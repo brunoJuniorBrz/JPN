@@ -1,0 +1,153 @@
+{
+  "format": "jpn-projetos-backup",
+  "exportedAt": "2026-10-26T13:55:19.825Z",
+  "data": {
+    "version": 2,
+    "revision": 1,
+    "exampleInstalled": true,
+    "projects": [
+      {
+        "id": "d0955ca0-2e9e-4e2a-b457-300000000001",
+        "name": "EXEMPLO — Cobertura da garagem",
+        "client": "Sr. Antônio — cliente fictício",
+        "phone": "",
+        "location": "Obra fictícia para demonstração",
+        "description": "Cobertura de uma água, com 6 m de largura e 10 m de comprimento. Todos os materiais, preços e quantidades manuais são fictícios.",
+        "category": "Cobertura metálica",
+        "status": "Em elaboração",
+        "createdAt": "2026-10-26T13:55:19.101Z",
+        "updatedAt": "2026-10-26T13:55:19.101Z",
+        "technicalNotes": "Exemplo de geometria e orçamento, sem dimensionamento estrutural. Apoios, perfis, ligações e quantidade de peças precisam de especificação profissional.",
+        "commercialNotes": "Valores fictícios para demonstração. Não usar como proposta comercial.",
+        "technicalContact": "",
+        "technicalStatus": "preliminary",
+        "roof": {
+          "widthM": 6,
+          "lengthM": 10,
+          "lowHeightM": 3,
+          "slopePercent": 10,
+          "fall": "width-positive",
+          "profileDescription": "",
+          "supports": [],
+          "revision": 1
+        },
+        "estimate": {
+          "materials": [
+            {
+              "id": "daed79ed-9767-4efa-82e4-3be9a4d62629",
+              "materialId": "d0955ca0-2e9e-4e2a-b457-300000000002",
+              "name": "Telha por m² — exemplo",
+              "purchaseUnit": "m²",
+              "measurementUnit": "m²",
+              "measurementPerPurchase": null,
+              "source": "roof-area",
+              "manualQuantity": null,
+              "wastePercent": 5,
+              "unitPriceCents": 8000
+            },
+            {
+              "id": "b16bb5ee-df17-4a75-8f3b-0e2c20081962",
+              "materialId": "d0955ca0-2e9e-4e2a-b457-300000000003",
+              "name": "Perfil por barra — exemplo",
+              "purchaseUnit": "barra",
+              "measurementUnit": "m",
+              "measurementPerPurchase": 6,
+              "source": "manual",
+              "manualQuantity": 24,
+              "wastePercent": 0,
+              "unitPriceCents": 25000
+            },
+            {
+              "id": "926eece9-e925-4f8d-8e54-a6840477642c",
+              "materialId": "d0955ca0-2e9e-4e2a-b457-300000000004",
+              "name": "Fixador — exemplo",
+              "purchaseUnit": "un",
+              "measurementUnit": "un",
+              "measurementPerPurchase": null,
+              "source": "manual",
+              "manualQuantity": 100,
+              "wastePercent": 0,
+              "unitPriceCents": 250
+            }
+          ],
+          "labor": [
+            {
+              "id": "2ca64dab-cc46-49be-9bab-8501fd8a791a",
+              "description": "Montagem — exemplo",
+              "quantity": 2,
+              "unit": "dia",
+              "unitPriceCents": 60000
+            }
+          ],
+          "expenses": [
+            {
+              "id": "a583fe0d-3d0d-45d0-b385-14139fdd1ed5",
+              "description": "Transporte — exemplo",
+              "quantity": 1,
+              "unit": "viagem",
+              "unitPriceCents": 35000
+            }
+          ],
+          "charges": [],
+          "pricingMode": "markup",
+          "pricingPercent": 25,
+          "deadline": "Prazo a combinar — exemplo"
+        },
+        "isExample": true
+      }
+    ],
+    "materials": [
+      {
+        "id": "d0955ca0-2e9e-4e2a-b457-300000000002",
+        "name": "Telha por m² — exemplo",
+        "code": "EX-01",
+        "category": "Telhas metálicas",
+        "purchaseUnit": "m²",
+        "measurementUnit": "m²",
+        "measurementPerPurchase": null,
+        "unitPriceCents": 8000,
+        "supplier": "Fornecedor fictício",
+        "notes": "Preço fictício para aprender a usar o sistema. Não é cotação de mercado.",
+        "updatedAt": "2026-10-26T13:55:19.102Z",
+        "isExample": true
+      },
+      {
+        "id": "d0955ca0-2e9e-4e2a-b457-300000000003",
+        "name": "Perfil por barra — exemplo",
+        "code": "EX-02",
+        "category": "Perfis metálicos",
+        "purchaseUnit": "barra",
+        "measurementUnit": "m",
+        "measurementPerPurchase": 6,
+        "unitPriceCents": 25000,
+        "supplier": "Fornecedor fictício",
+        "notes": "Barra de 6 m apenas como exemplo de compra. Perfil e resistência não dimensionados.",
+        "updatedAt": "2026-10-26T13:55:19.102Z",
+        "isExample": true
+      },
+      {
+        "id": "d0955ca0-2e9e-4e2a-b457-300000000004",
+        "name": "Fixador — exemplo",
+        "code": "EX-03",
+        "category": "Parafusos e fixadores",
+        "purchaseUnit": "un",
+        "measurementUnit": "un",
+        "measurementPerPurchase": null,
+        "unitPriceCents": 250,
+        "supplier": "Fornecedor fictício",
+        "notes": "Quantidade e preço fictícios; sem especificação de ligação.",
+        "updatedAt": "2026-10-26T13:55:19.102Z",
+        "isExample": true
+      }
+    ],
+    "settings": {
+      "companyName": "JPN Projetos",
+      "businessInfo": "",
+      "defaultWastePercent": 0,
+      "pricingMode": "markup",
+      "defaultPricingPercent": 0,
+      "currency": "BRL",
+      "compactView": false
+    }
+  }
+}

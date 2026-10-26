@@ -1,0 +1,18 @@
+"use client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Plus, ArrowRight, FolderOpen, FilePenLine, CircleCheck, Wallet, Ruler, Boxes } from "lucide-react";
+import { useData } from "@/components/data-provider";
+import { PageHeading } from "@/components/ui";
+import { ProjectCard } from "@/components/projects/project-card";
+import { calculateEstimate, moneyLabel } from "@/domain/calculations/estimate";
+export default function Dashboard() {
+  const { data, installExample } = useData(), router = useRouter();
+  const projects = [...data.projects].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  const real = projects.filter(p => !p.isExample), example = projects.find(p => p.isExample);
+  const total = real.filter(p => p.status !== "Arquivado").reduce((sum, p) => sum + (calculateEstimate(p).saleCents ?? 0), 0);
+  const stats = [{ label: "Suas obras", value: real.length, icon: FolderOpen, detail: "Sem contar projetos de exemplo" }, { label: "Em elaboração", value: real.filter(p => p.status === "Em elaboração").length, icon: FilePenLine, detail: "Orçamentos em preparação" }, { label: "Finalizados", value: real.filter(p => p.status === "Finalizado").length, icon: CircleCheck, detail: "Status informado por você" }, { label: "Total dos orçamentos", value: moneyLabel(total), icon: Wallet, detail: "Sem exemplos, arquivados ou pendentes" }];
+  return <><PageHeading eyebrow="JPN PROJETOS" title="Visão geral" description="Cadastre a obra, informe as medidas e veja quanto cobrar." action={<Link className="button" href="/projetos/novo"><Plus size={20} />Novo projeto</Link>} /><section className="welcome-panel simple-welcome"><div><h2>Seu orçamento, passo a passo.</h2><p>1. Cliente · 2. Medidas · 3. Materiais · 4. Custos · 5. Resumo</p><Link href="/projetos/novo" className="welcome-link">Começar uma nova obra <ArrowRight size={20} /></Link></div><Ruler className="welcome-icon" size={64} /></section>
+    <section className="example-intro"><div><strong>Quer ver um projeto preenchido?</strong><p>Abra a cobertura de garagem fictícia. Você pode mudar medidas e preços para aprender.</p></div>{example ? <Link className="button secondary" href={`/projetos/${example.id}?etapa=1`}>Abrir exemplo<ArrowRight size={18} /></Link> : <button className="button secondary" onClick={() => { const id = installExample(); if (id) router.push(`/projetos/${id}?etapa=1`); }}>Criar exemplo</button>}</section>
+    <section className="stats-grid" aria-label="Estatísticas dos projetos">{stats.map(item => <article key={item.label} className="stat-card"><div><span>{item.label}</span><item.icon size={20} /></div><strong>{item.value}</strong><p>{item.detail}</p></article>)}</section><div className="section-title"><div><h2>Projetos recentes</h2><p>Toque no nome para continuar.</p></div><Link href="/projetos" className="text-link">Ver todos<ArrowRight size={18} /></Link></div>{projects.length ? <div className={`project-grid ${data.settings.compactView ? "compact" : ""}`}>{projects.slice(0, 6).map(p => <ProjectCard key={p.id} project={p} />)}</div> : <section className="empty-state"><FolderOpen size={32} /><h3>Seu primeiro projeto começa aqui</h3><p>Cadastre o cliente e os detalhes da obra.</p><Link href="/projetos/novo" className="button">Criar primeiro projeto</Link></section>}<div className="home-shortcuts"><Link className="button secondary" href="/materiais"><Boxes size={20} />Meus materiais e preços</Link><Link className="button secondary" href="/configuracoes">Configurações e backup</Link></div><p className="notice">Desenhos e orçamentos preliminares. PDF, Excel e DXF serão acrescentados na próxima fase.</p></>;
+}
