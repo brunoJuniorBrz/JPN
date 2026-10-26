@@ -42,6 +42,9 @@ export const estimateSchema = z.object({
   charges: z.array(chargeSchema).max(100),
   pricingMode: z.enum(["markup", "margin"]), pricingPercent: z.number().finite().min(0).max(1000).refine(n => Math.abs(n * 100 - Math.round(n * 100)) < 1e-7, "Use até duas casas decimais.").nullable(),
   deadline: z.string().max(500),
+  paymentTerms: z.string().max(2000).default(""),
+  validity: z.string().max(500).default(""),
+  exclusions: z.string().max(2000).default(""),
 }).strict();
 export type Estimate = z.infer<typeof estimateSchema>;
-export function emptyEstimate(): Estimate { return { materials: [], labor: [], expenses: [], charges: [], pricingMode: "markup", pricingPercent: 0, deadline: "" }; }
+export function emptyEstimate(): Estimate { return { materials: [], labor: [], expenses: [], charges: [], pricingMode: "markup", pricingPercent: 0, deadline: "", paymentTerms: "", validity: "", exclusions: "" }; }

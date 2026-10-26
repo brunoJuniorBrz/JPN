@@ -1,10 +1,12 @@
 {
   "name": "jpn-projetos",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.15.0",
-  "engines": { "node": ">=24 <25" },
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,6 +17,9 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "exceljs": "^4.4.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.9",
     "lucide-react": "1.61.0",
     "next": "16.4.3",
     "react": "19.3.1",
@@ -29,6 +34,7 @@
     "@types/react-dom": "19.3.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.4.3",
+    "pdfjs-dist": "^6.4.299",
     "postcss": "8.5.31",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",

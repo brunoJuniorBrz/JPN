@@ -91,7 +91,10 @@
           "charges": [],
           "pricingMode": "markup",
           "pricingPercent": 25,
-          "deadline": "Prazo a combinar — exemplo"
+          "deadline": "Prazo a combinar — exemplo",
+          "paymentTerms": "50% na aprovação e 50% na conclusão - exemplo",
+          "validity": "10 dias a partir da emissão - exemplo",
+          "exclusions": "Alvenaria e instalações elétricas - exemplo"
         },
         "isExample": true
       }

@@ -35,13 +35,20 @@
 - [x] Projeto fictício completo com preços identificados como exemplos.
 - [x] Testes unitários e jornadas em diferentes larguras de tela.
 
-## Fase 4 — Próxima entrega: documentos e CAD
+## Fase 4 — Entrega comercial disponível; CAD pendente
+
+- [x] PDF comercial com escopo, total e condições, sem custos e margem internos.
+- [x] Planilha XLSX interna com quantidades, preços, encargos e resumo financeiro.
+- [x] Formulário de entrega com bloqueio por pendências, erros de gravação e condições ausentes.
+- [x] Compatibilidade com projetos antigos e exemplo fictício identificado no PDF.
+
+Próximos incrementos:
 
 1. Instalar e consultar a API da versão escolhida de `@tarikjabiri/dxf`.
 2. Consumir o GeometryModel existente para DXF em mm, mantendo camadas, textos, revisão e aviso preliminar.
-3. Implementar XLSX com medidas, itens, quantidades, preços, custos e resumo financeiro; testar coerência com o mesmo orçamento.
-4. Gerar PDF comercial sem custos/margens internos e PDF interno detalhado.
-5. Validar visualização e compartilhamento no celular.
+3. Acrescentar medidas geométricas à planilha interna.
+4. Gerar PDF interno detalhado.
+5. Validar compartilhamento nativo e dispositivos físicos; download no navegador já disponível.
 6. Testar DXF em CAD disponível e documentar qual software foi usado.
 7. SCR somente após confirmar sintaxe e compatibilidade. DWG nativo continua fora do escopo.
 

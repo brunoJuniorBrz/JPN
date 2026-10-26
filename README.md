@@ -1,6 +1,6 @@
-# JPN Projetos — v0.3.0
+# JPN Projetos — v0.4.0
 
-Sistema local de projetos e orçamentos de estruturas metálicas. As **Fases 1, 2 e 3** estão implementadas: cadastro, geometria de cobertura de uma água, catálogo de materiais e orçamento. PDF, XLSX e DXF pertencem à Fase 4 e ainda não estão disponíveis.
+Sistema local de projetos e orçamentos de estruturas metálicas. Cadastro, geometria de cobertura de uma água, catálogo e orçamento implementados. A entrega comercial agora inclui **PDF para o cliente e planilha XLSX interna**. CAD permanece para a próxima etapa.
 
 ## Como usar
 
@@ -9,7 +9,12 @@ Sistema local de projetos e orçamentos de estruturas metálicas. As **Fases 1, 
 3. Confira a cobertura em **De cima**, **De frente** e **De lado**. Arraste para mover, use dois dedos ou os botões para ampliar e **Ajustar à tela** para voltar.
 4. Em **Materiais**, selecione um item ou cadastre outro sem sair da obra. Informe a quantidade manualmente ou escolha uma regra compatível com a unidade.
 5. Em **Custos**, inclua mão de obra, despesas, ganho e, se necessário, encargos explicitamente informados.
-6. Em **Resumo**, veja custos, preço de venda, lucro bruto, margens e pendências.
+6. Em **Resumo → Entregar o orçamento**, confira o serviço, preencha pagamento, prazo e validade e clique em **Baixar orçamento em PDF**. Abra o arquivo e anexe no WhatsApp ou e-mail do cliente.
+7. Em **Planilha para uso interno**, baixe o XLSX com custos e lucro. As células exportadas são valores da emissão; alterações na planilha não recalculam o orçamento. Recalcule no sistema.
+
+O PDF contém empresa, cliente, obra, escopo, valor total, condições, exclusões e observações comerciais. Não inclui preços de compra, lucro, margem nem notas técnicas internas. Projetos fictícios recebem identificação no documento. O número de referência identifica o projeto; cada emissão reflete os dados atuais, sem histórico imutável de propostas. Informações da empresa vêm de Configurações.
+
+Os campos comerciais são compatíveis com backups v2 anteriores: iniciam vazios e precisam ser preenchidos antes de emitir o PDF. Nenhuma condição de pagamento ou validade é presumida para projetos existentes. A geração ocorre no navegador; não há envio automático nem serviço de armazenamento dos arquivos.
 
 A navegação tem cinco passos, campos e botões maiores, exemplos ao lado dos campos e detalhes técnicos opcionais. Os dados válidos são salvos automaticamente após 600 ms. Projetos incompletos podem ser salvos para continuar depois; itens sem quantidade, preço ou conversão impedem a exibição de um preço de venda completo.
 
@@ -67,7 +72,7 @@ Os testes unitários incluem conversões m/mm/m², área e inclinação, quatro 
 
 Playwright verifica cadastro completo até o orçamento, números brasileiros, alteração de medidas, recarga, CRUD de projetos, catálogo, backup, configurações, corrupção de dados, zoom/pan por gestos de toque e cinco etapas preenchidas em larguras de 320, 390, 768 e 1440 px. As capturas ficam em `test-results/`. Os testes usam Chromium e emulação de toque; não equivalem a teste em Safari iOS ou Chrome Android físicos.
 
-Verificação desta entrega: **35 testes unitários e 9 testes de navegador aprovados; typecheck e lint sem erros; build de produção aprovado**. Também foi verificada a versão de produção em viewport móvel, com abertura do exemplo, preço de venda e exportação real do backup JSON. Capturas de desenho e resumo foram revisadas visualmente.
+Verificação desta entrega: **39 testes unitários e 11 testes de navegador aprovados; TypeScript e lint sem erros; build de produção aprovado**. Os testes reabrem PDF e XLSX para conferir conteúdo, valores e separação dos dados internos, verificam paginação, compatibilidade dos campos novos, persistência e falha de armazenamento. Jornadas em 320, 390, 768 e 1440 px passaram contra o build de produção. Download de PDF em viewport móvel e visual do documento foram conferidos; dispositivos físicos ainda não foram testados.
 
 ## Tecnologias e estrutura
 
@@ -156,7 +161,7 @@ O dashboard soma somente preços calculáveis de projetos reais não arquivados.
 
 ## Limitações e próxima etapa
 
-- Fase 4 pendente: PDF comercial/interno, XLSX e DXF. Não há botões simulando essas exportações; JSON funciona.
+- Fase 4 parcial: PDF comercial e XLSX interno disponíveis. PDF interno detalhado, DXF e compartilhamento nativo permanecem pendentes. Downloads podem ser anexados manualmente.
 - O desenho permanece identificado como **DESENHO PRELIMINAR — NÃO UTILIZAR PARA EXECUÇÃO**. Não há cálculo estrutural, capacidade de carga, ligações, fundações ou ART.
 - Outros tipos de estrutura aceitam orçamento manual, mas não possuem gerador geométrico nesta versão. Duas águas pertence à fase posterior.
 - Não há plano de corte: quatro barras não garantem aproveitamento de cortes de peças específicas.
