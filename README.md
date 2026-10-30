@@ -1,8 +1,22 @@
-# JPN Projetos — v0.4.0
+# JPN Projetos — v0.5.0
 
-Sistema local de projetos e orçamentos de estruturas metálicas. Cadastro, geometria de cobertura de uma água, catálogo e orçamento implementados. A entrega comercial agora inclui **PDF para o cliente e planilha XLSX interna**. CAD permanece para a próxima etapa.
+Sistema local de projetos e levantamento geométrico de materiais de estruturas metálicas. O fluxo principal agora é **Obra → Medidas → Estrutura → Resultado**, com peças identificadas, desenho e PDF/XLSX para cotação sem preços. O orçamento de venda permanece como área secundária.
 
-## Como usar
+## Levantamento de peças
+
+Abra **Abrir exemplo de levantamento** na página inicial: cobertura fictícia de 10 × 20 m, inclinação de 10%, 5 linhas de tesouras, 7 linhas de terças e 123 peças. Perfis e massas são fictícios. O exemplo é criado somente ao clicar, sem substituir os exemplos ou projetos anteriores.
+
+Para uma obra nova, informe medidas, espaçamento máximo entre tesouras e terças, altura da tesoura e número de painéis. A geração distribui os vãos igualmente, incluindo as extremidades, e calcula pilares, banzos, montantes, diagonais e trechos de terça. A área inclinada do exemplo é 200,997512 m². O comprimento de cada peça é geométrico entre eixos; não inclui descontos ou cortes de fabricação.
+
+Perfis podem ser informados na estrutura ou copiados dos dados técnicos do catálogo. Massa é calculada apenas onde houver kg/m. A lista mantém dados ausentes como pendentes. A revisão do engenheiro aparece **depois dos resultados**, sem caixa de aprovação ou bloqueio do download por falta de revisão. PDF e Excel incluem as pendências. Apenas ausência de geometria calculável ou falha de salvamento impede a emissão correspondente.
+
+**Estado do produto:** geração geométrica e quantitativos implementados; dimensionamento por resistência, escolha automática dos melhores perfis, cargas e verificações normativas ainda não implementados. A aprovação final do engenheiro não substitui essas implementações. Ligações, chapas, fixadores, soldas, contraventamentos, corte e telhas comerciais não estão quantificados. O desenho e a lista não constituem projeto executivo completo.
+
+Consulte o [diagnóstico e arquitetura](docs/PLANEJAMENTO-TECNICO.md) e o [plano do dimensionamento automático](docs/DIMENSIONAMENTO.md). AutoCAD/DXF fica na última etapa.
+
+## Orçamento de venda preservado
+
+Dentro do projeto, selecione **Orçamento de venda** para usar o fluxo comercial anterior:
 
 1. Abra **Novo projeto** e informe nome da obra e cliente. Clique em **Salvar e continuar**.
 2. Em **Medidas**, preencha largura, comprimento, altura do lado mais baixo e inclinação. Aceita vírgula: `6,50`.
@@ -68,11 +82,11 @@ pnpm test:e2e
 pnpm build
 ```
 
-Os testes unitários incluem conversões m/mm/m², área e inclinação, quatro sentidos de queda, entidades geométricas, apoios, quantidades e perdas, compra por barra, centavos, margem versus markup, encargos, informações pendentes, atualização da geometria e do orçamento, serialização, migração v1→v2, importação sem sobrescrita e falhas de armazenamento.
+Os testes unitários incluem conversões m/mm/m², área e inclinação, quatro sentidos de queda, entidades geométricas, apoios, quantidades e perdas, compra por barra, centavos, margem versus markup, encargos, informações pendentes, atualização da geometria e do orçamento, serialização, migração v1/v2→v3, importação sem sobrescrita e falhas de armazenamento.
 
 Playwright verifica cadastro completo até o orçamento, números brasileiros, alteração de medidas, recarga, CRUD de projetos, catálogo, backup, configurações, corrupção de dados, zoom/pan por gestos de toque e cinco etapas preenchidas em larguras de 320, 390, 768 e 1440 px. As capturas ficam em `test-results/`. Os testes usam Chromium e emulação de toque; não equivalem a teste em Safari iOS ou Chrome Android físicos.
 
-Verificação desta entrega: **39 testes unitários e 11 testes de navegador aprovados; TypeScript e lint sem erros; build de produção aprovado**. Os testes reabrem PDF e XLSX para conferir conteúdo, valores e separação dos dados internos, verificam paginação, compatibilidade dos campos novos, persistência e falha de armazenamento. Jornadas em 320, 390, 768 e 1440 px passaram contra o build de produção. Download de PDF em viewport móvel e visual do documento foram conferidos; dispositivos físicos ainda não foram testados.
+Verificação desta entrega: **47 testes unitários e 14 testes de navegador aprovados; TypeScript e lint sem erros; build de produção aprovado**. Os testes reabrem PDF e XLSX para conferir conteúdo, valores e separação dos dados internos, verificam paginação, compatibilidade dos campos novos, persistência e falha de armazenamento. Jornadas comerciais em 320, 390, 768 e 1440 px e de levantamento em 390 e 1440 px passaram no navegador. O build de produção teve abertura do novo exemplo, desenho e download PDF conferidos em viewport móvel; o documento também foi revisado visualmente; dispositivos físicos ainda não foram testados.
 
 ## Tecnologias e estrutura
 
@@ -98,7 +112,7 @@ tests/e2e/                            Jornadas de navegador e responsividade
 
 ## Persistência, compatibilidade e backup
 
-Uma única estrutura JSON armazena projetos, materiais e configurações. O documento agora usa `version: 2`. A chave física `jpn-projetos:v1` foi mantida para localizar os dados já existentes. Documentos e backups da Fase 1 são validados com o schema antigo e migrados em memória; novos campos ficam vazios, sem medidas ou custos inventados. A próxima gravação persiste a versão 2. Documentos de versões desconhecidas são rejeitados.
+Uma única estrutura JSON armazena projetos, materiais e configurações em `version: 3`. A chave física `jpn-projetos:v1` continua a mesma. Snapshots v1/v2 são validados e migrados em memória; projetos antigos recebem `planning: null`, com orçamento e medidas preservados. A próxima gravação persiste v3. Versões desconhecidas são rejeitadas. O modelo de peças é derivado, não armazenado no backup; a configuração e as cópias dos perfis são preservadas. A importação continua criando cópias e não altera configurações locais.
 
 Zod valida leitura e gravação. localStorage só é acessado na infraestrutura, após a hidratação do cliente. Os repositórios isolam o armazenamento das telas. Uma futura implementação remota exigirá adaptar a coordenação assíncrona, autenticação e concorrência; não há Supabase implementado.
 

@@ -1,5 +1,22 @@
 # Roadmap — JPN Projetos
 
+## Prioridade atual — solução calculada para revisão final
+
+O produto mudou de foco: levantar e dimensionar a estrutura para substituir o intermediário. A revisão do engenheiro ocorre ao final, sem autorização obrigatória para exibir ou baixar os resultados. CAD fica na última etapa.
+
+- [x] v0.5: fluxo de levantamento separado do orçamento de venda.
+- [x] Modelo central 3D em mm com nós e peças de uma água: pilares, banzos, montantes, diagonais e terças.
+- [x] Distribuição por limites geométricos informados, quantitativos, massa conhecida e seleção visual.
+- [x] Especificações de perfil no catálogo, copiadas para o projeto sem dependência de preço.
+- [x] PDF/XLSX de levantamento com pendências, peças identificadas e conferência final.
+- [x] Migração v1/v2→v3 preservando os orçamentos e exemplos antigos.
+- [ ] Catálogo técnico verificado, cargas, apoios, combinações e análise estrutural validada.
+- [ ] Verificações normativas e seleção automática de perfis e distribuições por critérios técnicos e econômicos.
+- [ ] Outras tipologias, ligações, soldas, telhamento comercial e plano de corte.
+- [ ] CAD/DXF a partir do modelo consolidado, após as etapas acima.
+
+As fases abaixo registram o histórico comercial; sua numeração não define a prioridade atual. Veja [DIMENSIONAMENTO.md](docs/DIMENSIONAMENTO.md).
+
 ## Fase 1 — Fundação concluída
 
 - [x] Next.js, TypeScript strict, Tailwind e interface responsiva.

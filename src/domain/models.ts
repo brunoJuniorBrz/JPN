@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { emptyEstimate, emptyRoof, estimateSchema, materialSchema, roofSchema } from "./project-details";
+import { planningSchema } from "./structure";
 export { materialSchema, units } from "./project-details";
 export type { Material } from "./project-details";
 
@@ -24,9 +25,10 @@ const projectBaseSchema = z.object({
   technicalContact: shortText,
   technicalStatus: z.literal("preliminary"),
 }).strict();
-export const projectSchema = projectBaseSchema.extend({
+const projectV2Schema = projectBaseSchema.extend({
   roof: roofSchema, estimate: estimateSchema, isExample: z.boolean(),
 });
+export const projectSchema = projectV2Schema.extend({ planning: planningSchema.nullable() });
 export type Project = z.infer<typeof projectSchema>;
 export const settingsSchema = z.object({
   companyName: shortText.min(1, "Informe o nome da empresa."),
@@ -48,14 +50,16 @@ const legacyMaterialSchema = z.object({
   supplier: shortText, notes, updatedAt: date,
 }).strict();
 const legacySnapshotSchema = z.object({ version: z.literal(1), revision: z.number().int().nonnegative(), projects: z.array(projectBaseSchema).max(10000), materials: z.array(legacyMaterialSchema).max(10000), settings: settingsSchema }).strict();
-export const snapshotSchema = z.object({
-  version: z.literal(2),
+const snapshotBase = z.object({
+  version: z.literal(3),
   revision: z.number().int().nonnegative(),
   exampleInstalled: z.boolean().default(false),
   projects: z.array(projectSchema).max(10000),
   materials: z.array(materialSchema).max(10000),
   settings: settingsSchema,
-}).strict().superRefine((data, ctx) => {
+}).strict();
+const snapshotV2Schema = snapshotBase.extend({ version: z.literal(2), projects: z.array(projectV2Schema).max(10000) });
+export const snapshotSchema = snapshotBase.superRefine((data, ctx) => {
   for (const key of ["projects", "materials"] as const) {
     if (new Set(data[key].map(item => item.id)).size !== data[key].length)
       ctx.addIssue({ code: "custom", path: [key], message: "IDs duplicados no arquivo." });
@@ -65,17 +69,21 @@ export type Snapshot = z.infer<typeof snapshotSchema>;
 export function migrateSnapshot(input: unknown): Snapshot {
   if (typeof input === "object" && input !== null && "version" in input && input.version === 1) {
     const old = legacySnapshotSchema.parse(input);
-    return snapshotSchema.parse({ ...old, version: 2,
-      projects: old.projects.map(p => ({ ...p, roof: emptyRoof(), estimate: { ...emptyEstimate(), pricingMode: old.settings.pricingMode, pricingPercent: Math.round(old.settings.defaultPricingPercent * 100) / 100 }, isExample: false })),
+    return snapshotSchema.parse({ ...old, version: 3,
+      projects: old.projects.map(p => ({ ...p, planning: null, roof: emptyRoof(), estimate: { ...emptyEstimate(), pricingMode: old.settings.pricingMode, pricingPercent: Math.round(old.settings.defaultPricingPercent * 100) / 100 }, isExample: false })),
       materials: old.materials.map(m => ({ ...m, measurementPerPurchase: null, isExample: false })),
     });
+  }
+  if (typeof input === "object" && input !== null && "version" in input && input.version === 2) {
+    const old = snapshotV2Schema.parse(input);
+    return snapshotSchema.parse({ ...old, version: 3, projects: old.projects.map(p => ({ ...p, planning: null })) });
   }
   return snapshotSchema.parse(input);
 }
 export const backupSchema = z.object({ format: z.literal("jpn-projetos-backup"), exportedAt: date, data: snapshotSchema }).strict();
 export type Backup = z.infer<typeof backupSchema>;
-export function emptySnapshot(): Snapshot { return { version: 2, revision: 0, exampleInstalled: false, projects: [], materials: [], settings: { ...defaultSettings } }; }
+export function emptySnapshot(): Snapshot { return { version: 3, revision: 0, exampleInstalled: false, projects: [], materials: [], settings: { ...defaultSettings } }; }
 export function newProject(settings: Settings = defaultSettings): Project {
   const now = new Date().toISOString();
-  return { id: crypto.randomUUID(), name: "", client: "", phone: "", location: "", description: "", category: "Cobertura metálica", status: "Rascunho", createdAt: now, updatedAt: now, technicalNotes: "", commercialNotes: "", technicalContact: "", technicalStatus: "preliminary", roof: emptyRoof(), estimate: { ...emptyEstimate(), pricingMode: settings.pricingMode, pricingPercent: Math.round(settings.defaultPricingPercent * 100) / 100 }, isExample: false };
+  return { id: crypto.randomUUID(), name: "", client: "", phone: "", location: "", description: "", category: "Cobertura metálica", status: "Rascunho", createdAt: now, updatedAt: now, technicalNotes: "", commercialNotes: "", technicalContact: "", technicalStatus: "preliminary", roof: emptyRoof(), estimate: { ...emptyEstimate(), pricingMode: settings.pricingMode, pricingPercent: Math.round(settings.defaultPricingPercent * 100) / 100 }, isExample: false, planning: null };
 }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { profileSchema } from "./structure";
 
 const text = z.string().trim().max(200);
 export const units = ["un", "m", "m²", "kg", "barra"] as const;
@@ -23,6 +24,7 @@ export const materialSchema = z.object({
   measurementPerPurchase: z.number().finite().positive().max(1000000).nullable(),
   unitPriceCents: money,
   supplier: text, notes: z.string().max(5000), updatedAt: z.iso.datetime(), isExample: z.boolean(),
+  technicalProfile: profileSchema.optional(),
 }).strict();
 export type Material = z.infer<typeof materialSchema>;
 export const materialLineSchema = z.object({

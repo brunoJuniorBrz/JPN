@@ -3,9 +3,9 @@ import { formatMeasure, metersToMillimeters as mm } from "./units";
 
 export const PRELIMINARY_NOTICE = "DESENHO PRELIMINAR — NÃO UTILIZAR PARA EXECUÇÃO";
 export type ViewName = "plan" | "front" | "side";
-export type Layer = "COBERTURA" | "EIXOS" | "APOIOS" | "COTAS" | "TEXTOS";
+export type Layer = "COBERTURA" | "EIXOS" | "APOIOS" | "COTAS" | "TEXTOS" | "PILARES" | "TERCAS" | "TESOURAS";
 export interface Point { x: number; y: number; }
-export type Entity = { type: "line"; a: Point; b: Point; layer: Layer } | { type: "text"; at: Point; text: string; height: number; layer: Layer } | { type: "circle"; at: Point; radius: number; layer: Layer };
+export type Entity = ({ type: "line"; a: Point; b: Point; layer: Layer } | { type: "text"; at: Point; text: string; height: number; layer: Layer } | { type: "circle"; at: Point; radius: number; layer: Layer }) & { pieceId?: string };
 export interface GeometryView { entities: Entity[]; bounds: { minX: number; minY: number; maxX: number; maxY: number }; }
 export interface RoofMetrics { projectedAreaM2: number; riseM: number; slopeLengthM: number; roofAreaM2: number; highHeightM: number; lowHeightM: number; widthM: number; lengthM: number; }
 export interface GeometryModel { units: "mm"; revision: number; metrics: RoofMetrics; views: Record<ViewName, GeometryView>; validSupportCount: number; warnings: string[]; }

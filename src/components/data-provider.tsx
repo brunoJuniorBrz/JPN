@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { emptySnapshot, projectSchema, type Backup, type Material, type Project, type Settings, type Snapshot } from "@/domain/models";
 import { browserRepositories, readRawBrowserData, LocalRepositories, STORAGE_KEY } from "@/infrastructure/persistence/local";
 import { downloadText } from "@/lib/format";
+import { planningExample, PLANNING_EXAMPLE_ID } from "@/domain/planning-example";
 
 type SaveState = "saved" | "pending" | "error";
 interface DataContextValue {
@@ -15,6 +16,7 @@ interface DataContextValue {
   invalidDraft: boolean; setInvalidDraft: (value: boolean) => void;
   saveMaterial: (material: Material) => boolean; removeMaterial: (id: string) => void;
   installExample: () => string | undefined;
+  installPlanningExample: () => string | undefined;
   loadEpoch: number;
 }
 const DataContext = createContext<DataContextValue | null>(null);
@@ -91,6 +93,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     saveMaterial: material => mutation(repo => { repo.materials.save(material); return true; }) ?? false,
     removeMaterial: id => { mutation(repo => repo.materials.remove(id)); },
     installExample: () => mutation(repo => repo.installExample()),
+    installPlanningExample: () => mutation(repo => { if (!repo.projects.list().some(p => p.id === PLANNING_EXAMPLE_ID)) repo.projects.save(planningExample()); return PLANNING_EXAMPLE_ID; }),
     recover: () => { try { const raw = readRawBrowserData(); downloadText(raw ?? "null", "jpn-dados-originais.json"); } catch (e) { fail(e); } },
   }}>{children}</DataContext.Provider>;
 }

@@ -5,6 +5,7 @@ const step = (page: import("@playwright/test").Page, name: string) => page.getBy
 test("obra real: cliente, medidas com vírgula, material próprio, custos e resumo persistido", async ({ page }) => {
   const errors: string[] = []; page.on("pageerror", e => errors.push(e.message));
   await page.goto("/projetos/novo");
+  await page.getByRole("button", { name: "Orçamento de venda", exact: true }).click();
   await page.getByRole("button", { name: "Salvar e continuar" }).click();
   await expect(page.getByText("Informe o nome do projeto.")).toBeVisible();
   await page.getByLabel("Nome do projeto *", { exact: true }).fill("Cobertura real de teste");
@@ -92,7 +93,7 @@ test("backup versão 2 com geometria, custos e referências e exclusão confirma
   await expect(page.getByText("2 projetos encontrados")).toBeVisible();
   page.once("dialog", d => d.accept()); await page.getByRole("button", { name: /^Excluir/ }).first().click();
   await expect(page.getByText("1 projeto encontrado")).toBeVisible();
-  await page.getByRole("link", { name: "EXEMPLO — Cobertura da garagem" }).click(); await step(page, "Resumo").click();
+  await page.getByRole("link", { name: "EXEMPLO — Cobertura da garagem" }).click(); await page.getByRole("button", { name: "Orçamento de venda", exact: true }).click(); await step(page, "Resumo").click();
   await expect(page.getByTestId("sale-price")).toContainText("9.831,50");
 });
 

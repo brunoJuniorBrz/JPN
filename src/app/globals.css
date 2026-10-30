@@ -362,3 +362,19 @@ body { font-size: 16px; }
 .proposal-check p { margin: 0; }
 .proposal-download { width: 100%; min-height: 56px; white-space: normal; }
 @media (max-width: 600px) { .proposal-delivery { padding: 16px; } .proposal-columns { grid-template-columns: 1fr; } }
+/* Planning workflow */
+.project-mode { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.project-mode button { min-height: 48px; padding: 12px 18px; border: 1px solid var(--line); border-radius: 10px; background: white; }
+.project-mode button.selected { background: var(--dark); color: white; }
+.planning-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.takeoff-table-scroll { max-width: 100%; overflow-x: auto; margin: 20px 0; border: 1px solid var(--line); border-radius: 12px; }
+.takeoff-table { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 15px; }
+.takeoff-table th, .takeoff-table td { padding: 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.takeoff-table th { background: #f0f2eb; }
+.takeoff-table td:first-child { max-width: 300px; overflow-wrap: anywhere; }
+.takeoff-table details { font-size: 13px; margin-top: 10px; }
+.takeoff-table summary { min-height: 44px; display: flex; align-items: center; }
+.technical-review { padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: #f8f8f3; margin-top: 24px; }
+.technical-review h4 { margin: 18px 0 8px; }
+.technical-review li { line-height: 1.7; margin-bottom: 8px; }
+@media (max-width: 600px) { .project-mode button { flex: 1 1 140px; } .planning-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

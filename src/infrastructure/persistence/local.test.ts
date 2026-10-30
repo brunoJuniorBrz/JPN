@@ -39,7 +39,7 @@ describe("Persistência versionada", () => {
     repo.projects.save({ ...p, phone: "11999999999" });
     const restored = new LocalRepositories(storage).load();
     expect(restored.projects).toHaveLength(1); expect(restored.projects[0].phone).toBe("11999999999");
-    expect(restored.version).toBe(2); expect(restored.revision).toBe(2);
+    expect(restored.version).toBe(3); expect(restored.revision).toBe(2);
   });
   it("duplica com novo ID e remove apenas o item solicitado", () => {
     const { repo } = setup(); const p = sampleProject(); repo.projects.save(p);
@@ -75,14 +75,14 @@ describe("Persistência versionada", () => {
 describe("Backups", () => {
   it("migra cadastro da fase 1 sem inventar medidas ou custos", () => {
     const p = sampleProject();
-    const oldProject = Object.fromEntries(Object.entries(p).filter(([key]) => !["roof", "estimate", "isExample"].includes(key)));
+    const oldProject = Object.fromEntries(Object.entries(p).filter(([key]) => !["roof", "estimate", "isExample", "planning"].includes(key)));
     const legacy = { version: 1, revision: 4, projects: [oldProject], materials: [], settings: defaultSettings };
     const storage = new MemoryStorage(); storage.setItem(STORAGE_KEY, JSON.stringify(legacy));
     const repo = new LocalRepositories(storage), migrated = repo.load();
-    expect(migrated.version).toBe(2); expect(migrated.projects[0].id).toBe(p.id);
+    expect(migrated.version).toBe(3); expect(migrated.projects[0].id).toBe(p.id);
     expect(migrated.projects[0].roof.widthM).toBeNull(); expect(migrated.projects[0].estimate.materials).toEqual([]);
     expect(JSON.parse(storage.getItem(STORAGE_KEY)!).version).toBe(1);
-    repo.projects.save(migrated.projects[0]); expect(JSON.parse(storage.getItem(STORAGE_KEY)!).version).toBe(2);
+    repo.projects.save(migrated.projects[0]); expect(JSON.parse(storage.getItem(STORAGE_KEY)!).version).toBe(3);
     const backup = parseBackup(JSON.stringify({ format: "jpn-projetos-backup", exportedAt: new Date().toISOString(), data: legacy }));
     expect(backup.data.projects[0].client).toBe(p.client);
   });
