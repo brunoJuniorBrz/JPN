@@ -1,0 +1,15 @@
+{
+  "schema": "jpn-truss2d-v1",
+  "units": "m-kN",
+  "nodes": [
+    {"id":"A","x_m":0,"z_m":0,"fix_x":true,"fix_z":true},
+    {"id":"B","x_m":4,"z_m":0,"fix_x":false,"fix_z":true},
+    {"id":"C","x_m":2,"z_m":3,"fix_x":false,"fix_z":false}
+  ],
+  "members": [
+    {"id":"AB","start":"A","end":"B","e_kn_m2":200000000,"area_m2":0.001},
+    {"id":"AC","start":"A","end":"C","e_kn_m2":200000000,"area_m2":0.001},
+    {"id":"BC","start":"B","end":"C","e_kn_m2":200000000,"area_m2":0.001}
+  ],
+  "loads": [{"node":"C","fx_kn":0,"fz_kn":-10}]
+}
