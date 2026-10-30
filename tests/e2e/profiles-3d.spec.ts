@@ -107,3 +107,16 @@ for (const width of [375, 1440]) test(`exemplo antigo abre demonstração sólid
   await expect(fields.getByLabel("Família geométrica 3D")).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(original);
 });
+
+for (const width of [375, 1440]) test(`atalho visível abre o 3D da estrutura no fluxo em ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 850 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Abrir exemplo completo de pré-projeto" }).click();
+  await page.getByRole("navigation", { name: "Etapas do levantamento" }).getByRole("button", { name: "Obra" }).click();
+  await expect(page.getByRole("button", { name: "Abrir modelo 3D" })).toBeVisible();
+  await page.getByRole("button", { name: "Abrir modelo 3D" }).click();
+  await expect(page.getByRole("button", { name: "Voltar às vistas 2D" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Perfis 3D", exact: true })).toBeVisible();
+  await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
