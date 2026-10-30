@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf";
 import { autoTable } from "jspdf-autotable";
 import { moneyLabel } from "@/domain/calculations/estimate";
 import type { CommercialProposal } from "./proposal";
+import { formatMeasure } from "@/domain/calculations/units";
 
 export function createProposalPdf(proposal: CommercialProposal): ArrayBuffer {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -15,6 +16,7 @@ export function createProposalPdf(proposal: CommercialProposal): ArrayBuffer {
     ["PAGAMENTO", proposal.paymentTerms], ["PRAZO", proposal.deadline],
     ["VALIDADE", proposal.validity],
   ];
+  if (proposal.items.length) rows.splice(4, 0, ["ITENS PREVISTOS", proposal.items.map(item => `${item.description}: ${formatMeasure(item.quantity, 6)} ${item.unit}`).join("\n")]);
   if (proposal.exclusions) rows.push(["NÃO INCLUÍDO", proposal.exclusions]);
   if (proposal.notes) rows.push(["OBSERVAÇÕES", proposal.notes]);
   rows.push(["CONFERÊNCIA TÉCNICA", "Orçamento preliminar. Dimensões e especificações sujeitas à conferência técnica. Este documento não substitui projeto estrutural."]);
@@ -24,7 +26,7 @@ export function createProposalPdf(proposal: CommercialProposal): ArrayBuffer {
     columnStyles: { 0: { cellWidth: 43, fontSize: 9, fontStyle: "bold", textColor: [83, 88, 87] }, 1: { cellWidth: 131 } },
     alternateRowStyles: { fillColor: [246, 246, 242] },
     didParseCell: data => {
-      if (data.row.index === 4) { data.cell.styles.fillColor = [234, 224, 193]; data.cell.styles.fontStyle = "bold"; data.cell.styles.fontSize = data.column.index === 1 ? 18 : 10; }
+      if (Array.isArray(data.row.raw) && data.row.raw[0] === "VALOR TOTAL") { data.cell.styles.fillColor = [234, 224, 193]; data.cell.styles.fontStyle = "bold"; data.cell.styles.fontSize = data.column.index === 1 ? 18 : 10; }
     },
     didDrawPage: () => {
       doc.setFillColor(32, 44, 44); doc.rect(0, 0, 210, 34, "F");

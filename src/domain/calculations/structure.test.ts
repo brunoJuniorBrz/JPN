@@ -75,13 +75,13 @@ describe("modelo central de peças", () => {
 describe("migração do levantamento", () => {
   it("preserva orçamento v2 e só grava a versão nova na próxima gravação", () => {
     const project = exampleProject();
-    const { planning: _planning, ...legacyProject } = project; void _planning;
+    const { planning: _planning, workspace: _workspace, revisions: _revisions, ...legacyProject } = project; void _planning; void _workspace; void _revisions;
     const old = { ...emptySnapshot(), version: 2, exampleInstalled: true, projects: [legacyProject] };
     const original = JSON.stringify(old); let raw = original;
     const repo = new LocalRepositories({ getItem: () => raw, setItem: (_key, value) => { raw = value; } });
-    const data = repo.load(); expect(data.version).toBe(3); expect(data.projects[0].planning).toBeNull();
+    const data = repo.load(); expect(data.version).toBe(4); expect(data.projects[0].planning).toBeNull();
     expect(data.projects[0].estimate).toEqual(project.estimate); expect(raw).toBe(original);
-    repo.projects.save(data.projects[0]); expect(JSON.parse(raw).version).toBe(3);
+    repo.projects.save(data.projects[0]); expect(JSON.parse(raw).version).toBe(4);
     expect(migrateSnapshot(old).projects[0].roof).toEqual(project.roof);
     expect(STORAGE_KEY).toBe("jpn-projetos:v1");
   });

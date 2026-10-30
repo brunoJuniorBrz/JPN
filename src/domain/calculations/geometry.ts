@@ -11,7 +11,7 @@ export interface RoofMetrics { projectedAreaM2: number; riseM: number; slopeLeng
 export interface GeometryModel { units: "mm"; revision: number; metrics: RoofMetrics; views: Record<ViewName, GeometryView>; validSupportCount: number; warnings: string[]; }
 export interface GeometryResult { model: GeometryModel | null; pending: string[]; }
 
-export function generateGeometry(input: RoofParameters): GeometryResult {
+export function generateGeometry(input: RoofParameters, typology: "mono" | "gable" = "mono"): GeometryResult {
   const parsed = roofSchema.safeParse(input);
   if (!parsed.success) return { model: null, pending: ["Revise as medidas: use valores positivos, até 1.000 m, e inclinação entre 0 e 100%."] };
   const r = parsed.data;
@@ -24,9 +24,9 @@ export function generateGeometry(input: RoofParameters): GeometryResult {
   const width = r.widthM, length = r.lengthM, low = r.lowHeightM;
   const acrossWidth = r.fall.startsWith("width"), positive = r.fall.endsWith("positive");
   const run = acrossWidth ? width : length, along = acrossWidth ? length : width;
-  const rise = run * r.slopePercent / 100, slopeLength = Math.hypot(run, rise);
+  const rise = run * r.slopePercent / 100 / (typology === "gable" ? 2 : 1), slopeLength = Math.hypot(run, rise * (typology === "gable" ? 2 : 1));
   const metrics: RoofMetrics = { projectedAreaM2: width * length, riseM: rise, slopeLengthM: slopeLength, roofAreaM2: along * slopeLength, highHeightM: low + rise, lowHeightM: low, widthM: width, lengthM: length };
-  const z = (x: number, y: number) => low + rise * (positive ? 1 - (acrossWidth ? x : y) / run : (acrossWidth ? x : y) / run);
+  const z = (x: number, y: number) => low + rise * (typology === "gable" ? 1 - Math.abs(2 * (acrossWidth ? x : y) / run - 1) : positive ? 1 - (acrossWidth ? x : y) / run : (acrossWidth ? x : y) / run);
   const vertices = [{ x: 0, y: 0 }, { x: width, y: 0 }, { x: width, y: length }, { x: 0, y: length }].map(p => ({ ...p, z: z(p.x, p.y) }));
   const validSupports = r.supports.filter(s => s.xM !== null && s.yM !== null && s.xM <= width && s.yM <= length);
   const warnings: string[] = [];
@@ -45,10 +45,15 @@ export function generateGeometry(input: RoofParameters): GeometryResult {
     const project = (p: { x: number; y: number; z: number }): Point => view === "plan" ? { x: mm(p.x), y: mm(p.y) } : { x: mm(view === "front" ? p.x : p.y), y: mm(p.z) };
     const seen = new Set<string>();
     vertices.forEach((p, i) => {
-      const a = project(p), b = project(vertices[(i + 1) % 4]);
-      const key = [JSON.stringify(a), JSON.stringify(b)].sort().join("|");
-      if (!seen.has(key)) { line(a, b, "COBERTURA"); seen.add(key); }
+      const end = vertices[(i + 1) % 4];
+      const split = typology === "gable" && (acrossWidth ? p.x !== end.x : p.y !== end.y);
+      const mid = { x: (p.x + end.x) / 2, y: (p.y + end.y) / 2, z: low + rise };
+      for (const [start, stop] of split ? [[p, mid], [mid, end]] : [[p, end]]) {
+        const a = project(start), b = project(stop), key = [JSON.stringify(a), JSON.stringify(b)].sort().join("|");
+        if (!seen.has(key)) { line(a, b, "COBERTURA"); seen.add(key); }
+      }
     });
+    if (typology === "gable") line(project({ x: acrossWidth ? width / 2 : 0, y: acrossWidth ? 0 : length / 2, z: low + rise }), project({ x: acrossWidth ? width / 2 : width, y: acrossWidth ? length : length / 2, z: low + rise }), "COBERTURA");
     const spanX = mm(view === "side" ? length : width), spanY = mm(view === "plan" ? length : low + rise);
     line({ x: -gap / 3, y: 0 }, { x: spanX + gap / 3, y: 0 }, "EIXOS");
     line({ x: 0, y: -gap / 3 }, { x: 0, y: spanY + gap / 3 }, "EIXOS");
@@ -71,12 +76,14 @@ export function generateGeometry(input: RoofParameters): GeometryResult {
     });
     if (view === "plan") {
       const center = { x: mm(width / 2), y: mm(length / 2) };
-      const lengthArrow = mm(run * .35), sign = positive ? 1 : -1;
-      const start = { x: center.x - (acrossWidth ? sign * lengthArrow / 2 : 0), y: center.y - (!acrossWidth ? sign * lengthArrow / 2 : 0) };
-      const end = { x: center.x + (acrossWidth ? sign * lengthArrow / 2 : 0), y: center.y + (!acrossWidth ? sign * lengthArrow / 2 : 0) };
-      line(start, end, "TEXTOS");
-      for (const d of [-1, 1]) line(end, { x: end.x - (acrossWidth ? sign * font * 2 : d * font), y: end.y - (!acrossWidth ? sign * font * 2 : d * font) }, "TEXTOS");
-      text({ x: center.x, y: center.y + gap }, `Queda ${formatMeasure(r.slopePercent, 2)}%`);
+      const lengthArrow = mm(run * .35);
+      for (const sign of typology === "gable" ? [-1, 1] : [positive ? 1 : -1]) {
+        const start = typology === "gable" ? center : { x: center.x - (acrossWidth ? sign * lengthArrow / 2 : 0), y: center.y - (!acrossWidth ? sign * lengthArrow / 2 : 0) };
+        const end = { x: center.x + (acrossWidth ? sign * lengthArrow / 2 : 0), y: center.y + (!acrossWidth ? sign * lengthArrow / 2 : 0) };
+        line(start, end, "TEXTOS");
+        for (const d of [-1, 1]) line(end, { x: end.x - (acrossWidth ? sign * font * 2 : d * font), y: end.y - (!acrossWidth ? sign * font * 2 : d * font) }, "TEXTOS");
+      }
+      text({ x: center.x, y: center.y + gap }, `${typology === "gable" ? "Duas águas" : "Queda"} ${formatMeasure(r.slopePercent, 2)}%`);
       text({ x: spanX / 2, y: spanY + gap }, "PLANTA • medidas horizontais");
     } else {
       text({ x: spanX / 2, y: spanY + gap }, `${view === "front" ? "FRENTE" : "LATERAL"} • inclinação ${formatMeasure(r.slopePercent, 2)}%`);

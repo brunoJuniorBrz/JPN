@@ -1,0 +1,67 @@
+{
+  "version": "0.6.0",
+  "audit_date": "2026-10-30",
+  "timezone": "America/Sao_Paulo",
+  "platform": "Windows x64",
+  "fresh_baseline": {
+    "python": 1183,
+    "vitest": 48,
+    "playwright": 14
+  },
+  "final": {
+    "python": 1186,
+    "vitest": 79,
+    "playwright": 21,
+    "total": 1286,
+    "failed": 0,
+    "skipped": 0
+  },
+  "checks": {
+    "typecheck_exit": 0,
+    "eslint_exit": 0,
+    "production_build_exit": 0,
+    "pip_check_exit": 0,
+    "dxf_parser": "passed",
+    "ezdxf_audit": {
+      "version": "1.4.5",
+      "lines_3d": 130,
+      "units": "mm",
+      "errors": 0
+    }
+  },
+  "visual_review": {
+    "three_mobile_375": "reviewed after camera fit correction",
+    "pdf_takeoff": "all 5 pages rendered with portable Poppler 26.09.0 and reviewed"
+  },
+  "campaigns": {
+    "pynite": {
+      "seeds": [
+        0,
+        999
+      ],
+      "cases": 1000
+    },
+    "cutting": {
+      "seed": 719,
+      "cases": 300
+    }
+  },
+  "ci_reference": {
+    "commit": "a818faf948c958194c2e43c8ae1e872d927d16d8",
+    "run": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41136719881",
+    "conclusion": "success",
+    "new_workflow_executed_remotely": false
+  },
+  "deployment": {
+    "local_process": "tested",
+    "private_http": "tested",
+    "docker_image": "not executed",
+    "public_hosting": "not deployed"
+  },
+  "limits": [
+    "Experimental axial 2D truss only",
+    "No normative design or fabrication release",
+    "FFD heuristic, not proven optimum",
+    "No physical mobile devices or AutoCAD available"
+  ]
+}

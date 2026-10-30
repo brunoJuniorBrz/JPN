@@ -1,6 +1,6 @@
 # Dimensionamento automático — próximo núcleo do produto
 
-Atualizado em 30/10/2026. Este documento continua sendo o plano de dimensionamento normativo e integração. A auditoria acrescentou um [núcleo experimental de treliças planas](../engine/README.md), com análise linear e validação comparativa; ele não está conectado à interface e não implementa dimensionamento. Resultados e limites em [AUDITORIA-MOTOR.md](AUDITORIA-MOTOR.md).
+Atualizado em 30/10/2026. Este documento continua sendo o plano de dimensionamento normativo e integração. A auditoria acrescentou um [núcleo experimental de treliças planas](../engine/README.md), com análise linear e validação comparativa; a v0.6 o conecta ao painel de tesoura isolada, sem implementar dimensionamento. Arquitetura e limites atuais em [PREPROJETO.md](PREPROJETO.md). Resultados e limites em [AUDITORIA-MOTOR.md](AUDITORIA-MOTOR.md).
 
 ## Fluxo solicitado
 

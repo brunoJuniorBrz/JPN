@@ -1,0 +1,455 @@
+{
+  "format": "jpn-projetos-backup",
+  "exportedAt": "2026-10-30T22:51:08.177Z",
+  "data": {
+    "version": 4,
+    "revision": 0,
+    "exampleInstalled": true,
+    "projects": [
+      {
+        "id": "278f6fa5-c5fa-440e-923d-527e0d880601",
+        "name": "EXEMPLO FICTÍCIO — Pré-projeto de duas águas",
+        "client": "Cliente fictício",
+        "phone": "",
+        "location": "",
+        "description": "Demonstração do pré-projeto e proposta. Quantitativos geométricos, preços e propriedades sintéticos; não utilizar para execução ou compra.",
+        "category": "Cobertura metálica",
+        "status": "Rascunho",
+        "createdAt": "2026-10-30T22:51:08.165Z",
+        "updatedAt": "2026-10-30T22:51:08.165Z",
+        "technicalNotes": "",
+        "commercialNotes": "",
+        "technicalContact": "",
+        "technicalStatus": "preliminary",
+        "roof": {
+          "widthM": 10,
+          "lengthM": 20,
+          "lowHeightM": 4,
+          "slopePercent": 10,
+          "fall": "width-positive",
+          "profileDescription": "",
+          "supports": [],
+          "revision": 0
+        },
+        "estimate": {
+          "materials": [
+            {
+              "id": "6ec8316e-89ac-4101-b340-dbe3952260df",
+              "materialId": null,
+              "name": "Pilares · Exemplo - Pilares",
+              "purchaseUnit": "m",
+              "measurementUnit": "m",
+              "measurementPerPurchase": null,
+              "source": "takeoff",
+              "quantityOrigin": {
+                "signature": "{\"planning\":{\"frameSpacingM\":5,\"overhangEndM\":0,\"overhangStartM\":0.5,\"panels\":4,\"profiles\":{\"bottomChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos inferiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"column\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":10,\"name\":\"Exemplo - Pilares\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"purlin\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Terças\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"topChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos superiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"web\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":2,\"name\":\"Exemplo - Diagonais e montantes\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6}},\"purlinSpacingM\":2,\"specificationNotes\":\"Demonstração sintética: duas águas simétricas, prolongamento longitudinal das terças de 0,50 m. Modelo experimental separado de uma tesoura articulada, com carga nodal de teste; sem ações normativas e sem liberação de fabricação.\",\"trussDepthM\":0.8,\"typology\":\"gable\",\"version\":1},\"roof\":{\"fall\":\"width-positive\",\"lengthM\":20,\"lowHeightM\":4,\"profileDescription\":\"\",\"revision\":0,\"slopePercent\":10,\"supports\":[],\"widthM\":10}}",
+                "role": "column",
+                "pieceIds": [
+                  "P1",
+                  "P2",
+                  "P3",
+                  "P4",
+                  "P5",
+                  "P6",
+                  "P7",
+                  "P8",
+                  "P9",
+                  "P10"
+                ]
+              },
+              "manualQuantity": 31.999999999999996,
+              "wastePercent": 0,
+              "unitPriceCents": 1000
+            },
+            {
+              "id": "9e3ba2dc-f027-41b0-9306-1264a046a007",
+              "materialId": null,
+              "name": "Banzos superiores · Exemplo - Banzos superiores",
+              "purchaseUnit": "m",
+              "measurementUnit": "m",
+              "measurementPerPurchase": null,
+              "source": "takeoff",
+              "quantityOrigin": {
+                "signature": "{\"planning\":{\"frameSpacingM\":5,\"overhangEndM\":0,\"overhangStartM\":0.5,\"panels\":4,\"profiles\":{\"bottomChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos inferiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"column\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":10,\"name\":\"Exemplo - Pilares\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"purlin\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Terças\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"topChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos superiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"web\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":2,\"name\":\"Exemplo - Diagonais e montantes\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6}},\"purlinSpacingM\":2,\"specificationNotes\":\"Demonstração sintética: duas águas simétricas, prolongamento longitudinal das terças de 0,50 m. Modelo experimental separado de uma tesoura articulada, com carga nodal de teste; sem ações normativas e sem liberação de fabricação.\",\"trussDepthM\":0.8,\"typology\":\"gable\",\"version\":1},\"roof\":{\"fall\":\"width-positive\",\"lengthM\":20,\"lowHeightM\":4,\"profileDescription\":\"\",\"revision\":0,\"slopePercent\":10,\"supports\":[],\"widthM\":10}}",
+                "role": "topChord",
+                "pieceIds": [
+                  "T1-BS1",
+                  "T1-BS2",
+                  "T1-BS3",
+                  "T1-BS4",
+                  "T2-BS1",
+                  "T2-BS2",
+                  "T2-BS3",
+                  "T2-BS4",
+                  "T3-BS1",
+                  "T3-BS2",
+                  "T3-BS3",
+                  "T3-BS4",
+                  "T4-BS1",
+                  "T4-BS2",
+                  "T4-BS3",
+                  "T4-BS4",
+                  "T5-BS1",
+                  "T5-BS2",
+                  "T5-BS3",
+                  "T5-BS4"
+                ]
+              },
+              "manualQuantity": 50.24937810560445,
+              "wastePercent": 0,
+              "unitPriceCents": 1000
+            },
+            {
+              "id": "577e5d5c-2505-47ee-95a1-eb343f88544f",
+              "materialId": null,
+              "name": "Banzos inferiores · Exemplo - Banzos inferiores",
+              "purchaseUnit": "m",
+              "measurementUnit": "m",
+              "measurementPerPurchase": null,
+              "source": "takeoff",
+              "quantityOrigin": {
+                "signature": "{\"planning\":{\"frameSpacingM\":5,\"overhangEndM\":0,\"overhangStartM\":0.5,\"panels\":4,\"profiles\":{\"bottomChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos inferiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"column\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":10,\"name\":\"Exemplo - Pilares\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"purlin\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Terças\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"topChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos superiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"web\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":2,\"name\":\"Exemplo - Diagonais e montantes\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6}},\"purlinSpacingM\":2,\"specificationNotes\":\"Demonstração sintética: duas águas simétricas, prolongamento longitudinal das terças de 0,50 m. Modelo experimental separado de uma tesoura articulada, com carga nodal de teste; sem ações normativas e sem liberação de fabricação.\",\"trussDepthM\":0.8,\"typology\":\"gable\",\"version\":1},\"roof\":{\"fall\":\"width-positive\",\"lengthM\":20,\"lowHeightM\":4,\"profileDescription\":\"\",\"revision\":0,\"slopePercent\":10,\"supports\":[],\"widthM\":10}}",
+                "role": "bottomChord",
+                "pieceIds": [
+                  "T1-BI1",
+                  "T1-BI2",
+                  "T1-BI3",
+                  "T1-BI4",
+                  "T2-BI1",
+                  "T2-BI2",
+                  "T2-BI3",
+                  "T2-BI4",
+                  "T3-BI1",
+                  "T3-BI2",
+                  "T3-BI3",
+                  "T3-BI4",
+                  "T4-BI1",
+                  "T4-BI2",
+                  "T4-BI3",
+                  "T4-BI4",
+                  "T5-BI1",
+                  "T5-BI2",
+                  "T5-BI3",
+                  "T5-BI4"
+                ]
+              },
+              "manualQuantity": 50,
+              "wastePercent": 0,
+              "unitPriceCents": 1000
+            },
+            {
+              "id": "52cceb4f-56fa-4b31-b4fc-0f09084e1cec",
+              "materialId": null,
+              "name": "Diagonais e montantes · Exemplo - Diagonais e montantes",
+              "purchaseUnit": "m",
+              "measurementUnit": "m",
+              "measurementPerPurchase": null,
+              "source": "takeoff",
+              "quantityOrigin": {
+                "signature": "{\"planning\":{\"frameSpacingM\":5,\"overhangEndM\":0,\"overhangStartM\":0.5,\"panels\":4,\"profiles\":{\"bottomChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos inferiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"column\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":10,\"name\":\"Exemplo - Pilares\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"purlin\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Terças\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"topChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos superiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"web\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":2,\"name\":\"Exemplo - Diagonais e montantes\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6}},\"purlinSpacingM\":2,\"specificationNotes\":\"Demonstração sintética: duas águas simétricas, prolongamento longitudinal das terças de 0,50 m. Modelo experimental separado de uma tesoura articulada, com carga nodal de teste; sem ações normativas e sem liberação de fabricação.\",\"trussDepthM\":0.8,\"typology\":\"gable\",\"version\":1},\"roof\":{\"fall\":\"width-positive\",\"lengthM\":20,\"lowHeightM\":4,\"profileDescription\":\"\",\"revision\":0,\"slopePercent\":10,\"supports\":[],\"widthM\":10}}",
+                "role": "web",
+                "pieceIds": [
+                  "T1-M1",
+                  "T1-D1",
+                  "T1-M2",
+                  "T1-D2",
+                  "T1-M3",
+                  "T1-D3",
+                  "T1-M4",
+                  "T1-D4",
+                  "T1-M5",
+                  "T2-M1",
+                  "T2-D1",
+                  "T2-M2",
+                  "T2-D2",
+                  "T2-M3",
+                  "T2-D3",
+                  "T2-M4",
+                  "T2-D4",
+                  "T2-M5",
+                  "T3-M1",
+                  "T3-D1",
+                  "T3-M2",
+                  "T3-D2",
+                  "T3-M3",
+                  "T3-D3",
+                  "T3-M4",
+                  "T3-D4",
+                  "T3-M5",
+                  "T4-M1",
+                  "T4-D1",
+                  "T4-M2",
+                  "T4-D2",
+                  "T4-M3",
+                  "T4-D3",
+                  "T4-M4",
+                  "T4-D4",
+                  "T4-M5",
+                  "T5-M1",
+                  "T5-D1",
+                  "T5-M2",
+                  "T5-D2",
+                  "T5-M3",
+                  "T5-D3",
+                  "T5-M4",
+                  "T5-D4",
+                  "T5-M5"
+                ]
+              },
+              "manualQuantity": 80.2934993331232,
+              "wastePercent": 0,
+              "unitPriceCents": 1000
+            },
+            {
+              "id": "27f0f1d6-be8b-44de-ac42-6cd915b04757",
+              "materialId": null,
+              "name": "Terças · Exemplo - Terças",
+              "purchaseUnit": "m",
+              "measurementUnit": "m",
+              "measurementPerPurchase": null,
+              "source": "takeoff",
+              "quantityOrigin": {
+                "signature": "{\"planning\":{\"frameSpacingM\":5,\"overhangEndM\":0,\"overhangStartM\":0.5,\"panels\":4,\"profiles\":{\"bottomChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos inferiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"column\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":10,\"name\":\"Exemplo - Pilares\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"purlin\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Terças\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"topChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos superiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"web\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":2,\"name\":\"Exemplo - Diagonais e montantes\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6}},\"purlinSpacingM\":2,\"specificationNotes\":\"Demonstração sintética: duas águas simétricas, prolongamento longitudinal das terças de 0,50 m. Modelo experimental separado de uma tesoura articulada, com carga nodal de teste; sem ações normativas e sem liberação de fabricação.\",\"trussDepthM\":0.8,\"typology\":\"gable\",\"version\":1},\"roof\":{\"fall\":\"width-positive\",\"lengthM\":20,\"lowHeightM\":4,\"profileDescription\":\"\",\"revision\":0,\"slopePercent\":10,\"supports\":[],\"widthM\":10}}",
+                "role": "purlin",
+                "pieceIds": [
+                  "TE1-V1",
+                  "TE1-V2",
+                  "TE1-V3",
+                  "TE1-V4",
+                  "TE1-B1",
+                  "TE2-V1",
+                  "TE2-V2",
+                  "TE2-V3",
+                  "TE2-V4",
+                  "TE2-B1",
+                  "TE3-V1",
+                  "TE3-V2",
+                  "TE3-V3",
+                  "TE3-V4",
+                  "TE3-B1",
+                  "TE4-V1",
+                  "TE4-V2",
+                  "TE4-V3",
+                  "TE4-V4",
+                  "TE4-B1",
+                  "TE5-V1",
+                  "TE5-V2",
+                  "TE5-V3",
+                  "TE5-V4",
+                  "TE5-B1",
+                  "TE6-V1",
+                  "TE6-V2",
+                  "TE6-V3",
+                  "TE6-V4",
+                  "TE6-B1",
+                  "TE7-V1",
+                  "TE7-V2",
+                  "TE7-V3",
+                  "TE7-V4",
+                  "TE7-B1"
+                ]
+              },
+              "manualQuantity": 143.5,
+              "wastePercent": 0,
+              "unitPriceCents": 1000
+            }
+          ],
+          "labor": [
+            {
+              "id": "a27a2785-6274-410d-9e28-a962c92fd1c7",
+              "description": "Fabricação fictícia para demonstração",
+              "quantity": 8,
+              "unit": "hora",
+              "unitPriceCents": 5000
+            },
+            {
+              "id": "d31fc26c-e84b-42b7-943b-26d52916c90b",
+              "description": "Instalação fictícia para demonstração",
+              "quantity": 8,
+              "unit": "hora",
+              "unitPriceCents": 5000
+            }
+          ],
+          "expenses": [
+            {
+              "id": "cb60f133-d705-4a86-b814-90a8fd8c3fc8",
+              "description": "Transporte fictício para demonstração",
+              "quantity": 1,
+              "unit": "viagem",
+              "unitPriceCents": 20000
+            }
+          ],
+          "charges": [],
+          "pricingMode": "markup",
+          "pricingPercent": 25,
+          "deadline": "Prazo fictício, a definir na obra real.",
+          "paymentTerms": "Condições fictícias para demonstração; definir na proposta real.",
+          "validity": "Exemplo sem validade comercial.",
+          "exclusions": "Dimensionamento normativo, detalhamento executivo, ligações, fundações, contraventamentos e liberação de fabricação não estão incluídos."
+        },
+        "isExample": true,
+        "planning": {
+          "version": 1,
+          "frameSpacingM": 5,
+          "purlinSpacingM": 2,
+          "trussDepthM": 0.8,
+          "panels": 4,
+          "profiles": {
+            "column": {
+              "name": "Exemplo - Pilares",
+              "steelGrade": "Aço fictício",
+              "section": "Seção não dimensionada",
+              "source": "EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial",
+              "massKgM": 10,
+              "stockLengthM": 6,
+              "data": {
+                "kind": "unspecified",
+                "dimensions": "",
+                "thicknessMm": null,
+                "areaCm2": 10,
+                "elasticModulusGpa": 200,
+                "iyCm4": null,
+                "izCm4": null,
+                "origin": "declared",
+                "sourceDate": "Dados sintéticos — 30/10/2026",
+                "calculationReference": ""
+              },
+              "pricePerMeterCents": 1000
+            },
+            "topChord": {
+              "name": "Exemplo - Banzos superiores",
+              "steelGrade": "Aço fictício",
+              "section": "Seção não dimensionada",
+              "source": "EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial",
+              "massKgM": 4,
+              "stockLengthM": 6,
+              "data": {
+                "kind": "unspecified",
+                "dimensions": "",
+                "thicknessMm": null,
+                "areaCm2": 10,
+                "elasticModulusGpa": 200,
+                "iyCm4": null,
+                "izCm4": null,
+                "origin": "declared",
+                "sourceDate": "Dados sintéticos — 30/10/2026",
+                "calculationReference": ""
+              },
+              "pricePerMeterCents": 1000
+            },
+            "bottomChord": {
+              "name": "Exemplo - Banzos inferiores",
+              "steelGrade": "Aço fictício",
+              "section": "Seção não dimensionada",
+              "source": "EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial",
+              "massKgM": 4,
+              "stockLengthM": 6,
+              "data": {
+                "kind": "unspecified",
+                "dimensions": "",
+                "thicknessMm": null,
+                "areaCm2": 10,
+                "elasticModulusGpa": 200,
+                "iyCm4": null,
+                "izCm4": null,
+                "origin": "declared",
+                "sourceDate": "Dados sintéticos — 30/10/2026",
+                "calculationReference": ""
+              },
+              "pricePerMeterCents": 1000
+            },
+            "web": {
+              "name": "Exemplo - Diagonais e montantes",
+              "steelGrade": "Aço fictício",
+              "section": "Seção não dimensionada",
+              "source": "EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial",
+              "massKgM": 2,
+              "stockLengthM": 6,
+              "data": {
+                "kind": "unspecified",
+                "dimensions": "",
+                "thicknessMm": null,
+                "areaCm2": 10,
+                "elasticModulusGpa": 200,
+                "iyCm4": null,
+                "izCm4": null,
+                "origin": "declared",
+                "sourceDate": "Dados sintéticos — 30/10/2026",
+                "calculationReference": ""
+              },
+              "pricePerMeterCents": 1000
+            },
+            "purlin": {
+              "name": "Exemplo - Terças",
+              "steelGrade": "Aço fictício",
+              "section": "Seção não dimensionada",
+              "source": "EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial",
+              "massKgM": 4,
+              "stockLengthM": 6,
+              "data": {
+                "kind": "unspecified",
+                "dimensions": "",
+                "thicknessMm": null,
+                "areaCm2": 10,
+                "elasticModulusGpa": 200,
+                "iyCm4": null,
+                "izCm4": null,
+                "origin": "declared",
+                "sourceDate": "Dados sintéticos — 30/10/2026",
+                "calculationReference": ""
+              },
+              "pricePerMeterCents": 1000
+            }
+          },
+          "specificationNotes": "Demonstração sintética: duas águas simétricas, prolongamento longitudinal das terças de 0,50 m. Modelo experimental separado de uma tesoura articulada, com carga nodal de teste; sem ações normativas e sem liberação de fabricação.",
+          "typology": "gable",
+          "overhangStartM": 0.5,
+          "overhangEndM": 0
+        },
+        "workspace": {
+          "cutting": {
+            "kerfMm": 3,
+            "endTrimMm": 10,
+            "minimumRemnantMm": 500,
+            "useFabrication": false
+          },
+          "fabrication": [],
+          "analysis": {
+            "signature": "{\"planning\":{\"frameSpacingM\":5,\"overhangEndM\":0,\"overhangStartM\":0.5,\"panels\":4,\"profiles\":{\"bottomChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos inferiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"column\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":10,\"name\":\"Exemplo - Pilares\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"purlin\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Terças\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"topChord\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":4,\"name\":\"Exemplo - Banzos superiores\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6},\"web\":{\"data\":{\"areaCm2\":10,\"calculationReference\":\"\",\"dimensions\":\"\",\"elasticModulusGpa\":200,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"unspecified\",\"origin\":\"declared\",\"sourceDate\":\"Dados sintéticos — 30/10/2026\",\"thicknessMm\":null},\"massKgM\":2,\"name\":\"Exemplo - Diagonais e montantes\",\"pricePerMeterCents\":1000,\"section\":\"Seção não dimensionada\",\"source\":\"EXEMPLO FICTÍCIO — propriedades de teste, sem catálogo comercial\",\"steelGrade\":\"Aço fictício\",\"stockLengthM\":6}},\"purlinSpacingM\":2,\"specificationNotes\":\"Demonstração sintética: duas águas simétricas, prolongamento longitudinal das terças de 0,50 m. Modelo experimental separado de uma tesoura articulada, com carga nodal de teste; sem ações normativas e sem liberação de fabricação.\",\"trussDepthM\":0.8,\"typology\":\"gable\",\"version\":1},\"roof\":{\"fall\":\"width-positive\",\"lengthM\":20,\"lowHeightM\":4,\"profileDescription\":\"\",\"revision\":0,\"slopePercent\":10,\"supports\":[],\"widthM\":10}}",
+            "supports": [
+              {
+                "node": "N1",
+                "uxMm": 0,
+                "uyMm": 0
+              },
+              {
+                "node": "N5",
+                "uxMm": null,
+                "uyMm": 0
+              }
+            ],
+            "loads": [
+              {
+                "node": "N8",
+                "fxKn": 0,
+                "fyKn": -10
+              }
+            ],
+            "articulated": true
+          }
+        },
+        "revisions": []
+      }
+    ],
+    "materials": [],
+    "settings": {
+      "companyName": "JPN Projetos",
+      "businessInfo": "",
+      "defaultWastePercent": 0,
+      "pricingMode": "markup",
+      "defaultPricingPercent": 0,
+      "currency": "BRL",
+      "compactView": false
+    }
+  }
+}

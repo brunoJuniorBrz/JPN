@@ -1,0 +1,275 @@
+{
+  "compared_to_commit": "a818faf948c958194c2e43c8ae1e872d927d16d8",
+  "changes": [
+    {
+      "path": ".github/workflows/validation.yml",
+      "status": "modified"
+    },
+    {
+      "path": "docs/DIMENSIONAMENTO.md",
+      "status": "modified"
+    },
+    {
+      "path": "docs/ENTREGA-PREPROJETO.md",
+      "status": "created"
+    },
+    {
+      "path": "docs/PREPROJETO.md",
+      "status": "created"
+    },
+    {
+      "path": "docs/validation/2026-10-30-platform/performance.json",
+      "status": "created"
+    },
+    {
+      "path": "docs/validation/2026-10-30-platform/playwright.json",
+      "status": "created"
+    },
+    {
+      "path": "docs/validation/2026-10-30-platform/pytest.xml",
+      "status": "created"
+    },
+    {
+      "path": "docs/validation/2026-10-30-platform/source-sha256.json",
+      "status": "created"
+    },
+    {
+      "path": "docs/validation/2026-10-30-platform/structural.json",
+      "status": "created"
+    },
+    {
+      "path": "docs/validation/2026-10-30-platform/summary.json",
+      "status": "created"
+    },
+    {
+      "path": "docs/validation/2026-10-30-platform/vitest.json",
+      "status": "created"
+    },
+    {
+      "path": "engine/.dockerignore",
+      "status": "created"
+    },
+    {
+      "path": "engine/Dockerfile",
+      "status": "created"
+    },
+    {
+      "path": "engine/jpn_structural/service.py",
+      "status": "created"
+    },
+    {
+      "path": "engine/pyproject.toml",
+      "status": "modified"
+    },
+    {
+      "path": "engine/README.md",
+      "status": "modified"
+    },
+    {
+      "path": "engine/requirements-validation.lock",
+      "status": "modified"
+    },
+    {
+      "path": "engine/tests/test_service.py",
+      "status": "created"
+    },
+    {
+      "path": "examples/preprojeto-duas-aguas.json",
+      "status": "created"
+    },
+    {
+      "path": "package.json",
+      "status": "modified"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "status": "modified"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "status": "modified"
+    },
+    {
+      "path": "README.md",
+      "status": "modified"
+    },
+    {
+      "path": "ROADMAP.md",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/api/analysis/route.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/app/globals.css",
+      "status": "modified"
+    },
+    {
+      "path": "src/app/page.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/app-shell.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/estimates/estimate-summary.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/estimates/material-items.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/geometry/roof-form.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/planning/analysis-panel.tsx",
+      "status": "created"
+    },
+    {
+      "path": "src/components/planning/camera-fit.test.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/components/planning/camera-fit.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/components/planning/planning-editor.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/planning/profile-fields.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/planning/project-workbench.tsx",
+      "status": "created"
+    },
+    {
+      "path": "src/components/planning/structure-3d.tsx",
+      "status": "created"
+    },
+    {
+      "path": "src/components/planning/structure-form.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/planning/structure-preview.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/components/projects/commercial-project-editor.tsx",
+      "status": "modified"
+    },
+    {
+      "path": "src/domain/analysis.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/domain/calculations/cutting.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/domain/calculations/estimate.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/domain/calculations/geometry.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/domain/calculations/platform.test.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/domain/calculations/project-basis.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/domain/calculations/structure.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/domain/calculations/structure.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/domain/models.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/domain/preproject-example.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/domain/project-details.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/domain/structure.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/domain/workspace.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/infrastructure/analysis/runner.test.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/infrastructure/analysis/runner.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/infrastructure/persistence/local.test.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/infrastructure/persistence/local.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/exports/cad.test.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/lib/exports/cad.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/lib/exports/cutting.ts",
+      "status": "created"
+    },
+    {
+      "path": "src/lib/exports/pdf.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/exports/proposal.ts",
+      "status": "modified"
+    },
+    {
+      "path": "src/lib/exports/takeoff.ts",
+      "status": "modified"
+    },
+    {
+      "path": "tests/e2e/planning.spec.ts",
+      "status": "modified"
+    },
+    {
+      "path": "tests/e2e/platform.spec.ts",
+      "status": "created"
+    },
+    {
+      "path": "tests/verify_dxf.py",
+      "status": "created"
+    }
+  ],
+  "deleted": [],
+  "note": "Local development changes. next-env.d.ts generated by Next is excluded."
+}

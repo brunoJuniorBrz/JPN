@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { emptyEstimate, emptyRoof, estimateSchema, materialSchema, roofSchema } from "./project-details";
 import { planningSchema } from "./structure";
+import { emptyWorkspace, workspaceSchema } from "./workspace";
 export { materialSchema, units } from "./project-details";
 export type { Material } from "./project-details";
 
@@ -28,7 +29,8 @@ const projectBaseSchema = z.object({
 const projectV2Schema = projectBaseSchema.extend({
   roof: roofSchema, estimate: estimateSchema, isExample: z.boolean(),
 });
-export const projectSchema = projectV2Schema.extend({ planning: planningSchema.nullable() });
+const revisionSchema = z.object({ id: z.uuid(), label: z.string().min(1).max(200), author: z.string().min(1).max(200), createdAt: date, roof: roofSchema, planning: planningSchema.nullable(), workspace: workspaceSchema }).strict();
+export const projectSchema = projectV2Schema.extend({ planning: planningSchema.nullable(), workspace: workspaceSchema.default(emptyWorkspace), revisions: z.array(revisionSchema).max(20).default([]) });
 export type Project = z.infer<typeof projectSchema>;
 export const settingsSchema = z.object({
   companyName: shortText.min(1, "Informe o nome da empresa."),
@@ -51,7 +53,7 @@ const legacyMaterialSchema = z.object({
 }).strict();
 const legacySnapshotSchema = z.object({ version: z.literal(1), revision: z.number().int().nonnegative(), projects: z.array(projectBaseSchema).max(10000), materials: z.array(legacyMaterialSchema).max(10000), settings: settingsSchema }).strict();
 const snapshotBase = z.object({
-  version: z.literal(3),
+  version: z.literal(4),
   revision: z.number().int().nonnegative(),
   exampleInstalled: z.boolean().default(false),
   projects: z.array(projectSchema).max(10000),
@@ -59,6 +61,7 @@ const snapshotBase = z.object({
   settings: settingsSchema,
 }).strict();
 const snapshotV2Schema = snapshotBase.extend({ version: z.literal(2), projects: z.array(projectV2Schema).max(10000) });
+const snapshotV3Schema = snapshotBase.extend({ version: z.literal(3) });
 export const snapshotSchema = snapshotBase.superRefine((data, ctx) => {
   for (const key of ["projects", "materials"] as const) {
     if (new Set(data[key].map(item => item.id)).size !== data[key].length)
@@ -69,21 +72,22 @@ export type Snapshot = z.infer<typeof snapshotSchema>;
 export function migrateSnapshot(input: unknown): Snapshot {
   if (typeof input === "object" && input !== null && "version" in input && input.version === 1) {
     const old = legacySnapshotSchema.parse(input);
-    return snapshotSchema.parse({ ...old, version: 3,
+    return snapshotSchema.parse({ ...old, version: 4,
       projects: old.projects.map(p => ({ ...p, planning: null, roof: emptyRoof(), estimate: { ...emptyEstimate(), pricingMode: old.settings.pricingMode, pricingPercent: Math.round(old.settings.defaultPricingPercent * 100) / 100 }, isExample: false })),
       materials: old.materials.map(m => ({ ...m, measurementPerPurchase: null, isExample: false })),
     });
   }
   if (typeof input === "object" && input !== null && "version" in input && input.version === 2) {
     const old = snapshotV2Schema.parse(input);
-    return snapshotSchema.parse({ ...old, version: 3, projects: old.projects.map(p => ({ ...p, planning: null })) });
+    return snapshotSchema.parse({ ...old, version: 4, projects: old.projects.map(p => ({ ...p, planning: null })) });
   }
+  if (typeof input === "object" && input !== null && "version" in input && input.version === 3) return snapshotSchema.parse({ ...snapshotV3Schema.parse(input), version: 4 });
   return snapshotSchema.parse(input);
 }
 export const backupSchema = z.object({ format: z.literal("jpn-projetos-backup"), exportedAt: date, data: snapshotSchema }).strict();
 export type Backup = z.infer<typeof backupSchema>;
-export function emptySnapshot(): Snapshot { return { version: 3, revision: 0, exampleInstalled: false, projects: [], materials: [], settings: { ...defaultSettings } }; }
+export function emptySnapshot(): Snapshot { return { version: 4, revision: 0, exampleInstalled: false, projects: [], materials: [], settings: { ...defaultSettings } }; }
 export function newProject(settings: Settings = defaultSettings): Project {
   const now = new Date().toISOString();
-  return { id: crypto.randomUUID(), name: "", client: "", phone: "", location: "", description: "", category: "Cobertura metálica", status: "Rascunho", createdAt: now, updatedAt: now, technicalNotes: "", commercialNotes: "", technicalContact: "", technicalStatus: "preliminary", roof: emptyRoof(), estimate: { ...emptyEstimate(), pricingMode: settings.pricingMode, pricingPercent: Math.round(settings.defaultPricingPercent * 100) / 100 }, isExample: false, planning: null };
+  return { id: crypto.randomUUID(), name: "", client: "", phone: "", location: "", description: "", category: "Cobertura metálica", status: "Rascunho", createdAt: now, updatedAt: now, technicalNotes: "", commercialNotes: "", technicalContact: "", technicalStatus: "preliminary", roof: emptyRoof(), estimate: { ...emptyEstimate(), pricingMode: settings.pricingMode, pricingPercent: Math.round(settings.defaultPricingPercent * 100) / 100 }, isExample: false, planning: null, workspace: emptyWorkspace(), revisions: [] };
 }

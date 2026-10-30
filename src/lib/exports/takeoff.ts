@@ -1,5 +1,6 @@
 import type { Project, Settings } from "@/domain/models";
-import { generateStructure } from "@/domain/calculations/structure";
+import { generateStructure, structureViews } from "@/domain/calculations/structure";
+import { structureSignature } from "@/domain/calculations/project-basis";
 import { roleLabels } from "@/domain/structure";
 import { formatMeasure } from "@/domain/calculations/units";
 
@@ -30,6 +31,18 @@ export async function createTakeoffPdf(data: TakeoffData): Promise<ArrayBuffer> 
   });
   doc.addPage();
   autoTable(doc, { margin: { top: 26, bottom: 17 }, startY: 26, theme: "striped", head: [["Conferência final e limites do levantamento"]], body: [...pending, ...notes].map(n => [n]), styles: { fontSize: 10 }, headStyles: { fillColor: [36, 40, 35] } });
+  const views = structureViews(data.project, data.result)!;
+  doc.addPage();
+  for (const [i, view] of (["plan", "front", "side"] as const).entries()) {
+    const v = views.views[view], b = v.bounds, scale = Math.min(85 / (b.maxX - b.minX), 140 / (b.maxY - b.minY));
+    const x = (n: number) => 12 + 93 * i + (n - b.minX) * scale, y = (n: number) => 40 + (b.maxY - n) * scale;
+    doc.setFontSize(9); doc.text(["PLANTA", "FRENTE", "LATERAL"][i], 14 + i * 93, 32); doc.setDrawColor(45, 70, 49); doc.setLineWidth(.15);
+    for (const e of v.entities) {
+      if (e.type === "line") doc.line(x(e.a.x), y(e.a.y), x(e.b.x), y(e.b.y));
+      else if (e.type === "circle") doc.circle(x(e.at.x), y(e.at.y), Math.max(.3, e.radius * scale));
+      else { doc.setFontSize(5); doc.text(e.text, x(e.at.x), y(e.at.y), { align: "center", maxWidth: 85 }); }
+    }
+  }
   for (let page = 1; page <= doc.getNumberOfPages(); page++) {
     doc.setPage(page); doc.setTextColor(36, 40, 35); doc.setFontSize(15);
     doc.text("LEVANTAMENTO PARA COTAÇÃO", 14, 15); doc.setFontSize(9);
@@ -51,8 +64,8 @@ export async function createTakeoffWorkbook(data: TakeoffData): Promise<ArrayBuf
   ]);
   const groups = book.addWorksheet("Lista de materiais"); groups.addRow(["Tipo", "Perfil", "Aço", "Seção", "Quantidade", "Comprimento geométrico (m)", "Total (m)", "Massa (kg)", "Comprimento comercial (m)", "Fonte", "IDs das peças"]);
   model.groups.forEach(g => groups.addRow([roleLabels[g.role], g.profile.name || "Pendente", g.profile.steelGrade || "Pendente", g.profile.section, g.pieceIds.length, g.lengthMm / 1000, g.totalLengthM, g.massKg ?? "Pendente", g.profile.stockLengthM ?? "Pendente", g.profile.source, g.pieceIds.join(", ")]));
-  const parts = book.addWorksheet("Peças"); parts.addRow(["ID", "Tipo", "Perfil", "Nó inicial", "Nó final", "Comprimento (mm)", "Massa (kg)"]);
-  model.pieces.forEach(p => parts.addRow([p.id, roleLabels[p.role], p.profile.name || "Pendente", p.start, p.end, p.lengthMm, p.massKg ?? "Pendente"]));
+  const parts = book.addWorksheet("Peças"); parts.addRow(["ID", "Tipo", "Perfil", "Nó inicial", "Nó final", "Comprimento geométrico (mm)", "Massa (kg)", "Comprimento final declarado (mm)", "Situação", "Fonte", "Massa linear (kg/m)"]);
+  model.pieces.forEach(p => { const f = data.project.workspace.fabrication.find(f => f.pieceId === p.id); parts.addRow([p.id, roleLabels[p.role], p.profile.name || "Pendente", p.start, p.end, p.lengthMm, p.massKg ?? "Pendente", f?.lengthMm ?? "Pendente", f && f.signature !== structureSignature(data.project) ? "Desatualizado - não cortar" : "Preliminar - não liberado para corte", p.profile.source, p.profile.massKgM ?? "Pendente"]); });
   const nodes = book.addWorksheet("Nós"); nodes.addRow(["ID", "X (mm)", "Y (mm)", "Z (mm)"]); model.nodes.forEach(n => nodes.addRow([n.id, n.x, n.y, n.z]));
   const checks = book.addWorksheet("Conferência final"); checks.addRow(["Pendências e hipóteses"]); [...pending, ...notes].forEach(note => checks.addRow([note]));
   for (const sheet of book.worksheets) {

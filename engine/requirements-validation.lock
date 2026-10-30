@@ -23,3 +23,5 @@ six==1.17.0
 tzdata==2026.6
 wcwidth==0.9.4
 wheel==0.48.0
+ezdxf==1.4.5
+typing_extensions==4.16.0

@@ -1,5 +1,21 @@
 # Roadmap — JPN Projetos
 
+## Entrega v0.6 — pré-projeto integrado
+
+- [x] Duas águas simétricas e balanços longitudinais de terças, com contratos e testes.
+- [x] Visualização 3D sob demanda, seleção e fallback 2D.
+- [x] Perfis com E/A, propriedades de seção e origem/data declaradas.
+- [x] Simulação FFD de aproveitamento, perdas explícitas, retalhos e rastreabilidade por peça; sem prova de ótimo ou liberação de corte.
+- [x] Quantitativos vinculados ao orçamento, com bloqueio explícito após mudança da configuração.
+- [x] Painel de análise de tesoura isolada, Python real por processo local ou HTTP privado, unidades/hash e invalidação.
+- [x] Snapshot v4 com migração, revisões preliminares e limite de backup restaurável.
+- [x] DXF 3D, SVG, vistas no PDF e exportação da simulação; leitores independentes e jornadas móveis.
+- [ ] Dimensionamento normativo, ações/combinações, estabilidade global e liberação de fabricação.
+- [ ] Estoques de múltiplos comprimentos, otimização exata e preços de compra por barra com comparação de alternativas.
+- [ ] Implantação autenticada do serviço, aparelhos físicos e conferência no AutoCAD.
+
+Detalhes e limites em [PREPROJETO.md](docs/PREPROJETO.md); o histórico abaixo descreve as etapas anteriores.
+
 ## Prioridade atual — solução calculada para revisão final
 
 O produto mudou de foco: levantar e dimensionar a estrutura para substituir o intermediário. A revisão do engenheiro ocorre ao final, sem autorização obrigatória para exibir ou baixar os resultados. CAD fica na última etapa.

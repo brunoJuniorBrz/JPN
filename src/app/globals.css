@@ -378,3 +378,10 @@ body { font-size: 16px; }
 .technical-review h4 { margin: 18px 0 8px; }
 .technical-review li { line-height: 1.7; margin-bottom: 8px; }
 @media (max-width: 600px) { .project-mode button { flex: 1 1 140px; } .planning-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.project-workbench { margin-top: 28px; padding-top: 24px; border-top: 2px solid var(--line); min-width: 0; }
+.project-workbench > h3, .project-workbench > p, .project-workbench > .button { margin-bottom: 16px; }
+.project-workbench h4 { margin: 22px 0 12px; }
+.project-workbench .project-mode { margin-top: 24px; }
+.structure-3d { width: 100%; min-height: 350px; overflow: hidden; border: 1px solid var(--line); margin: 16px 0; }
+.structure-3d canvas { display: block; max-width: 100%; touch-action: none; }
+.hash-label { font-size: 12px; overflow-wrap: anywhere; margin: 12px 0; }

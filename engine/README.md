@@ -1,6 +1,6 @@
 # Núcleo experimental de análise JPN
 
-Análise elástica linear de treliças planas articuladas, de primeira ordem e pequenas deformações. Executável Python independente; não integrado às telas, ao orçamento ou à persistência do JPN. Não faz dimensionamento nem aprova estruturas para construção. Os valores dos exemplos e testes são dados sintéticos de verificação, nunca padrões para uma obra.
+Análise elástica linear de treliças planas articuladas, de primeira ordem e pequenas deformações. Executável Python independente, agora chamado pelo painel técnico de tesoura isolada da v0.6 através de processo local ou serviço HTTP privado. A análise permanece separada do orçamento e os resultados são transitórios. Não faz dimensionamento nem aprova estruturas para construção. Os valores dos exemplos e testes são dados sintéticos de verificação, nunca padrões para uma obra.
 
 ## Executar
 
@@ -94,4 +94,4 @@ Sem análise 3D, flexão, torção, excentricidades, ligações semirrígidas, a
 
 `StructureModel` em TypeScript é um levantamento 3D em mm, não a entrada deste solver. As terças podem tocar banzos fora dos nós dos painéis; pilares não devem ser transformados automaticamente em barras articuladas. Um adaptador terá de escolher o plano, converter mm→m, discretizar pontos de aplicação de carga, definir vínculos e ligações, exigir E/A e fontes rastreáveis e avaliar estabilidade espacial. Perfis livres do catálogo atual não fornecem propriedades resistentes.
 
-Manter módulos separados: geometria/quantitativos TypeScript; análise Python com hash/revisão; futuro `DesignResult` com norma/edição e cada verificação; orçamento com cotações fornecidas. A CLI já é uma fronteira de integração testada; um serviço HTTP, infraestrutura Python, controles de concorrência e persistência de análises ainda não foram implementados.
+Manter módulos separados: geometria/quantitativos TypeScript; análise Python com hash/revisão; futuro `DesignResult` com norma/edição e cada verificação; orçamento com cotações fornecidas. A CLI e o serviço HTTP privado são fronteiras de integração testadas. O adaptador impõe timeout e concorrência limitada. Implantação pública, limites globais, autenticação de usuários e persistência de resultados continuam pendentes; consulte `docs/PREPROJETO.md`.

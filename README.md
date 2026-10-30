@@ -1,6 +1,20 @@
-# JPN Projetos — v0.5.0
+# JPN Projetos — v0.6.0
 
 Sistema local de projetos e levantamento geométrico de materiais de estruturas metálicas. O fluxo principal agora é **Obra → Medidas → Estrutura → Resultado**, com peças identificadas, desenho e PDF/XLSX para cotação sem preços. O orçamento de venda permanece como área secundária.
+
+## Pré-projeto integrado — v0.6
+
+Disponíveis: uma ou duas águas simétricas, prolongamentos longitudinais das terças, vistas 2D/3D com seleção e fallback sem WebGL2, perfis com propriedades/fonte/data, simulação de aproveitamento FFD, quantitativos vinculados ao orçamento, revisões preliminares, DXF 3D em mm, SVG e PDF/XLSX. A análise experimental chama o motor Python real apenas para **uma tesoura isolada articulada**, com cargas e apoios explícitos; não representa a cobertura inteira nem aprova perfis.
+
+Abra **Abrir exemplo completo de pré-projeto** na página inicial. O exemplo é inteiramente fictício e demonstra geometria → peças → simulação → análise de teste → orçamento → documentos. Também pode ser importado pelo [backup de demonstração](examples/preprojeto-duas-aguas.json).
+
+Guia completo, arquitetura, instalação Python, implantação Vercel/serviço separado, licenças e limites: [PREPROJETO.md](docs/PREPROJETO.md). Relatório desta execução: [ENTREGA-PREPROJETO.md](docs/ENTREGA-PREPROJETO.md).
+
+O aplicativo usa snapshots **v4**, migrando v1/v2/v3 sem regravar na leitura ou apagar dados. Resultados e quantitativos dependentes ficam desatualizados quando a configuração muda. Revisões de levantamento são preservadas pelo repositório; não equivalem a aprovação ou histórico assinado de propostas. Nenhum arquivo é liberado para fabricação nesta versão.
+
+Para desenvolvimento completo, preparar Python 3.12 conforme o guia antes de `pnpm test`; os testes JS incluem chamadas reais ao solver. Em Vercel, configurar o serviço remoto para habilitar análise; as outras funções permanecem disponíveis sem ele. Não houve implantação pública nesta execução.
+
+Validação desta execução: **1.186 testes Python + 79 Vitest + 21 Playwright aprovados (1.286 no total)**, sem falhas ou testes ignorados; typecheck, lint e build aprovados. Inclui 1.000 comparações com PyNite, 300 problemas de aproveitamento com semente fixa, processos/HTTP reais e jornadas em 320/375/768/1440 px. O DXF foi reaberto e auditado por leitores independentes.
 
 ## Levantamento de peças
 
@@ -10,7 +24,7 @@ Para uma obra nova, informe medidas, espaçamento máximo entre tesouras e terç
 
 Perfis podem ser informados na estrutura ou copiados dos dados técnicos do catálogo. Massa é calculada apenas onde houver kg/m. A lista mantém dados ausentes como pendentes. A revisão do engenheiro aparece **depois dos resultados**, sem caixa de aprovação ou bloqueio do download por falta de revisão. PDF e Excel incluem as pendências. Apenas ausência de geometria calculável ou falha de salvamento impede a emissão correspondente.
 
-**Estado do produto:** geração geométrica e quantitativos implementados; dimensionamento por resistência, escolha automática dos melhores perfis, cargas e verificações normativas ainda não implementados. A aprovação final do engenheiro não substitui essas implementações. Ligações, chapas, fixadores, soldas, contraventamentos, corte e telhas comerciais não estão quantificados. O desenho e a lista não constituem projeto executivo completo.
+**Estado do produto:** geração geométrica e quantitativos implementados; análise experimental de tesoura com cargas nodais disponível no painel técnico; dimensionamento por resistência, seleção automática de perfis e verificações normativas ainda não implementados. A aprovação final do engenheiro não substitui essas implementações. Ligações, chapas, fixadores, soldas, contraventamentos, corte e telhas comerciais não estão quantificados. O desenho e a lista não constituem projeto executivo completo.
 
 Consulte o [diagnóstico e arquitetura](docs/PLANEJAMENTO-TECNICO.md) e o [plano do dimensionamento automático](docs/DIMENSIONAMENTO.md). AutoCAD/DXF fica na última etapa.
 
@@ -82,15 +96,15 @@ pnpm test:e2e
 pnpm build
 ```
 
-Os testes unitários incluem conversões m/mm/m², área e inclinação, quatro sentidos de queda, entidades geométricas, apoios, quantidades e perdas, compra por barra, centavos, margem versus markup, encargos, informações pendentes, atualização da geometria e do orçamento, serialização, migração v1/v2→v3, importação sem sobrescrita e falhas de armazenamento.
+Os testes unitários incluem conversões m/mm/m², área e inclinação, quatro sentidos de queda, entidades geométricas, apoios, quantidades e perdas, compra por barra, centavos, margem versus markup, encargos, informações pendentes, atualização da geometria e do orçamento, serialização, migração v1/v2/v3→v4, importação sem sobrescrita e falhas de armazenamento.
 
 Playwright verifica cadastro completo até o orçamento, números brasileiros, alteração de medidas, recarga, CRUD de projetos, catálogo, backup, configurações, corrupção de dados, zoom/pan por gestos de toque e cinco etapas preenchidas em larguras de 320, 390, 768 e 1440 px. As capturas ficam em `test-results/`. Os testes usam Chromium e emulação de toque; não equivalem a teste em Safari iOS ou Chrome Android físicos.
 
-Verificação desta entrega: **47 testes unitários e 14 testes de navegador aprovados; TypeScript e lint sem erros; build de produção aprovado**. Os testes reabrem PDF e XLSX para conferir conteúdo, valores e separação dos dados internos, verificam paginação, compatibilidade dos campos novos, persistência e falha de armazenamento. Jornadas comerciais em 320, 390, 768 e 1440 px e de levantamento em 390 e 1440 px passaram no navegador. O build de produção teve abertura do novo exemplo, desenho e download PDF conferidos em viewport móvel; o documento também foi revisado visualmente; dispositivos físicos ainda não foram testados.
+Histórico da v0.5.0: **47 testes unitários e 14 testes de navegador aprovados; TypeScript e lint sem erros; build de produção aprovado**. Os testes reabrem PDF e XLSX para conferir conteúdo, valores e separação dos dados internos, verificam paginação, compatibilidade dos campos novos, persistência e falha de armazenamento. Jornadas comerciais em 320, 390, 768 e 1440 px e de levantamento em 390 e 1440 px passaram no navegador. O build de produção teve abertura do novo exemplo, desenho e download PDF conferidos em viewport móvel; o documento também foi revisado visualmente; dispositivos físicos ainda não foram testados.
 
 ## Tecnologias e estrutura
 
-### Núcleo de análise experimental — auditoria de 30/10/2026
+### Histórico da auditoria inicial — anterior à integração v0.6
 
 Foi acrescentado um pacote Python independente em [`engine/`](engine/README.md), sem integração automática às telas: treliças planas articuladas, análise elástica linear de primeira ordem, reações, esforços axiais e deslocamentos em SI. NumPy/SciPy fazem a álgebra linear; PyNiteFEA 3.2.1 é o referencial independente de testes. Instalação e execução completa estão no README do pacote.
 
@@ -120,7 +134,7 @@ tests/e2e/                            Jornadas de navegador e responsividade
 
 ## Persistência, compatibilidade e backup
 
-Uma única estrutura JSON armazena projetos, materiais e configurações em `version: 3`. A chave física `jpn-projetos:v1` continua a mesma. Snapshots v1/v2 são validados e migrados em memória; projetos antigos recebem `planning: null`, com orçamento e medidas preservados. A próxima gravação persiste v3. Versões desconhecidas são rejeitadas. O modelo de peças é derivado, não armazenado no backup; a configuração e as cópias dos perfis são preservadas. A importação continua criando cópias e não altera configurações locais.
+Uma única estrutura JSON armazena projetos, materiais, configurações e revisões preliminares em `version: 4`. A chave física `jpn-projetos:v1` continua a mesma. Snapshots v1/v2/v3 são validados e migrados em memória; projetos v1/v2 sem levantamento recebem `planning: null`, enquanto a configuração dos projetos v3 é preservada, assim como orçamento e medidas. A próxima gravação persiste v4. Versões desconhecidas são rejeitadas. O modelo de peças é derivado, não armazenado no backup; a configuração e as cópias dos perfis são preservadas. A importação continua criando cópias e não altera configurações locais.
 
 Zod valida leitura e gravação. localStorage só é acessado na infraestrutura, após a hidratação do cliente. Os repositórios isolam o armazenamento das telas. Uma futura implementação remota exigirá adaptar a coordenação assíncrona, autenticação e concorrência; não há Supabase implementado.
 
@@ -184,11 +198,11 @@ O dashboard soma somente preços calculáveis de projetos reais não arquivados.
 ## Limitações e próxima etapa
 
 - Fase 4 parcial: PDF comercial e XLSX interno disponíveis. PDF interno detalhado, DXF e compartilhamento nativo permanecem pendentes. Downloads podem ser anexados manualmente.
-- O desenho permanece identificado como **DESENHO PRELIMINAR — NÃO UTILIZAR PARA EXECUÇÃO**. Não há cálculo estrutural, capacidade de carga, ligações, fundações ou ART.
-- Outros tipos de estrutura aceitam orçamento manual, mas não possuem gerador geométrico nesta versão. Duas águas pertence à fase posterior.
-- Não há plano de corte: quatro barras não garantem aproveitamento de cortes de peças específicas.
+- O desenho permanece identificado como **DESENHO PRELIMINAR — NÃO UTILIZAR PARA EXECUÇÃO**. Há análise experimental de tesoura isolada; não há aprovação de capacidade de carga, ligações, fundações ou ART.
+- Outros tipos de estrutura aceitam orçamento manual, mas não possuem gerador geométrico nesta versão. Duas águas simétricas já estão disponíveis; outras tipologias permanecem pendentes.
+- Há simulação FFD de aproveitamento, sem ordem de corte: quantidades dependem das peças, da serra e das perdas informadas.
 - Despesas ausentes ficam claramente sinalizadas. Itens incompletos bloqueiam a venda; custos conhecidos continuam visíveis como parciais.
 - Antes do primeiro salvamento, voltar pelo histórico do navegador pode descartar o cadastro novo. Links internos e fechamento recebem proteção quando há um formulário não salvo; o histórico nativo não é interceptado.
-- Não há PWA instalável, cache offline testado, sincronização nem histórico de revisões completo.
+- Não há PWA instalável, cache offline testado ou sincronização. Há revisões do levantamento; propostas emitidas ainda não possuem histórico imutável completo.
 
 Veja [ROADMAP.md](ROADMAP.md) para os próximos incrementos.

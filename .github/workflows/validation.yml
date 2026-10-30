@@ -30,10 +30,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m venv .venv
+      - run: .venv/bin/python -m pip install -r engine/requirements-validation.lock
+      - run: .venv/bin/python -m pip install --no-build-isolation --no-deps -e ./engine
       - run: npx --yes pnpm@12.15.0 install --frozen-lockfile
       - run: npx --yes pnpm@12.15.0 typecheck
       - run: npx --yes pnpm@12.15.0 lint
       - run: npx --yes pnpm@12.15.0 test
+      - run: .venv/bin/python tests/verify_dxf.py
       - run: npx --yes pnpm@12.15.0 exec playwright install --with-deps chromium
       - run: npx --yes pnpm@12.15.0 test:e2e
       - run: npx --yes pnpm@12.15.0 build

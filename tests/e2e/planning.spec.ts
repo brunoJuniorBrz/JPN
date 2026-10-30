@@ -50,7 +50,7 @@ test("cria levantamento com perfis pendentes e preserva os dados no backup", asy
   await expect(page.getByText("Pilares: perfil não definido.", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Salvar levantamento" }).click();
   const snapshot = await page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!));
-  expect(snapshot.version).toBe(3); const project = snapshot.projects.find((p: { name: string }) => p.name === "Levantamento sem preços");
+  expect(snapshot.version).toBe(4); const project = snapshot.projects.find((p: { name: string }) => p.name === "Levantamento sem preços");
   expect(project.planning.frameSpacingM).toBe(5); expect(project.estimate.materials).toEqual([]);
   expect(project.id).not.toBe(PLANNING_EXAMPLE_ID);
 });

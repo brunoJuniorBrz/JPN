@@ -19,12 +19,15 @@ const intervals = (length: number, max: number) => {
 export function generateStructure(project: Project): StructureResult {
   const pending: string[] = [], notes = [...STRUCTURE_NOTES];
   if (project.category !== "Cobertura metálica") return { model: null, pending: ["O gerador de peças desta versão atende coberturas de uma água."], notes };
-  const roof = generateGeometry(project.roof);
+  const roof = generateGeometry(project.roof, project.planning?.typology);
   if (!roof.model) return { model: null, pending: roof.pending, notes };
   const parsed = planningSchema.safeParse(project.planning);
   if (!parsed.success) return { model: null, pending: ["Configure a distribuição e a geometria da tesoura na etapa Estrutura."], notes };
   const config = parsed.data;
+  if (config.overhangStartM === null || config.overhangEndM === null) return { model: null, pending: ["Informe os balanços longitudinais; use zero explicitamente quando não houver prolongamento."], notes };
   const { frameSpacingM, purlinSpacingM, trussDepthM, panels } = config;
+  if (config.typology === "gable" && (panels === null || panels < 2 || panels % 2)) return { model: null, pending: ["Duas águas exige número par de painéis, com nó na cumeeira."], notes };
+  if (config.typology === "gable") notes[0] = "Modelo geométrico de duas águas simétricas, cumeeira central e banzo inferior horizontal; resistência não verificada.";
   if (frameSpacingM === null) pending.push("Informe o espaçamento máximo entre tesouras.");
   if (purlinSpacingM === null) pending.push("Informe o espaçamento máximo entre terças.");
   if (trussDepthM === null) pending.push("Informe a altura da tesoura no lado baixo.");
@@ -34,8 +37,8 @@ export function generateStructure(project: Project): StructureResult {
   const span = across ? m.widthM : m.lengthM, length = across ? m.lengthM : m.widthM;
   const bottom = m.lowHeightM - trussDepthM;
   if (bottom <= 0) return { model: null, pending: ["A altura da tesoura deve ser menor que a altura da borda baixa, para haver pilares com altura positiva."], notes };
-  const bays = intervals(length, frameSpacingM), purlinBays = intervals(m.slopeLengthM, purlinSpacingM);
-  const pieceCount = (bays + 1) * (4 * panels + 3) + bays * (purlinBays + 1);
+  const bays = intervals(length, frameSpacingM), purlinBays = config.typology === "gable" ? 2 * intervals(m.slopeLengthM / 2, purlinSpacingM) : intervals(m.slopeLengthM, purlinSpacingM);
+  const pieceCount = (bays + 1) * (4 * panels + 3) + (bays + Number(config.overhangStartM > 0) + Number(config.overhangEndM > 0)) * (purlinBays + 1);
   if (bays > 100 || purlinBays > 100 || pieceCount > 5000) return { model: null, pending: ["Esta configuração excede 5.000 peças ou 100 vãos por direção. Divida a obra ou reveja os espaçamentos."], notes };
   if (project.roof.supports.length) notes.push("Os apoios do desenho antigo foram preservados, mas não são usados nesta distribuição de dois pilares por linha. Confira a compatibilidade com a obra.");
   const nodes: Node3D[] = [], pieces: StructurePiece[] = [], coordinates = new Map<string, Node3D>();
@@ -45,7 +48,7 @@ export function generateStructure(project: Project): StructureResult {
     const existing = coordinates.get(key); if (existing) return existing;
     const value = { id: `N${nodes.length + 1}`, ...point }; nodes.push(value); coordinates.set(key, value); return value;
   };
-  const elevation = (u: number) => m.lowHeightM + m.riseM * (positive ? 1 - u / span : u / span);
+  const elevation = (u: number) => m.lowHeightM + m.riseM * (config.typology === "gable" ? 1 - Math.abs(2 * u / span - 1) : positive ? 1 - u / span : u / span);
   const used = new Set<string>();
   const add = (id: string, role: PieceRole, a: Node3D, b: Node3D) => {
     const lengthMm = Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
@@ -66,13 +69,15 @@ export function generateStructure(project: Project): StructureResult {
         if (i < panels) {
           add(`${label}-BS${i + 1}`, "topChord", upper[i], upper[i + 1]);
           add(`${label}-BI${i + 1}`, "bottomChord", lower[i], lower[i + 1]);
-          add(`${label}-D${i + 1}`, "web", lower[i], upper[i + 1]);
+          add(`${label}-D${i + 1}`, "web", config.typology === "gable" && i >= panels / 2 ? lower[i + 1] : lower[i], config.typology === "gable" && i >= panels / 2 ? upper[i] : upper[i + 1]);
         }
       }
     }
     for (let r = 0; r <= purlinBays; r++) {
       const u = span * r / purlinBays;
       for (let f = 0; f < bays; f++) add(`TE${r + 1}-V${f + 1}`, "purlin", node(u, length * f / bays, elevation(u)), node(u, length * (f + 1) / bays, elevation(u)));
+      if (config.overhangStartM > 0) add(`TE${r + 1}-B1`, "purlin", node(u, -config.overhangStartM, elevation(u)), node(u, 0, elevation(u)));
+      if (config.overhangEndM > 0) add(`TE${r + 1}-B2`, "purlin", node(u, length, elevation(u)), node(u, length + config.overhangEndM, elevation(u)));
     }
   } catch (error) { return { model: null, pending: [error instanceof Error ? error.message : "Geometria inválida."], notes }; }
   const groups = new Map<string, MaterialGroup>();
@@ -93,11 +98,14 @@ export function generateStructure(project: Project): StructureResult {
     else if (pieces.some(p => p.role === role && p.lengthMm > profile.stockLengthM! * 1000 + 1e-6)) pending.push(`${roleLabels[role]}: existem peças maiores que o comprimento comercial. Defina fornecimento ou detalhamento de emendas.`);
   }
   notes.push("Quantidade de barras comerciais pendente de plano de corte. O total em metros não determina sozinho a compra.");
+  if (config.overhangStartM || config.overhangEndM) notes.push("Balanços longitudinais são prolongamentos geométricos das terças, sem verificação de flexão ou estabilidade. Não são analisados pelo solver de treliça.");
+  m.projectedAreaM2 = span * (length + config.overhangStartM + config.overhangEndM);
+  m.roofAreaM2 = m.slopeLengthM * (length + config.overhangStartM + config.overhangEndM);
   return { model: { units: "mm", nodes, pieces, groups: [...groups.values()], frameCount: bays + 1, frameSpacingM: length / bays, purlinRows: purlinBays + 1, purlinSpacingM: m.slopeLengthM / purlinBays, projectedAreaM2: m.projectedAreaM2, roofAreaM2: m.roofAreaM2, totalLengthM: pieces.reduce((sum, p) => sum + p.lengthMm / 1000, 0), knownMassKg: pieces.reduce((sum, p) => sum + (p.massKg ?? 0), 0), massComplete: pieces.every(p => p.massKg !== null) }, pending, notes };
 }
 
 export function structureViews(project: Project, result: StructureResult, onlyFirstTruss = false): GeometryModel | null {
-  const envelope = generateGeometry({ ...project.roof, supports: [] }).model;
+  const envelope = generateGeometry({ ...project.roof, supports: [] }, project.planning?.typology).model;
   if (!envelope || !result.model) return null;
   const nodes = new Map(result.model.nodes.map(n => [n.id, n]));
   for (const view of ["plan", "front", "side"] as ViewName[]) {
@@ -122,6 +130,11 @@ export function structureViews(project: Project, result: StructureResult, onlyFi
       entities.push({ type: "text", at: { x: (minX + maxX) / 2, y: minY - pad }, text: `Vão ${formatMeasure((maxX - minX) / 1000)} m · T1`, height: pad * .25, layer: "COTAS" });
     }
     envelope.views[view].entities = entities;
+    for (const n of result.model.nodes) {
+      const p = projectPoint(n), b = envelope.views[view].bounds;
+      b.minX = Math.min(b.minX, p.x - 200); b.maxX = Math.max(b.maxX, p.x + 200);
+      b.minY = Math.min(b.minY, p.y - 200); b.maxY = Math.max(b.maxY, p.y + 200);
+    }
   }
   return envelope;
 }

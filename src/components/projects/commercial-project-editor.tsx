@@ -47,7 +47,7 @@ export function CommercialProjectEditor({ initial, initialStep = 0 }: { initial?
     <section className="panel workflow-panel"><nav className="workflow-steps" aria-label="Etapas do projeto">{steps.map((label, i) => <button key={label} type="button" aria-current={step === i ? "step" : undefined} className={step === i ? "current" : ""} onClick={() => go(i)}><span>{i + 1}</span>{label}</button>)}</nav><p className="workflow-progress">Passo {step + 1} de 5 — {steps[step]}</p>
       <div className="workflow-content">
         {step === 0 && <GeneralForm project={project} onChange={update} errors={submitted || initial ? errors : {}} />}
-        {step === 1 && (project.category === "Cobertura metálica" ? <RoofForm roof={project.roof} onChange={roof => update({ roof })} /> : <div className="empty-state"><h2>Desenho disponível para coberturas simples</h2><p>Esta categoria ainda não tem gerador geométrico. Você pode continuar e montar o orçamento com quantidades manuais.</p></div>)}
+        {step === 1 && (project.category === "Cobertura metálica" ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} /> : <div className="empty-state"><h2>Desenho disponível para coberturas simples</h2><p>Esta categoria ainda não tem gerador geométrico. Você pode continuar e montar o orçamento com quantidades manuais.</p></div>)}
         {step === 2 && <MaterialItems project={project} onChange={materials => update({ estimate: { ...project.estimate, materials } })} />}
         {step === 3 && <CostsForm estimate={project.estimate} onChange={estimate => update({ estimate })} />}
         {step === 4 && <EstimateSummary project={project} onChange={update} />}

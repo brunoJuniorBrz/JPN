@@ -1,6 +1,8 @@
 import type { Project } from "../models";
 import type { CostLine, MaterialLine } from "../project-details";
 import { generateGeometry, type GeometryResult } from "./geometry";
+import { structureSignature } from "./project-basis";
+import { generateStructure } from "./structure";
 
 const SCALE = 1000000n, RATE = 10000n;
 const scaled = (value: number) => BigInt(Math.round(value * Number(SCALE)));
@@ -14,7 +16,7 @@ export interface MaterialResult { id: string; baseQuantity: number | null; purch
 export function calculateMaterial(line: MaterialLine, geometry: GeometryResult): MaterialResult {
   const result: MaterialResult = { id: line.id, baseQuantity: null, purchaseQuantity: null, subtotalCents: null, pending: [] };
   let amount: number | null = line.manualQuantity;
-  if (line.source !== "manual") {
+  if (line.source !== "manual" && line.source !== "takeoff") {
     const expectedUnit = line.source === "roof-area" ? "m²" : line.source === "slope-length" ? "m" : "un";
     if (line.measurementUnit !== expectedUnit) result.pending.push(`Esta regra exige medição em ${expectedUnit}.`);
     if (!geometry.model) result.pending.push("Preencha as medidas da cobertura.");
@@ -48,7 +50,12 @@ export interface EstimateResult {
 export function calculateEstimate(project: Project): EstimateResult {
   const result: EstimateResult = { materials: [], materialsCents: 0, laborCents: 0, expensesCents: 0, directCostCents: 0, costChargesCents: 0, saleChargesCents: 0, totalCostCents: 0, saleCents: null, profitCents: null, grossMarginPercent: null, pending: [], warnings: [] };
   const e = project.estimate;
-  const geometry: GeometryResult = project.category === "Cobertura metálica" ? generateGeometry(project.roof) : { model: null, pending: ["Gerador indisponível para esta categoria."] };
+  if (e.materials.some(line => line.source === "takeoff" && line.quantityOrigin?.signature !== structureSignature(project))) result.pending.push("Levantamento alterado: atualize os quantitativos vinculados antes de emitir o orçamento.");
+  const geometry: GeometryResult = project.category === "Cobertura metálica" ? generateGeometry(project.roof, project.planning?.typology) : { model: null, pending: ["Gerador indisponível para esta categoria."] };
+  if (geometry.model && project.planning) {
+    const structure = generateStructure(project).model;
+    if (structure) { geometry.model.metrics.roofAreaM2 = structure.roofAreaM2; geometry.model.metrics.projectedAreaM2 = structure.projectedAreaM2; }
+  }
   try {
     result.materials = e.materials.map(line => calculateMaterial(line, geometry));
     result.materials.forEach((row, i) => row.pending.forEach(p => result.pending.push(`${e.materials[i].name}: ${p}`)));

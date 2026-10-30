@@ -39,6 +39,7 @@ export class LocalRepositories {
     if (!this.loaded) throw new Error("Armazenamento não inicializado. Recarregue os dados.");
     const validated = snapshotSchema.parse({ ...next, revision: this.data.revision + 1 });
     const raw = JSON.stringify(validated);
+    if (new Blob([serializeBackup(validated)]).size > MAX_BACKUP_BYTES) throw new Error("O conjunto de dados ultrapassa 5 MB e não poderia ser restaurado pelo backup. Exporte e divida os projetos antes de continuar. Nenhum dado salvo foi alterado.");
     try {
       if (this.storage.getItem(STORAGE_KEY) !== this.lastRaw) throw new Error("CONFLICT");
       this.storage.setItem(STORAGE_KEY, raw);
@@ -50,7 +51,11 @@ export class LocalRepositories {
   }
   projects: ProjectRepository = {
     list: () => structuredClone(this.data.projects),
-    save: project => this.commit({ ...this.data, projects: [...this.data.projects.filter(p => p.id !== project.id), project] }),
+    save: project => {
+      const old = this.data.projects.find(p => p.id === project.id);
+      if (old && old.revisions.some((revision, i) => JSON.stringify(project.revisions[i]) !== JSON.stringify(revision))) throw new Error("Revisões registradas são imutáveis. Crie uma nova revisão para alterar o projeto.");
+      this.commit({ ...this.data, projects: [...this.data.projects.filter(p => p.id !== project.id), project] });
+    },
     remove: id => this.commit({ ...this.data, projects: this.data.projects.filter(p => p.id !== id) }),
     duplicate: id => {
       const original = this.data.projects.find(p => p.id === id);

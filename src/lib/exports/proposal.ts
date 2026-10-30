@@ -13,6 +13,7 @@ export function proposalPending(project: Project): string[] {
 export function commercialProposal(input: Project, settings: Settings, now = new Date()) {
   const project = projectSchema.parse(input);
   if (proposalPending(project).length) throw new Error("Complete os dados do orçamento antes de gerar a proposta.");
+  const estimate = calculateEstimate(project);
   return {
     company: settings.companyName, businessInfo: settings.businessInfo,
     reference: project.id.slice(0, 8).toUpperCase(),
@@ -21,7 +22,8 @@ export function commercialProposal(input: Project, settings: Settings, now = new
     scope: project.description, deadline: project.estimate.deadline,
     paymentTerms: project.estimate.paymentTerms, validity: project.estimate.validity,
     exclusions: project.estimate.exclusions, notes: project.commercialNotes,
-    saleCents: calculateEstimate(project).saleCents!, isExample: project.isExample,
+    saleCents: estimate.saleCents!, isExample: project.isExample,
+    items: project.estimate.materials.map((line, i) => ({ description: line.name, quantity: estimate.materials[i].baseQuantity!, unit: line.measurementUnit })),
   };
 }
 export type CommercialProposal = ReturnType<typeof commercialProposal>;
