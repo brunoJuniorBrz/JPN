@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { visualSectionSchema } from "./profile-section";
 
 export const roles = ["column", "topChord", "bottomChord", "web", "purlin"] as const;
 export type PieceRole = typeof roles[number];
@@ -17,6 +18,7 @@ export const profileSchema = z.object({
   section: z.string().max(500), source: z.string().max(1000),
   massKgM: positive.max(10000).nullable(), stockLengthM: positive.max(100).nullable(),
   data: sectionDataSchema.optional(),
+  visualSection: visualSectionSchema.optional(),
   pricePerMeterCents: z.number().int().min(0).max(10000000000).nullable().optional(),
 }).strict();
 export type ProfileSpec = z.infer<typeof profileSchema>;

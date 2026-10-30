@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1010" viewBox="0 0 900 1010" role="img" aria-labelledby="title desc">
+<title id="title">JPN · seis seções ideais e suas extrusões</title><desc id="desc">Exemplos sintéticos verificáveis pelo arquivo perfis-3d.json e testes de geometria. Milímetros. Não são produtos comerciais.</desc>
+<rect width="900" height="1010" fill="#f6f8f2"/><g font-family="Arial,sans-serif" fill="#293b32"><text x="30" y="38" font-size="23" font-weight="bold">JPN · perfis 3D</text><text x="30" y="65" font-size="14">EXEMPLOS SINTÉTICOS · seções ideais · dimensões em mm</text>
+<rect x="20" y="90" width="425" height="275" rx="10" fill="white" stroke="#d5decf"/><text x="38" y="119" font-size="18" font-weight="bold">Tubo retangular</text>
+<path d="M81.25,285.00 L168.75,285.00 L168.75,145.00 L81.25,145.00Z M85.63,280.63 L85.63,149.38 L164.38,149.38 L164.38,280.63Z" fill="#557664" fill-rule="evenodd" stroke="#293b32" stroke-width=".7"/>
+<polygon points="316.42,246.45 316.42,169.38 298.91,257.20" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="361.09,249.87 316.42,246.45 343.58,260.62" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="316.42,246.45 298.91,257.20 343.58,260.62" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="363.57,252.63 363.57,170.42 346.06,263.38" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="316.42,169.38 298.91,180.13 298.91,257.20" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="363.57,170.42 313.94,166.62 346.06,181.17" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="343.58,260.62 298.91,257.20 296.43,259.58" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="296.43,259.58 298.91,257.20 298.91,180.13" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="313.94,166.62 296.43,177.37 346.06,181.17" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="343.58,260.62 296.43,259.58 346.06,263.38" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="296.43,177.37 296.43,259.58 298.91,180.13" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="363.57,170.42 346.06,181.17 346.06,263.38" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="343.58,183.55 343.58,260.62 346.06,263.38" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="346.06,181.17 296.43,177.37 298.91,180.13" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="343.58,183.55 346.06,263.38 346.06,181.17" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="346.06,181.17 298.91,180.13 343.58,183.55" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<text x="38" y="305" font-size="14">100 × 160 · t 5</text><text x="38" y="329" font-size="12">Seção frontal / extrusão de 100 mm · A ideal 2500.00 mm²</text>
+<rect x="465" y="90" width="425" height="275" rx="10" fill="white" stroke="#d5decf"/><text x="483" y="119" font-size="18" font-weight="bold">Tubo quadrado</text>
+<path d="M500.00,285.00 L640.00,285.00 L640.00,145.00 L500.00,145.00Z M507.00,278.00 L507.00,152.00 L633.00,152.00 L633.00,278.00Z" fill="#557664" fill-rule="evenodd" stroke="#293b32" stroke-width=".7"/>
+<polygon points="761.42,231.04 761.42,184.80 743.91,241.79" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="806.09,234.45 761.42,231.04 788.58,245.20" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="808.57,237.21 808.57,185.83 791.06,247.96" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="761.42,231.04 743.91,241.79 788.58,245.20" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="808.57,185.83 758.94,182.04 791.06,196.58" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="761.42,184.80 743.91,195.55 743.91,241.79" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="758.94,182.04 741.43,192.79 791.06,196.58" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="741.43,244.17 743.91,241.79 743.91,195.55" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="788.58,245.20 743.91,241.79 741.43,244.17" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="741.43,192.79 741.43,244.17 743.91,195.55" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="808.57,185.83 791.06,196.58 791.06,247.96" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="788.58,245.20 741.43,244.17 791.06,247.96" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="791.06,196.58 741.43,192.79 743.91,195.55" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="788.58,198.96 788.58,245.20 791.06,247.96" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="791.06,196.58 743.91,195.55 788.58,198.96" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="788.58,198.96 791.06,247.96 791.06,196.58" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<text x="483" y="305" font-size="14">100 × 100 · t 5</text><text x="483" y="329" font-size="12">Seção frontal / extrusão de 100 mm · A ideal 1900.00 mm²</text>
+<rect x="20" y="380" width="425" height="275" rx="10" fill="white" stroke="#d5decf"/><text x="38" y="409" font-size="18" font-weight="bold">Tubo circular</text>
+<path d="M195.00,505.00 L193.65,491.34 L189.67,478.21 L183.20,466.11 L174.50,455.50 L163.89,446.80 L151.79,440.33 L138.66,436.35 L125.00,435.00 L111.34,436.35 L98.21,440.33 L86.11,446.80 L75.50,455.50 L66.80,466.11 L60.33,478.21 L56.35,491.34 L55.00,505.00 L56.35,518.66 L60.33,531.79 L66.80,543.89 L75.50,554.50 L86.11,563.20 L98.21,569.67 L111.34,573.65 L125.00,575.00 L138.66,573.65 L151.79,569.67 L163.89,563.20 L174.50,554.50 L183.20,543.89 L189.67,531.79 L193.65,518.66Z M188.00,505.00 L186.79,517.29 L183.20,529.11 L177.38,540.00 L169.55,549.55 L160.00,557.38 L149.11,563.20 L137.29,566.79 L125.00,568.00 L112.71,566.79 L100.89,563.20 L90.00,557.38 L80.45,549.55 L72.62,540.00 L66.80,529.11 L63.21,517.29 L62.00,505.00 L63.21,492.71 L66.80,480.89 L72.62,470.00 L80.45,460.45 L90.00,452.62 L100.89,446.80 L112.71,443.21 L125.00,442.00 L137.29,443.21 L149.11,446.80 L160.00,452.62 L169.55,460.45 L177.38,470.00 L183.20,480.89 L186.79,492.71Z" fill="#557664" fill-rule="evenodd" stroke="#293b32" stroke-width=".7"/>
+<polygon points="320.19,511.05 318.12,506.90 302.67,521.80" fill="rgb(106,138,125)" stroke="rgb(106,138,125)" stroke-width=".25"/>
+<polygon points="322.97,514.77 320.19,511.05 305.45,525.52" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="318.12,506.90 316.85,502.46 300.61,517.65" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="326.35,517.90 322.97,514.77 308.83,528.65" fill="rgb(108,141,128)" stroke="rgb(108,141,128)" stroke-width=".25"/>
+<polygon points="316.85,502.46 316.42,497.92 299.34,513.21" fill="rgb(102,132,121)" stroke="rgb(102,132,121)" stroke-width=".25"/>
+<polygon points="330.21,520.33 326.35,517.90 312.69,531.08" fill="rgb(108,141,129)" stroke="rgb(108,141,129)" stroke-width=".25"/>
+<polygon points="316.42,497.92 316.85,493.44 298.91,508.67" fill="rgb(99,129,117)" stroke="rgb(99,129,117)" stroke-width=".25"/>
+<polygon points="334.40,521.97 330.21,520.33 316.88,532.72" fill="rgb(108,141,128)" stroke="rgb(108,141,128)" stroke-width=".25"/>
+<polygon points="316.85,493.44 318.12,489.20 299.34,504.19" fill="rgb(96,125,114)" stroke="rgb(96,125,114)" stroke-width=".25"/>
+<polygon points="338.76,522.75 334.40,521.97 321.24,533.50" fill="rgb(108,140,127)" stroke="rgb(108,140,127)" stroke-width=".25"/>
+<polygon points="318.12,489.20 320.19,485.36 300.61,499.95" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="343.12,522.64 338.76,522.75 325.60,533.39" fill="rgb(106,138,126)" stroke="rgb(106,138,126)" stroke-width=".25"/>
+<polygon points="320.19,485.36 322.97,482.07 302.67,496.11" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="347.31,521.64 343.12,522.64 329.79,532.39" fill="rgb(104,136,124)" stroke="rgb(104,136,124)" stroke-width=".25"/>
+<polygon points="322.97,482.07 326.35,479.45 305.45,492.82" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="351.17,519.80 347.31,521.64 333.65,530.55" fill="rgb(102,133,121)" stroke="rgb(102,133,121)" stroke-width=".25"/>
+<polygon points="326.35,479.45 330.21,477.61 308.83,490.20" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="354.55,517.18 351.17,519.80 337.03,527.93" fill="rgb(100,130,118)" stroke="rgb(100,130,118)" stroke-width=".25"/>
+<polygon points="356.31,519.13 359.39,515.48 338.79,529.88" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="333.92,474.06 329.26,475.16 316.40,484.81" fill="rgb(104,136,124)" stroke="rgb(104,136,124)" stroke-width=".25"/>
+<polygon points="359.39,515.48 361.68,511.21 341.87,526.23" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="338.76,473.93 333.92,474.06 321.24,484.68" fill="rgb(106,138,126)" stroke="rgb(106,138,126)" stroke-width=".25"/>
+<polygon points="361.68,511.21 363.10,506.50 344.17,521.96" fill="rgb(96,125,114)" stroke="rgb(96,125,114)" stroke-width=".25"/>
+<polygon points="343.60,474.80 338.76,473.93 326.08,485.55" fill="rgb(108,140,127)" stroke="rgb(108,140,127)" stroke-width=".25"/>
+<polygon points="320.19,511.05 302.67,521.80 305.45,525.52" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="318.12,506.90 300.61,517.65 302.67,521.80" fill="rgb(106,138,125)" stroke="rgb(106,138,125)" stroke-width=".25"/>
+<polygon points="322.97,514.77 305.45,525.52 308.83,528.65" fill="rgb(108,141,128)" stroke="rgb(108,141,128)" stroke-width=".25"/>
+<polygon points="316.85,502.46 299.34,513.21 300.61,517.65" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="363.10,506.50 363.57,501.52 345.58,517.25" fill="rgb(99,129,117)" stroke="rgb(99,129,117)" stroke-width=".25"/>
+<polygon points="326.35,517.90 308.83,528.65 312.69,531.08" fill="rgb(108,141,129)" stroke="rgb(108,141,129)" stroke-width=".25"/>
+<polygon points="348.25,476.62 343.60,474.80 330.74,487.37" fill="rgb(108,141,128)" stroke="rgb(108,141,128)" stroke-width=".25"/>
+<polygon points="316.42,497.92 298.91,508.67 299.34,513.21" fill="rgb(102,132,121)" stroke="rgb(102,132,121)" stroke-width=".25"/>
+<polygon points="330.21,520.33 312.69,531.08 316.88,532.72" fill="rgb(108,141,128)" stroke="rgb(108,141,128)" stroke-width=".25"/>
+<polygon points="363.57,501.52 363.10,496.47 346.06,512.27" fill="rgb(102,132,121)" stroke="rgb(102,132,121)" stroke-width=".25"/>
+<polygon points="352.55,479.32 348.25,476.62 335.03,490.07" fill="rgb(108,141,129)" stroke="rgb(108,141,129)" stroke-width=".25"/>
+<polygon points="316.85,493.44 299.34,504.19 298.91,508.67" fill="rgb(99,129,117)" stroke="rgb(99,129,117)" stroke-width=".25"/>
+<polygon points="363.10,496.47 361.68,491.55 345.58,507.22" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="356.31,482.80 352.55,479.32 338.79,493.55" fill="rgb(108,141,128)" stroke="rgb(108,141,128)" stroke-width=".25"/>
+<polygon points="334.40,521.97 316.88,532.72 321.24,533.50" fill="rgb(108,140,127)" stroke="rgb(108,140,127)" stroke-width=".25"/>
+<polygon points="361.68,491.55 359.39,486.93 344.17,502.30" fill="rgb(106,138,125)" stroke="rgb(106,138,125)" stroke-width=".25"/>
+<polygon points="359.39,486.93 356.31,482.80 341.87,497.68" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="318.12,489.20 300.61,499.95 299.34,504.19" fill="rgb(96,125,114)" stroke="rgb(96,125,114)" stroke-width=".25"/>
+<polygon points="338.76,522.75 321.24,533.50 325.60,533.39" fill="rgb(106,138,126)" stroke="rgb(106,138,126)" stroke-width=".25"/>
+<polygon points="320.19,485.36 302.67,496.11 300.61,499.95" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="343.12,522.64 325.60,533.39 329.79,532.39" fill="rgb(104,136,124)" stroke="rgb(104,136,124)" stroke-width=".25"/>
+<polygon points="322.97,482.07 305.45,492.82 302.67,496.11" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="347.31,521.64 329.79,532.39 333.65,530.55" fill="rgb(102,133,121)" stroke="rgb(102,133,121)" stroke-width=".25"/>
+<polygon points="326.35,479.45 308.83,490.20 305.45,492.82" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="351.17,519.80 333.65,530.55 337.03,527.93" fill="rgb(100,130,118)" stroke="rgb(100,130,118)" stroke-width=".25"/>
+<polygon points="330.21,477.61 312.69,488.36 308.83,490.20" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="329.26,475.16 311.75,485.91 316.40,484.81" fill="rgb(104,136,124)" stroke="rgb(104,136,124)" stroke-width=".25"/>
+<polygon points="359.39,515.48 341.87,526.23 338.79,529.88" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="333.92,474.06 316.40,484.81 321.24,484.68" fill="rgb(106,138,126)" stroke="rgb(106,138,126)" stroke-width=".25"/>
+<polygon points="361.68,511.21 344.17,521.96 341.87,526.23" fill="rgb(93,121,111)" stroke="rgb(93,121,111)" stroke-width=".25"/>
+<polygon points="298.32,518.45 300.61,523.07 303.69,527.20" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="338.76,473.93 321.24,484.68 326.08,485.55" fill="rgb(108,140,127)" stroke="rgb(108,140,127)" stroke-width=".25"/>
+<polygon points="296.43,508.48 298.32,518.45 303.69,527.20" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="302.67,521.80 300.61,517.65 303.69,527.20" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="305.45,525.52 302.67,521.80 303.69,527.20" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="363.10,506.50 345.58,517.25 344.17,521.96" fill="rgb(96,125,114)" stroke="rgb(96,125,114)" stroke-width=".25"/>
+<polygon points="296.43,508.48 296.90,513.53 298.32,518.45" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="303.69,527.20 307.45,530.68 311.75,533.38" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="300.61,517.65 296.43,508.48 303.69,527.20" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="308.83,528.65 305.45,525.52 303.69,527.20" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="312.69,531.08 308.83,528.65 303.69,527.20" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="300.61,517.65 299.34,513.21 296.43,508.48" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="343.60,474.80 326.08,485.55 330.74,487.37" fill="rgb(108,141,128)" stroke="rgb(108,141,128)" stroke-width=".25"/>
+<polygon points="299.34,513.21 298.91,508.67 296.43,508.48" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="303.69,527.20 311.75,533.38 321.24,536.07" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="363.57,501.52 346.06,512.27 345.58,517.25" fill="rgb(99,129,117)" stroke="rgb(99,129,117)" stroke-width=".25"/>
+<polygon points="312.69,531.08 303.69,527.20 321.24,536.07" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="296.43,508.48 298.91,508.67 299.34,504.19" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="348.25,476.62 330.74,487.37 335.03,490.07" fill="rgb(108,141,129)" stroke="rgb(108,141,129)" stroke-width=".25"/>
+<polygon points="298.32,498.79 296.90,503.50 296.43,508.48" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="311.75,533.38 316.40,535.20 321.24,536.07" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="363.10,496.47 345.58,507.22 346.06,512.27" fill="rgb(102,132,121)" stroke="rgb(102,132,121)" stroke-width=".25"/>
+<polygon points="296.43,508.48 299.34,504.19 300.61,499.95" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="316.88,532.72 312.69,531.08 321.24,536.07" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="352.55,479.32 335.03,490.07 338.79,493.55" fill="rgb(108,141,128)" stroke="rgb(108,141,128)" stroke-width=".25"/>
+<polygon points="361.68,491.55 344.17,502.30 345.58,507.22" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="356.31,482.80 338.79,493.55 341.87,497.68" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="359.39,486.93 341.87,497.68 344.17,502.30" fill="rgb(106,138,125)" stroke="rgb(106,138,125)" stroke-width=".25"/>
+<polygon points="321.24,533.50 316.88,532.72 321.24,536.07" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="303.69,490.87 298.32,498.79 296.43,508.48" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="303.69,490.87 296.43,508.48 300.61,499.95" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="325.60,533.39 321.24,533.50 321.24,536.07" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="303.69,490.87 300.61,494.52 298.32,498.79" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="321.24,536.07 326.08,535.94 330.74,534.84" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="329.79,532.39 325.60,533.39 321.24,536.07" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="303.69,490.87 300.61,499.95 302.67,496.11" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="303.69,490.87 302.67,496.11 305.45,492.82" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="321.24,536.07 330.74,534.84 338.79,529.88" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="329.79,532.39 321.24,536.07 338.79,529.88" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="303.69,490.87 305.45,492.82 308.83,490.20" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="303.69,490.87 308.83,490.20 312.69,488.36" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="311.75,485.91 307.45,487.96 303.69,490.87" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="330.74,534.84 335.03,532.79 338.79,529.88" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="333.65,530.55 329.79,532.39 338.79,529.88" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="337.03,527.93 333.65,530.55 338.79,529.88" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="321.24,484.68 303.69,490.87 312.69,488.36" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="321.24,484.68 311.75,485.91 303.69,490.87" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="339.81,524.64 337.03,527.93 338.79,529.88" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="341.88,520.80 339.81,524.64 338.79,529.88" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="321.24,484.68 312.69,488.36 316.88,487.36" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="321.24,484.68 316.40,484.81 311.75,485.91" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="338.79,529.88 341.87,526.23 344.17,521.96" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="321.24,484.68 316.88,487.36 321.24,487.25" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="341.88,520.80 338.79,529.88 346.06,512.27" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="338.79,529.88 344.17,521.96 346.06,512.27" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="321.24,484.68 321.24,487.25 325.60,488.03" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="321.24,484.68 325.60,488.03 329.79,489.67" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="343.15,516.56 341.88,520.80 346.06,512.27" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="330.74,487.37 326.08,485.55 321.24,484.68" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="344.17,521.96 345.58,517.25 346.06,512.27" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="343.58,512.08 343.15,516.56 346.06,512.27" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="338.79,493.55 321.24,484.68 329.79,489.67" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="338.79,493.55 330.74,487.37 321.24,484.68" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="346.06,512.27 343.15,507.54 343.58,512.08" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="346.06,512.27 341.88,503.10 343.15,507.54" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="338.79,493.55 329.79,489.67 333.65,492.10" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="338.79,493.55 333.65,492.10 337.03,495.23" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="346.06,512.27 338.79,493.55 341.88,503.10" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="338.79,493.55 335.03,490.07 330.74,487.37" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="346.06,512.27 345.58,507.22 344.17,502.30" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="338.79,493.55 337.03,495.23 339.81,498.95" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="338.79,493.55 339.81,498.95 341.88,503.10" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="346.06,512.27 344.17,502.30 338.79,493.55" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="344.17,502.30 341.87,497.68 338.79,493.55" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<text x="38" y="595" font-size="14">100 × 100 · t 5</text><text x="38" y="619" font-size="12">Seção frontal / extrusão de 100 mm · A ideal 1492.26 mm²</text>
+<rect x="465" y="380" width="425" height="275" rx="10" fill="white" stroke="#d5decf"/><text x="483" y="409" font-size="18" font-weight="bold">I / H</text>
+<path d="M528.00,575.00 L612.00,575.00 L612.00,568.00 L572.10,568.00 L572.10,442.00 L612.00,442.00 L612.00,435.00 L528.00,435.00 L528.00,442.00 L567.90,442.00 L567.90,568.00 L528.00,568.00Z" fill="#557664" fill-rule="evenodd" stroke="#293b32" stroke-width=".7"/>
+<polygon points="782.27,545.75 753.98,543.59 764.75,556.51" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="813.54,548.15 785.25,545.98 796.02,558.90" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="785.25,545.98 785.25,453.49 767.73,556.73" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="753.98,543.59 736.46,554.34 764.75,556.51" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="813.54,553.28 813.54,548.15 796.02,564.03" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="785.25,545.98 767.73,556.73 796.02,558.90" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="764.75,556.51 736.46,554.34 736.46,559.48" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="813.54,450.52 753.98,445.97 796.02,461.27" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="813.54,548.15 796.02,558.90 796.02,564.03" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="764.75,556.51 736.46,559.48 767.73,556.73" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="785.25,453.49 767.73,464.25 767.73,556.73" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="813.54,455.66 813.54,450.52 796.02,466.41" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="736.46,559.48 796.02,558.90 767.73,556.73" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="753.98,445.97 736.46,456.72 796.02,461.27" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="736.46,559.48 796.02,564.03 796.02,558.90" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="764.75,464.02 764.75,556.51 767.73,556.73" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="767.73,556.73 767.73,464.25 764.75,464.02" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="813.54,450.52 796.02,461.27 796.02,466.41" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="796.02,461.27 736.46,456.72 736.46,461.85" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="796.02,461.27 736.46,461.85 764.75,464.02" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="767.73,464.25 796.02,461.27 764.75,464.02" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="767.73,464.25 796.02,466.41 796.02,461.27" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<text x="483" y="595" font-size="14">h 200 · b 120 · alma 6 · mesas 10</text><text x="483" y="619" font-size="12">Seção frontal / extrusão de 100 mm · A ideal 3480.00 mm²</text>
+<rect x="20" y="670" width="425" height="275" rx="10" fill="white" stroke="#d5decf"/><text x="38" y="699" font-size="18" font-weight="bold">U / C simples</text>
+<path d="M98.75,865.00 L151.25,865.00 L151.25,860.63 L103.13,860.63 L103.13,729.38 L151.25,729.38 L151.25,725.00 L98.75,725.00Z" fill="#557664" fill-rule="evenodd" stroke="#293b32" stroke-width=".7"/>
+<polygon points="326.35,827.21 326.35,750.14 308.83,837.96" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="353.65,829.30 326.35,827.21 336.13,840.05" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="353.65,831.87 353.65,829.30 336.13,842.62" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="326.35,827.21 308.83,837.96 336.13,840.05" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="353.65,749.66 323.87,747.38 336.13,760.41" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="353.65,829.30 336.13,840.05 336.13,842.62" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="353.65,752.23 353.65,749.66 336.13,762.98" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="326.35,750.14 308.83,760.89 308.83,837.96" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="306.35,840.34 336.13,840.05 308.83,837.96" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="323.87,747.38 306.35,758.13 336.13,760.41" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="306.35,758.13 306.35,840.34 308.83,837.96" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="306.35,840.34 336.13,842.62 336.13,840.05" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="353.65,749.66 336.13,760.41 336.13,762.98" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="308.83,837.96 308.83,760.89 306.35,758.13" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="308.83,760.89 336.13,760.41 306.35,758.13" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="308.83,760.89 336.13,762.98 336.13,760.41" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<text x="38" y="885" font-size="14">60 × 160 · t 5 · abertura +X</text><text x="38" y="909" font-size="12">Seção frontal / extrusão de 100 mm · A ideal 1350.00 mm²</text>
+<rect x="465" y="670" width="425" height="275" rx="10" fill="white" stroke="#d5decf"/><text x="483" y="699" font-size="18" font-weight="bold">Cantoneira L</text>
+<path d="M500.00,851.00 L640.00,851.00 L640.00,842.60 L508.40,842.60 L508.40,739.00 L500.00,739.00Z" fill="#557664" fill-rule="evenodd" stroke="#293b32" stroke-width=".7"/>
+<polygon points="761.92,805.43 761.92,767.40 744.40,816.18" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="761.92,767.40 758.94,767.17 744.40,778.15" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="808.57,808.99 761.92,805.43 791.06,819.74" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="808.57,812.07 808.57,808.99 791.06,822.83" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="761.92,805.43 744.40,816.18 791.06,819.74" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="761.92,767.40 744.40,778.15 744.40,816.18" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="758.94,767.17 741.43,777.93 744.40,778.15" fill="rgb(107,139,127)" stroke="rgb(107,139,127)" stroke-width=".25"/>
+<polygon points="808.57,808.99 791.06,819.74 791.06,822.83" fill="rgb(100,131,119)" stroke="rgb(100,131,119)" stroke-width=".25"/>
+<polygon points="744.40,816.18 744.40,778.15 741.43,819.03" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="744.40,778.15 741.43,777.93 741.43,819.03" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="741.43,819.03 791.06,819.74 744.40,816.18" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<polygon points="741.43,819.03 791.06,822.83 791.06,819.74" fill="rgb(104,135,123)" stroke="rgb(104,135,123)" stroke-width=".25"/>
+<text x="483" y="885" font-size="14">100 × 80 · t 6</text><text x="483" y="909" font-size="12">Seção frontal / extrusão de 100 mm · A ideal 1044.00 mm²</text>
+<text x="30" y="987" font-size="13">Vazios abertos nas extremidades · sem raios ou filetes · representação sem verificação resistente</text></g></svg>

@@ -1,0 +1,11 @@
+{
+  "notice": "EXEMPLOS SINTÉTICOS DE GEOMETRIA. Sem catálogo comercial, massa, propriedades resistentes ou liberação de fabricação.",
+  "sections": [
+    { "family": "rectangular-tube", "widthMm": 100, "heightMm": 160, "thicknessMm": 5, "expectedAreaMm2": 2500 },
+    { "family": "square-tube", "sideMm": 100, "thicknessMm": 5, "expectedAreaMm2": 1900 },
+    { "family": "circular-tube", "diameterMm": 100, "thicknessMm": 5, "expectedAreaMm2": 1492.2565104551518 },
+    { "family": "i", "heightMm": 200, "flangeWidthMm": 120, "webThicknessMm": 6, "flangeThicknessMm": 10, "expectedAreaMm2": 3480 },
+    { "family": "channel", "heightMm": 160, "flangeWidthMm": 60, "thicknessMm": 5, "opening": "positive-x", "expectedAreaMm2": 1350 },
+    { "family": "angle", "legXmm": 100, "legYmm": 80, "thicknessMm": 6, "expectedAreaMm2": 1044 }
+  ]
+}

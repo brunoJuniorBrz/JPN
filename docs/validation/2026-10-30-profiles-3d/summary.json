@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-30",
+  "scope": "Ideal prismatic cross-sections for visualization only",
+  "tests": {
+    "python": 1186,
+    "vitest": 102,
+    "playwright": 24,
+    "total": 1312,
+    "failed": 0,
+    "skipped": 0
+  },
+  "checks": {
+    "typecheck_exit": 0,
+    "eslint_exit": 0,
+    "production_build_exit": 0,
+    "ezdxf": {
+      "version": "1.4.5",
+      "lines_3d": 130,
+      "units": "mm",
+      "audit_errors": 0
+    }
+  },
+  "regression": {
+    "pynite_cases": 1000,
+    "engine_calculation_and_export_files_identical_to_previous_delivery": 38,
+    "model_coordinates_lengths_mass_cutting_and_solver_inputs": "unchanged with optional visual metadata"
+  },
+  "geometry": {
+    "families": 6,
+    "new_unit_tests": 23,
+    "instance_stress_count": 3000,
+    "shared_section_buffers_in_stress_case": 1
+  },
+  "visual_review": {
+    "gallery": "examples/perfis-3d.svg, inspected as PNG rendered in Chromium",
+    "screenshots": [
+      "test-results/profiles-3d-375.png",
+      "test-results/profiles-3d-1440.png"
+    ],
+    "screenshots_checked": true
+  },
+  "browsers": {
+    "desktop_width": 1440,
+    "mobile": {
+      "width": 375,
+      "isMobile": true,
+      "hasTouch": true,
+      "deviceScaleFactor": 2
+    },
+    "legacy_viewport_widths": [
+      320,
+      375,
+      768,
+      1440
+    ]
+  },
+  "performance": {
+    "rendering": "on demand, no permanent animation loop",
+    "geometry": "one shared extrusion and InstancedMesh per section, independent of length and role",
+    "pixel_ratio_cap": [
+      1,
+      1.5
+    ],
+    "circular_segments": [
+      16,
+      32
+    ],
+    "fps_benchmark": "not performed"
+  },
+  "limits": [
+    "Ideal sharp sections; circular mesh is polygonal",
+    "No resistance or fabrication orientation verification",
+    "No physical mobile device tests",
+    "No fabrication solids in DXF",
+    "No public deployment"
+  ],
+  "remote_ci": "not included in local test totals; verify GitHub Actions for the published commit"
+}

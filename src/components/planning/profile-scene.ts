@@ -1,0 +1,87 @@
+import * as THREE from "three";
+import { resolveSection } from "@/domain/profile-section";
+import { roles, type StructureModel, type StructurePiece } from "@/domain/structure";
+import { createSectionGeometry, pieceMatrix, scenePoint, sectionKey } from "./profile-geometry";
+
+export const viewerModes = ["structural", "profiles", "mixed"] as const;
+export type ViewerMode = typeof viewerModes[number];
+export const VIEWER_MODE_KEY = "jpn-viewer-mode:v1";
+export function parseViewerMode(value: string | null): ViewerMode { return viewerModes.includes(value as ViewerMode) ? value as ViewerMode : "structural"; }
+export function viewerQuality(count: number, hardwareConcurrency = 8, deviceMemory = 8) {
+  const low = count > 1500 || hardwareConcurrency <= 4 || deviceMemory <= 4;
+  return { low, segments: low ? 16 : 32, pixelRatio: low ? 1 : 1.5 };
+}
+export const roleColors = { column: 0x8f672b, topChord: 0x265c40, bottomChord: 0x42815c, web: 0x64734d, purlin: 0x357989 };
+export function pieceIdFromHit(hit: Pick<THREE.Intersection, "object" | "instanceId" | "index">): string | null {
+  const ids = hit.object.userData.ids as string[] | undefined;
+  if (!ids) return null;
+  const index = hit.instanceId ?? (hit.index === undefined ? -1 : Math.floor(hit.index / 2));
+  return ids[index] ?? null;
+}
+
+export function buildProfileScene(model: StructureModel, segments = 32) {
+  const root = new THREE.Group(), axes = new THREE.Group(), solids = new THREE.Group(); root.add(axes, solids);
+  const nodes = new Map(model.nodes.map(n => [n.id, scenePoint(n)]));
+  const resources = new Set<{ dispose(): void }>(), cache = new Map<string, THREE.BufferGeometry>();
+  const batches = new Map<string, { geometry: THREE.BufferGeometry; pieces: StructurePiece[] }>();
+  const instances = new Map<string, { mesh: THREE.InstancedMesh; index: number; color: THREE.Color }>();
+  const simplified = new Set<string>(), warnings = new Map<string, string>();
+  for (const piece of model.pieces) {
+    const resolution = resolveSection(piece.profile), a = nodes.get(piece.start), b = nodes.get(piece.end);
+    if (!resolution.section || !a || !b || !Number.isFinite(a.distanceTo(b)) || a.distanceToSquared(b) === 0) {
+      simplified.add(piece.id); warnings.set(piece.id, resolution.warning || "Eixo inválido: sólido indisponível."); continue;
+    }
+    const key = sectionKey(resolution.section);
+    if (!cache.has(key)) { const geometry = createSectionGeometry(resolution.section, segments); cache.set(key, geometry); resources.add(geometry); }
+    if (!batches.has(key)) batches.set(key, { geometry: cache.get(key)!, pieces: [] });
+    batches.get(key)!.pieces.push(piece);
+  }
+  const material = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: .28, roughness: .65 }); resources.add(material);
+  for (const { geometry, pieces } of batches.values()) {
+    const mesh = new THREE.InstancedMesh(geometry, material, pieces.length); mesh.userData.ids = pieces.map(p => p.id);
+    pieces.forEach((piece, index) => {
+      const color = new THREE.Color(roleColors[piece.role]);
+      mesh.setMatrixAt(index, pieceMatrix(nodes.get(piece.start)!, nodes.get(piece.end)!, piece.profile.visualSection?.rollDeg));
+      mesh.setColorAt(index, color); instances.set(piece.id, { mesh, index, color });
+    });
+    mesh.instanceMatrix.needsUpdate = true; mesh.instanceColor!.needsUpdate = true;
+    mesh.computeBoundingBox(); mesh.computeBoundingSphere(); solids.add(mesh); resources.add(mesh);
+  }
+  const lineTargets: THREE.LineSegments[] = [];
+  for (const role of roles) for (const fallback of [false, true]) {
+    const pieces = model.pieces.filter(p => p.role === role && simplified.has(p.id) === fallback && nodes.has(p.start) && nodes.has(p.end));
+    if (!pieces.length) continue;
+    const geometry = new THREE.BufferGeometry().setFromPoints(pieces.flatMap(p => [nodes.get(p.start)!, nodes.get(p.end)!]));
+    const material = new THREE.LineBasicMaterial({ color: roleColors[role], depthTest: false, transparent: true, opacity: .8 });
+    const line = new THREE.LineSegments(geometry, material); line.userData.ids = pieces.map(p => p.id); line.userData.fallback = fallback;
+    line.renderOrder = 2; axes.add(line); lineTargets.push(line); resources.add(geometry); resources.add(material);
+  }
+  const markerGeometry = new THREE.BufferGeometry(), markerMaterial = new THREE.LineBasicMaterial({ color: 0xf15c17, depthTest: false });
+  const marker = new THREE.Line(markerGeometry, markerMaterial); marker.visible = false; marker.renderOrder = 10; root.add(marker); resources.add(markerGeometry); resources.add(markerMaterial);
+  const bounds = new THREE.Box3().setFromPoints([...nodes.values()]);
+  solids.children.forEach(mesh => bounds.union((mesh as THREE.InstancedMesh).boundingBox!));
+  let currentMode: ViewerMode = "structural", selected = "", disposed = false;
+  const setMode = (mode: ViewerMode) => {
+    currentMode = mode; solids.visible = mode !== "structural";
+    axes.children.forEach(line => {
+      line.visible = mode !== "profiles" || !!line.userData.fallback;
+      const material = (line as THREE.LineSegments).material as THREE.LineBasicMaterial;
+      material.depthTest = mode === "structural"; material.opacity = mode === "structural" ? 1 : .8;
+    });
+  };
+  setMode(currentMode);
+  return {
+    root, bounds, warnings, cache, instances,
+    solidCount: instances.size, fallbackCount: simplified.size,
+    setMode,
+    targets: () => [...(currentMode === "structural" ? [] : solids.children), ...lineTargets.filter(line => line.visible)],
+    highlight: (id: string) => {
+      const old = instances.get(selected); if (old) { old.mesh.setColorAt(old.index, old.color); old.mesh.instanceColor!.needsUpdate = true; }
+      selected = id; const item = instances.get(id);
+      if (item) { item.mesh.setColorAt(item.index, new THREE.Color(0xff9b36)); item.mesh.instanceColor!.needsUpdate = true; }
+      const piece = model.pieces.find(p => p.id === id); marker.visible = !!piece;
+      if (piece) { markerGeometry.setFromPoints([nodes.get(piece.start)!, nodes.get(piece.end)!]); markerGeometry.computeBoundingSphere(); }
+    },
+    dispose: () => { if (disposed) return; disposed = true; resources.forEach(r => r.dispose()); root.clear(); cache.clear(); instances.clear(); },
+  };
+}

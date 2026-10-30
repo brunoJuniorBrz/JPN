@@ -1,0 +1,1417 @@
+{
+  "numTotalTestSuites": 24,
+  "numPassedTestSuites": 24,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 102,
+  "numPassedTests": 102,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1793402690706,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "enquadra todos os extremos da estrutura na razão de tela 0.5",
+          "status": "passed",
+          "title": "enquadra todos os extremos da estrutura na razão de tela 0.5",
+          "duration": 4.545099999999991,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "enquadra todos os extremos da estrutura na razão de tela 0.8",
+          "status": "passed",
+          "title": "enquadra todos os extremos da estrutura na razão de tela 0.8",
+          "duration": 0.7616999999999621,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "enquadra todos os extremos da estrutura na razão de tela 1",
+          "status": "passed",
+          "title": "enquadra todos os extremos da estrutura na razão de tela 1",
+          "duration": 0.650100000000009,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "enquadra todos os extremos da estrutura na razão de tela 2",
+          "status": "passed",
+          "title": "enquadra todos os extremos da estrutura na razão de tela 2",
+          "duration": 0.516900000000021,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "enquadra todos os extremos da estrutura na razão de tela 3",
+          "status": "passed",
+          "title": "enquadra todos os extremos da estrutura na razão de tela 3",
+          "duration": 0.5732999999999606,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793402691204,
+      "endTime": 1793402691211.5732,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/src/components/planning/camera-fit.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência dimensões, volume e espessuras de rectangular-tube",
+          "status": "passed",
+          "title": "dimensões, volume e espessuras de rectangular-tube",
+          "duration": 14.91739999999993,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência dimensões, volume e espessuras de square-tube",
+          "status": "passed",
+          "title": "dimensões, volume e espessuras de square-tube",
+          "duration": 2.4388000000000147,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência dimensões, volume e espessuras de circular-tube",
+          "status": "passed",
+          "title": "dimensões, volume e espessuras de circular-tube",
+          "duration": 13.926199999999994,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência dimensões, volume e espessuras de i",
+          "status": "passed",
+          "title": "dimensões, volume e espessuras de i",
+          "duration": 1.935200000000009,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência dimensões, volume e espessuras de channel",
+          "status": "passed",
+          "title": "dimensões, volume e espessuras de channel",
+          "duration": 1.7013000000000602,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência dimensões, volume e espessuras de angle",
+          "status": "passed",
+          "title": "dimensões, volume e espessuras de angle",
+          "duration": 1.2195999999999003,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência espelha a abertura U/C sem mudar volume ou dimensões",
+          "status": "passed",
+          "title": "espelha a abertura U/C sem mudar volume ou dimensões",
+          "duration": 0.8026999999999589,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência preserva extremos e base ortogonal em 1",
+          "status": "passed",
+          "title": "preserva extremos e base ortogonal em 1",
+          "duration": 0.898900000000026,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência preserva extremos e base ortogonal em -1",
+          "status": "passed",
+          "title": "preserva extremos e base ortogonal em -1",
+          "duration": 0.32970000000000255,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência preserva extremos e base ortogonal em -1",
+          "status": "passed",
+          "title": "preserva extremos e base ortogonal em -1",
+          "duration": 0.33750000000009095,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência preserva extremos e base ortogonal em 0",
+          "status": "passed",
+          "title": "preserva extremos e base ortogonal em 0",
+          "duration": 0.1996000000000322,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência preserva extremos e base ortogonal em 0",
+          "status": "passed",
+          "title": "preserva extremos e base ortogonal em 0",
+          "duration": 0.19059999999990396,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência preserva extremos e base ortogonal em 0",
+          "status": "passed",
+          "title": "preserva extremos e base ortogonal em 0",
+          "duration": 0.205600000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência preserva extremos e base ortogonal em 0",
+          "status": "passed",
+          "title": "preserva extremos e base ortogonal em 0",
+          "duration": 0.16950000000008458,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência preserva extremos e base ortogonal em 3",
+          "status": "passed",
+          "title": "preserva extremos e base ortogonal em 3",
+          "duration": 0.15579999999999927,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência preserva extremos e base ortogonal em 0.000001",
+          "status": "passed",
+          "title": "preserva extremos e base ortogonal em 0.000001",
+          "duration": 0.17229999999995016,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência mantém orientação perto da vertical e aplica giro axial com sinal definido",
+          "status": "passed",
+          "title": "mantém orientação perto da vertical e aplica giro axial com sinal definido",
+          "duration": 1.67349999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "seções prismáticas de referência"
+          ],
+          "fullName": "seções prismáticas de referência recusa dados incompletos, incompatíveis, não finitos e vazios eliminados",
+          "status": "passed",
+          "title": "recusa dados incompletos, incompatíveis, não finitos e vazios eliminados",
+          "duration": 3.416900000000055,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "cena compartilhada e contrato original"
+          ],
+          "fullName": "cena compartilhada e contrato original instancia uma seção em comprimentos diferentes, seleciona IDs e preserva a câmera ao alternar grupos",
+          "status": "passed",
+          "title": "instancia uma seção em comprimentos diferentes, seleciona IDs e preserva a câmera ao alternar grupos",
+          "duration": 42.65300000000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "cena compartilhada e contrato original"
+          ],
+          "fullName": "cena compartilhada e contrato original mantém linhas selecionáveis quando faltam dimensões",
+          "status": "passed",
+          "title": "mantém linhas selecionáveis quando faltam dimensões",
+          "duration": 6.051500000000033,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "cena compartilhada e contrato original"
+          ],
+          "fullName": "cena compartilhada e contrato original raycast de sólido instanciado retorna o ID original através da parede do tubo",
+          "status": "passed",
+          "title": "raycast de sólido instanciado retorna o ID original através da parede do tubo",
+          "duration": 3.0043000000000575,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "cena compartilhada e contrato original"
+          ],
+          "fullName": "cena compartilhada e contrato original milhares de barras compartilham buffers; qualidade e modos inválidos têm fallback",
+          "status": "passed",
+          "title": "milhares de barras compartilham buffers; qualidade e modos inválidos têm fallback",
+          "duration": 39.91549999999995,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "cena compartilhada e contrato original"
+          ],
+          "fullName": "cena compartilhada e contrato original abre projetos antigos e persiste metadados opcionais sem alterar quantitativos, corte ou entradas do solver",
+          "status": "passed",
+          "title": "abre projetos antigos e persiste metadados opcionais sem alterar quantitativos, corte ou entradas do solver",
+          "duration": 48.26010000000008,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793402691357,
+      "endTime": 1793402691542.26,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/src/components/planning/profile-geometry.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Geometria em uma única fonte de dados"
+          ],
+          "fullName": "Geometria em uma única fonte de dados converte unidades sem misturar metros e milímetros",
+          "status": "passed",
+          "title": "converte unidades sem misturar metros e milímetros",
+          "duration": 2.448599999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Geometria em uma única fonte de dados"
+          ],
+          "fullName": "Geometria em uma única fonte de dados calcula 6 x 10 m com inclinação de 10% e altura baixa de 3 m",
+          "status": "passed",
+          "title": "calcula 6 x 10 m com inclinação de 10% e altura baixa de 3 m",
+          "duration": 33.46870000000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Geometria em uma única fonte de dados"
+          ],
+          "fullName": "Geometria em uma única fonte de dados inverte a queda sem alterar área e usa o comprimento quando solicitado",
+          "status": "passed",
+          "title": "inverte a queda sem alterar área e usa o comprimento quando solicitado",
+          "duration": 4.24980000000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Geometria em uma única fonte de dados"
+          ],
+          "fullName": "Geometria em uma única fonte de dados aceita inclinação zero, mas não inventa medidas ausentes ou inválidas",
+          "status": "passed",
+          "title": "aceita inclinação zero, mas não inventa medidas ausentes ou inválidas",
+          "duration": 2.26279999999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Geometria em uma única fonte de dados"
+          ],
+          "fullName": "Geometria em uma única fonte de dados desenha apenas apoios válidos e sinaliza duplicados e posições fora da cobertura",
+          "status": "passed",
+          "title": "desenha apenas apoios válidos e sinaliza duplicados e posições fora da cobertura",
+          "duration": 4.385899999999992,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Quantitativos e arredondamento de compras"
+          ],
+          "fullName": "Quantitativos e arredondamento de compras aplica perdas à área real e calcula subtotal em centavos",
+          "status": "passed",
+          "title": "aplica perdas à área real e calcula subtotal em centavos",
+          "duration": 2.001100000000008,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Quantitativos e arredondamento de compras"
+          ],
+          "fullName": "Quantitativos e arredondamento de compras converte 24 metros em quatro barras de seis metros e arredonda uma sobra para cima",
+          "status": "passed",
+          "title": "converte 24 metros em quatro barras de seis metros e arredonda uma sobra para cima",
+          "duration": 1.2737000000000194,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Quantitativos e arredondamento de compras"
+          ],
+          "fullName": "Quantitativos e arredondamento de compras mantém pendentes preço, quantidade, perdas, geometria e unidade incompatível",
+          "status": "passed",
+          "title": "mantém pendentes preço, quantidade, perdas, geometria e unidade incompatível",
+          "duration": 1.408399999999972,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Quantitativos e arredondamento de compras"
+          ],
+          "fullName": "Quantitativos e arredondamento de compras não inventa número de apoios",
+          "status": "passed",
+          "title": "não inventa número de apoios",
+          "duration": 5.149699999999996,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Orçamento em centavos"
+          ],
+          "fullName": "Orçamento em centavos soma o exemplo sem duplicar custos",
+          "status": "passed",
+          "title": "soma o exemplo sem duplicar custos",
+          "duration": 2.0663999999999874,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Orçamento em centavos"
+          ],
+          "fullName": "Orçamento em centavos distingue markup e margem sobre venda",
+          "status": "passed",
+          "title": "distingue markup e margem sobre venda",
+          "duration": 0.8430999999999926,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Orçamento em centavos"
+          ],
+          "fullName": "Orçamento em centavos arredonda metade para cima e não perde centavos em multiplicações decimais",
+          "status": "passed",
+          "title": "arredonda metade para cima e não perde centavos em multiplicações decimais",
+          "duration": 0.20519999999999072,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Orçamento em centavos"
+          ],
+          "fullName": "Orçamento em centavos incorpora encargos nas bases escolhidas e preserva a margem",
+          "status": "passed",
+          "title": "incorpora encargos nas bases escolhidas e preserva a margem",
+          "duration": 0.6811999999999898,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Orçamento em centavos"
+          ],
+          "fullName": "Orçamento em centavos bloqueia combinações inviáveis e itens incompletos",
+          "status": "passed",
+          "title": "bloqueia combinações inviáveis e itens incompletos",
+          "duration": 0.2833999999999719,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Orçamento em centavos"
+          ],
+          "fullName": "Orçamento em centavos recalcula desenho, área e custo a partir da mesma largura",
+          "status": "passed",
+          "title": "recalcula desenho, área e custo a partir da mesma largura",
+          "duration": 5.5692000000000235,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Orçamento em centavos"
+          ],
+          "fullName": "Orçamento em centavos não usa o gerador de cobertura para categorias futuras",
+          "status": "passed",
+          "title": "não usa o gerador de cobertura para categorias futuras",
+          "duration": 0.7590000000000146,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793402691302,
+      "endTime": 1793402691369.759,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/src/domain/calculations/calculations.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "tipologias e balanços"
+          ],
+          "fullName": "tipologias e balanços divide banzos na cumeeira e preserva área desenvolvida e simetria",
+          "status": "passed",
+          "title": "divide banzos na cumeeira e preserva área desenvolvida e simetria",
+          "duration": 40.2783,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tipologias e balanços"
+          ],
+          "fullName": "tipologias e balanços balanços criam somente trechos reais de terça e atualizam área",
+          "status": "passed",
+          "title": "balanços criam somente trechos reais de terça e atualizam área",
+          "duration": 5.981200000000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "tipologias e balanços"
+          ],
+          "fullName": "tipologias e balanços duas águas preserva quantidades ao refletir a queda e permutar os eixos",
+          "status": "passed",
+          "title": "duas águas preserva quantidades ao refletir a queda e permutar os eixos",
+          "duration": 7.711500000000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "aproveitamento de barras"
+          ],
+          "fullName": "aproveitamento de barras compara instâncias pequenas com particionamento exato: 6",
+          "status": "passed",
+          "title": "compara instâncias pequenas com particionamento exato: 6",
+          "duration": 3.342199999999991,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "aproveitamento de barras"
+          ],
+          "fullName": "aproveitamento de barras compara instâncias pequenas com particionamento exato: 8",
+          "status": "passed",
+          "title": "compara instâncias pequenas com particionamento exato: 8",
+          "duration": 1.6847999999999956,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "aproveitamento de barras"
+          ],
+          "fullName": "aproveitamento de barras compara instâncias pequenas com particionamento exato: 3",
+          "status": "passed",
+          "title": "compara instâncias pequenas com particionamento exato: 3",
+          "duration": 0.345799999999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "aproveitamento de barras"
+          ],
+          "fullName": "aproveitamento de barras compara instâncias pequenas com particionamento exato: 5",
+          "status": "passed",
+          "title": "compara instâncias pequenas com particionamento exato: 5",
+          "duration": 0.24960000000004356,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "aproveitamento de barras"
+          ],
+          "fullName": "aproveitamento de barras não promete ótimo quando a heurística perde para uma solução conhecida",
+          "status": "passed",
+          "title": "não promete ótimo quando a heurística perde para uma solução conhecida",
+          "duration": 0.4689000000000192,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "aproveitamento de barras"
+          ],
+          "fullName": "aproveitamento de barras contabiliza serra, duas pontas e sobra reutilizável sem exceder estoque",
+          "status": "passed",
+          "title": "contabiliza serra, duas pontas e sobra reutilizável sem exceder estoque",
+          "duration": 2.511599999999987,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "aproveitamento de barras"
+          ],
+          "fullName": "aproveitamento de barras conserva quantidades e comprimentos em 300 problemas com semente fixa",
+          "status": "passed",
+          "title": "conserva quantidades e comprimentos em 300 problemas com semente fixa",
+          "duration": 40.8809,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "aproveitamento de barras"
+          ],
+          "fullName": "aproveitamento de barras separa perfis e recusa comprimentos finais ausentes/desatualizados",
+          "status": "passed",
+          "title": "separa perfis e recusa comprimentos finais ausentes/desatualizados",
+          "duration": 7.036299999999983,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "aproveitamento de barras"
+          ],
+          "fullName": "aproveitamento de barras processa levantamento maior dentro do limite, conservando as 3.815 peças",
+          "status": "passed",
+          "title": "processa levantamento maior dentro do limite, conservando as 3.815 peças",
+          "duration": 42.02069999999992,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "origem, migração e revisões"
+          ],
+          "fullName": "origem, migração e revisões exemplo importável executa o fluxo de quantitativo, corte e orçamento sem custos presumidos",
+          "status": "passed",
+          "title": "exemplo importável executa o fluxo de quantitativo, corte e orçamento sem custos presumidos",
+          "duration": 33.487199999999916,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "origem, migração e revisões"
+          ],
+          "fullName": "origem, migração e revisões liga quantitativos, preserva preços e invalida orçamento quando a geometria muda",
+          "status": "passed",
+          "title": "liga quantitativos, preserva preços e invalida orçamento quando a geometria muda",
+          "duration": 11.547500000000014,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "origem, migração e revisões"
+          ],
+          "fullName": "origem, migração e revisões migra v3 sem gravar ou perder dados e faz backup das novas propriedades",
+          "status": "passed",
+          "title": "migra v3 sem gravar ou perder dados e faz backup das novas propriedades",
+          "duration": 2.8489000000000715,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "origem, migração e revisões"
+          ],
+          "fullName": "origem, migração e revisões captura revisão independente e impede alteração/remoção de registros anteriores",
+          "status": "passed",
+          "title": "captura revisão independente e impede alteração/remoção de registros anteriores",
+          "duration": 3.1994000000000824,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "origem, migração e revisões"
+          ],
+          "fullName": "origem, migração e revisões não grava um conjunto que excederia a capacidade de restauração do backup",
+          "status": "passed",
+          "title": "não grava um conjunto que excederia a capacidade de restauração do backup",
+          "duration": 61.84889999999996,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793402691268,
+      "endTime": 1793402691534.8489,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/src/domain/calculations/platform.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "modelo central de peças"
+          ],
+          "fullName": "modelo central de peças gera 5 linhas em 20 m, área inclinada e 123 peças identificadas",
+          "status": "passed",
+          "title": "gera 5 linhas em 20 m, área inclinada e 123 peças identificadas",
+          "duration": 41.193899999999985,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "modelo central de peças"
+          ],
+          "fullName": "modelo central de peças conserva peças, comprimentos e massa na consolidação e nas vistas",
+          "status": "passed",
+          "title": "conserva peças, comprimentos e massa na consolidação e nas vistas",
+          "duration": 18.06460000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "modelo central de peças"
+          ],
+          "fullName": "modelo central de peças inverte a queda e troca eixos sem perder a identidade ou os totais",
+          "status": "passed",
+          "title": "inverte a queda e troca eixos sem perder a identidade ou os totais",
+          "duration": 7.462999999999965,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "modelo central de peças"
+          ],
+          "fullName": "modelo central de peças mantém resultado com perfis pendentes, sem inventar massa ou aprovação",
+          "status": "passed",
+          "title": "mantém resultado com perfis pendentes, sem inventar massa ou aprovação",
+          "duration": 4.0867000000000075,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "modelo central de peças"
+          ],
+          "fullName": "modelo central de peças trata medidas ausentes, impossíveis, limites e comprimentos comerciais insuficientes",
+          "status": "passed",
+          "title": "trata medidas ausentes, impossíveis, limites e comprimentos comerciais insuficientes",
+          "duration": 7.716099999999983,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "modelo central de peças"
+          ],
+          "fullName": "modelo central de peças não ultrapassa espaçamentos máximos perto de um múltiplo inteiro",
+          "status": "passed",
+          "title": "não ultrapassa espaçamentos máximos perto de um múltiplo inteiro",
+          "duration": 3.08340000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "migração do levantamento"
+          ],
+          "fullName": "migração do levantamento preserva orçamento v2 e só grava a versão nova na próxima gravação",
+          "status": "passed",
+          "title": "preserva orçamento v2 e só grava a versão nova na próxima gravação",
+          "duration": 15.158299999999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "migração do levantamento"
+          ],
+          "fullName": "migração do levantamento preserva configuração no backup, duplicação e importação sem compartilhar objetos",
+          "status": "passed",
+          "title": "preserva configuração no backup, duplicação e importação sem compartilhar objetos",
+          "duration": 8.706500000000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793402691268,
+      "endTime": 1793402691373.7065,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/src/domain/calculations/structure.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "chama o processo Python real e confere a referência analítica",
+          "status": "passed",
+          "title": "chama o processo Python real e confere a referência analítica",
+          "duration": 713.3447000000001,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "propaga mecanismo instável sem gerar resultado falso",
+          "status": "passed",
+          "title": "propaga mecanismo instável sem gerar resultado falso",
+          "duration": 653.6398000000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "Vercel sem serviço bloqueia só a análise",
+          "status": "passed",
+          "title": "Vercel sem serviço bloqueia só a análise",
+          "duration": 1.06899999999996,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "verifica identidade das entradas na resposta remota",
+          "status": "passed",
+          "title": "verifica identidade das entradas na resposta remota",
+          "duration": 18.959400000000187,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "adaptador HTTP chama serviço Python real separado",
+          "status": "passed",
+          "title": "adaptador HTTP chama serviço Python real separado",
+          "duration": 1057.5668999999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "API real protege origem e valida corpo antes de chamar Python",
+          "status": "passed",
+          "title": "API real protege origem e valida corpo antes de chamar Python",
+          "duration": 1230.2057,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "adaptador seleciona só T1 e converte mm, cm², GPa e kN",
+          "status": "passed",
+          "title": "adaptador seleciona só T1 e converte mm, cm², GPa e kN",
+          "duration": 32.29340000000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793402691249,
+      "endTime": 1793402694956.2935,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/src/infrastructure/analysis/runner.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Validação dos contratos"
+          ],
+          "fullName": "Validação dos contratos exige nome e cliente sem aceitar espaços em branco",
+          "status": "passed",
+          "title": "exige nome e cliente sem aceitar espaços em branco",
+          "duration": 16.567000000000007,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Validação dos contratos"
+          ],
+          "fullName": "Validação dos contratos não permite inventar aprovação técnica ou campos de outra versão",
+          "status": "passed",
+          "title": "não permite inventar aprovação técnica ou campos de outra versão",
+          "duration": 0.7436999999999898,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Validação dos contratos"
+          ],
+          "fullName": "Validação dos contratos distingue limites de markup e margem",
+          "status": "passed",
+          "title": "distingue limites de markup e margem",
+          "duration": 1.3480000000000132,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Validação dos contratos"
+          ],
+          "fullName": "Validação dos contratos lê percentuais brasileiros sem aceitar números ambíguos",
+          "status": "passed",
+          "title": "lê percentuais brasileiros sem aceitar números ambíguos",
+          "duration": 0.48910000000000764,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Persistência versionada"
+          ],
+          "fullName": "Persistência versionada inicia vazia, salva, edita e recupera de outra instância",
+          "status": "passed",
+          "title": "inicia vazia, salva, edita e recupera de outra instância",
+          "duration": 4.995900000000006,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Persistência versionada"
+          ],
+          "fullName": "Persistência versionada duplica com novo ID e remove apenas o item solicitado",
+          "status": "passed",
+          "title": "duplica com novo ID e remove apenas o item solicitado",
+          "duration": 2.775599999999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Persistência versionada"
+          ],
+          "fullName": "Persistência versionada não expõe referências mutáveis",
+          "status": "passed",
+          "title": "não expõe referências mutáveis",
+          "duration": 0.6000999999999976,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Persistência versionada"
+          ],
+          "fullName": "Persistência versionada preserva dados corrompidos e impede gravação",
+          "status": "passed",
+          "title": "preserva dados corrompidos e impede gravação",
+          "duration": 1.2115999999999758,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Persistência versionada"
+          ],
+          "fullName": "Persistência versionada trata falha de leitura",
+          "status": "passed",
+          "title": "trata falha de leitura",
+          "duration": 0.4067000000000007,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Persistência versionada"
+          ],
+          "fullName": "Persistência versionada não publica gravação malsucedida e permite tentar novamente",
+          "status": "passed",
+          "title": "não publica gravação malsucedida e permite tentar novamente",
+          "duration": 1.4825999999999908,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Persistência versionada"
+          ],
+          "fullName": "Persistência versionada detecta alteração por outra aba antes de sobrescrever",
+          "status": "passed",
+          "title": "detecta alteração por outra aba antes de sobrescrever",
+          "duration": 1.2416000000000054,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Backups"
+          ],
+          "fullName": "Backups migra cadastro da fase 1 sem inventar medidas ou custos",
+          "status": "passed",
+          "title": "migra cadastro da fase 1 sem inventar medidas ou custos",
+          "duration": 5.001100000000008,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Backups"
+          ],
+          "fullName": "Backups remapeia materiais importados sem alterar preços dos itens",
+          "status": "passed",
+          "title": "remapeia materiais importados sem alterar preços dos itens",
+          "duration": 7.52879999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Backups"
+          ],
+          "fullName": "Backups cria exemplo identificado sem sobrescrever nem recriar após exclusão",
+          "status": "passed",
+          "title": "cria exemplo identificado sem sobrescrever nem recriar após exclusão",
+          "duration": 4.410200000000032,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Backups"
+          ],
+          "fullName": "Backups faz round-trip preservando todos os campos",
+          "status": "passed",
+          "title": "faz round-trip preservando todos os campos",
+          "duration": 0.7524999999999977,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Backups"
+          ],
+          "fullName": "Backups rejeita JSON inválido, versão incompatível e projetos inválidos",
+          "status": "passed",
+          "title": "rejeita JSON inválido, versão incompatível e projetos inválidos",
+          "duration": 5.373199999999997,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Backups"
+          ],
+          "fullName": "Backups rejeita IDs duplicados e arquivos grandes",
+          "status": "passed",
+          "title": "rejeita IDs duplicados e arquivos grandes",
+          "duration": 14.998400000000004,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Backups"
+          ],
+          "fullName": "Backups importa como cópias, mantém configurações locais e nunca sobrescreve",
+          "status": "passed",
+          "title": "importa como cópias, mantém configurações locais e nunca sobrescreve",
+          "duration": 3.1958000000000197,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "Backups"
+          ],
+          "fullName": "Backups importação é atômica quando falta espaço",
+          "status": "passed",
+          "title": "importação é atômica quando falta espaço",
+          "duration": 1.667100000000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793402691291,
+      "endTime": 1793402691366.667,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/src/infrastructure/persistence/local.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "reabre DXF com leitor independente, conserva coordenadas 3D/mm e não injeta texto em SVG",
+          "status": "passed",
+          "title": "reabre DXF com leitor independente, conserva coordenadas 3D/mm e não injeta texto em SVG",
+          "duration": 53.17870000000005,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "reabre PDF da simulação sem confundir comprimentos geométricos com ordem de corte",
+          "status": "passed",
+          "title": "reabre PDF da simulação sem confundir comprimentos geométricos com ordem de corte",
+          "duration": 310.0173,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793402691426,
+      "endTime": 1793402691790.0173,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/src/lib/exports/cad.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "documentos do orçamento"
+          ],
+          "fullName": "documentos do orçamento abre projetos v2 anteriores sem inventar condições comerciais",
+          "status": "passed",
+          "title": "abre projetos v2 anteriores sem inventar condições comerciais",
+          "duration": 34.55449999999996,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "documentos do orçamento"
+          ],
+          "fullName": "documentos do orçamento bloqueia documentos com preços incompletos",
+          "status": "passed",
+          "title": "bloqueia documentos com preços incompletos",
+          "duration": 2.7607000000000426,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "documentos do orçamento"
+          ],
+          "fullName": "documentos do orçamento gera PDF legível, com valor correto e sem dados internos, inclusive em várias páginas",
+          "status": "passed",
+          "title": "gera PDF legível, com valor correto e sem dados internos, inclusive em várias páginas",
+          "duration": 144.97820000000002,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "documentos do orçamento"
+          ],
+          "fullName": "documentos do orçamento planilha reaberta preserva números, quantidades e textos sem executar fórmulas",
+          "status": "passed",
+          "title": "planilha reaberta preserva números, quantidades e textos sem executar fórmulas",
+          "duration": 56.04259999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793402692281,
+      "endTime": 1793402692520.0425,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/src/lib/exports/exports.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "exporta quantitativos sem preços, inclui pendências e reabre valores exatos no XLSX",
+          "status": "passed",
+          "title": "exporta quantitativos sem preços, inclui pendências e reabre valores exatos no XLSX",
+          "duration": 369.6091999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793402692181,
+      "endTime": 1793402692550.6091,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/src/lib/exports/takeoff.test.ts"
+    }
+  ]
+}
