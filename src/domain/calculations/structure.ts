@@ -10,7 +10,12 @@ export const STRUCTURE_NOTES = [
   "Contraventamentos, ligações, chapas, fixadores, fundações e soldas ainda não quantificados. Esta lista não representa todos os materiais de uma obra.",
   "Resistência, estabilidade, cargas e verificações normativas ainda não calculadas. Perfis associados não significam dimensionamento aprovado.",
 ];
-const intervals = (length: number, max: number) => Math.max(1, Math.ceil(length / max - 1e-10));
+const intervals = (length: number, max: number) => {
+  const count = Math.max(1, Math.ceil(length / max));
+  // A fixed epsilon can round down a real excess. Check the actual spacing,
+  // including a quotient rounded to an integer by floating-point division.
+  return length / count > max ? count + 1 : count;
+};
 export function generateStructure(project: Project): StructureResult {
   const pending: string[] = [], notes = [...STRUCTURE_NOTES];
   if (project.category !== "Cobertura metálica") return { model: null, pending: ["O gerador de peças desta versão atende coberturas de uma água."], notes };

@@ -1,6 +1,6 @@
 # Dimensionamento automático — próximo núcleo do produto
 
-Atualizado em 30/10/2026. Este documento é um plano de implementação, não um motor já entregue.
+Atualizado em 30/10/2026. Este documento continua sendo o plano de dimensionamento normativo e integração. A auditoria acrescentou um [núcleo experimental de treliças planas](../engine/README.md), com análise linear e validação comparativa; ele não está conectado à interface e não implementa dimensionamento. Resultados e limites em [AUDITORIA-MOTOR.md](AUDITORIA-MOTOR.md).
 
 ## Fluxo solicitado
 
@@ -28,7 +28,7 @@ A própria biblioteca delimita P-Delta/P-delta como parte da análise de segunda
 
 sectionproperties pode apoiar o cálculo de propriedades de seções, com análises geométrica, plástica e de empenamento. Não substitui o solver da estrutura nem as verificações normativas. Fonte: [guia de análise](https://sectionproperties.readthedocs.io/en/stable/user_guide/analysis.html).
 
-Ainda pendentes: comparação detalhada com anaStruct, auditoria de licenças e dependências das versões fixadas, catálogo oficial, revisão das edições/aplicabilidade das normas brasileiras e prova de implantação do serviço Python. Nenhuma biblioteca Python foi instalada ou anunciada como integrada nesta entrega.
+Na entrega original, nenhuma biblioteca Python havia sido instalada. A auditoria posterior instalou e fixou NumPy 2.5.4, SciPy 1.18.1 e PyNiteFEA 3.2.1 para o pacote independente, examinou a API instalada e as licenças e executou comparações. PyNite permanece dependência de validação. A avaliação inicial de alternativas e as limitações normativas estão no relatório; catálogo oficial, aplicação das normas e prova de implantação do serviço Python continuam pendentes.
 
 ## Contrato proposto
 

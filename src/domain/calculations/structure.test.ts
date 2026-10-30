@@ -59,6 +59,17 @@ describe("modelo central de peças", () => {
     expect(generateStructure(p).pending.some(n => n.includes("maiores que o comprimento comercial"))).toBe(true);
     p.roof.widthM = null; expect(generateStructure(p).model).toBeNull();
   });
+  it("não ultrapassa espaçamentos máximos perto de um múltiplo inteiro", () => {
+    const p = planningExample();
+    p.roof.lengthM = 20.0000000001;
+    p.roof.widthM = 10.0000000001;
+    p.roof.slopePercent = 0;
+    const m = generateStructure(p).model!;
+    expect(m.frameSpacingM).toBeLessThanOrEqual(p.planning!.frameSpacingM!);
+    expect(m.purlinSpacingM).toBeLessThanOrEqual(p.planning!.purlinSpacingM!);
+    expect(m.frameCount).toBe(6);
+    expect(m.purlinRows).toBe(7);
+  });
 });
 
 describe("migração do levantamento", () => {

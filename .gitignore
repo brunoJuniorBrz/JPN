@@ -6,3 +6,9 @@ playwright-report/
 test-results/
 *.tsbuildinfo
 .env*
+.tools/
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+engine/validation-results/

@@ -1,0 +1,21 @@
+{
+  "schema_version": "jpn.truss/1",
+  "units": "SI",
+  "nodes": [
+    { "id": "0", "x_m": 0, "y_m": 0 },
+    { "id": "1", "x_m": 2, "y_m": 0 },
+    { "id": "2", "x_m": 1, "y_m": 1 }
+  ],
+  "members": [
+    { "id": "M0", "start": "0", "end": "1", "e_pa": 200000000000, "area_m2": 0.001 },
+    { "id": "M1", "start": "0", "end": "2", "e_pa": 200000000000, "area_m2": 0.001 },
+    { "id": "M2", "start": "1", "end": "2", "e_pa": 200000000000, "area_m2": 0.001 }
+  ],
+  "supports": [
+    { "node": "0", "ux_m": 0, "uy_m": 0 },
+    { "node": "1", "ux_m": null, "uy_m": 0 }
+  ],
+  "loads": [
+    { "node": "2", "fx_n": 0, "fy_n": -10000 }
+  ]
+}

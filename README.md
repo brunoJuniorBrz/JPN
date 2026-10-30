@@ -90,6 +90,14 @@ Verificação desta entrega: **47 testes unitários e 14 testes de navegador apr
 
 ## Tecnologias e estrutura
 
+### Núcleo de análise experimental — auditoria de 30/10/2026
+
+Foi acrescentado um pacote Python independente em [`engine/`](engine/README.md), sem integração automática às telas: treliças planas articuladas, análise elástica linear de primeira ordem, reações, esforços axiais e deslocamentos em SI. NumPy/SciPy fazem a álgebra linear; PyNiteFEA 3.2.1 é o referencial independente de testes. Instalação e execução completa estão no README do pacote.
+
+A execução local registrou **1.183 testes Python, 48 testes Vitest e 14 testes de navegador aprovados**, sem testes ignorados; TypeScript, lint e build aprovados. Inclui 1.000 geometrias com sementes fixas comparadas ao PyNite, soluções analíticas, equilíbrio, compatibilidade, energia e rejeição de mecanismos. Consulte o [relatório da auditoria](docs/AUDITORIA-MOTOR.md) e a [evidência estruturada](docs/validation/2026-10-30/structural.json).
+
+O histórico citado de outro protótipo com 20 testes não estava nesta cópia do repositório; os resultados acima pertencem à implementação identificada nos arquivos de evidência. O núcleo permanece experimental, sem verificações normativas, flambagem, flexão ou autorização para uso em projetos reais. A interface continua gerando geometria/quantitativos, sem executar análise resistente. Foi corrigido o arredondamento do número de vãos para respeitar o espaçamento máximo informado.
+
 Next.js App Router, React, TypeScript strict, Tailwind/PostCSS, Lucide, Zod, Context API, Vitest e Playwright. Sem APIs pagas, banco remoto ou credenciais. A documentação compatível do Next está em `node_modules/next/dist/docs/`.
 
 ```text

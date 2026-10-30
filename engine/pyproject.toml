@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jpn-structural"
+version = "0.1.0"
+description = "Experimental linear 2D truss analysis, separate from design and takeoff"
+requires-python = ">=3.12,<3.13"
+dependencies = ["numpy==2.5.4", "scipy==1.18.1"]
+
+[project.optional-dependencies]
+validation = ["PyNiteFEA==3.2.1", "pytest==9.2.0"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["jpn_structural*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+filterwarnings = ["error"]

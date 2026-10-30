@@ -1,0 +1,77 @@
+{
+    "audit_date":  "2026-10-30",
+    "time_zone":  "America/Sao_Paulo",
+    "platform":  "Windows x64",
+    "versions":  {
+                     "playwright":  "1.64.1",
+                     "node":  "24.13.0",
+                     "vitest":  "5.0.5",
+                     "pnpm":  "12.15.0",
+                     "next":  "16.4.3"
+                 },
+    "baseline":  {
+                     "playwright":  {
+                                        "startTime":  "2026-10-30T21:58:48.525Z",
+                                        "duration":  33968.123,
+                                        "expected":  14,
+                                        "skipped":  0,
+                                        "unexpected":  0,
+                                        "flaky":  0
+                                    },
+                     "vitest_tests":  47,
+                     "vitest_passed":  47
+                 },
+    "final":  {
+                  "vitest_failed":  0,
+                  "playwright":  {
+                                     "startTime":  "2026-10-30T22:06:46.700Z",
+                                     "duration":  33284.664,
+                                     "expected":  14,
+                                     "skipped":  0,
+                                     "unexpected":  0,
+                                     "flaky":  0
+                                 },
+                  "vitest_tests":  48,
+                  "vitest_passed":  48
+              },
+    "executed_checks":  [
+                            {
+                                "exit_code":  0,
+                                "command":  "pnpm install --frozen-lockfile"
+                            },
+                            {
+                                "command":  "pnpm typecheck",
+                                "actual":  "node node_modules/typescript/bin/tsc --noEmit",
+                                "exit_code":  0
+                            },
+                            {
+                                "command":  "pnpm lint",
+                                "actual":  "node node_modules/eslint/bin/eslint.js .",
+                                "exit_code":  0
+                            },
+                            {
+                                "command":  "pnpm test",
+                                "actual":  "node node_modules/vitest/vitest.mjs run --reporter=json --outputFile=.tools/final-vitest.json",
+                                "exit_code":  0
+                            },
+                            {
+                                "command":  "pnpm test:e2e",
+                                "actual":  "node node_modules/@playwright/test/cli.js test --reporter=json",
+                                "exit_code":  0
+                            },
+                            {
+                                "command":  "pnpm build",
+                                "actual":  "node node_modules/next/dist/bin/next build",
+                                "exit_code":  0
+                            },
+                            {
+                                "exit_code":  0,
+                                "command":  "python -m pip check"
+                            }
+                        ],
+    "limitations":  [
+                        "No git repository or git executable in supplied copy",
+                        "Remote CI and other platforms not executed",
+                        "Experimental structural engine is not integrated into UI"
+                    ]
+}

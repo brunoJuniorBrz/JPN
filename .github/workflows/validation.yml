@@ -1,0 +1,39 @@
+name: Validate JPN calculations
+on: [push, pull_request]
+
+jobs:
+  structural:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r engine/requirements-validation.lock
+      - run: python -m pip install --no-build-isolation --no-deps -e ./engine
+      - run: python -m pip check
+      - run: python engine/validate.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: structural-validation-${{ matrix.os }}
+          path: engine/validation-results/
+
+  application:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npx --yes pnpm@12.15.0 install --frozen-lockfile
+      - run: npx --yes pnpm@12.15.0 typecheck
+      - run: npx --yes pnpm@12.15.0 lint
+      - run: npx --yes pnpm@12.15.0 test
+      - run: npx --yes pnpm@12.15.0 exec playwright install --with-deps chromium
+      - run: npx --yes pnpm@12.15.0 test:e2e
+      - run: npx --yes pnpm@12.15.0 build
