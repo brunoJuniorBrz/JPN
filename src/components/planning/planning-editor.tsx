@@ -44,6 +44,12 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
   return <><Link href="/projetos" className="back-link"><ArrowLeft size={18} />Todos os projetos</Link><PageHeading eyebrow="DA MEDIDA À LISTA DE MATERIAIS" title={project.name || "Vamos começar sua obra"} description="Informe a obra, configure a geometria e veja as peças e os quantitativos." />
     {project.isExample && <p className="example-banner">EXEMPLO FICTÍCIO · Medidas, distribuição e perfis apenas para demonstrar o cálculo geométrico.</p>}
     <section className="panel workflow-panel"><nav className="workflow-steps planning-steps" aria-label="Etapas do levantamento">{steps.map((label, i) => <button key={label} type="button" className={step === i ? "current" : ""} aria-current={step === i ? "step" : undefined} onClick={() => go(i)}><span>{i + 1}</span>{label}</button>)}</nav><p className="workflow-progress">Passo {step + 1} de 4 — {steps[step]}</p>
+      <div className="viewer-shortcut"><button type="button" className="button secondary" onClick={() => {
+        if (preview.model) { go(3, true); return; }
+        setMessage(preview.pending[0] ?? "Complete as medidas e a estrutura para visualizar o modelo 3D.");
+        const roof = project.roof;
+        go(roof.widthM === null || roof.lengthM === null || roof.lowHeightM === null || roof.slopePercent === null ? 1 : 2);
+      }}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button><span className="field-hint">{preview.model ? "Visualização 3D da estrutura disponível também no celular." : `Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span></div>
       <div className="workflow-content">
         {step === 0 && <GeneralForm project={project} onChange={update} errors={submitted || initial ? errors : {}} />}
         {step === 1 && (project.category === "Cobertura metálica" ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>)}
