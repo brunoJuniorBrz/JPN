@@ -77,3 +77,33 @@ test("cadastro geométrico incompleto avisa e persiste dimensões sem inferir pr
   expect(stored.visualSection).toEqual({ family: "angle", legXmm: 100, legYmm: 80, rollDeg: 90 });
   expect(stored.massKgM).toBe(planningExample().planning!.profiles.column.massKgM);
 });
+
+for (const width of [375, 1440]) test(`exemplo antigo abre demonstração sólida sem modificar o projeto em ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 950 });
+  const project = planningExample();
+  await page.addInitScript(snapshot => localStorage.setItem("jpn-projetos:v1", JSON.stringify(snapshot)), { ...emptySnapshot(), exampleInstalled: true, projects: [project] });
+  await page.goto(`/projetos/${project.id}?fluxo=levantamento&etapa=3`);
+  await expect(page.getByTestId("takeoff-totals")).toBeVisible();
+  const original = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
+  const totals = await page.getByTestId("takeoff-totals").innerText();
+  await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+  await page.getByRole("button", { name: "Perfis 3D", exact: true }).click();
+  await expect(page.getByTestId("profile-coverage")).toContainText("0 peças com seção 3D · 123 em linha");
+  await page.getByRole("button", { name: "Ver demonstração com perfis" }).click();
+  const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
+  await expect(canvas).toHaveAttribute("data-solid-count", "123"); await expect(canvas).toHaveAttribute("data-fallback-count", "0");
+  await expect(page.getByTestId("profile-demo-notice")).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "P1" })).toContainText("I 240 × 160");
+  await page.getByRole("button", { name: "Focar peça selecionada" }).click();
+  await canvas.screenshot({ path: `test-results/demo-profile-focus-${width}.png` });
+  expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(original);
+  expect(await page.getByTestId("takeoff-totals").innerText()).toBe(totals);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole("button", { name: "Voltar ao meu projeto" }).click();
+  await expect(canvas).toHaveAttribute("data-solid-count", "0");
+  await page.getByLabel("Selecionar peça no desenho").selectOption("P9");
+  await page.getByRole("button", { name: "Cadastrar dimensões", exact: true }).click();
+  const fields = page.locator("details.technical-details").filter({ has: page.getByLabel("Família geométrica 3D") }).first();
+  await expect(fields.getByLabel("Família geométrica 3D")).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(original);
+});

@@ -8,6 +8,10 @@ Em **Estrutura**, abra uma categoria de peças e **Geometria da seção para vis
 
 O modo Estrutural preserva os eixos originais. Perfis 3D mostra sólidos e mantém em linha as peças sem geometria válida. Misto sobrepõe os eixos aos sólidos. O resumo informa a cobertura dos dados; a seleção detalha a pendência de cada peça. Clique/toque ou use a lista acessível. O destaque segue o ID original, incluindo as instâncias.
 
+Se aparecer **0 peças com seção 3D**, a versão está ativa, mas o projeto ainda não tem dimensões estruturadas. O aviso agora oferece **Cadastrar dimensões**, que abre a categoria selecionada já com os campos geométricos expandidos, e **Ver demonstração com perfis**, que troca somente o modelo exibido no visualizador. Essa demonstração contém 123 peças com seções completas de teste, não grava dimensões no projeto e não muda seus quantitativos. **Voltar ao meu projeto** restaura a visualização original.
+
+**Focar peça selecionada** aproxima a câmera da peça em suas dimensões reais; **Isométrica · ajustar 3D** volta ao conjunto. A demonstração inicia com um pilar I focado para deixar a seção visível, pois a escala de uma cobertura de 20 m torna perfis de poucos centímetros pequenos na vista geral. O foco é mantido ao redimensionar o visualizador.
+
 ## Contrato e famílias
 
 `ProfileSpec.visualSection` é opcional e discriminado por `family`. Dimensões incompletas são `null`, permitindo salvar rascunhos. Valores negativos, nulos geometricamente impossíveis, não finitos e campos de famílias diferentes não produzem sólidos. O texto livre não é interpretado como dimensão. Nenhuma medida é obtida de massa ou área.
@@ -65,11 +69,13 @@ O arquivo é uma galeria de referência, não um backup importável de projeto. 
 
 - `src/domain/profile-section.ts`: contrato, validação, dimensões conhecidas, avisos e convenção de orientação.
 - `src/domain/structure.ts`: inclusão opcional do contrato no perfil compartilhado.
+- `src/domain/profiles-3d-demo.ts`: modelo de demonstração separado, sem gravação no projeto.
 - `src/components/planning/profile-section-fields.tsx` e `profile-fields.tsx`: cadastro por família.
 - `src/components/planning/profile-geometry.ts`: contornos, vazios, extrusão e transformação local.
 - `src/components/planning/profile-scene.ts`: cache, instâncias, cores, modos, seleção e descarte.
 - `src/components/planning/structure-3d.tsx`: integração, luzes, qualidade, preferência e controles.
 - `src/components/planning/structure-preview.tsx`: informações da peça selecionada.
+- `src/components/planning/planning-editor.tsx`, `takeoff-summary.tsx` e `structure-form.tsx`: acesso direto ao cadastro da categoria escolhida.
 - `src/components/planning/profile-geometry.test.ts` e `tests/e2e/profiles-3d.spec.ts`: referências geométricas e jornadas.
 - `examples/perfis-3d.*`, `examples/generate-profile-gallery.mjs`, este guia e README: demonstração e entrega.
 
@@ -77,10 +83,10 @@ Motor Python, gerador paramétrico, fórmulas de quantitativos/corte/orçamento 
 
 ## Verificações desta entrega
 
-Todos aprovados, sem falhas ou testes ignorados: **102 Vitest + 24 Playwright + 1.186 Python = 1.312 testes**. TypeScript `--noEmit`, ESLint e build Next.js de produção aprovados. Python inclui nova execução das 1.000 comparações com PyNite. DXF reaberto em ezdxf 1.4.5: 130 linhas 3D em mm, sem erros de auditoria; a suíte JS também usa dxf-parser.
+Todos aprovados, sem falhas ou testes ignorados: **102 Vitest + 26 Playwright + 1.186 Python = 1.314 testes**. TypeScript `--noEmit`, ESLint e build Next.js de produção aprovados. Python inclui nova execução das 1.000 comparações com PyNite. DXF reaberto em ezdxf 1.4.5: 130 linhas 3D em mm, sem erros de auditoria; a suíte JS também usa dxf-parser.
 
 Os 23 testes unitários adicionais verificam as seis seções, caixas externas, volumes contra áreas analíticas independentes, espessuras e vazios com raios, abertura U/C, extremos, barras verticais/inclinadas/antiparalelas, giro, dados inválidos/incompletos, instâncias/IDs, raycast real de sólido, modos, descarte idempotente, 3.000 elementos e compatibilidade com projetos antigos. A comparação do modelo confirma coordenadas, comprimentos, massa, corte e entradas do solver preservados com os metadados visuais.
 
-As três jornadas adicionais cobrem modos, seleção por lista e clique/toque, recarga da preferência sem mutação do projeto, cadastro incompleto/completo e persistência. Desktop em 1.440 px e celular emulado de 375 px com toque e escala 2. As 21 jornadas anteriores preservam documentos, análise, orçamento, revisão, fallback sem WebGL e demais larguras. Galeria SVG e capturas 3D foram inspecionadas. Não houve teste em aparelho físico, benchmark de FPS ou implantação pública nesta etapa.
+As cinco jornadas adicionais cobrem modos, seleção por lista e clique/toque, recarga da preferência sem mutação do projeto, cadastro incompleto/completo e persistência; incluem a entrada na demonstração a partir do exemplo antigo sem dimensões, foco e retorno ao cadastro correto. Desktop em 1.440 px e celular emulado de 375 px com toque e escala 2. As 21 jornadas anteriores preservam documentos, análise, orçamento, revisão, fallback sem WebGL e demais larguras. Galeria SVG e capturas 3D foram inspecionadas. Não houve teste em aparelho físico ou benchmark de FPS. Evidências da correção de acesso em `docs/validation/2026-10-30-profiles-demo/`.
 
 Referências de API: [ExtrudeGeometry](https://threejs.org/docs/pages/ExtrudeGeometry.html) e [InstancedMesh](https://threejs.org/docs/pages/InstancedMesh.html), conferidas junto dos fontes instalados da versão utilizada. Evidências e resultados desta execução em `docs/validation/2026-10-30-profiles-3d/`.

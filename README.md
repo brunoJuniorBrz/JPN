@@ -6,6 +6,8 @@ Sistema local de projetos e levantamento geométrico de materiais de estruturas 
 
 O visualizador agora oferece **Estrutural / Perfis 3D / Misto**, com tubos retangulares, quadrados e circulares, I/H, U/C e L nas dimensões cadastradas. Informe os campos opcionais em **Estrutura → Geometria da seção para visualização 3D**. Dados ausentes ou incompatíveis mantêm linhas com aviso. [Guia, arquivos, orientação, desempenho e limites](docs/PERFIS-3D.md) · [Galeria visual verificável](examples/perfis-3d.svg).
 
+Projetos antigos podem mostrar **0 peças com seção 3D** porque os perfis eram apenas texto. Nesse aviso, use **Ver demonstração com perfis** para ver 123 sólidos sem alterar o projeto, ou **Cadastrar dimensões** para abrir diretamente os campos da categoria escolhida. **Focar peça selecionada** aproxima o perfil, mantendo suas medidas reais.
+
 Disponíveis: uma ou duas águas simétricas, prolongamentos longitudinais das terças, vistas 2D/3D com seleção e fallback sem WebGL2, perfis com propriedades/fonte/data, simulação de aproveitamento FFD, quantitativos vinculados ao orçamento, revisões preliminares, DXF 3D em mm, SVG e PDF/XLSX. A análise experimental chama o motor Python real apenas para **uma tesoura isolada articulada**, com cargas e apoios explícitos; não representa a cobertura inteira nem aprova perfis.
 
 Abra **Abrir exemplo completo de pré-projeto** na página inicial. O exemplo é inteiramente fictício e demonstra geometria → peças → simulação → análise de teste → orçamento → documentos. Também pode ser importado pelo [backup de demonstração](examples/preprojeto-duas-aguas.json).
@@ -16,7 +18,7 @@ O aplicativo usa snapshots **v4**, migrando v1/v2/v3 sem regravar na leitura ou 
 
 Para desenvolvimento completo, preparar Python 3.12 conforme o guia antes de `pnpm test`; os testes JS incluem chamadas reais ao solver. Em Vercel, configurar o serviço remoto para habilitar análise; as outras funções permanecem disponíveis sem ele. Não houve implantação pública nesta execução.
 
-Validação após os perfis 3D: **1.186 testes Python + 102 Vitest + 24 Playwright aprovados (1.312 no total)**, sem falhas ou testes ignorados; typecheck, lint e build aprovados. Inclui 1.000 comparações com PyNite, 300 problemas de aproveitamento com semente fixa, processos/HTTP reais e jornadas em 320/375/768/1440 px, com toque em celular emulado. O DXF foi reaberto e auditado por leitores independentes. Evidências desta etapa: [resumo verificável](docs/validation/2026-10-30-profiles-3d/summary.json). O histórico anterior permanece em `docs/validation/2026-10-30-platform/`.
+Validação após os perfis 3D e o acesso à demonstração: **1.186 testes Python + 102 Vitest + 26 Playwright aprovados (1.314 no total)**, sem falhas ou testes ignorados; typecheck, lint e build aprovados. Inclui 1.000 comparações com PyNite, 300 problemas de aproveitamento com semente fixa, processos/HTTP reais e jornadas em 320/375/768/1440 px, com toque em celular emulado. O DXF foi reaberto e auditado por leitores independentes. Evidências desta etapa: [resumo verificável](docs/validation/2026-10-30-profiles-demo/summary.json). O histórico anterior permanece em `docs/validation/2026-10-30-platform/` e `docs/validation/2026-10-30-profiles-3d/`.
 
 ## Levantamento de peças
 

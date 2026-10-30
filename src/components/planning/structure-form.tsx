@@ -1,12 +1,12 @@
 "use client";
 import type { Project } from "@/domain/models";
-import { emptyPlanning, roles, roleLabels, type Planning } from "@/domain/structure";
+import { emptyPlanning, roles, roleLabels, type Planning, type PieceRole } from "@/domain/structure";
 import { useData } from "@/components/data-provider";
 import { Field, Select, Textarea } from "@/components/ui";
 import { NumberField } from "@/components/number-field";
 import { ProfileFields } from "./profile-fields";
 
-export function StructureForm({ project, onChange }: { project: Project; onChange: (patch: Partial<Project>) => void }) {
+export function StructureForm({ project, onChange, profileToEdit }: { project: Project; onChange: (patch: Partial<Project>) => void; profileToEdit?: PieceRole }) {
   const config = project.planning ?? emptyPlanning(); const { data } = useData();
   const update = (patch: Partial<Planning>) => onChange({ planning: { ...config, ...patch } });
   return <section><h2>Como distribuir a estrutura?</h2><p className="muted">O sistema gera as linhas, os nós e as peças a partir destas medidas. Os espaçamentos são limites geométricos informados, ainda sem verificação de resistência.</p>
@@ -20,9 +20,9 @@ export function StructureForm({ project, onChange }: { project: Project; onChang
       <NumberField label="Número de painéis por tesoura" value={config.panels} min={1} max={40} decimals={0} onChange={panels => update({ panels })} hint="Divisões iguais ao longo do vão horizontal." />
     </div>
     <h3>Perfis usados no levantamento</h3><p className="muted">Você pode gerar as peças antes de definir os perfis. A massa é calculada quando houver kg/m. A seleção automática por resistência será incorporada ao motor de dimensionamento.</p>
-    {roles.map(role => <details className="technical-details" key={role}><summary>{roleLabels[role]} · {config.profiles[role].name || "Perfil a definir"}</summary>
+    {roles.map(role => <details className="technical-details" key={role} open={profileToEdit === role || undefined}><summary>{roleLabels[role]} · {config.profiles[role].name || "Perfil a definir"}</summary>
       <Field label={`Copiar perfil do catálogo para ${roleLabels[role].toLowerCase()}`}><Select value="" onChange={e => { const profile = data.materials.find(m => m.id === e.target.value)?.technicalProfile; if (profile) update({ profiles: { ...config.profiles, [role]: { ...profile } } }); }}><option value="">Escolher um perfil cadastrado</option>{data.materials.filter(m => m.technicalProfile).map(m => <option key={m.id} value={m.id}>{m.name}</option>)}</Select></Field>
-      <ProfileFields value={config.profiles[role]} onChange={profile => update({ profiles: { ...config.profiles, [role]: profile } })} />
+      <ProfileFields value={config.profiles[role]} expandGeometry={profileToEdit === role} onChange={profile => update({ profiles: { ...config.profiles, [role]: profile } })} />
     </details>)}
     <Field label="Hipóteses e observações do levantamento"><Textarea value={config.specificationNotes} maxLength={3000} onChange={e => update({ specificationNotes: e.target.value })} /></Field>
   </section>;

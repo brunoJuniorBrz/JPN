@@ -4,11 +4,11 @@ import { Field, Select } from "@/components/ui";
 import { familyLabels, resolveSection, sectionDimensions, visualSectionSchema, type VisualSection } from "@/domain/profile-section";
 import { sectionDataSchema, type ProfileSpec } from "@/domain/structure";
 
-export function ProfileSectionFields({ value, onChange }: { value: ProfileSpec; onChange: (value: ProfileSpec) => void }) {
+export function ProfileSectionFields({ value, onChange, expanded = false }: { value: ProfileSpec; onChange: (value: ProfileSpec) => void; expanded?: boolean }) {
   const v = value.visualSection, data = value.data ?? sectionDataSchema.parse({});
   const change = (patch: Record<string, unknown>) => onChange({ ...value, visualSection: visualSectionSchema.parse({ ...v, ...patch }) });
   const resolution = resolveSection(value);
-  return <details className="technical-details"><summary>Geometria da seção para visualização 3D</summary>
+  return <details className="technical-details" open={expanded || undefined}><summary>Geometria da seção para visualização 3D</summary>
     <Field label="Família geométrica 3D"><Select value={v?.family ?? ""} onChange={e => {
       if (!e.target.value) { const { visualSection: _visual, ...rest } = value; void _visual; onChange(rest); return; }
       const family = e.target.value as VisualSection["family"];

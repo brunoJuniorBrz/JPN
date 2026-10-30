@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-30",
+  "scope": "Make complete 3D profiles discoverable from legacy projects",
+  "tests": {
+    "python": 1186,
+    "vitest": 102,
+    "playwright": 26,
+    "total": 1314,
+    "failed": 0,
+    "skipped": 0
+  },
+  "checks": {
+    "typecheck_exit": 0,
+    "eslint_exit": 0,
+    "production_build_exit": 0,
+    "ezdxf_lines_3d": 130,
+    "ezdxf_audit_errors": 0
+  },
+  "regression": {
+    "unchanged_engine_calculation_export_files": 38,
+    "pynite_comparisons": 1000
+  },
+  "legacy_case": {
+    "initial_solid_count": 0,
+    "initial_line_count": 123,
+    "demo_solid_count": 123,
+    "demo_fallback_count": 0,
+    "project_storage_unchanged": true,
+    "original_totals_unchanged": true,
+    "returns_to_original_model": true,
+    "opens_selected_profile_geometry_fields": true
+  },
+  "visual_review": {
+    "desktop": "test-results/demo-profile-focus-1440.png",
+    "mobile_width": "test-results/demo-profile-focus-375.png",
+    "reviewed": true
+  },
+  "limits": [
+    "Demo dimensions are synthetic and never copied to projects automatically",
+    "Actual project solids still require declared dimensions",
+    "No resistance checks or fabrication release",
+    "No physical mobile or FPS benchmark"
+  ]
+}
