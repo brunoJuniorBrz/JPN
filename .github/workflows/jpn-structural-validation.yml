@@ -1,0 +1,30 @@
+name: JPN experimental truss and PyNite comparison
+
+on:
+  push:
+    branches:
+      - experimento/motor-estrutural-2d
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    name: Independent truss tests and PyNiteFEA 3.2.1 comparison
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: engine/requirements-crosscheck.txt
+      - name: Install numerical solvers
+        run: python -m pip install --disable-pip-version-check -r engine/requirements-crosscheck.txt
+      - name: Confirm versions
+        run: |
+          python -c "import importlib.metadata as m; print({p:m.version(p) for p in ['PyNiteFEA','numpy','scipy']})"
+      - name: Run independent and cross-solver tests
+        run: python -m unittest discover -s engine/tests -v
