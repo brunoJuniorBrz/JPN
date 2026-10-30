@@ -382,6 +382,11 @@ body { font-size: 16px; }
 .project-workbench > h3, .project-workbench > p, .project-workbench > .button { margin-bottom: 16px; }
 .project-workbench h4 { margin: 22px 0 12px; }
 .project-workbench .project-mode { margin-top: 24px; }
+.viewer-shortcut { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; background: #f7f9f4; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.viewer-shortcut .button { min-height: 48px; }
+.viewer-shortcut .field-hint { flex: 1 1 210px; }
+#jpn-viewer { scroll-margin-top: 24px; }
+@media (max-width: 600px) { .viewer-shortcut .button { width: 100%; } }
 .structure-3d { width: 100%; min-height: 350px; overflow: hidden; border: 1px solid var(--line); margin: 16px 0; }
 .structure-3d canvas { display: block; max-width: 100%; touch-action: none; }
 .hash-label { font-size: 12px; overflow-wrap: anywhere; margin: 12px 0; }
