@@ -1,6 +1,7 @@
 import { mixedReferenceProject } from "./mixed-project";
 import { pieceRoles } from "../spatial-preparation";
 import { generateStructure } from "../calculations/structure";
+import { selfWeightOverlapReviewBasis } from "../structural-loading";
 export function loadedMixedReferenceProject(){
   const p=mixedReferenceProject(),d=p.workspace.spatialPreparation!;
   p.name="EXEMPLO SINTÉTICO — PESO E CARGAS UNIFORMES";
@@ -10,5 +11,6 @@ export function loadedMixedReferenceProject(){
   d.cases[0].source+="; mais carga uniforme sintética -0,1 kN/m em Z na terça declarada";
   d.loading={version:1,selfWeight:{caseId:"PP-DEMO",gravity:[0,0,-10],axialLumping:"half-to-end-nodes"},uniform:[{id:"Q-DEMO",pieceId:piece.id,caseId:"TESTE",coordinates:"global",knM:[0,0,-.1],source:"Carga uniforme sintética, sem ação normativa presumida",revision:"M17-R1"}],roofArea:[]};
   d.combinations=[{id:"TOTAL",factors:{TESTE:1,INVERSO:0,"PP-DEMO":1}},{id:"PESO",factors:{TESTE:0,INVERSO:0,"PP-DEMO":1}},{id:"INVERSO-TOTAL",factors:{TESTE:-1,INVERSO:0,"PP-DEMO":-1}}];
+  d.loading.overlapReview={confirmed:true,source:"Hipóteses sintéticas independentes: força concentrada e UDL não incluem o peso de barras sintético",revision:"M17-R1",basis:selfWeightOverlapReviewBasis(d,d.loading)};
   return p;
 }
