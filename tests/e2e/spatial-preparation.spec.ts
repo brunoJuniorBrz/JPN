@@ -23,6 +23,8 @@ for (const viewport of [375, 1440]) test(`preparação física é editável, per
   await page.getByRole("button", { name: /Aplicar hipótese escolhida às/ }).click();
   await expect(page.getByLabel(/ · UX/)).toHaveValue("fixed");
   await expect(page.getByLabel(/ · RX/)).toHaveValue("free");
+  await page.getByLabel("Ligação da extremidade inicial").selectOption("rigid");
+  await page.getByLabel("Ligação da extremidade final").selectOption("pinned");
   await page.getByLabel("Revisão de ligações e justificativa").fill("Somente hipótese declarada; revisar juntas e contraventamentos");
   await page.getByRole("button", { name: "3. Cargas e combinações" }).click();
   await page.getByLabel("Fonte e hipótese de CASO-1").fill("Força nodal de exemplo, não projeto");
@@ -40,10 +42,12 @@ for (const viewport of [375, 1440]) test(`preparação física é editável, per
   const stored = await page.evaluate(() => {
     const snapshot = JSON.parse(localStorage.getItem("jpn-projetos:v1")!);
     const d = snapshot.projects.at(-1).workspace.spatialPreparation;
-    return { grade: d.groups.column.steelGrade, bases: d.supports.length, fz: d.loads[0].fzKn, factor: d.combinations[0].factors["CASO-1"], steel: d.groups.column.eGpa };
+    return { grade: d.groups.column.steelGrade, bases: d.supports.length, fz: d.loads[0].fzKn, factor: d.combinations[0].factors["CASO-1"], steel: d.groups.column.eGpa, connections: d.memberConnections };
   });
   expect(stored.grade).toBe("Declarado para estudo"); expect(stored.bases).toBeGreaterThan(0);
   expect(stored.fz).toBe(-12); expect(stored.factor).toBe(1);
+  expect(stored.connections).toHaveLength(1);
+  expect(stored.connections[0]).toMatchObject({ start: "rigid", end: "pinned" });
   await page.reload();
   await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
   await expect(page.getByLabel("Elasticidade E (GPa)")).toHaveValue("200");
