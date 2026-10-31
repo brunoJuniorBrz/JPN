@@ -64,19 +64,19 @@ test("sincroniza linhas vinculadas ao levantamento ao editar geometria, sem alte
   await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
   await expect(page.getByTestId("takeoff-totals")).toBeVisible();
   await page.getByRole("button", { name: "Atualizar quantitativos no orçamento" }).click();
+  await expect.poll(async () => page.evaluate(() => { const data = JSON.parse(localStorage.getItem("jpn-projetos:v1")!); return data.projects.at(-1).estimate.materials.filter((line: { source: string }) => line.source === "takeoff").length; })).toBe(5);
   const before = await page.evaluate(() => {
     const data = JSON.parse(localStorage.getItem("jpn-projetos:v1")!);
     const project = data.projects.at(-1);
-    return project.estimate.materials.filter((line: { source: string }) => line.source === "takeoff").find((line: { quantityOrigin: { role: string } }) => line.quantityOrigin.role === "purlin").manualQuantity;
+    return project.estimate.materials.filter((line: { source: string }) => line.source === "takeoff").find((line: { quantityOrigin: { role: string } }) => line.quantityOrigin.role === "column").manualQuantity;
   });
   await page.getByRole("button", { name: "Editar distribuição e espaçamentos" }).click();
   await page.getByLabel("Espaçamento máximo entre tesouras (m)").fill("2");
-  await page.getByRole("button", { name: "Salvar levantamento" }).count(); // keep UI responsive
   await page.getByRole("button", { name: "Abrir modelo 3D" }).click();
   await expect(page.getByTestId("takeoff-totals")).toBeVisible();
   await expect.poll(async () => page.evaluate(() => {
     const data = JSON.parse(localStorage.getItem("jpn-projetos:v1")!);
     const project = data.projects.at(-1);
-    return project.estimate.materials.filter((line: { source: string }) => line.source === "takeoff").find((line: { quantityOrigin: { role: string } }) => line.quantityOrigin.role === "purlin").manualQuantity;
+    return project.estimate.materials.filter((line: { source: string }) => line.source === "takeoff").find((line: { quantityOrigin: { role: string } }) => line.quantityOrigin.role === "column").manualQuantity;
   })).not.toBe(before);
 });
