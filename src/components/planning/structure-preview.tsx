@@ -17,7 +17,7 @@ export function StructurePreview({ project, result, onConfigureProfile, startIn3
   const [view, setView] = useState<ViewName>("plan"), [detail, setDetail] = useState(false), [selected, setSelected] = useState("");
   const [three, setThree] = useState(startIn3D), [dimensions, setDimensions] = useState(true);
   const [demo, setDemo] = useState(false);
-  const activeModel = useMemo(() => demo && three ? profiles3DDemo() : result.model, [demo, three, result.model]);
+  const activeModel = useMemo(() => demo && three ? profiles3DDemo(project) : result.model, [demo, three, project, result.model]);
   const model = useMemo(() => structureViews(project, result, detail), [project, result, detail]);
   if (!model || !result.model) return null;
   const selectedPiece = activeModel!.pieces.find(p => p.id === selected);
