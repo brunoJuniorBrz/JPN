@@ -3,6 +3,7 @@ import { z } from "zod";
 // Traceable physical properties are independent of synthetic 3D display geometry.
 const positive = z.number().finite().positive().max(1e12).nullable();
 const meaningful = z.string().max(1000);
+export const connectionChoices = ["pending", "rigid", "pinned", "axial"] as const;
 export const physicalGroupSchema = z.object({
   steelGrade: meaningful, materialSource: meaningful, materialRevision: meaningful,
   eGpa: positive, gGpa: positive, nu: z.number().finite().min(-.99).max(.499).nullable(),
