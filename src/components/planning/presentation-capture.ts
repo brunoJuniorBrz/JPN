@@ -7,7 +7,7 @@ export interface PresentationDimensions {
   highHeightM: number;
 }
 export function presentationDimensions(e: PresentationEnvelope): PresentationDimensions {
-  return { spanM: e.widthM, lengthM: e.lengthM, lowHeightM: e.lowHeightM, highHeightM: e.highHeightM };
+  return { spanM: e.acrossWidth ? e.widthM : e.lengthM, lengthM: e.acrossWidth ? e.lengthM : e.widthM, lowHeightM: e.lowHeightM, highHeightM: e.highHeightM };
 }
 export function dimensionLabels(d: PresentationDimensions) {
   const f = (v: number) => new Intl.NumberFormat("pt-BR", {maximumFractionDigits:2}).format(v);
