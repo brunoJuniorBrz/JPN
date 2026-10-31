@@ -73,6 +73,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       controls.target.copy(fitIsometricCamera(camera, framingBounds));controls.update();render();
     };
     changeMode.current = value => {
+      const previousMode = activeMode;
       activeMode = value;
       profiles.setMode(value === "finished" ? "profiles" : value);
       grid.visible = value !== "finished";
@@ -88,7 +89,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
           fitFull();
         }).catch(()=>{if(!disposed)setPictureError("O ambiente 3D não pôde ser carregado. Retorne aos Perfis 3D.");});
       }
-      if(value === "finished") fitFull(); else render();
+      if(value === "finished" || previousMode === "finished") { fitFull(); resize(); } else render();
     };
     applyOptions.current = options => { environment?.update(options);render(); };
     capture.current = () => {
