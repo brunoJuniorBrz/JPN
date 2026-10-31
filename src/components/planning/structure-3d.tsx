@@ -60,7 +60,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     sun.shadow.camera.near=1;sun.shadow.camera.far=span*4+20;sun.shadow.camera.updateProjectionMatrix();
     const grid = new THREE.GridHelper(gridStep * 20, 20, 0xaab6a0, 0xdce2d5); grid.position.set(center.x, 0, center.z); scene.add(grid);
     resources.push(grid.geometry, ...(Array.isArray(grid.material) ? grid.material : [grid.material]));
-    const render = () => { renderer.render(scene,camera); canvas.dataset.drawCalls = String(renderer.info.render.calls); canvas.dataset.triangles = String(renderer.info.render.triangles); };
+    const render = () => { renderer.render(scene,camera); canvas.dataset.drawCalls = String(renderer.info.render.calls); canvas.dataset.triangles = String(renderer.info.render.triangles); if (environment) { const sources = environment.status(); canvas.dataset.carSource = sources.carSource; canvas.dataset.personSource = sources.personSource; } };
     let framingBounds = bounds, activeMode: ViewerMode | "finished" = "profiles", disposed = false;
     type PresentationHandle = ReturnType<typeof import("./presentation-scene")["createPresentationScene"]>;
     let environment: PresentationHandle | null = null;
