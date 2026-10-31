@@ -49,7 +49,7 @@ test("remove exemplos antigos do navegador, preservando projetos reais e cópias
   expect(stored.projects.some((p: { id: string }) => p.id === EXAMPLE_ID || p.id === PLANNING_EXAMPLE_ID || p.id === PREPROJECT_EXAMPLE_ID)).toBe(false);
   expect(stored.projects.some((p: { id: string }) => p.id === real.id)).toBe(true);
   expect(stored.projects.some((p: { id: string }) => p.id === duplicate.id)).toBe(true);
-  expect(stored.materials).toHaveLength(0);
+  expect(stored.materials).toHaveLength(3); // Materiais referenciados por cópia preservada.
   await page.reload();
   const after = await page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!));
   expect(after.projects).toHaveLength(2);
