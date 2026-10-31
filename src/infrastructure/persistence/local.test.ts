@@ -109,7 +109,7 @@ describe("Backups", () => {
     for (const m of exampleMaterials()) repo.materials.save(m);
     repo.retireLegacyExamples();
     expect(repo.projects.list().map(p => p.id)).toEqual([real.id, customCopy.id]);
-    expect(repo.materials.list()).toHaveLength(0);
+    expect(repo.materials.list()).toHaveLength(3); // Mantidos por cópia editada ainda vinculada.
     expect(repo.snapshot().exampleInstalled).toBe(true);
     const revision = repo.snapshot().revision;
     repo.retireLegacyExamples();
