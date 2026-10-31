@@ -8,6 +8,11 @@ import { resistanceDiagnostics } from "./resistance-preparation";
 import { verifyLoadingTrace, selfWeightOverlapReviewBasis } from "./structural-loading";
 import { parseBackup,serializeBackup } from "@/infrastructure/persistence/local";
 import { emptySnapshot } from "./models";
+import { createQuickProject } from "./quick-project";
+import { generateStructure } from "./calculations/structure";
+import { structureSignature } from "./calculations/project-basis";
+import { baseNodeIds, newSpatialPreparation, pieceRoles } from "./spatial-preparation";
+import { inspectConnectivity } from "./spatial-connectivity";
 afterEach(()=>vi.unstubAllEnvs());
 it("prepara carga física sem mutação, conserva peso/segmentos e persiste backup compatível",async()=>{
   const p=loadedMixedReferenceProject(),before=JSON.stringify(p),a=await adaptLoadedMixedProject(p);
@@ -59,3 +64,46 @@ it("não exige revisão de duplicidade quando combinações isolam peso de carga
   d.combinations=[{id:"APENAS-PESO",factors:{TESTE:0,INVERSO:0,"PP-DEMO":1}}];
   await expect(adaptLoadedMixedProject(p)).resolves.toHaveProperty("request.schema_version","jpn.mixed3d/2");
 });
+
+it("cobertura criada pelo gerador comum admite peso/carga após declarações reais explícitas, sem abrir fixture",async()=>{
+  const p=createQuickProject({typology:"gable",widthM:10,lengthM:20,heightM:4});
+  await expect(adaptLoadedMixedProject(p)).rejects.toThrow(/carregamentos físicos/);
+  const model=generateStructure(p).model!,nodes=new Map(model.nodes.map(n=>[n.id,n]));
+  const d=newSpatialPreparation(p);
+  for(const role of pieceRoles)d.groups[role]={
+    steelGrade:"Material ISOTRÓPICO SINTÉTICO PARA TESTE, não é aço certificado",
+    materialSource:"Declaração manual do teste de cobertura gerada",materialRevision:"T1",
+    eGpa:200,gGpa:200/2.6,nu:.3,areaCm2:100,iyCm4:8000,izCm4:8000,jCm4:16000,
+    sectionSource:"Seção física sintética do ensaio, não visual",sectionRevision:"T1",
+    rotationDeg:0,connection:"rigid",elementKind:"frame",
+    density:{kgM3:1000,source:"Densidade sintética declarada para teste",revision:"T1"}
+  };
+  const diagonals=model.pieces.filter(piece=>piece.role==="web"&&Math.abs(nodes.get(piece.start)!.x-nodes.get(piece.end)!.x)>1e-6);
+  d.memberKinds=diagonals.map(piece=>({pieceId:piece.id,kind:"axial"}));
+  d.memberConnections=diagonals.map(piece=>({pieceId:piece.id,start:"axial",end:"axial"}));
+  d.supports=baseNodeIds(model).map(nodeId=>({nodeId,dofs:["fixed","fixed","fixed","fixed","fixed","fixed"] as ["fixed","fixed","fixed","fixed","fixed","fixed"]}));
+  d.connectionsReview="Conexões sintéticas declaradas: encontros reais da malha unidos, diagonais axiais, demais peças pórtico.";
+  d.lateralSystem="Ensaio: pórticos rígidos com engastes sintéticos e diagonais axiais; sem homologação para obra.";
+  d.loadPathReview="Caso de teste sintético: peso próprio declarado e UDL em uma terça, sem carga normativa.";
+  d.connectivity={version:1,geometrySignature:structureSignature(p),reviewSource:d.connectionsReview,
+    junctions:inspectConnectivity(model).junctions.map(j=>({nodeId:j.nodeId,pieceIds:j.pieceIds,decision:"connect"}))};
+  d.cases=[{id:"PERMANENTE",source:"Peso próprio sintético declarado"},{id:"LINHA",source:"Uniforme sintética em uma terça"}];
+  d.loads=[];d.combinations=[
+    {id:"SO-PESO",factors:{PERMANENTE:1,LINHA:0}},
+    {id:"SO-LINHA",factors:{PERMANENTE:0,LINHA:1}}
+  ];
+  const purlin=model.pieces.find(piece=>piece.role==="purlin")!;
+  d.loading={version:1,selfWeight:{caseId:"PERMANENTE",gravity:[0,0,-10],axialLumping:"half-to-end-nodes"},
+    uniform:[{id:"Q-GERADA",pieceId:purlin.id,caseId:"LINHA",coordinates:"global",
+      knM:[0,0,-0.1],source:"Teste UDL sintético independente",revision:"T1"}],roofArea:[]};
+  p.workspace.spatialPreparation=d;
+  const prepared=await adaptLoadedMixedProject(p);
+  expect(prepared.request.members).toHaveLength(243);
+  expect(prepared.request.self_weight!.densities).toHaveLength(243);
+  expect(prepared.request.member_loads).toHaveLength(1);
+  vi.stubEnv("NODE_ENV","development");vi.stubEnv("JPN_LOCAL_MIXED_ENABLED","1");vi.stubEnv("JPN_LOCAL_MIXED_ORIGIN","http://127.0.0.1:3000");
+  const response=await runLocalMixed(JSON.stringify(prepared.request));
+  if(response.status!=="completed"||response.result.schema_version!=="jpn.mixed3d-result/2")throw new Error("Sem análise real");
+  for(const combo of Object.values(response.result.combinations))expect(combo.equilibrium.relative_residual).toBeLessThan(1e-8);
+  expect(response.result.loading.self_weight!.total_mass_kg).toBeGreaterThan(0);
+},30000);
