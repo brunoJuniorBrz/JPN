@@ -30,15 +30,15 @@ type SupportState = "pending" | "free" | "fixed";
 const supportChoices: { value: SupportState; label: string }[] = [
   { value: "pending", label: "Pendente" }, { value: "free", label: "Livre" }, { value: "fixed", label: "Restrito (zero)" },
 ];
-function SignedNumber({ label, value, onChange }: { label: string; value: number | null; onChange: (v: number | null) => void }) {
+function SignedNumber({ label, value, onChange, limit = 1e9 }: { label: string; value: number | null; onChange: (v: number | null) => void; limit?: number }) {
   const [entry, setEntry] = useState(value === null ? "" : String(value).replace(".", ","));
   const [focused, setFocused] = useState(false);
-  const valid = !entry || (/^-?\d+(?:[.,]\d+)?$/.test(entry) && Number.isFinite(Number(entry.replace(",", "."))) && Math.abs(Number(entry.replace(",", "."))) <= 1e9);
+  const valid = !entry || (/^-?\d+(?:[.,]\d+)?$/.test(entry) && Number.isFinite(Number(entry.replace(",", "."))) && Math.abs(Number(entry.replace(",", "."))) <= limit);
   return <Field label={label} error={!valid && focused ? "Informe um valor com sinal, ou zero." : undefined}><Input
     inputMode="decimal" value={focused ? entry : value === null ? "" : String(value).replace(".", ",")}
     onFocus={() => { setFocused(true); setEntry(value === null ? "" : String(value).replace(".", ",")); }}
     onBlur={() => setFocused(false)}
-    onChange={e => { const next = e.target.value; setEntry(next); onChange(/^-?\d+(?:[.,]\d+)?$/.test(next) && Number.isFinite(Number(next.replace(",", "."))) && Math.abs(Number(next.replace(",", "."))) <= 1e9 ? Number(next.replace(",", ".")) : null); }}
+    onChange={e => { const next = e.target.value; setEntry(next); onChange(/^-?\d+(?:[.,]\d+)?$/.test(next) && Number.isFinite(Number(next.replace(",", "."))) && Math.abs(Number(next.replace(",", "."))) <= limit ? Number(next.replace(",", ".")) : null); }}
   /></Field>;
 }
 function selectCaseName(cases: readonly { id: string }[], prefix: string) {
@@ -190,7 +190,7 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
       </details>)}
       <h4>Combinações</h4><p className="field-hint">Fatores devem ser informados pelo responsável técnico. Zero é explícito; vazio significa pendente.</p>
       {draft.combinations.map(combo => <details className="technical-details" key={combo.id} open={draft.combinations.length === 1 || undefined}><summary>{combo.id}</summary>
-        <div className="form-grid">{draft.cases.map(c => <SignedNumber key={combo.id + c.id} label={`Fator ${c.id} em ${combo.id}`} value={combo.factors[c.id] ?? null} onChange={value => change({ ...draft, combinations: draft.combinations.map(item => item.id === combo.id ? { ...item, factors: { ...item.factors, [c.id]: value } } : item) })}/>)}</div>
+        <div className="form-grid">{draft.cases.map(c => <SignedNumber key={combo.id + c.id} label={`Fator ${c.id} em ${combo.id}`} limit={100} value={combo.factors[c.id] ?? null} onChange={value => change({ ...draft, combinations: draft.combinations.map(item => item.id === combo.id ? { ...item, factors: { ...item.factors, [c.id]: value } } : item) })}/>)}</div>
         <button type="button" className="button secondary" disabled={draft.combinations.length <= 1} onClick={() => change({ ...draft, combinations: draft.combinations.filter(c => c.id !== combo.id) })}>Excluir combinação</button>
       </details>)}
       <button type="button" className="button secondary" disabled={draft.combinations.length >= 10} onClick={() => {
