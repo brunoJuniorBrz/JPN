@@ -21,6 +21,7 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
   const [step, setStep] = useState(initialStep), [submitted, setSubmitted] = useState(false), [message, setMessage] = useState("");
   const [profileToEdit, setProfileToEdit] = useState<PieceRole>();
   const [open3D, setOpen3D] = useState(initialOpen3D);
+  const [open3DRequest, setOpen3DRequest] = useState(0);
   const preview = useMemo(() => generateStructure(project), [project]);
   const parsed = projectSchema.safeParse(project);
   const errors = parsed.success ? {} : Object.fromEntries(parsed.error.issues.map(i => [i.path[0], i.message]));
@@ -38,7 +39,7 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
   function go(target: number, request3D = false) {
     setSubmitted(true); if (!parsed.success) { setStep(0); return; }
     if (!initial) { saveProject(parsed.data); if (flush()) { setInvalidDraft(false); router.replace(`/projetos/${project.id}?fluxo=levantamento&etapa=${target}${request3D ? "&vista=3d" : ""}`); } }
-    else { setStep(target); setOpen3D(request3D); setSubmitted(false); if (!request3D) window.scrollTo({ top: 0, behavior: "smooth" }); }
+    else { setStep(target); setOpen3D(request3D); if (request3D) setOpen3DRequest(n => n + 1); setSubmitted(false); if (!request3D) window.scrollTo({ top: 0, behavior: "smooth" }); }
   }
   function save() { if (!parsed.success) { setSubmitted(true); setStep(0); return; } saveProject(parsed.data); if (flush()) setMessage("Levantamento salvo neste navegador."); }
   return <><Link href="/projetos" className="back-link"><ArrowLeft size={18} />Todos os projetos</Link><PageHeading eyebrow="DA MEDIDA À LISTA DE MATERIAIS" title={project.name || "Vamos começar sua obra"} description="Informe a obra, configure a geometria e veja as peças e os quantitativos." />
@@ -54,7 +55,7 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
         {step === 0 && <GeneralForm project={project} onChange={update} errors={submitted || initial ? errors : {}} />}
         {step === 1 && (project.category === "Cobertura metálica" ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>)}
         {step === 2 && <StructureForm project={project} onChange={update} profileToEdit={profileToEdit} />}
-        {step === 3 && <><TakeoffSummary project={project} startIn3D={open3D} onConfigureProfile={role => { setProfileToEdit(role); go(2); }} /><ProjectWorkbench project={project} onChange={update} /></>}
+        {step === 3 && <><TakeoffSummary project={project} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={role => { setProfileToEdit(role); go(2); }} /><ProjectWorkbench project={project} onChange={update} /></>}
       </div>
       <div className="workflow-footer"><span className="field-hint">Quantitativos independentes de preços</span><div className="actions">{step > 0 && <button type="button" className="button secondary" onClick={() => go(step - 1)}><ArrowLeft size={18} />Voltar</button>}{step < 3 ? <button type="button" className="button" onClick={() => go(step + 1)}>{!initial ? "Salvar e continuar" : `Ir para ${steps[step + 1].toLowerCase()}`}<ArrowRight size={18} /></button> : <button type="button" className="button" onClick={save}><Save size={18} />Salvar levantamento</button>}</div></div>
       <p className="editor-save-note" role="status">{message || (!initial ? "O projeto será criado ao continuar." : saveState === "pending" ? "Salvando…" : saveState === "error" ? "Confira o aviso de armazenamento." : "Alterações salvas neste navegador.")}</p>

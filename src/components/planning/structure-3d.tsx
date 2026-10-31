@@ -5,17 +5,18 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import type { StructureModel } from "@/domain/structure";
 import { resolveSection } from "@/domain/profile-section";
 import { fitIsometricCamera } from "./camera-fit";
-import { buildProfileScene, parseViewerMode, pieceIdFromHit, viewerQuality, VIEWER_MODE_KEY, type ViewerMode } from "./profile-scene";
+import { buildProfileScene, pieceIdFromHit, viewerQuality, type ViewerMode } from "./profile-scene";
 
-export function Structure3D({ model, selected, onSelect, initialMode, autoFocus = false, onDemonstrate, onConfigureProfile }: { model: StructureModel; selected: string; onSelect: (id: string) => void; initialMode?: ViewerMode; autoFocus?: boolean; onDemonstrate?: () => void; onConfigureProfile?: () => void }) {
+export function Structure3D({ model, selected, onSelect, onDemonstrate, onConfigureProfile }: { model: StructureModel; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
   const [failure, setFailure] = useState("");
   const [expanded, setExpanded] = useState(false);
-  const [mode, setMode] = useState<ViewerMode>(() => { if (initialMode) return initialMode; try { return parseViewerMode(localStorage.getItem(VIEWER_MODE_KEY)); } catch { return "structural"; } });
+  // Opening the viewer always starts with solid profiles, regardless of the mode last used.
+  const [mode, setMode] = useState<ViewerMode>("profiles");
   const changeMode = useRef<(mode: ViewerMode) => void>(() => {});
-  const focus = useRef<(id: string) => void>(() => {}), initialFocusApplied = useRef(false);
+  const focus = useRef<(id: string) => void>(() => {});
   useEffect(() => { select.current = onSelect; }, [onSelect]);
   useEffect(() => {
     const container = host.current!;
@@ -34,6 +35,7 @@ export function Structure3D({ model, selected, onSelect, initialMode, autoFocus 
     const sun = new THREE.DirectionalLight(0xffffff, 2.5); sun.position.set(5, 12, 8); scene.add(sun);
     canvas.dataset.quality = quality.low ? "reduced" : "standard";
     canvas.dataset.solidCount = String(profiles.solidCount); canvas.dataset.fallbackCount = String(profiles.fallbackCount);
+    canvas.dataset.framing = "whole-structure";
     const resources: (THREE.BufferGeometry | THREE.Material)[] = [];
     const bounds = profiles.bounds, center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
     const span = Math.max(size.x, size.y, size.z, 1), gridStep = gridSpacingM;
@@ -42,14 +44,14 @@ export function Structure3D({ model, selected, onSelect, initialMode, autoFocus 
     const render = () => renderer.render(scene, camera);
     let framingBounds = bounds;
     changeMode.current = value => { profiles.setMode(value); canvas.dataset.mode = value; render(); };
-    reset.current = () => { framingBounds = bounds; controls.target.copy(fitIsometricCamera(camera, bounds)); controls.update(); render(); };
+    reset.current = () => { framingBounds = bounds; canvas.dataset.framing = "whole-structure"; controls.target.copy(fitIsometricCamera(camera, bounds)); controls.update(); render(); };
     focus.current = id => {
       const item = profiles.instances.get(id), piece = model.pieces.find(p => p.id === id);
       if (!piece) return;
       let pieceBounds: THREE.Box3;
       if (item) { const matrix = new THREE.Matrix4(); item.mesh.getMatrixAt(item.index, matrix); pieceBounds = item.mesh.geometry.boundingBox!.clone().applyMatrix4(matrix); }
       else { const points = model.nodes.filter(n => n.id === piece.start || n.id === piece.end).map(n => new THREE.Vector3(n.x / 1000, n.z / 1000, -n.y / 1000)); pieceBounds = new THREE.Box3().setFromPoints(points); }
-      framingBounds = pieceBounds; controls.target.copy(fitIsometricCamera(camera, pieceBounds)); controls.update(); render();
+      framingBounds = pieceBounds; canvas.dataset.framing = "selected-piece"; controls.target.copy(fitIsometricCamera(camera, pieceBounds)); controls.update(); render();
     };
     highlight.current = id => { profiles.highlight(id); render(); };
     const resize = () => {
@@ -79,9 +81,8 @@ export function Structure3D({ model, selected, onSelect, initialMode, autoFocus 
     resize();
     return () => { observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; reset.current = () => {}; focus.current = () => {}; };
   }, [model, gridSpacingM]);
-  useEffect(() => { changeMode.current(mode); try { localStorage.setItem(VIEWER_MODE_KEY, mode); } catch { /* Storage unavailable: retain this session's mode. */ } }, [mode, model]);
+  useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
-  useEffect(() => { if (autoFocus && selected && !initialFocusApplied.current) { initialFocusApplied.current = true; focus.current(selected); } }, [autoFocus, selected, model]);
   useEffect(() => {
     if (!expanded) return;
     const previousOverflow = document.body.style.overflow;
