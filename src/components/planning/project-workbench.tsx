@@ -14,7 +14,7 @@ import { SpatialAnalysisPanel } from "./spatial-analysis-panel";
 import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 
 export function ProjectWorkbench({ project, onChange }: { project: Project; onChange: (patch: Partial<Project>) => void }) {
-  const { data, saveProject, flush } = useData(), [tab, setTab] = useState("prepare"), [message, setMessage] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
+  const { data, saveProject, flush } = useData(), [tab, setTab] = useState("cut"), [message, setMessage] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
   const [label, setLabel] = useState(""), [author, setAuthor] = useState(""), [pieceId, setPieceId] = useState(""), [lengthMm, setLengthMm] = useState<number | null>(null);
   const model = generateStructure(project).model, config = project.workspace.cutting;
   let plan: ReturnType<typeof projectCutting> | null = null, pending = "";
