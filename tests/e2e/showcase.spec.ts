@@ -41,7 +41,7 @@ test("remove exemplos antigos do navegador, preservando projetos reais e cópias
   const real = { ...newProject(), name: "Obra real", client: "Cliente real" };
   const old = [exampleProject(), planningExample(), preprojectExample()];
   const duplicate = { ...exampleProject(), id: crypto.randomUUID(), name: "Cópia preservada do exemplo" };
-  await page.addInitScript(value => localStorage.setItem("jpn-projetos:v1", JSON.stringify(value)), {
+  await page.addInitScript(value => { if (!localStorage.getItem("jpn-projetos:v1")) localStorage.setItem("jpn-projetos:v1", JSON.stringify(value)); }, {
     ...emptySnapshot(), exampleInstalled: true, projects: [...old, real, duplicate], materials: exampleMaterials(),
   });
   await page.goto("/");
