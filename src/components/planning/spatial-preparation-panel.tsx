@@ -41,7 +41,7 @@ function SignedNumber({ label, value, onChange }: { label: string; value: number
     onChange={e => { const next = e.target.value; setEntry(next); onChange(/^-?\d+(?:[.,]\d+)?$/.test(next) && Number.isFinite(Number(next.replace(",", "."))) && Math.abs(Number(next.replace(",", "."))) <= 1e9 ? Number(next.replace(",", ".")) : null); }}
   /></Field>;
 }
-function selectCaseName(cases: SpatialPreparation["cases"], prefix: string) {
+function selectCaseName(cases: readonly { id: string }[], prefix: string) {
   const ids = new Set(cases.map(c => c.id));
   for (let i = 1; i <= 100; i++) if (!ids.has(`${prefix}-${i}`)) return `${prefix}-${i}`;
   return "";
@@ -85,7 +85,7 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
     onChange({ workspace: { ...project.workspace, spatialPreparation: next } }); setNotice("");
   }
   function group(patch: Partial<PhysicalGroup>) { change({ ...draft, groups: { ...draft.groups, [role]: { ...currentRole, ...patch } } }); }
-  function setSupport(nodeId: string, states: SupportState[]) {
+  function writeSupport(nodeId: string, states: SupportState[]) {
     if (!nodeId) return;
     const value = { nodeId, dofs: states as SpatialPreparation["supports"][number]["dofs"] };
     change({ ...draft, supports: [...draft.supports.filter(s => s.nodeId !== nodeId), value] });
@@ -143,7 +143,7 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
         }}>Aplicar hipótese escolhida às {base.length} bases</button></div>
         <div className="physical-dofs">
           {dofNames.map((d, i) => <Field key={selectedBase + d} label={`${selectedBase} · ${d}`}><Select value={supportDofs[i]} onChange={e => {
-            const updated = [...supportDofs] as SupportState[]; updated[i] = e.target.value as SupportState; setSupport(selectedBase, updated);
+            const updated = [...supportDofs] as SupportState[]; updated[i] = e.target.value as SupportState; writeSupport(selectedBase, updated);
           }}>{supportChoices.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</Select></Field>)}
         </div>
       </> : <p className="notice">Não há bases identificadas. Revise a geometria.</p>}
