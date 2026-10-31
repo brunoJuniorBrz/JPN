@@ -133,6 +133,7 @@ export function createPresentationScene(envelope: PresentationEnvelope, initial:
     mesh.receiveShadow=true; mesh.castShadow=true; fixed.add(mesh);roofMeshes.push(mesh);resources.add(geometry);resources.add(mesh.material as THREE.Material);
   }
   let car: THREE.Group|null=null, person: THREE.Group|null=null, disposed=false, loadToken=0, opts=initial;
+  let carSource:"pending"|"gltf"|"fallback"="pending", personSource:"pending"|"gltf"|"fallback"="pending";
   const disposeLoaded=(group:THREE.Group)=>group.traverse(object=>{
     if(object instanceof THREE.Mesh){object.geometry?.dispose();const arr=Array.isArray(object.material)?object.material:[object.material];for(const m of arr){m?.dispose();}}
   });
@@ -157,12 +158,12 @@ export function createPresentationScene(envelope: PresentationEnvelope, initial:
         const gltf=await loader.loadAsync(`/presentation/${kind}-lowpoly.glb`);
         if(disposed||token!==loadToken){disposeLoaded(gltf.scene);return;}
         const group=gltf.scene;positionModel(group,kind);
-        if(kind==="car")car=group;else person=group;
+        if(kind==="car"){car=group;carSource="gltf";}else{person=group;personSource="gltf";}
         group.visible=kind==="car"?opts.showCar:opts.showPerson;invalidate();
       }catch{
         if(disposed||token!==loadToken)return;
         const fallback=kind==="car"?makeFallbackCar():makeFallbackFigure();positionModel(fallback,kind);
-        if(kind==="car")car=fallback;else person=fallback;
+        if(kind==="car"){car=fallback;carSource="fallback";}else{person=fallback;personSource="fallback";}
         fallback.visible=kind==="car"?opts.showCar:opts.showPerson;invalidate();
       }
     }));
@@ -190,5 +191,5 @@ export function createPresentationScene(envelope: PresentationEnvelope, initial:
   return {root,update,dispose:()=>{
     disposed=true;loadToken++;if(car)disposeLoaded(car);if(person)disposeLoaded(person);
     roofMap?.dispose();resources.forEach(resource=>resource.dispose());root.clear();
-  },status:()=>({loadedCar:!!car,loadedPerson:!!person})};
+  },status:()=>({loadedCar:!!car,loadedPerson:!!person,carSource,personSource})};
 }
