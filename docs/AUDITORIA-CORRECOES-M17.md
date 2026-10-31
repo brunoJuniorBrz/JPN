@@ -28,6 +28,10 @@ Não foi possível executar no ambiente do auditor o checkout do repositório e 
 
 GitHub Actions reportava `failure` com **zero etapas executadas** nos jobs application/Ubuntu/Windows. Logs do job retornaram 404 BlobNotFound. Causa não determinada: pode envolver infraestrutura/permissões/conta e não foi atribuída ao código.
 
+**Nova tentativa realizada:** workflow `41254454619`, tentativa 2; o GitHub aceitou a solicitação, porém application, structural Ubuntu e structural Windows encerraram novamente com `failure` e **zero etapas**. A configuração `.github/workflows/validation.yml` foi inspecionada estaticamente; não foi possível identificar motivo conclusivo para a falha de alocação/execução dos jobs.
+
+**Fixture JSON numérica anterior à revisão:** a declaração `overlapReview` acrescentada ao projeto de exemplo altera sua identidade/revisão. O arquivo versionado `engine/examples/mixed-loaded-roof.json` continua sendo o fixture numérico emitido antes dessa alteração. Regenerar usando o teste de exportação `JPN_EXPORT_LOADED_FIXTURE=1` no ambiente de desenvolvimento, conferir os hashes e repetir `engine/audit_loading.py` antes do merge.
+
 Vercel/Linux/Windows integrados, DXF regenerado e fluxo manual completo via UI em obra comum continuam não homologados independentemente. O teste novo de cobertura gerada normaliza parte da lacuna, mas seu resultado não pode ser antecipado antes da execução.
 
 Os arquivos locais `.tools/m17-*` não constam do diff da PR; seus bytes locais não foram inspecionados.
