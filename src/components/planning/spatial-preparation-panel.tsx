@@ -47,6 +47,7 @@ function selectCaseName(cases: readonly { id: string }[], prefix: string) {
   return "";
 }
 function catalogueGroup(material: Material): PhysicalGroup | null {
+  if (material.physicalDeclaration) return structuredClone(material.physicalDeclaration);
   const profile = material.technicalProfile;
   if (!profile) return null;
   const d = profile.data;
@@ -61,13 +62,14 @@ function catalogueGroup(material: Material): PhysicalGroup | null {
     sectionSource: source, sectionRevision: d?.sourceDate ?? "" };
 }
 export function SpatialPreparationPanel({ project, onChange }: { project: Project; onChange: (patch: Partial<Project>) => void }) {
-  const { data } = useData();
+  const { data, saveMaterial } = useData();
   const draft = project.workspace.spatialPreparation ?? newSpatialPreparation(project);
   const review = useMemo(() => spatialPreparationReview(project, draft), [project, draft]);
   const [role, setRole] = useState<(typeof pieceRoles)[number]>("column");
   const [support, setSupport] = useState("");
   const [node, setNode] = useState("");
   const [bulk, setBulk] = useState("");
+  const [catalogueTarget, setCatalogueTarget] = useState("");
   const [caseForLoad, setCaseForLoad] = useState("");
   const [section, setSection] = useState<"profiles" | "supports" | "loads" | "review">("profiles");
   const [notice, setNotice] = useState("");
@@ -116,7 +118,7 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
           <option value="">Escolher grupo</option>{pieceRoles.filter(k => k !== role).map(k => <option value={k} key={k}>{roleLabels[k]}</option>)}</Select></Field>
         <Field label="Copiar catálogo técnico existente"><Select value="" onChange={e => { const material = data.materials.find(m => m.id === e.target.value); const copy = material && catalogueGroup(material); if (copy) group(copy); }}>
           <option value="">Escolher perfil (dados faltantes continuam vazios)</option>
-          {data.materials.filter(m => m.technicalProfile).map(m => <option value={m.id} key={m.id}>{m.name}</option>)}
+          {data.materials.filter(m => m.technicalProfile || m.physicalDeclaration).map(m => <option value={m.id} key={m.id}>{m.name}</option>)}
         </Select></Field>
         <Field label="Classe do aço"><Input value={currentRole.steelGrade} maxLength={1000} onChange={e => group({ steelGrade: e.target.value })}/></Field>
         <Field label="Fonte do material / fabricante"><Input value={currentRole.materialSource} maxLength={1000} onChange={e => group({ materialSource: e.target.value })}/></Field>
@@ -128,6 +130,12 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
         <Field label="Data / revisão da seção"><Input value={currentRole.sectionRevision} maxLength={1000} onChange={e => group({ sectionRevision: e.target.value })}/></Field>
       </div>
       <p className="field-hint">A, Iy, Iz e J precisam corresponder à seção real e à convenção dos eixos. A compatibilidade de E/G/ν é conferida na lista de pendências.</p>
+      <div className="physical-catalogue">
+        <h4>Reutilizar no catálogo</h4>
+        <p className="field-hint">Guarda estes dados declarados em um material já cadastrado. Campos incompletos continuam pendentes e nenhuma propriedade é certificada.</p>
+        <Field label="Material existente para guardar a declaração"><Select value={catalogueTarget} onChange={e => setCatalogueTarget(e.target.value)}><option value="">Selecione um material existente</option>{data.materials.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}</Select></Field>
+        <button type="button" className="button secondary" disabled={!catalogueTarget} onClick={() => { const material = data.materials.find(m => m.id === catalogueTarget); if (material && saveMaterial({ ...material, physicalDeclaration: structuredClone(currentRole) })) setNotice("Declaração física guardada no material selecionado. Confira as fontes antes de reutilizar."); }}>Guardar declaração física no catálogo</button>
+      </div>
     </>}
     {section === "supports" && <>
       <h4>Apoios nas bases</h4><p className="field-hint">Escolha os vínculos de cada base real, inclusive quando o grau de liberdade estiver livre. Nenhum pilar é considerado engastado automaticamente.</p>
