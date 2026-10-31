@@ -1,6 +1,6 @@
 import { backupSchema, emptySnapshot, migrateSnapshot, snapshotSchema, type Backup, type Project, type Snapshot } from "@/domain/models";
 import type { MaterialRepository, ProjectRepository, SettingsRepository } from "@/domain/repositories";
-import { exampleMaterials, exampleProject, EXAMPLE_ID } from "@/domain/example";
+import { exampleMaterials, EXAMPLE_ID } from "@/domain/example";
 import { PLANNING_EXAMPLE_ID } from "@/domain/planning-example";
 import { PREPROJECT_EXAMPLE_ID } from "@/domain/preproject-example";
 import { showcaseProject, SHOWCASE_IDS, type ShowcaseKind } from "@/domain/showcase-projects";
@@ -91,12 +91,10 @@ export class LocalRepositories {
     return id;
   }
   installExample(): string {
-    const example = exampleProject(this.data.settings);
-    this.commit({ ...this.data, exampleInstalled: true,
-      projects: this.data.projects.some(p => p.id === EXAMPLE_ID) ? this.data.projects : [...this.data.projects, example],
-      materials: [...this.data.materials, ...exampleMaterials().filter(m => !this.data.materials.some(existing => existing.id === m.id))],
-    });
-    return EXAMPLE_ID;
+    // Backward-compatible entry point: never recreate the obsolete garage demo.
+    const id = this.installShowcase("cobertura");
+    if (!this.data.exampleInstalled) this.commit({ ...this.data, exampleInstalled: true });
+    return id;
   }
   importBackup(backup: Backup): { projects: number; materials: number } {
     const validated = backupSchema.parse(backup);
