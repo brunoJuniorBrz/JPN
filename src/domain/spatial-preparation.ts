@@ -7,6 +7,7 @@ import type { StructureModel } from "./structure";
 import { generateStructure } from "./calculations/structure";
 import { structureSignature } from "./calculations/project-basis";
 import { spatialContacts } from "./spatial-readiness";
+import { connectivityDeclarationSchema } from "./spatial-connectivity";
 
 // Human declarations, NOT finite-element input. A pending field is never
 // translated to zero, a free support or a material property by default.
@@ -30,6 +31,7 @@ export const spatialPreparationSchema = z.object({
   loads: z.array(loadSchema).max(500),
   combinations: z.array(z.object({ id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/), factors: z.record(z.string().max(40), z.number().finite().min(-100).max(100).nullable()) }).strict()).max(10),
   connectionsReview: meaningful, lateralSystem: meaningful, loadPathReview: meaningful,
+  connectivity: connectivityDeclarationSchema.optional(),
 }).strict();
 export type SpatialPreparation = z.infer<typeof spatialPreparationSchema>;
 export type PhysicalLoad = SpatialPreparation["loads"][number];

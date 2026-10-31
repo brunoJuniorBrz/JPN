@@ -1,0 +1,83 @@
+{
+    "date":  "2026-10-31",
+    "initial_commit":  "e6b2b8d84c5ab115ccfe2188330361b8128520b1",
+    "branch":  "feat/geometric-physical-adapter",
+    "verdict":  "APROVADO COM RESSALVAS",
+    "verdict_scope":  "Experimental explicit-frame adapter only; corrections M1 and M2 included; no structural safety or normative approval",
+    "python":  {
+                   "tests":  1277,
+                   "failures":  0,
+                   "errors":  0,
+                   "skipped":  0,
+                   "exit_code":  0
+               },
+    "reference_campaign":  1000,
+    "targeted_python":  {
+                            "exit_code":  0,
+                            "failed":  0,
+                            "passed":  6
+                        },
+    "vitest":  {
+                   "exit_code":  0,
+                   "skipped":  0,
+                   "failed":  0,
+                   "passed":  152
+               },
+    "playwright":  {
+                       "startTime":  "2026-10-31T19:01:25.683Z",
+                       "duration":  165641.839,
+                       "expected":  52,
+                       "skipped":  0,
+                       "unexpected":  0,
+                       "flaky":  0
+                   },
+    "typecheck":  {
+                      "exit_code":  0
+                  },
+    "lint":  {
+                 "errors":  0,
+                 "existing_warnings":  2,
+                 "exit_code":  0
+             },
+    "build":  {
+                  "exit_code":  0
+              },
+    "dxf":  {
+                "units":  "mm",
+                "lines_3d":  130,
+                "errors":  0,
+                "exit_code":  0
+            },
+    "benchmark":  {
+                      "exit_code":  0,
+                      "blas_threads":  1
+                  },
+    "independent_math":  {
+                             "exit_code":  0
+                         },
+    "red_tests":  {
+                      "existing_suite_failures":  0,
+                      "failed":  4,
+                      "total":  13,
+                      "passed":  9
+                  },
+    "green_tests":  {
+                        "failed":  0,
+                        "total":  13,
+                        "passed":  13
+                    },
+    "fixes":  [
+                  "Reject unsupported runtime geometry units",
+                  "Reject nonfinite or nonpositive original member length metadata"
+              ],
+    "github_actions_queried":  false,
+    "merge_performed":  false,
+    "linux_verified":  false,
+    "production_verified":  false,
+    "limitations":  [
+                        "Explicit frame scope only; axial/mixed and independent contacts blocked",
+                        "Windows/Chromium only",
+                        "Maximum 250/600 not exhaustively benchmarked",
+                        "Legacy handoff wording and two pre-existing lint warnings remain"
+                    ]
+}

@@ -7,11 +7,11 @@ const vec = z.tuple([n, n, n]);
 export const spatialRequestSchema = z.object({
   schema_version: z.literal("jpn.frame3d/1"), units: z.literal("SI"), theory: z.literal("linear-elastic-euler-bernoulli"),
   project: z.object({ id: source, revision: source, source }).strict(),
-  nodes: z.array(z.object({ id, x_m: n.min(-10000).max(10000), y_m: n.min(-10000).max(10000), z_m: n.min(-10000).max(10000) }).strict()).min(2).max(100),
+  nodes: z.array(z.object({ id, x_m: n.min(-10000).max(10000), y_m: n.min(-10000).max(10000), z_m: n.min(-10000).max(10000) }).strict()).min(2).max(250),
   materials: z.array(z.object({ id, e_pa: n.min(1).max(1e13), g_pa: n.min(1).max(1e13), nu: n.min(-.99).max(.499), source, revision: source }).strict()).min(1).max(50),
   sections: z.array(z.object({ id, area_m2: n.min(1e-16).max(1000), iy_m4: n.min(1e-16).max(1000), iz_m4: n.min(1e-16).max(1000), j_m4: n.min(1e-16).max(1000), source, revision: source }).strict()).min(1).max(50),
-  members: z.array(z.object({ id, start: id, end: id, kind: z.literal("frame"), material: id, section: id, rotation_deg: n.min(-360).max(360), release_start: flags, release_end: flags }).strict()).min(1).max(200),
-  supports: z.array(z.object({ node: id, restrained: flags }).strict()).max(100),
+  members: z.array(z.object({ id, start: id, end: id, kind: z.literal("frame"), material: id, section: id, rotation_deg: n.min(-360).max(360), release_start: flags, release_end: flags }).strict()).min(1).max(600),
+  supports: z.array(z.object({ node: id, restrained: flags }).strict()).max(250),
   cases: z.array(z.object({ id, source }).strict()).min(1).max(10),
   nodal_loads: z.array(z.object({ node: id, case: id, fx_n: signed, fy_n: signed, fz_n: signed, mx_nm: signed, my_nm: signed, mz_nm: signed }).strict()).max(500),
   combinations: z.array(z.object({ id, factors: z.record(id, n.min(-100).max(100)) }).strict()).min(1).max(10),
@@ -40,7 +40,7 @@ export const spatialResultSchema = z.object({
   schema_version: z.literal("jpn.frame3d-result/1"), status: z.literal("analysis_completed_experimental"), units: z.literal("SI"),
   project: z.object({ id: source, revision: source, source }).strict(), input_sha256: z.string().regex(/^[a-f0-9]{64}$/),
   solver: z.object({ name: z.literal("PyNiteFEA"), version: z.literal("3.2.1"), adapter: z.literal("jpn-frame3d/1") }).strict(),
-  assumptions: z.array(z.string()).max(20), diagnostics: z.object({ free_dofs: n.int().nonnegative().max(600), scaled_condition: n.min(1).max(1e10), elapsed_seconds: n.nonnegative() }).strict(),
+  assumptions: z.array(z.string()).max(20), diagnostics: z.object({ free_dofs: n.int().nonnegative().max(1500), scaled_condition: n.min(1).max(1e10), elapsed_seconds: n.nonnegative() }).strict(),
   combinations: z.record(id, z.object({
     nodes: z.record(id, resultNode),
     members: z.record(id, z.object({ length_m: n.positive(), local_axes: z.tuple([vec, vec, vec]), end_actions_local: z.array(n).length(12), stations: z.array(station).length(5) }).strict()),

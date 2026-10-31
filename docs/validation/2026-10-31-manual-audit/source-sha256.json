@@ -1,0 +1,10 @@
+{
+    "src/domain/spatial-connectivity.ts":  "cb8eab1da172dc8b342d6771bc4fee046e9868c497adfce733136cef1ee6d759",
+    "src/domain/spatial-connectivity.test.ts":  "653b8193a8fd6a5de541e53121c00df4ba8d9b3b26adb9daed725fe31fd3edba",
+    "engine/tests/test_spatial_adapter.py":  "1c94cd6f01cbc6a75c25af6d3808edd59fda42ae1c9279a0305c56f77b52ff05",
+    "docs/AUDITORIA-MANUAL-PRS-11-12.md":  "0a9d7645595b8b516c6eaad90528ed24aed5446027b731998ac109666e4f32aa",
+    "docs/validation/2026-10-31-manual-audit/check_math.py":  "5f85f2e3b8e407132481a3c6b5d939233c4d21ab2c764bd09a56e1fa90480e69",
+    "engine/examples/spatial-adapted-roof.json":  "0f15df1bbb529e292952949f0f853f5e3d0d5982c5ab4678487f9c188423d5e8",
+    "engine/examples/spatial-adapted-tee.json":  "27f3e19c98e7c8aa2b4fb9f8905bd161df76348964259cf9d5ebd155508083a8",
+    "examples/spatial-adapter-mapping.json":  "b1f5c160f6a46fa51312ff1aac3437011035ae9a61b11f53aead2a188a6592be"
+}

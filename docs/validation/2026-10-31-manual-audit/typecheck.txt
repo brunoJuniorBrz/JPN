@@ -1,0 +1,7 @@
+corepack : $ tsc --noEmit
+No linha:2 caractere:536
++ ... /audit-vitest.json *> $log} else {corepack pnpm $task *> $log}; $code ...
++                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ tsc --noEmit:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

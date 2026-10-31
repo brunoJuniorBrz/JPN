@@ -1,0 +1,19 @@
+{
+    "docs/ENTREGA-ADAPTADOR-GEOMETRICO-FISICO.md":  "3d2c909949d0f0699acdf7593d95fb12e1bf59ed7c168e417b4e35b74d9bab7c",
+    "engine/benchmark_adapter.py":  "c939eaef3185fea1b760b62d80f19106f22aefdebe99ec63663f0e88fd0289d6",
+    "engine/examples/spatial-adapted-roof.json":  "0f15df1bbb529e292952949f0f853f5e3d0d5982c5ab4678487f9c188423d5e8",
+    "engine/examples/spatial-adapted-tee.json":  "27f3e19c98e7c8aa2b4fb9f8905bd161df76348964259cf9d5ebd155508083a8",
+    "engine/jpn_structural/frame3d_model.py":  "9ccaaa8f142ccf1b3d7325323cb4bc62807d0fb7f4a423d51bb5154488e3e004",
+    "engine/tests/test_spatial_adapter.py":  "3ef9f2765a34bb51eaade71f582d9908123407cb1b8047748534221a2ae2d6fc",
+    "examples/spatial-adapter-mapping.json":  "b1f5c160f6a46fa51312ff1aac3437011035ae9a61b11f53aead2a188a6592be",
+    "examples/spatial-adapter-project.json":  "5f454b2dfae224a6b427843f36cf4aabd32f3dd9e2c456042bb24f1bdd4f42fb",
+    "src/components/planning/spatial-adapter-panel.tsx":  "be99bdb765ff03ce044b1fd93ad75735ad969d62812c874545e9edc46855ce86",
+    "src/components/planning/spatial-preparation-panel.tsx":  "575e3dcc98042c3ed512e60eee12748f8859a576df188ffc518c626f4fd8757b",
+    "src/domain/examples/spatial-adapter-example.ts":  "0f6409e5fecc6cdb35b585e21be4096e8256387e82126b846154f2ba7f7c84c6",
+    "src/domain/geometric-physical-adapter.ts":  "5ebdbb0d7f7776c3453fa9ab952820247caef507f10804d7e1ff7b0a210e6a23",
+    "src/domain/spatial-analysis.ts":  "796281d2609117e78cba70bc3dacae791787d6ab25b728a15cb502a72cd53866",
+    "src/domain/spatial-connectivity.test.ts":  "714279731a3e53362b0e0c957ba7e0e66be1f68f4f22e34856817453e96f05fa",
+    "src/domain/spatial-connectivity.ts":  "231fa583db4d3f7ba0779eb6f3aae9d4bb9662f43d2968439ffa1868167e8a16",
+    "src/domain/spatial-preparation.ts":  "919cf807defe9a05f06d4999bffec607a407274a6e6e968483e87d7e04aef426",
+    "tests/e2e/spatial-adapter.spec.ts":  "6e2c43dab25f2b268bf3542c6778a024fb79140050d01e937d7d597f16b1f978"
+}

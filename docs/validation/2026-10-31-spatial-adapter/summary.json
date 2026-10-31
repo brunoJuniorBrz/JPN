@@ -1,0 +1,69 @@
+{
+    "date":  "2026-10-31",
+    "base":  "74e223da0521ad1104fc578103d51487f8e94df1",
+    "branch":  "feat/geometric-physical-adapter",
+    "scope":  "Explicit rigid-frame geometric adapter; axial/mixed models blocked",
+    "environment":  "Windows 10; Node 24.13.0; Python 3.12.10; PyNiteFEA 3.2.1",
+    "baseline":  {
+                     "playwright":  48,
+                     "vitest":  139,
+                     "python":  1271
+                 },
+    "python":  {
+                   "reference_campaign":  1000,
+                   "skipped":  0,
+                   "failed":  0,
+                   "passed":  1274
+               },
+    "vitest":  {
+                   "skipped":  0,
+                   "failed":  0,
+                   "passed":  147
+               },
+    "playwright":  {
+                       "startTime":  "2026-10-31T18:29:26.411Z",
+                       "duration":  169524.86000000002,
+                       "expected":  52,
+                       "skipped":  0,
+                       "unexpected":  0,
+                       "flaky":  0
+                   },
+    "typecheck":  {
+                      "exit_code":  0
+                  },
+    "lint":  {
+                 "errors":  0,
+                 "existing_warnings":  2,
+                 "exit_code":  0
+             },
+    "build":  {
+                  "exit_code":  0
+              },
+    "dxf":  {
+                "units":  "mm",
+                "lines_3d":  130,
+                "audit_errors":  0
+            },
+    "test_history":  {
+                         "final_targeted_e2e_passed":  4,
+                         "reason":  "Fixture init script overwrote storage at reload; corrected to initialize only absent storage and assert persistence",
+                         "initial_targeted_e2e_failures":  2,
+                         "initial_typecheck":  "never helper narrowing errors corrected before final checks"
+                     },
+    "remote_ci":  {
+                      "baseline_runs":  [
+                                            41227213454,
+                                            41227190957
+                                        ],
+                      "linux_verified":  false,
+                      "baseline_state":  "failed before any steps",
+                      "new_pr_checks":  "see GitHub; not certified by local results"
+                  },
+    "limitations":  [
+                        "Axial and mixed elements unsupported and blocked",
+                        "Independent coincident joints and crossings without original node unsupported and blocked",
+                        "Two spherical pins per frame unsupported and blocked",
+                        "Performance measured only for 132 nodes / 243 physical segments",
+                        "No normative resistance or safety verification"
+                    ]
+}

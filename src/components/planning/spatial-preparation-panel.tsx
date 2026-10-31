@@ -12,6 +12,7 @@ import {
   spatialPreparationReview, type PhysicalGroup, type SpatialPreparation,
 } from "@/domain/spatial-preparation";
 import type { Material } from "@/domain/models";
+import { SpatialAdapterPanel } from "./spatial-adapter-panel";
 
 const numberFields = [
   ["eGpa", "Elasticidade E (GPa)"], ["gGpa", "Cisalhamento G (GPa)"],
@@ -118,7 +119,7 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
     <div className="notice" data-testid="physical-prep-status">
       <strong>{review.stale ? "Cadastro desatualizado" : review.issues.length ? "Preparação em andamento" : "Declarações preenchidas; aguarda adaptador físico"}</strong>
       <p>{review.geometry ? `${review.geometry.pieces.length} peças · ${nodes.length} nós · ${base.length} bases de pilares.` : "Geometria visual incompleta."} Nenhum dado deste painel libera dimensionamento ou fabricação.</p>
-      <p><strong>{review.issues.length} pendências</strong> · {review.contacts.length} encontros geométricos a revisar no futuro adaptador de análise.</p>
+      <p><strong>{review.issues.length} pendências</strong> · {review.contacts.length} encontros geométricos aparentes; a conferência física é feita no adaptador.</p>
       {review.stale && <button type="button" className="button secondary" onClick={() => { change({ ...draft, geometrySignature: structureSignature(project) }); setNotice("Vínculo geométrico atualizado. Revise apoios, cargas e conexões com os novos nós."); }}>Reconhecer nova geometria (sem apagar dados)</button>}
     </div>
     <nav className="physical-prep-tabs" aria-label="Etapas da preparação">
@@ -229,8 +230,9 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
       <Field label="Revisão do caminho de cargas até os apoios"><Textarea rows={3} maxLength={1000} value={draft.loadPathReview} onChange={e => change({ ...draft, loadPathReview: e.target.value })}/></Field>
     </>}
     {section === "review" && <>
+      <SpatialAdapterPanel project={project} draft={draft} onChange={change}/>
       <h4>Pendências para análise estrutural</h4>
-      <p className="field-hint">Esta conferência avalia o preenchimento e a topologia aparente; não aprova vínculos, seções ou dimensionamento. O adaptador de conectividade e o motor para treliças/pórticos mistos serão desenvolvidos em outra etapa.</p>
+      <p className="field-hint">Esta conferência avalia o preenchimento e a topologia aparente; não aprova vínculos, seções ou dimensionamento. O adaptador de conectividade acima trata pórticos explicitamente declarados. O modelo misto de treliças e pórticos permanece bloqueado.</p>
       <ul className="physical-issues">{review.issues.map((i, idx) => <li key={idx}><strong>{i.code}</strong> — {i.message}</li>)}</ul>
       {!review.issues.length && <p className="notice">Todas as declarações deste formulário foram preenchidas. Ainda é necessária validação física e normativa independente.</p>}
       <p>Esta preparação permanece vinculada às medidas pela revisão geométrica registrada. Exporte os dados para revisão externa.</p>

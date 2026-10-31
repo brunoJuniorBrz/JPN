@@ -1,0 +1,107 @@
+{
+  "status": "passed",
+  "analytical_beam": {
+    "c_translation_z_m": {
+      "reference": -0.00016666666666666663,
+      "actual": -0.0001666666666666667,
+      "absolute_error": 5.421010862427522e-20
+    },
+    "b_translation_z_m": {
+      "reference": -0.0004166666666666666,
+      "actual": -0.0004166666666666668,
+      "absolute_error": 2.168404344971009e-19
+    },
+    "c_rotation_y_rad": {
+      "reference": 0.00012499999999999998,
+      "actual": 0.00012500000000000003,
+      "absolute_error": 5.421010862427522e-20
+    },
+    "b_rotation_y_rad": {
+      "reference": 0.00012499999999999998,
+      "actual": 0.00012500000000000006,
+      "absolute_error": 8.131516293641283e-20
+    },
+    "reaction_z_n": {
+      "reference": 1000.0,
+      "actual": 1000.0,
+      "absolute_error": 0.0
+    },
+    "reaction_moment_y_nm": {
+      "reference": -2000.0,
+      "actual": -2000.0000000000007,
+      "absolute_error": 6.821210263296962e-13
+    }
+  },
+  "beam_stations": [
+    {
+      "x_m": 0.0,
+      "n_n": -0.0,
+      "vy_n": -0.0,
+      "vz_n": -1000.0,
+      "t_nm": 0.0,
+      "my_nm": 2000.0000000000007,
+      "mz_nm": 0.0
+    },
+    {
+      "x_m": 0.5,
+      "n_n": -0.0,
+      "vy_n": -0.0,
+      "vz_n": -1000.0,
+      "t_nm": 0.0,
+      "my_nm": 1500.0000000000007,
+      "mz_nm": 0.0
+    },
+    {
+      "x_m": 1.0,
+      "n_n": -0.0,
+      "vy_n": -0.0,
+      "vz_n": -1000.0,
+      "t_nm": 0.0,
+      "my_nm": 1000.0000000000007,
+      "mz_nm": 0.0
+    },
+    {
+      "x_m": 1.5,
+      "n_n": -0.0,
+      "vy_n": -0.0,
+      "vz_n": -1000.0,
+      "t_nm": 0.0,
+      "my_nm": 500.0000000000007,
+      "mz_nm": 0.0
+    },
+    {
+      "x_m": 2.0,
+      "n_n": -0.0,
+      "vy_n": -0.0,
+      "vz_n": -1000.0,
+      "t_nm": 0.0,
+      "my_nm": 6.821210263296962e-13,
+      "mz_nm": 0.0
+    }
+  ],
+  "subdivision": {
+    "original_nodes": 132,
+    "original_segments": 243,
+    "refined_nodes": 133,
+    "refined_segments": 244,
+    "max_absolute_changes": {
+      "translation_m": 8.161162446795184e-19,
+      "rotation_rad": 9.275010772434589e-20,
+      "force_n": 1.1198153515579179e-11,
+      "moment_nm": 6.860290113763767e-12
+    }
+  },
+  "roof_equilibrium": {
+    "force_n": [
+      1.0206058220774139e-11,
+      2.2541257749253418e-10,
+      9.741540907270974e-12
+    ],
+    "moment_nm": [
+      -2.693241185625084e-10,
+      -7.122480383259244e-11,
+      1.4240981727198232e-09
+    ],
+    "relative_residual": 9.697659573754906e-14
+  }
+}
