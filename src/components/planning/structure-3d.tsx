@@ -43,7 +43,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = false;
     const profiles = buildProfileScene(model, quality.segments); scene.add(profiles.root);
-    scene.add(new THREE.HemisphereLight(0xffffff, 0x9aa797, 2));
+    const ambient = new THREE.HemisphereLight(0xffffff, 0x9aa797, 2); scene.add(ambient);
     const sun = new THREE.DirectionalLight(0xffffff, 2.5); sun.position.set(5, 12, 8); scene.add(sun);
     sun.castShadow = false; sun.shadow.mapSize.set(quality.low ? 512 : 1024, quality.low ? 512 : 1024); sun.shadow.bias = -0.0002;
     canvas.dataset.quality = quality.low ? "reduced" : "standard";
@@ -78,6 +78,10 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       profiles.setMode(value === "finished" ? "profiles" : value);
       grid.visible = value !== "finished";
       sun.castShadow = value === "finished" && !quality.low;
+      // Keep the original technical lighting unchanged; tone down the client
+      // presentation lights to preserve roof pigments and concrete shading.
+      sun.intensity = value === "finished" ? 1.65 : 2.5;
+      ambient.intensity = value === "finished" ? 1.15 : 2;
       canvas.dataset.mode = value;
       if(environment) environment.root.visible = value === "finished";
       if(value === "finished" && envelope && !environment) {
