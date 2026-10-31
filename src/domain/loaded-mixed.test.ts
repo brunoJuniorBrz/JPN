@@ -5,7 +5,7 @@ import { loadedMixedReferenceProject } from "./examples/loaded-mixed-project";
 import { runLocalMixed } from "@/infrastructure/analysis/local-mixed-runner";
 import { mixedInputHash, mixedStations } from "./mixed-analysis";
 import { resistanceDiagnostics } from "./resistance-preparation";
-import { verifyLoadingTrace } from "./structural-loading";
+import { verifyLoadingTrace, selfWeightOverlapReviewBasis } from "./structural-loading";
 import { parseBackup,serializeBackup } from "@/infrastructure/persistence/local";
 import { emptySnapshot } from "./models";
 afterEach(()=>vi.unstubAllEnvs());
@@ -37,3 +37,25 @@ it("executa versão 2 com Python real: massa, equilíbrio, forças invertidas, e
   const frame=Object.values(c.members).find(m=>m.kind==="frame")!;expect(mixedStations(frame)).toEqual(frame.kind==="frame"?frame.stations:null);
   const bad=structuredClone(out.result);bad.loading.self_weight!.total_mass_kg+=1;expect(()=>verifyLoadingTrace(a.request,bad)).toThrow(/Massa/);
 },20000);
+
+it("bloqueia potencial dupla contagem entre casos até revisão explícita, revogada por mudança das ações",async()=>{
+  const p=loadedMixedReferenceProject(),d=p.workspace.spatialPreparation!,loading=d.loading!;
+  delete loading.overlapReview;
+  await expect(adaptLoadedMixedProject(p)).rejects.toThrow(/POSSIBLE_DOUBLE_COUNT/);
+  loading.overlapReview={confirmed:true,source:"Conferência sintética das fontes",revision:"R1",basis:selfWeightOverlapReviewBasis(d,loading)};
+  await expect(adaptLoadedMixedProject(p)).resolves.toHaveProperty("request.schema_version","jpn.mixed3d/2");
+  d.loads[0].fzKn=-1.1;
+  await expect(adaptLoadedMixedProject(p)).rejects.toThrow(/POSSIBLE_DOUBLE_COUNT/);
+  loading.overlapReview.basis=selfWeightOverlapReviewBasis(d,loading);
+  d.combinations[0].factors.TESTE=0.5;
+  await expect(adaptLoadedMixedProject(p)).rejects.toThrow(/POSSIBLE_DOUBLE_COUNT/);
+  loading.overlapReview.basis=selfWeightOverlapReviewBasis(d,loading);
+  d.groups.column.density!.kgM3=1100;
+  await expect(adaptLoadedMixedProject(p)).rejects.toThrow(/POSSIBLE_DOUBLE_COUNT/);
+});
+it("não exige revisão de duplicidade quando combinações isolam peso de cargas manuais",async()=>{
+  const p=loadedMixedReferenceProject(),d=p.workspace.spatialPreparation!,loading=d.loading!;
+  delete loading.overlapReview;
+  d.combinations=[{id:"APENAS-PESO",factors:{TESTE:0,INVERSO:0,"PP-DEMO":1}}];
+  await expect(adaptLoadedMixedProject(p)).resolves.toHaveProperty("request.schema_version","jpn.mixed3d/2");
+});
