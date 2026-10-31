@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/domain/models";
 import { spatialInputHash, spatialRequestSchema, spatialResultSchema, canonicalSpatialInput, type SpatialResult } from "@/domain/spatial-analysis";
 import { buildSpatialRequest, spatialReadiness } from "@/domain/spatial-readiness";
@@ -17,7 +17,7 @@ export function SpatialAnalysisPanel({ project, onOpenPreparation }: { project: 
   const [combination, setCombination] = useState(""), [member, setMember] = useState("");
   const [bindingBasis, setBindingBasis] = useState("");
   const signature = structureSignature(project);
-  const coordination = spatialCoordination(project);
+  const coordination = useMemo(() => spatialCoordination(project), [project]);
   let parsed: ReturnType<typeof spatialRequestSchema.safeParse> | null = null;
   try { parsed = spatialRequestSchema.safeParse(JSON.parse(text)); } catch {}
   const bindingIdentity = JSON.stringify({ signature, connections, lateral });
