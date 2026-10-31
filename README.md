@@ -4,6 +4,8 @@ Sistema local de projetos e levantamento geométrico de materiais de estruturas 
 
 ## Entrada rápida: 3D primeiro
 
+**Análise espacial experimental:** depois do 3D, abra **Análise 3D experimental** nas ferramentas do pré-projeto. O painel executa um pórtico explícito de referência por PyNiteFEA 3.2.1, com deslocamentos/rotações, reações e esforços por combinação. A geometria rápida permanece visual: apoios, ligações, propriedades e cargas não são presumidos. [Entrega, validação independente, contratos, execução e limites](docs/ENTREGA-MOTOR-3D-EXPERIMENTAL.md). Em Vercel, configurar `JPN_SPATIAL_ANALYSIS_URL` para um serviço Python privado; a falta do serviço não bloqueia 3D ou levantamento.
+
 Em **Novo projeto**, a opção padrão é a **Entrada rápida**. Informe o formato (uma ou duas águas), largura, comprimento e altura; nome, cliente e inclinação visual inicial são opcionais. O aplicativo cria um projeto não fictício, salva no navegador e abre imediatamente **Resultado → Perfis 3D**, com o modelo enquadrado inteiro. **Usar cadastro completo** preserva o antigo fluxo técnico para quem preferir começar detalhando tudo.
 
 O gerador rápido propõe APENAS uma configuração **geométrica provisória**, com distribuição inicial de tesouras/terças, número de painéis e seções 3D **sintéticas**; a inclinação visual começa em 10% quando não informada. Nenhuma classe de aço, massa por metro, preço, comprimento comercial, resistência ou ação foi assumida ou aprovada. **Não usar a saída rápida para encomendar material ou cortar**. Informações físicas/normativas serão solicitadas no futuro motor de dimensionamento.

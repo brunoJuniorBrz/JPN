@@ -10,6 +10,7 @@ import { NumberField } from "@/components/number-field";
 import { useData } from "@/components/data-provider";
 import { downloadBlob, exportFilename } from "@/lib/exports/proposal";
 import { AnalysisPanel } from "./analysis-panel";
+import { SpatialAnalysisPanel } from "./spatial-analysis-panel";
 
 export function ProjectWorkbench({ project, onChange }: { project: Project; onChange: (patch: Partial<Project>) => void }) {
   const { data, saveProject, flush } = useData(), [tab, setTab] = useState("cut"), [message, setMessage] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
@@ -31,8 +32,9 @@ export function ProjectWorkbench({ project, onChange }: { project: Project; onCh
   }
   return <section className="project-workbench"><h3>Do levantamento à proposta</h3><p>Quantitativo preliminar · análise experimental separada · dimensionamento normativo pendente · fabricação não liberada.</p>
     <button type="button" className="button" disabled={!model} onClick={() => action(() => { onChange(transferTakeoff(project, Math.round(data.settings.defaultWastePercent * 100) / 100)); setMessage("Quantitativos vinculados ao orçamento de venda. Confira preços por metro e custos na área comercial."); })}>Atualizar quantitativos no orçamento</button>
-    <nav className="project-mode" aria-label="Ferramentas do pré-projeto">{[["cut", "Aproveitamento"], ["analysis", "Análise disponível"], ["docs", "Revisões e desenhos"]].map(([key, title]) => <button key={key} type="button" aria-pressed={tab === key} className={tab === key ? "selected" : ""} onClick={() => setTab(key)}>{title}</button>)}</nav>
+    <nav className="project-mode" aria-label="Ferramentas do pré-projeto">{[["cut", "Aproveitamento"], ["analysis", "Análise disponível"], ["spatial", "Análise 3D experimental"], ["docs", "Revisões e desenhos"]].map(([key, title]) => <button key={key} type="button" aria-pressed={tab === key} className={tab === key ? "selected" : ""} onClick={() => setTab(key)}>{title}</button>)}</nav>
     {tab === "analysis" && <AnalysisPanel project={project} onChange={onChange} />}
+    {tab === "spatial" && <SpatialAnalysisPanel project={project} />}
     {tab === "cut" && <><h4>Simulação preliminar de aproveitamento</h4><p>Perfis e aços separados. Comprimento comercial vem de cada perfil. Uma perda de serra por peça, mais duas perdas de extremidade por barra. Heurística First Fit Decreasing; não comprova o mínimo de barras e não libera fabricação.</p>
       <div className="form-grid"><NumberField label="Espessura do corte (mm)" value={config.kerfMm} min={0} max={1000} onChange={kerfMm => changeCutting({ kerfMm })} /><NumberField label="Perda em cada extremidade (mm)" value={config.endTrimMm} min={0} max={100000} onChange={endTrimMm => changeCutting({ endTrimMm })} /><NumberField label="Sobra mínima aproveitável (mm)" value={config.minimumRemnantMm} min={0} max={1000000} onChange={minimumRemnantMm => changeCutting({ minimumRemnantMm })} /></div>
       <label className="checkbox-label"><input type="checkbox" checked={config.useFabrication} onChange={e => changeCutting({ useFabrication: e.target.checked })} />Usar comprimentos finais declarados por peça (ainda sem liberação de fabricação)</label>
