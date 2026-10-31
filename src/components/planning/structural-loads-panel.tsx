@@ -4,7 +4,7 @@ import type { Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
 import { mixedPieceKind } from "@/domain/mixed-adapter";
 import { newSpatialPreparation, pieceRoles } from "@/domain/spatial-preparation";
-import { densitySchema, emptyLoading, loadingDraftSchema, type LoadingDraft } from "@/domain/structural-loading";
+import { densitySchema, emptyLoading, loadingDraftSchema, needsSelfWeightOverlapReview, selfWeightOverlapReviewBasis, type LoadingDraft } from "@/domain/structural-loading";
 import { resistanceDiagnostics, resistancePreparationSchema } from "@/domain/resistance-preparation";
 import { Field, Input, Select } from "@/components/ui";
 
@@ -16,11 +16,14 @@ export function StructuralLoadsPanel({project,onChange}:{project:Project;onChang
   const [pressure,setPressure]=useState(""),[projection,setProjection]=useState(""),[direction,setDirection]=useState(["","",""]),[path,setPath]=useState(""),[areaSource,setAreaSource]=useState(""),[areaRevision,setAreaRevision]=useState("");
   const [family,setFamily]=useState(""),[fy,setFy]=useState(""),[fu,setFu]=useState(""),[ly,setLy]=useState(""),[lz,setLz]=useState(""),[lb,setLb]=useState("");
   const [resSource,setResSource]=useState(""),[resRevision,setResRevision]=useState(""),[restraint,setRestraint]=useState(""),[wy,setWy]=useState(""),[wz,setWz]=useState(""),[clause,setClause]=useState("");
+  const [overlapSource,setOverlapSource]=useState(""),[overlapRevision,setOverlapRevision]=useState("");
   const [message,setMessage]=useState("");
   function attempt(run:()=>void){try{run();setMessage("Declaração registrada. Revise combinações antes de executar; resultados anteriores foram invalidados.");}catch(e){setMessage((e as Error).message);}}
   const number=(s:string)=>{if(!s.trim())throw new Error("Informe todos os valores, inclusive zeros explícitos.");const v=Number(s.replace(",","."));if(!Number.isFinite(v))throw new Error("Número inválido.");return v;};
   function change(next:LoadingDraft){onChange({workspace:{...project.workspace,spatialPreparation:{...d,loading:loadingDraftSchema.parse(next)}}});}
   const selected=pieces.find(p=>p.id===piece)??pieces[0], activeCase=d.cases.some(c=>c.id===qCase)?qCase:d.cases[0]?.id??"";
+  const overlapNeeded=needsSelfWeightOverlapReview(d,loading);
+  const overlapValid=!overlapNeeded||(loading.overlapReview?.confirmed===true&&loading.overlapReview.basis===selfWeightOverlapReviewBasis(d,loading));
   const input=(label:string,value:string,change:(s:string)=>void)=><Field key={label} label={label}><Input value={value} onChange={e=>change(e.target.value)} maxLength={1000}/></Field>;
   return <details className="technical-details" data-testid="structural-loads"><summary>Carregamentos físicos automáticos e base resistente</summary>
     <p>Sem densidade ou gravidade presumidas. Pórticos recebem peso distribuído consistente; barras axiais recebem metade do peso em cada nó, sem flexão. Ativar peso cria caso e combinação isolados: fator 1 no caso novo e 0 nos demais, sem coeficientes normativos.</p>
@@ -35,6 +38,16 @@ export function StructuralLoadsPanel({project,onChange}:{project:Project;onChang
       onChange({workspace:{...project.workspace,spatialPreparation:{...d,loading:{...loading,selfWeight:{caseId,gravity:g,axialLumping:"half-to-end-nodes"}},cases:[...d.cases,{id:caseId,source:caseSource}],combinations:[...d.combinations.map(c=>({...c,factors:{...c.factors,[caseId]:0}})),{id:caseId+"-ISO",factors:Object.fromEntries([...d.cases.map(c=>[c.id,0]),[caseId,1]])}]}}});
     })}>Ativar peso e criar caso/combinação isolados</button>
     {loading.selfWeight&&<p>Peso ativo: {loading.selfWeight.caseId}, g={loading.selfWeight.gravity.join("; ")} m/s². <button className="button secondary" onClick={()=>attempt(()=>change({...loading,selfWeight:null}))}>Desativar peso próprio</button> O caso permanece no cadastro para revisão; remova/revise suas combinações explicitamente.</p>}
+    {overlapNeeded&&<div className="notice" data-testid="self-weight-overlap-review">
+      <strong>Atenção: possível dupla contagem de peso próprio</strong>
+      <p>Esta combinação contém peso próprio automático E cargas manuais. O JPN não sabe se você incluiu peso próprio nas cargas manuais. A execução permanece bloqueada até revisão explícita por responsável técnico, vinculada à revisão exata das cargas, grupos e combinações. Não confirma segurança ou dimensionamento.</p>
+      <div className="form-grid">{input("Fonte da conferência de duplicidade",overlapSource,setOverlapSource)}{input("Revisão da conferência de duplicidade",overlapRevision,setOverlapRevision)}</div>
+      <button type="button" className="button secondary" onClick={()=>attempt(()=>{
+        if(!overlapSource.trim()||!overlapRevision.trim())throw new Error("Declare fonte e revisão da conferência.");
+        change({...loading,overlapReview:{confirmed:true,source:overlapSource,revision:overlapRevision,basis:selfWeightOverlapReviewBasis(d,loading)}});
+      })}>Confirmo que as ações manuais combinadas não incluem novamente o peso próprio automático</button>
+      <p>{overlapValid?"Revisão de possíveis duplicidades registrada para este conjunto exato de cargas.":"PENDENTE: confira as ações e registre a revisão antes de calcular."}</p>
+    </div>}
     <h4>Carga uniforme por peça física</h4><p>N/m no contrato; formulário em kN/m. Toda a peça e seus segmentos recebem a mesma intensidade. Não aplicar carga transversal a axial.</p>
     <Field label="Peça da carga uniforme"><Select value={selected?.id??""} onChange={e=>setPiece(e.target.value)}>{pieces.map(p=><option key={p.id}>{p.id}</option>)}</Select></Field>
     <Field label="Caso da carga uniforme"><Select value={activeCase} onChange={e=>setQCase(e.target.value)}>{d.cases.map(c=><option key={c.id}>{c.id}</option>)}</Select></Field>
