@@ -1,0 +1,73 @@
+import { expect, test } from "@playwright/test";
+
+for (const viewport of [375, 1440]) test(`preparação física é editável, persistente e segura em ${viewport}px`, async ({ page }) => {
+  await page.setViewportSize({ width: viewport, height: 930 });
+  const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));
+  await page.goto("/projetos/novo");
+  await page.getByLabel("Largura (m)").fill("10");
+  await page.getByLabel("Comprimento (m)").fill("20");
+  await page.getByLabel("Altura (m)").fill("4");
+  await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
+  await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
+  await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
+  await expect(page.getByTestId("physical-prep-status")).toContainText("Preparação em andamento");
+  await expect(page.getByTestId("physical-prep-status")).toContainText("pendências");
+  await page.getByLabel("Fonte do material / fabricante").fill("Ficha técnica de exemplo");
+  await page.getByLabel("Data / revisão do material").fill("R1");
+  await page.getByLabel("Classe do aço").fill("Declarado para estudo");
+  await page.getByLabel("Elasticidade E (GPa)").fill("200");
+  await page.getByLabel("Inércia Iy (cm⁴)").fill("50");
+  await page.getByRole("button", { name: "2. Apoios e ligações" }).click();
+  await expect(page.getByLabel("Base do pilar")).toBeVisible();
+  await page.getByLabel("Modelo de apoio para todas as bases").selectOption("pinned");
+  await page.getByRole("button", { name: /Aplicar hipótese escolhida às/ }).click();
+  await expect(page.getByLabel(/ · UX/)).toHaveValue("fixed");
+  await expect(page.getByLabel(/ · RX/)).toHaveValue("free");
+  await page.getByLabel("Revisão de ligações e justificativa").fill("Somente hipótese declarada; revisar juntas e contraventamentos");
+  await page.getByRole("button", { name: "3. Cargas e combinações" }).click();
+  await page.getByLabel("Fonte e hipótese de CASO-1").fill("Força nodal de exemplo, não projeto");
+  await page.getByRole("button", { name: "Adicionar carga nodal" }).click();
+  await page.getByText(/Carga 1 ·/).click();
+  await page.getByLabel("Fz (kN)").fill("-12");
+  await page.getByLabel("Fator CASO-1 em COMB-1").fill("1");
+  await page.getByRole("button", { name: "4. Conferência" }).click();
+  await expect(page.getByText(/adaptador de conectividade/)).toBeVisible();
+  await page.getByRole("button", { name: "Salvar levantamento" }).click();
+  await expect.poll(async () => page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem("jpn-projetos:v1")!);
+    return data.projects.at(-1).workspace.spatialPreparation?.groups.column.eGpa;
+  })).toBe(200);
+  const stored = await page.evaluate(() => {
+    const snapshot = JSON.parse(localStorage.getItem("jpn-projetos:v1")!);
+    const d = snapshot.projects.at(-1).workspace.spatialPreparation;
+    return { grade: d.groups.column.steelGrade, bases: d.supports.length, fz: d.loads[0].fzKn, factor: d.combinations[0].factors["CASO-1"], steel: d.groups.column.eGpa };
+  });
+  expect(stored.grade).toBe("Declarado para estudo"); expect(stored.bases).toBeGreaterThan(0);
+  expect(stored.fz).toBe(-12); expect(stored.factor).toBe(1);
+  await page.reload();
+  await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
+  await expect(page.getByLabel("Elasticidade E (GPa)")).toHaveValue("200");
+  await expect(page.getByLabel("Fonte do material / fabricante")).toHaveValue("Ficha técnica de exemplo");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test("alterar espaçamentos mantém declarações e marca o vínculo como desatualizado", async ({ page }) => {
+  await page.goto("/projetos/novo");
+  await page.getByLabel("Largura (m)").fill("8");
+  await page.getByLabel("Comprimento (m)").fill("12");
+  await page.getByLabel("Altura (m)").fill("3");
+  await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
+  await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
+  await page.getByLabel("Classe do aço").fill("Aço fictício só para estudo");
+  await page.getByRole("button", { name: "Salvar levantamento" }).click();
+  await page.getByRole("button", { name: "Estrutura", exact: true }).click();
+  await page.getByLabel("Espaçamento máximo entre tesouras (m)").fill("3");
+  await page.getByRole("button", { name: "Resultado", exact: true }).click();
+  await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
+  await expect(page.getByTestId("physical-prep-status")).toContainText("Cadastro desatualizado");
+  await expect(page.getByLabel("Classe do aço")).toHaveValue("Aço fictício só para estudo");
+  await page.getByRole("button", { name: /Reconhecer nova geometria/ }).click();
+  await expect(page.getByTestId("physical-prep-status")).not.toContainText("Cadastro desatualizado");
+  await expect(page.getByTestId("physical-prep-status")).toContainText("pendências");
+});
