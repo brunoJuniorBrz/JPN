@@ -8,9 +8,9 @@ import { SHOWCASE_IDS } from "../../src/domain/showcase-projects";
 for (const width of [375, 1440]) test(`demonstrações 3D com orçamento completo em ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   await page.goto("/");
-  for (const [kind, button, id] of [
-    ["cobertura", "Abrir exemplo de levantamento", SHOWCASE_IDS.cobertura],
-    ["galpao", "Abrir exemplo completo de pré-projeto", SHOWCASE_IDS.galpao],
+  for (const [button, id] of [
+    ["Abrir exemplo de levantamento", SHOWCASE_IDS.cobertura],
+    ["Abrir exemplo completo de pré-projeto", SHOWCASE_IDS.galpao],
   ] as const) {
     await page.getByRole("button", { name: button }).click();
     await expect(page).toHaveURL(new RegExp(`/projetos/${id}.*vista=3d`));
