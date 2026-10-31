@@ -48,7 +48,9 @@ function selectCaseName(cases: readonly { id: string }[], prefix: string) {
 }
 function catalogueGroup(material: Material): PhysicalGroup | null {
   if (material.isExample) return null;
-  if (material.physicalDeclaration) return structuredClone(material.physicalDeclaration);
+  // A catalogue section does not prescribe connection stiffness or local roll
+  // in another structure. Both must be explicitly reviewed in each project.
+  if (material.physicalDeclaration) return { ...structuredClone(material.physicalDeclaration), connection: "pending", rotationDeg: null };
   const profile = material.technicalProfile;
   if (!profile) return null;
   const d = profile.data;
@@ -149,7 +151,7 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
         <h4>Reutilizar no catálogo</h4>
         <p className="field-hint">Guarda estes dados declarados em um material já cadastrado. Campos incompletos continuam pendentes e nenhuma propriedade é certificada.</p>
         <Field label="Material existente para guardar a declaração"><Select value={catalogueTarget} onChange={e => setCatalogueTarget(e.target.value)}><option value="">Selecione um material existente</option>{data.materials.filter(m => !m.isExample).map(m => <option key={m.id} value={m.id}>{m.name}</option>)}</Select></Field>
-        <button type="button" className="button secondary" disabled={!catalogueTarget} onClick={() => { const material = data.materials.find(m => m.id === catalogueTarget); if (material && saveMaterial({ ...material, physicalDeclaration: structuredClone(currentRole) })) setNotice("Declaração física guardada no material selecionado. Confira as fontes antes de reutilizar."); }}>Guardar declaração física no catálogo</button>
+        <button type="button" className="button secondary" disabled={!catalogueTarget} onClick={() => { const material = data.materials.find(m => m.id === catalogueTarget); if (material && saveMaterial({ ...material, physicalDeclaration: { ...structuredClone(currentRole), connection: "pending", rotationDeg: null } })) setNotice("Declaração física guardada no material selecionado. Confira as fontes antes de reutilizar."); }}>Guardar declaração física no catálogo</button>
       </div>
     </>}
     {section === "supports" && <>
