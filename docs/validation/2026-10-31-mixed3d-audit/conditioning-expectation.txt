@@ -1,0 +1,38 @@
+..................................................F.                     [100%]
+================================== FAILURES ===================================
+_ test_mechanisms_contracts_and_numeric_limits[ill_conditioned-ILL_CONDITIONED] _
+
+mutation = 'ill_conditioned', code = 'ILL_CONDITIONED'
+
+    @pytest.mark.parametrize('mutation,code', [
+        ('no_support', 'UNSTABLE'), ('free_axial_transverse', 'UNSTABLE'), ('released_frame_rotation', 'UNSTABLE'),
+        ('two_torsion_releases', 'UNSUPPORTED_RELEASE'), ('moment_on_axial', 'INACTIVE_DOF'), ('restraint_on_axial', 'INACTIVE_DOF'),
+        ('support_duplicate', 'INVALID_REFERENCE'), ('unsupported_kind', 'UNSUPPORTED_MODEL'), ('coincident', 'INVALID_GEOMETRY'),
+        ('orphan', 'DISCONNECTED_MODEL'), ('pending_load', 'INVALID_INPUT'), ('missing_case_load', 'INCOMPLETE_MODEL'),
+        ('bad_combination', 'INVALID_COMBINATION'), ('node_limit', 'INPUT_LIMIT'), ('ill_conditioned', 'ILL_CONDITIONED'),
+    ])
+    def test_mechanisms_contracts_and_numeric_limits(mutation, code):
+        p = beam_and_axial()
+        if mutation == 'no_support': p['supports'] = []
+        if mutation == 'free_axial_transverse': p['supports'].pop()
+        if mutation == 'released_frame_rotation': p['members'][0]['release_end'][3:] = [True] * 3
+        if mutation == 'two_torsion_releases': p['members'][0]['release_start'][3] = True; p['members'][0]['release_end'][3] = True
+        if mutation == 'moment_on_axial': p['nodal_loads'][0].update(node='C', mx_nm=1.)
+        if mutation == 'restraint_on_axial': p['supports'][1]['restrained'][3] = True
+        if mutation == 'support_duplicate': p['supports'].append(copy.deepcopy(p['supports'][0]))
+        if mutation == 'unsupported_kind': p['members'][1]['kind'] = 'cable'
+        if mutation == 'coincident': p['nodes'].append({**p['nodes'][0], 'id': 'COPY'})
+        if mutation == 'orphan': p['nodes'].append(dict(id='ORPHAN', x_m=5., y_m=6., z_m=7.))
+        if mutation == 'pending_load': p['nodal_loads'][0]['fz_n'] = None
+        if mutation == 'missing_case_load': p['cases'].append(dict(id='EMPTY', source='Explicit case without declared load'))
+        if mutation == 'bad_combination': p['combinations'][0]['factors'] = {'WRONG': 1}
+        if mutation == 'node_limit': p['nodes'] *= 51
+        if mutation == 'ill_conditioned': p['sections'][0].update(iy_m4=1e-14, iz_m4=1e-14, j_m4=1e-14)
+>       with pytest.raises(AnalysisError) as exc: analyze_mixed3d(p)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_mixed3d_audit.py:191: Failed
+=========================== short test summary info ===========================
+FAILED engine\tests\test_mixed3d_audit.py::test_mechanisms_contracts_and_numeric_limits[ill_conditioned-ILL_CONDITIONED]
+1 failed, 51 passed in 1.07s

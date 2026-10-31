@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="13" time="0.997" timestamp="2026-10-31T17:45:51.462510-03:00" hostname="DESKTOP-20BN1M6"><testcase classname="tests.test_mixed3d_audit" name="test_real_spring_api_stiffness_and_axial_signs" time="0.003" /><testcase classname="tests.test_mixed3d_audit" name="test_parallel_beam_axial_closed_form_all_actions[2e-07--1]" time="0.062" /><testcase classname="tests.test_mixed3d_audit" name="test_parallel_beam_axial_closed_form_all_actions[2e-07-1]" time="0.005" /><testcase classname="tests.test_mixed3d_audit" name="test_parallel_beam_axial_closed_form_all_actions[200000000.0--1]" time="0.004" /><testcase classname="tests.test_mixed3d_audit" name="test_parallel_beam_axial_closed_form_all_actions[200000000.0-1]" time="0.004" /><testcase classname="tests.test_mixed3d_audit" name="test_parallel_beam_axial_closed_form_all_actions[1e+16--1]" time="0.005" /><testcase classname="tests.test_mixed3d_audit" name="test_parallel_beam_axial_closed_form_all_actions[1e+16-1]" time="0.005" /><testcase classname="tests.test_mixed3d_audit" name="test_spatial_frame_chain_against_independent_castigliano" time="0.011" /><testcase classname="tests.test_mixed3d_audit" name="test_unrestrained_axial_only_joint_keeps_three_translations_and_no_moments" time="0.007" /><testcase classname="tests.test_mixed3d_audit" name="test_declared_base_hinge_does_not_transfer_bending_moment" time="0.005" /><testcase classname="tests.test_mixed3d_audit" name="test_unhashable_frame_endpoint_fails_as_contract_error[start]" time="0.001"><failure message="TypeError: unhashable type: 'list'">end = 'start'
+
+    @pytest.mark.parametrize('end', ['start', 'end'])
+    def test_unhashable_frame_endpoint_fails_as_contract_error(end):
+        p = beam_and_axial(); p['members'][0][end] = []
+&gt;       with pytest.raises(AnalysisError) as exc: validate_mixed3d(p)
+                                                  ^^^^^^^^^^^^^^^^^^^
+
+engine\tests\test_mixed3d_audit.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+data = {'schema_version': 'jpn.mixed3d/1', 'units': 'SI', 'theory': 'linear-elastic-frame-axial', 'project': {'id': 'MIXED-1', 'revision': '1', 'source': 'Analytical isolated fixture'}, ...}
+
+    def validate_mixed3d(data):
+        obj(data, 'schema_version units theory project nodes members materials sections supports cases nodal_loads combinations', 'modelo')
+        if (data['schema_version'], data['units'], data['theory']) != ('jpn.mixed3d/1', 'SI', 'linear-elastic-frame-axial'):
+            fail('UNSUPPORTED_MODEL', 'Somente pórticos Euler-Bernoulli e barras axiais bilaterais 3D em SI.')
+        obj(data['project'], 'id revision source', 'projeto')
+        for k,v in data['project'].items():
+            text(v, 'projeto.' + k)
+        ids = {}
+        for field, limit in LIMITS.items():
+            collection = data[field]
+            if type(collection) is not list or len(collection) &gt; limit:
+                fail('INPUT_LIMIT', f'{field}: limite de {limit} registros.')
+        for field in ('nodes', 'members', 'materials', 'sections', 'cases', 'combinations'):
+            values = data[field]
+            names = []
+            for item in values:
+                if type(item) is not dict or 'id' not in item:
+                    fail('INVALID_INPUT', f'{field}: registro inválido.')
+                text(item['id'], f'{field}.id', True)
+                names.append(item['id'])
+            if len(names) != len(set(names)):
+                fail('DUPLICATE_ID', f'{field}: IDs duplicados.')
+            ids[field] = set(names)
+        if len(data['nodes']) &lt; 2 or not all(data[k] for k in ('members','cases','combinations','nodal_loads')):
+            fail('INCOMPLETE_MODEL', 'Informe nós, barras, casos, cargas e combinações.')
+        points={}
+        for n in data['nodes']:
+            obj(n,'id x_m y_m z_m','nó')
+            for k in ('x_m','y_m','z_m'):
+                number(n[k],-10000,10000,k)
+            points[n['id']] = np.array([n[k] for k in ('x_m','y_m','z_m')], dtype=float)
+        for mat in data['materials']:
+            obj(mat, 'id e_pa g_pa nu source revision', 'material')
+            for k in ('e_pa','g_pa'):
+                number(mat[k],1,1e13,k)
+            number(mat['nu'],-.99,.499,'nu')
+            if abs(mat['e_pa']/(2*mat['g_pa']*(1+mat['nu']))-1)&gt;.001:
+                fail('INVALID_MATERIAL','E, G e nu incompatíveis.')
+            text(mat['source'],'material.source');text(mat['revision'],'material.revision')
+        for sec in data['sections']:
+            obj(sec,'id area_m2 iy_m4 iz_m4 j_m4 source revision','seção')
+            for k in ('area_m2','iy_m4','iz_m4','j_m4'):
+                number(sec[k],1e-16,1000,k,True)
+            text(sec['source'],'seção.source');text(sec['revision'],'seção.revision')
+        frames=set(); edges=set()
+        for m in data['members']:
+            if m.get('kind')=='frame':
+                obj(m,'id start end kind material section rotation_deg release_start release_end','pórtico')
+                for k in ('material','section'):
+                    text(m[k],k,True)
+                if m['material'] not in ids['materials'] or m['section'] not in ids['sections']:
+                    fail('INVALID_REFERENCE',f"{m['id']}: material ou seção ausente.")
+                number(m['rotation_deg'],-360,360,'rotation_deg')
+                flags(m['release_start']);flags(m['release_end'])
+                if any(m['release_start'][:3]+m['release_end'][:3]):
+                    fail('UNSUPPORTED_RELEASE','Liberação translacional não suportada.')
+                if m['release_start'][3] and m['release_end'][3]:
+                    fail('UNSUPPORTED_RELEASE','Liberação de torção nas duas extremidades.')
+&gt;               frames.update((m['start'],m['end']))
+E               TypeError: unhashable type: 'list'
+
+engine\jpn_structural\mixed3d.py:83: TypeError</failure></testcase><testcase classname="tests.test_mixed3d_audit" name="test_unhashable_frame_endpoint_fails_as_contract_error[end]" time="0.001"><failure message="TypeError: unhashable type: 'list'">end = 'end'
+
+    @pytest.mark.parametrize('end', ['start', 'end'])
+    def test_unhashable_frame_endpoint_fails_as_contract_error(end):
+        p = beam_and_axial(); p['members'][0][end] = []
+&gt;       with pytest.raises(AnalysisError) as exc: validate_mixed3d(p)
+                                                  ^^^^^^^^^^^^^^^^^^^
+
+engine\tests\test_mixed3d_audit.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+data = {'schema_version': 'jpn.mixed3d/1', 'units': 'SI', 'theory': 'linear-elastic-frame-axial', 'project': {'id': 'MIXED-1', 'revision': '1', 'source': 'Analytical isolated fixture'}, ...}
+
+    def validate_mixed3d(data):
+        obj(data, 'schema_version units theory project nodes members materials sections supports cases nodal_loads combinations', 'modelo')
+        if (data['schema_version'], data['units'], data['theory']) != ('jpn.mixed3d/1', 'SI', 'linear-elastic-frame-axial'):
+            fail('UNSUPPORTED_MODEL', 'Somente pórticos Euler-Bernoulli e barras axiais bilaterais 3D em SI.')
+        obj(data['project'], 'id revision source', 'projeto')
+        for k,v in data['project'].items():
+            text(v, 'projeto.' + k)
+        ids = {}
+        for field, limit in LIMITS.items():
+            collection = data[field]
+            if type(collection) is not list or len(collection) &gt; limit:
+                fail('INPUT_LIMIT', f'{field}: limite de {limit} registros.')
+        for field in ('nodes', 'members', 'materials', 'sections', 'cases', 'combinations'):
+            values = data[field]
+            names = []
+            for item in values:
+                if type(item) is not dict or 'id' not in item:
+                    fail('INVALID_INPUT', f'{field}: registro inválido.')
+                text(item['id'], f'{field}.id', True)
+                names.append(item['id'])
+            if len(names) != len(set(names)):
+                fail('DUPLICATE_ID', f'{field}: IDs duplicados.')
+            ids[field] = set(names)
+        if len(data['nodes']) &lt; 2 or not all(data[k] for k in ('members','cases','combinations','nodal_loads')):
+            fail('INCOMPLETE_MODEL', 'Informe nós, barras, casos, cargas e combinações.')
+        points={}
+        for n in data['nodes']:
+            obj(n,'id x_m y_m z_m','nó')
+            for k in ('x_m','y_m','z_m'):
+                number(n[k],-10000,10000,k)
+            points[n['id']] = np.array([n[k] for k in ('x_m','y_m','z_m')], dtype=float)
+        for mat in data['materials']:
+            obj(mat, 'id e_pa g_pa nu source revision', 'material')
+            for k in ('e_pa','g_pa'):
+                number(mat[k],1,1e13,k)
+            number(mat['nu'],-.99,.499,'nu')
+            if abs(mat['e_pa']/(2*mat['g_pa']*(1+mat['nu']))-1)&gt;.001:
+                fail('INVALID_MATERIAL','E, G e nu incompatíveis.')
+            text(mat['source'],'material.source');text(mat['revision'],'material.revision')
+        for sec in data['sections']:
+            obj(sec,'id area_m2 iy_m4 iz_m4 j_m4 source revision','seção')
+            for k in ('area_m2','iy_m4','iz_m4','j_m4'):
+                number(sec[k],1e-16,1000,k,True)
+            text(sec['source'],'seção.source');text(sec['revision'],'seção.revision')
+        frames=set(); edges=set()
+        for m in data['members']:
+            if m.get('kind')=='frame':
+                obj(m,'id start end kind material section rotation_deg release_start release_end','pórtico')
+                for k in ('material','section'):
+                    text(m[k],k,True)
+                if m['material'] not in ids['materials'] or m['section'] not in ids['sections']:
+                    fail('INVALID_REFERENCE',f"{m['id']}: material ou seção ausente.")
+                number(m['rotation_deg'],-360,360,'rotation_deg')
+                flags(m['release_start']);flags(m['release_end'])
+                if any(m['release_start'][:3]+m['release_end'][:3]):
+                    fail('UNSUPPORTED_RELEASE','Liberação translacional não suportada.')
+                if m['release_start'][3] and m['release_end'][3]:
+                    fail('UNSUPPORTED_RELEASE','Liberação de torção nas duas extremidades.')
+&gt;               frames.update((m['start'],m['end']))
+E               TypeError: unhashable type: 'list'
+
+engine\jpn_structural\mixed3d.py:83: TypeError</failure></testcase><testcase classname="tests.test_mixed3d_audit" name="test_nodewise_corruption_cannot_hide_behind_global_balance" time="0.005"><failure message="Failed: DID NOT RAISE AnalysisError">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000014AFB773CB0&gt;
+
+    def test_nodewise_corruption_cannot_hide_behind_global_balance(monkeypatch):
+        original = FEModel3D.analyze_linear
+        def corrupt(self, *args, **kwargs):
+            original(self, *args, **kwargs)
+            # Controlled fault AFTER the real solve: transverse displacement does
+            # not change the vertical axial spring extension or stored reactions.
+            # Global external balance still passes; member/joint balance must fail.
+            self.nodes['B'].DY['LC'] += 1e-4
+        monkeypatch.setattr(FEModel3D, 'analyze_linear', corrupt)
+&gt;       with pytest.raises(AnalysisError) as exc: analyze_mixed3d(beam_and_axial())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_mixed3d_audit.py:104: Failed</failure></testcase></testsuite></testsuites>

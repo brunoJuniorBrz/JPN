@@ -1,0 +1,54 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_ test_near_axis_large_origin_rejects_real_nonorthogonal_pynite_basis[axial] __
+
+kind = 'axial'
+
+    @pytest.mark.parametrize('kind', ['axial', 'frame'])
+    def test_near_axis_large_origin_rejects_real_nonorthogonal_pynite_basis(kind):
+        p = beam_and_axial()
+        if kind == 'axial':
+            p['nodes'][2].update(x_m=2. + 1e-8, y_m=1., z_m=0.)
+            p['nodal_loads'][0].update(fy_n=-1000., fz_n=0.)
+        else:
+            p['nodes'][1].update(x_m=1e-8, y_m=1., z_m=0.)
+            p['nodes'][2].update(x_m=2., y_m=1., z_m=0.)
+        # Near origin, the library produces orthonormal axes and this physical model
+        # is valid. At X+9000 m, math.isclose of absolute coordinates in the pinned
+        # library misclassifies the element direction. Do not change its orientation
+        # or add restraints: refuse the nonphysical basis before solving.
+        analyze_mixed3d(p)
+        for node in p['nodes']: node['x_m'] += 9000.
+>       with pytest.raises(AnalysisError) as exc: analyze_mixed3d(p)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_mixed3d_audit.py:46: Failed
+_ test_near_axis_large_origin_rejects_real_nonorthogonal_pynite_basis[frame] __
+
+kind = 'frame'
+
+    @pytest.mark.parametrize('kind', ['axial', 'frame'])
+    def test_near_axis_large_origin_rejects_real_nonorthogonal_pynite_basis(kind):
+        p = beam_and_axial()
+        if kind == 'axial':
+            p['nodes'][2].update(x_m=2. + 1e-8, y_m=1., z_m=0.)
+            p['nodal_loads'][0].update(fy_n=-1000., fz_n=0.)
+        else:
+            p['nodes'][1].update(x_m=1e-8, y_m=1., z_m=0.)
+            p['nodes'][2].update(x_m=2., y_m=1., z_m=0.)
+        # Near origin, the library produces orthonormal axes and this physical model
+        # is valid. At X+9000 m, math.isclose of absolute coordinates in the pinned
+        # library misclassifies the element direction. Do not change its orientation
+        # or add restraints: refuse the nonphysical basis before solving.
+        analyze_mixed3d(p)
+        for node in p['nodes']: node['x_m'] += 9000.
+>       with pytest.raises(AnalysisError) as exc: analyze_mixed3d(p)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_mixed3d_audit.py:46: Failed
+=========================== short test summary info ===========================
+FAILED engine\tests\test_mixed3d_audit.py::test_near_axis_large_origin_rejects_real_nonorthogonal_pynite_basis[axial]
+FAILED engine\tests\test_mixed3d_audit.py::test_near_axis_large_origin_rejects_real_nonorthogonal_pynite_basis[frame]
+2 failed, 31 deselected in 0.95s

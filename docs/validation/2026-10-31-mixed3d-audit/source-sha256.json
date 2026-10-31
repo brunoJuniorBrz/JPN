@@ -1,0 +1,9 @@
+{
+    "engine/jpn_structural/mixed3d.py":  "564ab524cba67f6bab2dc42f5ca36989d4d7a1d521b9560239f12087ada772d2",
+    "engine/tests/test_mixed3d.py":  "f8d49bfc9a4eee45a78cc1f795e784acbd69d309a8285e841700c070e8069309",
+    "engine/tests/test_mixed3d_audit.py":  "df0d65ebc02cb231dd61bdddec53e340cab14fe7708debc8532306718d0791f8",
+    "engine/tests/mixed3d_reference.py":  "8eed0d80af7359809a95edac77a7143d4e418eaa8736ec1b3fbcbc1f57d7b579",
+    "engine/audit_mixed3d.py":  "e50afa96d8e9b4110b42730e7f7a51d58d2f9c46baf4f4d30d6d0da808849bb0",
+    "docs/PROTOTIPO-MISTO-PORTE-AXIAL-3D.md":  "436ad0ece3d3691422cdf028373bb205fdd163d8d74956911174c6ed57702a19",
+    "docs/AUDITORIA-PR-15-MOTOR-MISTO-3D.md":  "48c8541bdc6cb86da980b49342dc210e84d964109d3256a3ac5b8cd04bba121e"
+}
