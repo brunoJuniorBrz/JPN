@@ -96,6 +96,12 @@ def analyze_frame3d(raw):
             for member in model.members.values():
                 if len(member.sub_members) != 1:
                     fail('UNRESOLVED_CONTACT', 'PyNite tentou criar juntas não declaradas.')
+                axes = np.asarray(next(iter(member.sub_members.values())).T()[:3, :3], dtype=float)
+                # Same fail-closed protection as the audited mixed solver.
+                # Near-axis classification in PyNite 3.2.1 can depend on the
+                # absolute origin; never solve with a nonorthogonal local basis.
+                if not np.isfinite(axes).all() or not np.allclose(axes @ axes.T, np.eye(3), rtol=0, atol=1e-12):
+                    fail('INVALID_GEOMETRY', f'{member.name}: base local não ortogonal no PyNite 3.2.1; modelo recusado.')
             first_combo = data['combinations'][0]['id']
             stiffness = model.Ke(first_combo, check_stability=False, sparse=False)
             restrained = {s['node']: s['restrained'] for s in data['supports']}
