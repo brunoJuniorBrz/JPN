@@ -79,11 +79,14 @@ export function spatialPreparationReview(project: Project, draft: SpatialPrepara
   if (!draft.loadPathReview.trim()) add("LOAD_PATH", "Descreva o caminho das ações até os apoios.");
   if (!draft.cases.length || draft.cases.some(c => !c.source.trim()) || new Set(draft.cases.map(c => c.id)).size !== draft.cases.length) add("CASES", "Identifique os casos e suas fontes sem presumir ações.");
   if (!draft.loads.length) add("LOADS", "Nenhuma carga nodal declarada.");
+  if (new Set(draft.loads.map(l => l.id)).size !== draft.loads.length) add("DUPLICATE_LOADS", "Identificadores de cargas duplicados.");
   if (draft.loads.some(l => !nodes.has(l.nodeId) || !draft.cases.some(c => c.id === l.caseId) ||
      [l.fxKn, l.fyKn, l.fzKn, l.mxKnm, l.myKnm, l.mzKnm].some(v => v === null))) add("LOAD_VALUES", "Cargas com nó/caso inválido ou componente em branco; informe zero explicitamente.");
   if (!draft.combinations.length || draft.combinations.some(c => !Object.values(c.factors).some(v => v !== null && v !== 0)
       || Object.keys(c.factors).some(id => !draft.cases.some(d => d.id === id))
       || draft.cases.some(d => c.factors[d.id] === null || c.factors[d.id] === undefined))) add("COMBINATIONS", "Combinações com fatores faltantes ou inválidos.");
-  return { geometry, base, contacts, stale, issues, declarationsComplete: issues.every(i => ["TOPOLOGY"].includes(i.code)) && issues.some(i => i.code === "TOPOLOGY") ? true : issues.length === 0,
-    analysisReady: false as const };
+  // Complete *declarations* never imply an analyzable or approved physical model.
+  // The topology adapter and engineering validation are separate future work.
+  const declarationsComplete = !!geometry && !stale && issues.every(i => i.code === "TOPOLOGY");
+  return { geometry, base, contacts, stale, issues, declarationsComplete, analysisReady: false as const };
 }
