@@ -13,6 +13,9 @@ The Python functions delegate to the **existing** `jpn_structural.service.Handle
 
 ## Configure the Python service (new Vercel project)
 
+**Deployment branch:** Until PR #13 is approved and merged, these `engine/api` endpoints exist on `feat/vercel-python-free-runtime`, not on `main` or the isolated truss / mixed-frame prototype branches. Keep `Root Directory = engine`, deploy that exact branch for an isolated staging test, and only promote a successfully verified build. Changing `Root Directory` does not redeploy an existing failed build. Do not merge the unverified numerical prototype branches just to make Vercel deploy.
+
+
 1. In Vercel, **Add New → Project** and import the existing private GitHub repository `brunoJuniorBrz/JPN` **again**; leave the existing `jpn-three` project unchanged.
 2. Name the new project, for example, `jpn-structural-engine`.
 3. Set **Root Directory** to **`engine`** (not `/`), Framework Preset **Other**. Keep the Python install/build defaults; `pyproject.toml` declares Python >=3.12,<3.13 and pins NumPy, SciPy and PyNiteFEA.
