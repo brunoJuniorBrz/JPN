@@ -36,10 +36,11 @@ export function drawPresentationAnnotations(
     ctx.fillStyle="#ffffff";ctx.font=`500 ${scale*.77}px sans-serif`;
     lines.forEach((line,i)=>ctx.fillText(line,pad*1.5,headerHeight+pad*1.6+i*scale*1.65,boxW-pad));
   }
-  const notice="JPN · VISUALIZAÇÃO PRELIMINAR — NÃO É DIMENSIONAMENTO E NÃO LIBERA FABRICAÇÃO";
-  const footHeight=Math.max(scale*2,30);
-  ctx.fillStyle="rgba(15,29,35,.87)";ctx.fillRect(0,height-footHeight,width,footHeight);
-  ctx.fillStyle="#ffffff";ctx.font=`600 ${Math.max(9,scale*.61)}px sans-serif`;
-  ctx.fillText(notice,pad,height-footHeight/2,width-pad*2);
+  const footHeight=Math.max(scale*2.5,44);
+  ctx.fillStyle="rgba(15,29,35,.9)";ctx.fillRect(0,height-footHeight,width,footHeight);
+  ctx.fillStyle="#ffffff";ctx.font=`700 ${Math.max(11,scale*.62)}px sans-serif`;
+  ctx.fillText("JPN · VISUALIZAÇÃO PRELIMINAR",pad,height-footHeight*.66,width-pad*2);
+  ctx.font=`600 ${Math.max(10,scale*.55)}px sans-serif`;
+  ctx.fillText("NÃO É DIMENSIONAMENTO · NÃO LIBERA FABRICAÇÃO",pad,height-footHeight*.29,width-pad*2);
   ctx.restore();
 }
