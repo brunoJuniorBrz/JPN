@@ -1,0 +1,10 @@
+{
+    "engine/jpn_structural/truss3d.py":  "3d7a2c629c4013f7a770ba139459e88fc210f7e1d25616fd1cd5122c0cbbbc92",
+    "engine/tests/test_truss3d.py":  "940cc874315b018abc30f3603ede4bb69bccb985eae54e97b07c56aabb047e54",
+    "engine/tests/test_truss3d_audit.py":  "fd5c3fe0a2832c23df756a29f4adca8ec255c5d762f9082debd84ee5dcc09ab0",
+    "engine/tests/truss3d_reference.py":  "93cd5e3ffb86b9290acc747b0b891c0cd961fcfdc3d4c09119230c7bd555f172",
+    "engine/examples/truss3d-bar.json":  "2f4d4851091c4c420dcc78e13ac2beacf377cc3007670da236b065d317d627e2",
+    "engine/audit_truss3d.py":  "436fd4e98ca21b9cca80272ef9057ce361e8207e2037e6c23cd3847d992460d9",
+    "docs/PROTOTIPO-TRELICA-AXIAL-3D.md":  "9daca4fcaa7c72c67551bed0bc5a78df1a4afa3fa4adfa3f93de5211151446be",
+    "docs/AUDITORIA-PR-14-TRELICA-AXIAL-3D.md":  "af709363836fd40f250f2f73d606c159ed805a1f7539146ab9e9591187ab6c99"
+}

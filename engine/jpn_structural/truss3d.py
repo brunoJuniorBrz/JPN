@@ -174,7 +174,10 @@ def analyze_truss3d(raw):
         if condition > 1e10:
             _error("ILL_CONDITIONED", "Sistema fora do domínio numérico experimental.")
         try:
-            u[free] = solve(kff, f[free], assume_a="pos", check_finite=True)
+            # Solve the same diagonally equilibrated system used above for
+            # stability: S^-1 K S^-1 v=S^-1 f, u=S^-1 v. Raw SI magnitudes can
+            # differ by many orders without a physical/numerical mechanism.
+            u[free] = solve(scaled, f[free] / scale, assume_a="pos", check_finite=True) / scale
         except (ValueError, np.linalg.LinAlgError) as exc:
             raise AnalysisError("NUMERICAL_FAILURE", "Falha na solução do sistema elástico.") from exc
     if not np.isfinite(u).all():

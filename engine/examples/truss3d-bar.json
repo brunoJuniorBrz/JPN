@@ -1,0 +1,65 @@
+{
+  "schema_version": "jpn.truss3d/1",
+  "units": "SI",
+  "theory": "linear-elastic-axial",
+  "project": {
+    "id": "P-1",
+    "revision": "r1",
+    "source": "analytical-fixture"
+  },
+  "case": {
+    "id": "LC-1",
+    "source": "explicit analytical test force"
+  },
+  "nodes": [
+    {
+      "id": "A",
+      "x_m": 0.0,
+      "y_m": 0.0,
+      "z_m": 0.0
+    },
+    {
+      "id": "B",
+      "x_m": 2.0,
+      "y_m": 0.0,
+      "z_m": 0.0
+    }
+  ],
+  "members": [
+    {
+      "id": "AB",
+      "start": "A",
+      "end": "B",
+      "e_pa": 200000000000.0,
+      "area_m2": 0.01,
+      "source": "test",
+      "revision": "1"
+    }
+  ],
+  "supports": [
+    {
+      "node": "A",
+      "restrained": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "B",
+      "restrained": [
+        false,
+        true,
+        true
+      ]
+    }
+  ],
+  "loads": [
+    {
+      "node": "B",
+      "fx_n": 1000.0,
+      "fy_n": 0.0,
+      "fz_n": 0.0
+    }
+  ]
+}

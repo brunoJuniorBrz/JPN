@@ -37,7 +37,17 @@ CLI de uso **local apenas**:
 python -m jpn_structural.truss3d < engine/examples/truss3d-bar.json
 ```
 
-**Validação preliminar desta implementação:** 27 testes passaram em ambiente Python local com NumPy/SciPy, usando substitutos equivalentes dos helpers existentes para importação; **ainda não** foi executada a suíte real do repositório integrado, nem PyNite 3.2.1, Linux, Vercel ou cenários de produção. O Codex deve executar esses testes no checkout real, conferir as APIs importadas e fazer uma revisão de sinais e condicionamento antes de qualquer integração.
+**Histórico da validação preliminar:** os 27 testes originais haviam passado em Python 3.13 com substitutos dos helpers; isso não constituía validação integrada.
+
+**Auditoria posterior em 31/10/2026:** os 27 testes originais passaram em Python 3.12.10 com as dependências reais fixadas. Foram adicionadas referências analíticas de barra oblíqua/tripé espacial e comparação direta com PyNiteFEA 3.2.1 (Spring3D axial bilateral), além de geometrias adversariais e mecanismos. A resolução passou a usar o mesmo equilíbrio diagonal usado na verificação espectral, corrigindo uma falha reproduzida com grande contraste de rigidezes. Resultado: 63 testes direcionados aprovados e validação Python completa aprovada, sem alterar os motores anteriores. Ver [relatório da auditoria do PR #14](AUDITORIA-PR-14-TRELICA-AXIAL-3D.md) para contagens, evidências, correções e ressalvas. Linux, Vercel e produção não foram verificados; o protótipo permanece isolado.
+
+Reprodução das comparações e do benchmark de 100 nós/235 barras, com uma thread de BLAS:
+
+```sh
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python engine/audit_truss3d.py
+```
+
+Em PowerShell, configure as três variáveis com `$env:NOME='1'`. A entrada `engine/examples/truss3d-bar.json` usada pelo comando CLI acima agora está versionada e é exercitada pelo teste de round-trip real.
 
 ## Próximos passos (fora deste PR)
 

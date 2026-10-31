@@ -1,0 +1,60 @@
+{
+    "date":  "2026-10-31",
+    "pr":  14,
+    "initial_commit":  "fc7d7c5ccceb834fb080af5d139f496bb43dd93f",
+    "branch":  "feat/isolated-axial-truss3d-prototype",
+    "verdict":  "APROVADO COM RESSALVAS",
+    "scope":  "Isolated linear axial 3D prototype only; no mixed solver, UI, HTTP, deployment, or design approval",
+    "environment":  {
+                        "platform":  "Windows 10",
+                        "pytest":  "9.2.0",
+                        "numpy":  "2.5.4",
+                        "real_dependencies":  true,
+                        "python":  "3.12.10",
+                        "PyNiteFEA":  "3.2.1",
+                        "pip_check_exit":  0,
+                        "stub_helpers":  false,
+                        "blas_threads":  1,
+                        "scipy":  "1.18.1"
+                    },
+    "baseline":  {
+                     "exit":  0,
+                     "failed":  0,
+                     "passed":  27
+                 },
+    "adversarial_red":  {
+                            "exit":  1,
+                            "cause":  "Unscaled linear solve emits LinAlgWarning for valid diagonally equilibrated system",
+                            "failed":  1,
+                            "passed":  28
+                        },
+    "targeted":  {
+                     "exit":  0,
+                     "failed":  0,
+                     "passed":  63
+                 },
+    "full_python":  {
+                        "tests":  1340,
+                        "failures":  0,
+                        "errors":  0,
+                        "skipped":  0,
+                        "exit_code":  0
+                    },
+    "reference_campaign":  1000,
+    "references_benchmark_exit":  0,
+    "pynite_valid_reference_assemblies_in_new_tests":  21,
+    "fixes":  [
+                  "Solve the same equilibrated linear system checked for stability",
+                  "Provide documented CLI example and exercise it in round-trip test"
+              ],
+    "previous_solvers_modified":  false,
+    "ui_modified":  false,
+    "deploy_performed":  false,
+    "merge_performed":  false,
+    "linux_verified":  false,
+    "limitations":  [
+                        "Local prototype CLI has no native hard timeout or RSS quota",
+                        "Benchmark case has 100 nodes / 235 members / 80 free translations, not all possible topologies",
+                        "Windows only; UI, production, mixed elements and code design not tested"
+                    ]
+}

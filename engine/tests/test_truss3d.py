@@ -128,8 +128,10 @@ def test_cli_real_json_round_trip_and_invalid_request():
     import subprocess
     import sys
     import json
+    from pathlib import Path
     command = [sys.executable, "-m", "jpn_structural.truss3d"]
-    completed = subprocess.run(command, input=json.dumps(beam()).encode(), capture_output=True, timeout=10)
+    example = (Path(__file__).parents[1] / "examples/truss3d-bar.json").read_bytes()
+    completed = subprocess.run(command, input=example, capture_output=True, timeout=10)
     assert completed.returncode == 0, completed.stderr
     parsed = json.loads(completed.stdout)
     assert parsed["members"]["AB"]["axial_n"] == pytest.approx(1000)
