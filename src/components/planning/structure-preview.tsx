@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import type { Project } from "@/domain/models";
 import type { PieceRole, StructureResult } from "@/domain/structure";
@@ -13,10 +13,15 @@ import type { ViewName } from "@/domain/calculations/geometry";
 import { profiles3DDemo } from "@/domain/profiles-3d-demo";
 const Structure3D = dynamic(() => import("./structure-3d").then(m => m.Structure3D), { ssr: false, loading: () => <p role="status">Carregando visualização 3D…</p> });
 
-export function StructurePreview({ project, result, onConfigureProfile, startIn3D = false }: { project: Project; result: StructureResult; onConfigureProfile?: (role: PieceRole) => void; startIn3D?: boolean }) {
+export function StructurePreview({ project, result, onConfigureProfile, startIn3D = false, open3DRequest = 0 }: { project: Project; result: StructureResult; onConfigureProfile?: (role: PieceRole) => void; startIn3D?: boolean; open3DRequest?: number }) {
   const [view, setView] = useState<ViewName>("plan"), [detail, setDetail] = useState(false), [selected, setSelected] = useState("");
   const [three, setThree] = useState(startIn3D), [dimensions, setDimensions] = useState(true);
   const [demo, setDemo] = useState(false);
+  useEffect(() => {
+    // A repeated click on "Abrir modelo 3D" also works while already on Resultado.
+    if (open3DRequest === 0) return;
+    setSelected(""); setDetail(false); setDemo(false); setThree(true);
+  }, [open3DRequest]);
   const activeModel = useMemo(() => demo && three ? profiles3DDemo() : result.model, [demo, three, result.model]);
   const model = useMemo(() => structureViews(project, result, detail), [project, result, detail]);
   if (!model || !result.model) return null;
