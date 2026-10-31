@@ -82,7 +82,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       if(value === "finished" && envelope && !environment) {
         void import("./presentation-scene").then(({createPresentationScene}) => {
           if(disposed || activeMode !== "finished" || environment) return;
-          environment = createPresentationScene(envelope,model,optionsRef.current,render);
+          environment = createPresentationScene(envelope,optionsRef.current,render);
           scene.add(environment.root);
           canvas.dataset.contextLoaded = "true";
           fitFull();
