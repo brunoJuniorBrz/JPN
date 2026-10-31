@@ -33,7 +33,7 @@ class Handler(BaseHTTPRequestHandler):
         token = os.environ.get("JPN_ANALYSIS_TOKEN")
         if token and not hmac.compare_digest(self.headers.get("Authorization", "").encode("utf-8"), f"Bearer {token}".encode("utf-8")):
             return self.respond(401, {"error": {"code": "UNAUTHORIZED", "message": "Authentication required"}})
-        if self.path != "/analyze":
+        if self.path not in ("/analyze", "/analyze3d"):
             return self.respond(404, {"error": {"code": "NOT_FOUND", "message": "Unknown path"}})
         try:
             length = int(self.headers.get("Content-Length", "0"))
@@ -46,13 +46,19 @@ class Handler(BaseHTTPRequestHandler):
                 if len(payload) != length:
                     raise ValueError("Incomplete request")
                 # Separate worker enforces a hard timeout and releases numerical memory.
-                result = subprocess.run([sys.executable, "-m", "jpn_structural"], input=payload, capture_output=True, timeout=20)
+                module = "jpn_structural.frame3d" if self.path == "/analyze3d" else "jpn_structural"
+                worker_env = {**os.environ, "OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"}
+                result = subprocess.run([sys.executable, "-m", module], input=payload, capture_output=True, timeout=20, env=worker_env)
+                if len(result.stdout) > 2_000_000:
+                    return self.respond(422, {"error": {"code": "OUTPUT_LIMIT", "message": "Resposta excede 2 MB"}})
                 data = json.loads(result.stdout)
                 if result.returncode:
                     return self.respond(422, data)
                 self.respond(200, {"request_sha256": hashlib.sha256(payload).hexdigest(), "result": data})
             finally:
                 slots.release()
+        except subprocess.TimeoutExpired:
+            self.respond(503, {"error": {"code": "TIMEOUT", "message": "Processo interrompido após 20 segundos"}})
         except (ValueError, OSError, subprocess.SubprocessError) as exc:
             self.respond(422, {"error": {"code": "SERVICE_FAILURE", "message": type(exc).__name__}})
 

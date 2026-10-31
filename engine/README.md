@@ -1,5 +1,18 @@
 # Núcleo experimental de análise JPN
 
+## Módulo espacial experimental — jpn.frame3d/1
+
+O pacote agora inclui um módulo isolado de pórticos espaciais Euler–Bernoulli, executado pelo **PyNiteFEA 3.2.1 (MIT)**, fixado como dependência de runtime. Global Z para cima; SI; dados físicos, fontes, apoios, liberações, casos e combinações explícitos. O contrato 2D e seu solver abaixo permanecem preservados. Não há dimensionamento ou liberação de fabricação.
+
+```sh
+python -m jpn_structural.frame3d < engine/examples/spatial-portal.json
+python engine/validate.py
+```
+
+O serviço existente aceita também `/analyze3d`; o Next usa `POST /api/analysis3d` e `JPN_SPATIAL_ANALYSIS_URL`, mantendo o endpoint/configuração 2D independente. Em hosts sem Python local, configure o serviço remoto privado com HTTPS e `JPN_ANALYSIS_TOKEN`. Limites, sinais físicos, referências analíticas, benchmark de 60 nós/79 barras, inputs/resultados JSON e instruções de interface estão no [relatório espacial](../docs/ENTREGA-MOTOR-3D-EXPERIMENTAL.md). O validador executa as suítes 2D/3D, a campanha histórica e os benchmarks em worker limitado a 20 s.
+
+## Contrato legado — jpn.truss/1
+
 Análise elástica linear de treliças planas articuladas, de primeira ordem e pequenas deformações. Executável Python independente, agora chamado pelo painel técnico de tesoura isolada da v0.6 através de processo local ou serviço HTTP privado. A análise permanece separada do orçamento e os resultados são transitórios. Não faz dimensionamento nem aprova estruturas para construção. Os valores dos exemplos e testes são dados sintéticos de verificação, nunca padrões para uma obra.
 
 ## Executar
@@ -28,7 +41,7 @@ Linux/macOS: substituir `.venv\Scripts\python.exe` por `.venv/bin/python`. Para 
 
 O ambiente portátil preparado nesta auditoria fica em `.tools/` (ignorado pelo Git). Neste computador os comandos equivalentes já funcionam com `.tools/python/python.exe`; no Python embutido do Windows, a instalação usa `--no-build-isolation` por limitação desse runtime. Para instalações regulares, preferir o ambiente virtual acima.
 
-Somente runtime: `python -m pip install ./engine` instala NumPy e SciPy. PyNite e pytest são dependências de validação, não do solver. `requirements-validation.lock` fixa também as dependências transitivas do ambiente testado. Os pacotes nativos dependem de plataforma/BLAS; uma segunda plataforma ainda precisa executar a CI.
+Runtime: `python -m pip install ./engine` instala NumPy, SciPy e PyNiteFEA 3.2.1. PyNite é runtime do módulo espacial e referencial de validação do contrato 2D; pytest continua somente de validação. `requirements-validation.lock` fixa também as dependências transitivas do ambiente testado. Os pacotes nativos dependem de plataforma/BLAS; consulte os checks Windows/Linux do PR para a execução remota.
 
 ## Contrato e sinais
 
@@ -88,7 +101,7 @@ Os dois programas usam NumPy/SciPy e podem compartilhar BLAS: concordância não
 
 `python engine/validate.py` executa toda a suíte e produz `engine/validation-results/pytest.xml` e `validation.json`, com contagem, versões, hashes dos fontes/testes e desvios máximos identificados por semente. Qualquer falha ou teste ignorado impede status aprovado. A workflow `.github/workflows/validation.yml` repete as suítes em CI; sua execução remota ainda não foi observada. Evidência local arquivada em `docs/validation/2026-10-30/` e relatório em `docs/AUDITORIA-MOTOR.md`.
 
-## Fora do domínio e integração futura
+## Fora do domínio do contrato 2D e integração
 
 Sem análise 3D, flexão, torção, excentricidades, ligações semirrígidas, apoio inclinado/mola, material não linear, plastificação, peso próprio automático, cargas distribuídas/temperatura, combinações, dinâmica, flambagem, P–Δ/P–δ, vento, dimensionamento normativo ou otimização. Barras coincidentes/duplicadas são rejeitadas; cruzamento de barras não cria nó automaticamente. Nós interiores a uma barra não a discretizam; sua conectividade depende das extremidades explicitamente cadastradas.
 

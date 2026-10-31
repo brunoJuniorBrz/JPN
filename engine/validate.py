@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 import hashlib
 from importlib.metadata import version
 import json
+import os
 from pathlib import Path
 import platform
 import subprocess
@@ -59,10 +60,19 @@ def main():
             print(f"Reference comparisons: {seed+1}/1000", flush=True)
     source_hashes = {str(path.relative_to(root)).replace("\\", "/"): hashlib.sha256(path.read_bytes()).hexdigest()
                      for path in sorted(root.rglob("*.py")) if "build" not in path.relative_to(root).parts}
-    healthy = suite.returncode == 0 and counts["tests"] > 0 and not counts["skipped"] and not failures and comparisons == 1000
+    spatial_ok = False
+    try:
+        bench = subprocess.run([sys.executable, str(root / "benchmark_spatial.py")], cwd=root, capture_output=True, text=True, timeout=20,
+                               env={**os.environ, "OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"})
+        spatial = json.loads(bench.stdout)
+        spatial_ok = bench.returncode == 0 and len(spatial["results"]) == 2
+    except (ValueError, subprocess.SubprocessError) as exc:
+        spatial = {"status": "failed", "error": type(exc).__name__}
+    healthy = suite.returncode == 0 and counts["tests"] > 0 and not counts["skipped"] and not failures and comparisons == 1000 and spatial_ok
     report = {
         "status": "passed" if healthy else "failed",
-        "scope": "Experimental first-order 2D axial trusses only; not professional validation or code design",
+        "scope": "Experimental first-order 2D axial trusses and explicit 3D Euler-Bernoulli frames; no code design",
+        "spatial_benchmarks": spatial,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "elapsed_seconds": time.perf_counter()-started,
         "environment": {"python": platform.python_version(), "platform": platform.platform(),
