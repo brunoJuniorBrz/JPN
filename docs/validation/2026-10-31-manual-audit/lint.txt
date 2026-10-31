@@ -1,0 +1,16 @@
+corepack : $ eslint .
+No linha:2 caractere:536
++ ... /audit-vitest.json *> $log} else {corepack pnpm $task *> $log}; $code ...
++                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ eslint .:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+C:\Users\Bruno\Downloads\JPN-main\.tools\adapter-worktree\src\components\planning\spatial-preparation-panel.tsx
+  11:3  warning  'baseNodeIds' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Bruno\Downloads\JPN-main\.tools\adapter-worktree\src\components\planning\structure-3d.tsx
+  154:6  warning  React Hook useEffect has a missing dependency: 'envelope'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+✖ 2 problems (0 errors, 2 warnings)
+

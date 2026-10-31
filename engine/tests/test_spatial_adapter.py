@@ -42,12 +42,36 @@ def test_segmented_cantilever_point_load_analytical(sign):
     assert r['nodes']['C']['translation_m'][2] == pytest.approx(force * a**3 / (3 * ei), rel=1e-10)
     assert r['nodes']['B']['translation_m'][2] == pytest.approx(force * a**2 * (3 * length - a) / (6 * ei), rel=1e-10)
     assert r['nodes']['B']['rotation_rad'][1] == pytest.approx(-force * a**2 / (2 * ei), rel=1e-10)
+    assert r['nodes']['C']['rotation_rad'][1] == pytest.approx(-force * a**2 / (2 * ei), rel=1e-10)
     assert r['nodes']['A']['force_n'][2] == pytest.approx(-force, rel=1e-10)
     assert r['nodes']['A']['moment_nm'][1] == pytest.approx(force * a, rel=1e-10)
     assert abs(r['members']['BEAM:S1']['stations'][0]['my_nm']) == pytest.approx(abs(force * a), rel=1e-10)
     assert np.linalg.norm(r['members']['BRANCH']['end_actions_local']) < 1e-6
     assert np.linalg.norm(r['members']['BEAM:S2']['end_actions_local']) < 1e-6
+    for station in r['members']['BEAM:S1']['stations']:
+        assert station['vz_n'] == pytest.approx(force, rel=1e-10)
+        assert station['my_nm'] == pytest.approx(-force * (a - station['x_m']), rel=1e-10, abs=1e-7)
+        assert [station[k] for k in ('n_n', 'vy_n', 't_nm', 'mz_nm')] == pytest.approx([0, 0, 0, 0], abs=1e-7)
+    assert r['nodes']['A']['translation_m'] + r['nodes']['A']['rotation_rad'] == pytest.approx([0] * 6, abs=1e-15)
     equilibrium_independent(p, r)
+
+
+@pytest.mark.parametrize('dofs', ([True, True, True, False, False, False], [False, True, True, True, True, True]))
+def test_insufficient_declared_support_is_not_stabilized(dofs):
+    p = fixture('tee'); p['supports'][0]['restrained'] = dofs
+    with pytest.raises(AnalysisError) as error:
+        analyze_frame3d(p)
+    assert error.value.code == 'UNSTABLE'
+
+
+def test_bending_release_at_split_joint_is_applied_without_artificial_restraint():
+    p = fixture('tee')
+    # Release bending about global/local Y at the free end of the first span.
+    # The extension/branch are unsupported: this creates a real mechanism.
+    p['members'][0]['release_end'][4] = True
+    with pytest.raises(AnalysisError) as error:
+        analyze_frame3d(p)
+    assert error.value.code == 'UNSTABLE'
 
 
 def test_generated_roof_explicit_frames_equilibrium_scaling_and_stability():

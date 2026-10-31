@@ -21,6 +21,7 @@ export class ConnectivityError extends Error {
 function fail(code: string, message: string, pieces: string[] = [], nodes: string[] = []): never { throw new ConnectivityError(code, message, pieces, nodes); }
 
 export function inspectConnectivity(model: StructureModel) {
+  if (model.units !== "mm") fail("UNSUPPORTED_UNITS", "Geometria deve declarar unidade mm; nenhuma conversão implícita foi aplicada.");
   if (model.nodes.length > CONNECTIVITY_LIMITS.nodes || model.pieces.length > CONNECTIVITY_LIMITS.members) fail("MODEL_LIMIT", "Geometria excede 250 nós ou 600 peças, antes da segmentação.");
   const points = new Map(model.nodes.map(n => [n.id, [n.x, n.y, n.z] as V]));
   if (points.size !== model.nodes.length || new Set(model.pieces.map(p => p.id)).size !== model.pieces.length) fail("DUPLICATE_ID", "Nós ou peças com IDs repetidos.");
@@ -32,6 +33,7 @@ export function inspectConnectivity(model: StructureModel) {
   const memberships = new Map<string, { pieceIds: string[]; interiorPieceIds: string[] }>();
   const cuts = new Map<string, { nodeId: string; t: number }[]>();
   const segments = model.pieces.map(piece => {
+    if (!Number.isFinite(piece.lengthMm) || piece.lengthMm <= 0) fail("INVALID_GEOMETRY", `Comprimento original inválido em ${piece.id}.`, [piece.id]);
     const a = points.get(piece.start), b = points.get(piece.end);
     if (!a || !b || norm(sub(b, a)) < .01) fail("INVALID_GEOMETRY", `Extremos inválidos em ${piece.id}.`, [piece.id]);
     const direction = sub(b, a), dd = dot(direction, direction);

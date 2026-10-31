@@ -21,6 +21,23 @@ const declaration = (m: StructureModel): ConnectivityDeclaration => ({ version: 
   junctions: inspectConnectivity(m).junctions.map(j => ({ nodeId: j.nodeId, pieceIds: j.pieceIds, decision: "connect" })) });
 
 describe("geometric connectivity without inferred physical joints", () => {
+  it.each([NaN, Infinity, -Infinity])("rejects nonfinite original length metadata (%s)", length => {
+    const m = tee(), d = declaration(m); m.pieces[0].lengthMm = length;
+    expect(() => discretizeGeometry(m, d, "test")).toThrow(/inválid/);
+  });
+  it("rejects an unsupported geometry unit at the runtime boundary", () => {
+    const m = tee(), d = declaration(m); Object.assign(m, { units: "m" });
+    expect(() => discretizeGeometry(m, d, "test")).toThrow(/unidade|mm/i);
+  });
+  it("rejects duplicate/orphan decisions, generated ID collisions and too-short cuts", () => {
+    const m = tee(), d = declaration(m);
+    expect(() => discretizeGeometry(m, { ...d, junctions: [...d.junctions, d.junctions[0]] }, "test")).toThrow(/duplicadas/);
+    expect(() => discretizeGeometry(m, { ...d, junctions: [...d.junctions, { ...d.junctions[0], nodeId: "ORPHAN" }] }, "test")).toThrow(/inexistente/);
+    m.pieces[1].id = "BEAM:S1";
+    expect(() => discretizeGeometry(m, declaration(m), "test")).toThrow(/colisão/);
+    const short = tee(); short.nodes[2].x = .005; short.nodes[3].x = .005;
+    expect(() => discretizeGeometry(short, declaration(short), "test")).toThrow(/0,01 mm/);
+  });
   it("splits at an original interior node, preserving IDs, orientation and lengths", () => {
     const model = tee(), before = JSON.stringify(model), d = declaration(model), result = discretizeGeometry(model, d, "test");
     expect(result.members.map(m => [m.id, m.originalId, m.start, m.end, m.t0, m.t1])).toEqual([
