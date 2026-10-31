@@ -9,9 +9,10 @@ import { spatialSI } from "./spatial-analysis";
 export function mixedPieceKind(piece: StructurePiece, draft: SpatialPreparation) {
   return draft.memberKinds?.find(m => m.pieceId === piece.id)?.kind ?? draft.groups[piece.role].elementKind;
 }
-export function mixedPreparationReview(project: Project, draft: SpatialPreparation) {
+export function mixedPreparationReview(project: Project, draft: SpatialPreparation, loaded = false) {
   const common = spatialPreparationReview(project, draft);
   const replaced = new Set(["PROPERTIES", "ISOTROPY", "CONNECTION", "AXIAL", "MEMBER_CONNECTION", "TOPOLOGY"]);
+  if(loaded)replaced.add("LOADS");
   const issues = common.issues.filter(i => !replaced.has(i.code));
   const add = (code: string, message: string) => issues.push({ code, message });
   let mapping: ReturnType<typeof discretizeGeometry> | undefined;
@@ -39,9 +40,9 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
   return { ...common, mapping, issues, declarationsComplete: !!mapping && !issues.length, analysisReady: false as const };
 }
 
-export async function adaptMixedProject(project: Project) {
+export async function prepareMixedInput(project: Project, loaded = false) {
   const draft = spatialPreparationSchema.parse(project.workspace.spatialPreparation ?? newSpatialPreparation(project));
-  const review = mixedPreparationReview(project, draft), blockers = review.issues.filter(i => i.code !== "TOPOLOGY");
+  const review = mixedPreparationReview(project, draft, loaded), blockers = review.issues.filter(i => i.code !== "TOPOLOGY");
   if (blockers.length) throw new ConnectivityError("PREPARATION_INCOMPLETE", blockers.slice(0, 12).map(i => `${i.code}: ${i.message}`).join(" "));
   if (!review.geometry || !draft.connectivity) throw new ConnectivityError("CONNECTIVITY_PENDING", "Revise e registre a conectividade física.");
   const mapping = review.mapping!;
@@ -57,7 +58,7 @@ export async function adaptMixedProject(project: Project) {
   });
   const frameRoles = [...new Set(review.geometry.pieces.filter(p => mixedPieceKind(p, draft) === "frame").map(p => p.role))];
   const revision = await mixedInputHash({ geometry: mapping.geometrySignature, preparation: draft });
-  const request = mixedRequestSchema.parse({ schema_version: "jpn.mixed3d/1", units: "SI", theory: "linear-elastic-frame-axial",
+  const request = { schema_version: "jpn.mixed3d/1", units: "SI", theory: "linear-elastic-frame-axial",
     project: { id: project.id, revision, source: `JPN adaptador misto/1; declarações ${revision}; experimental, sem aprovação normativa` },
     nodes: mapping.nodes.map(n => ({ id: n.id, x_m: spatialSI.metres(n.x), y_m: spatialSI.metres(n.y), z_m: spatialSI.metres(n.z) })), members,
     materials: frameRoles.map(role => { const p = draft.groups[role]; return { id: `MAT-${role}`, e_pa: spatialSI.modulus(p.eGpa!), g_pa: spatialSI.modulus(p.gGpa!), nu: p.nu!, source: `${p.steelGrade}; ${p.materialSource}`, revision: p.materialRevision }; }),
@@ -65,6 +66,10 @@ export async function adaptMixedProject(project: Project) {
     supports: draft.supports.filter(s => s.dofs.some(d => d === "fixed")).map(s => ({ node: s.nodeId, restrained: s.dofs.map(d => d === "fixed") })),
     cases: draft.cases, combinations: draft.combinations,
     nodal_loads: draft.loads.map(l => ({ node: l.nodeId, case: l.caseId, fx_n: spatialSI.force(l.fxKn!), fy_n: spatialSI.force(l.fyKn!), fz_n: spatialSI.force(l.fzKn!), mx_nm: spatialSI.moment(l.mxKnm!), my_nm: spatialSI.moment(l.myKnm!), mz_nm: spatialSI.moment(l.mzKnm!) })),
-  });
+  };
   return { schema_version: "jpn.mixed-adapter/1" as const, approved_for_fabrication: false as const, preparation_sha256: revision, input_sha256: await mixedInputHash(request), mapping, request };
+}
+export async function adaptMixedProject(project: Project) {
+  const prepared=await prepareMixedInput(project);
+  return {...prepared,request:mixedRequestSchema.parse(prepared.request)};
 }

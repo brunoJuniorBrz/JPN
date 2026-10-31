@@ -4,8 +4,12 @@ import type { Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
 import { structureSignature } from "@/domain/calculations/project-basis";
 import { mixedReferenceProject } from "@/domain/examples/mixed-project";
+import { loadedMixedReferenceProject } from "@/domain/examples/loaded-mixed-project";
 import { adaptMixedProject } from "@/domain/mixed-adapter";
-import { mixedResultSchema, mixedStations, verifyMixedResult, type MixedResult } from "@/domain/mixed-analysis";
+import { mixedStations, verifyMixedResult } from "@/domain/mixed-analysis";
+import { anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
+import { adaptLoadedMixedProject } from "@/domain/loaded-mixed-adapter";
+import { StructuralLoadsPanel } from "./structural-loads-panel";
 import { inspectConnectivity } from "@/domain/spatial-connectivity";
 import { newSpatialPreparation } from "@/domain/spatial-preparation";
 import { Field, Input, Select } from "@/components/ui";
@@ -13,8 +17,8 @@ import { downloadText } from "@/lib/format";
 import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { Structure3D } from "./structure-3d";
 
-type Prepared = Awaited<ReturnType<typeof adaptMixedProject>>;
-type Session = { identity: string; prepared: Prepared; result: MixedResult; execution: unknown };
+type Prepared = Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>>;
+type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown };
 const show = (v: number) => v === 0 ? "0" : v.toExponential(5);
 export function MixedAnalysisWorkspace({ project, onChange }: { project: Project; onChange: (patch: Partial<Project>) => void }) {
   const [example, setExample] = useState<Project | null>(null), [pane, setPane] = useState("prepare");
@@ -74,11 +78,12 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
     setBusyIdentity(identity); setError(""); setSession(null);
     const timeout = setTimeout(() => controller.abort(), 25000);
     try {
-      const prepared = await adaptMixedProject(active); if (controller.signal.aborted || ticket.current.value !== mine) return;
+      const prepared = await (draft.loading ? adaptLoadedMixedProject(active) : adaptMixedProject(active)); if (controller.signal.aborted || ticket.current.value !== mine) return;
       const response = await fetch("/api/experimental/mixed3d", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(prepared.request), signal: controller.signal });
       const out = await response.json(); if (!response.ok) throw new Error(`${out.error?.code ?? response.status}: ${out.error?.message ?? "Análise recusada."}`);
       if (out.schema_version !== "jpn.local-mixed/1" || out.status !== "completed" || out.execution?.local_only !== true) throw new Error("Resposta local incompatível.");
-      const parsed = mixedResultSchema.parse(out.result); verifyMixedResult(prepared.request, parsed, prepared.input_sha256);
+      const parsed = anyMixedResultSchema.parse(out.result); if(parsed.schema_version!==prepared.request.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error("Versão de resposta incompatível."); verifyMixedResult(prepared.request, parsed, prepared.input_sha256);
+      verifyLoadingTrace(prepared.request,parsed);
       if (controller.signal.aborted || ticket.current.value !== mine) return;
       setSession({ identity, prepared, result: parsed, execution: out.execution }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
     } catch (e) { if (ticket.current.value === mine) setError(controller.signal.aborted ? "Execução cancelada ou prazo excedido; nenhum resultado publicado." : (e as Error).message); }
@@ -87,14 +92,15 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
   function exportJSON(value: unknown, name: string) { downloadText(JSON.stringify(value, null, 2), name); }
   return <section aria-label="Análise Estrutural Experimental" data-testid="mixed-workspace" className="mixed-workspace">
     <h3>Análise Estrutural Experimental</h3>
-    <p>Primeira ordem, elasticidade linear e cargas nodais declaradas. Sem peso próprio automático, dimensionamento resistente ou autorização para fabricar.</p>
-    <div className="actions"><button className="button secondary" onClick={() => switchScope(mixedReferenceProject())}>Abrir exemplo misto independente</button>{example && <button className="button secondary" onClick={() => switchScope(null)}>Voltar à obra</button>}</div>
+    <p>Primeira ordem e elasticidade linear. Peso próprio somente quando ativado com densidades e gravidade declaradas. Sem dimensionamento resistente ou autorização para fabricar.</p>
+    <div className="actions"><button className="button secondary" onClick={() => switchScope(mixedReferenceProject())}>Abrir exemplo misto independente</button><button className="button secondary" onClick={()=>switchScope(loadedMixedReferenceProject())}>Abrir exemplo de peso e cargas</button>{example && <button className="button secondary" onClick={() => switchScope(null)}>Voltar à obra</button>}</div>
     <p className="notice" data-testid="mixed-scope">{example ? "EXEMPLO SINTÉTICO INDEPENDENTE — 10 × 20 × 4 m. Pilares, banzos, terças e montantes são pórticos rígidos; 36 diagonais são axiais. 12 bases engastadas, propriedades e forças sintéticas explícitas. Não altera nem salva sua obra." : "OBRA ATUAL — somente suas declarações físicas. Dados ausentes ou modelos instáveis bloqueiam o cálculo."}</p>
     <p role="status" data-testid="mixed-health">{health}</p>
     <button className="button secondary" disabled={busy} onClick={() => { setReady(false); setHealth("Verificando Python local…"); setHealthRevision(v => v + 1); }}>Verificar executor local</button>
     <nav className="physical-prep-tabs" aria-label="Fluxo misto"><button className="button secondary" aria-pressed={pane === "prepare"} onClick={() => setPane("prepare")}>Preparação mista</button><button className="button secondary" aria-pressed={pane === "results"} onClick={() => setPane("results")}>Resultados 3D</button></nav>
     {pane === "prepare" && <>
       <SpatialPreparationPanel key={example ? "example" : "work"} project={active} onChange={edit} mixed />
+      <StructuralLoadsPanel project={active} onChange={edit}/>
       <details className="technical-details"><summary>Conectividade física e segmentação</summary>
         <p>Conectar junta significa compartilhar translações e somente as rotações previstas pelo tipo e liberações declarados. Barras contínuas mantêm continuidade nos cortes internos. Contatos independentes exigem outro modelo e são recusados.</p>
         {connectivity.error && <p role="alert">{connectivity.error}</p>}
@@ -114,12 +120,13 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
       <p>Legenda: pórtico azul; axial em tração turquesa; compressão violeta; nulo cinza; sinais diferentes entre segmentos ocre. Seleção laranja. Cores não verificam resistência.</p>
       {current && result && <div data-testid="mixed-results">
         <p>{current.prepared.request.nodes.length} nós · {new Set(current.prepared.mapping.members.map(m => m.originalId)).size} peças · {current.prepared.request.members.length} segmentos · {current.prepared.request.members.filter(m => m.kind === "axial").length} axiais.</p>
+        {current.result.schema_version==="jpn.mixed3d-result/2" && <p data-testid="loaded-result-trace">{current.result.loading.self_weight ? `Peso próprio declarado: ${show(current.result.loading.self_weight.total_mass_kg)} kg · caso ${current.result.loading.self_weight.case}.` : "Peso próprio desativado."} {current.result.loading.member_loads.length} cargas uniformes manuais; sem duplicação automática.</p>}
         <Field label="Combinação mista"><Select value={selectedCombo ?? ""} onChange={e => setCombo(e.target.value)}>{Object.keys(current.result.combinations).map(id => <option key={id}>{id}</option>)}</Select></Field>
         <Field label="Segmento físico da peça"><Select value={segment?.id ?? ""} onChange={e => { setSegmentId(e.target.value); setNodeId(""); }}>{segments.map(m => <option key={m.id} value={m.id}>{m.id} ← {m.originalId} · {m.start} → {m.end}</option>)}</Select></Field>
         {member && segment && <div data-testid="mixed-selection" data-original-piece={selectedPiece} data-segment={segment.id} data-kind={member.kind}>
           <h4>{selectedPiece} → {segment.id} · {member.kind === "axial" ? "Barra exclusivamente axial" : "Pórtico Euler–Bernoulli"}</h4>
           <p data-testid="mixed-axial">N = {show((member.kind === "axial" ? member.axial_n : -member.end_actions_local[0]) / 1000)} kN · {(member.kind === "axial" ? member.axial_n : -member.end_actions_local[0]) > 1e-8 ? "tração" : (member.kind === "axial" ? member.axial_n : -member.end_actions_local[0]) < -1e-8 ? "compressão" : "aproximadamente nulo"} (+ tração / − compressão).</p>
-          {stations ? <><p>Esforços de seção no eixo local do segmento, obtidos das ações das extremidades para cargas exclusivamente nodais. Não são diagramas de resistência.</p><ul>{stations.map(s => <li key={s.x_m}>x={show(s.x_m)} m · N/Vy/Vz (kN): {[s.n_n, s.vy_n, s.vz_n].map(v => show(v / 1000)).join("; ")} · T/My/Mz (kN·m): {[s.t_nm, s.my_nm, s.mz_nm].map(v => show(v / 1000)).join("; ")}</li>)}</ul></> : <p>Flexão, cortantes, torção e rotações da barra não participam da formulação axial. Nenhum valor de flexão foi inventado.</p>}
+          {stations ? <><p>Esforços locais incluindo cargas distribuídas quando declaradas. Cinco estações amostradas; não são envelopes de resistência.</p><ul>{stations.map(s => <li key={s.x_m}>x={show(s.x_m)} m · N/Vy/Vz (kN): {[s.n_n, s.vy_n, s.vz_n].map(v => show(v / 1000)).join("; ")} · T/My/Mz (kN·m): {[s.t_nm, s.my_nm, s.mz_nm].map(v => show(v / 1000)).join("; ")}{s.translation_local_m && ` · deslocamento local XYZ (mm): ${s.translation_local_m.map(v=>show(v*1000)).join("; ")}`}</li>)}</ul></> : <p>Flexão, cortantes, torção e rotações da barra não participam da formulação axial. Nenhum valor de flexão foi inventado.</p>}
           <p>Rastreabilidade: {segment.start} → {segment.end}; intervalo original [{segment.t0}, {segment.t1}]; comprimento {show(segment.lengthMm / 1000)} m.</p>
         </div>}
         <Field label="Nó do resultado misto"><Select value={selectedNode} onChange={e => setNodeId(e.target.value)}>{current.prepared.request.nodes.map(n => <option key={n.id}>{n.id}</option>)}</Select></Field>

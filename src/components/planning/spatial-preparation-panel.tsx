@@ -69,7 +69,7 @@ function catalogueGroup(material: Material): PhysicalGroup | null {
 export function SpatialPreparationPanel({ project, onChange, initialSection = "profiles", onOpenSpatial, mixed = false }: { project: Project; onChange: (patch: Partial<Project>) => void; initialSection?: "profiles" | "supports" | "loads" | "review"; onOpenSpatial?: () => void; mixed?: boolean }) {
   const { data, saveMaterial } = useData();
   const draft = project.workspace.spatialPreparation ?? newSpatialPreparation(project);
-  const review = useMemo(() => mixed ? mixedPreparationReview(project, draft) : spatialPreparationReview(project, draft), [project, draft, mixed]);
+  const review = useMemo(() => mixed ? mixedPreparationReview(project, draft, !!draft.loading) : spatialPreparationReview(project, draft), [project, draft, mixed]);
   const [role, setRole] = useState<(typeof pieceRoles)[number]>("column");
   const [support, setSupport] = useState("");
   const [node, setNode] = useState("");

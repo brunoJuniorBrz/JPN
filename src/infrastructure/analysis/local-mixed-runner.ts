@@ -2,12 +2,13 @@ import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
-import { mixedInputHash, mixedRequestSchema, mixedResultSchema, verifyMixedResult } from "@/domain/mixed-analysis";
+import { mixedInputHash, verifyMixedResult } from "@/domain/mixed-analysis";
+import { anyMixedRequestSchema, anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
 import { SolverFailure } from "./runner";
 
 export const localMixedLimits = { inputBytes: 500000, outputBytes: 2000000, milliseconds: 20000, memoryBytes: 768 * 1024 * 1024, concurrency: 1 } as const;
 const executionSchema = z.object({ memory_limit_bytes: z.literal(localMixedLimits.memoryBytes), memory_kind: z.enum(["windows-job-process-commit", "linux-address-space"]), local_only: z.literal(true) }).strict();
-const envelopeSchema = z.object({ schema_version: z.literal("jpn.local-mixed/1"), status: z.literal("completed"), execution: executionSchema, result: mixedResultSchema }).strict();
+const envelopeSchema = z.object({ schema_version: z.literal("jpn.local-mixed/1"), status: z.literal("completed"), execution: executionSchema, result: anyMixedResultSchema }).strict();
 const healthSchema = z.object({ schema_version: z.literal("jpn.local-mixed/1"), status: z.literal("ready"), execution: executionSchema,
   dependencies: z.object({ python: z.literal("3.12"), PyNiteFEA: z.literal("3.2.1"), numpy: z.string(), scipy: z.string() }).strict() }).strict();
 type Gate = { active: number; disabled: boolean };
@@ -19,9 +20,9 @@ export async function runLocalMixed(payload: string, mode: "health" | "analysis"
   if (!localMixedEnabled()) throw new SolverFailure("LOCAL_ONLY", "Abra o JPN com pnpm dev:structural; execução mista restrita ao desenvolvimento local.");
   if (gate.disabled) throw new SolverFailure("CLEANUP_FAILURE", "Executor bloqueado após falha de limpeza. Reinicie o ambiente local.");
   if (Buffer.byteLength(payload) > localMixedLimits.inputBytes) throw new SolverFailure("INPUT_LIMIT", "Entrada excede 500 kB.");
-  let request: ReturnType<typeof mixedRequestSchema.parse> | undefined;
+  let request: ReturnType<typeof anyMixedRequestSchema.parse> | undefined;
   if (mode === "analysis") {
-    try { request = mixedRequestSchema.parse(JSON.parse(payload)); }
+    try { request = anyMixedRequestSchema.parse(JSON.parse(payload)); }
     catch { throw new SolverFailure("INVALID_INPUT", "Modelo misto incompleto ou incompatível com o contrato SI."); }
   }
   if (gate.active >= localMixedLimits.concurrency) throw new SolverFailure("BUSY", "Uma análise local já está em execução. Aguarde.");
@@ -62,7 +63,9 @@ export async function runLocalMixed(payload: string, mode: "health" | "analysis"
     });
     if (mode === "health") return healthSchema.parse(raw);
     const output = envelopeSchema.parse(raw);
+    if(output.result.schema_version!==request!.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error("Versão de resposta incompatível.");
     verifyMixedResult(request!, output.result, await mixedInputHash(request));
+    verifyLoadingTrace(request!,output.result);
     return output;
   } catch (e) {
     if (e instanceof SolverFailure) throw e;

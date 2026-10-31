@@ -5,13 +5,14 @@ const n = z.number().finite(), id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-
 const source = z.string().min(1).max(1000).refine(v => !!v.trim());
 const base = spatialRequestSchema.shape;
 const axial = z.object({ id, start: id, end: id, kind: z.literal("axial"), e_pa: n.min(1).max(1e13), area_m2: n.min(1e-16).max(1000), source, revision: source }).strict();
-export const mixedRequestSchema = z.object({
+export const mixedRequestObject = z.object({
   ...base, schema_version: z.literal("jpn.mixed3d/1"), theory: z.literal("linear-elastic-frame-axial"),
   nodes: z.array(base.nodes.element).min(2).max(150),
   members: z.array(z.discriminatedUnion("kind", [base.members.element, axial])).min(2).max(320),
   materials: z.array(base.materials.element).max(50), sections: z.array(base.sections.element).max(50),
   supports: z.array(base.supports.element).max(150), nodal_loads: base.nodal_loads.min(1),
-}).strict().superRefine((v, ctx) => {
+}).strict();
+export function validateMixedReferences(v: Omit<z.infer<typeof mixedRequestObject>, "schema_version">, ctx: z.RefinementCtx, distributedCases: string[] = []) {
   const issue = (message: string) => ctx.addIssue({ code: "custom", message });
   for (const values of [v.nodes, v.members, v.materials, v.sections, v.cases, v.combinations]) if (new Set(values.map(x => x.id)).size !== values.length) issue("IDs duplicados.");
   const nodes = new Set(v.nodes.map(x => x.id)), cases = new Set(v.cases.map(c => c.id)), frameNodes = new Set<string>(), edges = new Set<string>();
@@ -35,9 +36,10 @@ export const mixedRequestSchema = z.object({
     if (!nodes.has(l.node) || !cases.has(l.case)) issue("Carga com nó/caso ausente.");
     if (!frameNodes.has(l.node) && [l.mx_nm, l.my_nm, l.mz_nm].some(Boolean)) issue(`${l.node}: nó exclusivamente axial não recebe momentos.`);
   }
-  for (const c of v.cases) if (!v.nodal_loads.some(l => l.case === c.id)) issue(`${c.id}: declare cargas explícitas, inclusive zeros.`);
+  for (const c of v.cases) if (!distributedCases.includes(c.id) && !v.nodal_loads.some(l => l.case === c.id)) issue(`${c.id}: declare cargas explícitas, inclusive zeros.`);
   for (const c of v.combinations) if (!Object.values(c.factors).some(Boolean) || Object.keys(c.factors).some(k => !cases.has(k))) issue("Combinação inválida.");
-});
+}
+export const mixedRequestSchema = mixedRequestObject.superRefine((v, ctx) => validateMixedReferences(v, ctx));
 export type MixedRequest = z.infer<typeof mixedRequestSchema>;
 const vec = z.tuple([n, n, n]);
 const resultMember = z.discriminatedUnion("kind", [
@@ -58,7 +60,7 @@ export async function mixedInputHash(value: unknown) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(canonicalSpatialInput(value)));
   return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, "0")).join("");
 }
-export function verifyMixedResult(request: MixedRequest, result: MixedResult, hash: string) {
+export function verifyMixedResult(request: Pick<MixedRequest,"project"|"nodes"|"members"|"combinations">, result: Pick<MixedResult,"project"|"input_sha256"|"combinations">, hash: string) {
   const same = (a: string[], b: string[]) => [...a].sort().join("|") === [...b].sort().join("|");
   if (result.input_sha256 !== hash || canonicalSpatialInput(result.project) !== canonicalSpatialInput(request.project) || !same(Object.keys(result.combinations), request.combinations.map(c => c.id))) throw new Error("Resposta não corresponde à revisão, hash ou combinações enviados.");
   const frameNodes = new Set(request.members.filter(m => m.kind === "frame").flatMap(m => [m.start, m.end]));
@@ -68,8 +70,10 @@ export function verifyMixedResult(request: MixedRequest, result: MixedResult, ha
     for (const [id, node] of Object.entries(c.nodes)) if (node.active_rotations !== frameNodes.has(id) || (!node.active_rotations && (Math.max(...node.rotation_rad.map(Math.abs)) > 1e-12 || Math.max(...node.reaction_moment_nm.map(Math.abs)) > 1e-8))) throw new Error("Graus rotacionais incompatíveis na resposta.");
   }
 }
-export function mixedStations(member: z.infer<typeof resultMember>) {
+export type MixedStation = { x_m:number;n_n:number;vy_n:number;vz_n:number;t_nm:number;my_nm:number;mz_nm:number;translation_local_m?:[number,number,number] };
+export function mixedStations(member: z.infer<typeof resultMember> & {stations?:MixedStation[]}): MixedStation[] | null {
   if (member.kind !== "frame") return null; // No invented shear/moments for axial-only elements.
+  if(member.stations)return member.stations;
   const a = member.end_actions_local;
   return [0, .25, .5, .75, 1].map(t => ({ x_m: t * member.length_m, n_n: -a[0], vy_n: -a[1], vz_n: -a[2], t_nm: -a[3], my_nm: -a[4] - t * member.length_m * a[2], mz_nm: -a[5] + t * member.length_m * a[1] }));
 }

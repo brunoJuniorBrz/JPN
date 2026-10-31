@@ -81,7 +81,11 @@ def main():
         def nonfinite(_):
             raise ValueError('Nonfinite JSON constant')
         data = json.loads(body.decode('utf-8'), object_pairs_hook=_unique_object, parse_constant=nonfinite)
-        result = analyze_mixed3d(data)
+        if type(data) is dict and data.get('schema_version')=='jpn.mixed3d/2':
+            from jpn_structural.mixed3d_loads import analyze_loaded_mixed3d
+            result=analyze_loaded_mixed3d(data)
+        else:
+            result = analyze_mixed3d(data)
         return dict(schema_version='jpn.local-mixed/1', status='completed', execution=limits, result=result)
     except MemoryError:
         return dict(status='error', error=dict(code='MEMORY_LIMIT', message='Limite de memória do processo atingido; nenhum resultado publicado.'))

@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { loadingDraftSchema } from "./structural-loading";
+import { resistancePreparationSchema } from "./resistance-preparation";
 import { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
 export { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
 export type { PhysicalGroup } from "./physical-declaration";
@@ -33,6 +35,8 @@ export const spatialPreparationSchema = z.object({
   connectionsReview: meaningful, lateralSystem: meaningful, loadPathReview: meaningful,
   connectivity: connectivityDeclarationSchema.optional(),
   memberKinds: z.array(z.object({ pieceId: z.string().min(1).max(100), kind: z.enum(["frame", "axial"]) }).strict()).max(5000).optional(),
+  loading: loadingDraftSchema.optional(),
+  resistance: z.array(resistancePreparationSchema).max(5000).optional(),
 }).strict();
 export type SpatialPreparation = z.infer<typeof spatialPreparationSchema>;
 export type PhysicalLoad = SpatialPreparation["loads"][number];
