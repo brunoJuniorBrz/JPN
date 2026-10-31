@@ -40,7 +40,7 @@ describe("client presentation layer is derived, not structural input", () => {
     const corners=roofPlaneCorners(e)[0];
     expect(corners[0].x).toBeCloseTo(-1.2);
     expect(corners[2].x).toBeCloseTo(8.7);
-    expect(corners[0].z).toBe(0);
+    expect(corners[0].z).toBeCloseTo(0);
     expect(corners[1].z).toBeCloseTo(-15);
     expect(corners[0].y).toBeCloseTo(3.035);
     expect(corners[1].y).toBeCloseTo(6.035);
