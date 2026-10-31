@@ -71,6 +71,7 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
   const [bulk, setBulk] = useState("");
   const [catalogueTarget, setCatalogueTarget] = useState("");
   const [caseForLoad, setCaseForLoad] = useState("");
+  const [memberId, setMemberId] = useState("");
   const [section, setSection] = useState<"profiles" | "supports" | "loads" | "review">("profiles");
   const [notice, setNotice] = useState("");
   const currentRole = draft.groups[role];
@@ -79,6 +80,8 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
   const selectedBase = base.includes(support) ? support : base[0] ?? "";
   const selectedNode = nodes.some(n => n.id === node) ? node : nodes[0]?.id ?? "";
   const selectedCase = draft.cases.some(c => c.id === caseForLoad) ? caseForLoad : draft.cases[0]?.id ?? "";
+  const selectedMember = review.geometry?.pieces.find(p => p.id === memberId) ?? review.geometry?.pieces[0];
+  const memberOverride = draft.memberConnections.find(v => v.pieceId === selectedMember?.id);
   const existingSupport = draft.supports.find(s => s.nodeId === selectedBase);
   const emptyDofs: SupportState[] = ["pending", "pending", "pending", "pending", "pending", "pending"];
   const supportDofs = existingSupport?.dofs ?? emptyDofs;
@@ -91,6 +94,17 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
     if (!nodeId) return;
     const value = { nodeId, dofs: states as SpatialPreparation["supports"][number]["dofs"] };
     change({ ...draft, supports: [...draft.supports.filter(s => s.nodeId !== nodeId), value] });
+  }
+  function changeMemberEnd(end: "start" | "end", value: SpatialPreparation["memberConnections"][number]["start"]) {
+    if (!selectedMember) return;
+    const next: SpatialPreparation["memberConnections"][number] = {
+      pieceId: selectedMember.id, start: memberOverride?.start ?? "inherit", end: memberOverride?.end ?? "inherit",
+    };
+    next[end] = value;
+    change({ ...draft, memberConnections: [
+      ...draft.memberConnections.filter(v => v.pieceId !== selectedMember.id),
+      ...(next.start === "inherit" && next.end === "inherit" ? [] : [next]),
+    ] });
   }
   function updateLoad(id: string, patch: Partial<SpatialPreparation["loads"][number]>) {
     change({ ...draft, loads: draft.loads.map(l => l.id === id ? { ...l, ...patch } : l) });
@@ -163,6 +177,19 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
           <option value="pinned">Articulada (hipótese declarada)</option><option value="axial">Axial/treliça (adaptador futuro)</option>
         </Select></Field>)}
       </div>
+      <h4>Ajustar ligação de uma peça individual</h4>
+      <p className="field-hint">Uma peça pode ter ligação diferente no início e no fim. `Usar grupo` herda a hipótese do grupo; não significa vínculo validado. Recalcule as hipóteses depois de mudar a geometria.</p>
+      {selectedMember && <>
+        <Field label="Peça para revisar extremidades"><Select value={selectedMember.id} onChange={e => setMemberId(e.target.value)}>{review.geometry!.pieces.map(p => <option key={p.id} value={p.id}>{p.id} · {roleLabels[p.role]}</option>)}</Select></Field>
+        <div className="form-grid">
+          {(["start", "end"] as const).map(end => <Field key={selectedMember.id + end} label={end === "start" ? "Ligação da extremidade inicial" : "Ligação da extremidade final"}><Select value={memberOverride?.[end] ?? "inherit"} onChange={e => changeMemberEnd(end, e.target.value as SpatialPreparation["memberConnections"][number]["start"])}>
+            <option value="inherit">Usar grupo ({draft.groups[selectedMember.role].connection})</option>
+            <option value="pending">Pendente</option><option value="rigid">Rígida, declarada</option>
+            <option value="pinned">Articulada, declarada</option><option value="axial">Axial/treliça (adaptador futuro)</option>
+          </Select></Field>)}
+        </div>
+        <p className="field-hint">{draft.memberConnections.length} peças possuem exceções declaradas no cadastro.</p>
+      </>}
       <Field label="Revisão de ligações e justificativa"><Textarea rows={3} value={draft.connectionsReview} onChange={e => change({ ...draft, connectionsReview: e.target.value })} maxLength={1000}/></Field>
       <Field label="Sistema de estabilidade lateral"><Textarea rows={3} value={draft.lateralSystem} onChange={e => change({ ...draft, lateralSystem: e.target.value })} maxLength={1000}/></Field>
     </>}
