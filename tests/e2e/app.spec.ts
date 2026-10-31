@@ -127,6 +127,11 @@ test("configurações com vírgula e proteção de dados corrompidos", async ({ 
 
 test("amplia e movimenta o desenho com gestos de toque", async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await context.addInitScript(value => {
+    if (!localStorage.getItem("jpn-projetos:v1")) localStorage.setItem("jpn-projetos:v1", JSON.stringify(value));
+  }, { ...emptySnapshot(), exampleInstalled: true,
+    projects: [{ ...exampleProject(), isExample: false }],
+    materials: exampleMaterials().map(item => ({ ...item, isExample: false })) });
   const page = await context.newPage();
   await page.goto(`/projetos/${EXAMPLE_ID}?etapa=1`);
   const svg = page.getByRole("img", { name: "Desenho preliminar: planta" });
