@@ -45,15 +45,22 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const profiles = buildProfileScene(model, quality.segments); scene.add(profiles.root);
     scene.add(new THREE.HemisphereLight(0xffffff, 0x9aa797, 2));
     const sun = new THREE.DirectionalLight(0xffffff, 2.5); sun.position.set(5, 12, 8); scene.add(sun);
+    sun.castShadow = false; sun.shadow.mapSize.set(quality.low ? 512 : 1024, quality.low ? 512 : 1024); sun.shadow.bias = -0.0002;
     canvas.dataset.quality = quality.low ? "reduced" : "standard";
     canvas.dataset.solidCount = String(profiles.solidCount); canvas.dataset.fallbackCount = String(profiles.fallbackCount);
     canvas.dataset.framing = "whole-structure";
     const resources: (THREE.BufferGeometry | THREE.Material)[] = [];
     const bounds = profiles.bounds, center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
     const span = Math.max(size.x, size.y, size.z, 1), gridStep = gridSpacingM;
+    sun.position.copy(center).add(new THREE.Vector3(span*.5,span*.95,span*.5));
+    sun.target.position.copy(center); scene.add(sun.target);
+    const shadowRange=Math.max(span,20);
+    sun.shadow.camera.left=-shadowRange;sun.shadow.camera.right=shadowRange;
+    sun.shadow.camera.top=shadowRange;sun.shadow.camera.bottom=-shadowRange;
+    sun.shadow.camera.near=1;sun.shadow.camera.far=span*4+20;sun.shadow.camera.updateProjectionMatrix();
     const grid = new THREE.GridHelper(gridStep * 20, 20, 0xaab6a0, 0xdce2d5); grid.position.set(center.x, 0, center.z); scene.add(grid);
     resources.push(grid.geometry, ...(Array.isArray(grid.material) ? grid.material : [grid.material]));
-    const render = () => renderer.render(scene, camera);
+    const render = () => { renderer.render(scene,camera); canvas.dataset.drawCalls = String(renderer.info.render.calls); canvas.dataset.triangles = String(renderer.info.render.triangles); };
     let framingBounds = bounds, activeMode: ViewerMode | "finished" = "profiles", disposed = false;
     type PresentationHandle = ReturnType<typeof import("./presentation-scene")["createPresentationScene"]>;
     let environment: PresentationHandle | null = null;
@@ -69,6 +76,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       activeMode = value;
       profiles.setMode(value === "finished" ? "profiles" : value);
       grid.visible = value !== "finished";
+      sun.castShadow = value === "finished" && !quality.low;
       canvas.dataset.mode = value;
       if(environment) environment.root.visible = value === "finished";
       if(value === "finished" && envelope && !environment) {
@@ -137,7 +145,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const lost = (e: Event) => { e.preventDefault(); setFailure("O dispositivo perdeu o contexto gráfico. As vistas 2D continuam disponíveis."); };
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("webglcontextlost", lost);
     resize();
-    return () => { disposed = true; environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; };
+    return () => { disposed = true; environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); sun.shadow.dispose();renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; };
   }, [model, gridSpacingM, roof, planning, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
@@ -177,7 +185,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
         {([["showPerson","Pessoa (1,70 m)"],["showCar","Carro (4,50 m)"],["showDimensions","Exibir cotas"]] as const).map(([key,label])=><label key={key}><input type="checkbox" checked={presentationOptions[key]} onChange={e=>setPresentationOptions(o=>({...o,[key]:e.target.checked}))}/>{label}</label>)}
       </div>
       <p className="field-hint">Telha, paredes, veículo e pessoa são ilustrativos e não compõem a lista de materiais. Mude para Perfis 3D para selecionar ou editar peças.</p>
-    </section>
+    </section>}
     {failure ? <p role="status" className="notice">{failure}</p> : <>
       <div className="actions structure-viewer-tools"><button type="button" className="button" onClick={() => setExpanded(v => !v)}>{expanded ? "Sair da tela cheia" : "Tela cheia"}</button><button className="button secondary" type="button" onClick={() => reset.current()}>Isométrica · ajustar 3D</button><button className="button secondary" type="button" disabled={!selected || mode === "finished"} onClick={() => focus.current(selected)}>Focar peça selecionada</button>{mode === "finished" && <button type="button" className="button" onClick={() => capture.current()}>Salvar imagem PNG</button>}</div>
       {pictureError && <p role="alert" className="field-error">{pictureError}</p>}
