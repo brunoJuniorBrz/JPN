@@ -45,12 +45,15 @@ test("remove exemplos antigos do navegador, preservando projetos reais e cópias
     ...emptySnapshot(), exampleInstalled: true, projects: [...old, real, duplicate], materials: exampleMaterials(),
   });
   await page.goto("/");
+  // Migration runs after hydration: wait for the rendered dashboard, not just navigation.
+  await expect(page.getByRole("button", { name: "Abrir exemplo de levantamento" })).toBeVisible();
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!));
   expect(stored.projects.some((p: { id: string }) => p.id === EXAMPLE_ID || p.id === PLANNING_EXAMPLE_ID || p.id === PREPROJECT_EXAMPLE_ID)).toBe(false);
   expect(stored.projects.some((p: { id: string }) => p.id === real.id)).toBe(true);
   expect(stored.projects.some((p: { id: string }) => p.id === duplicate.id)).toBe(true);
   expect(stored.materials).toHaveLength(3); // Materiais referenciados por cópia preservada.
   await page.reload();
+  await expect(page.getByRole("button", { name: "Abrir exemplo de levantamento" })).toBeVisible();
   const after = await page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!));
   expect(after.projects).toHaveLength(2);
 });
