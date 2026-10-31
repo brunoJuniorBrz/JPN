@@ -1,15 +1,16 @@
 import { z } from "zod";
-import { physicalGroupSchema, emptyPhysicalGroup, type PhysicalGroup } from "./physical-declaration";
+import { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
 export { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
 export type { PhysicalGroup } from "./physical-declaration";
 import type { Project } from "./models";
-import type { PieceRole, StructureModel } from "./structure";
+import type { StructureModel } from "./structure";
 import { generateStructure } from "./calculations/structure";
 import { structureSignature } from "./calculations/project-basis";
 import { spatialContacts } from "./spatial-readiness";
 
 // Human declarations, NOT finite-element input. A pending field is never
 // translated to zero, a free support or a material property by default.
+const meaningful = z.string().max(1000);
 const signed = z.number().finite().min(-1e9).max(1e9).nullable();
 const choice = z.enum(["pending", "fixed", "free"]);
 export const dofNames = ["UX", "UY", "UZ", "RX", "RY", "RZ"] as const;
