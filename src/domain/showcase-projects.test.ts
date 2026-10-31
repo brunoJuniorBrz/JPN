@@ -19,6 +19,8 @@ describe("Novas demonstrações com proposta e modelo 3D", () => {
         expect(section.warning).toBe("");
         expect(section.section).not.toBeNull();
         expect(profile.source).toMatch(/SINTÉTICOS/);
+        expect(profile.data?.areaCm2).toBeGreaterThan(0);
+        expect(profile.data?.elasticModulusGpa).toBe(200);
       }
       const result = generateStructure(p);
       expect(result.model).not.toBeNull();
