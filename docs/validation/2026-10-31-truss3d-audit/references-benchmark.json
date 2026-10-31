@@ -1,0 +1,237 @@
+{
+  "status": "passed",
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "dependencies": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "PyNiteFEA": "3.2.1",
+      "pytest": "9.2.0"
+    },
+    "threads": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  },
+  "comparisons": [
+    {
+      "case": "tripod-analytic",
+      "input_sha256": "cee818fb63e11da37c94ff4b91751a2724d5d8b5d110a7085035fdabda713fba",
+      "max_absolute_pynite_errors": {
+        "translation_m": 8.470329472543003e-22,
+        "reaction_n": 3.410605131648481e-13,
+        "axial_n": 3.410605131648481e-13
+      },
+      "diagnostics": {
+        "free_dofs": 3,
+        "scaled_condition": 1.0000000000000007,
+        "relative_equilibrium_residual": 4.76052676972097e-17,
+        "elapsed_seconds": 0.001067500008502975
+      },
+      "nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_n": [
+            -700.0000000000001,
+            0.0,
+            1400.0000000000002
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_n": [
+            -186.60254037844373,
+            323.20508075688775,
+            -746.4101615137756
+          ]
+        },
+        "B2": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_n": [
+            -13.39745962155618,
+            -23.20508075688778,
+            -53.58983848622472
+          ]
+        },
+        "TIP": {
+          "translation_m": [
+            3.3541019662496853e-06,
+            -1.1180339887498962e-06,
+            -2.7950849718747395e-07
+          ],
+          "reaction_n": [
+            1.1368683772161603e-13,
+            5.684341886080802e-14,
+            0.0
+          ]
+        }
+      },
+      "members": {
+        "M0": {
+          "length_m": 2.23606797749979,
+          "axial_n": -1565.2475842498532,
+          "strain": -7.826237921249265e-07,
+          "extension_m": -1.7500000000000004e-06
+        },
+        "M1": {
+          "length_m": 2.23606797749979,
+          "axial_n": 834.5119301206998,
+          "strain": 4.172559650603499e-07,
+          "extension_m": 9.330127018922196e-07
+        },
+        "M2": {
+          "length_m": 2.23606797749979,
+          "axial_n": 59.915260879216355,
+          "strain": 2.995763043960818e-08,
+          "extension_m": 6.69872981077808e-08
+        }
+      },
+      "analytical": {
+        "tip_translation_m": [
+          3.354101966249685e-06,
+          -1.118033988749895e-06,
+          -2.7950849718747374e-07
+        ],
+        "axial_n": {
+          "M0": -1565.2475842498527,
+          "M1": 834.5119301206993,
+          "M2": 59.915260879216916
+        },
+        "max_translation_error_m": 1.2705494208814505e-21,
+        "max_axial_error_n": 5.684341886080801e-13
+      }
+    },
+    {
+      "case": "tetrahedron",
+      "input_sha256": "6abc0e1ff5135aed1b4f0378f0c631f3f751c0103fe030b14c54beaaf266ce54",
+      "max_absolute_pynite_errors": {
+        "translation_m": 5.293955920339377e-23,
+        "reaction_n": 3.410605131648481e-13,
+        "axial_n": 1.1368683772161603e-13
+      },
+      "diagnostics": {
+        "free_dofs": 6,
+        "scaled_condition": 7.821901314306042,
+        "relative_equilibrium_residual": 1.7027786373826455e-16,
+        "elapsed_seconds": 0.0011217999999644235
+      },
+      "nodes": {
+        "A": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_n": [
+            -99.99999999999999,
+            -200.00000000000003,
+            700.0
+          ]
+        },
+        "B": {
+          "translation_m": [
+            4.999999999999999e-08,
+            0.0,
+            0.0
+          ],
+          "reaction_n": [
+            2.842170943040401e-14,
+            0.0,
+            99.99999999999996
+          ]
+        },
+        "C": {
+          "translation_m": [
+            1.5e-07,
+            1.0000000000000001e-07,
+            0.0
+          ],
+          "reaction_n": [
+            0.0,
+            2.842170943040401e-14,
+            199.99999999999994
+          ]
+        },
+        "D": {
+          "translation_m": [
+            -1.5857864376269052e-07,
+            3.284271247461899e-08,
+            -3.5e-07
+          ],
+          "reaction_n": [
+            -4.263256414560601e-14,
+            -5.684341886080802e-14,
+            3.410605131648481e-13
+          ]
+        }
+      },
+      "members": {
+        "AB": {
+          "length_m": 1.0,
+          "axial_n": 99.99999999999999,
+          "strain": 4.999999999999999e-08,
+          "extension_m": 4.999999999999999e-08
+        },
+        "AC": {
+          "length_m": 1.0,
+          "axial_n": 200.00000000000003,
+          "strain": 1.0000000000000001e-07,
+          "extension_m": 1.0000000000000001e-07
+        },
+        "AD": {
+          "length_m": 1.0,
+          "axial_n": -700.0,
+          "strain": -3.5e-07,
+          "extension_m": -3.5e-07
+        },
+        "BC": {
+          "length_m": 1.4142135623730951,
+          "axial_n": 1.871696065287322e-14,
+          "strain": 9.358480326436609e-24,
+          "extension_m": 1.3234889800848443e-23
+        },
+        "BD": {
+          "length_m": 1.4142135623730951,
+          "axial_n": -141.4213562373095,
+          "strain": -7.071067811865474e-08,
+          "extension_m": -1e-07
+        },
+        "CD": {
+          "length_m": 1.4142135623730951,
+          "axial_n": -282.84271247461896,
+          "strain": -1.4142135623730946e-07,
+          "extension_m": -1.9999999999999996e-07
+        }
+      }
+    }
+  ],
+  "benchmark": {
+    "nodes": 100,
+    "members": 235,
+    "supports": 100,
+    "free_dofs": 80,
+    "elapsed_seconds": 2.9935509000060847,
+    "peak_traced_bytes": 1575307,
+    "process_peak_rss_bytes": 91975680,
+    "scaled_condition": 25.27414236908842,
+    "relative_equilibrium_residual": 5.968558980384833e-16,
+    "input_sha256": "dd068af08054d12c0205383ec1eb9e3a85d4c6a70c0ab8c6f3db228590ff2bd3",
+    "expected_max_translation_m": 4e-06,
+    "input_bytes": 47160,
+    "output_bytes": 34218
+  }
+}
