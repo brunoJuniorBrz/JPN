@@ -1,0 +1,261 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\node-v24.13.0-win-x64\\node.exe",
+      "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/e2e/mixed-local.spec.ts",
+      "--reporter=json"
+    ],
+    "configFile": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\playwright.config.ts",
+    "rootDir": "C:/Users/Bruno/Downloads/JPN-main/.tools/mission16-worktree/tests/e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Bruno/Downloads/JPN-main/.tools/mission16-worktree/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/Bruno/Downloads/JPN-main/.tools/mission16-worktree/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e",
+        "snapshotDir": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "http://127.0.0.1:3000",
+          "trace": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scripts/dev-structural.mjs",
+      "url": "http://127.0.0.1:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "mixed-local.spec.ts",
+      "file": "mixed-local.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "fluxo misto real, rastreabilidade 3D e invalidação em 375px",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 9335,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('mixed-workspace').getByLabel(/ · UX/)\nExpected: \u001b[32m\"fixed\"\u001b[39m\nReceived: \u001b[31m\"pending\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" getByTestId('mixed-workspace').getByLabel(/ · UX/) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('mixed-workspace').getByLabel(/ · UX/)\u001b[22m\n\u001b[2m    14 × locator resolved to <select id=\"_r_1k_\" class=\"input \">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"pending\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('mixed-workspace').getByLabel(/ · UX/)\nExpected: \u001b[32m\"fixed\"\u001b[39m\nReceived: \u001b[31m\"pending\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" getByTestId('mixed-workspace').getByLabel(/ · UX/) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('mixed-workspace').getByLabel(/ · UX/)\u001b[22m\n\u001b[2m    14 × locator resolved to <select id=\"_r_1k_\" class=\"input \">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"pending\"\u001b[22m\n\n    at C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e\\mixed-local.spec.ts:21:43",
+                    "location": {
+                      "file": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e\\mixed-local.spec.ts",
+                      "column": 43,
+                      "line": 21
+                    },
+                    "snippet": "  19 |   await expect(panel.getByLabel(\"Elasticidade E (GPa)\")).toHaveValue(\"200\");\n  20 |   await panel.getByRole(\"button\", { name: \"2. Apoios e ligações\" }).click();\n> 21 |   await expect(panel.getByLabel(/ · UX/)).toHaveValue(\"fixed\");\n     |                                           ^\n  22 |   await panel.getByRole(\"button\", { name: \"3. Cargas e combinações\" }).click();\n  23 |   await expect(panel.getByLabel(\"Fonte e hipótese de TESTE\")).not.toBeEmpty();\n  24 |   await panel.getByRole(\"button\", { name: \"Executar análise mista local\" }).click();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e\\mixed-local.spec.ts",
+                        "column": 43,
+                        "line": 21
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('mixed-workspace').getByLabel(/ · UX/)\nExpected: \u001b[32m\"fixed\"\u001b[39m\nReceived: \u001b[31m\"pending\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" getByTestId('mixed-workspace').getByLabel(/ · UX/) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('mixed-workspace').getByLabel(/ · UX/)\u001b[22m\n\u001b[2m    14 × locator resolved to <select id=\"_r_1k_\" class=\"input \">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"pending\"\u001b[22m\n\n\n  19 |   await expect(panel.getByLabel(\"Elasticidade E (GPa)\")).toHaveValue(\"200\");\n  20 |   await panel.getByRole(\"button\", { name: \"2. Apoios e ligações\" }).click();\n> 21 |   await expect(panel.getByLabel(/ · UX/)).toHaveValue(\"fixed\");\n     |                                           ^\n  22 |   await panel.getByRole(\"button\", { name: \"3. Cargas e combinações\" }).click();\n  23 |   await expect(panel.getByLabel(\"Fonte e hipótese de TESTE\")).not.toBeEmpty();\n  24 |   await panel.getByRole(\"button\", { name: \"Executar análise mista local\" }).click();\n    at C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e\\mixed-local.spec.ts:21:43"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-31T22:05:43.910Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\test-results\\mixed-local-fluxo-misto-re-27965-e-3D-e-invalidação-em-375px-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\test-results\\mixed-local-fluxo-misto-re-27965-e-3D-e-invalidação-em-375px-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e\\mixed-local.spec.ts",
+                    "column": 43,
+                    "line": 21
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a75994030917997848a8-94ded90603528fe45bf2",
+          "file": "mixed-local.spec.ts",
+          "line": 4,
+          "column": 34
+        },
+        {
+          "title": "fluxo misto real, rastreabilidade 3D e invalidação em 1440px",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 8962,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('mixed-workspace').getByLabel(/ · UX/)\nExpected: \u001b[32m\"fixed\"\u001b[39m\nReceived: \u001b[31m\"pending\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" getByTestId('mixed-workspace').getByLabel(/ · UX/) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('mixed-workspace').getByLabel(/ · UX/)\u001b[22m\n\u001b[2m    14 × locator resolved to <select id=\"_r_1k_\" class=\"input \">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"pending\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('mixed-workspace').getByLabel(/ · UX/)\nExpected: \u001b[32m\"fixed\"\u001b[39m\nReceived: \u001b[31m\"pending\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" getByTestId('mixed-workspace').getByLabel(/ · UX/) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('mixed-workspace').getByLabel(/ · UX/)\u001b[22m\n\u001b[2m    14 × locator resolved to <select id=\"_r_1k_\" class=\"input \">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"pending\"\u001b[22m\n\n    at C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e\\mixed-local.spec.ts:21:43",
+                    "location": {
+                      "file": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e\\mixed-local.spec.ts",
+                      "column": 43,
+                      "line": 21
+                    },
+                    "snippet": "  19 |   await expect(panel.getByLabel(\"Elasticidade E (GPa)\")).toHaveValue(\"200\");\n  20 |   await panel.getByRole(\"button\", { name: \"2. Apoios e ligações\" }).click();\n> 21 |   await expect(panel.getByLabel(/ · UX/)).toHaveValue(\"fixed\");\n     |                                           ^\n  22 |   await panel.getByRole(\"button\", { name: \"3. Cargas e combinações\" }).click();\n  23 |   await expect(panel.getByLabel(\"Fonte e hipótese de TESTE\")).not.toBeEmpty();\n  24 |   await panel.getByRole(\"button\", { name: \"Executar análise mista local\" }).click();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e\\mixed-local.spec.ts",
+                        "column": 43,
+                        "line": 21
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  getByTestId('mixed-workspace').getByLabel(/ · UX/)\nExpected: \u001b[32m\"fixed\"\u001b[39m\nReceived: \u001b[31m\"pending\"\u001b[39m\nTimeout:  5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" getByTestId('mixed-workspace').getByLabel(/ · UX/) with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('mixed-workspace').getByLabel(/ · UX/)\u001b[22m\n\u001b[2m    14 × locator resolved to <select id=\"_r_1k_\" class=\"input \">…</select>\u001b[22m\n\u001b[2m       - unexpected value \"pending\"\u001b[22m\n\n\n  19 |   await expect(panel.getByLabel(\"Elasticidade E (GPa)\")).toHaveValue(\"200\");\n  20 |   await panel.getByRole(\"button\", { name: \"2. Apoios e ligações\" }).click();\n> 21 |   await expect(panel.getByLabel(/ · UX/)).toHaveValue(\"fixed\");\n     |                                           ^\n  22 |   await panel.getByRole(\"button\", { name: \"3. Cargas e combinações\" }).click();\n  23 |   await expect(panel.getByLabel(\"Fonte e hipótese de TESTE\")).not.toBeEmpty();\n  24 |   await panel.getByRole(\"button\", { name: \"Executar análise mista local\" }).click();\n    at C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e\\mixed-local.spec.ts:21:43"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-31T22:05:53.804Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\test-results\\mixed-local-fluxo-misto-re-0e991--3D-e-invalidação-em-1440px-chromium\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\test-results\\mixed-local-fluxo-misto-re-0e991--3D-e-invalidação-em-1440px-chromium\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\mission16-worktree\\tests\\e2e\\mixed-local.spec.ts",
+                    "column": 43,
+                    "line": 21
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a75994030917997848a8-b5620896d48cc2bcc642",
+          "file": "mixed-local.spec.ts",
+          "line": 4,
+          "column": 34
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-31T22:05:43.386Z",
+    "duration": 19625.029,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

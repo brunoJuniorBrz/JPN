@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "next dev",
+    "dev:structural": "node scripts/dev-structural.mjs",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",

@@ -24,6 +24,7 @@ export function pieceIdFromHit(hit: Pick<THREE.Intersection, "object" | "instanc
 export function buildProfileScene(model: StructureModel, segments = 32) {
   const root = new THREE.Group(), axes = new THREE.Group(), solids = new THREE.Group(); root.add(axes, solids);
   const nodes = new Map(model.nodes.map(n => [n.id, scenePoint(n)]));
+  const piecesById = new Map(model.pieces.map(p => [p.id, p]));
   const resources = new Set<{ dispose(): void }>(), cache = new Map<string, THREE.BufferGeometry>();
   const batches = new Map<string, { geometry: THREE.BufferGeometry; pieces: StructurePiece[] }>();
   const instances = new Map<string, { mesh: THREE.InstancedMesh; index: number; color: THREE.Color }>();
@@ -76,6 +77,19 @@ export function buildProfileScene(model: StructureModel, segments = 32) {
     root, bounds, warnings, cache, instances,
     solidCount: instances.size, fallbackCount: simplified.size,
     setMode,
+    setColors: (colors?: Record<string, number>) => {
+      for (const piece of model.pieces) {
+        const item = instances.get(piece.id);
+        if (item) { item.color.setHex(colors?.[piece.id] ?? roleColors[piece.role]); item.mesh.setColorAt(item.index, item.color); item.mesh.instanceColor!.needsUpdate = true; }
+      }
+      for (const line of lineTargets) {
+        const ids = line.userData.ids as string[], values: number[] = [];
+        for (const id of ids) { const piece = piecesById.get(id)!; const color = new THREE.Color(colors?.[id] ?? roleColors[piece.role]); values.push(color.r, color.g, color.b, color.r, color.g, color.b); }
+        line.geometry.setAttribute("color", new THREE.Float32BufferAttribute(values, 3));
+        const mat = line.material as THREE.LineBasicMaterial; mat.color.setHex(0xffffff); mat.vertexColors = true; mat.needsUpdate = true;
+      }
+      const item = instances.get(selected); if (item) { item.mesh.setColorAt(item.index, new THREE.Color(0xff9b36)); item.mesh.instanceColor!.needsUpdate = true; }
+    },
     targets: () => [...(currentMode === "structural" ? [] : solids.children), ...lineTargets.filter(line => line.visible)],
     highlight: (id: string) => {
       const old = instances.get(selected); if (old) { old.mesh.setColorAt(old.index, old.color); old.mesh.instanceColor!.needsUpdate = true; }

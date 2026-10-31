@@ -440,6 +440,9 @@ body { font-size: 16px; }
 
 /* Physical preparation: compact controls with explicit, reviewable inputs. */
 .physical-prep { display: grid; gap: 16px; min-width: 0; }
+.mixed-workspace { display: grid; gap: 16px; min-width: 0; overflow-wrap: anywhere; }
+.mixed-workspace select { min-width: 0; max-width: 100%; }
+.mixed-workspace li { margin-bottom: 8px; }
 .physical-prep h3, .physical-prep h4 { margin-bottom: 2px; }
 .physical-prep .notice { overflow-wrap: anywhere; }
 .physical-prep-tabs { display: flex; flex-wrap: wrap; gap: 8px; }

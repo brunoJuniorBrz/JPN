@@ -13,6 +13,7 @@ import { AnalysisPanel } from "./analysis-panel";
 import { SpatialAnalysisPanel } from "./spatial-analysis-panel";
 import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { SpatialCoordinationPanel } from "./spatial-coordination-panel";
+import { MixedAnalysisWorkspace } from "./mixed-analysis-workspace";
 
 export function ProjectWorkbench({ project, onChange, onEditStructure }: { project: Project; onChange: (patch: Partial<Project>) => void; onEditStructure?: () => void }) {
   const { data, saveProject, flush } = useData(), [tab, setTab] = useState("cut"), [message, setMessage] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
@@ -37,11 +38,12 @@ export function ProjectWorkbench({ project, onChange, onEditStructure }: { proje
   return <section className="project-workbench"><h3>Do levantamento à proposta</h3><p>Quantitativo preliminar · análise experimental separada · dimensionamento normativo pendente · fabricação não liberada.</p>
     <button type="button" className="button" disabled={!model} onClick={() => action(() => { onChange(transferTakeoff(project, Math.round(data.settings.defaultWastePercent * 100) / 100)); setMessage("Quantitativos vinculados ao orçamento de venda. Confira preços por metro e custos na área comercial."); })}>Atualizar quantitativos no orçamento</button>
     <div className="spatial-jump"><p>Próximo passo técnico: confira a preparação da obra e as pendências da análise física.</p><button type="button" className="button secondary" onClick={() => setTab("overview")}>Ver roteiro estrutural</button></div>
-    <nav className="project-mode" aria-label="Ferramentas do pré-projeto">{[["overview", "Roteiro estrutural"], ["prepare", "Preparar análise"], ["cut", "Aproveitamento"], ["analysis", "Análise disponível"], ["spatial", "Análise 3D experimental"], ["docs", "Revisões e desenhos"]].map(([key, title]) => <button key={key} type="button" aria-pressed={tab === key} className={tab === key ? "selected" : ""} onClick={() => setTab(key)}>{title}</button>)}</nav>
+    <nav className="project-mode" aria-label="Ferramentas do pré-projeto">{[["overview", "Roteiro estrutural"], ["prepare", "Preparar análise"], ["cut", "Aproveitamento"], ["analysis", "Análise disponível"], ["spatial", "Análise 3D experimental"], ["mixedlocal", "Análise Estrutural Experimental"], ["docs", "Revisões e desenhos"]].map(([key, title]) => <button key={key} type="button" aria-pressed={tab === key} className={tab === key ? "selected" : ""} onClick={() => setTab(key)}>{title}</button>)}</nav>
     {tab === "overview" && <SpatialCoordinationPanel project={project} onEdit={openPreparation} onOpenAnalysis={() => setTab("spatial")} onEditStructure={onEditStructure} />}
     {tab === "prepare" && <SpatialPreparationPanel key={preparationStage} initialSection={preparationStage} project={project} onChange={onChange} onOpenSpatial={() => setTab("spatial")} />}
     {tab === "analysis" && <AnalysisPanel project={project} onChange={onChange} />}
     {tab === "spatial" && <SpatialAnalysisPanel project={project} onOpenPreparation={() => openPreparation("review")} />}
+    {tab === "mixedlocal" && <MixedAnalysisWorkspace project={project} onChange={onChange} />}
     {tab === "cut" && <><h4>Simulação preliminar de aproveitamento</h4><p>Perfis e aços separados. Comprimento comercial vem de cada perfil. Uma perda de serra por peça, mais duas perdas de extremidade por barra. Heurística First Fit Decreasing; não comprova o mínimo de barras e não libera fabricação.</p>
       <div className="form-grid"><NumberField label="Espessura do corte (mm)" value={config.kerfMm} min={0} max={1000} onChange={kerfMm => changeCutting({ kerfMm })} /><NumberField label="Perda em cada extremidade (mm)" value={config.endTrimMm} min={0} max={100000} onChange={endTrimMm => changeCutting({ endTrimMm })} /><NumberField label="Sobra mínima aproveitável (mm)" value={config.minimumRemnantMm} min={0} max={1000000} onChange={minimumRemnantMm => changeCutting({ minimumRemnantMm })} /></div>
       <label className="checkbox-label"><input type="checkbox" checked={config.useFabrication} onChange={e => changeCutting({ useFabrication: e.target.checked })} />Usar comprimentos finais declarados por peça (ainda sem liberação de fabricação)</label>

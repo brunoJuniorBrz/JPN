@@ -1,0 +1,13 @@
+corepack : $ eslint .
+No linha:2 caractere:341
++ ... ck=$LASTEXITCODE; corepack pnpm lint *> ../m16-lint-final.txt; $lint= ...
++                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ eslint .:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+C:\Users\Bruno\Downloads\JPN-main\.tools\mission16-worktree\src\components\planning\structure-3d.tsx
+  156:6  warning  React Hook useEffect has a missing dependency: 'envelope'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+✖ 1 problem (0 errors, 1 warning)
+
