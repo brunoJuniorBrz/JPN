@@ -42,7 +42,7 @@ for (const width of [375,1440]) test(`modo acabado preserva a estrutura, persona
   await expect(canvas).toHaveAttribute("data-mode","structural");
   await page.getByRole("group",{name:"Modo de visualização 3D"}).getByRole("button",{name:"Misto"}).click();
   await expect(canvas).toHaveAttribute("data-mode","mixed");
-  await expect(page.getByTestId("takeoff-totals")).toHaveText(before);
+  expect(await page.getByTestId("takeoff-totals").innerText()).toBe(before);
   expect(await page.evaluate(()=>JSON.stringify(JSON.parse(localStorage.getItem("jpn-projetos:v1")!).projects.at(-1).planning))).toBe(previous);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   expect(errors).toEqual([]);
