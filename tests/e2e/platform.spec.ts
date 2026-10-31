@@ -5,7 +5,7 @@ import { sectionDataSchema } from "../../src/domain/structure";
 import { trussGeometry } from "../../src/domain/analysis";
 
 function fixture() {
-  const p = planningExample();
+  const p = planningExample(); p.isExample = false;
   p.description = "Fornecimento preliminar de estrutura metálica, sujeito ao dimensionamento e detalhamento.";
   p.estimate.paymentTerms = "Condição fictícia para teste"; p.estimate.validity = "10 dias (teste)"; p.estimate.deadline = "Prazo a confirmar no teste";
   for (const profile of Object.values(p.planning!.profiles)) {
