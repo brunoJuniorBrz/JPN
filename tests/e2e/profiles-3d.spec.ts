@@ -25,8 +25,13 @@ test(`perfis 3D, seleção, modos e persistência em ${width}px`, async ({ page 
   const errors: string[] = []; page.on("pageerror", e => errors.push(e.message)); await seed(page);
   const before = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
   const totals = await page.getByTestId("takeoff-totals").innerText();
+  // Even a previously stored Structural preference must not override the new opening default.
+  await page.evaluate(() => localStorage.setItem("jpn-viewer-mode:v1", "structural"));
   await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
   const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" }); await expect(canvas).toBeVisible();
+  await expect(canvas).toHaveAttribute("data-mode", "profiles");
+  await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
+  await expect(page.getByLabel("Selecionar peça no desenho")).toHaveValue("");
   if (width === 375) expect(Number(await canvas.getAttribute("data-pixel-ratio"))).toBeGreaterThanOrEqual(1.75);
   await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
   await expect(page.locator(".structure-viewer--expanded")).toBeVisible();
@@ -39,6 +44,8 @@ test(`perfis 3D, seleção, modos e persistência em ${width}px`, async ({ page 
   await expect(page.getByTestId("profile-coverage")).toContainText("em linha");
   await page.getByLabel("Selecionar peça no desenho").selectOption("P1");
   await expect(page.getByRole("status").filter({ hasText: "P1" })).toContainText("Largura externa: 100 mm");
+  // Selecting or highlighting never zooms in on its own.
+  await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
   await canvas.screenshot({ path: `test-results/profiles-3d-${width}.png` });
   // Exercise the actual pointer raycaster against rendered solids, independently
   // of the accessible dropdown. Scan a sparse screen grid to find a hit.
@@ -50,14 +57,25 @@ test(`perfis 3D, seleção, modos e persistência em ${width}px`, async ({ page 
     hit = !!(await page.getByLabel("Selecionar peça no desenho").inputValue());
   }
   expect(hit).toBe(true);
+  await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
+  await page.getByRole("button", { name: "Focar peça selecionada" }).click();
+  await expect(canvas).toHaveAttribute("data-framing", "selected-piece");
+  await page.getByRole("button", { name: "Isométrica · ajustar 3D" }).click();
+  await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
   await page.getByRole("button", { name: "Misto", exact: true }).click(); await expect(canvas).toHaveAttribute("data-mode", "mixed");
   await page.getByRole("button", { name: "Estrutural", exact: true }).click(); await expect(canvas).toHaveAttribute("data-mode", "structural");
-  await page.getByRole("button", { name: "Perfis 3D", exact: true }).click();
+  // Re-opening 3D resets mode and camera after choosing other modes or pieces.
+  await page.getByRole("button", { name: "Voltar às vistas 2D" }).click();
+  await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+  await expect(canvas).toHaveAttribute("data-mode", "profiles");
+  await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
+  await expect(page.getByLabel("Selecionar peça no desenho")).toHaveValue("");
   const box = (await canvas.boundingBox())!; await page.mouse.move(box.x + box.width / 2, box.y + 170); await page.mouse.down(); await page.mouse.move(box.x + box.width / 2 + 35, box.y + 180, { steps: 5 }); await page.mouse.up();
   await page.getByRole("button", { name: "Isométrica · ajustar 3D" }).click();
   expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(before);
   await page.reload(); await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
   await expect(canvas).toHaveAttribute("data-mode", "profiles");
+  await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
   expect(await page.getByTestId("takeoff-totals").innerText()).toBe(totals);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole("button", { name: "Voltar às vistas 2D" }).click(); await expect(canvas).toHaveCount(0);
@@ -99,8 +117,16 @@ for (const width of [375, 1440]) test(`exemplo antigo abre demonstração sólid
   const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
   await expect(canvas).toHaveAttribute("data-solid-count", "123"); await expect(canvas).toHaveAttribute("data-fallback-count", "0");
   await expect(page.getByTestId("profile-demo-notice")).toBeVisible();
+  await expect(canvas).toHaveAttribute("data-mode", "profiles");
+  await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
+  await expect(page.getByLabel("Selecionar peça no desenho")).toHaveValue("");
+  await page.getByLabel("Selecionar peça no desenho").selectOption("P1");
   await expect(page.getByRole("status").filter({ hasText: "P1" })).toContainText("I 240 × 160");
+  await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
   await page.getByRole("button", { name: "Focar peça selecionada" }).click();
+  await expect(canvas).toHaveAttribute("data-framing", "selected-piece");
+  await page.getByRole("button", { name: "Isométrica · ajustar 3D" }).click();
+  await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
   await canvas.screenshot({ path: `test-results/demo-profile-focus-${width}.png` });
   expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(original);
   expect(await page.getByTestId("takeoff-totals").innerText()).toBe(totals);
@@ -123,6 +149,9 @@ for (const width of [375, 1440]) test(`atalho visível abre o 3D da estrutura no
   await page.getByRole("button", { name: "Abrir modelo 3D" }).click();
   await expect(page.getByRole("button", { name: "Voltar às vistas 2D" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Perfis 3D", exact: true })).toBeVisible();
-  await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
+  const shortcutCanvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
+  await expect(shortcutCanvas).toBeVisible();
+  await expect(shortcutCanvas).toHaveAttribute("data-mode", "profiles");
+  await expect(shortcutCanvas).toHaveAttribute("data-framing", "whole-structure");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
