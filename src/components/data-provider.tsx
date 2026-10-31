@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState, ty
 import { emptySnapshot, projectSchema, type Backup, type Material, type Project, type Settings, type Snapshot } from "@/domain/models";
 import { browserRepositories, readRawBrowserData, LocalRepositories, STORAGE_KEY } from "@/infrastructure/persistence/local";
 import { downloadText } from "@/lib/format";
-import { planningExample, PLANNING_EXAMPLE_ID } from "@/domain/planning-example";
+import type { ShowcaseKind } from "@/domain/showcase-projects";
 
 type SaveState = "saved" | "pending" | "error";
 interface DataContextValue {
@@ -17,6 +17,7 @@ interface DataContextValue {
   saveMaterial: (material: Material) => boolean; removeMaterial: (id: string) => void;
   installExample: () => string | undefined;
   installPlanningExample: () => string | undefined;
+  installShowcase: (kind: ShowcaseKind) => string | undefined;
   loadEpoch: number;
 }
 const DataContext = createContext<DataContextValue | null>(null);
@@ -36,11 +37,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
     try {
       const repo = browserRepositories();
       let next = repo.load(); repository.current = repo;
-      let seedError: unknown;
-      if (!next.exampleInstalled) { try { repo.installExample(); next = repo.snapshot(); } catch (e) { seedError = e; } }
+      // Replace only old built-in examples; never seed the obsolete garage on startup.
+      let migrationError: unknown;
+      try { repo.retireLegacyExamples(); next = repo.snapshot(); } catch (e) { migrationError = e; }
       pending.current.clear(); setData(next); setFatal(""); setError(""); setSaveState("saved"); setReady(true);
       setLoadEpoch(epoch => epoch + 1);
-      if (seedError) fail(seedError);
+      if (migrationError) fail(migrationError);
     } catch (e) { setFatal(e instanceof Error ? e.message : "Armazenamento indisponível."); setReady(true); }
   }, [fail]);
   const flush = useCallback(() => {
@@ -93,7 +95,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     saveMaterial: material => mutation(repo => { repo.materials.save(material); return true; }) ?? false,
     removeMaterial: id => { mutation(repo => repo.materials.remove(id)); },
     installExample: () => mutation(repo => repo.installExample()),
-    installPlanningExample: () => mutation(repo => { if (!repo.projects.list().some(p => p.id === PLANNING_EXAMPLE_ID)) repo.projects.save(planningExample()); return PLANNING_EXAMPLE_ID; }),
+    installPlanningExample: () => mutation(repo => repo.installShowcase("cobertura")),
+    installShowcase: kind => mutation(repo => repo.installShowcase(kind)),
     recover: () => { try { const raw = readRawBrowserData(); downloadText(raw ?? "null", "jpn-dados-originais.json"); } catch (e) { fail(e); } },
   }}>{children}</DataContext.Provider>;
 }
