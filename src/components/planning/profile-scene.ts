@@ -9,7 +9,9 @@ export const VIEWER_MODE_KEY = "jpn-viewer-mode:v1";
 export function parseViewerMode(value: string | null): ViewerMode { return viewerModes.includes(value as ViewerMode) ? value as ViewerMode : "structural"; }
 export function viewerQuality(count: number, hardwareConcurrency = 8, deviceMemory = 8) {
   const low = count > 1500 || hardwareConcurrency <= 4 || deviceMemory <= 4;
-  return { low, segments: low ? 16 : 32, pixelRatio: low ? 1 : 1.5 };
+  // Reduce mesh complexity on limited devices, not the image sharpness.
+  // The renderer additionally applies a screen-size pixel budget on resize.
+  return { low, segments: low ? 16 : 32, pixelRatio: low ? 2 : 2.25 };
 }
 export const roleColors = { column: 0x8f672b, topChord: 0x265c40, bottomChord: 0x42815c, web: 0x64734d, purlin: 0x357989 };
 export function pieceIdFromHit(hit: Pick<THREE.Intersection, "object" | "instanceId" | "index">): string | null {
