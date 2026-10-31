@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { defaultSettings, emptySnapshot, newProject, projectSchema, settingsSchema } from "@/domain/models";
 import { decimalInput } from "@/lib/format";
-import { exampleMaterials, exampleProject } from "@/domain/example";
+import { exampleMaterials, exampleProject, EXAMPLE_ID } from "@/domain/example";
+import { planningExample, PLANNING_EXAMPLE_ID } from "@/domain/planning-example";
+import { preprojectExample, PREPROJECT_EXAMPLE_ID } from "@/domain/preproject-example";
+import { SHOWCASE_IDS } from "@/domain/showcase-projects";
 import { LocalRepositories, MAX_BACKUP_BYTES, parseBackup, serializeBackup, STORAGE_KEY, type StorageAdapter } from "./local";
 
 class MemoryStorage implements StorageAdapter {
@@ -96,6 +99,39 @@ describe("Backups", () => {
     expect(repo.projects.list()[0].estimate.materials[0].unitPriceCents).toBe(8000);
     repo.materials.remove(snapshot.materials[0].id);
     expect(repo.projects.list()[0].estimate.materials[0].name).toBe(project.estimate.materials[0].name);
+  });
+  it("remove somente exemplos nativos antigos e mantém projetos reais e cópias importadas", () => {
+    const { repo, storage } = setup();
+    const real = sampleProject(), customCopy = { ...exampleProject(), id: crypto.randomUUID(), name: "Cópia editada pelo usuário" };
+    repo.projects.save(real);
+    repo.projects.save(exampleProject()); repo.projects.save(planningExample()); repo.projects.save(preprojectExample());
+    repo.projects.save(customCopy);
+    for (const m of exampleMaterials()) repo.materials.save(m);
+    repo.retireLegacyExamples();
+    expect(repo.projects.list().map(p => p.id)).toEqual([real.id, customCopy.id]);
+    expect(repo.materials.list()).toHaveLength(3); // Mantidos por cópia editada ainda vinculada.
+    expect(repo.snapshot().exampleInstalled).toBe(true);
+    const revision = repo.snapshot().revision;
+    repo.retireLegacyExamples();
+    expect(repo.snapshot().revision).toBe(revision);
+    expect(new LocalRepositories(storage).load().projects.map(p => p.id)).toEqual([real.id, customCopy.id]);
+  });
+  it("preserva material fictício se referenciado por projeto real", () => {
+    const { repo } = setup(); const example = exampleProject(); const material = exampleMaterials()[0];
+    const real = { ...example, id: crypto.randomUUID(), name: "Projeto real", isExample: false };
+    repo.projects.save(example); repo.projects.save(real); repo.materials.save(material);
+    repo.retireLegacyExamples();
+    expect(repo.projects.list()).toHaveLength(1);
+    expect(repo.materials.list()).toHaveLength(1);
+  });
+  it("instala exemplos novos com IDs estáveis e sem duplicar ao reabrir", () => {
+    const { repo } = setup();
+    expect(repo.installShowcase("cobertura")).toBe(SHOWCASE_IDS.cobertura);
+    expect(repo.installShowcase("galpao")).toBe(SHOWCASE_IDS.galpao);
+    expect(repo.installShowcase("cobertura")).toBe(SHOWCASE_IDS.cobertura);
+    expect(repo.projects.list()).toHaveLength(2);
+    expect(repo.projects.list().every(p => p.isExample)).toBe(true);
+    expect(repo.projects.list().some(p => p.id === EXAMPLE_ID || p.id === PLANNING_EXAMPLE_ID || p.id === PREPROJECT_EXAMPLE_ID)).toBe(false);
   });
   it("cria exemplo identificado sem sobrescrever nem recriar após exclusão", () => {
     const { repo, storage } = setup(); repo.projects.save(sampleProject()); repo.installExample();

@@ -1,6 +1,21 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
-import { EXAMPLE_ID } from "../../src/domain/example";
+import { EXAMPLE_ID, exampleProject, exampleMaterials } from "../../src/domain/example";
+import { emptySnapshot } from "../../src/domain/models";
+
+
+// Legacy commercial flow remains independently covered by a controlled fixture.
+// Production no longer installs this obsolete example automatically.
+test.beforeEach(async ({ page }) => {
+  const fixture = {
+    ...emptySnapshot(), exampleInstalled: true,
+    projects: [{ ...exampleProject(), isExample: false }],
+    materials: exampleMaterials().map(item => ({ ...item, isExample: false })),
+  };
+  await page.addInitScript(value => {
+    if (!localStorage.getItem("jpn-projetos:v1")) localStorage.setItem("jpn-projetos:v1", JSON.stringify(value));
+  }, fixture);
+});
 
 test("entrega PDF e planilha, persiste condições e bloqueia PDF incompleto", async ({ page }) => {
   const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));

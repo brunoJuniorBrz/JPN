@@ -1,5 +1,20 @@
 import { expect, test } from "@playwright/test";
-import { EXAMPLE_ID } from "../../src/domain/example";
+import { EXAMPLE_ID, exampleProject, exampleMaterials } from "../../src/domain/example";
+import { emptySnapshot } from "../../src/domain/models";
+
+// Legacy commercial flow remains independently covered by a controlled fixture.
+// Production no longer installs this obsolete example automatically.
+test.beforeEach(async ({ page }) => {
+  const fixture = {
+    ...emptySnapshot(), exampleInstalled: true,
+    projects: [{ ...exampleProject(), isExample: false }],
+    materials: exampleMaterials().map(item => ({ ...item, isExample: false })),
+  };
+  await page.addInitScript(value => {
+    if (!localStorage.getItem("jpn-projetos:v1")) localStorage.setItem("jpn-projetos:v1", JSON.stringify(value));
+  }, fixture);
+});
+
 const step = (page: import("@playwright/test").Page, name: string) => page.getByRole("navigation", { name: "Etapas do projeto" }).getByRole("button", { name, exact: false });
 
 test("obra real: cliente, medidas com vírgula, material próprio, custos e resumo persistido", async ({ page }) => {
@@ -112,6 +127,11 @@ test("configurações com vírgula e proteção de dados corrompidos", async ({ 
 
 test("amplia e movimenta o desenho com gestos de toque", async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await context.addInitScript(value => {
+    if (!localStorage.getItem("jpn-projetos:v1")) localStorage.setItem("jpn-projetos:v1", JSON.stringify(value));
+  }, { ...emptySnapshot(), exampleInstalled: true,
+    projects: [{ ...exampleProject(), isExample: false }],
+    materials: exampleMaterials().map(item => ({ ...item, isExample: false })) });
   const page = await context.newPage();
   await page.goto(`/projetos/${EXAMPLE_ID}?etapa=1`);
   const svg = page.getByRole("img", { name: "Desenho preliminar: planta" });

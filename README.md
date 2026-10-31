@@ -6,11 +6,11 @@ Sistema local de projetos e levantamento geométrico de materiais de estruturas 
 
 O visualizador agora oferece **Estrutural / Perfis 3D / Misto**, com tubos retangulares, quadrados e circulares, I/H, U/C e L nas dimensões cadastradas. Informe os campos opcionais em **Estrutura → Geometria da seção para visualização 3D**. Dados ausentes ou incompatíveis mantêm linhas com aviso. [Guia, arquivos, orientação, desempenho e limites](docs/PERFIS-3D.md) · [Galeria visual verificável](examples/perfis-3d.svg).
 
-Projetos antigos podem mostrar **0 peças com seção 3D** porque os perfis eram apenas texto. Nesse aviso, use **Ver demonstração com perfis** para ver 123 sólidos sem alterar o projeto, ou **Cadastrar dimensões** para abrir diretamente os campos da categoria escolhida. **Focar peça selecionada** aproxima o perfil, mantendo suas medidas reais.
+Projetos antigos podem mostrar **0 peças com seção 3D** porque os perfis eram apenas texto. Nesse aviso, **Ver demonstração com perfis** utiliza a geometria atual da obra e seções explicitamente sintéticas, sem salvar alterações, enquanto **Cadastrar dimensões** permite inserir seções reais. O 3D abre em **Perfis 3D**, com enquadramento da estrutura inteira, em celulares e computadores; somente **Focar peça selecionada** aproxima uma barra.
 
 Disponíveis: uma ou duas águas simétricas, prolongamentos longitudinais das terças, vistas 2D/3D com seleção e fallback sem WebGL2, perfis com propriedades/fonte/data, simulação de aproveitamento FFD, quantitativos vinculados ao orçamento, revisões preliminares, DXF 3D em mm, SVG e PDF/XLSX. A análise experimental chama o motor Python real apenas para **uma tesoura isolada articulada**, com cargas e apoios explícitos; não representa a cobertura inteira nem aprova perfis.
 
-Abra **Abrir exemplo completo de pré-projeto** na página inicial. O exemplo é inteiramente fictício e demonstra geometria → peças → simulação → análise de teste → orçamento → documentos. Também pode ser importado pelo [backup de demonstração](examples/preprojeto-duas-aguas.json).
+A página inicial traz **duas demonstrações atualizadas**: cobertura de oficina 10 × 20 m (uma água) e galpão 10 × 20 m (duas águas). Ambas abrem diretamente em **Perfis 3D**, com todas as seções geométricas válidas para renderização, quantitativos vinculados e orçamento de venda fictício preenchido. As seções, preços, quantidades de fixadores, prazos e serviços são sintéticos, não são cotação nem dimensionamento normativo. O arquivo [preprojeto-duas-aguas.json](examples/preprojeto-duas-aguas.json) é um arquivo histórico, não o novo modelo de apresentação.
 
 Guia completo, arquitetura, instalação Python, implantação Vercel/serviço separado, licenças e limites: [PREPROJETO.md](docs/PREPROJETO.md). Relatório desta execução: [ENTREGA-PREPROJETO.md](docs/ENTREGA-PREPROJETO.md).
 
@@ -22,7 +22,7 @@ Validação após os perfis 3D e o acesso à demonstração: **1.186 testes Pyth
 
 ## Levantamento de peças
 
-Abra **Abrir exemplo de levantamento** na página inicial: cobertura fictícia de 10 × 20 m, inclinação de 10%, 5 linhas de tesouras, 7 linhas de terças e 123 peças. Perfis e massas são fictícios. O exemplo é criado somente ao clicar, sem substituir os exemplos ou projetos anteriores.
+Abra **Abrir exemplo de levantamento** na página inicial: cobertura de oficina fictícia de 10 × 20 m, inclinação de 10%, 5 linhas de tesouras, 7 linhas de terças e 123 peças com seções 3D completas. A proposta de demonstração inclui material derivado do levantamento, telhamento por área, quantidades ilustrativas de fixadores, mão de obra e despesas. O segundo exemplo demonstra duas águas e a análise experimental isolada. Ambos são instalados somente ao clicar.
 
 Para uma obra nova, informe medidas, espaçamento máximo entre tesouras e terças, altura da tesoura e número de painéis. A geração distribui os vãos igualmente, incluindo as extremidades, e calcula pilares, banzos, montantes, diagonais e trechos de terça. A área inclinada do exemplo é 200,997512 m². O comprimento de cada peça é geométrico entre eixos; não inclui descontos ou cortes de fabricação.
 
@@ -52,7 +52,7 @@ A navegação tem cinco passos, campos e botões maiores, exemplos ao lado dos c
 
 ### Exemplo pronto
 
-Na primeira abertura desta versão, é adicionado uma única vez **EXEMPLO — Cobertura da garagem**, sem alterar projetos existentes. O dashboard tem o botão **Abrir exemplo**. Todos os preços e quantitativos manuais são identificados como fictícios. O exemplo e seus materiais podem ser editados ou excluídos; sua exclusão não provoca recriação automática. Estatísticas comerciais do dashboard não somam exemplos.
+O exemplo automático antigo da garagem foi descontinuado. Ao abrir a nova versão, o aplicativo remove apenas os **três exemplos nativos antigos identificados por ID**, e materiais fictícios do catálogo anterior que não sejam referenciados por outros projetos. Projetos reais, cópias e materiais ainda referenciados são preservados. A remoção não recria automaticamente exemplos: use os dois botões da página inicial quando quiser uma nova demonstração. Depois de instalados, os exemplos são reutilizados ao abrir novamente; não acumulam cópias. Os preços e dimensões são sempre fictícios.
 
 - Largura: 6 m; comprimento: 10 m; altura baixa: 3 m; inclinação: 10% pela largura.
 - Área horizontal: 60 m²; área real: aproximadamente 60,299254 m².
@@ -62,7 +62,7 @@ Na primeira abertura desta versão, é adicionado uma única vez **EXEMPLO — C
 - Mão de obra: dois dias de R$ 600; transporte: R$ 350.
 - Custo: **R$ 7.865,20**; markup: 25%; venda: **R$ 9.831,50**; lucro bruto: **R$ 1.966,30**; margem bruta: 20%.
 
-Não há apoios, bitolas, soldas ou ligações inventados nesse exemplo. Ele ensina geometria e orçamento; não é um projeto de fabricação nem uma cotação de mercado.
+As seções visuais são fictícias e NÃO constituem seleção técnica de perfis ou cálculo resistente. Ligações, soldas, contraventamentos, fundações, revestimentos e consumíveis podem estar ausentes do orçamento ilustrativo. Nunca utilize estes valores para comprar material, cortar peças ou executar a obra.
 
 Uma cópia exportada pelo aplicativo está em [examples/cobertura-garagem.json](examples/cobertura-garagem.json). Pode ser importada nas configurações, adicionando uma nova cópia do projeto.
 

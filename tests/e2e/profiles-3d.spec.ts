@@ -6,7 +6,7 @@ import { visualSectionSchema } from "../../src/domain/profile-section";
 import examples from "../../examples/perfis-3d.json" with { type: "json" };
 
 async function seed(page: Page) {
-  const p = planningExample();
+  const p = planningExample(); p.isExample = false;
   roles.forEach((role, i) => {
     const { thicknessMm, expectedAreaMm2: _area, ...v } = examples.sections[i]; void _area;
     p.planning!.profiles[role].visualSection = visualSectionSchema.parse(v);
@@ -104,7 +104,7 @@ test("cadastro geométrico incompleto avisa e persiste dimensões sem inferir pr
 
 for (const width of [375, 1440]) test(`exemplo antigo abre demonstração sólida sem modificar o projeto em ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 950 });
-  const project = planningExample();
+  const project = planningExample(); project.isExample = false;
   await page.addInitScript(snapshot => localStorage.setItem("jpn-projetos:v1", JSON.stringify(snapshot)), { ...emptySnapshot(), exampleInstalled: true, projects: [project] });
   await page.goto(`/projetos/${project.id}?fluxo=levantamento&etapa=3`);
   await expect(page.getByTestId("takeoff-totals")).toBeVisible();

@@ -1,11 +1,15 @@
 import { planningExample } from "./planning-example";
+import type { Project } from "./models";
 import { generateStructure } from "./calculations/structure";
 import { roles, sectionDataSchema, type ProfileSpec } from "./structure";
 
 // A separate visual demonstration. Never merges dimensions into a user's
 // project or claims that a commercial profile was selected by engineering.
-export function profiles3DDemo() {
-  const project = planningExample();
+export function profiles3DDemo(source: Project = planningExample()) {
+  // Demonstrate profile geometry on the CURRENT project's spans and roof shape,
+  // without inserting synthetic sections or costs into the saved project.
+  const project = structuredClone(source);
+  if (!project.planning) throw new Error("A demonstração 3D exige geometria previamente configurada.");
   const sections: Record<typeof roles[number], ProfileSpec["visualSection"]> = {
     column: { family: "i", heightMm: 240, flangeWidthMm: 160, webThicknessMm: 8, flangeThicknessMm: 12, rollDeg: 0 },
     topChord: { family: "rectangular-tube", widthMm: 100, heightMm: 160, rollDeg: 0 },

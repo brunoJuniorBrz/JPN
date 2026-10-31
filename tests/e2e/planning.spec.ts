@@ -28,6 +28,7 @@ for (const width of [390, 1440]) test(`levantamento sem preços, revisão ao fin
   await page.screenshot({ path: `test-results/levantamento-${width}.png`, fullPage: true });
   await page.getByRole("button", { name: "Orçamento de venda", exact: true }).click();
   await page.getByRole("navigation", { name: "Etapas do projeto" }).getByRole("button", { name: "Resumo" }).click();
+  // Changing the span invalidates takeoff quantities; a new transfer is required.
   await expect(page.getByTestId("sale-price")).toContainText("Complete");
   expect(errors).toEqual([]);
 });
