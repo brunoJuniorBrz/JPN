@@ -37,6 +37,18 @@ const profiles: Record<ShowcaseKind, Record<PieceRole, {
   },
 };
 
+function visualAreaMm2(section: NonNullable<ProfileSpec["visualSection"]>, wallMm: number | null): number {
+  const t = wallMm ?? 0;
+  switch (section.family) {
+    case "square-tube": return section.sideMm! ** 2 - (section.sideMm! - 2 * t) ** 2;
+    case "rectangular-tube": return section.widthMm! * section.heightMm! - (section.widthMm! - 2 * t) * (section.heightMm! - 2 * t);
+    case "circular-tube": return Math.PI / 4 * (section.diameterMm! ** 2 - (section.diameterMm! - 2 * t) ** 2);
+    case "i": return 2 * section.flangeWidthMm! * section.flangeThicknessMm! + (section.heightMm! - 2 * section.flangeThicknessMm!) * section.webThicknessMm!;
+    case "channel": return t * section.heightMm! + 2 * t * (section.flangeWidthMm! - t);
+    case "angle": return t * (section.legXmm! + section.legYmm! - t);
+  }
+}
+
 export function applyShowcaseProfiles(project: Project, kind: ShowcaseKind): Project {
   if (!project.planning) throw new Error("Configure a estrutura antes de atribuir perfis de demonstração.");
   for (const role of roles) {
@@ -47,7 +59,13 @@ export function applyShowcaseProfiles(project: Project, kind: ShowcaseKind): Pro
       section: spec.name,
       source: "DIMENSÕES E PREÇOS SINTÉTICOS, exclusivos para demonstração. Sem consulta a catálogo, fabricante ou norma.",
       massKgM: null, stockLengthM: 6, pricePerMeterCents: spec.pricePerMeterCents,
-      data: { ...sectionDataSchema.parse({}), kind: spec.kind, thicknessMm: spec.thicknessMm, sourceDate: "2026-10-31", dimensions: spec.name },
+      data: { ...sectionDataSchema.parse({}), kind: spec.kind, thicknessMm: spec.thicknessMm,
+        // Ideal area calculated from the synthetic rendered section (no fillets or radii).
+        // Experimental solver input, NOT a checked resistant property.
+        areaCm2: visualAreaMm2(spec.visualSection, spec.thicknessMm) / 100,
+        elasticModulusGpa: 200,
+        origin: "calculated", calculationReference: "Seção geométrica ideal; E=200 GPa declarado apenas para simulação, sem laudo ou aprovação.",
+        sourceDate: "2026-10-31", dimensions: spec.name },
       visualSection: spec.visualSection,
     };
   }
