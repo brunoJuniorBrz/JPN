@@ -20,6 +20,7 @@ const step = (page: import("@playwright/test").Page, name: string) => page.getBy
 test("obra real: cliente, medidas com vírgula, material próprio, custos e resumo persistido", async ({ page }) => {
   const errors: string[] = []; page.on("pageerror", e => errors.push(e.message));
   await page.goto("/projetos/novo");
+  await page.getByRole("button", { name: "Usar cadastro completo" }).click();
   await page.getByRole("button", { name: "Orçamento de venda", exact: true }).click();
   await page.getByRole("button", { name: "Salvar e continuar" }).click();
   await expect(page.getByText("Informe o nome do projeto.")).toBeVisible();

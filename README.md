@@ -2,6 +2,16 @@
 
 Sistema local de projetos e levantamento geométrico de materiais de estruturas metálicas. O fluxo principal agora é **Obra → Medidas → Estrutura → Resultado**, com peças identificadas, desenho e PDF/XLSX para cotação sem preços. O orçamento de venda permanece como área secundária.
 
+## Entrada rápida: 3D primeiro
+
+Em **Novo projeto**, a opção padrão é a **Entrada rápida**. Informe o formato (uma ou duas águas), largura, comprimento e altura; nome, cliente e inclinação visual inicial são opcionais. O aplicativo cria um projeto não fictício, salva no navegador e abre imediatamente **Resultado → Perfis 3D**, com o modelo enquadrado inteiro. **Usar cadastro completo** preserva o antigo fluxo técnico para quem preferir começar detalhando tudo.
+
+O gerador rápido propõe APENAS uma configuração **geométrica provisória**, com distribuição inicial de tesouras/terças, número de painéis e seções 3D **sintéticas**; a inclinação visual começa em 10% quando não informada. Nenhuma classe de aço, massa por metro, preço, comprimento comercial, resistência ou ação foi assumida ou aprovada. **Não usar a saída rápida para encomendar material ou cortar**. Informações físicas/normativas serão solicitadas no futuro motor de dimensionamento.
+
+No 3D, selecione uma barra e use **Editar perfil deste grupo**, ou **Editar distribuição e espaçamentos**. As alterações em Medidas/Estrutura atualizam automaticamente as peças e a lista geométrica. Quando existem linhas de orçamento vinculadas por levantamento, o editor de planejamento atualiza suas quantidades preservando material manual, preço e perdas por grupo, desde que o modelo esteja calculável. Enquanto um formulário está incompleto, as linhas antigas permanecem sinalizadas como desatualizadas.
+
+As configurações iniciais **não são uma otimização de engenharia**, apenas uma pré-visualização editável. Cargas, vento, apoios, análise espacial, verificações normativas, soldas e detalhamento de fabricação continuam pendentes.
+
 ## Pré-projeto integrado — v0.6
 
 O visualizador agora oferece **Estrutural / Perfis 3D / Misto**, com tubos retangulares, quadrados e circulares, I/H, U/C e L nas dimensões cadastradas. Informe os campos opcionais em **Estrutura → Geometria da seção para visualização 3D**. Dados ausentes ou incompatíveis mantêm linhas com aviso. [Guia, arquivos, orientação, desempenho e limites](docs/PERFIS-3D.md) · [Galeria visual verificável](examples/perfis-3d.svg).
@@ -14,7 +24,7 @@ A página inicial traz **duas demonstrações atualizadas**: cobertura de oficin
 
 Guia completo, arquitetura, instalação Python, implantação Vercel/serviço separado, licenças e limites: [PREPROJETO.md](docs/PREPROJETO.md). Relatório desta execução: [ENTREGA-PREPROJETO.md](docs/ENTREGA-PREPROJETO.md).
 
-O aplicativo usa snapshots **v4**, migrando v1/v2/v3 sem regravar na leitura ou apagar dados. Resultados e quantitativos dependentes ficam desatualizados quando a configuração muda. Revisões de levantamento são preservadas pelo repositório; não equivalem a aprovação ou histórico assinado de propostas. Nenhum arquivo é liberado para fabricação nesta versão.
+O aplicativo usa snapshots **v4**, migrando v1/v2/v3 sem regravar na leitura ou apagar dados. As quantidades geométricas são recalculadas no planejamento e as linhas de orçamento vinculadas são atualizadas se houver modelo válido; análises e registros de fabricação dependentes podem ficar desatualizados quando a configuração muda. Revisões de levantamento são preservadas pelo repositório; não equivalem a aprovação ou histórico assinado de propostas. Nenhum arquivo é liberado para fabricação nesta versão.
 
 Para desenvolvimento completo, preparar Python 3.12 conforme o guia antes de `pnpm test`; os testes JS incluem chamadas reais ao solver. Em Vercel, configurar o serviço remoto para habilitar análise; as outras funções permanecem disponíveis sem ele. Não houve implantação pública nesta execução.
 

@@ -28,13 +28,14 @@ for (const width of [390, 1440]) test(`levantamento sem preços, revisão ao fin
   await page.screenshot({ path: `test-results/levantamento-${width}.png`, fullPage: true });
   await page.getByRole("button", { name: "Orçamento de venda", exact: true }).click();
   await page.getByRole("navigation", { name: "Etapas do projeto" }).getByRole("button", { name: "Resumo" }).click();
-  // Changing the span invalidates takeoff quantities; a new transfer is required.
-  await expect(page.getByTestId("sale-price")).toContainText("Complete");
+  // The planner now refreshes geometrically linked quantities automatically.
+  await expect(page.getByTestId("sale-price")).not.toContainText("Complete");
   expect(errors).toEqual([]);
 });
 
 test("cria levantamento com perfis pendentes e preserva os dados no backup", async ({ page }) => {
   await page.goto("/projetos/novo");
+  await page.getByRole("button", { name: "Usar cadastro completo" }).click();
   await page.getByLabel("Nome do projeto *", { exact: true }).fill("Levantamento sem preços");
   await page.getByLabel("Cliente *", { exact: true }).fill("Engenheiro de teste");
   await page.getByRole("button", { name: "Salvar e continuar" }).click();
