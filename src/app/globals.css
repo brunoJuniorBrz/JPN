@@ -436,3 +436,25 @@ body { font-size: 16px; }
   .quick-start-primary, .quick-start-actions .secondary { flex-basis: auto; width: 100%; }
 }
 @media (max-width: 380px) { .quick-start-measures { grid-template-columns: 1fr; } .quick-start-measures > :last-child { grid-column: auto; } }
+
+
+/* Physical preparation: compact controls with explicit, reviewable inputs. */
+.physical-prep { display: grid; gap: 16px; min-width: 0; }
+.physical-prep h3, .physical-prep h4 { margin-bottom: 2px; }
+.physical-prep .notice { overflow-wrap: anywhere; }
+.physical-prep-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.physical-prep-tabs .button { min-height: 44px; padding: 10px 12px; flex: 1 1 180px; justify-content: center; }
+.physical-dofs { display: grid; gap: 12px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.physical-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto; align-items: end; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.physical-row > button { min-height: 44px; }
+.physical-issues { max-height: 360px; overflow-y: auto; padding-left: 20px; overflow-wrap: anywhere; }
+.physical-issues li { margin-bottom: 7px; }
+.physical-prep .technical-details { min-width: 0; }
+@media (max-width: 680px) {
+  .physical-prep-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .physical-prep-tabs .button { min-width: 0; flex-basis: auto; }
+  .physical-dofs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .physical-row { grid-template-columns: minmax(0, 1fr); align-items: stretch; }
+  .physical-row .button { width: 100%; }
+}
+@media (max-width: 370px) { .physical-prep-tabs, .physical-dofs { grid-template-columns: 1fr; } }
