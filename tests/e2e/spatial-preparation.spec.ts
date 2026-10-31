@@ -61,9 +61,9 @@ test("alterar espaçamentos mantém declarações e marca o vínculo como desatu
   await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
   await page.getByLabel("Classe do aço").fill("Aço fictício só para estudo");
   await page.getByRole("button", { name: "Salvar levantamento" }).click();
-  await page.getByRole("button", { name: "Estrutura", exact: true }).click();
+  await page.getByRole("button", { name: /Estrutura/ }).click();
   await page.getByLabel("Espaçamento máximo entre tesouras (m)").fill("3");
-  await page.getByRole("button", { name: "Resultado", exact: true }).click();
+  await page.getByRole("button", { name: /Resultado/ }).click();
   await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
   await expect(page.getByTestId("physical-prep-status")).toContainText("Cadastro desatualizado");
   await expect(page.getByLabel("Classe do aço")).toHaveValue("Aço fictício só para estudo");
