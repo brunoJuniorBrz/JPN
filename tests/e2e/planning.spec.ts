@@ -35,6 +35,7 @@ for (const width of [390, 1440]) test(`levantamento sem preços, revisão ao fin
 
 test("cria levantamento com perfis pendentes e preserva os dados no backup", async ({ page }) => {
   await page.goto("/projetos/novo");
+  await page.getByRole("button", { name: "Usar cadastro completo" }).click();
   await page.getByLabel("Nome do projeto *", { exact: true }).fill("Levantamento sem preços");
   await page.getByLabel("Cliente *", { exact: true }).fill("Engenheiro de teste");
   await page.getByRole("button", { name: "Salvar e continuar" }).click();
