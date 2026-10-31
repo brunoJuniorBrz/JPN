@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
+export { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
+export type { PhysicalGroup } from "./physical-declaration";
 import type { Project } from "./models";
 import type { PieceRole, StructureModel } from "./structure";
 import { generateStructure } from "./calculations/structure";
@@ -7,21 +10,11 @@ import { spatialContacts } from "./spatial-readiness";
 
 // Human declarations, NOT finite-element input. A pending field is never
 // translated to zero, a free support or a material property by default.
-const positive = z.number().finite().positive().max(1e12).nullable();
 const signed = z.number().finite().min(-1e9).max(1e9).nullable();
-const meaningful = z.string().max(1000);
 const choice = z.enum(["pending", "fixed", "free"]);
 export const dofNames = ["UX", "UY", "UZ", "RX", "RY", "RZ"] as const;
 export const pieceRoles = ["column", "topChord", "bottomChord", "web", "purlin"] as const;
 export const connectionChoices = ["pending", "rigid", "pinned", "axial"] as const;
-export const physicalGroupSchema = z.object({
-  steelGrade: meaningful, materialSource: meaningful, materialRevision: meaningful,
-  eGpa: positive, gGpa: positive, nu: z.number().finite().min(-.99).max(.499).nullable(),
-  areaCm2: positive, iyCm4: positive, izCm4: positive, jCm4: positive,
-  sectionSource: meaningful, sectionRevision: meaningful, rotationDeg: z.number().finite().min(-360).max(360).nullable(),
-  connection: z.enum(connectionChoices),
-}).strict();
-export type PhysicalGroup = z.infer<typeof physicalGroupSchema>;
 const supportSchema = z.object({ nodeId: z.string().min(1).max(100), dofs: z.tuple([choice, choice, choice, choice, choice, choice]) }).strict();
 const loadSchema = z.object({
   id: z.string().uuid(), caseId: z.string().min(1).max(40), nodeId: z.string().min(1).max(100),
@@ -39,10 +32,6 @@ export const spatialPreparationSchema = z.object({
 export type SpatialPreparation = z.infer<typeof spatialPreparationSchema>;
 export type PhysicalLoad = SpatialPreparation["loads"][number];
 
-export function emptyPhysicalGroup(): PhysicalGroup {
-  return { steelGrade: "", materialSource: "", materialRevision: "", eGpa: null, gGpa: null, nu: null,
-    areaCm2: null, iyCm4: null, izCm4: null, jCm4: null, sectionSource: "", sectionRevision: "", rotationDeg: null, connection: "pending" };
-}
 export function newSpatialPreparation(project: Pick<Project, "roof" | "planning">): SpatialPreparation {
   return { version: 1, geometrySignature: structureSignature(project),
     groups: { column: emptyPhysicalGroup(), topChord: emptyPhysicalGroup(), bottomChord: emptyPhysicalGroup(), web: emptyPhysicalGroup(), purlin: emptyPhysicalGroup() },
