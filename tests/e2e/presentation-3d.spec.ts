@@ -15,6 +15,8 @@ for (const width of [375,1440]) test(`modo acabado preserva a estrutura, persona
   await page.getByRole("group",{name:"Modo de visualização 3D"}).getByRole("button",{name:"Acabado"}).click();
   await expect(canvas).toHaveAttribute("data-mode","finished");
   await expect(canvas).toHaveAttribute("data-context-loaded","true",{timeout:20000});
+  await expect(canvas).toHaveAttribute("data-car-source","gltf",{timeout:20000});
+  await expect(canvas).toHaveAttribute("data-person-source","gltf",{timeout:20000});
   await expect(page.getByText("JPN · PRÉ-PROJETO VISUAL · NÃO DIMENSIONADO")).toBeVisible();
   await expect(page.getByLabel("Cotas do pré-projeto")).toContainText("Vão 10 m");
   await expect(page.getByLabel("Cotas do pré-projeto")).toContainText("Comprimento 20 m");
