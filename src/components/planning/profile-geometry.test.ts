@@ -132,7 +132,7 @@ describe("cena compartilhada e contrato original", () => {
   it("milhares de barras compartilham buffers; qualidade e modos inválidos têm fallback", () => {
     const m = model(); m.pieces = Array.from({ length: 3000 }, (_, i) => ({ ...m.pieces[i % m.pieces.length], id: `synthetic-${i}` }));
     const s = buildProfileScene(m, viewerQuality(m.pieces.length).segments); expect(s.cache.size).toBe(1); expect(s.instances.size).toBe(3000); expect(s.root.children[1].children.length).toBe(1); s.dispose();
-    expect(viewerQuality(100, 2).pixelRatio).toBe(1); expect(viewerQuality(100, 8, 2).segments).toBe(16); expect(viewerQuality(100).pixelRatio).toBe(1.5);
+    expect(viewerQuality(100, 2).pixelRatio).toBe(2); expect(viewerQuality(100, 8, 2).segments).toBe(16); expect(viewerQuality(100).pixelRatio).toBe(2.25);
     expect(parseViewerMode("mixed")).toBe("mixed"); expect(parseViewerMode("unknown")).toBe("structural");
   });
   it("abre projetos antigos e persiste metadados opcionais sem alterar quantitativos, corte ou entradas do solver", () => {
