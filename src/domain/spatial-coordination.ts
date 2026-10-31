@@ -2,7 +2,6 @@ import type { Project } from "./models";
 import { generateStructure } from "./calculations/structure";
 import { structureSignature } from "./calculations/project-basis";
 import { newSpatialPreparation, spatialPreparationReview, type SpatialPreparation } from "./spatial-preparation";
-import { pieceRoles } from "./spatial-preparation";
 
 export const spatialStepIds = ["geometry", "properties", "supports", "connections", "loads", "topology"] as const;
 export type SpatialStepId = typeof spatialStepIds[number];
