@@ -8,9 +8,31 @@ export const loadingDraftSchema=z.object({version:z.literal(1),
   selfWeight:z.object({caseId:id,gravity:vec,axialLumping:z.literal("half-to-end-nodes")}).strict().nullable(),
   uniform:z.array(z.object({id,pieceId:id,caseId:id,coordinates:z.enum(["global","local"]),knM:vec,source,revision:source}).strict()).max(320),
   roofArea:z.array(z.object({caseId:id,knM2:n.nonnegative(),projection:z.enum(["horizontal","roof-surface"]),direction:vec,source,revision:source,loadPath:source}).strict()).max(10),
+  overlapReview:z.object({confirmed:z.literal(true),source,revision:source,basis:z.string().min(1).max(1000000)}).strict().optional(),
 }).strict();
 export type LoadingDraft=z.infer<typeof loadingDraftSchema>;
 export const emptyLoading=():LoadingDraft=>({version:1,selfWeight:null,uniform:[],roofArea:[]});
+/** A review cannot prove the absence of duplicate physical actions; it records the
+ * engineer's explicit declaration for exactly the edited cases/loads/model. */
+export function needsSelfWeightOverlapReview(
+  draft:{loads:readonly {caseId:string}[]; combinations:readonly {factors:Record<string,number|null>}[]},
+  loading:LoadingDraft
+):boolean {
+  const weightCase=loading.selfWeight?.caseId;
+  if(!weightCase)return false;
+  const manualCases=new Set([...draft.loads.map(l=>l.caseId),...loading.uniform.map(l=>l.caseId)]);
+  return draft.combinations.some(c=>(c.factors[weightCase]??0)!==0 &&
+    [...manualCases].some(id=>id!==weightCase&&(c.factors[id]??0)!==0));
+}
+export function selfWeightOverlapReviewBasis(
+  draft:{geometrySignature:unknown;groups:unknown;loads:unknown;cases:unknown;combinations:unknown},
+  loading:LoadingDraft
+):string {
+  return canonicalSpatialInput({geometry:draft.geometrySignature,physicalGroups:draft.groups,
+    nodalLoads:draft.loads,cases:draft.cases,combinations:draft.combinations,
+    uniformLoads:loading.uniform,selfWeight:loading.selfWeight});
+}
+
 const uniformSchema=z.object({id,member:id,case:id,coordinate_system:z.enum(["global","local"]),force_per_length_n_m:vec.refine(v=>v.every(x=>Math.abs(x)<=1e9)),source,revision:source}).strict();
 export const loadedMixedRequestSchema=mixedRequestObject.extend({schema_version:z.literal("jpn.mixed3d/2"),nodal_loads:mixedRequestObject.shape.nodal_loads.min(0),
   member_loads:z.array(uniformSchema).max(640),self_weight:z.object({case:id,gravity_m_s2:vec.refine(v=>v.every(x=>Math.abs(x)<=100)&&Math.hypot(...v)>0),axial_lumping:z.literal("half-to-end-nodes"),densities:z.array(z.object({member:id,kg_m3:n.positive().max(100000),source,revision:source}).strict()).max(320)}).strict().nullable(),
