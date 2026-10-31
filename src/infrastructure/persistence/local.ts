@@ -1,6 +1,9 @@
 import { backupSchema, emptySnapshot, migrateSnapshot, snapshotSchema, type Backup, type Project, type Snapshot } from "@/domain/models";
 import type { MaterialRepository, ProjectRepository, SettingsRepository } from "@/domain/repositories";
 import { exampleMaterials, exampleProject, EXAMPLE_ID } from "@/domain/example";
+import { PLANNING_EXAMPLE_ID } from "@/domain/planning-example";
+import { PREPROJECT_EXAMPLE_ID } from "@/domain/preproject-example";
+import { showcaseProject, SHOWCASE_IDS, type ShowcaseKind } from "@/domain/showcase-projects";
 
 export const STORAGE_KEY = "jpn-projetos:v1";
 export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
@@ -71,6 +74,22 @@ export class LocalRepositories {
     remove: id => this.commit({ ...this.data, materials: this.data.materials.filter(m => m.id !== id) }),
   };
   settings: SettingsRepository = { get: () => structuredClone(this.data.settings), save: settings => this.commit({ ...this.data, settings }) };
+  retireLegacyExamples(): void {
+    // Only the known old built-in IDs are retired. Custom projects, duplicates,
+    // imported examples and unrelated IDs are left untouched.
+    const retired = new Set([EXAMPLE_ID, PLANNING_EXAMPLE_ID, PREPROJECT_EXAMPLE_ID]);
+    const projects = this.data.projects.filter(p => !p.isExample || !retired.has(p.id));
+    const oldMaterials = new Set(exampleMaterials().map(m => m.id));
+    const referenced = new Set(projects.flatMap(p => p.estimate.materials.map(line => line.materialId).filter(id => id !== null)));
+    const materials = this.data.materials.filter(m => !m.isExample || !oldMaterials.has(m.id) || referenced.has(m.id));
+    if (projects.length === this.data.projects.length && materials.length === this.data.materials.length) return;
+    this.commit({ ...this.data, exampleInstalled: true, projects, materials });
+  }
+  installShowcase(kind: ShowcaseKind): string {
+    const id = SHOWCASE_IDS[kind];
+    if (!this.data.projects.some(p => p.id === id)) this.projects.save(showcaseProject(kind));
+    return id;
+  }
   installExample(): string {
     const example = exampleProject(this.data.settings);
     this.commit({ ...this.data, exampleInstalled: true,
