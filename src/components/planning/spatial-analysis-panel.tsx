@@ -1,21 +1,23 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/domain/models";
 import { spatialInputHash, spatialRequestSchema, spatialResultSchema, canonicalSpatialInput, type SpatialResult } from "@/domain/spatial-analysis";
 import { buildSpatialRequest, spatialReadiness } from "@/domain/spatial-readiness";
 import { structureSignature } from "@/domain/calculations/project-basis";
+import { spatialCoordination } from "@/domain/spatial-coordination";
 import { Field, Input, Select, Textarea } from "@/components/ui";
 import { downloadText } from "@/lib/format";
 import example from "../../../engine/examples/spatial-portal.json";
 
 const dofs = ["UX", "UY", "UZ", "RX", "RY", "RZ"];
 const display = (n: number) => n.toLocaleString("pt-BR", { maximumFractionDigits: 6 });
-export function SpatialAnalysisPanel({ project }: { project: Project }) {
+export function SpatialAnalysisPanel({ project, onOpenPreparation }: { project: Project; onOpenPreparation?: () => void }) {
   const [text, setText] = useState(""), [scope, setScope] = useState("independent"), [connections, setConnections] = useState(""), [lateral, setLateral] = useState("");
   const [busy, setBusy] = useState(false), [error, setError] = useState(""), [state, setState] = useState<{ identity: string; result: SpatialResult } | null>(null);
   const [combination, setCombination] = useState(""), [member, setMember] = useState("");
   const [bindingBasis, setBindingBasis] = useState("");
   const signature = structureSignature(project);
+  const coordination = useMemo(() => spatialCoordination(project), [project]);
   let parsed: ReturnType<typeof spatialRequestSchema.safeParse> | null = null;
   try { parsed = spatialRequestSchema.safeParse(JSON.parse(text)); } catch {}
   const bindingIdentity = JSON.stringify({ signature, connections, lateral });
@@ -29,6 +31,9 @@ export function SpatialAnalysisPanel({ project }: { project: Project }) {
   const activeCombination = current?.combinations[combination] ? combination : Object.keys(current?.combinations ?? {})[0];
   const result = current?.combinations[activeCombination];
   const activeMember = result?.members[member] ? member : Object.keys(result?.members ?? {})[0];
+  const peakTranslationMm = result ? Math.max(0, ...Object.values(result.nodes).map(n => Math.hypot(...n.translation_m) * 1000)) : 0;
+  const peakReactionKn = result ? Math.max(0, ...Object.values(result.nodes).map(n => Math.hypot(...n.force_n) / 1000)) : 0;
+  const peakAxialKn = result ? Math.max(0, ...Object.values(result.members).flatMap(m => m.stations.map(p => Math.abs(p.n_n) / 1000))) : 0;
   const edit = (value: string) => { latest.current = ""; setText(value); setError(""); };
   async function bind() {
     setError("");
@@ -58,6 +63,11 @@ export function SpatialAnalysisPanel({ project }: { project: Project }) {
     <div className="notice" data-testid="spatial-readiness"><strong>{readiness.visual_ready ? "Modelo visual pronto" : "Geometria visual pendente"} · {readiness.analysis_ready ? "Modelo físico declarado: pronto para análise experimental" : "Faltam dados para análise desta obra"}</strong><p>A cobertura não será convertida automaticamente em pórticos rígidos.</p>
       <details><summary>Pendências da obra · {readiness.issues.length} diagnósticos</summary><ul>{readiness.issues.map((issue, i) => <li key={`${issue.code}-${i}`}><strong>{issue.code}</strong>: {issue.message}</li>)}</ul></details>
     </div>
+    <div className="notice" data-testid="spatial-analysis-link">
+      <strong>Dados da preparação da obra: {coordination.recorded} de 5 grupos sem pendências automáticas</strong>
+      <p>{coordination.review.stale ? "As declarações precisam de revisão após mudanças na geometria." : coordination.review.issues.length ? `Restam ${coordination.review.issues.length} pendências no cadastro e na topologia.` : "Declarações preenchidas; adaptador físico e revisão de engenharia ainda pendentes."} Estas declarações não são convertidas automaticamente em um modelo calculável.</p>
+      {onOpenPreparation && <button type="button" className="button secondary" onClick={onOpenPreparation}>Conferir preparação e pendências</button>}
+    </div>
     <button type="button" className="button secondary" onClick={() => { setScope("fixture"); edit(JSON.stringify(example, null, 2)); setState(null); }}>Carregar exemplo espacial validado</button>
     <p className="field-hint">Exemplo independente de cinco nós e quatro barras, com dois engastes e forças/momentos declarados. Dimensões e propriedades sintéticas de validação; não substitui dados da sua obra.</p>
     {text && <>
@@ -85,6 +95,12 @@ export function SpatialAnalysisPanel({ project }: { project: Project }) {
     {error && <p role="alert" className="field-error">{error.includes("UNAVAILABLE") ? "Serviço de análise indisponível" : "Instabilidade/erro"}: {error}</p>}
     {state && !current && <p role="status" className="notice">Modelo alterado: resultado desatualizado. Execute novamente; a resposta anterior não é atual.</p>}
     {current && result && <div data-testid="spatial-results"><h4>Análise experimental executada</h4>
+      <p className="field-hint">Resumo da combinação exibida; valores absolutos, sem comparação com limites normativos e sem aprovação estrutural.</p>
+      <div className="spatial-result-metrics" data-testid="spatial-result-metrics">
+        <div><span>Maior deslocamento resultante</span><strong>{display(peakTranslationMm)} mm</strong></div>
+        <div><span>Maior reação de força resultante</span><strong>{display(peakReactionKn)} kN</strong></div>
+        <div><span>Maior esforço normal absoluto</span><strong>{display(peakAxialKn)} kN</strong></div>
+      </div>
       <p style={{ overflowWrap: "anywhere" }}>Modelo {current.project.id} · revisão {current.project.revision} · {current.solver.name} {current.solver.version}. {current.project.source}</p>
       <p className="hash-label">SHA-256 de todas as entradas: {current.input_sha256}</p>
       <Field label="Combinação 3D exibida"><Select value={activeCombination} onChange={e => setCombination(e.target.value)}>{Object.keys(current.combinations).map(id => <option key={id}>{id}</option>)}</Select></Field>
