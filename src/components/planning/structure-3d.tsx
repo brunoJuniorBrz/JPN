@@ -2,20 +2,30 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import type { StructureModel } from "@/domain/structure";
+import type { StructureModel, Planning } from "@/domain/structure";
+import type { RoofParameters } from "@/domain/project-details";
+import { initialPresentationOptions, presentationEnvelope, type PresentationOptions, type WallLayout, type RoofColor, type RoofFinish } from "./presentation-scene";
+import { drawPresentationAnnotations, presentationDimensions, dimensionLabels } from "./presentation-capture";
 import { resolveSection } from "@/domain/profile-section";
 import { fitIsometricCamera } from "./camera-fit";
 import { buildProfileScene, pieceIdFromHit, viewerQuality, type ViewerMode } from "./profile-scene";
 
-export function Structure3D({ model, selected, onSelect, onDemonstrate, onConfigureProfile }: { model: StructureModel; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void }) {
+export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
   const [failure, setFailure] = useState("");
+  const [pictureError, setPictureError] = useState("");
+  const [presentationOptions, setPresentationOptions] = useState<PresentationOptions>(initialPresentationOptions);
+  const optionsRef = useRef(presentationOptions);
+  const applyOptions = useRef<(options:PresentationOptions)=>void>(()=>{});
+  const capture = useRef<()=>void>(()=>{});
+  const envelope = presentationEnvelope(roof, planning);
+  const dimensions = envelope ? dimensionLabels(presentationDimensions(envelope)) : [];
   const [expanded, setExpanded] = useState(false);
   // Opening the viewer always starts with solid profiles, regardless of the mode last used.
-  const [mode, setMode] = useState<ViewerMode>("profiles");
-  const changeMode = useRef<(mode: ViewerMode) => void>(() => {});
+  const [mode, setMode] = useState<ViewerMode | "finished">("profiles");
+  const changeMode = useRef<(mode: ViewerMode | "finished") => void>(() => {});
   const focus = useRef<(id: string) => void>(() => {});
   useEffect(() => { select.current = onSelect; }, [onSelect]);
   useEffect(() => {
@@ -29,6 +39,8 @@ export function Structure3D({ model, selected, onSelect, onDemonstrate, onConfig
     renderer.setClearColor(0xf6f8f2); container.appendChild(renderer.domElement);
     renderer.domElement.setAttribute("aria-label", "Modelo 3D da estrutura"); renderer.domElement.setAttribute("role", "img");
     const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(40, 1, .01, 100000);
+    renderer.shadowMap.enabled = !quality.low;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = false;
     const profiles = buildProfileScene(model, quality.segments); scene.add(profiles.root);
     scene.add(new THREE.HemisphereLight(0xffffff, 0x9aa797, 2));
@@ -42,9 +54,54 @@ export function Structure3D({ model, selected, onSelect, onDemonstrate, onConfig
     const grid = new THREE.GridHelper(gridStep * 20, 20, 0xaab6a0, 0xdce2d5); grid.position.set(center.x, 0, center.z); scene.add(grid);
     resources.push(grid.geometry, ...(Array.isArray(grid.material) ? grid.material : [grid.material]));
     const render = () => renderer.render(scene, camera);
-    let framingBounds = bounds;
-    changeMode.current = value => { profiles.setMode(value); canvas.dataset.mode = value; render(); };
-    reset.current = () => { framingBounds = bounds; canvas.dataset.framing = "whole-structure"; controls.target.copy(fitIsometricCamera(camera, bounds)); controls.update(); render(); };
+    let framingBounds = bounds, activeMode: ViewerMode | "finished" = "profiles", disposed = false;
+    type PresentationHandle = ReturnType<typeof import("./presentation-scene")["createPresentationScene"]>;
+    let environment: PresentationHandle | null = null;
+    const presentationBounds = envelope ? new THREE.Box3().setFromPoints([
+      new THREE.Vector3(-3,0,3),new THREE.Vector3(envelope.widthM+3,envelope.highHeightM+1,-envelope.lengthM-3),
+    ]) : bounds;
+    const fitFull = () => {
+      framingBounds = activeMode === "finished" ? bounds.clone().union(presentationBounds) : bounds;
+      canvas.dataset.framing = "whole-structure";
+      controls.target.copy(fitIsometricCamera(camera, framingBounds));controls.update();render();
+    };
+    changeMode.current = value => {
+      activeMode = value;
+      profiles.setMode(value === "finished" ? "profiles" : value);
+      grid.visible = value !== "finished";
+      canvas.dataset.mode = value;
+      if(environment) environment.root.visible = value === "finished";
+      if(value === "finished" && envelope && !environment) {
+        void import("./presentation-scene").then(({createPresentationScene}) => {
+          if(disposed || activeMode !== "finished" || environment) return;
+          environment = createPresentationScene(envelope,model,optionsRef.current,render);
+          scene.add(environment.root);
+          canvas.dataset.contextLoaded = "true";
+          fitFull();
+        }).catch(()=>{if(!disposed)setPictureError("O ambiente 3D não pôde ser carregado. Retorne aos Perfis 3D.");});
+      }
+      if(value === "finished") fitFull(); else render();
+    };
+    applyOptions.current = options => { environment?.update(options);render(); };
+    capture.current = () => {
+      if(activeMode !== "finished" || !envelope) return;
+      try {
+        render();
+        const frame = document.createElement("canvas");
+        frame.width = renderer.domElement.width; frame.height = renderer.domElement.height;
+        const ctx = frame.getContext("2d");if(!ctx)throw new Error("Canvas 2D indisponível");
+        ctx.drawImage(renderer.domElement,0,0,frame.width,frame.height);
+        drawPresentationAnnotations(ctx,frame.width,frame.height,projectName,presentationDimensions(envelope),optionsRef.current.showDimensions);
+        frame.toBlob(blob=>{
+          if(!blob){setPictureError("Não foi possível gerar o PNG.");return;}
+          const url=URL.createObjectURL(blob),anchor=document.createElement("a");
+          anchor.href=url;anchor.download="jpn-apresentacao-preliminar.png";anchor.click();
+          window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+        },"image/png");
+        setPictureError("");
+      } catch { setPictureError("Falha ao exportar a imagem neste navegador."); }
+    };
+    reset.current = fitFull;
     focus.current = id => {
       const item = profiles.instances.get(id), piece = model.pieces.find(p => p.id === id);
       if (!piece) return;
@@ -59,7 +116,7 @@ export function Structure3D({ model, selected, onSelect, onDemonstrate, onConfig
       // iPhone/WebKit may report only a few CPU cores. Keep fine pixels even when
       // reducing mesh complexity; cap the total GPU framebuffer for stability.
       const pixelBudget = quality.low ? 1_200_000 : 2_400_000;
-      const ratio = Math.max(1, Math.min(window.devicePixelRatio || 1, quality.pixelRatio, Math.sqrt(pixelBudget / (width * height))));
+      const ratio = Math.max(1, Math.min(window.devicePixelRatio || 1, activeMode === "finished" ? 2 : quality.pixelRatio, Math.sqrt(pixelBudget / (width * height))));
       renderer.setPixelRatio(ratio); canvas.dataset.pixelRatio = ratio.toFixed(2);
       renderer.setSize(width, height);
       camera.aspect = width / height; camera.updateProjectionMatrix();
@@ -73,15 +130,17 @@ export function Structure3D({ model, selected, onSelect, onDemonstrate, onConfig
       if (Math.hypot(e.clientX - startX, e.clientY - startY) > 5) return;
       const rect = renderer.domElement.getBoundingClientRect();
       raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), camera);
+      if (activeMode === "finished") return;
       const hit = raycaster.intersectObjects(profiles.targets(), false)[0];
       const id = hit ? pieceIdFromHit(hit) : null; if (id) select.current(id);
     };
     const lost = (e: Event) => { e.preventDefault(); setFailure("O dispositivo perdeu o contexto gráfico. As vistas 2D continuam disponíveis."); };
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("webglcontextlost", lost);
     resize();
-    return () => { observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; reset.current = () => {}; focus.current = () => {}; };
-  }, [model, gridSpacingM]);
+    return () => { disposed = true; environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; };
+  }, [model, gridSpacingM, roof, planning, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
+  useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
   useEffect(() => {
     if (!expanded) return;
