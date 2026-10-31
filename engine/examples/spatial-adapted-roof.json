@@ -1,0 +1,7130 @@
+{
+  "schema_version": "jpn.frame3d/1",
+  "units": "SI",
+  "theory": "linear-elastic-euler-bernoulli",
+  "project": {
+    "id": "11111111-1111-4111-8111-111111111111",
+    "revision": "2ea2fe65708fcfaea865f6397119b1c2daf3d5eb172c085c8ed64811af3c19d8",
+    "source": "JPN adaptador geométrico-físico/1; declarações SHA-256 2ea2fe65708fcfaea865f6397119b1c2daf3d5eb172c085c8ed64811af3c19d8; sem aprovação normativa"
+  },
+  "nodes": [
+    {
+      "id": "N1",
+      "x_m": 0,
+      "y_m": 0,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N2",
+      "x_m": 1.6666666666666667,
+      "y_m": 0,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N3",
+      "x_m": 3.3333333333333335,
+      "y_m": 0,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N4",
+      "x_m": 5,
+      "y_m": 0,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N5",
+      "x_m": 6.666666666666667,
+      "y_m": 0,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N6",
+      "x_m": 8.333333333333334,
+      "y_m": 0,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N7",
+      "x_m": 10,
+      "y_m": 0,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N8",
+      "x_m": 0,
+      "y_m": 0,
+      "z_m": 4
+    },
+    {
+      "id": "N9",
+      "x_m": 1.6666666666666667,
+      "y_m": 0,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N10",
+      "x_m": 3.3333333333333335,
+      "y_m": 0,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N11",
+      "x_m": 5,
+      "y_m": 0,
+      "z_m": 4.5
+    },
+    {
+      "id": "N12",
+      "x_m": 6.666666666666667,
+      "y_m": 0,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N13",
+      "x_m": 8.333333333333334,
+      "y_m": 0,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N14",
+      "x_m": 10,
+      "y_m": 0,
+      "z_m": 4
+    },
+    {
+      "id": "N15",
+      "x_m": 0,
+      "y_m": 0,
+      "z_m": 0
+    },
+    {
+      "id": "N16",
+      "x_m": 10,
+      "y_m": 0,
+      "z_m": 0
+    },
+    {
+      "id": "N17",
+      "x_m": 0,
+      "y_m": 4,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N18",
+      "x_m": 1.6666666666666667,
+      "y_m": 4,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N19",
+      "x_m": 3.3333333333333335,
+      "y_m": 4,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N20",
+      "x_m": 5,
+      "y_m": 4,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N21",
+      "x_m": 6.666666666666667,
+      "y_m": 4,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N22",
+      "x_m": 8.333333333333334,
+      "y_m": 4,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N23",
+      "x_m": 10,
+      "y_m": 4,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N24",
+      "x_m": 0,
+      "y_m": 4,
+      "z_m": 4
+    },
+    {
+      "id": "N25",
+      "x_m": 1.6666666666666667,
+      "y_m": 4,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N26",
+      "x_m": 3.3333333333333335,
+      "y_m": 4,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N27",
+      "x_m": 5,
+      "y_m": 4,
+      "z_m": 4.5
+    },
+    {
+      "id": "N28",
+      "x_m": 6.666666666666667,
+      "y_m": 4,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N29",
+      "x_m": 8.333333333333334,
+      "y_m": 4,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N30",
+      "x_m": 10,
+      "y_m": 4,
+      "z_m": 4
+    },
+    {
+      "id": "N31",
+      "x_m": 0,
+      "y_m": 4,
+      "z_m": 0
+    },
+    {
+      "id": "N32",
+      "x_m": 10,
+      "y_m": 4,
+      "z_m": 0
+    },
+    {
+      "id": "N33",
+      "x_m": 0,
+      "y_m": 8,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N34",
+      "x_m": 1.6666666666666667,
+      "y_m": 8,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N35",
+      "x_m": 3.3333333333333335,
+      "y_m": 8,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N36",
+      "x_m": 5,
+      "y_m": 8,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N37",
+      "x_m": 6.666666666666667,
+      "y_m": 8,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N38",
+      "x_m": 8.333333333333334,
+      "y_m": 8,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N39",
+      "x_m": 10,
+      "y_m": 8,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N40",
+      "x_m": 0,
+      "y_m": 8,
+      "z_m": 4
+    },
+    {
+      "id": "N41",
+      "x_m": 1.6666666666666667,
+      "y_m": 8,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N42",
+      "x_m": 3.3333333333333335,
+      "y_m": 8,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N43",
+      "x_m": 5,
+      "y_m": 8,
+      "z_m": 4.5
+    },
+    {
+      "id": "N44",
+      "x_m": 6.666666666666667,
+      "y_m": 8,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N45",
+      "x_m": 8.333333333333334,
+      "y_m": 8,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N46",
+      "x_m": 10,
+      "y_m": 8,
+      "z_m": 4
+    },
+    {
+      "id": "N47",
+      "x_m": 0,
+      "y_m": 8,
+      "z_m": 0
+    },
+    {
+      "id": "N48",
+      "x_m": 10,
+      "y_m": 8,
+      "z_m": 0
+    },
+    {
+      "id": "N49",
+      "x_m": 0,
+      "y_m": 12,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N50",
+      "x_m": 1.6666666666666667,
+      "y_m": 12,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N51",
+      "x_m": 3.3333333333333335,
+      "y_m": 12,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N52",
+      "x_m": 5,
+      "y_m": 12,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N53",
+      "x_m": 6.666666666666667,
+      "y_m": 12,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N54",
+      "x_m": 8.333333333333334,
+      "y_m": 12,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N55",
+      "x_m": 10,
+      "y_m": 12,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N56",
+      "x_m": 0,
+      "y_m": 12,
+      "z_m": 4
+    },
+    {
+      "id": "N57",
+      "x_m": 1.6666666666666667,
+      "y_m": 12,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N58",
+      "x_m": 3.3333333333333335,
+      "y_m": 12,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N59",
+      "x_m": 5,
+      "y_m": 12,
+      "z_m": 4.5
+    },
+    {
+      "id": "N60",
+      "x_m": 6.666666666666667,
+      "y_m": 12,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N61",
+      "x_m": 8.333333333333334,
+      "y_m": 12,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N62",
+      "x_m": 10,
+      "y_m": 12,
+      "z_m": 4
+    },
+    {
+      "id": "N63",
+      "x_m": 0,
+      "y_m": 12,
+      "z_m": 0
+    },
+    {
+      "id": "N64",
+      "x_m": 10,
+      "y_m": 12,
+      "z_m": 0
+    },
+    {
+      "id": "N65",
+      "x_m": 0,
+      "y_m": 16,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N66",
+      "x_m": 1.6666666666666667,
+      "y_m": 16,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N67",
+      "x_m": 3.3333333333333335,
+      "y_m": 16,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N68",
+      "x_m": 5,
+      "y_m": 16,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N69",
+      "x_m": 6.666666666666667,
+      "y_m": 16,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N70",
+      "x_m": 8.333333333333334,
+      "y_m": 16,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N71",
+      "x_m": 10,
+      "y_m": 16,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N72",
+      "x_m": 0,
+      "y_m": 16,
+      "z_m": 4
+    },
+    {
+      "id": "N73",
+      "x_m": 1.6666666666666667,
+      "y_m": 16,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N74",
+      "x_m": 3.3333333333333335,
+      "y_m": 16,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N75",
+      "x_m": 5,
+      "y_m": 16,
+      "z_m": 4.5
+    },
+    {
+      "id": "N76",
+      "x_m": 6.666666666666667,
+      "y_m": 16,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N77",
+      "x_m": 8.333333333333334,
+      "y_m": 16,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N78",
+      "x_m": 10,
+      "y_m": 16,
+      "z_m": 4
+    },
+    {
+      "id": "N79",
+      "x_m": 0,
+      "y_m": 16,
+      "z_m": 0
+    },
+    {
+      "id": "N80",
+      "x_m": 10,
+      "y_m": 16,
+      "z_m": 0
+    },
+    {
+      "id": "N81",
+      "x_m": 0,
+      "y_m": 20,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N82",
+      "x_m": 1.6666666666666667,
+      "y_m": 20,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N83",
+      "x_m": 3.3333333333333335,
+      "y_m": 20,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N84",
+      "x_m": 5,
+      "y_m": 20,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N85",
+      "x_m": 6.666666666666667,
+      "y_m": 20,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N86",
+      "x_m": 8.333333333333334,
+      "y_m": 20,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N87",
+      "x_m": 10,
+      "y_m": 20,
+      "z_m": 3.1666666666666665
+    },
+    {
+      "id": "N88",
+      "x_m": 0,
+      "y_m": 20,
+      "z_m": 4
+    },
+    {
+      "id": "N89",
+      "x_m": 1.6666666666666667,
+      "y_m": 20,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N90",
+      "x_m": 3.3333333333333335,
+      "y_m": 20,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N91",
+      "x_m": 5,
+      "y_m": 20,
+      "z_m": 4.5
+    },
+    {
+      "id": "N92",
+      "x_m": 6.666666666666667,
+      "y_m": 20,
+      "z_m": 4.333333333333333
+    },
+    {
+      "id": "N93",
+      "x_m": 8.333333333333334,
+      "y_m": 20,
+      "z_m": 4.166666666666667
+    },
+    {
+      "id": "N94",
+      "x_m": 10,
+      "y_m": 20,
+      "z_m": 4
+    },
+    {
+      "id": "N95",
+      "x_m": 0,
+      "y_m": 20,
+      "z_m": 0
+    },
+    {
+      "id": "N96",
+      "x_m": 10,
+      "y_m": 20,
+      "z_m": 0
+    },
+    {
+      "id": "N97",
+      "x_m": 1.25,
+      "y_m": 0,
+      "z_m": 4.125
+    },
+    {
+      "id": "N98",
+      "x_m": 1.25,
+      "y_m": 4,
+      "z_m": 4.125
+    },
+    {
+      "id": "N99",
+      "x_m": 1.25,
+      "y_m": 8,
+      "z_m": 4.125
+    },
+    {
+      "id": "N100",
+      "x_m": 1.25,
+      "y_m": 12,
+      "z_m": 4.125
+    },
+    {
+      "id": "N101",
+      "x_m": 1.25,
+      "y_m": 16,
+      "z_m": 4.125
+    },
+    {
+      "id": "N102",
+      "x_m": 1.25,
+      "y_m": 20,
+      "z_m": 4.125
+    },
+    {
+      "id": "N103",
+      "x_m": 2.5,
+      "y_m": 0,
+      "z_m": 4.25
+    },
+    {
+      "id": "N104",
+      "x_m": 2.5,
+      "y_m": 4,
+      "z_m": 4.25
+    },
+    {
+      "id": "N105",
+      "x_m": 2.5,
+      "y_m": 8,
+      "z_m": 4.25
+    },
+    {
+      "id": "N106",
+      "x_m": 2.5,
+      "y_m": 12,
+      "z_m": 4.25
+    },
+    {
+      "id": "N107",
+      "x_m": 2.5,
+      "y_m": 16,
+      "z_m": 4.25
+    },
+    {
+      "id": "N108",
+      "x_m": 2.5,
+      "y_m": 20,
+      "z_m": 4.25
+    },
+    {
+      "id": "N109",
+      "x_m": 3.75,
+      "y_m": 0,
+      "z_m": 4.375
+    },
+    {
+      "id": "N110",
+      "x_m": 3.75,
+      "y_m": 4,
+      "z_m": 4.375
+    },
+    {
+      "id": "N111",
+      "x_m": 3.75,
+      "y_m": 8,
+      "z_m": 4.375
+    },
+    {
+      "id": "N112",
+      "x_m": 3.75,
+      "y_m": 12,
+      "z_m": 4.375
+    },
+    {
+      "id": "N113",
+      "x_m": 3.75,
+      "y_m": 16,
+      "z_m": 4.375
+    },
+    {
+      "id": "N114",
+      "x_m": 3.75,
+      "y_m": 20,
+      "z_m": 4.375
+    },
+    {
+      "id": "N115",
+      "x_m": 6.25,
+      "y_m": 0,
+      "z_m": 4.375
+    },
+    {
+      "id": "N116",
+      "x_m": 6.25,
+      "y_m": 4,
+      "z_m": 4.375
+    },
+    {
+      "id": "N117",
+      "x_m": 6.25,
+      "y_m": 8,
+      "z_m": 4.375
+    },
+    {
+      "id": "N118",
+      "x_m": 6.25,
+      "y_m": 12,
+      "z_m": 4.375
+    },
+    {
+      "id": "N119",
+      "x_m": 6.25,
+      "y_m": 16,
+      "z_m": 4.375
+    },
+    {
+      "id": "N120",
+      "x_m": 6.25,
+      "y_m": 20,
+      "z_m": 4.375
+    },
+    {
+      "id": "N121",
+      "x_m": 7.5,
+      "y_m": 0,
+      "z_m": 4.25
+    },
+    {
+      "id": "N122",
+      "x_m": 7.5,
+      "y_m": 4,
+      "z_m": 4.25
+    },
+    {
+      "id": "N123",
+      "x_m": 7.5,
+      "y_m": 8,
+      "z_m": 4.25
+    },
+    {
+      "id": "N124",
+      "x_m": 7.5,
+      "y_m": 12,
+      "z_m": 4.25
+    },
+    {
+      "id": "N125",
+      "x_m": 7.5,
+      "y_m": 16,
+      "z_m": 4.25
+    },
+    {
+      "id": "N126",
+      "x_m": 7.5,
+      "y_m": 20,
+      "z_m": 4.25
+    },
+    {
+      "id": "N127",
+      "x_m": 8.75,
+      "y_m": 0,
+      "z_m": 4.125
+    },
+    {
+      "id": "N128",
+      "x_m": 8.75,
+      "y_m": 4,
+      "z_m": 4.125
+    },
+    {
+      "id": "N129",
+      "x_m": 8.75,
+      "y_m": 8,
+      "z_m": 4.125
+    },
+    {
+      "id": "N130",
+      "x_m": 8.75,
+      "y_m": 12,
+      "z_m": 4.125
+    },
+    {
+      "id": "N131",
+      "x_m": 8.75,
+      "y_m": 16,
+      "z_m": 4.125
+    },
+    {
+      "id": "N132",
+      "x_m": 8.75,
+      "y_m": 20,
+      "z_m": 4.125
+    }
+  ],
+  "materials": [
+    {
+      "id": "MAT-column",
+      "e_pa": 200000000000,
+      "g_pa": 76923076923.07692,
+      "nu": 0.3,
+      "source": "Material isótropo sintético de verificação; Fixture matemática; E=200 GPa, nu=0,3, G=E/(2(1+nu))",
+      "revision": "1"
+    },
+    {
+      "id": "MAT-web",
+      "e_pa": 200000000000,
+      "g_pa": 76923076923.07692,
+      "nu": 0.3,
+      "source": "Material isótropo sintético de verificação; Fixture matemática; E=200 GPa, nu=0,3, G=E/(2(1+nu))",
+      "revision": "1"
+    },
+    {
+      "id": "MAT-topChord",
+      "e_pa": 200000000000,
+      "g_pa": 76923076923.07692,
+      "nu": 0.3,
+      "source": "Material isótropo sintético de verificação; Fixture matemática; E=200 GPa, nu=0,3, G=E/(2(1+nu))",
+      "revision": "1"
+    },
+    {
+      "id": "MAT-bottomChord",
+      "e_pa": 200000000000,
+      "g_pa": 76923076923.07692,
+      "nu": 0.3,
+      "source": "Material isótropo sintético de verificação; Fixture matemática; E=200 GPa, nu=0,3, G=E/(2(1+nu))",
+      "revision": "1"
+    },
+    {
+      "id": "MAT-purlin",
+      "e_pa": 200000000000,
+      "g_pa": 76923076923.07692,
+      "nu": 0.3,
+      "source": "Material isótropo sintético de verificação; Fixture matemática; E=200 GPa, nu=0,3, G=E/(2(1+nu))",
+      "revision": "1"
+    }
+  ],
+  "sections": [
+    {
+      "id": "SEC-column",
+      "area_m2": 0.01,
+      "iy_m4": 0.00008,
+      "iz_m4": 0.00008,
+      "j_m4": 0.00016,
+      "source": "Seção sintética: A=0,01 m²; Iy=Iz=8e-5 m4; J=1,6e-4 m4; não é perfil comercial aprovado",
+      "revision": "1"
+    },
+    {
+      "id": "SEC-web",
+      "area_m2": 0.01,
+      "iy_m4": 0.00008,
+      "iz_m4": 0.00008,
+      "j_m4": 0.00016,
+      "source": "Seção sintética: A=0,01 m²; Iy=Iz=8e-5 m4; J=1,6e-4 m4; não é perfil comercial aprovado",
+      "revision": "1"
+    },
+    {
+      "id": "SEC-topChord",
+      "area_m2": 0.01,
+      "iy_m4": 0.00008,
+      "iz_m4": 0.00008,
+      "j_m4": 0.00016,
+      "source": "Seção sintética: A=0,01 m²; Iy=Iz=8e-5 m4; J=1,6e-4 m4; não é perfil comercial aprovado",
+      "revision": "1"
+    },
+    {
+      "id": "SEC-bottomChord",
+      "area_m2": 0.01,
+      "iy_m4": 0.00008,
+      "iz_m4": 0.00008,
+      "j_m4": 0.00016,
+      "source": "Seção sintética: A=0,01 m²; Iy=Iz=8e-5 m4; J=1,6e-4 m4; não é perfil comercial aprovado",
+      "revision": "1"
+    },
+    {
+      "id": "SEC-purlin",
+      "area_m2": 0.01,
+      "iy_m4": 0.00008,
+      "iz_m4": 0.00008,
+      "j_m4": 0.00016,
+      "source": "Seção sintética: A=0,01 m²; Iy=Iz=8e-5 m4; J=1,6e-4 m4; não é perfil comercial aprovado",
+      "revision": "1"
+    }
+  ],
+  "members": [
+    {
+      "id": "P1",
+      "start": "N15",
+      "end": "N1",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P2",
+      "start": "N16",
+      "end": "N7",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-M1",
+      "start": "N1",
+      "end": "N8",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS1:S1",
+      "start": "N8",
+      "end": "N97",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS1:S2",
+      "start": "N97",
+      "end": "N9",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BI1",
+      "start": "N1",
+      "end": "N2",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-D1",
+      "start": "N1",
+      "end": "N9",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-M2",
+      "start": "N2",
+      "end": "N9",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS2:S1",
+      "start": "N9",
+      "end": "N103",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS2:S2",
+      "start": "N103",
+      "end": "N10",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BI2",
+      "start": "N2",
+      "end": "N3",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-D2",
+      "start": "N2",
+      "end": "N10",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-M3",
+      "start": "N3",
+      "end": "N10",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS3:S1",
+      "start": "N10",
+      "end": "N109",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS3:S2",
+      "start": "N109",
+      "end": "N11",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BI3",
+      "start": "N3",
+      "end": "N4",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-D3",
+      "start": "N3",
+      "end": "N11",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-M4",
+      "start": "N4",
+      "end": "N11",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS4:S1",
+      "start": "N11",
+      "end": "N115",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS4:S2",
+      "start": "N115",
+      "end": "N12",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BI4",
+      "start": "N4",
+      "end": "N5",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-D4",
+      "start": "N5",
+      "end": "N11",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-M5",
+      "start": "N5",
+      "end": "N12",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS5:S1",
+      "start": "N12",
+      "end": "N121",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS5:S2",
+      "start": "N121",
+      "end": "N13",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BI5",
+      "start": "N5",
+      "end": "N6",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-D5",
+      "start": "N6",
+      "end": "N12",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-M6",
+      "start": "N6",
+      "end": "N13",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS6:S1",
+      "start": "N13",
+      "end": "N127",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BS6:S2",
+      "start": "N127",
+      "end": "N14",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-BI6",
+      "start": "N6",
+      "end": "N7",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-D6",
+      "start": "N7",
+      "end": "N13",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T1-M7",
+      "start": "N7",
+      "end": "N14",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P3",
+      "start": "N31",
+      "end": "N17",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P4",
+      "start": "N32",
+      "end": "N23",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-M1",
+      "start": "N17",
+      "end": "N24",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS1:S1",
+      "start": "N24",
+      "end": "N98",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS1:S2",
+      "start": "N98",
+      "end": "N25",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BI1",
+      "start": "N17",
+      "end": "N18",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-D1",
+      "start": "N17",
+      "end": "N25",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-M2",
+      "start": "N18",
+      "end": "N25",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS2:S1",
+      "start": "N25",
+      "end": "N104",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS2:S2",
+      "start": "N104",
+      "end": "N26",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BI2",
+      "start": "N18",
+      "end": "N19",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-D2",
+      "start": "N18",
+      "end": "N26",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-M3",
+      "start": "N19",
+      "end": "N26",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS3:S1",
+      "start": "N26",
+      "end": "N110",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS3:S2",
+      "start": "N110",
+      "end": "N27",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BI3",
+      "start": "N19",
+      "end": "N20",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-D3",
+      "start": "N19",
+      "end": "N27",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-M4",
+      "start": "N20",
+      "end": "N27",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS4:S1",
+      "start": "N27",
+      "end": "N116",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS4:S2",
+      "start": "N116",
+      "end": "N28",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BI4",
+      "start": "N20",
+      "end": "N21",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-D4",
+      "start": "N21",
+      "end": "N27",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-M5",
+      "start": "N21",
+      "end": "N28",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS5:S1",
+      "start": "N28",
+      "end": "N122",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS5:S2",
+      "start": "N122",
+      "end": "N29",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BI5",
+      "start": "N21",
+      "end": "N22",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-D5",
+      "start": "N22",
+      "end": "N28",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-M6",
+      "start": "N22",
+      "end": "N29",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS6:S1",
+      "start": "N29",
+      "end": "N128",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BS6:S2",
+      "start": "N128",
+      "end": "N30",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-BI6",
+      "start": "N22",
+      "end": "N23",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-D6",
+      "start": "N23",
+      "end": "N29",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T2-M7",
+      "start": "N23",
+      "end": "N30",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P5",
+      "start": "N47",
+      "end": "N33",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P6",
+      "start": "N48",
+      "end": "N39",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-M1",
+      "start": "N33",
+      "end": "N40",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS1:S1",
+      "start": "N40",
+      "end": "N99",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS1:S2",
+      "start": "N99",
+      "end": "N41",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BI1",
+      "start": "N33",
+      "end": "N34",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-D1",
+      "start": "N33",
+      "end": "N41",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-M2",
+      "start": "N34",
+      "end": "N41",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS2:S1",
+      "start": "N41",
+      "end": "N105",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS2:S2",
+      "start": "N105",
+      "end": "N42",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BI2",
+      "start": "N34",
+      "end": "N35",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-D2",
+      "start": "N34",
+      "end": "N42",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-M3",
+      "start": "N35",
+      "end": "N42",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS3:S1",
+      "start": "N42",
+      "end": "N111",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS3:S2",
+      "start": "N111",
+      "end": "N43",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BI3",
+      "start": "N35",
+      "end": "N36",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-D3",
+      "start": "N35",
+      "end": "N43",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-M4",
+      "start": "N36",
+      "end": "N43",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS4:S1",
+      "start": "N43",
+      "end": "N117",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS4:S2",
+      "start": "N117",
+      "end": "N44",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BI4",
+      "start": "N36",
+      "end": "N37",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-D4",
+      "start": "N37",
+      "end": "N43",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-M5",
+      "start": "N37",
+      "end": "N44",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS5:S1",
+      "start": "N44",
+      "end": "N123",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS5:S2",
+      "start": "N123",
+      "end": "N45",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BI5",
+      "start": "N37",
+      "end": "N38",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-D5",
+      "start": "N38",
+      "end": "N44",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-M6",
+      "start": "N38",
+      "end": "N45",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS6:S1",
+      "start": "N45",
+      "end": "N129",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BS6:S2",
+      "start": "N129",
+      "end": "N46",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-BI6",
+      "start": "N38",
+      "end": "N39",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-D6",
+      "start": "N39",
+      "end": "N45",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T3-M7",
+      "start": "N39",
+      "end": "N46",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P7",
+      "start": "N63",
+      "end": "N49",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P8",
+      "start": "N64",
+      "end": "N55",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-M1",
+      "start": "N49",
+      "end": "N56",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS1:S1",
+      "start": "N56",
+      "end": "N100",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS1:S2",
+      "start": "N100",
+      "end": "N57",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BI1",
+      "start": "N49",
+      "end": "N50",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-D1",
+      "start": "N49",
+      "end": "N57",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-M2",
+      "start": "N50",
+      "end": "N57",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS2:S1",
+      "start": "N57",
+      "end": "N106",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS2:S2",
+      "start": "N106",
+      "end": "N58",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BI2",
+      "start": "N50",
+      "end": "N51",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-D2",
+      "start": "N50",
+      "end": "N58",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-M3",
+      "start": "N51",
+      "end": "N58",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS3:S1",
+      "start": "N58",
+      "end": "N112",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS3:S2",
+      "start": "N112",
+      "end": "N59",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BI3",
+      "start": "N51",
+      "end": "N52",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-D3",
+      "start": "N51",
+      "end": "N59",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-M4",
+      "start": "N52",
+      "end": "N59",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS4:S1",
+      "start": "N59",
+      "end": "N118",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS4:S2",
+      "start": "N118",
+      "end": "N60",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BI4",
+      "start": "N52",
+      "end": "N53",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-D4",
+      "start": "N53",
+      "end": "N59",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-M5",
+      "start": "N53",
+      "end": "N60",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS5:S1",
+      "start": "N60",
+      "end": "N124",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS5:S2",
+      "start": "N124",
+      "end": "N61",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BI5",
+      "start": "N53",
+      "end": "N54",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-D5",
+      "start": "N54",
+      "end": "N60",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-M6",
+      "start": "N54",
+      "end": "N61",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS6:S1",
+      "start": "N61",
+      "end": "N130",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BS6:S2",
+      "start": "N130",
+      "end": "N62",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-BI6",
+      "start": "N54",
+      "end": "N55",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-D6",
+      "start": "N55",
+      "end": "N61",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T4-M7",
+      "start": "N55",
+      "end": "N62",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P9",
+      "start": "N79",
+      "end": "N65",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P10",
+      "start": "N80",
+      "end": "N71",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-M1",
+      "start": "N65",
+      "end": "N72",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS1:S1",
+      "start": "N72",
+      "end": "N101",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS1:S2",
+      "start": "N101",
+      "end": "N73",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BI1",
+      "start": "N65",
+      "end": "N66",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-D1",
+      "start": "N65",
+      "end": "N73",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-M2",
+      "start": "N66",
+      "end": "N73",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS2:S1",
+      "start": "N73",
+      "end": "N107",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS2:S2",
+      "start": "N107",
+      "end": "N74",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BI2",
+      "start": "N66",
+      "end": "N67",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-D2",
+      "start": "N66",
+      "end": "N74",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-M3",
+      "start": "N67",
+      "end": "N74",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS3:S1",
+      "start": "N74",
+      "end": "N113",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS3:S2",
+      "start": "N113",
+      "end": "N75",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BI3",
+      "start": "N67",
+      "end": "N68",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-D3",
+      "start": "N67",
+      "end": "N75",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-M4",
+      "start": "N68",
+      "end": "N75",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS4:S1",
+      "start": "N75",
+      "end": "N119",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS4:S2",
+      "start": "N119",
+      "end": "N76",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BI4",
+      "start": "N68",
+      "end": "N69",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-D4",
+      "start": "N69",
+      "end": "N75",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-M5",
+      "start": "N69",
+      "end": "N76",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS5:S1",
+      "start": "N76",
+      "end": "N125",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS5:S2",
+      "start": "N125",
+      "end": "N77",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BI5",
+      "start": "N69",
+      "end": "N70",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-D5",
+      "start": "N70",
+      "end": "N76",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-M6",
+      "start": "N70",
+      "end": "N77",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS6:S1",
+      "start": "N77",
+      "end": "N131",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BS6:S2",
+      "start": "N131",
+      "end": "N78",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-BI6",
+      "start": "N70",
+      "end": "N71",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-D6",
+      "start": "N71",
+      "end": "N77",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T5-M7",
+      "start": "N71",
+      "end": "N78",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P11",
+      "start": "N95",
+      "end": "N81",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "P12",
+      "start": "N96",
+      "end": "N87",
+      "kind": "frame",
+      "material": "MAT-column",
+      "section": "SEC-column",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-M1",
+      "start": "N81",
+      "end": "N88",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS1:S1",
+      "start": "N88",
+      "end": "N102",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS1:S2",
+      "start": "N102",
+      "end": "N89",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BI1",
+      "start": "N81",
+      "end": "N82",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-D1",
+      "start": "N81",
+      "end": "N89",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-M2",
+      "start": "N82",
+      "end": "N89",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS2:S1",
+      "start": "N89",
+      "end": "N108",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS2:S2",
+      "start": "N108",
+      "end": "N90",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BI2",
+      "start": "N82",
+      "end": "N83",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-D2",
+      "start": "N82",
+      "end": "N90",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-M3",
+      "start": "N83",
+      "end": "N90",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS3:S1",
+      "start": "N90",
+      "end": "N114",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS3:S2",
+      "start": "N114",
+      "end": "N91",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BI3",
+      "start": "N83",
+      "end": "N84",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-D3",
+      "start": "N83",
+      "end": "N91",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-M4",
+      "start": "N84",
+      "end": "N91",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS4:S1",
+      "start": "N91",
+      "end": "N120",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS4:S2",
+      "start": "N120",
+      "end": "N92",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BI4",
+      "start": "N84",
+      "end": "N85",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-D4",
+      "start": "N85",
+      "end": "N91",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-M5",
+      "start": "N85",
+      "end": "N92",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS5:S1",
+      "start": "N92",
+      "end": "N126",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS5:S2",
+      "start": "N126",
+      "end": "N93",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BI5",
+      "start": "N85",
+      "end": "N86",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-D5",
+      "start": "N86",
+      "end": "N92",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-M6",
+      "start": "N86",
+      "end": "N93",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS6:S1",
+      "start": "N93",
+      "end": "N132",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BS6:S2",
+      "start": "N132",
+      "end": "N94",
+      "kind": "frame",
+      "material": "MAT-topChord",
+      "section": "SEC-topChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-BI6",
+      "start": "N86",
+      "end": "N87",
+      "kind": "frame",
+      "material": "MAT-bottomChord",
+      "section": "SEC-bottomChord",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-D6",
+      "start": "N87",
+      "end": "N93",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "T6-M7",
+      "start": "N87",
+      "end": "N94",
+      "kind": "frame",
+      "material": "MAT-web",
+      "section": "SEC-web",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE1-V1",
+      "start": "N8",
+      "end": "N24",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE1-V2",
+      "start": "N24",
+      "end": "N40",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE1-V3",
+      "start": "N40",
+      "end": "N56",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE1-V4",
+      "start": "N56",
+      "end": "N72",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE1-V5",
+      "start": "N72",
+      "end": "N88",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE2-V1",
+      "start": "N97",
+      "end": "N98",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE2-V2",
+      "start": "N98",
+      "end": "N99",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE2-V3",
+      "start": "N99",
+      "end": "N100",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE2-V4",
+      "start": "N100",
+      "end": "N101",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE2-V5",
+      "start": "N101",
+      "end": "N102",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE3-V1",
+      "start": "N103",
+      "end": "N104",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE3-V2",
+      "start": "N104",
+      "end": "N105",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE3-V3",
+      "start": "N105",
+      "end": "N106",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE3-V4",
+      "start": "N106",
+      "end": "N107",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE3-V5",
+      "start": "N107",
+      "end": "N108",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE4-V1",
+      "start": "N109",
+      "end": "N110",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE4-V2",
+      "start": "N110",
+      "end": "N111",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE4-V3",
+      "start": "N111",
+      "end": "N112",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE4-V4",
+      "start": "N112",
+      "end": "N113",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE4-V5",
+      "start": "N113",
+      "end": "N114",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE5-V1",
+      "start": "N11",
+      "end": "N27",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE5-V2",
+      "start": "N27",
+      "end": "N43",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE5-V3",
+      "start": "N43",
+      "end": "N59",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE5-V4",
+      "start": "N59",
+      "end": "N75",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE5-V5",
+      "start": "N75",
+      "end": "N91",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE6-V1",
+      "start": "N115",
+      "end": "N116",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE6-V2",
+      "start": "N116",
+      "end": "N117",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE6-V3",
+      "start": "N117",
+      "end": "N118",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE6-V4",
+      "start": "N118",
+      "end": "N119",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE6-V5",
+      "start": "N119",
+      "end": "N120",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE7-V1",
+      "start": "N121",
+      "end": "N122",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE7-V2",
+      "start": "N122",
+      "end": "N123",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE7-V3",
+      "start": "N123",
+      "end": "N124",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE7-V4",
+      "start": "N124",
+      "end": "N125",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE7-V5",
+      "start": "N125",
+      "end": "N126",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE8-V1",
+      "start": "N127",
+      "end": "N128",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE8-V2",
+      "start": "N128",
+      "end": "N129",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE8-V3",
+      "start": "N129",
+      "end": "N130",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE8-V4",
+      "start": "N130",
+      "end": "N131",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE8-V5",
+      "start": "N131",
+      "end": "N132",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE9-V1",
+      "start": "N14",
+      "end": "N30",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE9-V2",
+      "start": "N30",
+      "end": "N46",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE9-V3",
+      "start": "N46",
+      "end": "N62",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE9-V4",
+      "start": "N62",
+      "end": "N78",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "id": "TE9-V5",
+      "start": "N78",
+      "end": "N94",
+      "kind": "frame",
+      "material": "MAT-purlin",
+      "section": "SEC-purlin",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  ],
+  "supports": [
+    {
+      "node": "N15",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N16",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N31",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N32",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N47",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N48",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N63",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N64",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N79",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N80",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N95",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "node": "N96",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "TESTE",
+      "source": "Carga nodal sintética de verificação: (0,2; 0,3; -1) kN; sem peso próprio automático"
+    }
+  ],
+  "nodal_loads": [
+    {
+      "node": "N11",
+      "case": "TESTE",
+      "fx_n": 200,
+      "fy_n": 300,
+      "fz_n": -1000,
+      "mx_nm": 0,
+      "my_nm": 0,
+      "mz_nm": 0
+    }
+  ],
+  "combinations": [
+    {
+      "id": "TESTE-1",
+      "factors": {
+        "TESTE": 1
+      }
+    }
+  ]
+}

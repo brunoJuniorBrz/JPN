@@ -1,0 +1,63 @@
+import { expect, test } from "@playwright/test";
+import { emptySnapshot } from "../../src/domain/models";
+import { spatialAdapterExample } from "../../src/domain/examples/spatial-adapter-example";
+import { readFileSync } from "node:fs";
+
+for (const width of [375, 1440]) {
+  test(`adaptador executa declarações persistidas, exporta IDs e invalida resultados em ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 950 });
+    const project = spatialAdapterExample(), errors: string[] = [];
+    page.on("pageerror", e => errors.push(e.message));
+    await page.addInitScript(value => { if (!localStorage.getItem("jpn-projetos:v1")) localStorage.setItem("jpn-projetos:v1", JSON.stringify(value)); }, { ...emptySnapshot(), exampleInstalled: true, projects: [project] });
+    await page.goto(`/projetos/${project.id}?fluxo=levantamento&etapa=3`);
+    await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
+    await page.getByRole("button", { name: "4. Conferência" }).click();
+    const before = await page.getByTestId("takeoff-totals").innerText();
+    await page.getByRole("button", { name: "Preparar modelo físico desta obra" }).click();
+    await expect(page.getByTestId("adapter-prepared")).toContainText("132 nós · 207 peças originais · 243 segmentos físicos");
+    await page.getByRole("button", { name: "Executar modelo integrado experimental" }).click();
+    const results = page.getByTestId("adapter-results");
+    await expect(results).toBeVisible({ timeout: 25000 });
+    await expect(results).toContainText("Deslocamento máximo:");
+    await page.getByLabel("Segmento do resultado integrado").selectOption({ index: 3 });
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Exportar resultados e rastreabilidade" }).click();
+    const download = await downloadPromise, data = JSON.parse(readFileSync(await download.path(), "utf8"));
+    expect(data.prepared.mapping.schema_version).toBe("jpn.geometry-physical-map/1");
+    expect(data.prepared.approved_for_fabrication).toBe(false);
+    expect(data.result.input_sha256).toBe(data.prepared.input_sha256);
+    expect(Object.keys(data.result.combinations["TESTE-1"].members)).toHaveLength(243);
+    expect(await page.getByTestId("takeoff-totals").innerText()).toBe(before);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await results.screenshot({ path: `test-results/adapter-results-${width}.png` });
+    await page.getByLabel("Fonte da revisão de conectividade").fill("Revisão explícita R2 do teste");
+    await page.getByRole("checkbox", { name: /Revisei todas as juntas/ }).check();
+    await page.getByRole("button", { name: "Registrar conexões revisadas" }).click();
+    await expect(results).toHaveCount(0); await expect(page.getByTestId("adapter-prepared")).toHaveCount(0);
+    await page.getByRole("button", { name: "Salvar levantamento" }).click();
+    await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!).projects[0].workspace.spatialPreparation.connectivity.reviewSource)).toBe("Revisão explícita R2 do teste");
+    await page.reload();
+    await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
+    await page.getByRole("button", { name: "4. Conferência" }).click();
+    await expect(page.getByLabel("Fonte da revisão de conectividade")).toHaveValue("Revisão explícita R2 do teste");
+    await expect(results).toHaveCount(0);
+    expect(errors).toEqual([]);
+  });
+  test(`cobertura incompleta continua bloqueada e exemplo independente não altera a obra em ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 950 });
+    await page.goto("/projetos/novo");
+    await page.getByLabel("Largura (m)").fill("10"); await page.getByLabel("Comprimento (m)").fill("20"); await page.getByLabel("Altura (m)").fill("4");
+    await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
+    await page.getByRole("button", { name: "Preparar análise", exact: true }).click(); await page.getByRole("button", { name: "4. Conferência" }).click();
+    await page.getByRole("button", { name: "Preparar modelo físico desta obra" }).click();
+    await expect(page.getByRole("alert").filter({ hasText: "PROPERTIES" })).toBeVisible();
+    await expect(page.getByTestId("adapter-prepared")).toHaveCount(0);
+    const before = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
+    await page.getByRole("button", { name: "Carregar cobertura sintética validada 10 × 20 m" }).click();
+    await expect(page.getByTestId("adapter-prepared")).toContainText("EXEMPLO SINTÉTICO INDEPENDENTE");
+    await page.getByRole("button", { name: "Executar modelo integrado experimental" }).click();
+    await expect(page.getByTestId("adapter-results")).toBeVisible({ timeout: 25000 });
+    expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(before);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}

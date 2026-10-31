@@ -7,7 +7,7 @@ import struct
 from .model import AnalysisError
 
 DOFS = ('UX', 'UY', 'UZ', 'RX', 'RY', 'RZ')
-LIMITS = dict(nodes=100, members=200, materials=50, sections=50, supports=100,
+LIMITS = dict(nodes=250, members=600, materials=50, sections=50, supports=250,
               cases=10, nodal_loads=500, combinations=10)
 
 
