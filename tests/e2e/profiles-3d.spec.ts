@@ -153,5 +153,17 @@ for (const width of [375, 1440]) test(`atalho visível abre o 3D da estrutura no
   await expect(shortcutCanvas).toBeVisible();
   await expect(shortcutCanvas).toHaveAttribute("data-mode", "profiles");
   await expect(shortcutCanvas).toHaveAttribute("data-framing", "whole-structure");
+  await page.getByLabel("Selecionar peça no desenho").selectOption("P1");
+  await page.getByRole("button", { name: "Focar peça selecionada" }).click();
+  await expect(shortcutCanvas).toHaveAttribute("data-framing", "selected-piece");
+  // Repeating the shortcut on Resultado must reset the camera and mode.
+  await page.getByRole("button", { name: "Abrir modelo 3D" }).click();
+  await expect(shortcutCanvas).toHaveAttribute("data-mode", "profiles");
+  await expect(shortcutCanvas).toHaveAttribute("data-framing", "whole-structure");
+  await expect(page.getByLabel("Selecionar peça no desenho")).toHaveValue("");
+  await page.getByRole("button", { name: "Voltar às vistas 2D" }).click();
+  await page.getByRole("button", { name: "Abrir modelo 3D" }).click();
+  await expect(shortcutCanvas).toHaveAttribute("data-mode", "profiles");
+  await expect(shortcutCanvas).toHaveAttribute("data-framing", "whole-structure");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
