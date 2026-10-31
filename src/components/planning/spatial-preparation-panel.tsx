@@ -8,11 +8,12 @@ import { useData } from "@/components/data-provider";
 import { downloadText } from "@/lib/format";
 import { structureSignature } from "@/domain/calculations/project-basis";
 import {
-  baseNodeIds, dofNames, emptyPhysicalGroup, emptyPhysicalLoad, newSpatialPreparation, pieceRoles,
+  dofNames, emptyPhysicalGroup, emptyPhysicalLoad, newSpatialPreparation, pieceRoles,
   spatialPreparationReview, type PhysicalGroup, type SpatialPreparation,
 } from "@/domain/spatial-preparation";
 import type { Material } from "@/domain/models";
 import { SpatialAdapterPanel } from "./spatial-adapter-panel";
+import { mixedPreparationReview } from "@/domain/mixed-adapter";
 
 const numberFields = [
   ["eGpa", "Elasticidade E (GPa)"], ["gGpa", "Cisalhamento G (GPa)"],
@@ -65,10 +66,10 @@ function catalogueGroup(material: Material): PhysicalGroup | null {
     iyCm4: source && d?.iyCm4 ? d.iyCm4 : null, izCm4: source && d?.izCm4 ? d.izCm4 : null,
     sectionSource: source, sectionRevision: d?.sourceDate ?? "" };
 }
-export function SpatialPreparationPanel({ project, onChange, initialSection = "profiles", onOpenSpatial }: { project: Project; onChange: (patch: Partial<Project>) => void; initialSection?: "profiles" | "supports" | "loads" | "review"; onOpenSpatial?: () => void }) {
+export function SpatialPreparationPanel({ project, onChange, initialSection = "profiles", onOpenSpatial, mixed = false }: { project: Project; onChange: (patch: Partial<Project>) => void; initialSection?: "profiles" | "supports" | "loads" | "review"; onOpenSpatial?: () => void; mixed?: boolean }) {
   const { data, saveMaterial } = useData();
   const draft = project.workspace.spatialPreparation ?? newSpatialPreparation(project);
-  const review = useMemo(() => spatialPreparationReview(project, draft), [project, draft]);
+  const review = useMemo(() => mixed ? mixedPreparationReview(project, draft) : spatialPreparationReview(project, draft), [project, draft, mixed]);
   const [role, setRole] = useState<(typeof pieceRoles)[number]>("column");
   const [support, setSupport] = useState("");
   const [node, setNode] = useState("");
@@ -79,9 +80,11 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
   const [section, setSection] = useState<"profiles" | "supports" | "loads" | "review">(initialSection);
   const [notice, setNotice] = useState("");
   const currentRole = draft.groups[role];
+  const needsBending = !mixed || currentRole.elementKind !== "axial" || draft.memberKinds?.some(m => m.kind === "frame" && review.geometry?.pieces.some(p => p.id === m.pieceId && p.role === role));
   const nodes = review.geometry?.nodes ?? [];
   const base = review.base;
-  const selectedBase = base.includes(support) ? support : base[0] ?? "";
+  const supportNodes = mixed ? nodes.map(n => n.id) : base;
+  const selectedBase = supportNodes.includes(support) ? support : draft.supports.find(s => supportNodes.includes(s.nodeId))?.nodeId ?? base[0] ?? supportNodes[0] ?? "";
   const selectedNode = nodes.some(n => n.id === node) ? node : nodes[0]?.id ?? "";
   const selectedCase = draft.cases.some(c => c.id === caseForLoad) ? caseForLoad : draft.cases[0]?.id ?? "";
   const selectedMember = review.geometry?.pieces.find(p => p.id === memberId) ?? review.geometry?.pieces[0];
@@ -117,7 +120,7 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
     <h3>Preparar análise estrutural</h3>
     <p>Preencha somente dados conhecidos e revisados. A estrutura 3D continua disponível imediatamente; nenhum perfil, apoio, ligação ou carregamento será presumido pelo sistema.</p>
     <div className="notice" data-testid="physical-prep-status">
-      <strong>{review.stale ? "Cadastro desatualizado" : review.issues.length ? "Preparação em andamento" : "Declarações preenchidas; aguarda adaptador físico"}</strong>
+      <strong>{review.stale ? "Cadastro desatualizado" : review.issues.length ? "Preparação em andamento" : mixed ? "Declarações conferidas; análise ainda não executada" : "Declarações preenchidas; aguarda adaptador físico"}</strong>
       <p>{review.geometry ? `${review.geometry.pieces.length} peças · ${nodes.length} nós · ${base.length} bases de pilares.` : "Geometria visual incompleta."} Nenhum dado deste painel libera dimensionamento ou fabricação.</p>
       <p><strong>{review.issues.length} pendências</strong> · {review.contacts.length} encontros geométricos aparentes; a conferência física é feita no adaptador.</p>
       {review.stale && <button type="button" className="button secondary" onClick={() => { change({ ...draft, geometrySignature: structureSignature(project) }); setNotice("Vínculo geométrico atualizado. Revise apoios, cargas e conexões com os novos nós."); }}>Reconhecer nova geometria (sem apagar dados)</button>}
@@ -134,20 +137,21 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
       <div className="form-grid">
         <Field label="Copiar dados declarados de outro grupo"><Select value="" onChange={e => { const source = draft.groups[e.target.value as typeof role]; if (source) group({ ...source }); }}>
           <option value="">Escolher grupo</option>{pieceRoles.filter(k => k !== role).map(k => <option value={k} key={k}>{roleLabels[k]}</option>)}</Select></Field>
-        <Field label="Copiar catálogo técnico existente"><Select value="" onChange={e => { const material = data.materials.find(m => m.id === e.target.value); const copy = material && catalogueGroup(material); if (copy) group(copy); }}>
+        {mixed && <Field label="Tipo físico do grupo"><Select value={currentRole.elementKind ?? "pending"} onChange={e => group({ elementKind: e.target.value === "pending" ? undefined : e.target.value as "frame" | "axial" })}><option value="pending">Não declarado</option><option value="frame">Pórtico Euler–Bernoulli</option><option value="axial">Barra exclusivamente axial</option></Select></Field>}
+        <Field label="Copiar catálogo técnico existente"><Select value="" onChange={e => { const material = data.materials.find(m => m.id === e.target.value); const copy = material && catalogueGroup(material); if (copy) group({ ...copy, elementKind: currentRole.elementKind }); }}>
           <option value="">Escolher perfil (dados faltantes continuam vazios)</option>
           {data.materials.filter(m => !m.isExample && (m.technicalProfile || m.physicalDeclaration)).map(m => <option value={m.id} key={m.id}>{m.name}</option>)}
         </Select></Field>
         <Field label="Classe do aço"><Input value={currentRole.steelGrade} maxLength={1000} onChange={e => group({ steelGrade: e.target.value })}/></Field>
         <Field label="Fonte do material / fabricante"><Input value={currentRole.materialSource} maxLength={1000} onChange={e => group({ materialSource: e.target.value })}/></Field>
         <Field label="Data / revisão do material"><Input value={currentRole.materialRevision} maxLength={1000} onChange={e => group({ materialRevision: e.target.value })}/></Field>
-        {numberFields.map(([key, label]) => <NumberField key={role + key} label={label} min={0.000000001} max={1e9} decimals={9} value={currentRole[key]} onChange={value => group({ [key]: value })} />)}
-        <NumberField key={role + "nu"} label="Poisson ν" min={0} max={.499} decimals={6} value={currentRole.nu} onChange={nu => group({ nu })} />
-        <NumberField key={role + "orientation"} label="Giro local físico (graus)" min={0} max={360} decimals={3} value={currentRole.rotationDeg} onChange={rotationDeg => group({ rotationDeg })} hint="Não usar automaticamente o giro da seção visual."/>
+        {numberFields.filter(([key]) => needsBending || key === "eGpa" || key === "areaCm2").map(([key, label]) => <NumberField key={role + key} label={label} min={0.000000001} max={1e9} decimals={9} value={currentRole[key]} onChange={value => group({ [key]: value })} />)}
+        {needsBending && <NumberField key={role + "nu"} label="Poisson ν" min={-.99} max={.499} decimals={6} value={currentRole.nu} onChange={nu => group({ nu })} />}
+        {needsBending && <NumberField key={role + "orientation"} label="Giro local físico (graus)" min={-360} max={360} decimals={3} value={currentRole.rotationDeg} onChange={rotationDeg => group({ rotationDeg })} hint="Não usar automaticamente o giro da seção visual."/>}
         <Field label="Fonte da seção / catálogo"><Input value={currentRole.sectionSource} maxLength={1000} onChange={e => group({ sectionSource: e.target.value })}/></Field>
         <Field label="Data / revisão da seção"><Input value={currentRole.sectionRevision} maxLength={1000} onChange={e => group({ sectionRevision: e.target.value })}/></Field>
       </div>
-      <p className="field-hint">A, Iy, Iz e J precisam corresponder à seção real e à convenção dos eixos. A compatibilidade de E/G/ν é conferida na lista de pendências.</p>
+      <p className="field-hint">{needsBending ? "A, Iy, Iz e J precisam corresponder à seção real e à convenção dos eixos. A compatibilidade de E/G/ν é conferida na lista de pendências." : "Grupo exclusivamente axial: E e A com fontes/revisões; G, ν, inércias, torção e giro não participam da formulação. Uma peça de pórtico neste grupo volta a exigir esses dados."}</p>
       <div className="physical-catalogue">
         <h4>Reutilizar no catálogo</h4>
         <p className="field-hint">Guarda estes dados declarados em um material já cadastrado. Campos incompletos continuam pendentes e nenhuma propriedade é certificada.</p>
@@ -159,7 +163,7 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
       <h4>Apoios nas bases</h4><p className="field-hint">Escolha os vínculos de cada base real, inclusive quando o grau de liberdade estiver livre. Nenhum pilar é considerado engastado automaticamente.</p>
       {base.length ? <>
         <div className="form-grid">
-          <Field label="Base do pilar"><Select value={selectedBase} onChange={e => setSupport(e.target.value)}>{base.map(id => <option key={id} value={id}>{id}</option>)}</Select></Field>
+          <Field label={mixed ? "Nó do apoio misto" : "Base do pilar"}><Select value={selectedBase} onChange={e => setSupport(e.target.value)}>{supportNodes.map(id => <option key={id} value={id}>{id}</option>)}</Select></Field>
           <Field label="Modelo de apoio para todas as bases"><Select value={bulk} onChange={e => setBulk(e.target.value)}><option value="">Selecione para aplicar explicitamente</option><option value="fixed">Seis graus restritos (hipótese de engaste)</option><option value="pinned">Translações restritas; rotações livres (hipótese de articulação)</option></Select></Field>
         </div>
         <div className="actions"><button type="button" className="button secondary" disabled={!bulk} onClick={() => {
@@ -173,23 +177,24 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
           }}>{supportChoices.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</Select></Field>)}
         </div>
       </> : <p className="notice">Não há bases identificadas. Revise a geometria.</p>}
-      <h4>Comportamento das ligações</h4><p className="field-hint">Hipóteses por grupo, editáveis. Ligações axiais/mistas ainda não são interpretadas pelo solver 3D; a missão de conectividade continua necessária.</p>
+      <h4>Comportamento das ligações</h4><p className="field-hint">{mixed ? "O tipo físico é declarado separadamente. Uma extremidade articulada não transforma pórtico em axial. Axiais exigem ambas as extremidades axiais; contradições bloqueiam a execução." : "Hipóteses por grupo, editáveis. Ligações axiais/mistas ainda não são interpretadas pelo solver 3D; a missão de conectividade continua necessária."}</p>
       <div className="form-grid">
         {pieceRoles.map(key => <Field label={roleLabels[key]} key={key}><Select value={draft.groups[key].connection}
           onChange={e => change({ ...draft, groups: { ...draft.groups, [key]: { ...draft.groups[key], connection: e.target.value as PhysicalGroup["connection"] } } })}>
           <option value="pending">Não declarada</option><option value="rigid">Rígida (hipótese declarada)</option>
-          <option value="pinned">Articulada (hipótese declarada)</option><option value="axial">Axial/treliça (adaptador futuro)</option>
+          <option value="pinned">Articulada (hipótese declarada)</option><option value="axial">{mixed ? "Axial — sem transferência de momentos" : "Axial/treliça (adaptador futuro)"}</option>
         </Select></Field>)}
       </div>
       <h4>Ajustar ligação de uma peça individual</h4>
       <p className="field-hint">Uma peça pode ter ligação diferente no início e no fim. `Usar grupo` herda a hipótese do grupo; não significa vínculo validado. Recalcule as hipóteses depois de mudar a geometria.</p>
       {selectedMember && <>
         <Field label="Peça para revisar extremidades"><Select value={selectedMember.id} onChange={e => setMemberId(e.target.value)}>{review.geometry!.pieces.map(p => <option key={p.id} value={p.id}>{p.id} · {roleLabels[p.role]}</option>)}</Select></Field>
+        {mixed && <Field label="Tipo físico desta peça"><Select value={draft.memberKinds?.find(m => m.pieceId === selectedMember.id)?.kind ?? "inherit"} onChange={e => change({ ...draft, memberKinds: [...(draft.memberKinds ?? []).filter(m => m.pieceId !== selectedMember.id), ...(e.target.value === "inherit" ? [] : [{ pieceId: selectedMember.id, kind: e.target.value as "frame" | "axial" }])] })}><option value="inherit">Usar tipo do grupo ({draft.groups[selectedMember.role].elementKind ?? "pendente"})</option><option value="frame">Pórtico Euler–Bernoulli</option><option value="axial">Barra exclusivamente axial</option></Select></Field>}
         <div className="form-grid">
           {(["start", "end"] as const).map(end => <Field key={selectedMember.id + end} label={end === "start" ? "Ligação da extremidade inicial" : "Ligação da extremidade final"}><Select value={memberOverride?.[end] ?? "inherit"} onChange={e => changeMemberEnd(end, e.target.value as SpatialPreparation["memberConnections"][number]["start"])}>
             <option value="inherit">Usar grupo ({draft.groups[selectedMember.role].connection})</option>
             <option value="pending">Pendente</option><option value="rigid">Rígida, declarada</option>
-            <option value="pinned">Articulada, declarada</option><option value="axial">Axial/treliça (adaptador futuro)</option>
+            <option value="pinned">Articulada, declarada</option><option value="axial">{mixed ? "Axial, declarada" : "Axial/treliça (adaptador futuro)"}</option>
           </Select></Field>)}
         </div>
         <p className="field-hint">{draft.memberConnections.length} peças possuem exceções declaradas no cadastro.</p>
@@ -230,9 +235,9 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
       <Field label="Revisão do caminho de cargas até os apoios"><Textarea rows={3} maxLength={1000} value={draft.loadPathReview} onChange={e => change({ ...draft, loadPathReview: e.target.value })}/></Field>
     </>}
     {section === "review" && <>
-      <SpatialAdapterPanel project={project} draft={draft} onChange={change}/>
+      {!mixed && <SpatialAdapterPanel project={project} draft={draft} onChange={change}/>}
       <h4>Pendências para análise estrutural</h4>
-      <p className="field-hint">Esta conferência avalia o preenchimento e a topologia aparente; não aprova vínculos, seções ou dimensionamento. O adaptador de conectividade acima trata pórticos explicitamente declarados. O modelo misto de treliças e pórticos permanece bloqueado.</p>
+      <p className="field-hint">{mixed ? "Esta conferência valida preenchimento, tipos físicos e conectividade declarada. Execute o processo Python local para verificar estabilidade e equilíbrio; não há aprovação de resistência ou dimensionamento." : "Esta conferência avalia o preenchimento e a topologia aparente; não aprova vínculos, seções ou dimensionamento. O adaptador de conectividade acima trata pórticos explicitamente declarados. O modelo misto de treliças e pórticos permanece bloqueado."}</p>
       <ul className="physical-issues">{review.issues.map((i, idx) => <li key={idx}><strong>{i.code}</strong> — {i.message}</li>)}</ul>
       {!review.issues.length && <p className="notice">Todas as declarações deste formulário foram preenchidas. Ainda é necessária validação física e normativa independente.</p>}
       <p>Esta preparação permanece vinculada às medidas pela revisão geométrica registrada. Exporte os dados para revisão externa.</p>

@@ -122,6 +122,18 @@ describe("cena compartilhada e contrato original", () => {
     const lines = s.targets().find(x => x instanceof THREE.LineSegments)!;
     expect(pieceIdFromHit({ object: lines, index: 0 })).toBe(m.pieces[0].id); expect(pieceIdFromHit({ object: lines, index: 99999 })).toBeNull(); s.dispose();
   });
+  it("colore respostas por ID em sólidos/linhas, mantém seleção e não altera posições ou geometria", () => {
+    const m = model(), original = JSON.stringify(m), s = buildProfileScene(m), item = s.instances.get("T1-BS1")!;
+    const before = new THREE.Matrix4(); item.mesh.getMatrixAt(item.index, before);
+    s.setColors({ "T1-BS1": 0x27858f }); const color = new THREE.Color(); item.mesh.getColorAt(item.index, color); expect(color.getHex()).toBe(0x27858f);
+    s.highlight("T1-BS1"); s.setColors({ "T1-BS1": 0x8e639f }); item.mesh.getColorAt(item.index, color); expect(color.getHex()).toBe(0xff9b36);
+    s.highlight("P1"); item.mesh.getColorAt(item.index, color); expect(color.getHex()).toBe(0x8e639f);
+    s.setMode("structural"); const line = s.targets().find(x => (x.userData.ids as string[]).includes("T1-BS1")) as THREE.LineSegments;
+    const index = (line.userData.ids as string[]).indexOf("T1-BS1") * 2, colors = line.geometry.getAttribute("color");
+    expect(new THREE.Color().fromBufferAttribute(colors, index).getHex()).toBe(0x8e639f);
+    const after = new THREE.Matrix4(); item.mesh.getMatrixAt(item.index, after); expect(after.elements).toEqual(before.elements);
+    expect(pieceIdFromHit({ object: item.mesh, instanceId: item.index })).toBe("T1-BS1"); expect(JSON.stringify(m)).toBe(original); s.dispose();
+  });
   it("raycast de sólido instanciado retorna o ID original através da parede do tubo", () => {
     const m = model(); m.pieces = [m.pieces[0]]; const s = buildProfileScene(m); s.setMode("profiles"); s.root.updateMatrixWorld(true);
     const item = s.instances.get(m.pieces[0].id)!, matrix = new THREE.Matrix4(); item.mesh.getMatrixAt(item.index, matrix);

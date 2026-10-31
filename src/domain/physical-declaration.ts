@@ -10,6 +10,7 @@ export const physicalGroupSchema = z.object({
   areaCm2: positive, iyCm4: positive, izCm4: positive, jCm4: positive,
   sectionSource: meaningful, sectionRevision: meaningful, rotationDeg: z.number().finite().min(-360).max(360).nullable(),
   connection: z.enum(connectionChoices),
+  elementKind: z.enum(["frame", "axial"]).optional(),
 }).strict();
 export type PhysicalGroup = z.infer<typeof physicalGroupSchema>;
 

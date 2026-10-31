@@ -1,0 +1,59 @@
+{
+    "health":  {
+                   "schema_version":  "jpn.local-mixed/1",
+                   "status":  "ready",
+                   "execution":  {
+                                     "memory_limit_bytes":  805306368,
+                                     "memory_kind":  "windows-job-process-commit",
+                                     "local_only":  true
+                                 },
+                   "dependencies":  {
+                                        "python":  "3.12",
+                                        "PyNiteFEA":  "3.2.1",
+                                        "numpy":  "2.5.4",
+                                        "scipy":  "1.18.1"
+                                    }
+               },
+    "execution":  {
+                      "memory_limit_bytes":  805306368,
+                      "memory_kind":  "windows-job-process-commit",
+                      "local_only":  true
+                  },
+    "input_sha256":  "1cfc3706b68bcbf924cc5dc78960427661feb9d33ffa70c2d0a744c4d924c39a",
+    "diagnostics":  {
+                        "free_dofs":  720,
+                        "scaled_condition":  27255.736767324055,
+                        "elapsed_seconds":  1.8807632000098238
+                    },
+    "equilibrium":  {
+                        "force_n":  [
+                                        4.2081005346972233E-11,
+                                        7.1715078320266912E-11,
+                                        -3.4663827364056488E-11
+                                    ],
+                        "moment_nm":  [
+                                          -1.1232259566895664E-10,
+                                          2.7722535378416069E-10,
+                                          3.3560354495421052E-10
+                                      ],
+                        "relative_residual":  3.858448586951995E-14
+                    },
+    "axial_sample":  {
+                         "Value":  {
+                                       "kind":  "axial",
+                                       "axial_n":  -634.5513891494338,
+                                       "length_m":  1.9436506316151005,
+                                       "extension_m":  -6.1667310415626891E-07
+                                   },
+                         "MemberType":  8,
+                         "IsSettable":  true,
+                         "IsGettable":  true,
+                         "TypeNameOfValue":  "System.Management.Automation.PSCustomObject",
+                         "Name":  "T1-D1",
+                         "IsInstance":  true
+                     },
+    "listener":  {
+                     "LocalAddress":  "127.0.0.1",
+                     "LocalPort":  3000
+                 }
+}

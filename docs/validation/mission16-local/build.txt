@@ -1,0 +1,38 @@
+corepack : $ next build
+No linha:2 caractere:694
++ ... 64;'+$env:PATH; corepack pnpm build *> ../m16-build-final.txt; exit $ ...
++                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ next build:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+▲ Next.js 16.4.3 (Turbopack)
+✓ Running next.config took 28ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 4.4s
+  Running TypeScript ...
+  Finished TypeScript in 4.8s ...
+  Collecting page data using 12 workers ...
+  Generating static pages using 12 workers (0/10) ...
+  Generating static pages using 12 workers (2/10) 
+  Generating static pages using 12 workers (4/10) 
+  Generating static pages using 12 workers (7/10) 
+✓ Generating static pages using 12 workers (10/10) in 837ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/analysis
+├ ƒ /api/analysis3d
+├ ƒ /api/experimental/mixed3d
+├ ○ /configuracoes
+├ ○ /materiais
+├ ○ /projetos
+├ ƒ /projetos/[id]
+└ ○ /projetos/novo
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

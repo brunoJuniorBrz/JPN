@@ -10,7 +10,7 @@ import { resolveSection } from "@/domain/profile-section";
 import { fitIsometricCamera } from "./camera-fit";
 import { buildProfileScene, pieceIdFromHit, viewerQuality, type ViewerMode } from "./profile-scene";
 
-export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void }) {
+export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number> }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
@@ -27,6 +27,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const [mode, setMode] = useState<ViewerMode | "finished">("profiles");
   const changeMode = useRef<(mode: ViewerMode | "finished") => void>(() => {});
   const focus = useRef<(id: string) => void>(() => {});
+  const colorize = useRef<(colors?: Record<string, number>) => void>(() => {});
   useEffect(() => { select.current = onSelect; }, [onSelect]);
   useEffect(() => {
     const container = host.current!;
@@ -61,6 +62,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const grid = new THREE.GridHelper(gridStep * 20, 20, 0xaab6a0, 0xdce2d5); grid.position.set(center.x, 0, center.z); scene.add(grid);
     resources.push(grid.geometry, ...(Array.isArray(grid.material) ? grid.material : [grid.material]));
     const render = () => { renderer.render(scene,camera); canvas.dataset.drawCalls = String(renderer.info.render.calls); canvas.dataset.triangles = String(renderer.info.render.triangles); if (environment) { const sources = environment.status(); canvas.dataset.carSource = sources.carSource; canvas.dataset.personSource = sources.personSource; } };
+    colorize.current = colors => { profiles.setColors(colors); canvas.dataset.analysisMode = colors ? "experimental" : "none"; render(); };
     let framingBounds = bounds, activeMode: ViewerMode | "finished" = "profiles", disposed = false;
     type PresentationHandle = ReturnType<typeof import("./presentation-scene")["createPresentationScene"]>;
     let environment: PresentationHandle | null = null;
@@ -123,7 +125,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       else { const points = model.nodes.filter(n => n.id === piece.start || n.id === piece.end).map(n => new THREE.Vector3(n.x / 1000, n.z / 1000, -n.y / 1000)); pieceBounds = new THREE.Box3().setFromPoints(points); }
       framingBounds = pieceBounds; canvas.dataset.framing = "selected-piece"; controls.target.copy(fitIsometricCamera(camera, pieceBounds)); controls.update(); render();
     };
-    highlight.current = id => { profiles.highlight(id); render(); };
+    highlight.current = id => { profiles.highlight(id); canvas.dataset.selectedPiece = id; render(); };
     const resize = () => {
       const width = Math.max(container.clientWidth, 1), height = Math.max(container.clientHeight, 1);
       // iPhone/WebKit may report only a few CPU cores. Keep fine pixels even when
@@ -145,7 +147,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), camera);
       if (activeMode === "finished") return;
       const hit = raycaster.intersectObjects(profiles.targets(), false)[0];
-      const id = hit ? pieceIdFromHit(hit) : null; if (id) select.current(id);
+      const id = hit ? pieceIdFromHit(hit) : null; if (id) { canvas.dataset.pickedPiece = id; select.current(id); }
     };
     const lost = (e: Event) => { e.preventDefault(); setFailure("O dispositivo perdeu o contexto gráfico. As vistas 2D continuam disponíveis."); };
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("webglcontextlost", lost);
@@ -155,6 +157,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
+  useEffect(() => { colorize.current(analysisColors); }, [analysisColors, model]);
   useEffect(() => {
     if (!expanded) return;
     const previousOverflow = document.body.style.overflow;
@@ -166,7 +169,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const fallbackCount = model.pieces.filter(p => !resolveSection(p.profile).section).length;
   return <div className={expanded ? "structure-viewer structure-viewer--expanded" : "structure-viewer"}>
     {expanded && <div className="structure-viewer-heading"><strong>Apresentação da estrutura · 3D</strong><button type="button" className="button secondary" onClick={() => setExpanded(false)}>Fechar tela cheia</button></div>}
-    {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
+    {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).filter(([value]) => !analysisColors || value !== "finished").map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
     {!failure && mode !== "structural" && <div className="notice structure-profile-notice" data-testid="profile-coverage">
       <strong>{model.pieces.length - fallbackCount} peças com seção 3D · {fallbackCount} em linha.</strong>
       {fallbackCount > 0 && <><p>Para visualizar perfis reais, informe família, dimensões e espessura de cada categoria. O sistema não inventa medidas para projetos antigos.</p><div className="actions">{onConfigureProfile && <button type="button" className="button" onClick={onConfigureProfile}>Cadastrar dimensões</button>}{onDemonstrate && <button type="button" className="button secondary" onClick={onDemonstrate}>Ver demonstração com perfis</button>}</div></>}
