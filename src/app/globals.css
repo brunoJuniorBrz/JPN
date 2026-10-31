@@ -492,3 +492,32 @@ body { font-size: 16px; }
   .presentation-dimensions span { font-size:10px; padding:4px 6px; }
 }
 @media (max-width:370px) { .presentation-settings { grid-template-columns:1fr; } }
+
+
+/* Structural coordination: small mobile-first dashboard, not an approval panel. */
+.spatial-jump { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; border:1px solid var(--line); background:#f7f9f5; border-radius:10px; padding:12px 15px; margin-top:18px; }
+.spatial-jump p { margin:0; flex:1 1 230px; font-size:13px; }
+.spatial-jump button { min-height:44px; }
+.spatial-overview { margin-top:18px; display:grid; gap:14px; min-width:0; }
+.spatial-overview > h3 { margin:0; }
+.spatial-overview > p { margin:0; }
+.spatial-overview-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.spatial-overview-step { display:flex; flex-direction:column; min-width:0; gap:10px; background:#f8faf7; border:1px solid var(--line); border-radius:12px; padding:16px; }
+.spatial-overview-step-head { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:7px; }
+.spatial-overview-step-head span { color:#536154; font-size:12px; }
+.spatial-overview-step > p, .spatial-overview-step li { overflow-wrap:anywhere; font-size:13px; margin:0; }
+.spatial-overview-step > .button { margin-top:auto; min-height:44px; }
+.spatial-overview-step details { overflow-wrap:anywhere; }
+.spatial-overview-step details summary { cursor:pointer; }
+.spatial-overview-actions { display:flex; flex-wrap:wrap; gap:10px; }
+.spatial-overview-actions > button { min-height:48px; }
+.spatial-result-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:16px 0; }
+.spatial-result-metrics > div { display:flex; flex-direction:column; gap:6px; padding:13px; border:1px solid var(--line); border-radius:10px; background:#f8faf7; overflow-wrap:anywhere; }
+.spatial-result-metrics span { color:var(--muted); font-size:12px; }
+.spatial-result-metrics strong { font-size:18px; font-variant-numeric:tabular-nums; }
+@media (max-width:680px) {
+ .spatial-overview-grid { grid-template-columns:1fr; }
+ .spatial-overview-actions { flex-direction:column; }
+ .spatial-overview-actions button, .spatial-jump button { width:100%; }
+ .spatial-result-metrics { grid-template-columns:1fr; }
+}
