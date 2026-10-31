@@ -29,7 +29,17 @@ Foi criado `engine/tests/test_mixed3d.py`, com:
 - teste de perda de estabilidade se as rotações da base do frame forem liberadas;
 - proporcionalidade linear de cargas e hash de revisão.
 
-**Limitação da execução desta rodada:** em uma cópia local provisória, os validadores equivalentes passaram 18 testes e 3 testes que requerem PyNite ficaram pulados porque o ambiente de execução disponível não tinha PyNite instalado. O código publicado neste PR foi adaptado para reutilizar os helpers **reais** de `frame3d_model`, e os testes específicos desta versão **ainda precisam ser executados no checkout real**. Não apresentar estes passes provisórios como validação final. Nenhuma comparação real com PyNite, benchmark, CI, Linux ou deploy foi feita nesta missão.
+**Histórico da execução preliminar:** em uma cópia provisória, os validadores equivalentes passaram 18 testes e 3 que requerem PyNite ficaram pulados. Essa execução não constituía validação integrada.
+
+**Auditoria posterior (31/10/2026):** executados Python 3.12.10 e PyNiteFEA 3.2.1 reais, sem helpers substitutos: 21 testes originais e 54 testes direcionados finais aprovados, zero skips. A validação Python completa passou com 1394 testes e a campanha anterior de 1000 casos 2D. Ver [relatório do PR #15](AUDITORIA-PR-15-MOTOR-MISTO-3D.md) para referências independentes, fases vermelhas, correções, desempenho e ressalvas. Foi adicionada verificação de equilíbrio nodal e rejeição de bases locais não ortogonais da API PyNite em certas geometrias quase alinhadas com origem distante. Não houve alteração da interface, deploy ou merge; Linux e produção não foram verificados.
+
+Reprodução da referência por trabalho virtual/método das forças, da junta axial livre e do benchmark espacial:
+
+```sh
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python engine/audit_mixed3d.py
+```
+
+Em PowerShell configure as três variáveis com `$env:NOME='1'`. O utilitário é exclusivo de auditoria; não cria endpoint nem executor público.
 
 ## Tarefas de auditoria obrigatórias antes de merge
 

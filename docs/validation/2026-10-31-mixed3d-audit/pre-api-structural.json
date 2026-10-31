@@ -1,0 +1,257 @@
+{
+  "status": "passed",
+  "scope": "Experimental first-order 2D axial trusses and explicit 3D Euler-Bernoulli frames; no code design",
+  "spatial_benchmarks": {
+    "environment": {
+      "python": "3.12.10",
+      "platform": "Windows-10-10.0.19045-SP0"
+    },
+    "results": [
+      {
+        "name": "portal-5-nodes",
+        "nodes": 5,
+        "members": 4,
+        "elapsed_seconds": 1.660524799997802,
+        "peak_traced_bytes": 28142931,
+        "process_peak_rss_bytes": 108396544,
+        "scaled_condition": 1801.070322325687,
+        "input_sha256": "596c492437a138eba82f67f3ac3f38e2a313ce0b723544f88242e70a9ce162b7",
+        "max_equilibrium_residual": 3.0126041319806603e-15
+      },
+      {
+        "name": "grid-10x20m",
+        "nodes": 60,
+        "members": 79,
+        "elapsed_seconds": 0.8447253999911482,
+        "peak_traced_bytes": 2483799,
+        "process_peak_rss_bytes": 108396544,
+        "scaled_condition": 462.39514833460726,
+        "input_sha256": "c677fb65978613c5d1aece851b6228e188e05adddfa361d99c9a0d619130f795",
+        "max_equilibrium_residual": 1.1369309008371e-17
+      }
+    ],
+    "independent_reference": {
+      "method": "Castigliano force method, six redundants, exact quadratic integration; no PyNite matrix or results in reference",
+      "reference": "https://ocw.mit.edu/courses/2-080j-structural-mechanics-fall-2013/2d0cc95bd3556fdadc28226acabafa51_MIT2_080JF13_Lecture8.pdf",
+      "max_absolute_errors": {
+        "translation_m": 2.5153490401663703e-17,
+        "rotation_rad": 8.348356728138384e-18,
+        "reaction_n": 3.865352482534945e-11,
+        "moment_nm": 9.777068044058979e-11
+      },
+      "reference_displacements": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          4.784012333429455e-05,
+          0.00021681646922433592,
+          5.795687210490134e-07,
+          -0.00011347236884429429,
+          -2.2442021974491792e-05,
+          9.155554119216053e-05
+        ],
+        [
+          4.899927933494676e-05,
+          0.0005498888263132584,
+          0.0003272904505525129,
+          -0.00014858369952036772,
+          -7.651689438023523e-05,
+          1.9741625846646628e-05
+        ],
+        [
+          7.998333587894493e-05,
+          0.0005502202603822918,
+          -1.5579568721057167e-05,
+          -0.00021038545089345343,
+          1.3907661449985564e-05,
+          -2.6576599043671273e-05
+        ],
+        [
+          5.204170427930421e-18,
+          6.938893903907228e-18,
+          -1.3010426069826053e-17,
+          -1.3010426069826053e-18,
+          0.0,
+          5.421010862427522e-19
+        ]
+      ],
+      "reference_reactions": [
+        [
+          -579.5780003273514,
+          -331.4340690339204,
+          -386.3791473660094,
+          1102.3370707204485,
+          -749.6762166270637,
+          -375.61247668578653
+        ],
+        [
+          -420.4219996726485,
+          -1668.5659309660796,
+          10386.37914736601,
+          3624.9046345475326,
+          -704.8071939088971,
+          109.03220120480783
+        ]
+      ],
+      "input_sha256": "596c492437a138eba82f67f3ac3f38e2a313ce0b723544f88242e70a9ce162b7"
+    }
+  },
+  "generated_at_utc": "2026-10-31T20:50:55.727867+00:00",
+  "elapsed_seconds": 45.562855500000296,
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "PyNiteFEA": "3.2.1",
+    "pytest": "9.2.0"
+  },
+  "pytest": {
+    "tests": 1392,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "random_campaign": {
+    "generator": "random.Random(seed)",
+    "seeds_inclusive": [
+      0,
+      999
+    ],
+    "passed": 1000,
+    "failures": [],
+    "max_absolute_deviation": {
+      "displacement_m": {
+        "absolute": 2.0459328675670463e-14,
+        "seed": 471
+      },
+      "reaction_n": {
+        "absolute": 1.6542617231607437e-07,
+        "seed": 471
+      },
+      "axial_n": {
+        "absolute": 1.680455170571804e-07,
+        "seed": 471
+      }
+    },
+    "comparison_tolerances": {
+      "relative": 1e-07,
+      "displacement_absolute_m": 1e-11,
+      "force_absolute_n": 1e-05
+    }
+  },
+  "analytical_triangle": {
+    "schema_version": "jpn.truss-result/1",
+    "status": "analyzed_experimental",
+    "units": "SI",
+    "input_sha256": "870ae751d7cf689d6020728e09eb6669ddd87612e346fac91ad6fdbd7b79cc67",
+    "solver": {
+      "name": "jpn-linear-truss",
+      "version": "0.1.0",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1"
+    },
+    "assumptions": [
+      "Experimental first-order planar pin-jointed truss; axial deformation only.",
+      "SI: m, N, Pa, m\u00b2. Global +X right, +Y up. Axial +tension, -compression.",
+      "Linear elastic E and A supplied per member; loads act only at nodes.",
+      "No self-weight, wind, combinations, beam bending, joints, buckling or code checks inferred.",
+      "Convergence is not design approval or authorization for construction."
+    ],
+    "nodes": {
+      "0": {
+        "ux_m": 0.0,
+        "uy_m": 0.0,
+        "rx_n": 0.0,
+        "ry_n": 5000.0
+      },
+      "1": {
+        "ux_m": 4.9999999999999996e-05,
+        "uy_m": 0.0,
+        "rx_n": 0.0,
+        "ry_n": 5000.0
+      },
+      "2": {
+        "ux_m": 2.4999999999999998e-05,
+        "uy_m": -9.571067811865477e-05,
+        "rx_n": 0.0,
+        "ry_n": 0.0
+      }
+    },
+    "members": {
+      "M0": {
+        "length_m": 2.0,
+        "extension_m": 4.9999999999999996e-05,
+        "strain": 2.4999999999999998e-05,
+        "axial_n": 5000.0
+      },
+      "M1": {
+        "length_m": 1.4142135623730951,
+        "extension_m": -5.000000000000001e-05,
+        "strain": -3.535533905932738e-05,
+        "axial_n": -7071.067811865476
+      },
+      "M2": {
+        "length_m": 1.4142135623730951,
+        "extension_m": -5.000000000000001e-05,
+        "strain": -3.535533905932738e-05,
+        "axial_n": -7071.067811865476
+      }
+    },
+    "diagnostics": {
+      "free_dofs": 3,
+      "scaled_condition": 4.611581789308714,
+      "raw_condition": 4.675192353967919,
+      "nodal_residual_relative": 0.0,
+      "balance_fx_n": 0.0,
+      "balance_fy_n": 0.0,
+      "balance_moment_nm": 0.0,
+      "moment_residual_relative": 0.0,
+      "strain_energy_j": 0.47855339059327384,
+      "max_abs_strain": 3.535533905932738e-05,
+      "displacement_span_ratio": 4.785533905932738e-05
+    }
+  },
+  "source_sha256": {
+    "audit_mixed3d.py": "e50afa96d8e9b4110b42730e7f7a51d58d2f9c46baf4f4d30d6d0da808849bb0",
+    "audit_truss3d.py": "436fd4e98ca21b9cca80272ef9057ce361e8207e2037e6c23cd3847d992460d9",
+    "benchmark_adapter.py": "c939eaef3185fea1b760b62d80f19106f22aefdebe99ec63663f0e88fd0289d6",
+    "benchmark_spatial.py": "560a328386c34de0beed4612aa06fa91fd81f94c3b8f5c3778ada35f23f1a8da",
+    "jpn_structural/__init__.py": "06602d6f1695526967baa0ff724a045e35e958a0708b75d4047e06f2aa8da4ba",
+    "jpn_structural/__main__.py": "7b46773cbb9b6efd2775f4ab52d6b13c580040c1b1cdd4851450d432d40a846f",
+    "jpn_structural/frame3d.py": "fed3e6627dcf26dce5ce6b3fdd519b62e34b44f8d0c48edd5d43c316cf0f2840",
+    "jpn_structural/frame3d_model.py": "9ccaaa8f142ccf1b3d7325323cb4bc62807d0fb7f4a423d51bb5154488e3e004",
+    "jpn_structural/mixed3d.py": "b6155a2bb488caa42ac5c17bef3d33b1144b0921858f8e825c0ddb7123a41eb8",
+    "jpn_structural/model.py": "bee228ec7034c41252428ed2eab3ed97170ef0b5766ef6a5ef7d8d23683f749c",
+    "jpn_structural/service.py": "8e8dacac34650cfdd4aa71841a1b18219d9a670ba36a37c79f71910ad336d12f",
+    "jpn_structural/solver.py": "d8ab47f90f7e01567966e0d5695a7da18b6c7d82c860e97d1d11dc7d2cb3ec2e",
+    "jpn_structural/truss3d.py": "3d7a2c629c4013f7a770ba139459e88fc210f7e1d25616fd1cd5122c0cbbbc92",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/cases.py": "19c29b16f1ef7cf0556016e22b7af5129aaf8eea7d15f26759065526427aca6e",
+    "tests/checks.py": "16f81ea6765e1418ccbc2b8cff012eb4508afd08e0f2260cb5f930ff90f89e28",
+    "tests/mixed3d_reference.py": "8eed0d80af7359809a95edac77a7143d4e418eaa8736ec1b3fbcbc1f57d7b579",
+    "tests/oracle.py": "b7c2ea2ef71e58183492d66a0a5a96f2d3f93ea5c0c5bbece3ac1f86e88aec0d",
+    "tests/spatial_reference.py": "b21d45bd5a69d202cdb0e1cab2757dbcce73471557db86542912a46c5aa26e25",
+    "tests/test_analytical.py": "68670e751cc305107e3f3d252582c07be5ea882df9862328d3e261f622e45e4f",
+    "tests/test_frame3d.py": "59ede073181aa2b3d1830519d64a76fdaae920013196f40117154b7d6ee52b38",
+    "tests/test_frame3d_service.py": "9a92d0a518c73fdf1ce20039ab0e453cabd68f7dfb8025f46783621220c20abd",
+    "tests/test_invalid.py": "e554666c3de25c29ca7721aa3c82b0b7413616a4a48c17455866788971797812",
+    "tests/test_invariants.py": "f28d02441a9999c9abccbd62827eb044f6381871368542aae80a8c762be720d2",
+    "tests/test_mixed3d.py": "f8d49bfc9a4eee45a78cc1f795e784acbd69d309a8285e841700c070e8069309",
+    "tests/test_mixed3d_audit.py": "a2c56619da0a59be5311204a5d3bf57639ecb864e65c104fb750961eeab65056",
+    "tests/test_pynite.py": "8ddac32b9cd3f3108d4738a5b6c37077b3157b9f2e9201e4fa1774fff0e3920f",
+    "tests/test_service.py": "9282831477bcd344b89cd75a5c0f7a318de9b901c8f42fc2fb224e986d0b70ef",
+    "tests/test_spatial_adapter.py": "1c94cd6f01cbc6a75c25af6d3808edd59fda42ae1c9279a0305c56f77b52ff05",
+    "tests/test_truss3d.py": "940cc874315b018abc30f3603ede4bb69bccb985eae54e97b07c56aabb047e54",
+    "tests/test_truss3d_audit.py": "fd5c3fe0a2832c23df756a29f4adca8ec255c5d762f9082debd84ee5dcc09ab0",
+    "tests/truss3d_reference.py": "93cd5e3ffb86b9290acc747b0b891c0cd961fcfdc3d4c09119230c7bd555f172",
+    "validate.py": "5c585adc5644d8b045b21949a1a45e940002aadb28606f029baa520f64a0588e"
+  }
+}

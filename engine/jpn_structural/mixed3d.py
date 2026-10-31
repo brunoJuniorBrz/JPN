@@ -80,7 +80,6 @@ def validate_mixed3d(data):
                 fail('UNSUPPORTED_RELEASE','Liberação translacional não suportada.')
             if m['release_start'][3] and m['release_end'][3]:
                 fail('UNSUPPORTED_RELEASE','Liberação de torção nas duas extremidades.')
-            frames.update((m['start'],m['end']))
         elif m.get('kind')=='axial':
             obj(m,'id start end kind e_pa area_m2 source revision','axial')
             number(m['e_pa'],1,1e13,'E',True);number(m['area_m2'],1e-16,1000,'A',True)
@@ -92,6 +91,8 @@ def validate_mixed3d(data):
         a,b=m['start'],m['end']
         if a not in points or b not in points or a==b:
             fail('INVALID_REFERENCE',f"{m['id']}: nós inválidos.")
+        if m['kind']=='frame':
+            frames.update((a,b))
         edge=tuple(sorted((a,b)))
         if edge in edges:
             fail('INVALID_GEOMETRY','Barras duplicadas.')
@@ -184,6 +185,14 @@ def analyze_mixed3d(raw):
             Analysis._prepare_model(model)
             if any(len(m.sub_members)!=1 for m in model.members.values()):
                 fail('UNRESOLVED_CONTACT','PyNite gerou segmentação implícita.')
+            elements=list(model.springs.values())+[next(iter(m.sub_members.values())) for m in model.members.values()]
+            for element in elements:
+                axes=np.asarray(element.T()[:3,:3],dtype=float)
+                # PyNite 3.2.1 uses isclose on absolute coordinates for axis
+                # classification. Near-axis elements at a distant origin can
+                # produce a nonorthogonal basis: refuse, never repair supports.
+                if not np.isfinite(axes).all() or not np.allclose(axes@axes.T,np.eye(3),rtol=0,atol=1e-12):
+                    fail('INVALID_GEOMETRY',f'{element.name}: base local não ortogonal no PyNite 3.2.1; modelo recusado.')
             matrix=model.Ke(data['combinations'][0]['id'],check_stability=False,sparse=False)
             free=[]
             for node in model.nodes.values():
@@ -214,6 +223,7 @@ def analyze_mixed3d(raw):
     result={}
     for combo in data['combinations']:
         name=combo['id'];nodes={};members={}
+        assembled={nid:np.zeros(6) for nid in points};external_nodes={}
         forces=np.zeros(3);moments=np.zeros(3);force_scale=0.;moment_scale=0.
         origin=next(iter(points.values()))
         for nid,n in model.nodes.items():
@@ -231,6 +241,7 @@ def analyze_mixed3d(raw):
                     load+=combo['factors'].get(l['case'],0)*np.array([l[k] for k in
                         ('fx_n','fy_n','fz_n','mx_nm','my_nm','mz_nm')])
             external=load+reaction
+            external_nodes[nid]=external
             forces+=external[:3]
             moments+=external[3:]+np.cross(points[nid]-origin,external[:3])
             force_scale+=np.linalg.norm(load[:3])+np.linalg.norm(reaction[:3])
@@ -252,16 +263,28 @@ def analyze_mixed3d(raw):
             if not math.isfinite(value) or not math.isclose(value,expected,rel_tol=1e-7,abs_tol=1e-5):
                 fail('EQUILIBRIUM_FAILURE','Barra axial inconsistente com EA/L e deslocamentos.')
             members[mid]=dict(kind='axial',axial_n=value,length_m=length,extension_m=extension)
+            assembled[m['start']][:3]-=value*direction
+            assembled[m['end']][:3]+=value*direction
         for mid,beam in model.members.items():
             sub=next(iter(beam.sub_members.values()))
             actions=np.asarray(sub.f(name)).ravel()
             if len(actions)!=12 or not np.isfinite(actions).all():
                 fail('NUMERICAL_FAILURE','Forças de pórtico inválidas.')
             members[mid]=dict(kind='frame',length_m=float(beam.L()),end_actions_local=actions.tolist())
+            global_actions=sub.T().T@actions
+            assembled[beam.i_node.name]+=global_actions[:6]
+            assembled[beam.j_node.name]+=global_actions[6:]
+        # External resultant balance alone cannot validate internal joint actions.
+        # Convert moments to equivalent forces for the same SI length scale used
+        # by the global check; preserve the existing acceptance tolerance.
+        units=np.array([1.,1,1,span,span,span])
+        nodal_residual=max(float(np.linalg.norm((assembled[n]-external_nodes[n])/units)) for n in points)
+        nodal_scale=sum(float(np.linalg.norm(assembled[n]/units)+np.linalg.norm(external_nodes[n]/units)) for n in points)
         residual=max(float(np.linalg.norm(forces))/max(force_scale,1e-30),
-            float(np.linalg.norm(moments))/max(moment_scale+span*force_scale,1e-30))
+            float(np.linalg.norm(moments))/max(moment_scale+span*force_scale,1e-30),
+            nodal_residual/max(nodal_scale,1e-30))
         if not math.isfinite(residual) or residual>1e-8:
-            fail('EQUILIBRIUM_FAILURE','Equilíbrio global não atendido.')
+            fail('EQUILIBRIUM_FAILURE','Equilíbrio global ou nodal não atendido.')
         result[name]=dict(nodes=nodes,members=members,
              equilibrium=dict(force_n=forces.tolist(),moment_nm=moments.tolist(),relative_residual=residual))
     return dict(schema_version='jpn.mixed3d-result/1',status='analysis_completed_experimental',

@@ -1,0 +1,86 @@
+{
+    "date":  "2026-10-31",
+    "pr":  15,
+    "initial_commit":  "1080dfacd63feb3b233b0bcea9ab0262b968a2e4",
+    "branch":  "feat/experimental-mixed-frame-axial-3d",
+    "verdict":  "APROVADO COM RESSALVAS",
+    "scope":  "Experimental isolated mixed frame/axial kernel only; no UI/HTTP/deployment or structural safety approval",
+    "environment":  {
+                        "platform":  "Windows 10",
+                        "pytest":  "9.2.0",
+                        "numpy":  "2.5.4",
+                        "real_dependencies":  true,
+                        "python":  "3.12.10",
+                        "PyNiteFEA":  "3.2.1",
+                        "pip_check_exit":  0,
+                        "stub_helpers":  false,
+                        "blas_threads":  1,
+                        "scipy":  "1.18.1"
+                    },
+    "baseline":  {
+                     "exit":  0,
+                     "skipped":  0,
+                     "failed":  0,
+                     "passed":  21
+                 },
+    "initial_new_tests":  {
+                              "two_failures_were_invalid_fixture_areas":  true,
+                              "failed":  5,
+                              "passed":  8
+                          },
+    "adversarial_red":  {
+                            "causes":  [
+                                           "Frame endpoints hashed before ID validation",
+                                           "Missing nodal balance validation; controlled post-solve fault accepted"
+                                       ],
+                            "failed":  3,
+                            "passed":  10
+                        },
+    "conditioning_fixture_history":  "Weak section need not imply poor scaled conditioning; replaced incorrect expectation with near-dependent directions without changing solver tolerances",
+    "pre_api_targeted":  {
+                             "passed":  52,
+                             "failed":  0
+                         },
+    "pre_api_full":  {
+                         "passed":  1392,
+                         "failed":  0
+                     },
+    "api_red":  {
+                    "deselected":  31,
+                    "cause":  "Actual PyNite nonorthogonal bases at distant origins were accepted for frame and axial elements",
+                    "failed":  2,
+                    "passed":  0
+                },
+    "final_targeted":  {
+                           "exit":  0,
+                           "skipped":  0,
+                           "failed":  0,
+                           "passed":  54
+                       },
+    "full_python":  {
+                        "tests":  1394,
+                        "failures":  0,
+                        "errors":  0,
+                        "skipped":  0,
+                        "exit_code":  0
+                    },
+    "reference_campaign":  1000,
+    "references_benchmark_exit":  0,
+    "fixes":  [
+                  "Reject nonorthogonal native element bases before solving",
+                  "Check assembled force/moment balance at every node",
+                  "Classify frame nodes only after endpoint validation"
+              ],
+    "previous_solvers_modified":  false,
+    "previous_contracts_modified":  false,
+    "ui_modified":  false,
+    "deploy_performed":  false,
+    "merge_performed":  false,
+    "linux_verified":  false,
+    "limitations":  [
+                        "Nonorthogonal bases are rejected; no automatic coordinate or axis repair",
+                        "Core function has no protected HTTP executor, timeout or RSS quotas",
+                        "Benchmark is representative, not the 150-node/320-member worst case",
+                        "Windows only; no production or normative design verification"
+                    ]
+}

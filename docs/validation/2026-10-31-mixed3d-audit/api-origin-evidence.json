@@ -1,0 +1,14 @@
+{
+  "near_origin_anchor_reaction_n": [
+    9.962640039078744e-06,
+    996.26400996264,
+    0.0
+  ],
+  "translated_anchor_reaction_n": [
+    0.0,
+    996.26400996264,
+    0.0
+  ],
+  "global_nodal_residual_near_origin": 5.684341886080763e-17,
+  "global_nodal_residual_translated": 2.4889343992231647e-09
+}
