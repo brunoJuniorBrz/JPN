@@ -411,3 +411,28 @@ body { font-size: 16px; }
 .structure-viewer--expanded .drawing-help { display: none; }
 
 .hash-label { font-size: 12px; overflow-wrap: anywhere; margin: 12px 0; }
+
+
+/* Fast, mobile-first geometric preproject entry. */
+.quick-start-panel { padding: clamp(18px, 3vw, 34px); max-width: 880px; margin-inline: auto; }
+.quick-start-title { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px; }
+.quick-start-title svg { color: #526944; flex-shrink: 0; }
+.quick-start-title h2 { font-size: clamp(20px, 3vw, 27px); margin: 0 0 6px; }
+.quick-start-title p { color: var(--muted); margin: 0; }
+.quick-start-measures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 20px 0; }
+.quick-start-options { border: 1px solid var(--line); border-radius: 10px; margin: 18px 0; padding: 12px 14px; }
+.quick-start-options summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+.quick-start-options[open] .quick-start-measures { margin-bottom: 4px; }
+.quick-start-warning { margin: 20px 0; }
+.quick-start-warning p { margin-top: 6px; }
+.quick-start-actions { display: flex; align-items: stretch; flex-wrap: wrap; gap: 12px; margin-bottom: 15px; }
+.quick-start-actions button { min-height: 52px; }
+.quick-start-primary { flex: 1 1 290px; justify-content: center; }
+.quick-start-actions .secondary { flex: 1 1 210px; justify-content: center; }
+@media (max-width: 640px) {
+  .quick-start-measures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .quick-start-measures > :last-child { grid-column: 1 / -1; }
+  .quick-start-actions { flex-direction: column; }
+  .quick-start-primary, .quick-start-actions .secondary { flex-basis: auto; width: 100%; }
+}
+@media (max-width: 380px) { .quick-start-measures { grid-template-columns: 1fr; } .quick-start-measures > :last-child { grid-column: auto; } }
