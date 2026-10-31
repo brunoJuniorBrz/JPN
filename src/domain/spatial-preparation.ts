@@ -25,6 +25,7 @@ export const spatialPreparationSchema = z.object({
   version: z.literal(1), geometrySignature: z.string().max(100000),
   groups: z.object({ column: physicalGroupSchema, topChord: physicalGroupSchema, bottomChord: physicalGroupSchema, web: physicalGroupSchema, purlin: physicalGroupSchema }).strict(),
   supports: z.array(supportSchema).max(200),
+  memberConnections: z.array(z.object({ pieceId: z.string().min(1).max(100), start: z.enum(["inherit", ...connectionChoices]), end: z.enum(["inherit", ...connectionChoices]) }).strict()).max(5000),
   cases: z.array(z.object({ id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/), source: meaningful }).strict()).max(10),
   loads: z.array(loadSchema).max(500),
   combinations: z.array(z.object({ id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/), factors: z.record(z.string().max(40), z.number().finite().min(-100).max(100).nullable()) }).strict()).max(10),
@@ -36,7 +37,7 @@ export type PhysicalLoad = SpatialPreparation["loads"][number];
 export function newSpatialPreparation(project: Pick<Project, "roof" | "planning">): SpatialPreparation {
   return { version: 1, geometrySignature: structureSignature(project),
     groups: { column: emptyPhysicalGroup(), topChord: emptyPhysicalGroup(), bottomChord: emptyPhysicalGroup(), web: emptyPhysicalGroup(), purlin: emptyPhysicalGroup() },
-    supports: [], cases: [{ id: "CASO-1", source: "" }], loads: [],
+    supports: [], memberConnections: [], cases: [{ id: "CASO-1", source: "" }], loads: [],
     combinations: [{ id: "COMB-1", factors: { "CASO-1": null } }],
     connectionsReview: "", lateralSystem: "", loadPathReview: "" };
 }
@@ -62,6 +63,9 @@ export function spatialPreparationReview(project: Project, draft: SpatialPrepara
   if (draft.supports.some(s => !nodes.has(s.nodeId))) add("ORPHAN_SUPPORT", "Há apoios referindo nós que não existem mais; revise os registros.");
   if (base.some(id => !assigned.has(id))) add("SUPPORTS", `Faltam declarações para ${base.filter(id => !assigned.has(id)).length} bases de pilares.`);
   if (draft.supports.some(s => s.dofs.some(d => d === "pending"))) add("DOFS", "Existem graus de liberdade pendentes. Livre não é o mesmo que não informado.");
+  if (new Set(draft.memberConnections.map(v => v.pieceId)).size !== draft.memberConnections.length) add("DUPLICATE_CONNECTION", "Peças com hipóteses de ligação duplicadas.");
+  if (draft.memberConnections.some(v => !geometry?.pieces.some(p => p.id === v.pieceId))) add("ORPHAN_CONNECTION", "Há hipóteses de ligação individuais referindo peças que não existem mais.");
+  if (draft.memberConnections.some(v => v.start === "pending" || v.end === "pending")) add("MEMBER_CONNECTION", "Há hipóteses individuais com extremidades ainda pendentes.");
   for (const role of pieceRoles) {
     const p = draft.groups[role];
     if (!p.steelGrade.trim() || !p.materialSource.trim() || !p.materialRevision.trim()
