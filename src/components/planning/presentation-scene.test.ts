@@ -37,6 +37,8 @@ describe("client presentation layer is derived, not structural input", () => {
     p.roof.fall="length-negative";p.planning!.overhangStartM=1.2;p.planning!.overhangEndM=.7;
     const e=presentationEnvelope(p.roof,p.planning)!;
     expect(e.acrossWidth).toBe(false);
+    expect(presentationDimensions(e).spanM).toBe(15);
+    expect(presentationDimensions(e).lengthM).toBe(8);
     const corners=roofPlaneCorners(e)[0];
     expect(corners[0].x).toBeCloseTo(-1.2);
     expect(corners[2].x).toBeCloseTo(8.7);
