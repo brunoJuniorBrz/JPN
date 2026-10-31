@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createQuickProject } from "./quick-project";
-import { projectSchema, migrateSnapshot, emptySnapshot } from "./models";
+import { projectSchema, migrateSnapshot, emptySnapshot, materialSchema } from "./models";
 import { parseBackup, serializeBackup } from "@/infrastructure/persistence/local";
 import { structureSignature } from "./calculations/project-basis";
 import { baseNodeIds, newSpatialPreparation, spatialPreparationReview, spatialPreparationSchema, pieceRoles } from "./spatial-preparation";
@@ -50,6 +50,23 @@ describe("preparação estrutural editável — dados físicos distintos do 3D",
     expect(restored.data.projects[0].roof).toEqual(p.roof);
     const old = structuredClone(p); delete old.workspace.spatialPreparation;
     expect(migrateSnapshot({ ...state, projects: [old] }).projects[0].workspace.spatialPreparation).toBeUndefined();
+  });
+  it("reutiliza uma declaração física no catálogo sem tornar dados antigos obrigatórios", () => {
+    const material = {
+      id: crypto.randomUUID(), name: "Perfil comercial cadastrado", code: "P1",
+      category: "Perfis metálicos", purchaseUnit: "m", measurementUnit: "m",
+      measurementPerPurchase: null, unitPriceCents: null, supplier: "", notes: "",
+      updatedAt: new Date().toISOString(), isExample: false,
+    } as const;
+    expect(materialSchema.safeParse(material).success).toBe(true);
+    const physical = newSpatialPreparation(project()).groups.topChord;
+    const full = materialSchema.parse({ ...material, physicalDeclaration: { ...physical, eGpa: 205, materialSource: "Catálogo oficial", steelGrade: "Aço declarado" } });
+    const state = { ...emptySnapshot(), materials: [full] };
+    const restored = parseBackup(serializeBackup(state)).data.materials[0];
+    expect(restored.physicalDeclaration?.eGpa).toBe(205);
+    expect(restored.physicalDeclaration?.gGpa).toBeNull();
+    expect(restored.technicalProfile).toBeUndefined();
+    expect(materialSchema.parse(material).physicalDeclaration).toBeUndefined();
   });
   it("conserva declarações e invalida vínculo após edição de medidas, perfis ou espaçamentos", () => {
     const p = project(); p.workspace.spatialPreparation = newSpatialPreparation(p);
