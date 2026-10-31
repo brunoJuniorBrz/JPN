@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import type { StructureModel } from "@/domain/structure";
 import type { RoofParameters } from "@/domain/project-details";
 import type { Planning } from "@/domain/structure";
 
@@ -108,7 +107,7 @@ function makeFallbackCar() {
   for (const x of [-.97,.97]) for (const z of [-1.45,1.45]) {const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.34,.34,.18,10),rubber);wheel.rotation.z=Math.PI/2;wheel.position.set(x,.4,z);root.add(wheel);}
   return root;
 }
-export function createPresentationScene(envelope: PresentationEnvelope, model: StructureModel, initial: PresentationOptions, invalidate: () => void) {
+export function createPresentationScene(envelope: PresentationEnvelope, initial: PresentationOptions, invalidate: () => void) {
   const root = new THREE.Group(), fixed = new THREE.Group(), walls = new THREE.Group(), roofMeshes: THREE.Mesh[] = [], resources = new Set<{dispose():void}>();
   root.add(fixed, walls);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(envelope.widthM+6,envelope.lengthM+6),
