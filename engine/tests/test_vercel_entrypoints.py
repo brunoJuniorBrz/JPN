@@ -59,3 +59,15 @@ def test_health_is_read_only_and_never_exposes_token(name, mode, monkeypatch):
     h.respond.assert_called_once_with(200, {
         "service": "jpn-experimental-analysis", "mode": mode, "status": "ready",
     })
+
+@pytest.mark.parametrize("name,mode", [("analyze", "2d"), ("analyze3d", "3d")])
+def test_health_reports_configuration_required_without_token(name, mode, monkeypatch):
+    monkeypatch.delenv("JPN_ANALYSIS_TOKEN", raising=False)
+    klass = load_handler(name)
+    h = object.__new__(klass)
+    h.respond = Mock()
+    h.do_GET()
+    h.respond.assert_called_once_with(503, {
+        "service": "jpn-experimental-analysis", "mode": mode,
+        "status": "configuration_required",
+    })
