@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
+import { physicalGroupSchema, emptyPhysicalGroup, type PhysicalGroup } from "./physical-declaration";
 export { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
 export type { PhysicalGroup } from "./physical-declaration";
 import type { Project } from "./models";
