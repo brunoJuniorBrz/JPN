@@ -21,7 +21,9 @@ for (const width of [375,1440]) test(`modo acabado preserva a estrutura, persona
   await page.getByLabel("Tipo de telha").selectOption("sandwich");
   await page.getByLabel("Cor do telhado").selectOption("terracotta");
   await page.getByLabel("Paredes").selectOption("three");
-  await page.getByLabel(/Opacidade do telhado/).fill("0.5");
+  await page.getByLabel(/Opacidade do telhado/).focus();
+  await page.getByLabel(/Opacidade do telhado/).press("ArrowLeft");
+  await expect(page.getByLabel(/Opacidade do telhado/)).toHaveValue("0.95");
   await page.getByLabel("Pessoa (1,70 m)").uncheck();
   await expect(page.getByLabel("Pessoa (1,70 m)")).not.toBeChecked();
   await expect(canvas).toHaveAttribute("data-mode","finished");
