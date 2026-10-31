@@ -25,7 +25,7 @@ const stepDefinitions: Record<SpatialStepId, { label: string; action: SpatialSte
 export function spatialCoordination(project: Project) {
   const draft = project.workspace.spatialPreparation ?? newSpatialPreparation(project);
   const review = spatialPreparationReview(project, draft);
-  const steps: SpatialStep[] = spatialStepIds.map(id => {
+  const steps = spatialStepIds.map<SpatialStep>(id => {
     const def = stepDefinitions[id];
     const messages = review.issues.filter(i => def.codes.includes(i.code)).map(i => i.message);
     return { id, label: def.label, action: def.action, messages,
