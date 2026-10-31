@@ -64,7 +64,7 @@ function catalogueGroup(material: Material): PhysicalGroup | null {
     iyCm4: source && d?.iyCm4 ? d.iyCm4 : null, izCm4: source && d?.izCm4 ? d.izCm4 : null,
     sectionSource: source, sectionRevision: d?.sourceDate ?? "" };
 }
-export function SpatialPreparationPanel({ project, onChange }: { project: Project; onChange: (patch: Partial<Project>) => void }) {
+export function SpatialPreparationPanel({ project, onChange, initialSection = "profiles", onOpenSpatial }: { project: Project; onChange: (patch: Partial<Project>) => void; initialSection?: "profiles" | "supports" | "loads" | "review"; onOpenSpatial?: () => void }) {
   const { data, saveMaterial } = useData();
   const draft = project.workspace.spatialPreparation ?? newSpatialPreparation(project);
   const review = useMemo(() => spatialPreparationReview(project, draft), [project, draft]);
@@ -75,7 +75,7 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
   const [catalogueTarget, setCatalogueTarget] = useState("");
   const [caseForLoad, setCaseForLoad] = useState("");
   const [memberId, setMemberId] = useState("");
-  const [section, setSection] = useState<"profiles" | "supports" | "loads" | "review">("profiles");
+  const [section, setSection] = useState<"profiles" | "supports" | "loads" | "review">(initialSection);
   const [notice, setNotice] = useState("");
   const currentRole = draft.groups[role];
   const nodes = review.geometry?.nodes ?? [];
@@ -240,6 +240,7 @@ export function SpatialPreparationPanel({ project, onChange }: { project: Projec
         technicalStatus: "preliminary", analysisReady: false,
       }, null, 2), "jpn-preparacao-estrutural.json")}>Exportar declarações e pendências em JSON</button>
       <p className="field-hint">O arquivo é um cadastro de preparação, não uma solicitação jpn.frame3d/1 e não deve ser enviado diretamente ao solver.</p>
+      {onOpenSpatial && <div className="actions"><button type="button" className="button secondary" onClick={onOpenSpatial}>Consultar análise 3D experimental</button></div>}
     </>}
     {notice && <p role="status" className="notice">{notice}</p>}
   </section>;
