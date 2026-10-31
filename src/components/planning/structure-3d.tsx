@@ -12,6 +12,7 @@ export function Structure3D({ model, selected, onSelect, initialMode, autoFocus 
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
   const [failure, setFailure] = useState("");
+  const [expanded, setExpanded] = useState(false);
   const [mode, setMode] = useState<ViewerMode>(() => { if (initialMode) return initialMode; try { return parseViewerMode(localStorage.getItem(VIEWER_MODE_KEY)); } catch { return "structural"; } });
   const changeMode = useRef<(mode: ViewerMode) => void>(() => {});
   const focus = useRef<(id: string) => void>(() => {}), initialFocusApplied = useRef(false);
@@ -20,11 +21,10 @@ export function Structure3D({ model, selected, onSelect, initialMode, autoFocus 
     const container = host.current!;
     let renderer: THREE.WebGLRenderer;
     const quality = viewerQuality(model.pieces.length, navigator.hardwareConcurrency, (navigator as Navigator & { deviceMemory?: number }).deviceMemory);
-    const canvas = document.createElement("canvas"), context = canvas.getContext("webgl2", { antialias: !quality.low, alpha: false, powerPreference: "low-power" });
+    const canvas = document.createElement("canvas"), context = canvas.getContext("webgl2", { antialias: true, alpha: false, powerPreference: "default" });
     if (!context) { const timer = setTimeout(() => setFailure("3D indisponível neste dispositivo. Use as vistas 2D acima."), 0); return () => clearTimeout(timer); }
-    try { renderer = new THREE.WebGLRenderer({ canvas, context, antialias: !quality.low, alpha: false, powerPreference: "low-power" }); }
+    try { renderer = new THREE.WebGLRenderer({ canvas, context, antialias: true, alpha: false, powerPreference: "default" }); }
     catch { const timer = setTimeout(() => setFailure("3D indisponível neste dispositivo. Use as vistas 2D acima."), 0); return () => clearTimeout(timer); }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality.pixelRatio));
     renderer.setClearColor(0xf6f8f2); container.appendChild(renderer.domElement);
     renderer.domElement.setAttribute("aria-label", "Modelo 3D da estrutura"); renderer.domElement.setAttribute("role", "img");
     const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(40, 1, .01, 100000);
@@ -52,7 +52,17 @@ export function Structure3D({ model, selected, onSelect, initialMode, autoFocus 
       framingBounds = pieceBounds; controls.target.copy(fitIsometricCamera(camera, pieceBounds)); controls.update(); render();
     };
     highlight.current = id => { profiles.highlight(id); render(); };
-    const resize = () => { const width = Math.max(container.clientWidth, 1); renderer.setSize(width, 350); camera.aspect = width / 350; camera.updateProjectionMatrix(); controls.target.copy(fitIsometricCamera(camera, framingBounds)); controls.update(); render(); };
+    const resize = () => {
+      const width = Math.max(container.clientWidth, 1), height = Math.max(container.clientHeight, 1);
+      // iPhone/WebKit may report only a few CPU cores. Keep fine pixels even when
+      // reducing mesh complexity; cap the total GPU framebuffer for stability.
+      const pixelBudget = quality.low ? 1_200_000 : 2_400_000;
+      const ratio = Math.max(1, Math.min(window.devicePixelRatio || 1, quality.pixelRatio, Math.sqrt(pixelBudget / (width * height))));
+      renderer.setPixelRatio(ratio); canvas.dataset.pixelRatio = ratio.toFixed(2);
+      renderer.setSize(width, height);
+      camera.aspect = width / height; camera.updateProjectionMatrix();
+      controls.target.copy(fitIsometricCamera(camera, framingBounds)); controls.update(); render();
+    };
     const observer = new ResizeObserver(resize); observer.observe(container); controls.addEventListener("change", render);
     const raycaster = new THREE.Raycaster(); raycaster.params.Line = { threshold: span / 180 };
     let startX = 0, startY = 0;
@@ -66,22 +76,32 @@ export function Structure3D({ model, selected, onSelect, initialMode, autoFocus 
     };
     const lost = (e: Event) => { e.preventDefault(); setFailure("O dispositivo perdeu o contexto gráfico. As vistas 2D continuam disponíveis."); };
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("webglcontextlost", lost);
-    reset.current(); resize();
+    resize();
     return () => { observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; reset.current = () => {}; focus.current = () => {}; };
   }, [model, gridSpacingM]);
   useEffect(() => { changeMode.current(mode); try { localStorage.setItem(VIEWER_MODE_KEY, mode); } catch { /* Storage unavailable: retain this session's mode. */ } }, [mode, model]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
   useEffect(() => { if (autoFocus && selected && !initialFocusApplied.current) { initialFocusApplied.current = true; focus.current(selected); } }, [autoFocus, selected, model]);
+  useEffect(() => {
+    if (!expanded) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") setExpanded(false); };
+    document.addEventListener("keydown", onKeyDown);
+    return () => { document.body.style.overflow = previousOverflow; document.removeEventListener("keydown", onKeyDown); };
+  }, [expanded]);
   const fallbackCount = model.pieces.filter(p => !resolveSection(p.profile).section).length;
-  return <div>
+  return <div className={expanded ? "structure-viewer structure-viewer--expanded" : "structure-viewer"}>
+    {expanded && <div className="structure-viewer-heading"><strong>Apresentação da estrutura · 3D</strong><button type="button" className="button secondary" onClick={() => setExpanded(false)}>Fechar tela cheia</button></div>}
     {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"]] as const).map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
+    {!failure && mode !== "structural" && <div className="notice structure-profile-notice" data-testid="profile-coverage">
+      <strong>{model.pieces.length - fallbackCount} peças com seção sólida · {fallbackCount} representadas por linhas.</strong>
+      {fallbackCount > 0 && <><p>Para visualizar perfis reais, informe família, dimensões e espessura de cada categoria. O sistema não inventa medidas para projetos antigos.</p><div className="actions">{onConfigureProfile && <button type="button" className="button" onClick={onConfigureProfile}>Cadastrar dimensões</button>}{onDemonstrate && <button type="button" className="button secondary" onClick={onDemonstrate}>Ver demonstração com perfis</button>}</div></>}
+    </div>}
     <div ref={host} className="structure-3d" hidden={!!failure} />
     {failure ? <p role="status" className="notice">{failure}</p> : <>
-      <div className="actions"><button className="button secondary" type="button" onClick={() => reset.current()}>Isométrica · ajustar 3D</button><button className="button secondary" type="button" disabled={!selected} onClick={() => focus.current(selected)}>Focar peça selecionada</button></div>
-      {mode !== "structural" && <div className="notice" data-testid="profile-coverage">{model.pieces.length - fallbackCount} peças com seção 3D · {fallbackCount} em linha por dados ausentes ou incompatíveis.
-        {fallbackCount > 0 && <><p>Para exibir sólidos no seu projeto, cadastre a família e as dimensões em mm. Os perfis antigos em texto continuam em linha.</p><div className="actions">{onConfigureProfile && <button type="button" className="button" onClick={onConfigureProfile}>Cadastrar dimensões</button>}{onDemonstrate && <button type="button" className="button secondary" onClick={onDemonstrate}>Ver demonstração com perfis</button>}</div></>}
-      </div>}
-      <p className="drawing-help">Arraste para girar; dois dedos para ampliar/deslocar. Grade: {gridSpacingM.toLocaleString("pt-BR")} m por célula. Cores por categoria. Qualidade reduzida automaticamente em dispositivos limitados ou acima de 1.500 peças. Use a seleção de peças para acesso por teclado.</p>
+      <div className="actions structure-viewer-tools"><button type="button" className="button" onClick={() => setExpanded(v => !v)}>{expanded ? "Sair da tela cheia" : "Tela cheia"}</button><button className="button secondary" type="button" onClick={() => reset.current()}>Isométrica · ajustar 3D</button><button className="button secondary" type="button" disabled={!selected} onClick={() => focus.current(selected)}>Focar peça selecionada</button></div>
+      <p className="drawing-help">Arraste para girar; dois dedos para ampliar/deslocar. Grade: {gridSpacingM.toLocaleString("pt-BR")} m por célula. Cores por categoria. Nitidez de imagem adaptativa com limite de pixels para preservar o desempenho. Use a seleção de peças para acesso por teclado.</p>
     </>}
   </div>;
 }
