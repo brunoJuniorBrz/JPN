@@ -22,10 +22,15 @@ it("prepara carga física sem mutação, conserva peso/segmentos e persiste back
 });
 it("recusa falta de densidade, axial transversal, caso duplicado e caminho de cobertura indefinido",async()=>{
   const p=loadedMixedReferenceProject(),d=p.workspace.spatialPreparation!;delete d.groups.column.density;
+  // This case tests density validation after an explicit review of the current
+  // declarations. Other tests below require edits to revoke that review.
+  d.loading!.overlapReview!.basis=selfWeightOverlapReviewBasis(d,d.loading!);
   await expect(adaptLoadedMixedProject(p)).rejects.toThrow(/densidade/);
   const b=loadedMixedReferenceProject(),loading=b.workspace.spatialPreparation!.loading!;loading.uniform[0].caseId="PP-DEMO";
+  loading.overlapReview!.basis=selfWeightOverlapReviewBasis(b.workspace.spatialPreparation!,loading);
   await expect(adaptLoadedMixedProject(b)).rejects.toThrow(/exclusivo/);
   loading.uniform[0].caseId="TESTE";loading.uniform[0].pieceId=b.workspace.spatialPreparation!.memberKinds![0].pieceId;
+  loading.overlapReview!.basis=selfWeightOverlapReviewBasis(b.workspace.spatialPreparation!,loading);
   await expect(adaptLoadedMixedProject(b)).rejects.toThrow(/axial|pórtico/);
   loading.roofArea=[{caseId:"TESTE",knM2:.1,projection:"horizontal",direction:[0,0,-1],source:"S",revision:"1",loadPath:"A definir"}];
   await expect(adaptLoadedMixedProject(b)).rejects.toThrow(/ROOF_LOAD_PATH_PENDING/);
@@ -98,6 +103,7 @@ it("cobertura criada pelo gerador comum admite peso/carga após declarações re
       knM:[0,0,-0.1],source:"Teste UDL sintético independente",revision:"T1"}],roofArea:[]};
   p.workspace.spatialPreparation=d;
   const prepared=await adaptLoadedMixedProject(p);
+  expect(prepared.request.nodal_loads).toEqual([]);
   expect(prepared.request.members).toHaveLength(243);
   expect(prepared.request.self_weight!.densities).toHaveLength(243);
   expect(prepared.request.member_loads).toHaveLength(1);

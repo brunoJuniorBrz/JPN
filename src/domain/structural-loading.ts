@@ -34,7 +34,7 @@ export function selfWeightOverlapReviewBasis(
 }
 
 const uniformSchema=z.object({id,member:id,case:id,coordinate_system:z.enum(["global","local"]),force_per_length_n_m:vec.refine(v=>v.every(x=>Math.abs(x)<=1e9)),source,revision:source}).strict();
-export const loadedMixedRequestSchema=mixedRequestObject.extend({schema_version:z.literal("jpn.mixed3d/2"),nodal_loads:mixedRequestObject.shape.nodal_loads.min(0),
+export const loadedMixedRequestSchema=mixedRequestObject.extend({schema_version:z.literal("jpn.mixed3d/2"),nodal_loads:z.array(mixedRequestObject.shape.nodal_loads.element).max(500),
   member_loads:z.array(uniformSchema).max(640),self_weight:z.object({case:id,gravity_m_s2:vec.refine(v=>v.every(x=>Math.abs(x)<=100)&&Math.hypot(...v)>0),axial_lumping:z.literal("half-to-end-nodes"),densities:z.array(z.object({member:id,kg_m3:n.positive().max(100000),source,revision:source}).strict()).max(320)}).strict().nullable(),
 }).strict().superRefine((v,ctx)=>{
   const issue=(message:string)=>ctx.addIssue({code:"custom",message});

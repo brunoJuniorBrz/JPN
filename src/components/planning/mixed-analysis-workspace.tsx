@@ -29,6 +29,7 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
   const [source, setSource] = useState(""), [confirm, setConfirm] = useState(false);
   const [health, setHealth] = useState("Verificando Python local…"), [ready, setReady] = useState(false);
   const [healthRevision, setHealthRevision] = useState(0);
+  const [executionMode,setExecutionMode]=useState<"local"|"remote">("local");
   const [busyIdentity, setBusyIdentity] = useState<string | null>(null), [error, setError] = useState("");
   const busy = busyIdentity === identity;
   const [session, setSession] = useState<Session | null>(null), [combo, setCombo] = useState(""), [pieceId, setPieceId] = useState(""), [segmentId, setSegmentId] = useState(""), [nodeId, setNodeId] = useState("");
@@ -39,7 +40,7 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
     (async () => {
       let out;
       for (let attempt = 0; attempt < 6; attempt++) {
-        const r = await fetch("/api/experimental/mixed3d", { signal: controller.signal, cache: "no-store" }); out = await r.json();
+        const r = await fetch("/api/experimental/mixed3d", { headers:{"X-JPN-Request":"1"}, signal: controller.signal, cache: "no-store" }); out = await r.json();
         if (r.ok && out.status === "ready") break;
         // StrictMode/remount may cancel a previous health process. Wait for its
         // confirmed exit; never bypass the single-process gate or retry analysis.
@@ -48,8 +49,8 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
         if (controller.signal.aborted) return;
       }
       if (controller.signal.aborted) return;
-      setReady(true); setHealth(`Python ${out.dependencies.python} · PyNiteFEA ${out.dependencies.PyNiteFEA} · processo separado · 768 MiB · 20 s · uma execução por vez.`);
-    })().catch(e => { if (!controller.signal.aborted) setHealth(`${(e as Error).message} Inicie com pnpm dev:structural e abra http://127.0.0.1:3000.`); });
+      setExecutionMode(out.execution?.local_only===false?"remote":"local");setReady(true); setHealth(`Python ${out.dependencies.python} · PyNiteFEA ${out.dependencies.PyNiteFEA} · ${out.execution?.local_only===false?"serviço remoto autenticado":"processo local separado"} · 768 MiB · 20 s no solver · uma execução por instância.`);
+    })().catch(e => { if (!controller.signal.aborted) setHealth(`${(e as Error).message} No modo local, inicie com pnpm dev:structural; no modo remoto, confira o acesso de operador e a configuração do servidor.`); });
     return () => controller.abort();
   }, [healthRevision]);
   function invalidate() { ticket.current.value++; request.current?.abort(); setSession(null); setBusyIdentity(null); setError(""); }
@@ -76,12 +77,12 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
   async function execute() {
     const controller = new AbortController(), mine = ++ticket.current.value; request.current?.abort(); request.current = controller;
     setBusyIdentity(identity); setError(""); setSession(null);
-    const timeout = setTimeout(() => controller.abort(), 25000);
+    const timeout = setTimeout(() => controller.abort(), 33000);
     try {
       const prepared = await (draft.loading ? adaptLoadedMixedProject(active) : adaptMixedProject(active)); if (controller.signal.aborted || ticket.current.value !== mine) return;
       const response = await fetch("/api/experimental/mixed3d", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(prepared.request), signal: controller.signal });
       const out = await response.json(); if (!response.ok) throw new Error(`${out.error?.code ?? response.status}: ${out.error?.message ?? "Análise recusada."}`);
-      if (out.schema_version !== "jpn.local-mixed/1" || out.status !== "completed" || out.execution?.local_only !== true) throw new Error("Resposta local incompatível.");
+      if (out.status !== "completed" || !((out.schema_version==="jpn.local-mixed/1"&&out.execution?.local_only===true)||(out.schema_version==="jpn.remote-mixed/1"&&out.execution?.local_only===false&&out.execution?.transport==="remote"))) throw new Error("Origem de execução incompatível.");
       const parsed = anyMixedResultSchema.parse(out.result); if(parsed.schema_version!==prepared.request.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error("Versão de resposta incompatível."); verifyMixedResult(prepared.request, parsed, prepared.input_sha256);
       verifyLoadingTrace(prepared.request,parsed);
       if (controller.signal.aborted || ticket.current.value !== mine) return;
@@ -96,7 +97,7 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
     <div className="actions"><button className="button secondary" onClick={() => switchScope(mixedReferenceProject())}>Abrir exemplo misto independente</button><button className="button secondary" onClick={()=>switchScope(loadedMixedReferenceProject())}>Abrir exemplo de peso e cargas</button>{example && <button className="button secondary" onClick={() => switchScope(null)}>Voltar à obra</button>}</div>
     <p className="notice" data-testid="mixed-scope">{example ? "EXEMPLO SINTÉTICO INDEPENDENTE — 10 × 20 × 4 m. Pilares, banzos, terças e montantes são pórticos rígidos; 36 diagonais são axiais. 12 bases engastadas, propriedades e forças sintéticas explícitas. Não altera nem salva sua obra." : "OBRA ATUAL — somente suas declarações físicas. Dados ausentes ou modelos instáveis bloqueiam o cálculo."}</p>
     <p role="status" data-testid="mixed-health">{health}</p>
-    <button className="button secondary" disabled={busy} onClick={() => { setReady(false); setHealth("Verificando Python local…"); setHealthRevision(v => v + 1); }}>Verificar executor local</button>
+    <button className="button secondary" disabled={busy} onClick={() => { setReady(false); setHealth("Verificando Python…"); setHealthRevision(v => v + 1); }}>Verificar executor {executionMode==="remote"?"remoto":"local"}</button>
     <nav className="physical-prep-tabs" aria-label="Fluxo misto"><button className="button secondary" aria-pressed={pane === "prepare"} onClick={() => setPane("prepare")}>Preparação mista</button><button className="button secondary" aria-pressed={pane === "results"} onClick={() => setPane("results")}>Resultados 3D</button></nav>
     {pane === "prepare" && <>
       <SpatialPreparationPanel key={example ? "example" : "work"} project={active} onChange={edit} mixed />
@@ -111,7 +112,7 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
         <button className="button secondary" disabled={!confirm || !source.trim() || !connectivity.inspected} onClick={() => edit({ workspace: { ...active.workspace, spatialPreparation: { ...draft, connectivity: { version: 1, geometrySignature: signature, reviewSource: source, junctions: connectivity.inspected!.junctions.map(j => ({ nodeId: j.nodeId, pieceIds: j.pieceIds, decision: "connect" })) } } } })}>Registrar conectividade revisada</button>
       </details>
     </>}
-    <div className="actions"><button className="button" disabled={!ready || busy} onClick={() => void execute()}>{busy ? "Executando Python local…" : "Executar análise mista local"}</button>{busy && <button className="button secondary" onClick={invalidate}>Cancelar execução</button>}</div>
+    <div className="actions"><button className="button" disabled={!ready || busy} onClick={() => void execute()}>{busy ? "Executando Python…" : `Executar análise mista ${executionMode==="remote"?"online":"local"}`}</button>{busy && <button className="button secondary" onClick={invalidate}>Cancelar execução</button>}</div>
     {error && <p className="field-error" role="alert">{error}</p>}
     {pane === "results" && <>
       {!current && <p className="notice" data-testid="mixed-no-results">Sem resultado atual. Execute após revisar os dados; alterações invalidam resultados anteriores.</p>}
