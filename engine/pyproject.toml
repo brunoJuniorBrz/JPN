@@ -16,6 +16,9 @@ validation = ["PyNiteFEA==3.2.1", "pytest==9.2.0", "ezdxf==1.4.5"]
 where = ["."]
 include = ["jpn_structural*"]
 
+[tool.vercel]
+entrypoint = "app:app"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
