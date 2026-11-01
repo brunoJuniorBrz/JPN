@@ -7,6 +7,7 @@ server-side bearer token, including health. No CORS or browser credentials.
 import hashlib
 import hmac
 import json
+import logging
 import math
 import os
 from pathlib import Path
@@ -22,6 +23,7 @@ STDERR_BYTES = 16000
 TIMEOUT_SECONDS = 20
 MEMORY_BYTES = 768 * 1024 * 1024
 WORKER = Path(__file__).resolve().with_name('local_mixed_worker.py')
+VERCEL_VENV = Path('/tmp/_vc_deps')
 CONTRACTS = ('jpn.mixed3d/1', 'jpn.mixed3d/2')
 _slot = threading.BoundedSemaphore(1)  # Per instance, not a distributed quota.
 _disabled = False
@@ -68,6 +70,26 @@ def _stop(process):
         pass
 
 
+def _worker_python():
+    """Keep -I while using Vercel's runtime-installed PEP 405 environment."""
+    if not (sys.platform.startswith('linux') and os.environ.get('VERCEL') == '1' and VERCEL_VENV.is_dir()):
+        return sys.executable
+    packages = VERCEL_VENV / 'lib' / f'python{sys.version_info.major}.{sys.version_info.minor}' / 'site-packages'
+    if not (VERCEL_VENV / 'pyvenv.cfg').is_file() or not packages.is_dir():
+        raise TransportError('UNAVAILABLE', 'Runtime Python environment is incomplete.', 503)
+    python = VERCEL_VENV / 'bin' / 'python'
+    # Vercel may create only pyvenv.cfg/site-packages for uv sync. Complete
+    # that skeleton without installing/copying packages or trusting PYTHONPATH.
+    if not os.path.lexists(python):
+        python.parent.mkdir(exist_ok=True)
+        python.symlink_to(sys.executable)
+    if not python.is_file() or not os.access(python, os.X_OK):
+        raise TransportError('UNAVAILABLE', 'Runtime Python interpreter is unavailable.', 503)
+    # Do not resolve(): invoking the venv path makes Python discover pyvenv.cfg.
+    # Imports and dependency versions are verified inside the memory-capped worker.
+    return str(python)
+
+
 def _worker(payload, health=False):
     """Bound both pipes while running; wait for exit before releasing capacity."""
     global _disabled
@@ -85,7 +107,14 @@ def _worker(payload, health=False):
     try:
         if _disabled:
             raise TransportError('CLEANUP_FAILURE', 'Executor disabled after unconfirmed process cleanup.', 503)
-        process = subprocess.Popen([sys.executable, '-I', '-X', 'utf8', str(WORKER), *(['--health'] if health else [])],
+        python = _worker_python()
+        # This records only booleans, never search paths, credentials or model data.
+        if health:
+            import importlib.util
+            logging.info('jpn_worker_visibility parent_packages=%s pythonpath_present=%s runtime_venv=%s',
+                all(importlib.util.find_spec(name) is not None for name in ('Pynite', 'scipy', 'numpy')),
+                bool(os.environ.get('PYTHONPATH')), python != sys.executable)
+        process = subprocess.Popen([python, '-I', '-X', 'utf8', str(WORKER), *(['--health'] if health else [])],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             cwd=str(WORKER.parent), env={**os.environ, 'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'})
         def abort(code):
@@ -149,6 +178,15 @@ def _worker(payload, health=False):
             raise TransportError('INVALID_RESPONSE', 'Invalid worker envelope.', 503)
         if process.returncode != 0 or output.get('status') == 'error':
             error = output.get('error', {})
+            if isinstance(error, dict):
+                diagnostic = error.get('diagnostic') or {}
+                if not isinstance(diagnostic, dict):
+                    diagnostic = {}
+                logging.warning('jpn_worker_refusal code=%s phase=%s kind=%s missing=%s returncode=%s',
+                    str(error.get('code', 'UNKNOWN'))[:80],
+                    str(diagnostic.get('phase', 'not-reported'))[:40],
+                    str(diagnostic.get('exception', 'not-reported'))[:40],
+                    str(diagnostic.get('missing_module', 'none'))[:40], process.returncode)
             code = error.get('code', 'SERVICE_FAILURE')
             if not isinstance(code, str) or not re.fullmatch(r'[A-Z_]{1,80}', code):
                 code = 'SERVICE_FAILURE'
@@ -233,8 +271,12 @@ def app(environ, start_response):
         body = _handle(environ)
         status = 200
     except TransportError as exc:
+        # Only static error codes/statuses in logs; never tokens, URLs or payloads.
+        if exc.status >= 500:
+            logging.warning('jpn_mixed_backend_failure code=%s status=%d', exc.code, exc.status)
         status, body = exc.status, dict(error=dict(code=exc.code, message=exc.message))
-    except Exception:
+    except Exception as exc:
+        logging.error('jpn_mixed_backend_unexpected exception_type=%s', type(exc).__name__)
         status, body = 503, dict(error=dict(code='SERVICE_FAILURE', message='Request failed; no result published.'))
     try:
         encoded = json.dumps(body, allow_nan=False, ensure_ascii=False).encode('utf-8')

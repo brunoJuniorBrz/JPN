@@ -3,6 +3,7 @@ import hashlib
 import importlib.util
 from io import BytesIO
 import json
+import os
 from pathlib import Path
 import socketserver
 import subprocess
@@ -20,6 +21,70 @@ ROOT = Path(__file__).parents[1]
 spec = importlib.util.spec_from_file_location('jpn_vercel_app', ROOT/'app.py')
 http = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(http)
+
+
+def runtime_venv(tmp_path, monkeypatch):
+    root = tmp_path / '_vc_deps'
+    packages = root / 'lib' / f'python{sys.version_info.major}.{sys.version_info.minor}' / 'site-packages'
+    packages.mkdir(parents=True)
+    (root / 'pyvenv.cfg').write_text(f'home = {Path(sys.executable).parent}\ninclude-system-site-packages = false\n')
+    monkeypatch.setattr(http, 'VERCEL_VENV', root)
+    monkeypatch.setenv('VERCEL', '1')
+    return root, packages
+
+
+def test_runtime_interpreter_selection_preserves_local_and_windows(tmp_path, monkeypatch):
+    root, _ = runtime_venv(tmp_path, monkeypatch)
+    (root / 'bin').mkdir()
+    candidate = root / 'bin' / 'python'
+    candidate.write_bytes(b'interpreter fixture, not executed')
+    candidate.chmod(0o700)
+    monkeypatch.setattr(http.sys, 'platform', 'linux')
+    assert http._worker_python() == str(candidate)
+    monkeypatch.delenv('VERCEL')
+    assert http._worker_python() == sys.executable
+    monkeypatch.setenv('VERCEL', '1')
+    monkeypatch.setattr(http.sys, 'platform', 'win32')
+    assert http._worker_python() == sys.executable
+
+
+def test_runtime_interpreter_refuses_incomplete_or_unusable_venv(tmp_path, monkeypatch):
+    root, _ = runtime_venv(tmp_path, monkeypatch)
+    monkeypatch.setattr(http.sys, 'platform', 'linux')
+    (root / 'pyvenv.cfg').unlink()
+    with pytest.raises(http.TransportError, match='incomplete'):
+        http._worker_python()
+    (root / 'pyvenv.cfg').write_text('home = unused\n')
+    (root / 'bin').mkdir()
+    (root / 'bin' / 'python').write_bytes(b'not executable')
+    monkeypatch.setattr(http.os, 'access', lambda *_: False)
+    with pytest.raises(http.TransportError, match='unavailable'):
+        http._worker_python()
+
+
+def test_real_isolated_interpreter_uses_venv_on_linux_preserves_windows(tmp_path, monkeypatch):
+    root, packages = runtime_venv(tmp_path, monkeypatch)
+    if sys.platform == 'win32':
+        # The embedded Windows Python has no venv module. Exercise its real
+        # unchanged isolated interpreter; Linux CI exercises the PEP 405 path.
+        selected = http._worker_python()
+        assert selected == sys.executable
+        p = subprocess.run([selected, '-I', '-c', 'import sys; assert sys.flags.isolated == 1'], capture_output=True, timeout=5)
+        assert p.returncode == 0, p.stderr
+    else:
+        # Reproduce Vercel's minimal skeleton, not a mock Python interpreter.
+        (packages / 'jpn_runtime_probe.py').write_text('value = 1729\n')
+        poison = tmp_path / 'untrusted'
+        poison.mkdir()
+        (poison / 'jpn_runtime_probe.py').write_text('raise RuntimeError("PYTHONPATH was trusted")\n')
+        env = {**os.environ, 'PYTHONPATH': str(poison)}
+        base = subprocess.run([sys.executable, '-I', '-c', 'import jpn_runtime_probe'], env=env, capture_output=True, timeout=5)
+        assert base.returncode != 0  # Before the fix, the worker used this path.
+        selected = http._worker_python()
+        assert selected == str(root / 'bin' / 'python')
+        probe = 'import sys,jpn_runtime_probe; assert sys.flags.isolated == 1; assert jpn_runtime_probe.value == 1729; assert sys.prefix == sys.argv[1]'
+        p = subprocess.run([selected, '-I', '-c', probe, str(root)], env=env, capture_output=True, timeout=5)
+        assert p.returncode == 0, p.stderr
 
 
 class Server(socketserver.ThreadingMixIn, WSGIServer):
