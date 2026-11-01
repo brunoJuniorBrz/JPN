@@ -74,14 +74,19 @@ export function buildProfileScene(model: StructureModel, segments = 32) {
     const piece = piecesById.get(id);
     return !!piece && visibleRoles.has(piece.role) && (!isolatedId || isolatedId === id);
   };
+  let lastVisibilityKey = "";
   const refreshVisibility = () => {
-    for (const [id, item] of instances) {
-      item.mesh.setMatrixAt(item.index, pieceVisible(id) ? originalMatrices.get(id)! : hiddenMatrix);
-      item.mesh.instanceMatrix.needsUpdate = true;
-    }
-    // Invisible instances must not keep the old bounds for raycasting/culling.
-    for (const mesh of solids.children as THREE.InstancedMesh[]) {
-      mesh.computeBoundingBox(); mesh.computeBoundingSphere();
+    const key = roles.filter(role => visibleRoles.has(role)).join(",") + "|" + (isolatedId ?? "");
+    if (key !== lastVisibilityKey) {
+      lastVisibilityKey = key;
+      for (const [id, item] of instances) {
+        item.mesh.setMatrixAt(item.index, pieceVisible(id) ? originalMatrices.get(id)! : hiddenMatrix);
+      }
+      // Update each GPU buffer and bounding volume only when filters actually change.
+      for (const mesh of solids.children as THREE.InstancedMesh[]) {
+        mesh.instanceMatrix.needsUpdate = true;
+        mesh.computeBoundingBox(); mesh.computeBoundingSphere();
+      }
     }
     for (const line of lineTargets) {
       const ids = line.userData.ids as string[];
