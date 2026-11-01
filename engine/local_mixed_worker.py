@@ -53,6 +53,7 @@ def memory_limit():
 
 
 def main():
+    phase = 'memory_cap'
     try:
         limits = memory_limit()
         if sys.version_info[:2] != (3, 12):
@@ -64,6 +65,7 @@ def main():
                 return dict(schema_version='jpn.local-mixed/1', status='memory_limit_verified', execution=limits)
             raise RuntimeError('MEMORY_LIMIT_UNAVAILABLE')
         sys.path.insert(0, str(Path(__file__).resolve().parent))
+        phase = 'dependency_import'
         from importlib.metadata import version
         import Pynite  # real import under the memory cap, never a stub
         import scipy
@@ -73,6 +75,7 @@ def main():
         if '--health' in sys.argv:
             return dict(schema_version='jpn.local-mixed/1', status='ready', execution=limits,
                         dependencies=dict(python='3.12', PyNiteFEA=version('PyNiteFEA'), numpy=numpy.__version__, scipy=scipy.__version__))
+        phase = 'model_import'
         from jpn_structural.__main__ import _unique_object
         from jpn_structural.mixed3d import analyze_mixed3d
         body = sys.stdin.buffer.read(500001)
@@ -94,7 +97,11 @@ def main():
     except (RuntimeError, ImportError, OSError) as exc:
         allowed = {'MEMORY_LIMIT_UNAVAILABLE', 'DEPENDENCY_VERSION', 'INPUT_LIMIT'}
         code = str(exc) if str(exc) in allowed else 'UNAVAILABLE'
-        return dict(status='error', error=dict(code=code, message='Execução local protegida indisponível; verifique Python 3.12, dependências e limites do sistema.'))
+        missing = getattr(exc, 'name', None) if isinstance(exc, ModuleNotFoundError) else None
+        missing = missing if missing in ('Pynite', 'numpy', 'scipy', 'jpn_structural') else 'none'
+        # The WSGI parent logs only these allowlisted diagnostics; no file paths or traceback.
+        return dict(status='error', error=dict(code=code, message='Execução local protegida indisponível; verifique Python 3.12, dependências e limites do sistema.',
+            diagnostic=dict(phase=phase, exception=type(exc).__name__, missing_module=missing)))
 
 
 if __name__ == '__main__':

@@ -86,6 +86,12 @@ def _worker(payload, health=False):
     try:
         if _disabled:
             raise TransportError('CLEANUP_FAILURE', 'Executor disabled after unconfirmed process cleanup.', 503)
+        # This records only booleans, never search paths, credentials or model data.
+        if health:
+            import importlib.util
+            logging.info('jpn_worker_visibility parent_packages=%s pythonpath_present=%s',
+                all(importlib.util.find_spec(name) is not None for name in ('Pynite', 'scipy', 'numpy')),
+                bool(os.environ.get('PYTHONPATH')))
         process = subprocess.Popen([sys.executable, '-I', '-X', 'utf8', str(WORKER), *(['--health'] if health else [])],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             cwd=str(WORKER.parent), env={**os.environ, 'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'})
@@ -150,6 +156,15 @@ def _worker(payload, health=False):
             raise TransportError('INVALID_RESPONSE', 'Invalid worker envelope.', 503)
         if process.returncode != 0 or output.get('status') == 'error':
             error = output.get('error', {})
+            if isinstance(error, dict):
+                diagnostic = error.get('diagnostic') or {}
+                if not isinstance(diagnostic, dict):
+                    diagnostic = {}
+                logging.warning('jpn_worker_refusal code=%s phase=%s kind=%s missing=%s returncode=%s',
+                    str(error.get('code', 'UNKNOWN'))[:80],
+                    str(diagnostic.get('phase', 'not-reported'))[:40],
+                    str(diagnostic.get('exception', 'not-reported'))[:40],
+                    str(diagnostic.get('missing_module', 'none'))[:40], process.returncode)
             code = error.get('code', 'SERVICE_FAILURE')
             if not isinstance(code, str) or not re.fullmatch(r'[A-Z_]{1,80}', code):
                 code = 'SERVICE_FAILURE'
