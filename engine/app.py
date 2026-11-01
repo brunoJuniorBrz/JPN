@@ -7,6 +7,7 @@ server-side bearer token, including health. No CORS or browser credentials.
 import hashlib
 import hmac
 import json
+import logging
 import math
 import os
 from pathlib import Path
@@ -233,8 +234,12 @@ def app(environ, start_response):
         body = _handle(environ)
         status = 200
     except TransportError as exc:
+        # Only static error codes/statuses in logs; never tokens, URLs or payloads.
+        if exc.status >= 500:
+            logging.warning('jpn_mixed_backend_failure code=%s status=%d', exc.code, exc.status)
         status, body = exc.status, dict(error=dict(code=exc.code, message=exc.message))
-    except Exception:
+    except Exception as exc:
+        logging.error('jpn_mixed_backend_unexpected exception_type=%s', type(exc).__name__)
         status, body = 503, dict(error=dict(code='SERVICE_FAILURE', message='Request failed; no result published.'))
     try:
         encoded = json.dumps(body, allow_nan=False, ensure_ascii=False).encode('utf-8')
