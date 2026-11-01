@@ -27,7 +27,7 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
   const model = useMemo(() => generateStructure(active).model, [active]);
   const connectivity = useMemo(() => { try { return model ? { inspected: inspectConnectivity(model), error: "" } : { error: "Geometria incompleta." }; } catch (e) { return { error: (e as Error).message }; } }, [model]);
   const [source, setSource] = useState(""), [confirm, setConfirm] = useState(false);
-  const [health, setHealth] = useState("Verificando Python local…"), [ready, setReady] = useState(false);
+  const [health, setHealth] = useState("Verificando executor Python…"), [ready, setReady] = useState(false);
   const [healthRevision, setHealthRevision] = useState(0);
   const [executionMode,setExecutionMode]=useState<"local"|"remote">("local");
   const [busyIdentity, setBusyIdentity] = useState<string | null>(null), [error, setError] = useState("");
@@ -39,13 +39,15 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
     const controller = new AbortController();
     (async () => {
       let out;
-      for (let attempt = 0; attempt < 6; attempt++) {
+      for (let attempt = 0; attempt <= 9; attempt++) {
         const r = await fetch("/api/experimental/mixed3d", { headers:{"X-JPN-Request":"1"}, signal: controller.signal, cache: "no-store" }); out = await r.json();
         if (r.ok && out.status === "ready") break;
-        // StrictMode/remount may cancel a previous health process. Wait for its
-        // confirmed exit; never bypass the single-process gate or retry analysis.
-        if (out.error?.code !== "BUSY" || attempt === 5) throw new Error(out.error?.message ?? "Executor indisponível.");
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Remount/StrictMode or another legitimate request can occupy the
+        // single-process gate. Back off for up to ~35 s instead of hammering
+        // a cold-starting Python worker. Never bypass the concurrency guard.
+        if (out.error?.code !== "BUSY" || attempt === 9) throw new Error(out.error?.message ?? "Executor indisponível.");
+        setHealth("Executor ocupado por outra verificação; aguardando liberação automática…");
+        await new Promise(resolve => setTimeout(resolve, Math.min(5000, 700 * 2 ** attempt)));
         if (controller.signal.aborted) return;
       }
       if (controller.signal.aborted) return;
@@ -97,7 +99,7 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
     <div className="actions"><button className="button secondary" onClick={() => switchScope(mixedReferenceProject())}>Abrir exemplo misto independente</button><button className="button secondary" onClick={()=>switchScope(loadedMixedReferenceProject())}>Abrir exemplo de peso e cargas</button>{example && <button className="button secondary" onClick={() => switchScope(null)}>Voltar à obra</button>}</div>
     <p className="notice" data-testid="mixed-scope">{example ? "EXEMPLO SINTÉTICO INDEPENDENTE — 10 × 20 × 4 m. Pilares, banzos, terças e montantes são pórticos rígidos; 36 diagonais são axiais. 12 bases engastadas, propriedades e forças sintéticas explícitas. Não altera nem salva sua obra." : "OBRA ATUAL — somente suas declarações físicas. Dados ausentes ou modelos instáveis bloqueiam o cálculo."}</p>
     <p role="status" data-testid="mixed-health">{health}</p>
-    <button className="button secondary" disabled={busy} onClick={() => { setReady(false); setHealth("Verificando Python…"); setHealthRevision(v => v + 1); }}>Verificar executor {executionMode==="remote"?"remoto":"local"}</button>
+    <button className="button secondary" disabled={busy} onClick={() => { setReady(false); setHealth("Verificando Python…"); setHealthRevision(v => v + 1); }}>Verificar executor {ready ? (executionMode==="remote"?"remoto":"local") : ""}</button>
     <nav className="physical-prep-tabs" aria-label="Fluxo misto"><button className="button secondary" aria-pressed={pane === "prepare"} onClick={() => setPane("prepare")}>Preparação mista</button><button className="button secondary" aria-pressed={pane === "results"} onClick={() => setPane("results")}>Resultados 3D</button></nav>
     {pane === "prepare" && <>
       <SpatialPreparationPanel key={example ? "example" : "work"} project={active} onChange={edit} mixed />
