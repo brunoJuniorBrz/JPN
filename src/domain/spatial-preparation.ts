@@ -10,6 +10,7 @@ import { generateStructure } from "./calculations/structure";
 import { structureSignature } from "./calculations/project-basis";
 import { spatialContacts } from "./spatial-readiness";
 import { connectivityDeclarationSchema } from "./spatial-connectivity";
+import { roofRegionsSchema } from "./roof-regions";
 
 // Human declarations, NOT finite-element input. A pending field is never
 // translated to zero, a free support or a material property by default.
@@ -36,6 +37,7 @@ export const spatialPreparationSchema = z.object({
   connectivity: connectivityDeclarationSchema.optional(),
   memberKinds: z.array(z.object({ pieceId: z.string().min(1).max(100), kind: z.enum(["frame", "axial"]) }).strict()).max(5000).optional(),
   loading: loadingDraftSchema.optional(),
+  roofRegions:roofRegionsSchema.optional(),
   resistance: z.array(resistancePreparationSchema).max(5000).optional(),
 }).strict();
 export type SpatialPreparation = z.infer<typeof spatialPreparationSchema>;
@@ -59,6 +61,7 @@ export function spatialPreparationReview(project: Project, draft: SpatialPrepara
   const geometry = generateStructure(project).model;
   const issues: { code: string; message: string }[] = [];
   const add = (code: string, message: string) => issues.push({ code, message });
+  if(draft.roofRegions)add("COMPOSED_ROOF_PRELIMINARY","Regiões compostas são preliminares e ainda não analisáveis. O modelo retangular não as substitui.");
   const stale = draft.geometrySignature !== structureSignature(project);
   if (stale) add("STALE_GEOMETRY", "Medidas, distribuição ou perfis mudaram. Revise o cadastro e atualize o vínculo geométrico.");
   if (!geometry) add("GEOMETRY", "A geometria visual está incompleta.");

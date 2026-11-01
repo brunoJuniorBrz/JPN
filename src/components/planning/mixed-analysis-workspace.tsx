@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
 import { structureSignature } from "@/domain/calculations/project-basis";
+import { roofAreaReferenceProject } from "@/domain/examples/roof-area-project";
 import { mixedReferenceProject } from "@/domain/examples/mixed-project";
 import { loadedMixedReferenceProject } from "@/domain/examples/loaded-mixed-project";
 import { adaptMixedProject } from "@/domain/mixed-adapter";
@@ -96,14 +97,14 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
   return <section aria-label="Análise Estrutural Experimental" data-testid="mixed-workspace" className="mixed-workspace">
     <h3>Análise Estrutural Experimental</h3>
     <p>Primeira ordem e elasticidade linear. Peso próprio somente quando ativado com densidades e gravidade declaradas. Sem dimensionamento resistente ou autorização para fabricar.</p>
-    <div className="actions"><button className="button secondary" onClick={() => switchScope(mixedReferenceProject())}>Abrir exemplo misto independente</button><button className="button secondary" onClick={()=>switchScope(loadedMixedReferenceProject())}>Abrir exemplo de peso e cargas</button>{example && <button className="button secondary" onClick={() => switchScope(null)}>Voltar à obra</button>}</div>
+    <div className="actions"><button className="button secondary" onClick={() => switchScope(mixedReferenceProject())}>Abrir exemplo misto independente</button><button className="button secondary" onClick={()=>switchScope(loadedMixedReferenceProject())}>Abrir exemplo de peso e cargas</button><button className="button secondary" onClick={()=>switchScope(roofAreaReferenceProject())}>Abrir exemplo de ações por área</button>{example && <button className="button secondary" onClick={() => switchScope(null)}>Voltar à obra</button>}</div>
     <p className="notice" data-testid="mixed-scope">{example ? "EXEMPLO SINTÉTICO INDEPENDENTE — 10 × 20 × 4 m. Pilares, banzos, terças e montantes são pórticos rígidos; 36 diagonais são axiais. 12 bases engastadas, propriedades e forças sintéticas explícitas. Não altera nem salva sua obra." : "OBRA ATUAL — somente suas declarações físicas. Dados ausentes ou modelos instáveis bloqueiam o cálculo."}</p>
     <p role="status" data-testid="mixed-health">{health}</p>
     <button className="button secondary" disabled={busy} onClick={() => { setReady(false); setHealth("Verificando Python…"); setHealthRevision(v => v + 1); }}>Verificar executor {ready ? (executionMode==="remote"?"remoto":"local") : ""}</button>
     <nav className="physical-prep-tabs" aria-label="Fluxo misto"><button className="button secondary" aria-pressed={pane === "prepare"} onClick={() => setPane("prepare")}>Preparação mista</button><button className="button secondary" aria-pressed={pane === "results"} onClick={() => setPane("results")}>Resultados 3D</button></nav>
     {pane === "prepare" && <>
       <SpatialPreparationPanel key={example ? "example" : "work"} project={active} onChange={edit} mixed />
-      <StructuralLoadsPanel project={active} onChange={edit}/>
+      <StructuralLoadsPanel project={active} onChange={edit} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setNodeId("");setPane("results");}}/>
       <details className="technical-details"><summary>Conectividade física e segmentação</summary>
         <p>Conectar junta significa compartilhar translações e somente as rotações previstas pelo tipo e liberações declarados. Barras contínuas mantêm continuidade nos cortes internos. Contatos independentes exigem outro modelo e são recusados.</p>
         {connectivity.error && <p role="alert">{connectivity.error}</p>}
@@ -123,7 +124,8 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
       <p>Legenda: pórtico azul; axial em tração turquesa; compressão violeta; nulo cinza; sinais diferentes entre segmentos ocre. Seleção laranja. Cores não verificam resistência.</p>
       {current && result && <div data-testid="mixed-results">
         <p>{current.prepared.request.nodes.length} nós · {new Set(current.prepared.mapping.members.map(m => m.originalId)).size} peças · {current.prepared.request.members.length} segmentos · {current.prepared.request.members.filter(m => m.kind === "axial").length} axiais.</p>
-        {current.result.schema_version==="jpn.mixed3d-result/2" && <p data-testid="loaded-result-trace">{current.result.loading.self_weight ? `Peso próprio declarado: ${show(current.result.loading.self_weight.total_mass_kg)} kg · caso ${current.result.loading.self_weight.case}.` : "Peso próprio desativado."} {current.result.loading.member_loads.length} cargas uniformes manuais; sem duplicação automática.</p>}
+        {current.result.schema_version==="jpn.mixed3d-result/2" && <p data-testid="loaded-result-trace">{current.result.loading.self_weight ? `Peso próprio declarado: ${show(current.result.loading.self_weight.total_mass_kg)} kg · caso ${current.result.loading.self_weight.case}.` : "Peso próprio desativado."} {current.result.loading.member_loads.length} cargas distribuídas físicas; sem duplicação automática.</p>}
+        {"roof_load_path" in current.prepared && current.prepared.roof_load_path && <p data-testid="roof-result-trace">{current.prepared.roof_load_path.actions.length} ação por área distribuída; áreas, resultantes e momentos globais conservados. A transferência até os apoios foi calculada pelo solver.</p>}
         <Field label="Combinação mista"><Select value={selectedCombo ?? ""} onChange={e => setCombo(e.target.value)}>{Object.keys(current.result.combinations).map(id => <option key={id}>{id}</option>)}</Select></Field>
         <Field label="Segmento físico da peça"><Select value={segment?.id ?? ""} onChange={e => { setSegmentId(e.target.value); setNodeId(""); }}>{segments.map(m => <option key={m.id} value={m.id}>{m.id} ← {m.originalId} · {m.start} → {m.end}</option>)}</Select></Field>
         {member && segment && <div data-testid="mixed-selection" data-original-piece={selectedPiece} data-segment={segment.id} data-kind={member.kind}>
