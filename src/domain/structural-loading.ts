@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { mixedRequestObject, mixedResultSchema, validateMixedReferences } from "./mixed-analysis";
 import { canonicalSpatialInput } from "./spatial-analysis";
+import { roofDistributionSchema } from "./roof-regions";
 const n=z.number().finite(), source=z.string().min(1).max(1000).refine(s=>!!s.trim()), id=z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/);
 const vec=z.tuple([n,n,n]);
 export const densitySchema=z.object({ kgM3:n.positive().max(100000),source,revision:source }).strict();
@@ -8,6 +9,7 @@ export const loadingDraftSchema=z.object({version:z.literal(1),
   selfWeight:z.object({caseId:id,gravity:vec,axialLumping:z.literal("half-to-end-nodes")}).strict().nullable(),
   uniform:z.array(z.object({id,pieceId:id,caseId:id,coordinates:z.enum(["global","local"]),knM:vec,source,revision:source}).strict()).max(320),
   roofArea:z.array(z.object({caseId:id,knM2:n.nonnegative(),projection:z.enum(["horizontal","roof-surface"]),direction:vec,source,revision:source,loadPath:source}).strict()).max(10),
+  roofDistribution:roofDistributionSchema.optional(),
   overlapReview:z.object({confirmed:z.literal(true),source,revision:source,basis:z.string().min(1).max(1000000)}).strict().optional(),
 }).strict();
 export type LoadingDraft=z.infer<typeof loadingDraftSchema>;
@@ -19,10 +21,9 @@ export function needsSelfWeightOverlapReview(
   loading:LoadingDraft
 ):boolean {
   const weightCase=loading.selfWeight?.caseId;
-  if(!weightCase)return false;
-  const manualCases=new Set([...draft.loads.map(l=>l.caseId),...loading.uniform.map(l=>l.caseId)]);
-  return draft.combinations.some(c=>(c.factors[weightCase]??0)!==0 &&
-    [...manualCases].some(id=>id!==weightCase&&(c.factors[id]??0)!==0));
+  const automatic=new Set([...(weightCase?[weightCase]:[]),...loading.roofArea.map(l=>l.caseId)]);
+  const otherCases=new Set([...draft.loads.map(l=>l.caseId),...loading.uniform.map(l=>l.caseId),...automatic]);
+  return draft.combinations.some(c=>[...automatic].some(a=>(c.factors[a]??0)!==0&&[...otherCases].some(b=>a!==b&&(c.factors[b]??0)!==0)));
 }
 export function selfWeightOverlapReviewBasis(
   draft:{geometrySignature:unknown;groups:unknown;loads:unknown;cases:unknown;combinations:unknown},
@@ -30,7 +31,9 @@ export function selfWeightOverlapReviewBasis(
 ):string {
   return canonicalSpatialInput({geometry:draft.geometrySignature,physicalGroups:draft.groups,
     nodalLoads:draft.loads,cases:draft.cases,combinations:draft.combinations,
-    uniformLoads:loading.uniform,selfWeight:loading.selfWeight});
+    uniformLoads:loading.uniform,selfWeight:loading.selfWeight,
+    ...(loading.roofArea.length?{roofArea:loading.roofArea}:{}),
+    ...(loading.roofDistribution?{roofDistribution:loading.roofDistribution}:{})});
 }
 
 const uniformSchema=z.object({id,member:id,case:id,coordinate_system:z.enum(["global","local"]),force_per_length_n_m:vec.refine(v=>v.every(x=>Math.abs(x)<=1e9)),source,revision:source}).strict();

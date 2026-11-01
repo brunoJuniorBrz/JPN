@@ -1,4 +1,5 @@
 "use client";
+import { RoofLoadPathPanel } from "./roof-load-path-panel";
 import { useState } from "react";
 import type { Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
@@ -8,12 +9,13 @@ import { densitySchema, emptyLoading, loadingDraftSchema, needsSelfWeightOverlap
 import { resistanceDiagnostics, resistancePreparationSchema } from "@/domain/resistance-preparation";
 import { Field, Input, Select } from "@/components/ui";
 
-export function StructuralLoadsPanel({project,onChange}:{project:Project;onChange:(patch:Partial<Project>)=>void}){
+export function StructuralLoadsPanel({project,onChange,onSelectPiece}:{project:Project;onChange:(patch:Partial<Project>)=>void;onSelectPiece?:(id:string)=>void}){
   const d=project.workspace.spatialPreparation??newSpatialPreparation(project), loading=d.loading??emptyLoading(), pieces=generateStructure(project).model?.pieces??[];
   const [density,setDensity]=useState(""),[densitySource,setDensitySource]=useState(""),[densityRevision,setDensityRevision]=useState(""),[role,setRole]=useState<typeof pieceRoles[number]>("column");
   const [gravity,setGravity]=useState(["","",""]),[caseId,setCaseId]=useState(""),[caseSource,setCaseSource]=useState("");
   const [piece,setPiece]=useState(""),[qCase,setQCase]=useState(""),[q,setQ]=useState(["","",""]),[coordinates,setCoordinates]=useState(""),[qSource,setQSource]=useState(""),[qRevision,setQRevision]=useState("");
   const [pressure,setPressure]=useState(""),[projection,setProjection]=useState(""),[direction,setDirection]=useState(["","",""]),[path,setPath]=useState(""),[areaSource,setAreaSource]=useState(""),[areaRevision,setAreaRevision]=useState("");
+  const [areaCase,setAreaCase]=useState(""),[areaCaseName,setAreaCaseName]=useState("");
   const [family,setFamily]=useState(""),[fy,setFy]=useState(""),[fu,setFu]=useState(""),[ly,setLy]=useState(""),[lz,setLz]=useState(""),[lb,setLb]=useState("");
   const [resSource,setResSource]=useState(""),[resRevision,setResRevision]=useState(""),[restraint,setRestraint]=useState(""),[wy,setWy]=useState(""),[wz,setWz]=useState(""),[clause,setClause]=useState("");
   const [overlapSource,setOverlapSource]=useState(""),[overlapRevision,setOverlapRevision]=useState("");
@@ -39,13 +41,13 @@ export function StructuralLoadsPanel({project,onChange}:{project:Project;onChang
     })}>Ativar peso e criar caso/combinação isolados</button>
     {loading.selfWeight&&<p>Peso ativo: {loading.selfWeight.caseId}, g={loading.selfWeight.gravity.join("; ")} m/s². <button className="button secondary" onClick={()=>attempt(()=>change({...loading,selfWeight:null}))}>Desativar peso próprio</button> O caso permanece no cadastro para revisão; remova/revise suas combinações explicitamente.</p>}
     {overlapNeeded&&<div className="notice" data-testid="self-weight-overlap-review">
-      <strong>Atenção: possível dupla contagem de peso próprio</strong>
-      <p>Esta combinação contém peso próprio automático E cargas manuais. O JPN não sabe se você incluiu peso próprio nas cargas manuais. A execução permanece bloqueada até revisão explícita por responsável técnico, vinculada à revisão exata das cargas, grupos e combinações. Não confirma segurança ou dimensionamento.</p>
+      <strong>Atenção: possível dupla contagem de ações automáticas</strong>
+      <p>A combinação reúne peso próprio ou ações por área com outras ações. Confira se as fontes são independentes. A revisão se vincula às cargas, geometria, grupos e combinações atuais; não confirma segurança ou dimensionamento.</p>
       <div className="form-grid">{input("Fonte da conferência de duplicidade",overlapSource,setOverlapSource)}{input("Revisão da conferência de duplicidade",overlapRevision,setOverlapRevision)}</div>
       <button type="button" className="button secondary" onClick={()=>attempt(()=>{
         if(!overlapSource.trim()||!overlapRevision.trim())throw new Error("Declare fonte e revisão da conferência.");
         change({...loading,overlapReview:{confirmed:true,source:overlapSource,revision:overlapRevision,basis:selfWeightOverlapReviewBasis(d,loading)}});
-      })}>Confirmo que as ações manuais combinadas não incluem novamente o peso próprio automático</button>
+      })}>Confirmo que as ações manuais combinadas e as ações por área não repetem as ações automáticas</button>
       <p>{overlapValid?"Revisão de possíveis duplicidades registrada para este conjunto exato de cargas.":"PENDENTE: confira as ações e registre a revisão antes de calcular."}</p>
     </div>}
     <h4>Carga uniforme por peça física</h4><p>N/m no contrato; formulário em kN/m. Toda a peça e seus segmentos recebem a mesma intensidade. Não aplicar carga transversal a axial.</p>
@@ -55,11 +57,19 @@ export function StructuralLoadsPanel({project,onChange}:{project:Project;onChang
     <div className="form-grid">{q.map((s,i)=>input(`Carga uniforme ${"XYZ"[i]} (kN/m)`,s,v=>setQ(q.map((x,j)=>i===j?v:x))))}{input("Fonte da carga uniforme",qSource,setQSource)}{input("Revisão da carga uniforme",qRevision,setQRevision)}</div>
     <button className="button secondary" onClick={()=>attempt(()=>{if(!selected||mixedPieceKind(selected,d)!=="frame")throw new Error("Selecione um pórtico explicitamente declarado; axial não recebe carga distribuída.");if(activeCase===loading.selfWeight?.caseId)throw new Error("Caso de peso próprio é exclusivo.");change({...loading,uniform:[...loading.uniform,{id:`U${crypto.randomUUID().slice(0,8)}`,pieceId:selected.id,caseId:activeCase,coordinates:coordinates as "local"|"global",knM:q.map(number) as [number,number,number],source:qSource,revision:qRevision}]});})}>Registrar carga uniforme</button>
     <ul>{loading.uniform.map(l=><li key={l.id}>{l.pieceId} · {l.caseId} · {l.coordinates} · {l.knM.join("; ")} kN/m · {l.source} ({l.revision}) <button className="button secondary" onClick={()=>change({...loading,uniform:loading.uniform.filter(x=>x.id!==l.id)})}>Remover carga {l.id}</button></li>)}</ul>
-    <h4>Ações permanentes por área — preparação</h4><p>A conversão automática para terças permanece bloqueada até implementar/verificar partições tributárias. Registrar uma ação por área bloqueia o cálculo, evitando ignorá-la. Caso, fonte/revisão e direção usam os campos acima; zero não substitui dado ausente.</p>
+    <h4>Ações permanentes por área</h4><p>Declare uma ação uniforme para toda a cobertura suportada, em caso exclusivo. Projeção horizontal e superfície inclinada têm medidas diferentes. Vetor unitário global; sem vento ou coeficientes normativos automáticos.</p>
+    <Field label="Caso da ação por área"><Select value={areaCase||activeCase} onChange={e=>setAreaCase(e.target.value)}>{d.cases.map(c=><option key={c.id}>{c.id}</option>)}</Select></Field>
+    {input("Novo caso exclusivo de área",areaCaseName,setAreaCaseName)}
+    <button type="button" className="button secondary" onClick={()=>attempt(()=>{
+      if(!/^[A-Za-z0-9][A-Za-z0-9_-]{0,23}$/.test(areaCaseName)||!areaSource.trim()||d.cases.some(c=>c.id===areaCaseName)||d.combinations.some(c=>c.id===areaCaseName+"-ISO")||d.cases.length>=10||d.combinations.length>=10)throw new Error("Declare ID novo, fonte da ação por área e capacidade de casos/combinações.");
+      const cases=[...d.cases,{id:areaCaseName,source:areaSource}];
+      onChange({workspace:{...project.workspace,spatialPreparation:{...d,cases,combinations:[...d.combinations.map(c=>({...c,factors:{...c.factors,[areaCaseName]:0}})),{id:areaCaseName+"-ISO",factors:Object.fromEntries(cases.map(c=>[c.id,c.id===areaCaseName?1:0]))}]}}});setAreaCase(areaCaseName);
+    })}>Criar caso de área e combinação isolada (fator 1)</button>
     {input("Ação permanente de cobertura (kN/m²)",pressure,setPressure)}<Field label="Projeção da área"><Select value={projection} onChange={e=>setProjection(e.target.value)}><option value="">Declare</option><option value="horizontal">Horizontal</option><option value="roof-surface">Superfície inclinada</option></Select></Field>
     {direction.map((s,i)=>input(`Direção da ação por área ${"XYZ"[i]}`,s,v=>setDirection(direction.map((x,j)=>i===j?v:x))))}{input("Caminho de transmissão da cobertura",path,setPath)}{input("Fonte da ação por área",areaSource,setAreaSource)}{input("Revisão da ação por área",areaRevision,setAreaRevision)}
-    <button className="button secondary" onClick={()=>attempt(()=>{const dir=direction.map(number) as [number,number,number];if(Math.abs(Math.hypot(...dir)-1)>1e-10)throw new Error("Declare vetor unitário da direção.");change({...loading,roofArea:[...loading.roofArea,{caseId:activeCase,knM2:number(pressure),projection:projection as "horizontal"|"roof-surface",direction:dir,source:areaSource,revision:areaRevision,loadPath:path}]});})}>Registrar ação por área pendente</button>
+    <button className="button secondary" onClick={()=>attempt(()=>{const dir=direction.map(number) as [number,number,number];if(Math.abs(Math.hypot(...dir)-1)>1e-10)throw new Error("Declare vetor unitário da direção.");change({...loading,roofArea:[...loading.roofArea,{caseId:areaCase||activeCase,knM2:number(pressure),projection:projection as "horizontal"|"roof-surface",direction:dir,source:areaSource,revision:areaRevision,loadPath:path}]});})}>Registrar ação por área pendente</button>
     {loading.roofArea.map((l,i)=><p key={i}>PENDENTE: {l.knM2} kN/m² · {l.projection} · {l.caseId} · {l.loadPath} <button className="button secondary" onClick={()=>change({...loading,roofArea:loading.roofArea.filter((_,j)=>j!==i)})}>Remover ação por área {i+1}</button></p>)}
+    <RoofLoadPathPanel project={project} onChange={onChange} onSelectPiece={onSelectPiece}/>
     <h4>Base resistente da peça selecionada — sem verificação normativa</h4>
     <Field label="Família real do perfil"><Select value={family} onChange={e=>setFamily(e.target.value)}><option value="">Pendente</option><option value="rolled">Laminado</option><option value="welded">Soldado</option><option value="tubular">Tubular</option><option value="cold-formed">Formado a frio</option></Select></Field>
     <div className="form-grid">{input("fy declarado (MPa)",fy,setFy)}{input("fu declarado (MPa)",fu,setFu)}{input("Comprimento de flambagem Y (m)",ly,setLy)}{input("Comprimento de flambagem Z (m)",lz,setLz)}{input("Distância de contenção lateral (m)",lb,setLb)}</div>
