@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { roles, roleLabels, type PieceRole, type StructureModel, type Planning } from "@/domain/structure";
@@ -20,11 +20,12 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const optionsRef = useRef(presentationOptions);
   const applyOptions = useRef<(options:PresentationOptions)=>void>(()=>{});
   const capture = useRef<()=>void>(()=>{});
-  const envelope = presentationEnvelope(roof, planning);
+  const envelope = useMemo(() => presentationEnvelope(roof, planning), [roof, planning]);
   const dimensions = envelope ? dimensionLabels(presentationDimensions(envelope)) : [];
   const [expanded, setExpanded] = useState(false);
   const [visibleRoles, setVisibleRoles] = useState<PieceRole[]>([...roles]);
   const [isolatedId, setIsolatedId] = useState<string | null>(null);
+  const activeIsolation = isolatedId === selected ? isolatedId : null;
   const applyVisibility = useRef<(visible: readonly PieceRole[], isolated: string | null) => void>(() => {});
   const cameraView = useRef<(view: "iso" | "top" | "front" | "side") => void>(() => {});
   // Opening the viewer always starts with solid profiles, regardless of the mode last used.
@@ -192,17 +193,14 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("webglcontextlost", lost);
     resize();
     return () => { disposed = true; environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); sun.shadow.dispose();renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; };
-  }, [model, gridSpacingM, roof, planning, projectName]);
+  }, [model, gridSpacingM, envelope, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
   useEffect(() => { colorize.current(analysisColors); }, [analysisColors, model]);
   useEffect(() => {
-    applyVisibility.current(mode === "finished" ? roles : visibleRoles, mode === "finished" ? null : isolatedId);
-  }, [visibleRoles, isolatedId, mode, model]);
-  useEffect(() => {
-    if (isolatedId && selected !== isolatedId) setIsolatedId(null);
-  }, [selected, isolatedId]);
+    applyVisibility.current(mode === "finished" ? roles : visibleRoles, mode === "finished" ? null : activeIsolation);
+  }, [visibleRoles, activeIsolation, mode, model]);
   useEffect(() => {
     if (!expanded) return;
     const previousOverflow = document.body.style.overflow;
@@ -225,12 +223,12 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
           }} />{roleLabels[role]}</label>)}
         </div>
       </details>
-      <button type="button" className="button secondary" disabled={!selected} aria-pressed={isolatedId === selected && !!selected} onClick={() => {
+      <button type="button" className="button secondary" disabled={!selected} aria-pressed={!!activeIsolation} onClick={() => {
         if (!selected || !model.pieces.some(p => p.id === selected)) return;
         setVisibleRoles([...roles]);
         setIsolatedId(current => current === selected ? null : selected);
-      }}>{isolatedId === selected && !!selected ? "Sair do isolamento" : "Isolar peça"}</button>
-      <button type="button" className="button secondary" disabled={!isolatedId && visibleRoles.length === roles.length} onClick={() => {
+      }}>{activeIsolation ? "Sair do isolamento" : "Isolar peça"}</button>
+      <button type="button" className="button secondary" disabled={!activeIsolation && visibleRoles.length === roles.length} onClick={() => {
         setVisibleRoles([...roles]); setIsolatedId(null);
       }}>Mostrar tudo</button>
       <div className="inspection-view-buttons" role="group" aria-label="Orientação da câmera 3D">
