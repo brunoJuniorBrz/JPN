@@ -8,6 +8,7 @@ import { useData } from "@/components/data-provider";
 import { NumberField } from "@/components/number-field";
 import { Field, Input, PageHeading, Select } from "@/components/ui";
 import { createQuickProject, type QuickProjectInput } from "@/domain/quick-project";
+import { FireScreeningHint } from "./fire-screening-hint";
 
 export function QuickProjectForm({ onAdvanced }: { onAdvanced: () => void }) {
   const router = useRouter();
@@ -49,6 +50,7 @@ export function QuickProjectForm({ onAdvanced }: { onAdvanced: () => void }) {
         <NumberField label="Comprimento (m)" value={lengthM} onChange={setLengthM} min={2} max={100} hint="Medida longitudinal."/>
         <NumberField label="Altura (m)" value={heightM} onChange={setHeightM} min={2} max={30} hint="Altura inicial da borda baixa."/>
       </div>
+      <FireScreeningHint widthM={widthM} lengthM={lengthM}/>
       <details className="quick-start-options"><summary>Detalhes opcionais (podem ficar para depois)</summary>
         <div className="quick-start-measures">
           <Field label="Nome do projeto"><Input maxLength={200} value={name} placeholder="Gerado pelas medidas" onChange={event => setName(event.target.value)}/></Field>
