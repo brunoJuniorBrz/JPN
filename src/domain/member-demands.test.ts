@@ -95,7 +95,7 @@ it("JPN → M22 → Python real → solicitações → relatório: 207 peças, d
   expect(p.family).toBe("cold-formed");expect(p.declaration!.geometry!.dimensionsMm.wallThickness).toBe(2);
   expect(p.verifications.some(v=>v.id==="local-distortional")).toBe(true);for(const v of p.verifications){expect(v.status).toBe("pending");expect(v.utilization).toBeNull();expect(v.designResistanceN).toBeNull();expect(v.clauseApplied).toBeNull();}
   for(const s of demands.samples){const expected=s.forces.nN/(p.physicalProperties.areaCm2!*1e-4)/1e6;expect(p.analyticalControls.axialMeanStress.find(v=>v.sampleId===s.id)!.stressMPa).toBe(expected);}
-  expect(report.normativeProceduresImplemented).toEqual([]);expect(report.demands.binding.inputSha256).toBe(prepared.input_sha256);
+  expect(report.normativeProceduresImplemented).toContain("NBR14762:2010-C.3");expect(report.demands.binding.inputSha256).toBe(prepared.input_sha256);
 });
 it("mudanças de norma, material, cargas, apoios, giro, perfil e discretização invalidam relatório",async()=>{
   await assertResistanceReportCurrent(report,roof,prepared,result);

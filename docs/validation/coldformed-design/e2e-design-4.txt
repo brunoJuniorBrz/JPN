@@ -1,0 +1,57 @@
+corepack : $ playwright test tests/e2e/coldformed-design.spec.ts --grep 375px
+No linha:2 caractere:260
++ ... HREADS='1'; corepack pnpm test:e2e tests/e2e/coldformed-design.spec.t ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ playwright te...ts --grep 375px:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (node:21296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:8776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:21560) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:30400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] ⚠ Fast Refresh had to perform a full reload when 
+./.tools/mission27-worktree/src/domain/spatial-preparation.ts [app-client] (ecmascript) <locals> changed. Read more: 
+https://nextjs.org/docs/messages/fast-refresh-reload
+[WebServer] (node:24440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px (32.5s)
+
+
+  1) [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px 
+
+    TimeoutError: locator.fill: Timeout 10000ms exceeded.
+    Call log:
+      - waiting for getByTestId('mixed-workspace').getByTestId('resistance-selected').getByLabel('Espessura de parede física (mm)', { exact: true })
+        - waiting for navigation to finish...
+        - navigated to "http://127.0.0.1:3000/projetos/c2184229-840d-4a3b-b17d-24714ba98d56?fluxo=levantamento&etapa=3&vista=3d"
+
+
+      25 |   await p.getByRole("button",{name:"Registrar base resistente pendente",exact:true}).click();await solve();await p.getByLabel("Peça na análise mista",{exact:true}).selectOption(pieceId);
+      26 |   const selected=p.getByTestId("resistance-selected");await selected.locator("summary").filter({hasText:"Geometria física resistente"}).click();await selected.getByLabel("Designação física resistente",{exact:true}).fill("Ue geométrico de teste — não perfil comercial");await selected.getByLabel("Forma física resistente",{exact:true}).selectOption("u-stiffened");
+    > 27 |   for(const [label,value]of [["Altura física (mm)","100"],["Largura física (mm)","50"],["Espessura de parede física (mm)","2"],["Enrijecedor física (mm)","15"],["Raio interno física (mm)","3"],["Fonte da geometria resistente","Dimensões explícitas do ensaio"],["Revisão da geometria resistente","1"]])await selected.getByLabel(label,{exact:true}).fill(value);
+         |                                                                                                                                                                                                                                                                                                                                                            ^
+      28 |   await selected.getByRole("button",{name:"Registrar geometria resistente e invalidar análise",exact:true}).click();await solve();await p.getByLabel("Peça na análise mista",{exact:true}).selectOption(pieceId);
+      29 |   const section=p.getByTestId("section-analysis");await section.locator(":scope > summary").click();await section.getByLabel("Poisson declarado para análise da seção",{exact:true}).fill("0.3");await section.getByLabel("Responsável pela análise da seção",{exact:true}).fill("Teste independente");await section.getByRole("button",{name:"Calcular seção física local",exact:true}).click();await expect(section.getByTestId("section-properties-result")).toBeVisible({timeout:25000});
+      30 |   await section.getByRole("button",{name:"Aplicar propriedades calculadas ao grupo físico",exact:true}).click();await expect(p.getByTestId("mixed-no-results")).toBeVisible();await solve();await p.getByLabel("Peça na análise mista",{exact:true}).selectOption(pieceId);
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\coldformed-design.spec.ts:27:348
+
+    Error Context: test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px 
+[ELIFECYCLE] Command failed with exit code 1.

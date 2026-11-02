@@ -1,5 +1,6 @@
 "use client";
 import { WindEngineeringPanel } from "./wind-engineering-panel";
+import { EngineeringCombinationsControl } from "./engineering-combinations-control";
 import { RoofLoadPathPanel } from "./roof-load-path-panel";
 import { useState } from "react";
 import type { Project } from "@/domain/models";
@@ -76,6 +77,7 @@ export function StructuralLoadsPanel({project,onChange,onSelectPiece}:{project:P
     {loading.roofArea.map((l,i)=><p key={i}>PENDENTE: {l.knM2} kN/m² · {l.projection} · {l.caseId} · {l.loadPath} <button className="button secondary" onClick={()=>change({...loading,roofArea:loading.roofArea.filter((_,j)=>j!==i)})}>Remover ação por área {i+1}</button></p>)}
     <RoofLoadPathPanel project={project} onChange={onChange} onSelectPiece={onSelectPiece}/>
     <WindEngineeringPanel project={project} onChange={onChange}/>
+    <EngineeringCombinationsControl project={project} onChange={onChange}/>
     <h4>Base resistente da peça selecionada — sem verificação normativa</h4>
     <Field label="Família real do perfil"><Select value={family} onChange={e=>setFamily(e.target.value)}><option value="">Pendente</option><option value="rolled">Laminado</option><option value="welded">Soldado</option><option value="tubular">Tubular</option><option value="cold-formed">Formado a frio</option></Select></Field>
     <div className="form-grid">{input("fy declarado (MPa)",fy,setFy)}{input("fu declarado (MPa)",fu,setFu)}{input("Comprimento de flambagem Y (m)",ly,setLy)}{input("Comprimento de flambagem Z (m)",lz,setLz)}{input("Distância de contenção lateral (m)",lb,setLb)}</div>

@@ -1,0 +1,7 @@
+corepack : $ eslint .
+No linha:2 caractere:260
++ ... NUM_THREADS='1'; corepack pnpm lint *> '..\m28-lint-full.txt'; $testC ...
++                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ eslint .:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

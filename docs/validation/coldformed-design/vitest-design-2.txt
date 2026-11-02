@@ -1,0 +1,40 @@
+
+ RUN  v5.0.5 C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree
+
+ ❯ src/domain/coldformed-design.test.ts (5 tests | 1 failed) 6616ms
+   × converts physical group and continuous original-member forces to SI without inventing critical modes 14ms
+corepack : 
+No linha:2 caractere:177
++ ... ython.exe'; corepack pnpm exec vitest run src/domain/coldformed-desig ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/domain/coldformed-design.test.ts > converts physical group and continuous original-member forces to SI 
+without inventing critical modes
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/domain/coldformed-design.test.ts:35:77
+     33|   expect(input.design.section.wy_m3).toBe(12e-6);expect(input.design.s…
+     34|   expect(input.design.critical.compression).toBeNull();expect(input.pr…
+     35|   expect(input.design.fields.every(f=>f.forces.myNm===null&&f.offset_m…
+       |                                                                             ^
+     36| });
+     37| it("study binding excludes only its own derived preparation metadata a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  19:05:38
+   Duration  6.96s (tests 97%, import 2%, transform 1%)
+

@@ -1,0 +1,47 @@
+corepack : $ playwright test tests/e2e/coldformed-design.spec.ts --grep 375px
+No linha:2 caractere:260
++ ... HREADS='1'; corepack pnpm test:e2e tests/e2e/coldformed-design.spec.t ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ playwright te...ts --grep 375px:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (node:22360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:11836) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:26204) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:25100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px (52.5s)
+
+
+  1) [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px 
+
+    TypeError: Cannot read properties of undefined (reading 'combinationId')
+
+      29 |   const section=p.getByTestId("section-analysis");await section.locator(":scope > summary").click();await section.getByLabel("Poisson declarado para análise da seção",{exact:true}).fill("0.3");await section.getByLabel("Responsável pela análise da seção",{exact:true}).fill("Teste independente");await section.getByRole("button",{name:"Calcular seção física local",exact:true}).click();await expect(section.getByTestId("section-properties-result")).toBeVisible({timeout:25000});
+      30 |   await section.getByRole("button",{name:"Aplicar propriedades calculadas ao grupo físico",exact:true}).click();await expect(p.getByTestId("mixed-no-results")).toBeVisible();await solve();await p.getByLabel("Peça na análise mista",{exact:true}).selectOption(pieceId);
+    > 31 |   report=await download(page,p,"Exportar relatório resistente preliminar");const demand=report.demands.pieces.find((v:{pieceId:string})=>v.pieceId===pieceId),combinationId=demand.samples.find((s:{combinationId:string;forces:{nN:number}})=>uls.includes(s.combinationId)&&s.forces.nN>10).combinationId;
+         |                                                                                                                                                                                                                                                                                              ^
+      32 |   const design=p.getByTestId("coldformed-design");await design.locator(":scope > summary").click();await design.getByLabel("Combinação ULS para verificar",{exact:true}).selectOption(combinationId);await design.getByLabel("Domínio do estudo resistente",{exact:true}).selectOption("not-required-pure-tension");
+      33 |   for(const [label,value]of [["Fonte do estudo crítico","Tração pura no modelo, dispensa de modos comprimidos; controle sintético"],["Revisão do estudo crítico","1"],["Responsável pelo estudo crítico","Ensaio independente"],["Contenções e padrão de esforços do estudo","Barra axial: N constante positivo; sem flexão, torção ou cargas transversais no modelo"],["Fonte da seção líquida e Ct","Declaração explícita: barra sem furos, todos os elementos conectados por soldas; resistência das soldas fora deste ensaio"],["Revisão da seção líquida e Ct","1"]])await design.getByLabel(label,{exact:true}).fill(value);
+      34 |   await design.getByLabel("Hipótese da seção tracionada",{exact:true}).selectOption("full-section-all-elements-welded");await design.getByRole("checkbox").last().check();await design.getByRole("button",{name:"Registrar estudo crítico e invalidar análise",exact:true}).click();await expect(p.getByTestId("mixed-no-results")).toBeVisible();
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\coldformed-design.spec.ts:31:286
+
+    Error Context: test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px 
+[ELIFECYCLE] Command failed with exit code 1.

@@ -14,7 +14,7 @@ export const resistancePreparationSchema=z.object({pieceId:z.string().min(1).max
 export function resistanceDiagnostics(value:unknown){
   const parsed=resistancePreparationSchema.safeParse(value);
   if(!parsed.success)return {status:"not_verified" as const,approved:false as const,issues:["Cadastro resistente ausente ou inválido."]};
-  const d=parsed.data,issues=["Verificação resistente não implementada: falta referência normativa integral, cláusulas auditadas e exemplos independentes."];
+  const d=parsed.data,issues=["Cadastro resistente pendente de execução: procedimentos parciais Ue/MRD estão disponíveis na análise detalhada; preencher este cadastro não executa nem aprova estados-limites."];
   for(const k of ["family","fyMpa","fuMpa","bucklingYM","bucklingZM","lateralRestraintM"] as const)if(d[k]===null)issues.push(`${k}: pendente.`);
   if(d.fyMpa!==null&&d.fuMpa!==null&&d.fuMpa<d.fyMpa)issues.push("fu menor que fy: declaração contraditória.");
   if(!d.source.trim()||!d.revision.trim()||!Object.values(d.sectionProperties).some(v=>v!==null)||!d.restraintDescription.trim())issues.push("Fontes, geometria resistente e contenções precisam de revisão.");

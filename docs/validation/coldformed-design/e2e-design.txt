@@ -1,0 +1,80 @@
+corepack : $ playwright test tests/e2e/coldformed-design.spec.ts
+No linha:2 caractere:260
++ ... HREADS='1'; corepack pnpm test:e2e tests/e2e/coldformed-design.spec.t ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ playwright te...-design.spec.ts:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (node:18820) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:19252) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:1068) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:9540) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px (13.3s)
+(node:25696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:25528) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 1440px (13.2s)
+
+
+  1) [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px 
+
+    Error: expect(received).toBeTruthy()
+
+    Received: undefined
+
+      10 |   await solve();let report=await download(page,p,"Exportar relatório resistente preliminar");
+      11 |   const uls=report.engineeringCombinations.combinations.filter((c:{purpose:string})=>c.purpose==="ULS").map((c:{id:string})=>c.id);
+    > 12 |   const candidate=report.demands.pieces.find((v:{kind:string;samples:{combinationId:string;forces:{nN:number}}[]})=>v.kind==="axial"&&v.samples.some(s=>uls.includes(s.combinationId)&&s.forces.nN>10));expect(candidate).toBeTruthy();const pieceId=candidate.pieceId;
+         |                                                                                                                                                                                                                           ^
+      13 |   await p.getByRole("button",{name:"Preparação mista",exact:true}).click();await p.getByTestId("structural-loads").locator(":scope > summary").click();await p.getByLabel("Peça da carga uniforme",{exact:true}).selectOption(pieceId);await p.getByLabel("Família real do perfil").selectOption("cold-formed");
+      14 |   for(const [name,value]of [["fy declarado (MPa)","250"],["fu declarado (MPa)","400"],["Comprimento de flambagem Y (m)","2"],["Comprimento de flambagem Z (m)","2"],["Distância de contenção lateral (m)","2"],["Fonte dos dados resistentes","Ensaio físico numérico explícito, não obra"],["Revisão dos dados resistentes","1"],["Descrição das contenções","Conforme modelo axial explicitamente declarado; ligações não aprovadas"],["Módulo elástico Wy (cm³)","20"],["Módulo elástico Wz (cm³)","10"],["Norma, edição e cláusulas para revisão futura","NBR14762:2010 9.6.2; todos os elementos conectados por soldas; sem furos"]])await p.getByLabel(name,{exact:true}).fill(value);
+      15 |   await p.getByRole("button",{name:"Registrar base resistente pendente",exact:true}).click();await solve();await p.getByLabel("Peça na análise mista",{exact:true}).selectOption(pieceId);
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\coldformed-design.spec.ts:12:219
+
+    Error Context: test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 1440px 
+
+    Error: expect(received).toBeTruthy()
+
+    Received: undefined
+
+      10 |   await solve();let report=await download(page,p,"Exportar relatório resistente preliminar");
+      11 |   const uls=report.engineeringCombinations.combinations.filter((c:{purpose:string})=>c.purpose==="ULS").map((c:{id:string})=>c.id);
+    > 12 |   const candidate=report.demands.pieces.find((v:{kind:string;samples:{combinationId:string;forces:{nN:number}}[]})=>v.kind==="axial"&&v.samples.some(s=>uls.includes(s.combinationId)&&s.forces.nN>10));expect(candidate).toBeTruthy();const pieceId=candidate.pieceId;
+         |                                                                                                                                                                                                                           ^
+      13 |   await p.getByRole("button",{name:"Preparação mista",exact:true}).click();await p.getByTestId("structural-loads").locator(":scope > summary").click();await p.getByLabel("Peça da carga uniforme",{exact:true}).selectOption(pieceId);await p.getByLabel("Família real do perfil").selectOption("cold-formed");
+      14 |   for(const [name,value]of [["fy declarado (MPa)","250"],["fu declarado (MPa)","400"],["Comprimento de flambagem Y (m)","2"],["Comprimento de flambagem Z (m)","2"],["Distância de contenção lateral (m)","2"],["Fonte dos dados resistentes","Ensaio físico numérico explícito, não obra"],["Revisão dos dados resistentes","1"],["Descrição das contenções","Conforme modelo axial explicitamente declarado; ligações não aprovadas"],["Módulo elástico Wy (cm³)","20"],["Módulo elástico Wz (cm³)","10"],["Norma, edição e cláusulas para revisão futura","NBR14762:2010 9.6.2; todos os elementos conectados por soldas; sem furos"]])await p.getByLabel(name,{exact:true}).fill(value);
+      15 |   await p.getByRole("button",{name:"Registrar base resistente pendente",exact:true}).click();await solve();await p.getByLabel("Peça na análise mista",{exact:true}).selectOption(pieceId);
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\coldformed-design.spec.ts:12:219
+
+    Error Context: test-results\coldformed-design-seção-fí-a3392-e-tração-NBR14762-em-1440px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\coldformed-design-seção-fí-a3392-e-tração-NBR14762-em-1440px-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\coldformed-design-seção-fí-a3392-e-tração-NBR14762-em-1440px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px 
+    [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 1440px 
+[ELIFECYCLE] Command failed with exit code 1.

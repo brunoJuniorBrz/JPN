@@ -1,5 +1,11 @@
 # Rastreabilidade das fontes e ausência de aprovação normativa
 
+**Atualização após os documentos do usuário:** o registro histórico abaixo é
+da primeira entrega. Foram acrescentados procedimentos parciais resistentes
+NBR 14762:2010, com cláusulas, fontes locais e testes em
+[ENTREGA-RESISTENCIA-UE-MRD.md](ENTREGA-RESISTENCIA-UE-MRD.md). Os PDFs não são
+redistribuídos. O domínio completo e a aprovação global continuam bloqueados.
+
 Consulta em 02/11/2026. Nenhuma cláusula normativa foi registrada como
 integralmente implementada nesta revisão. O catálogo e fontes acadêmicas não
 substituem o texto aplicável, suas exceções, tabelas e exemplos independentes.

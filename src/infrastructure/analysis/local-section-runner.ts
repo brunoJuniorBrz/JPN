@@ -5,13 +5,17 @@ import { localMixedEnabled,localMixedLimits } from "./local-mixed-runner";
 import { SolverFailure } from "./runner";
 import { sectionAnalysisRequestSchema,sectionAnalysisResultSchema } from "@/domain/section-analysis";
 import { mixedInputHash } from "@/domain/mixed-analysis";
+import { verifiedColdformedRequestSchema,coldformedDesignResultSchema } from "@/domain/coldformed-design";
 const envelope=z.object({schema_version:z.literal("jpn.local-section/1"),status:z.literal("completed"),execution:z.object({memory_limit_bytes:z.literal(localMixedLimits.memoryBytes),memory_kind:z.enum(["windows-job-process-commit","linux-address-space"]),local_only:z.literal(true)}).strict(),result:sectionAnalysisResultSchema}).strict();
-export async function runLocalSection(payload:string,signal?:AbortSignal){
+const designEnvelope=envelope.extend({result:coldformedDesignResultSchema.required({geometry_audit:true,calculation_input_sha256:true})});
+export function runLocalSection(payload:string,signal?:AbortSignal):Promise<z.infer<typeof envelope>>;
+export function runLocalSection(payload:string,signal:AbortSignal|undefined,kind:"design"):Promise<z.infer<typeof designEnvelope>>;
+export async function runLocalSection(payload:string,signal?:AbortSignal,kind:"section"|"design"="section"){
   if(!localMixedEnabled())throw new SolverFailure("LOCAL_ONLY","Módulo de seções disponível no executor local configurado, sem publicação remota nesta campanha.");
   const globals=globalThis as typeof globalThis&{__jpnLocalMixedGate?:{active:number;disabled:boolean}},gate=globals.__jpnLocalMixedGate??={active:0,disabled:false};
   if(gate.disabled)throw new SolverFailure("CLEANUP_FAILURE","Executor bloqueado após falha de limpeza.");
   if(Buffer.byteLength(payload)>localMixedLimits.inputBytes)throw new SolverFailure("INPUT_LIMIT","Entrada excede 500 kB.");
-  const input=sectionAnalysisRequestSchema.parse(JSON.parse(payload));if(gate.active>=1)throw new SolverFailure("BUSY","Outro cálculo está em execução.");gate.active++;
+  const input=kind==="design"?verifiedColdformedRequestSchema.parse(JSON.parse(payload)):sectionAnalysisRequestSchema.parse(JSON.parse(payload));if(gate.active>=1)throw new SolverFailure("BUSY","Outro cálculo está em execução.");gate.active++;
   try{
     const raw=await new Promise<unknown>((resolve,reject)=>{
       const executable=process.env.JPN_SECTION_PYTHON_EXECUTABLE||process.env.JPN_PYTHON_EXECUTABLE||path.resolve(process.platform==="win32"?".venv/Scripts/python.exe":".venv/bin/python");
@@ -27,6 +31,6 @@ export async function runLocalSection(payload:string,signal?:AbortSignal){
       child.on("close",code=>{if(failure)return finish(undefined,failure);try{const x=JSON.parse(Buffer.concat(chunks).toString("utf8"));if(code!==0||x.status!=="completed")return finish(undefined,new SolverFailure(x.error?.code??"SECTION_UNAVAILABLE",x.error?.message??"Seção recusada."));finish(x);}catch{finish(undefined,new SolverFailure("INVALID_RESPONSE","Resposta de seção inválida."));}});
       signal?.addEventListener("abort",cancel,{once:true});if(signal?.aborted)cancel();else child.stdin.end(payload);
     });
-    const out=envelope.parse(raw);if(out.result.input_sha256!==await mixedInputHash(input))throw new SolverFailure("HASH_MISMATCH","Propriedades não correspondem à entrada física.");return out;
+    const out=kind==="design"?designEnvelope.parse(raw):envelope.parse(raw);if(out.result.input_sha256!==await mixedInputHash(input))throw new SolverFailure("HASH_MISMATCH","Cálculo não corresponde à entrada física.");return out;
   }finally{gate.active--;}
 }

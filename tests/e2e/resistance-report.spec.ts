@@ -8,7 +8,7 @@ for(const width of [375,1440])test(`M23 solicitações reais, relatório e sele�
   await p.getByRole("button",{name:"Executar análise mista local",exact:true}).click();const report=p.getByTestId("resistance-report");await expect(report).toContainText("M23 parcial",{timeout:30000});
   await expect(report).toContainText("NÃO APROVADA PARA FABRICAÇÃO");
   const download=page.waitForEvent("download");await report.getByRole("button",{name:"Exportar relatório resistente preliminar",exact:true}).click();const file=await download,out=JSON.parse(await readFile((await file.path())!,"utf8"));
-  expect(out.pieces).toHaveLength(207);expect(out.approvedForFabrication).toBe(false);expect(out.normativeProceduresImplemented).toEqual([]);expect(out.physicalInput.members).toHaveLength(243);
+  expect(out.pieces).toHaveLength(207);expect(out.approvedForFabrication).toBe(false);expect(out.normativeProceduresImplemented).toContain("NBR14762:2010-C.3");expect(out.physicalInput.members).toHaveLength(243);
   const feDownload=page.waitForEvent("download");await p.getByRole("button",{name:"Exportar resultados mistos",exact:true}).click();const feFile=await feDownload,fe=JSON.parse(await readFile((await feFile.path())!,"utf8"));expect(out.binding.inputSha256).toBe(fe.result.input_sha256);
   expect(out.demands.sampling.continuousExtremaLocated).toBe(false);expect(out.binding.solver.version).toBe("3.2.1");
   const beam=out.demands.pieces.find((x:{kind:string;segments:unknown[]})=>x.kind==="frame"&&x.segments.length>1);expect(beam).toBeTruthy();

@@ -40,13 +40,17 @@ def analyze_section(raw):
     # strength avoids division by zero; those indices are NEVER exported/used.
     material=Material('geometric E/yield normalization, not physical steel',1.,raw['poisson'],1.,0.,'grey')
     started=time.perf_counter();history=[]
-    for factor in ((.25,.0625,.015625) if shape=='rectangle' else (4.,1.,.25)):
+    factors=(.25,.0625,.015625,.00390625,.0009765625) if shape=='rectangle' else (4.,1.,.25,.0625,.015625)
+    changes={}
+    for factor in factors:
         if shape=='u-stiffened':geom=cee_section(d=h,b=b,l=c,t=t,r_out=ro,n_r=64,material=material)
         elif shape=='i':geom=i_section(d=h,b=b,t_f=g['flangeThickness'],t_w=g['webThickness'],r=r,n_r=64,material=material)
         else:geom=rectangular_section(d=h,b=b,material=material)
         mesh_area=t*t*factor
         # Resource bound, not a span/section design limit. Refuse before mesh.
-        if geom.geom.area/mesh_area>8000:fail('MESH_LIMIT','Requested refinement exceeds resource domain; no properties approved.')
+        if geom.geom.area/mesh_area>8000:
+            if len(history)>=3:break
+            fail('MESH_LIMIT','Requested refinement exceeds resource domain; no properties approved.')
         geom.create_mesh(mesh_sizes=[mesh_area]);s=Section(geometry=geom)
         if len(s.mesh_nodes)>40000:fail('MESH_LIMIT','Mesh exceeds 40000 nodes.')
         s.calculate_geometric_properties();s.calculate_warping_properties()
@@ -58,11 +62,14 @@ def analyze_section(raw):
             radiusYMm=math.sqrt(iy/area),radiusZMm=math.sqrt(iz/area))
         if not all(math.isfinite(v) for v in values.values()) or min(area,iy,iz,values['jMm4'])<=0:fail('NUMERICAL_FAILURE','Nonfinite/degenerate section properties.')
         history.append(dict(meshAreaMm2=mesh_area,nodes=len(s.mesh_nodes),properties=values))
-    coarse,fine=history[-2]['properties'],history[-1]['properties'];span=max(h,b)
-    # Absolute scales for near-zero warping/shear-centre differences; geometry
-    # convergence is recorded, never mislabeled a certified error bound.
-    changes={k:abs(fine[k]-coarse[k])/max(abs(fine[k]),{'jMm4':t**4,'warpingMm6':t**6,'shearCenterYMm':span,'shearCenterZMm':span}[k]) for k in ('jMm4','warpingMm6','shearCenterYMm','shearCenterZMm')}
-    return dict(schema_version='jpn.section-analysis-result/1',units='mm',input_sha256=input_hash(raw),
+        if len(history)>=3:
+            coarse,fine=history[-2]['properties'],history[-1]['properties'];span=max(h,b)
+            # Refinement estimate, never a certified bound. Do not relax the
+            # requested target when three meshes happen to be insufficient.
+            changes={k:abs(fine[k]-coarse[k])/max(abs(fine[k]),{'jMm4':t**4,'warpingMm6':t**6,'shearCenterYMm':span,'shearCenterZMm':span}[k]) for k in ('jMm4','warpingMm6','shearCenterYMm','shearCenterZMm')}
+            if max(changes.values())<=raw['convergence']:break
+    fine=history[-1]['properties']
+    return dict(schema_version='jpn.section-analysis-result/2',units='mm',input_sha256=input_hash(raw),
         source=dict(source=raw['source'],revision=raw['revision'],responsible=raw['responsible']),
         library=dict(name='sectionproperties',version=version('sectionproperties'),license='MIT'),
         axes='library x,y → JPN local y,z; bottom-left section origin',properties=fine,refinements=history,

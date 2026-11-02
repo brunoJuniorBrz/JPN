@@ -1,0 +1,52 @@
+corepack : $ playwright test tests/e2e/coldformed-design.spec.ts --grep 375px
+No linha:2 caractere:260
++ ... HREADS='1'; corepack pnpm test:e2e tests/e2e/coldformed-design.spec.t ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ playwright te...ts --grep 375px:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (node:28848) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:19672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:6872) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:27208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px (3.0m)
+
+
+  1) [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px 
+
+    Test timeout of 180000ms exceeded.
+
+    Error: locator.selectOption: Test timeout of 180000ms exceeded.
+    Call log:
+      - waiting for getByTestId('mixed-workspace').getByLabel('Peça da carga uniforme', { exact: true })
+
+
+      19 |   const uls=report.engineeringCombinations.combinations.filter((c:{purpose:string})=>c.purpose==="ULS").map((c:{id:string})=>c.id);
+      20 |   const candidate=report.demands.pieces.find((v:{kind:string;samples:{combinationId:string;forces:{nN:number}}[]})=>v.kind==="axial"&&v.samples.some(s=>uls.includes(s.combinationId)&&s.forces.nN>10));expect(candidate).toBeTruthy();const pieceId=candidate.pieceId;
+    > 21 |   await p.getByLabel("Peça da carga uniforme",{exact:true}).selectOption(pieceId);await p.getByLabel("Família real do perfil").selectOption("cold-formed");
+         |                                                             ^
+      22 |   for(const [name,value]of [["fy declarado (MPa)","250"],["fu declarado (MPa)","400"],["Comprimento de flambagem Y (m)","2"],["Comprimento de flambagem Z (m)","2"],["Distância de contenção lateral (m)","2"],["Fonte dos dados resistentes","Ensaio físico numérico explícito, não obra"],["Revisão dos dados resistentes","1"],["Descrição das contenções","Conforme modelo axial explicitamente declarado; ligações não aprovadas"],["Módulo elástico Wy (cm³)","20"],["Módulo elástico Wz (cm³)","10"],["Norma, edição e cláusulas para revisão futura","NBR14762:2010 9.6.2; todos os elementos conectados por soldas; sem furos"]])await p.getByLabel(name,{exact:true}).fill(value);
+      23 |   await p.getByRole("button",{name:"Registrar base resistente pendente",exact:true}).click();await solve();await p.getByLabel("Peça na análise mista",{exact:true}).selectOption(pieceId);
+      24 |   const selected=p.getByTestId("resistance-selected");await selected.locator("summary").filter({hasText:"Geometria física resistente"}).click();await selected.getByLabel("Designação física resistente",{exact:true}).fill("Ue geométrico de teste — não perfil comercial");await selected.getByLabel("Forma física resistente",{exact:true}).selectOption("u-stiffened");
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\coldformed-design.spec.ts:21:61
+
+    Error Context: test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px 
+[ELIFECYCLE] Command failed with exit code 1.

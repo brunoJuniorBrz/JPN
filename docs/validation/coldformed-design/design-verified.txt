@@ -1,0 +1,33 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+__ test_real_worker_refuses_contradictory_geometry_and_runs_matching_section __
+
+physical = {'schema_version': 'jpn.verified-coldformed/1', 'geometry_analysis': {'schema_version': 'jpn.section-analysis/1', 'uni...ver_j_m4': 5.707981993206777e-10, 'property_resolutions': {'area_m2': 0, 'iy_m4': 0, 'iz_m4': 0, 'wy_m3': 0, ...}, ...}
+
+    def test_real_worker_refuses_contradictory_geometry_and_runs_matching_section(physical):
+        root=Path(__file__).resolve().parents[1]
+        out=subprocess.run([sys.executable,'-I','-X','utf8',str(root/'section_worker.py')],input=json.dumps(physical).encode(),capture_output=True,timeout=20)
+        r=json.loads(out.stdout)
+>       assert out.returncode==0, r
+E       AssertionError: {'status': 'error', 'error': {'code': 'SECTION_NOT_CONVERGED', 'message': 'Section refinement target not achieved; resistance execution blocked.'}}
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\python\\python.exe', '-I', '-X', 'utf8', 'C:\\U...TION_NOT_CONVERGED","message":"Section refinement target not achieved; resistance execution blocked."}}\n', stderr=b'').returncode
+
+engine\section_tests\test_verified_design.py:28: AssertionError
+___________ test_revision_and_web_dimensions_are_not_reinterpreted ____________
+
+physical = {'schema_version': 'jpn.verified-coldformed/1', 'geometry_analysis': {'schema_version': 'jpn.section-analysis/1', 'uni...ver_j_m4': 5.707981993206777e-10, 'property_resolutions': {'area_m2': 0, 'iy_m4': 0, 'iz_m4': 0, 'wy_m3': 0, ...}, ...}
+
+    def test_revision_and_web_dimensions_are_not_reinterpreted(physical):
+        bad=copy.deepcopy(physical);bad['design']['web']['flat_height_m']=.1
+>       with pytest.raises(AnalysisError,match='Web dimensions'):analyze_verified_coldformed(bad)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'Web dimensions'
+E         Actual message: 'Section refinement target not achieved; resistance execution blocked.'
+
+engine\section_tests\test_verified_design.py:39: AssertionError
+=========================== short test summary info ===========================
+FAILED engine\section_tests\test_verified_design.py::test_real_worker_refuses_contradictory_geometry_and_runs_matching_section
+FAILED engine\section_tests\test_verified_design.py::test_revision_and_web_dimensions_are_not_reinterpreted
+2 failed in 16.27s

@@ -19,7 +19,10 @@ def main():
         if len(data)>500000:raise ValueError('INPUT_LIMIT')
         def invalid(value):raise ValueError('Nonfinite JSON: '+value)
         raw=json.loads(data.decode('utf8'),object_pairs_hook=_unique_object,parse_constant=invalid)
-        if raw.get('schema_version')=='jpn.elastic-strip/1':
+        if raw.get('schema_version')=='jpn.verified-coldformed/1':
+            from jpn_structural.coldformed_geometry import analyze_verified_coldformed
+            result=analyze_verified_coldformed(raw)
+        elif raw.get('schema_version')=='jpn.elastic-strip/1':
             from jpn_structural.elastic_strip import analyze_elastic_strip
             result=analyze_elastic_strip(raw)
         else:

@@ -1,0 +1,1196 @@
+{
+  "schema_version": "jpn.coldformed-chain-evidence/1",
+  "status": "passed",
+  "section": {
+    "schema_version": "jpn.section-analysis-result/2",
+    "units": "mm",
+    "input_sha256": "79e75cbde81591bd6f921c928436965e76e2edc8dd6fef9e5ece3767523f341e",
+    "source": {
+      "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+      "revision": "1",
+      "responsible": "Independent numerical control"
+    },
+    "library": {
+      "name": "sectionproperties",
+      "version": "3.10.2",
+      "license": "MIT"
+    },
+    "axes": "library x,y \u2192 JPN local y,z; bottom-left section origin",
+    "properties": {
+      "areaMm2": 430.2602745439583,
+      "centroidYMm": 17.19077335558955,
+      "centroidZMm": 49.99999999999995,
+      "iyMm4": 684009.0630802086,
+      "izMm4": 147644.79742652318,
+      "iyzMm4": 1.0477378964424133e-09,
+      "jMm4": 570.6047484690789,
+      "warpingMm6": 319842688.1685021,
+      "shearCenterYMm": -23.04834594000102,
+      "shearCenterZMm": 49.99999994778128,
+      "wyPositiveMm3": 13680.181261604159,
+      "wyNegativeMm3": 13680.181261604186,
+      "wzPositiveMm3": 4500.099896492888,
+      "wzNegativeMm3": 8588.607061038167,
+      "radiusYMm": 39.871750503601795,
+      "radiusZMm": 18.524370097026246
+    },
+    "refinements": [
+      {
+        "meshAreaMm2": 16.0,
+        "nodes": 6474,
+        "properties": {
+          "areaMm2": 430.26027454395836,
+          "centroidYMm": 17.190773355589652,
+          "centroidZMm": 49.99999999999999,
+          "iyMm4": 684009.0630802133,
+          "izMm4": 147644.79742652253,
+          "iyzMm4": 8.149072527885437e-10,
+          "jMm4": 571.3905158886919,
+          "warpingMm6": 319842771.6151552,
+          "shearCenterYMm": -23.048341754550773,
+          "shearCenterZMm": 49.99999812002943,
+          "wyPositiveMm3": 13680.181261604263,
+          "wyNegativeMm3": 13680.181261604268,
+          "wzPositiveMm3": 4500.099896492883,
+          "wzNegativeMm3": 8588.607061038078,
+          "radiusYMm": 39.87175050360192,
+          "radiusZMm": 18.524370097026203
+        }
+      },
+      {
+        "meshAreaMm2": 4.0,
+        "nodes": 6474,
+        "properties": {
+          "areaMm2": 430.26027454395836,
+          "centroidYMm": 17.190773355589652,
+          "centroidZMm": 49.99999999999999,
+          "iyMm4": 684009.0630802133,
+          "izMm4": 147644.79742652253,
+          "iyzMm4": 8.149072527885437e-10,
+          "jMm4": 571.3905158886919,
+          "warpingMm6": 319842771.6151552,
+          "shearCenterYMm": -23.048341754550773,
+          "shearCenterZMm": 49.99999812002943,
+          "wyPositiveMm3": 13680.181261604263,
+          "wyNegativeMm3": 13680.181261604268,
+          "wzPositiveMm3": 4500.099896492883,
+          "wzNegativeMm3": 8588.607061038078,
+          "radiusYMm": 39.87175050360192,
+          "radiusZMm": 18.524370097026203
+        }
+      },
+      {
+        "meshAreaMm2": 1.0,
+        "nodes": 7353,
+        "properties": {
+          "areaMm2": 430.2602745439569,
+          "centroidYMm": 17.19077335558962,
+          "centroidZMm": 49.99999999999998,
+          "iyMm4": 684009.0630802091,
+          "izMm4": 147644.7974265229,
+          "iyzMm4": -6.984919309616089e-10,
+          "jMm4": 570.7981993206777,
+          "warpingMm6": 319842712.4453728,
+          "shearCenterYMm": -23.04834491202393,
+          "shearCenterZMm": 49.999998227056395,
+          "wyPositiveMm3": 13680.181261604175,
+          "wyNegativeMm3": 13680.181261604188,
+          "wzPositiveMm3": 4500.0998964928895,
+          "wzNegativeMm3": 8588.607061038116,
+          "radiusYMm": 39.871750503601874,
+          "radiusZMm": 18.52437009702626
+        }
+      },
+      {
+        "meshAreaMm2": 0.25,
+        "nodes": 11022,
+        "properties": {
+          "areaMm2": 430.2602745439583,
+          "centroidYMm": 17.19077335558955,
+          "centroidZMm": 49.99999999999995,
+          "iyMm4": 684009.0630802086,
+          "izMm4": 147644.79742652318,
+          "iyzMm4": 1.0477378964424133e-09,
+          "jMm4": 570.6047484690789,
+          "warpingMm6": 319842688.1685021,
+          "shearCenterYMm": -23.04834594000102,
+          "shearCenterZMm": 49.99999994778128,
+          "wyPositiveMm3": 13680.181261604159,
+          "wyNegativeMm3": 13680.181261604186,
+          "wzPositiveMm3": 4500.099896492888,
+          "wzNegativeMm3": 8588.607061038167,
+          "radiusYMm": 39.871750503601795,
+          "radiusZMm": 18.524370097026246
+        }
+      }
+    ],
+    "convergence": {
+      "status": "observed",
+      "relativeChanges": {
+        "jMm4": 0.00033902776329460855,
+        "warpingMm6": 7.590253466963524e-08,
+        "shearCenterYMm": 1.0279770918941721e-08,
+        "shearCenterZMm": 1.7207248887984862e-08
+      },
+      "target": 0.001,
+      "boundaryArcPoints": 64,
+      "errorBoundCertified": false
+    },
+    "elapsed_seconds": 8.101564800017513,
+    "normativeResistanceVerified": false,
+    "effectivePropertiesComputed": false,
+    "approvedForFabrication": false
+  },
+  "cases": [
+    {
+      "load_n": 1000.0,
+      "solver_input": {
+        "schema_version": "jpn.mixed3d/1",
+        "units": "SI",
+        "theory": "linear-elastic-frame-axial",
+        "project": {
+          "id": "UE-TENSION-CONTROL",
+          "revision": "1",
+          "source": "Synthetic analytical beam/tie; not a commercial profile or building"
+        },
+        "nodes": [
+          {
+            "id": "A",
+            "x_m": 0,
+            "y_m": 0,
+            "z_m": 0
+          },
+          {
+            "id": "B",
+            "x_m": 2,
+            "y_m": 0,
+            "z_m": 0
+          },
+          {
+            "id": "C",
+            "x_m": 2,
+            "y_m": 0,
+            "z_m": 1
+          }
+        ],
+        "materials": [
+          {
+            "id": "M",
+            "e_pa": 200000000000.0,
+            "g_pa": 76923076923.07692,
+            "nu": 0.3,
+            "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+            "revision": "1"
+          }
+        ],
+        "sections": [
+          {
+            "id": "S",
+            "area_m2": 0.01,
+            "iy_m4": 1e-05,
+            "iz_m4": 1e-05,
+            "j_m4": 1e-05,
+            "source": "Independent synthetic BEAM section; not the Ue tie",
+            "revision": "1"
+          }
+        ],
+        "members": [
+          {
+            "id": "BEAM",
+            "kind": "frame",
+            "start": "A",
+            "end": "B",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "TIE",
+            "kind": "axial",
+            "start": "B",
+            "end": "C",
+            "e_pa": 200000000000.0,
+            "area_m2": 0.00043026,
+            "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+            "revision": "1"
+          }
+        ],
+        "supports": [
+          {
+            "node": "A",
+            "restrained": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ]
+          },
+          {
+            "node": "C",
+            "restrained": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false
+            ]
+          }
+        ],
+        "cases": [
+          {
+            "id": "L",
+            "source": "Explicit nodal force; synthetic ULS with factor 1, not normative action selection"
+          }
+        ],
+        "combinations": [
+          {
+            "id": "ULS-TEST",
+            "factors": {
+              "L": 1
+            }
+          }
+        ],
+        "nodal_loads": [
+          {
+            "node": "B",
+            "case": "L",
+            "fx_n": 0,
+            "fy_n": 0,
+            "fz_n": -1000.0,
+            "mx_nm": 0,
+            "my_nm": 0,
+            "mz_nm": 0
+          }
+        ]
+      },
+      "solver_result": {
+        "schema_version": "jpn.mixed3d-result/1",
+        "status": "analysis_completed_experimental",
+        "units": "SI",
+        "project": {
+          "id": "UE-TENSION-CONTROL",
+          "revision": "1",
+          "source": "Synthetic analytical beam/tie; not a commercial profile or building"
+        },
+        "input_sha256": "e3b946fbf83859dd11a4ec2360207c62d109ea14ce69d36e00a0a66efee87756",
+        "solver": {
+          "name": "PyNiteFEA",
+          "version": "3.2.1",
+          "adapter": "jpn-mixed3d/1"
+        },
+        "assumptions": [
+          "Primeira ordem, p\u00f3rtico Euler-Bernoulli e mola axial bilateral EA/L.",
+          "Rota\u00e7\u00e3o inativa em n\u00f3s apenas axiais \u00e9 eliminada matematicamente, n\u00e3o representa apoio.",
+          "Sem peso pr\u00f3prio, vento, flambagem, resist\u00eancia normativa ou libera\u00e7\u00e3o para fabrica\u00e7\u00e3o."
+        ],
+        "diagnostics": {
+          "free_dofs": 6,
+          "scaled_condition": 13.928203230275503,
+          "elapsed_seconds": 0.02342890005093068
+        },
+        "combinations": {
+          "ULS-TEST": {
+            "nodes": {
+              "A": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  8.640353908896117
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  -17.280707817792226,
+                  0.0
+                ],
+                "active_rotations": true
+              },
+              "B": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  -1.1520471878528146e-05
+                ],
+                "rotation_rad": [
+                  0.0,
+                  8.640353908896108e-06,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "active_rotations": true
+              },
+              "C": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  991.3596460911041
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "active_rotations": false
+              }
+            },
+            "members": {
+              "TIE": {
+                "kind": "axial",
+                "axial_n": 991.3596460911041,
+                "length_m": 1.0,
+                "extension_m": 1.1520471878528146e-05
+              },
+              "BEAM": {
+                "kind": "frame",
+                "length_m": 2.0,
+                "end_actions_local": [
+                  0.0,
+                  0.0,
+                  8.640353908896117,
+                  0.0,
+                  -17.280707817792226,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -8.640353908896117,
+                  0.0,
+                  -7.105427357601002e-15,
+                  0.0
+                ]
+              }
+            },
+            "equilibrium": {
+              "force_n": [
+                0.0,
+                0.0,
+                2.2737367544323206e-13
+              ],
+              "moment_nm": [
+                0.0,
+                -4.547473508864641e-13,
+                0.0
+              ],
+              "relative_residual": 1.13686837721616e-16
+            }
+          }
+        }
+      },
+      "design_input": {
+        "schema_version": "jpn.verified-coldformed/1",
+        "geometry_analysis": {
+          "schema_version": "jpn.section-analysis/1",
+          "units": "mm",
+          "geometry": {
+            "shape": "u-stiffened",
+            "height": 100,
+            "width": 50,
+            "lip": 15,
+            "wallThickness": 2,
+            "insideRadius": 3
+          },
+          "poisson": 0.3,
+          "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+          "revision": "1",
+          "responsible": "Independent numerical control",
+          "convergence": 0.001
+        },
+        "solver_j_m4": 5.70605e-10,
+        "property_resolutions": {
+          "area_m2": 1e-09,
+          "iy_m4": 1e-12,
+          "iz_m4": 1e-12,
+          "wy_m3": 1e-10,
+          "wz_m3": 1e-11,
+          "j_m4": 1e-15
+        },
+        "design": {
+          "schema_version": "jpn.coldformed-design/1",
+          "units": "SI",
+          "piece_id": "TIE",
+          "combination_id": "ULS-TEST",
+          "binding": {
+            "mechanical_sha256": "02babd4ded0a4aecd4099513caa115e9a0950f8ef8872851e2ea109668cc98b1",
+            "analysis_input_sha256": "e3b946fbf83859dd11a4ec2360207c62d109ea14ce69d36e00a0a66efee87756",
+            "analysis_result_sha256": "c1a1291faab6d961e90149e4ebb664964e271cab3f3cf666894aa3ac9f4c09fd"
+          },
+          "section": {
+            "family": "cold-formed",
+            "shape": "u-stiffened",
+            "area_m2": 0.00043026,
+            "iy_m4": 6.84009e-07,
+            "iz_m4": 1.47645e-07,
+            "wy_m3": 1.36802e-05,
+            "wz_m3": 4.5001e-06,
+            "fy_pa": 250000000.0,
+            "fu_pa": 400000000.0,
+            "e_pa": 200000000000.0,
+            "effective_length_y_m": 1,
+            "effective_length_z_m": 1,
+            "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+            "revision": "1"
+          },
+          "study": {
+            "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+            "revision": "1",
+            "responsible": "Independent control",
+            "basis_sha256": "02babd4ded0a4aecd4099513caa115e9a0950f8ef8872851e2ea109668cc98b1",
+            "boundary_and_load_pattern": "Pure bilateral axial tie, concentric N constant; no shear, torsion or flexure represented",
+            "minimum_search": "not-required-pure-tension"
+          },
+          "critical": {
+            "compression": null,
+            "my_positive": null,
+            "my_negative": null,
+            "mz_positive": null,
+            "mz_negative": null
+          },
+          "tension": {
+            "basis": "full-section-all-elements-welded",
+            "source": "Explicit hypothesis: hole-free, no cutouts; all section elements connected by longitudinal/transverse welds. Weld capacity remains unverified.",
+            "revision": "1"
+          },
+          "web": {
+            "flat_height_m": 0.09,
+            "thickness_m": 0.002,
+            "unstiffened_single_web": false
+          },
+          "fields": [
+            {
+              "segment_id": "TIE",
+              "offset_m": 0,
+              "length_m": 1,
+              "forces": {
+                "nN": [
+                  991.3596460911041
+                ],
+                "vyN": null,
+                "vzN": null,
+                "tNm": null,
+                "myNm": null,
+                "mzNm": null
+              }
+            }
+          ]
+        }
+      },
+      "design_result": {
+        "schema_version": "jpn.coldformed-design-result/1",
+        "units": "SI",
+        "input_sha256": "818e1fdc98c303ec3ad24273acffb1922d5c09d5ddca40342e0f59960285b7c2",
+        "binding": {
+          "mechanical_sha256": "02babd4ded0a4aecd4099513caa115e9a0950f8ef8872851e2ea109668cc98b1",
+          "analysis_input_sha256": "e3b946fbf83859dd11a4ec2360207c62d109ea14ce69d36e00a0a66efee87756",
+          "analysis_result_sha256": "c1a1291faab6d961e90149e4ebb664964e271cab3f3cf666894aa3ac9f4c09fd"
+        },
+        "piece_id": "TIE",
+        "combination_id": "ULS-TEST",
+        "standard": "ABNT NBR 14762:2010",
+        "evaluator_version": "jpn.nbr14762-mrd/1",
+        "capacities": {
+          "tension": {
+            "design": 97786.42603271778,
+            "modes": {
+              "gross_yield": 97786.42603271778,
+              "net_outside": 127484.52579080245,
+              "net_connection": 104305.52110156565
+            },
+            "governing_mode": "gross_yield",
+            "clauses": [
+              "9.6.1",
+              "9.6.2(a)",
+              "9.6.2(b)",
+              "9.6.2(c)"
+            ]
+          }
+        },
+        "checks": [
+          {
+            "id": "tension",
+            "status": "PASS",
+            "demand": 991.3596460911041,
+            "resistance": 97786.42603271778,
+            "utilization": 0.010138008784157946,
+            "governing": {
+              "segment_id": "TIE",
+              "position_m": 0.0,
+              "segment_position_m": 0.0,
+              "combination_id": "ULS-TEST",
+              "forces": {
+                "nN": 991.3596460911041,
+                "vyN": null,
+                "vzN": null,
+                "tNm": null,
+                "myNm": null,
+                "mzNm": null
+              }
+            },
+            "clauses": [
+              "9.6.1",
+              "9.6.2(a)",
+              "9.6.2(b)",
+              "9.6.2(c)"
+            ]
+          }
+        ],
+        "status": "PASS-IMPLEMENTED-CHECKS",
+        "member_all_limit_states_verified": false,
+        "computed_structural_approval": false,
+        "approved_for_fabrication": false,
+        "remaining": [
+          "Connections/net-section provenance and load introduction/web crippling are not fully verified.",
+          "Complete normative action/combination and global stability validation remain separate.",
+          "C.5 effective inertia is not substituted silently into the gross-section displacement field."
+        ],
+        "calculation_input_sha256": "224fe1f0a6853f2385128d261d27e196056fd0eced10a996a1cf3f9ce9d0e63d",
+        "geometry_audit": {
+          "library": {
+            "name": "sectionproperties",
+            "version": "3.10.2",
+            "license": "MIT"
+          },
+          "geometry_input_sha256": "79e75cbde81591bd6f921c928436965e76e2edc8dd6fef9e5ece3767523f341e",
+          "differences": {
+            "area_m2": {
+              "declared": 0.00043026,
+              "computed": 0.0004302602745439583,
+              "resolution": 1e-09,
+              "absolute_difference": 2.745439582597063e-10
+            },
+            "iy_m4": {
+              "declared": 6.84009e-07,
+              "computed": 6.840090630802086e-07,
+              "resolution": 1e-12,
+              "absolute_difference": 6.308020863704381e-14
+            },
+            "iz_m4": {
+              "declared": 1.47645e-07,
+              "computed": 1.4764479742652318e-07,
+              "resolution": 1e-12,
+              "absolute_difference": 2.025734768193353e-13
+            },
+            "wy_m3": {
+              "declared": 1.36802e-05,
+              "computed": 1.368018126160416e-05,
+              "resolution": 1e-10,
+              "absolute_difference": 1.873839583966966e-11
+            },
+            "wz_m3": {
+              "declared": 4.5001e-06,
+              "computed": 4.500099896492888e-06,
+              "resolution": 1e-11,
+              "absolute_difference": 1.0350711275228502e-13
+            },
+            "j_m4": {
+              "declared": 5.70605e-10,
+              "computed": 5.706047484690789e-10,
+              "resolution": 1e-15,
+              "absolute_difference": 2.515309211419876e-16
+            }
+          },
+          "refinement": {
+            "status": "observed",
+            "relativeChanges": {
+              "jMm4": 0.00033902776329460855,
+              "warpingMm6": 7.590253466963524e-08,
+              "shearCenterYMm": 1.0279770918941721e-08,
+              "shearCenterZMm": 1.7207248887984862e-08
+            },
+            "target": 0.001,
+            "boundaryArcPoints": 64,
+            "errorBoundCertified": false
+          },
+          "computed_properties": {
+            "area_m2": 0.0004302602745439583,
+            "iy_m4": 6.840090630802086e-07,
+            "iz_m4": 1.4764479742652318e-07,
+            "wy_m3": 1.368018126160416e-05,
+            "wz_m3": 4.500099896492888e-06,
+            "j_m4": 5.706047484690789e-10
+          },
+          "note": "Gross section computed, effective properties and elastic critical mode classification are separate."
+        }
+      },
+      "independent": {
+        "k_beam_n_m": 750000.0000000001,
+        "k_tie_n_m": 86052000.0,
+        "axial_n": 991.3596460911039,
+        "tip_z_m": -1.1520471878528144e-05,
+        "tension_resistance_n": 97786.42603271778
+      }
+    },
+    {
+      "load_n": 200000.0,
+      "solver_input": {
+        "schema_version": "jpn.mixed3d/1",
+        "units": "SI",
+        "theory": "linear-elastic-frame-axial",
+        "project": {
+          "id": "UE-TENSION-CONTROL",
+          "revision": "1",
+          "source": "Synthetic analytical beam/tie; not a commercial profile or building"
+        },
+        "nodes": [
+          {
+            "id": "A",
+            "x_m": 0,
+            "y_m": 0,
+            "z_m": 0
+          },
+          {
+            "id": "B",
+            "x_m": 2,
+            "y_m": 0,
+            "z_m": 0
+          },
+          {
+            "id": "C",
+            "x_m": 2,
+            "y_m": 0,
+            "z_m": 1
+          }
+        ],
+        "materials": [
+          {
+            "id": "M",
+            "e_pa": 200000000000.0,
+            "g_pa": 76923076923.07692,
+            "nu": 0.3,
+            "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+            "revision": "1"
+          }
+        ],
+        "sections": [
+          {
+            "id": "S",
+            "area_m2": 0.01,
+            "iy_m4": 1e-05,
+            "iz_m4": 1e-05,
+            "j_m4": 1e-05,
+            "source": "Independent synthetic BEAM section; not the Ue tie",
+            "revision": "1"
+          }
+        ],
+        "members": [
+          {
+            "id": "BEAM",
+            "kind": "frame",
+            "start": "A",
+            "end": "B",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "TIE",
+            "kind": "axial",
+            "start": "B",
+            "end": "C",
+            "e_pa": 200000000000.0,
+            "area_m2": 0.00043026,
+            "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+            "revision": "1"
+          }
+        ],
+        "supports": [
+          {
+            "node": "A",
+            "restrained": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ]
+          },
+          {
+            "node": "C",
+            "restrained": [
+              true,
+              true,
+              true,
+              false,
+              false,
+              false
+            ]
+          }
+        ],
+        "cases": [
+          {
+            "id": "L",
+            "source": "Explicit nodal force; synthetic ULS with factor 1, not normative action selection"
+          }
+        ],
+        "combinations": [
+          {
+            "id": "ULS-TEST",
+            "factors": {
+              "L": 1
+            }
+          }
+        ],
+        "nodal_loads": [
+          {
+            "node": "B",
+            "case": "L",
+            "fx_n": 0,
+            "fy_n": 0,
+            "fz_n": -200000.0,
+            "mx_nm": 0,
+            "my_nm": 0,
+            "mz_nm": 0
+          }
+        ]
+      },
+      "solver_result": {
+        "schema_version": "jpn.mixed3d-result/1",
+        "status": "analysis_completed_experimental",
+        "units": "SI",
+        "project": {
+          "id": "UE-TENSION-CONTROL",
+          "revision": "1",
+          "source": "Synthetic analytical beam/tie; not a commercial profile or building"
+        },
+        "input_sha256": "a6e0ac077674bf9e42975b8e7e8caf832db4230809c8e0fc0dd614e017971b7d",
+        "solver": {
+          "name": "PyNiteFEA",
+          "version": "3.2.1",
+          "adapter": "jpn-mixed3d/1"
+        },
+        "assumptions": [
+          "Primeira ordem, p\u00f3rtico Euler-Bernoulli e mola axial bilateral EA/L.",
+          "Rota\u00e7\u00e3o inativa em n\u00f3s apenas axiais \u00e9 eliminada matematicamente, n\u00e3o representa apoio.",
+          "Sem peso pr\u00f3prio, vento, flambagem, resist\u00eancia normativa ou libera\u00e7\u00e3o para fabrica\u00e7\u00e3o."
+        ],
+        "diagnostics": {
+          "free_dofs": 6,
+          "scaled_condition": 13.928203230275503,
+          "elapsed_seconds": 0.005311099987011403
+        },
+        "combinations": {
+          "ULS-TEST": {
+            "nodes": {
+              "A": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  1728.0707817792218
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  -3456.1415635584435,
+                  0.0
+                ],
+                "active_rotations": true
+              },
+              "B": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  -0.0023040943757056285
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0017280707817792216,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "active_rotations": true
+              },
+              "C": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  198271.92921822076
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "active_rotations": false
+              }
+            },
+            "members": {
+              "TIE": {
+                "kind": "axial",
+                "axial_n": 198271.92921822076,
+                "length_m": 1.0,
+                "extension_m": 0.0023040943757056285
+              },
+              "BEAM": {
+                "kind": "frame",
+                "length_m": 2.0,
+                "end_actions_local": [
+                  0.0,
+                  0.0,
+                  1728.0707817792218,
+                  0.0,
+                  -3456.1415635584435,
+                  0.0,
+                  0.0,
+                  0.0,
+                  -1728.0707817792218,
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "equilibrium": {
+              "force_n": [
+                0.0,
+                0.0,
+                -2.9103830456733704e-11
+              ],
+              "moment_nm": [
+                0.0,
+                5.820766091346741e-11,
+                0.0
+              ],
+              "relative_residual": 7.275957614183426e-17
+            }
+          }
+        }
+      },
+      "design_input": {
+        "schema_version": "jpn.verified-coldformed/1",
+        "geometry_analysis": {
+          "schema_version": "jpn.section-analysis/1",
+          "units": "mm",
+          "geometry": {
+            "shape": "u-stiffened",
+            "height": 100,
+            "width": 50,
+            "lip": 15,
+            "wallThickness": 2,
+            "insideRadius": 3
+          },
+          "poisson": 0.3,
+          "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+          "revision": "1",
+          "responsible": "Independent numerical control",
+          "convergence": 0.001
+        },
+        "solver_j_m4": 5.70605e-10,
+        "property_resolutions": {
+          "area_m2": 1e-09,
+          "iy_m4": 1e-12,
+          "iz_m4": 1e-12,
+          "wy_m3": 1e-10,
+          "wz_m3": 1e-11,
+          "j_m4": 1e-15
+        },
+        "design": {
+          "schema_version": "jpn.coldformed-design/1",
+          "units": "SI",
+          "piece_id": "TIE",
+          "combination_id": "ULS-TEST",
+          "binding": {
+            "mechanical_sha256": "6c2c797ab72370637105e33f5be29a07440ee593869f959e2683292f77e24825",
+            "analysis_input_sha256": "a6e0ac077674bf9e42975b8e7e8caf832db4230809c8e0fc0dd614e017971b7d",
+            "analysis_result_sha256": "34a18b7eea47e5d7a2cfc8f256e78f3a146f3383a7a5628c596eb52c5fa428de"
+          },
+          "section": {
+            "family": "cold-formed",
+            "shape": "u-stiffened",
+            "area_m2": 0.00043026,
+            "iy_m4": 6.84009e-07,
+            "iz_m4": 1.47645e-07,
+            "wy_m3": 1.36802e-05,
+            "wz_m3": 4.5001e-06,
+            "fy_pa": 250000000.0,
+            "fu_pa": 400000000.0,
+            "e_pa": 200000000000.0,
+            "effective_length_y_m": 1,
+            "effective_length_z_m": 1,
+            "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+            "revision": "1"
+          },
+          "study": {
+            "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+            "revision": "1",
+            "responsible": "Independent control",
+            "basis_sha256": "6c2c797ab72370637105e33f5be29a07440ee593869f959e2683292f77e24825",
+            "boundary_and_load_pattern": "Pure bilateral axial tie, concentric N constant; no shear, torsion or flexure represented",
+            "minimum_search": "not-required-pure-tension"
+          },
+          "critical": {
+            "compression": null,
+            "my_positive": null,
+            "my_negative": null,
+            "mz_positive": null,
+            "mz_negative": null
+          },
+          "tension": {
+            "basis": "full-section-all-elements-welded",
+            "source": "Explicit hypothesis: hole-free, no cutouts; all section elements connected by longitudinal/transverse welds. Weld capacity remains unverified.",
+            "revision": "1"
+          },
+          "web": {
+            "flat_height_m": 0.09,
+            "thickness_m": 0.002,
+            "unstiffened_single_web": false
+          },
+          "fields": [
+            {
+              "segment_id": "TIE",
+              "offset_m": 0,
+              "length_m": 1,
+              "forces": {
+                "nN": [
+                  198271.92921822076
+                ],
+                "vyN": null,
+                "vzN": null,
+                "tNm": null,
+                "myNm": null,
+                "mzNm": null
+              }
+            }
+          ]
+        }
+      },
+      "design_result": {
+        "schema_version": "jpn.coldformed-design-result/1",
+        "units": "SI",
+        "input_sha256": "0f6e62e2b5d0279dee60990230b99187596c802dc20258e491e52f9a98070dc3",
+        "binding": {
+          "mechanical_sha256": "6c2c797ab72370637105e33f5be29a07440ee593869f959e2683292f77e24825",
+          "analysis_input_sha256": "a6e0ac077674bf9e42975b8e7e8caf832db4230809c8e0fc0dd614e017971b7d",
+          "analysis_result_sha256": "34a18b7eea47e5d7a2cfc8f256e78f3a146f3383a7a5628c596eb52c5fa428de"
+        },
+        "piece_id": "TIE",
+        "combination_id": "ULS-TEST",
+        "standard": "ABNT NBR 14762:2010",
+        "evaluator_version": "jpn.nbr14762-mrd/1",
+        "capacities": {
+          "tension": {
+            "design": 97786.42603271778,
+            "modes": {
+              "gross_yield": 97786.42603271778,
+              "net_outside": 127484.52579080245,
+              "net_connection": 104305.52110156565
+            },
+            "governing_mode": "gross_yield",
+            "clauses": [
+              "9.6.1",
+              "9.6.2(a)",
+              "9.6.2(b)",
+              "9.6.2(c)"
+            ]
+          }
+        },
+        "checks": [
+          {
+            "id": "tension",
+            "status": "FAIL",
+            "demand": 198271.92921822076,
+            "resistance": 97786.42603271778,
+            "utilization": 2.0276017568315887,
+            "governing": {
+              "segment_id": "TIE",
+              "position_m": 0.0,
+              "segment_position_m": 0.0,
+              "combination_id": "ULS-TEST",
+              "forces": {
+                "nN": 198271.92921822076,
+                "vyN": null,
+                "vzN": null,
+                "tNm": null,
+                "myNm": null,
+                "mzNm": null
+              }
+            },
+            "clauses": [
+              "9.6.1",
+              "9.6.2(a)",
+              "9.6.2(b)",
+              "9.6.2(c)"
+            ]
+          }
+        ],
+        "status": "FAIL",
+        "member_all_limit_states_verified": false,
+        "computed_structural_approval": false,
+        "approved_for_fabrication": false,
+        "remaining": [
+          "Connections/net-section provenance and load introduction/web crippling are not fully verified.",
+          "Complete normative action/combination and global stability validation remain separate.",
+          "C.5 effective inertia is not substituted silently into the gross-section displacement field."
+        ],
+        "calculation_input_sha256": "578bc2215070371b38b60b437ecacc6fa30089cfa159f11e86c2a95132e285a9",
+        "geometry_audit": {
+          "library": {
+            "name": "sectionproperties",
+            "version": "3.10.2",
+            "license": "MIT"
+          },
+          "geometry_input_sha256": "79e75cbde81591bd6f921c928436965e76e2edc8dd6fef9e5ece3767523f341e",
+          "differences": {
+            "area_m2": {
+              "declared": 0.00043026,
+              "computed": 0.0004302602745439583,
+              "resolution": 1e-09,
+              "absolute_difference": 2.745439582597063e-10
+            },
+            "iy_m4": {
+              "declared": 6.84009e-07,
+              "computed": 6.840090630802086e-07,
+              "resolution": 1e-12,
+              "absolute_difference": 6.308020863704381e-14
+            },
+            "iz_m4": {
+              "declared": 1.47645e-07,
+              "computed": 1.4764479742652318e-07,
+              "resolution": 1e-12,
+              "absolute_difference": 2.025734768193353e-13
+            },
+            "wy_m3": {
+              "declared": 1.36802e-05,
+              "computed": 1.368018126160416e-05,
+              "resolution": 1e-10,
+              "absolute_difference": 1.873839583966966e-11
+            },
+            "wz_m3": {
+              "declared": 4.5001e-06,
+              "computed": 4.500099896492888e-06,
+              "resolution": 1e-11,
+              "absolute_difference": 1.0350711275228502e-13
+            },
+            "j_m4": {
+              "declared": 5.70605e-10,
+              "computed": 5.706047484690789e-10,
+              "resolution": 1e-15,
+              "absolute_difference": 2.515309211419876e-16
+            }
+          },
+          "refinement": {
+            "status": "observed",
+            "relativeChanges": {
+              "jMm4": 0.00033902776329460855,
+              "warpingMm6": 7.590253466963524e-08,
+              "shearCenterYMm": 1.0279770918941721e-08,
+              "shearCenterZMm": 1.7207248887984862e-08
+            },
+            "target": 0.001,
+            "boundaryArcPoints": 64,
+            "errorBoundCertified": false
+          },
+          "computed_properties": {
+            "area_m2": 0.0004302602745439583,
+            "iy_m4": 6.840090630802086e-07,
+            "iz_m4": 1.4764479742652318e-07,
+            "wy_m3": 1.368018126160416e-05,
+            "wz_m3": 4.500099896492888e-06,
+            "j_m4": 5.706047484690789e-10
+          },
+          "note": "Gross section computed, effective properties and elastic critical mode classification are separate."
+        }
+      },
+      "independent": {
+        "k_beam_n_m": 750000.0000000001,
+        "k_tie_n_m": 86052000.0,
+        "axial_n": 198271.9292182208,
+        "tip_z_m": -0.002304094375705629,
+        "tension_resistance_n": 97786.42603271778
+      }
+    }
+  ],
+  "limitations": [
+    "Synthetic actions and connections, no global or member-complete approval",
+    "NBR14762:2010 9.6.2 tension only in this integrated control; all-elements-welded/no-hole hypothesis explicitly declared"
+  ]
+}

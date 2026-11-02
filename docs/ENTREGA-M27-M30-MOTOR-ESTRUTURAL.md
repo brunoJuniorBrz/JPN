@@ -1,5 +1,10 @@
 # Entrega M27–M30 — incremento matemático funcional, gate bloqueado
 
+**Incremento posterior às normas fornecidas:** veja
+[Resistência Ue/MRD executável](ENTREGA-RESISTENCIA-UE-MRD.md). O registro abaixo
+preserva as evidências da primeira entrega; a nova entrega acrescenta
+procedimentos resistentes, aplicação explícita da seção e novas validações.
+
 Base técnica: PR #35 `51273a29f89fe5c366d837411d8f452d4c7a7547`.
 Base da branch: PR #36 `b05c7fb9d04ad522b2795e58e4f6a9989124ea95`.
 Branch: `feat/m27-m30-structural-engine-complete`.

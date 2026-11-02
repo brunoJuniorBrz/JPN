@@ -14,6 +14,7 @@ import { roofRegionsSchema } from "./roof-regions";
 import { engineeringCombinationsSchema } from "./engineering-combinations";
 import { connectionsSchema } from "./connections";
 import { declaredServiceCriterionSchema } from "./declared-service";
+import { memberDesignDeclarationSchema } from "./coldformed-design";
 
 // Human declarations, NOT finite-element input. A pending field is never
 // translated to zero, a free support or a material property by default.
@@ -45,6 +46,7 @@ export const spatialPreparationSchema = z.object({
   engineeringCombinations: engineeringCombinationsSchema.optional(),
   connections: connectionsSchema.optional(),
   serviceCriteria:z.array(declaredServiceCriterionSchema).max(500).optional(),
+  memberDesign:z.array(memberDesignDeclarationSchema).max(1000).refine(items=>new Set(items.map(d=>JSON.stringify([d.pieceId,d.combinationId]))).size===items.length,"Estudos resistentes duplicados para a mesma peça e combinação.").optional(),
 }).strict();
 export type SpatialPreparation = z.infer<typeof spatialPreparationSchema>;
 export type PhysicalLoad = SpatialPreparation["loads"][number];

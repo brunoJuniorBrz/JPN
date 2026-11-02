@@ -9,6 +9,7 @@ import { ContinuousDemandsPanel } from "./continuous-demands-panel";
 import { ColdFormedPropertiesForm } from "./cold-formed-properties-form";
 import { SectionAnalysisControl } from "./section-analysis-control";
 import { DeclaredServiceControl } from "./declared-service-control";
+import { ColdformedDesignControl } from "./coldformed-design-control";
 
 const labels:Record<DemandComponent,string>={nN:"N",vyN:"Vy",vzN:"Vz",tNm:"T",myNm:"My",mzNm:"Mz"};
 const show=(n:number|null)=>n===null?"Não aplicável":n===0?"0":n.toExponential(5);
@@ -24,7 +25,7 @@ export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExpo
     <h4>Solicitações e preparação resistente — M23 parcial</h4>
     <p data-testid="engine-release-gate"><strong>MOTOR NÃO PRONTO — BLOQUEADO</strong>. Análise, critérios declarados, resistência normativa, revisão profissional e fabricação são estados separados.</p>
     <details><summary>Bloqueios da cadeia estrutural completa</summary><ul>{report.releaseGate.blocked.map(x=><li key={x.id}>{x.reason}</li>)}</ul></details>
-    <p>Estrutura NÃO APROVADA PARA FABRICAÇÃO. Nenhum procedimento resistente normativo implementado. Verificações individuais pendentes; peça incompleta. Os números abaixo são solicitações e controles analíticos, sem índice de utilização ou aprovação.</p>
+    <p>Estrutura NÃO APROVADA PARA FABRICAÇÃO. Procedimentos resistentes parciais disponíveis no controle Ue/MRD, com cálculo Python e relatório separado. A peça inteira permanece incompleta. A tabela básica abaixo contém solicitações, sem aprovação resistente.</p>
     <p>Máximos/mínimos apenas nas estações amostradas; os esforços de cada linha são simultâneos na mesma combinação e posição. N positivo = tração; negativo = compressão. Forças em N e momentos em N·m, nos eixos locais do solver.</p>
     <Field label="Componente dos extremos amostrados"><Select value={component} onChange={e=>setComponent(e.target.value as DemandComponent)}>{demandComponents.map(k=><option key={k} value={k}>{labels[k]}</option>)}</Select></Field>
     <details><summary>Tabela de extremos amostrados das peças</summary>
@@ -39,8 +40,9 @@ export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExpo
       <h4>{selectedPiece} · {data.profileDesignation??"Perfil físico ainda sem designação"}</h4>
       <ContinuousDemandsPanel report={report.continuousDemands} pieceId={selectedPiece}/>
       <DeclaredServiceControl key={`service-${selectedPiece}`} project={project} pieceId={selectedPiece} report={report} onChange={onChange}/>
-      <SectionAnalysisControl key={`section-${selectedPiece}`} project={project} pieceId={selectedPiece}/>
-      <p data-testid="normative-readiness">Prontidão normativa: {data.normativeReadiness.status}; combinações: {data.normativeReadiness.combinationStatus}. Nenhuma resistência ou utilização disponível.</p>
+      <SectionAnalysisControl key={`section-${selectedPiece}`} project={project} pieceId={selectedPiece} onChange={onChange}/>
+      <ColdformedDesignControl key={`design-${selectedPiece}`} project={project} report={report} pieceId={selectedPiece} onChange={onChange}/>
+      <p data-testid="normative-readiness">Prontidão normativa: {data.normativeReadiness.status}; combinações: {data.normativeReadiness.combinationStatus}. Execute o controle resistente para obter resistências/utilizações dos procedimentos suportados.</p>
       {data.normativeReadiness.physical&&<ul>{data.normativeReadiness.physical.issues.map((v,i)=><li key={i}>{v.code}: {v.message}</li>)}</ul>}
       <p>{demands.kind==="axial"?"Elemento axial: flexão, cortantes e torção não aplicáveis ao modelo.":`Pórtico; seção girada ${demands.axes!.rotationDeg}° conforme a entrada; eixos locais PyNite.`} {demands.segments.length} segmento(s); comprimento original {show(demands.lengthM)} m.</p>
       <div style={{overflowX:"auto"}} role="region" aria-label="Extremos concomitantes da peça selecionada" tabIndex={0}><table><thead><tr><th>Critério</th><th>Segmento</th><th>Combinação</th><th>x segmento / peça</th><th>Esforços simultâneos</th></tr></thead><tbody>

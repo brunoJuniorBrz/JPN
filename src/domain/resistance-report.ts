@@ -72,7 +72,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
       for(const key of ["wyCm3","wzCm3"])if(!d.sectionProperties[key])issues.push(`${key}: módulo elástico físico pendente.`);
     }
     const standard=d?.family==="cold-formed"?"ABNT NBR 14762:2010":"ABNT NBR 8800:2024 Versão Corrigida:2025";
-    const referenceBlock=`${d?.family?standard:"Norma aplicável à família ainda a identificar"}: texto legítimo, cláusulas/condições integrais e exemplos independentes ainda necessários; nenhuma cláusula aplicada neste avaliador.`;
+    const referenceBlock=`${d?.family?standard:"Norma aplicável à família ainda a identificar"}: procedimentos disponíveis em execução separada quando suportados; nenhuma cláusula resistente executada automaticamente neste relatório básico.`;
     const modes=[...normativeModes,...(d?.family==="cold-formed"?[{id:"local-distortional",label:"Flambagem local/distorcional e propriedades efetivas"}]:[{id:"local",label:"Instabilidade local e classificação da seção"}])];
     const continuous=continuousDemands?.pieces.find(p=>p.pieceId===piece.id),localDisplacement=!!continuous&&continuous.fields.every(f=>f.displacementStatus==="continuous-verified");
     const whole=wholePieceDeflections?.pieces.find(p=>p.pieceId===piece.id)?.status==="continuous-verified";
@@ -88,17 +88,17 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
     const controls=elasticMemberReference(piece,group,d);
     return {pieceId:piece.id,role:piece.role,profileDesignation:d?.profileDesignation??null,family:d?.family??null,
       status:"incomplete" as const,allApplicableVerificationsComplete:false as const,approved:false as const,
-      normativeReadiness:{status:readiness?.status??"pending-data",physical:readiness,coverage,continuousDemandStatus:coverage.forceComponents,interactionStatus:"unsupported",combinationStatus:"pending-normative-source",normativeSourceStatus:"pending-normative-source",designResistance:null,utilization:null,clausesApplied:[] as string[],blockers:["Nenhum procedimento normativo completo disponível no registro do motor; fontes textuais não habilitam aprovação.",...issues]},
+      normativeReadiness:{status:readiness?.status??"pending-data",physical:readiness,coverage,continuousDemandStatus:coverage.forceComponents,interactionStatus:"unsupported",combinationStatus:"pending-normative-source",normativeSourceStatus:"pending-normative-source",designResistance:null,utilization:null,clausesApplied:[] as string[],blockers:["Procedimentos parciais Ue/MRD exigem execução rastreável separada; o relatório básico não os executa nem aprova a peça completa.",...issues]},
       dataIssues:issues,physicalProperties:group,declaration:d,verifications,
       analyticalControls:{normative:false as const,status:"reference-only" as const,
         description:"N/A é apenas tensão média axial elástica; não representa tensões extremas de flexão, resistência, utilização ou segurança.",axialMeanStress,idealizedReferences:controls}};
   });
-  const binding={...demands.binding,evaluatorVersion:"jpn.resistance-report/2",declarationsSha256:await mixedInputHash(declarations)};
+  const binding={...demands.binding,evaluatorVersion:"jpn.resistance-report/2.1",declarationsSha256:await mixedInputHash(declarations)};
   const report={schema_version:"jpn.resistance-report/2" as const,status:"partial-demands-and-preparation" as const,
     approvedForFabrication:false as const,structureStatus:"NOT_APPROVED_FOR_FABRICATION" as const,
-    normativeProceduresImplemented:[] as string[],binding,physicalInput:current.request,
+    normativeProceduresImplemented:["NBR14762:2010-C.3","NBR14762:2010-C.4","NBR14762:2010-9.6.2","NBR14762:2010-9.8.3","NBR14762:2010-9.9"],binding,physicalInput:current.request,
     engineeringCombinations:draft.engineeringCombinations??null,demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
-    remaining:["Seleção e validação normativa das ações/combinações ainda pendentes na M22.","Procedimentos resistentes normativos integrais ainda indisponíveis; nenhuma verificação ATENDE/NÃO ATENDE emitida.","Missão 24: ligações, apoios, contenções, estabilidade global/efeitos adicionais e revisão do engenheiro."]};
+    remaining:["Seleção e validação normativa das ações/combinações ainda pendentes na M22.","Procedimentos parciais Ue/MRD disponíveis separadamente; todos os estados-limites da família e da obra ainda não estão concluídos.","Missão 24: ligações, apoios, contenções, estabilidade global/efeitos adicionais e revisão do engenheiro."]};
   const full={...report,releaseGate:buildEngineReleaseGate(project,report)};
   return {...full,reportSha256:await mixedInputHash(full)};
 }
