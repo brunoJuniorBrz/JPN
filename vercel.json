@@ -1,4 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "git": { "deploymentEnabled": { "feat/roof-area-load-path": false } }
+  "git": {
+    "deploymentEnabled": {
+      "feat/roof-area-load-path": false,
+      "audit/mission21-independent": false
+    }
+  }
 }

@@ -1,7 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "python",
-  "git": { "deploymentEnabled": { "feat/roof-area-load-path": false } },
+  "git": {
+    "deploymentEnabled": {
+      "feat/roof-area-load-path": false,
+      "audit/mission21-independent": false
+    }
+  },
   "functions": {
     "app.py": {
       "maxDuration": 30,
