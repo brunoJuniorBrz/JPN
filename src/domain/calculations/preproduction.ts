@@ -100,9 +100,13 @@ export function buildPreproductionDossier(project: Project) {
   }));
 
   let cutting: ReturnType<typeof projectCutting> | null = null;
-  try { cutting=projectCutting(project); }
-  catch (error) {
-    add("CUTTING_PENDING", `Simulação de corte indisponível: ${error instanceof Error ? error.message : "parâmetros inválidos"}`);
+  if (project.workspace.cutting.useFabrication && duplicateIds.size) {
+    add("CUTTING_PENDING", "Simulação com comprimentos finais bloqueada: registros duplicados precisam ser corrigidos.");
+  } else {
+    try { cutting=projectCutting(project); }
+    catch (error) {
+      add("CUTTING_PENDING", `Simulação de corte indisponível: ${error instanceof Error ? error.message : "parâmetros inválidos"}`);
+    }
   }
   // Structural design and fabrication checks are deliberately NOT inferred
   // from locally saved analysis, synthetic examples or manual length entries.
