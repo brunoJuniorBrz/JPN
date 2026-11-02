@@ -1,0 +1,249 @@
+{
+  "schema_version": "jpn.validation-reference-candidates/1",
+  "created_at": "2026-11-02",
+  "status": "research-candidates-not-validation-goldens",
+  "approved_for_normative_verification": false,
+  "unit_policy": "Never infer unit from numeric magnitude or mix section geometry algorithms; freeze norm and physical section properties first.",
+  "references": [
+    {
+      "id": "CBCA-2014-Ue-COMP-04",
+      "source": {
+        "publisher": "CBCA / Instituto Aço Brasil",
+        "work": "Estruturas compostas por perfis formados a frio",
+        "year": 2014,
+        "official_index": "https://www.cbca-acobrasil.org.br/site/biblioteca/?bsc=ativar&bscPgn=2&bscQtdReg=10&chkCat%5B%5D=7&txtBscKeyword=",
+        "printed_pages": "51–52",
+        "example": "Exemplo 04"
+      },
+      "profile": {
+        "family": "cold-formed",
+        "shape": "u-stiffened",
+        "dimensions_mm": {
+          "height": 100,
+          "width": 50,
+          "lip": 17,
+          "wallThickness": 1.2
+        },
+        "length_m": 4,
+        "intermediate_restraints": false
+      },
+      "targets": [
+        {
+          "quantity": "global_elastic_buckling_force",
+          "value": 9.57,
+          "unit": "kN",
+          "source_symbol": "Ne",
+          "provenance": "CBCA reported flexural-torsional governing mode"
+        },
+        {
+          "quantity": "global_buckling_reduction_factor",
+          "value": 0.124,
+          "unit": "dimensionless",
+          "source_symbol": "chi",
+          "provenance": "CBCA reported intermediate factor"
+        }
+      ],
+      "status": "not_executed",
+      "usable_for_pass_fail": false,
+      "blockers": [
+        "Requires lawful access and full checking of normative procedure and all section properties",
+        "Intermediate checkpoints are not final resistance of section or member",
+        "Boundary and torsional warping conditions must be independently verified"
+      ]
+    },
+    {
+      "id": "UPF-2021-Ue-COMP-150",
+      "source": {
+        "publisher": "Revista de Ensino de Engenharia / UPF",
+        "work": "PFF-NBR14762: um aplicativo para o dimensionamento de perfis formados a frio",
+        "doi": "10.37702/REE2236-0158.v40p3-14.2021",
+        "url": "https://revista.abenge.org.br/index.php/abenge/article/download/1807/1012/3472",
+        "printed_page": "10",
+        "table": "5"
+      },
+      "profile": {
+        "family": "cold-formed",
+        "shape": "u-stiffened",
+        "dimensions_mm": {
+          "height": 150,
+          "width": 60,
+          "lip": 20,
+          "wallThickness": 2.65
+        },
+        "unbraced_lengths_m": {
+          "x": 3,
+          "y": 3,
+          "z": 3
+        }
+      },
+      "targets": [
+        {
+          "quantity": "axial_compression_design_resistance",
+          "value": 60.9,
+          "unit": "kN",
+          "method": "PFF-NBR14762"
+        },
+        {
+          "quantity": "axial_compression_design_resistance",
+          "value": 59.66,
+          "unit": "kN",
+          "method": "mCalc_Perfis"
+        }
+      ],
+      "status": "not_executed",
+      "usable_for_pass_fail": false,
+      "blockers": [
+        "Two reference tools differ; no single golden result",
+        "Material fy=30 kN/cm² and E=200 GPa reported globally, other section inputs require extraction",
+        "Different section property estimation methods explicitly noted by authors",
+        "Confirm application of 2010 standard to exact modeled geometric section"
+      ]
+    },
+    {
+      "id": "UPF-2021-Ue-SHEAR-150",
+      "source": {
+        "publisher": "Revista de Ensino de Engenharia / UPF",
+        "work": "PFF-NBR14762: um aplicativo para o dimensionamento de perfis formados a frio",
+        "doi": "10.37702/REE2236-0158.v40p3-14.2021",
+        "url": "https://revista.abenge.org.br/index.php/abenge/article/download/1807/1012/3472",
+        "printed_page": "10",
+        "table": "6"
+      },
+      "profile": {
+        "family": "cold-formed",
+        "shape": "u-stiffened",
+        "dimensions_mm": {
+          "height": 150,
+          "width": 60,
+          "lip": 20,
+          "wallThickness": 2.65
+        },
+        "unbraced_lengths_m": {
+          "x": 3,
+          "y": 3,
+          "z": 3
+        }
+      },
+      "targets": [
+        {
+          "quantity": "shear_design_resistance",
+          "value": 60.45,
+          "unit": "kN",
+          "method": "PFF-NBR14762"
+        },
+        {
+          "quantity": "shear_design_resistance",
+          "value": 60.45,
+          "unit": "kN",
+          "method": "mCalc_Perfis"
+        }
+      ],
+      "status": "not_executed",
+      "usable_for_pass_fail": false,
+      "blockers": [
+        "Matching two program outputs does not establish normative correctness",
+        "Shear orientation, web thickness and section property convention need independent review"
+      ]
+    },
+    {
+      "id": "UPF-2021-Ue-FLEX-UNIT-QUARANTINE",
+      "source": {
+        "publisher": "Revista de Ensino de Engenharia / UPF",
+        "work": "PFF-NBR14762: um aplicativo para o dimensionamento de perfis formados a frio",
+        "doi": "10.37702/REE2236-0158.v40p3-14.2021",
+        "url": "https://revista.abenge.org.br/index.php/abenge/article/download/1807/1012/3472",
+        "printed_pages": "10–11",
+        "table": "7"
+      },
+      "profile": {
+        "family": "cold-formed",
+        "shape": "u-stiffened",
+        "dimensions_mm": {
+          "height": 150,
+          "width": 60,
+          "lip": 20,
+          "wallThickness": 2.65
+        },
+        "unbraced_lengths_m": {
+          "x": 3,
+          "y": 3,
+          "z": 3
+        }
+      },
+      "targets": [
+        {
+          "quantity": "bending_design_resistance",
+          "value": 607.38,
+          "unit": "as-printed-kN.m-UNVERIFIED",
+          "method": "PFF-NBR14762"
+        },
+        {
+          "quantity": "bending_design_resistance",
+          "value": 601.12,
+          "unit": "as-printed-kN.m-UNVERIFIED",
+          "method": "mCalc_Perfis"
+        }
+      ],
+      "status": "quarantined_units",
+      "usable_for_pass_fail": false,
+      "blockers": [
+        "Table header kN.m appears physically suspicious for this thin profile; article UI depicts kN.cm",
+        "Must verify original units and magnitude before any numerical comparison",
+        "Reference tools use differing section property methods"
+      ]
+    },
+    {
+      "id": "UPF-2021-Ue-FLEX-DIVERGENCE",
+      "source": {
+        "publisher": "Revista de Ensino de Engenharia / UPF",
+        "work": "PFF-NBR14762: um aplicativo para o dimensionamento de perfis formados a frio",
+        "doi": "10.37702/REE2236-0158.v40p3-14.2021",
+        "url": "https://revista.abenge.org.br/index.php/abenge/article/download/1807/1012/3472",
+        "printed_page": "10",
+        "table": "7"
+      },
+      "profile": {
+        "family": "cold-formed",
+        "shape": "u-stiffened",
+        "dimensions_mm": {
+          "height": 75,
+          "width": 40,
+          "lip": 15,
+          "wallThickness": 1.5
+        },
+        "unbraced_lengths_m": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        }
+      },
+      "targets": [
+        {
+          "quantity": "bending_design_resistance",
+          "value": 134.03,
+          "unit": "as-printed-kN.m-UNVERIFIED",
+          "method": "PFF-NBR14762"
+        },
+        {
+          "quantity": "bending_design_resistance",
+          "value": 167.48,
+          "unit": "as-printed-kN.m-UNVERIFIED",
+          "method": "mCalc_Perfis"
+        }
+      ],
+      "status": "quarantined_units-and-method-disagreement",
+      "usable_for_pass_fail": false,
+      "blockers": [
+        "Authors report ~24.96% method disagreement",
+        "Units require reconciliation before comparing",
+        "Do not treat either tool as ground truth"
+      ]
+    }
+  ],
+  "rules": [
+    "Reference targets are published third-party evidence, not normative clauses.",
+    "Only measured/computed outcomes from a fully equivalent model may be compared; absent inputs remain absent.",
+    "Do not copy tables, scans, full copyrighted manuals or normative texts into the repo.",
+    "These references are not building designs validated for fabrication."
+  ]
+}
