@@ -524,3 +524,49 @@ body { font-size: 16px; }
  .spatial-overview-actions button, .spatial-jump button { width:100%; }
  .spatial-result-metrics { grid-template-columns:1fr; }
 }
+
+/* Studio 3D: inspection tools stay visible and touch-friendly without changing geometry. */
+.inspection-tools {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  margin: 10px 0 4px; padding: 10px;
+  background: #eef2eb; border: 1px solid #d4decf; border-radius: 10px;
+}
+.inspection-tools > .button { min-height: 44px; padding: 8px 12px; font-size: 13px; }
+.inspection-tools button:focus-visible, .inspection-layers summary:focus-visible {
+  outline: 3px solid #468a84; outline-offset: 2px;
+}
+.inspection-layers { flex: 1 1 170px; min-width: 150px; }
+.inspection-layers summary {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 12px; min-height: 44px; cursor: pointer;
+  background: #fff; border: 1px solid #cad6c6; border-radius: 6px;
+  font-weight: 650; font-size: 13px;
+}
+.inspection-layers[open] summary { border-radius: 6px 6px 0 0; }
+.inspection-layer-options {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 4px 14px; padding: 10px; background: white;
+  border: 1px solid #cad6c6; border-top: 0; border-radius: 0 0 6px 6px;
+}
+.inspection-layer-options label {
+  display: flex; align-items: center; gap: 8px; font-size: 13px;
+  cursor: pointer; min-height: 40px;
+}
+.inspection-layer-options input { width: 18px; height: 18px; accent-color: #375a44; flex: none; }
+.inspection-view-buttons { display: flex; flex: 1 1 215px; gap: 4px; }
+.inspection-view-buttons button {
+  flex: 1; min-width: 0; min-height: 44px; padding: 6px;
+  background: white; border: 1px solid #cad6c6; border-radius: 6px;
+  font-size: 13px; cursor: pointer;
+}
+.structure-viewer--expanded .inspection-tools { flex-shrink: 0; }
+@media (max-width: 600px) {
+  .inspection-tools { display: grid; grid-template-columns: 1fr 1fr; padding: 8px; gap: 6px; }
+  .inspection-layers { grid-column: 1 / -1; min-width: 0; }
+  .inspection-tools > .button { width: 100%; }
+  .inspection-view-buttons { grid-column: 1 / -1; width: 100%; }
+  .inspection-layer-options { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 370px) {
+  .inspection-layer-options { grid-template-columns: 1fr; }
+}

@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import type { StructureModel, Planning } from "@/domain/structure";
+import { roles, roleLabels, type PieceRole, type StructureModel, type Planning } from "@/domain/structure";
 import type { RoofParameters } from "@/domain/project-details";
 import { initialPresentationOptions, presentationEnvelope, type PresentationOptions, type WallLayout, type RoofColor, type RoofFinish } from "./presentation-scene";
 import { drawPresentationAnnotations, presentationDimensions, dimensionLabels } from "./presentation-capture";
@@ -20,9 +20,14 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const optionsRef = useRef(presentationOptions);
   const applyOptions = useRef<(options:PresentationOptions)=>void>(()=>{});
   const capture = useRef<()=>void>(()=>{});
-  const envelope = presentationEnvelope(roof, planning);
+  const envelope = useMemo(() => presentationEnvelope(roof, planning), [roof, planning]);
   const dimensions = envelope ? dimensionLabels(presentationDimensions(envelope)) : [];
   const [expanded, setExpanded] = useState(false);
+  const [visibleRoles, setVisibleRoles] = useState<PieceRole[]>([...roles]);
+  const [isolatedId, setIsolatedId] = useState<string | null>(null);
+  const activeIsolation = isolatedId === selected ? isolatedId : null;
+  const applyVisibility = useRef<(visible: readonly PieceRole[], isolated: string | null) => void>(() => {});
+  const cameraView = useRef<(view: "iso" | "top" | "front" | "side") => void>(() => {});
   // Opening the viewer always starts with solid profiles, regardless of the mode last used.
   const [mode, setMode] = useState<ViewerMode | "finished">("profiles");
   const changeMode = useRef<(mode: ViewerMode | "finished") => void>(() => {});
@@ -64,6 +69,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const render = () => { renderer.render(scene,camera); canvas.dataset.drawCalls = String(renderer.info.render.calls); canvas.dataset.triangles = String(renderer.info.render.triangles); if (environment) { const sources = environment.status(); canvas.dataset.carSource = sources.carSource; canvas.dataset.personSource = sources.personSource; } };
     colorize.current = colors => { profiles.setColors(colors); canvas.dataset.analysisMode = colors ? "experimental" : "none"; render(); };
     let framingBounds = bounds, activeMode: ViewerMode | "finished" = "profiles", disposed = false;
+    let cameraFramed = false;
     type PresentationHandle = ReturnType<typeof import("./presentation-scene")["createPresentationScene"]>;
     let environment: PresentationHandle | null = null;
     const presentationBounds = envelope ? new THREE.Box3().setFromPoints([
@@ -72,7 +78,35 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const fitFull = () => {
       framingBounds = activeMode === "finished" ? bounds.clone().union(presentationBounds) : bounds;
       canvas.dataset.framing = "whole-structure";
-      controls.target.copy(fitIsometricCamera(camera, framingBounds));controls.update();render();
+      camera.up.set(0, 1, 0);
+      controls.target.copy(fitIsometricCamera(camera, framingBounds));
+      cameraFramed = true; canvas.dataset.cameraView = "iso";
+      controls.update(); render();
+    };
+    cameraView.current = view => {
+      if (view === "iso") { fitFull(); return; }
+      framingBounds = activeMode === "finished" ? bounds.clone().union(presentationBounds) : bounds;
+      // Aligned perspective inspection views; dimensioned 2D remains the drawing authority.
+      const center = framingBounds.getCenter(new THREE.Vector3());
+      const radius = Math.max(framingBounds.getBoundingSphere(new THREE.Sphere()).radius, .5);
+      const halfV = THREE.MathUtils.degToRad(camera.fov) / 2;
+      const halfH = Math.atan(Math.tan(halfV) * camera.aspect);
+      const distance = 1.12 * radius / Math.sin(Math.min(halfV, halfH));
+      const direction = view === "top" ? new THREE.Vector3(0, 1, 0)
+        : view === "front" ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(1, 0, 0);
+      camera.up.set(0, 1, 0);
+      if (view === "top") camera.up.set(0, 0, -1);
+      controls.target.copy(center);
+      camera.position.copy(center).addScaledVector(direction, distance);
+      camera.lookAt(center); cameraFramed = true;
+      canvas.dataset.framing = "whole-structure"; canvas.dataset.cameraView = view;
+      controls.update(); render();
+    };
+    applyVisibility.current = (visible, isolated) => {
+      profiles.setVisibility(new Set(visible), isolated);
+      canvas.dataset.visibleRoles = visible.join(",");
+      canvas.dataset.isolatedPiece = isolated ?? "";
+      render();
     };
     changeMode.current = value => {
       const previousMode = activeMode;
@@ -135,7 +169,13 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       renderer.setPixelRatio(ratio); canvas.dataset.pixelRatio = ratio.toFixed(2);
       renderer.setSize(width, height);
       camera.aspect = width / height; camera.updateProjectionMatrix();
-      controls.target.copy(fitIsometricCamera(camera, framingBounds)); controls.update(); render();
+      // Preserve camera pose and zoom after viewport/orientation changes.
+      if (!cameraFramed) {
+        camera.up.set(0, 1, 0);
+        controls.target.copy(fitIsometricCamera(camera, framingBounds));
+        cameraFramed = true; canvas.dataset.cameraView = "iso";
+      }
+      controls.update(); render();
     };
     const observer = new ResizeObserver(resize); observer.observe(container); controls.addEventListener("change", render);
     const raycaster = new THREE.Raycaster(); raycaster.params.Line = { threshold: span / 180 };
@@ -152,12 +192,15 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const lost = (e: Event) => { e.preventDefault(); setFailure("O dispositivo perdeu o contexto gráfico. As vistas 2D continuam disponíveis."); };
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("webglcontextlost", lost);
     resize();
-    return () => { disposed = true; environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); sun.shadow.dispose();renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; };
-  }, [model, gridSpacingM, roof, planning, projectName]);
+    return () => { disposed = true; environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); sun.shadow.dispose();renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; };
+  }, [model, gridSpacingM, envelope, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
   useEffect(() => { colorize.current(analysisColors); }, [analysisColors, model]);
+  useEffect(() => {
+    applyVisibility.current(mode === "finished" ? roles : visibleRoles, mode === "finished" ? null : activeIsolation);
+  }, [visibleRoles, activeIsolation, mode, model]);
   useEffect(() => {
     if (!expanded) return;
     const previousOverflow = document.body.style.overflow;
@@ -170,6 +213,30 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   return <div className={expanded ? "structure-viewer structure-viewer--expanded" : "structure-viewer"}>
     {expanded && <div className="structure-viewer-heading"><strong>Apresentação da estrutura · 3D</strong><button type="button" className="button secondary" onClick={() => setExpanded(false)}>Fechar tela cheia</button></div>}
     {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).filter(([value]) => !analysisColors || value !== "finished").map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
+    {!failure && mode !== "finished" && <div className="inspection-tools" aria-label="Ferramentas de inspeção 3D">
+      <details className="inspection-layers">
+        <summary>Camadas · {visibleRoles.length} de {roles.length}</summary>
+        <div className="inspection-layer-options">
+          {roles.map(role => <label key={role}><input type="checkbox" checked={visibleRoles.includes(role)} onChange={e => {
+            setVisibleRoles(current => e.target.checked ? roles.filter(r => r === role || current.includes(r)) : current.filter(r => r !== role));
+            setIsolatedId(null);
+          }} />{roleLabels[role]}</label>)}
+        </div>
+      </details>
+      <button type="button" className="button secondary" disabled={!selected} aria-pressed={!!activeIsolation} onClick={() => {
+        if (!selected || !model.pieces.some(p => p.id === selected)) return;
+        setVisibleRoles([...roles]);
+        setIsolatedId(current => current === selected ? null : selected);
+      }}>{activeIsolation ? "Sair do isolamento" : "Isolar peça"}</button>
+      <button type="button" className="button secondary" disabled={!activeIsolation && visibleRoles.length === roles.length} onClick={() => {
+        setVisibleRoles([...roles]); setIsolatedId(null);
+      }}>Mostrar tudo</button>
+      <div className="inspection-view-buttons" role="group" aria-label="Orientação da câmera 3D">
+        <button type="button" onClick={() => cameraView.current("top")}>Superior</button>
+        <button type="button" onClick={() => cameraView.current("front")}>Frontal</button>
+        <button type="button" onClick={() => cameraView.current("side")}>Lateral</button>
+      </div>
+    </div>}
     {!failure && mode !== "structural" && <div className="notice structure-profile-notice" data-testid="profile-coverage">
       <strong>{model.pieces.length - fallbackCount} peças com seção 3D · {fallbackCount} em linha.</strong>
       {fallbackCount > 0 && <><p>Para visualizar perfis reais, informe família, dimensões e espessura de cada categoria. O sistema não inventa medidas para projetos antigos.</p><div className="actions">{onConfigureProfile && <button type="button" className="button" onClick={onConfigureProfile}>Cadastrar dimensões</button>}{onDemonstrate && <button type="button" className="button secondary" onClick={onDemonstrate}>Ver demonstração com perfis</button>}</div></>}

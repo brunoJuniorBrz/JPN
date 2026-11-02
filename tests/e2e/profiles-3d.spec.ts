@@ -167,3 +167,39 @@ for (const width of [375, 1440]) test(`atalho visível abre o 3D da estrutura no
   await expect(shortcutCanvas).toHaveAttribute("data-framing", "whole-structure");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+
+for (const width of [375, 1440]) test(`Studio 3D filtra camadas, isola peça e preserva câmera em ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  await seed(page);
+  const before = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
+  const totals = await page.getByTestId("takeoff-totals").innerText();
+  await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+  const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
+  await expect(canvas).toHaveAttribute("data-mode", "profiles");
+  await page.getByLabel("Selecionar peça no desenho").selectOption("P1");
+  await page.getByRole("button", { name: "Isolar peça" }).click();
+  await expect(canvas).toHaveAttribute("data-isolated-piece", "P1");
+  await expect(page.getByRole("button", { name: "Sair do isolamento" })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Mostrar tudo" }).click();
+  await expect(canvas).toHaveAttribute("data-isolated-piece", "");
+  await page.locator(".inspection-layers summary").click();
+  await page.getByLabel("Pilares", { exact: true }).uncheck();
+  await expect(canvas).toHaveAttribute("data-visible-roles", /topChord/);
+  expect((await canvas.getAttribute("data-visible-roles"))!.split(",")).not.toContain("column");
+  await page.getByRole("button", { name: "Mostrar tudo" }).click();
+  expect((await canvas.getAttribute("data-visible-roles"))!.split(",")).toContain("column");
+  await page.getByRole("group", { name: "Orientação da câmera 3D" }).getByRole("button", { name: "Superior" }).click();
+  await expect(canvas).toHaveAttribute("data-camera-view", "top");
+  await page.setViewportSize({ width, height: 760 });
+  await expect(canvas).toHaveAttribute("data-camera-view", "top");
+  await page.getByRole("button", { name: "Isométrica · ajustar 3D" }).click();
+  await expect(canvas).toHaveAttribute("data-camera-view", "iso");
+  await page.getByRole("group", { name: "Modo de visualização 3D" }).getByRole("button", { name: "Acabado" }).click();
+  await expect(page.locator(".inspection-tools")).toHaveCount(0);
+  await page.getByRole("group", { name: "Modo de visualização 3D" }).getByRole("button", { name: "Perfis 3D" }).click();
+  await expect(page.locator(".inspection-tools")).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(before);
+  expect(await page.getByTestId("takeoff-totals").innerText()).toBe(totals);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
