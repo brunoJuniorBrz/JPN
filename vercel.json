@@ -3,7 +3,8 @@
   "git": {
     "deploymentEnabled": {
       "feat/roof-area-load-path": false,
-      "audit/mission21-independent": false
+      "audit/mission21-independent": false,
+      "feat/resistance-elastic-reference": false
     }
   }
 }
