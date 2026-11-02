@@ -1,0 +1,20 @@
+"use client";
+import { useState } from "react";
+import type { Project } from "@/domain/models";
+import type { ResistanceReport } from "@/domain/resistance-report";
+import { declaredServiceCriterionSchema } from "@/domain/declared-service";
+import { Field,Input,Select } from "@/components/ui";
+
+export function DeclaredServiceControl({project,pieceId,report,onChange}:{project:Project;pieceId:string;report:ResistanceReport;onChange:(p:Partial<Project>)=>void}){
+  const d=project.workspace.spatialPreparation!,existing=d.serviceCriteria?.find(c=>c.pieceId===pieceId),checks=report.serviceChecks.filter(c=>c.criterion.pieceId===pieceId),whole=report.wholePieceDeflections?.pieces.find(p=>p.pieceId===pieceId);
+  const [limit,setLimit]=useState(existing?String(existing.limitM*1000):""),[quantity,setQuantity]=useState(existing?.quantity??"global-z"),[source,setSource]=useState(existing?.source??""),[revision,setRevision]=useState(existing?.revision??""),[responsible,setResponsible]=useState(existing?.responsible??""),[combinations,setCombinations]=useState(existing?.combinations??[]),[error,setError]=useState("");
+  const sls=d.engineeringCombinations?.combinations.filter(c=>c.purpose.startsWith("SLS"))??[];
+  return <details data-testid="declared-service"><summary>Flecha da peça inteira e limite declarado</summary><p>Referência: corda entre os extremos originais, em XYZ global. O cálculo visita todos os segmentos e combinações selecionados. Um limite informado pelo responsável não constitui homologação normativa SLS ou aprovação estrutural.</p>
+    {whole?.status==="continuous-verified"&&<ul>{whole.combinations.map(c=>{const r=c.rows.find(r=>r.id===c.maximumNorm)!;return <li key={c.combinationId}>{c.combinationId}: flecha vetorial máxima {(r.normM*1000).toPrecision(7)} mm, x original {r.originalPositionM.toPrecision(7)} m, segmento {r.segmentId}.</li>;})}</ul>}
+    {checks.map(c=><p key={c.criterion.id} data-testid="declared-service-check">{c.status}: {c.calculation?`${(c.calculation.demandM*1000).toPrecision(6)} mm / ${(c.calculation.limitM*1000).toPrecision(6)} mm; razão ${c.calculation.utilization.toPrecision(6)}`:c.reason}. Validação normativa: não.</p>)}
+    <Field label="Limite de flecha declarado (mm)"><Input value={limit} onChange={e=>setLimit(e.target.value)}/></Field><Field label="Grandeza de flecha"><Select value={quantity} onChange={e=>setQuantity(e.target.value as typeof quantity)}>{Object.entries({"global-x":"Componente X global","global-y":"Componente Y global","global-z":"Componente Z global","vector-norm":"Norma do vetor XYZ"}).map(([k,v])=><option key={k} value={k}>{v}</option>)}</Select></Field>
+    <fieldset><legend>Combinações SLS declaradas para o critério</legend>{sls.map(c=><label key={c.id}><input type="checkbox" checked={combinations.includes(c.id)} onChange={e=>setCombinations(e.target.checked?[...combinations,c.id]:combinations.filter(id=>id!==c.id))}/>{c.id} ({c.purpose}; fatores ainda sob responsabilidade da declaração)</label>)}</fieldset>
+    <Field label="Fonte do limite de flecha"><Input value={source} onChange={e=>setSource(e.target.value)} maxLength={1000}/></Field><Field label="Revisão do limite de flecha"><Input value={revision} onChange={e=>setRevision(e.target.value)} maxLength={1000}/></Field><Field label="Responsável pelo limite de flecha"><Input value={responsible} onChange={e=>setResponsible(e.target.value)} maxLength={1000}/></Field>
+    <button type="button" className="button secondary" onClick={()=>{try{const c=declaredServiceCriterionSchema.parse({schema_version:"jpn.declared-service-criterion/1",id:existing?.id??`${pieceId}-declared-service`,pieceId,quantity,combinations,reference:"original-piece-end-chord",limitM:Number(limit.replace(",","."))/1000,source,revision,responsible});onChange({workspace:{...project.workspace,spatialPreparation:{...d,serviceCriteria:[...(d.serviceCriteria??[]).filter(v=>v.id!==c.id),c]}}});}catch(e){setError((e as Error).message);}}}>Registrar limite declarado e invalidar análise</button>{error&&<p role="alert">{error}</p>}
+  </details>;
+}

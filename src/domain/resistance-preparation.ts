@@ -9,7 +9,7 @@ export const resistantSectionGeometrySchema=z.object({
 }).strict();
 export const resistancePreparationSchema=z.object({pieceId:z.string().min(1).max(100),family:z.enum(["rolled","welded","tubular","cold-formed"]).nullable(),fyMpa:positive,fuMpa:positive,bucklingYM:positive,bucklingZM:positive,lateralRestraintM:positive,
   source:z.string().max(1000),revision:z.string().max(1000),sectionProperties:z.record(z.string().max(80),positive),restraintDescription:z.string().max(1000),normativeReference:z.string().max(1000),
-  profileDesignation:z.string().min(1).max(200).refine(s=>!!s.trim()).optional(),geometry:resistantSectionGeometrySchema.optional(),coldFormed:coldFormedPropertySchema.optional(),
+  profileDesignation:z.string().min(1).max(200).refine(s=>!!s.trim()).optional(),geometry:resistantSectionGeometrySchema.optional(),coldFormed:coldFormedPropertySchema.optional(),sectionPropertyResolutions:z.record(z.string().max(80),z.number().finite().positive()).optional(),
 }).strict();
 export function resistanceDiagnostics(value:unknown){
   const parsed=resistancePreparationSchema.safeParse(value);

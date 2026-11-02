@@ -8,7 +8,11 @@ import { extractMemberDemands, type DemandInput } from "./member-demands";
 import { resistancePreparationSchema } from "./resistance-preparation";
 import { elasticMemberReference } from "./resistance-elastic-reference";
 import { extractContinuousDemands } from "./continuous-demands";
-import { coldFormedDiagnostics } from "./cold-formed-properties";
+import { familyReadiness } from "./family-readiness";
+import { comparePhysicalProperty } from "./property-precision";
+import { extractWholePieceDeflections } from "./whole-piece-deflection";
+import { evaluateDeclaredService } from "./declared-service";
+import { buildEngineReleaseGate } from "./engine-release-gate";
 
 const normativeModes=[
   {id:"tension",label:"Tração: escoamento bruto e ruptura da seção efetiva/líquida"},
@@ -33,6 +37,8 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
     throw new Error("STALE_RESISTANCE_ANALYSIS: projeto/discretização/declarações diferem da análise; execute novamente.");
   const demands=await extractMemberDemands(prepared,value),draft=project.workspace.spatialPreparation!,model=generateStructure(project).model!;
   const continuousDemands=jointTrace?await extractContinuousDemands(prepared,value,jointTrace):null;
+  const wholePieceDeflections=continuousDemands?await extractWholePieceDeflections(continuousDemands):null;
+  const serviceChecks=evaluateDeclaredService(draft.serviceCriteria??[],wholePieceDeflections,draft.engineeringCombinations?.combinations.filter(c=>c.purpose.startsWith("SLS")).map(c=>c.id)??[]);
   const declarations=draft.resistance??[];
   if(new Set(declarations.map(d=>d.pieceId)).size!==declarations.length||declarations.some(d=>!model.pieces.some(p=>p.id===d.pieceId)))throw new Error("RESISTANCE_DECLARATIONS: cadastro resistente duplicado ou peça órfã.");
   const pieces=demands.pieces.map(demand=>{
@@ -58,34 +64,43 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
         if(t&&[dims.height,dims.width,dims.diameter].some(x=>x!==undefined&&x!==null&&2*t>=x))issues.push("Espessura incompatível com dimensões externas declaradas.");
         if(dims.webThickness&&dims.width&&dims.webThickness>=dims.width||dims.flangeThickness&&dims.height&&2*dims.flangeThickness>=dims.height)issues.push("Geometria I declarada degenerada.");
       }
-      for(const key of ["areaCm2","iyCm4","izCm4","jCm4"] as const){const declared=d.sectionProperties[key];if(declared!==undefined&&declared!==null&&declared!==group[key])issues.push(`${key}: valor resistente difere da seção física usada no solver.`);}
+      for(const key of ["areaCm2","iyCm4","izCm4","jCm4"] as const){const declared=d.sectionProperties[key],actual=group[key];if(declared!==undefined&&declared!==null&&actual!==null){
+        const advanced=d.coldFormed?.[key],sameAdvanced=advanced&&comparePhysicalProperty(declared,advanced.value).status==="consistent";
+        const precision=d.sectionPropertyResolutions?.[key]??(sameAdvanced?advanced.resolution:undefined),check=comparePhysicalProperty(declared,actual,precision);
+        if(check.status!=="consistent")issues.push(`${key}: valor resistente difere da seção física usada no solver (${check.status}; resolução ${precision??"não declarada"}).`);
+      }}
       for(const key of ["wyCm3","wzCm3"])if(!d.sectionProperties[key])issues.push(`${key}: módulo elástico físico pendente.`);
     }
     const standard=d?.family==="cold-formed"?"ABNT NBR 14762:2010":"ABNT NBR 8800:2024 Versão Corrigida:2025";
     const referenceBlock=`${d?.family?standard:"Norma aplicável à família ainda a identificar"}: texto legítimo, cláusulas/condições integrais e exemplos independentes ainda necessários; nenhuma cláusula aplicada neste avaliador.`;
     const modes=[...normativeModes,...(d?.family==="cold-formed"?[{id:"local-distortional",label:"Flambagem local/distorcional e propriedades efetivas"}]:[{id:"local",label:"Instabilidade local e classificação da seção"}])];
+    const continuous=continuousDemands?.pieces.find(p=>p.pieceId===piece.id),localDisplacement=!!continuous&&continuous.fields.every(f=>f.displacementStatus==="continuous-verified");
+    const whole=wholePieceDeflections?.pieces.find(p=>p.pieceId===piece.id)?.status==="continuous-verified";
+    const coverage={forceComponents:continuous?"continuous-verified":"sampled-stations-only",localDisplacement:localDisplacement?"continuous-verified":"unsupported",segmentRelativeDeflection:localDisplacement?"continuous-verified":"unsupported",wholePieceDeflection:whole?"continuous-verified":"unsupported",interactionExtrema:"unsupported"};
+    const readiness=d?familyReadiness(d,group,demand.lengthM):null;
     const verifications=modes.map(mode=>({id:mode.id,label:mode.label,status:"pending" as const,
-      demandCoverage:"sampled-stations-only" as const,designResistanceN:null,utilization:null,clauseApplied:null,
+      demandCoverage:mode.id==="interaction"?"unsupported-interaction-extrema":mode.id==="service"?"partial-service-components":coverage.forceComponents,coverage,designResistanceN:null,utilization:null,clauseApplied:null,
       blockers:[referenceBlock,...issues,
         ...(demand.kind==="axial"&&["bending","shear","torsion","interaction"].includes(mode.id)?["Modelo exclusivamente axial não fornece estes esforços; isso não comprova a ausência física de excentricidades ou desses modos na obra."]:[]),
-        ...(mode.id==="service"?["Referência de flecha relativa, limites e aplicabilidade SLS não implementados; cinco amostras não localizam extremo contínuo."]:[])]}));
+        ...(mode.id==="service"?[whole?"Flecha em XYZ e norma vetorial relativa à corda da peça inteira recuperadas; critérios declarados são separados da validação normativa SLS.":localDisplacement?"Componentes locais e corda do segmento recuperados; referência da peça inteira não suportada.":"Deslocamento contínuo indisponível; amostras não garantem extremo de serviço."]:[])]}));
     const axialMeanStress=demand.samples.map(s=>({sampleId:s.id,stressMPa:axialMeanStressMPa(s.forces.nN,group.areaCm2)}));
     if(axialMeanStress.some(s=>s.stressMPa===null))issues.push("Controle N/A indisponível: propriedade ausente ou limite numérico excedido.");
     const controls=elasticMemberReference(piece,group,d);
     return {pieceId:piece.id,role:piece.role,profileDesignation:d?.profileDesignation??null,family:d?.family??null,
       status:"incomplete" as const,allApplicableVerificationsComplete:false as const,approved:false as const,
-      normativeReadiness:{status:!d?"pending-data":coldFormedDiagnostics(d,group,demand.lengthM).status,physical: d?coldFormedDiagnostics(d,group,demand.lengthM):null,continuousDemandStatus:continuousDemands?"continuous-verified":"unsupported",interactionStatus:"unsupported",combinationStatus:"pending-normative-source",normativeSourceStatus:"pending-normative-source",designResistance:null,utilization:null,clausesApplied:[] as string[],blockers:["Nenhum procedimento normativo completo disponível no registro do motor; fontes textuais não habilitam aprovação.",...issues]},
+      normativeReadiness:{status:readiness?.status??"pending-data",physical:readiness,coverage,continuousDemandStatus:coverage.forceComponents,interactionStatus:"unsupported",combinationStatus:"pending-normative-source",normativeSourceStatus:"pending-normative-source",designResistance:null,utilization:null,clausesApplied:[] as string[],blockers:["Nenhum procedimento normativo completo disponível no registro do motor; fontes textuais não habilitam aprovação.",...issues]},
       dataIssues:issues,physicalProperties:group,declaration:d,verifications,
       analyticalControls:{normative:false as const,status:"reference-only" as const,
         description:"N/A é apenas tensão média axial elástica; não representa tensões extremas de flexão, resistência, utilização ou segurança.",axialMeanStress,idealizedReferences:controls}};
   });
-  const binding={...demands.binding,evaluatorVersion:"jpn.resistance-report/1",declarationsSha256:await mixedInputHash(declarations)};
-  const report={schema_version:"jpn.resistance-report/1" as const,status:"partial-demands-and-preparation" as const,
+  const binding={...demands.binding,evaluatorVersion:"jpn.resistance-report/2",declarationsSha256:await mixedInputHash(declarations)};
+  const report={schema_version:"jpn.resistance-report/2" as const,status:"partial-demands-and-preparation" as const,
     approvedForFabrication:false as const,structureStatus:"NOT_APPROVED_FOR_FABRICATION" as const,
     normativeProceduresImplemented:[] as string[],binding,physicalInput:current.request,
-    engineeringCombinations:draft.engineeringCombinations??null,demands,pieces,continuousDemands,
+    engineeringCombinations:draft.engineeringCombinations??null,demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
     remaining:["Seleção e validação normativa das ações/combinações ainda pendentes na M22.","Procedimentos resistentes normativos integrais ainda indisponíveis; nenhuma verificação ATENDE/NÃO ATENDE emitida.","Missão 24: ligações, apoios, contenções, estabilidade global/efeitos adicionais e revisão do engenheiro."]};
-  return {...report,reportSha256:await mixedInputHash(report)};
+  const full={...report,releaseGate:buildEngineReleaseGate(project,report)};
+  return {...full,reportSha256:await mixedInputHash(full)};
 }
 export type ResistanceReport=Awaited<ReturnType<typeof buildResistanceReport>>;
 

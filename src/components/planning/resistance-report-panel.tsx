@@ -7,6 +7,8 @@ import { resistancePreparationSchema, resistantSectionGeometrySchema } from "@/d
 import { Field, Input, Select } from "@/components/ui";
 import { ContinuousDemandsPanel } from "./continuous-demands-panel";
 import { ColdFormedPropertiesForm } from "./cold-formed-properties-form";
+import { SectionAnalysisControl } from "./section-analysis-control";
+import { DeclaredServiceControl } from "./declared-service-control";
 
 const labels:Record<DemandComponent,string>={nN:"N",vyN:"Vy",vzN:"Vz",tNm:"T",myNm:"My",mzNm:"Mz"};
 const show=(n:number|null)=>n===null?"Não aplicável":n===0?"0":n.toExponential(5);
@@ -20,6 +22,8 @@ export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExpo
   const rows=demands?new Map(demands.samples.map(s=>[s.id,s])):null;
   return <section className="notice" data-testid="resistance-report" aria-label="Solicitações e preparação resistente">
     <h4>Solicitações e preparação resistente — M23 parcial</h4>
+    <p data-testid="engine-release-gate"><strong>MOTOR NÃO PRONTO — BLOQUEADO</strong>. Análise, critérios declarados, resistência normativa, revisão profissional e fabricação são estados separados.</p>
+    <details><summary>Bloqueios da cadeia estrutural completa</summary><ul>{report.releaseGate.blocked.map(x=><li key={x.id}>{x.reason}</li>)}</ul></details>
     <p>Estrutura NÃO APROVADA PARA FABRICAÇÃO. Nenhum procedimento resistente normativo implementado. Verificações individuais pendentes; peça incompleta. Os números abaixo são solicitações e controles analíticos, sem índice de utilização ou aprovação.</p>
     <p>Máximos/mínimos apenas nas estações amostradas; os esforços de cada linha são simultâneos na mesma combinação e posição. N positivo = tração; negativo = compressão. Forças em N e momentos em N·m, nos eixos locais do solver.</p>
     <Field label="Componente dos extremos amostrados"><Select value={component} onChange={e=>setComponent(e.target.value as DemandComponent)}>{demandComponents.map(k=><option key={k} value={k}>{labels[k]}</option>)}</Select></Field>
@@ -34,6 +38,8 @@ export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExpo
     {data&&demands&&rows&&<div data-testid="resistance-selected" data-piece-id={selectedPiece}>
       <h4>{selectedPiece} · {data.profileDesignation??"Perfil físico ainda sem designação"}</h4>
       <ContinuousDemandsPanel report={report.continuousDemands} pieceId={selectedPiece}/>
+      <DeclaredServiceControl key={`service-${selectedPiece}`} project={project} pieceId={selectedPiece} report={report} onChange={onChange}/>
+      <SectionAnalysisControl key={`section-${selectedPiece}`} project={project} pieceId={selectedPiece}/>
       <p data-testid="normative-readiness">Prontidão normativa: {data.normativeReadiness.status}; combinações: {data.normativeReadiness.combinationStatus}. Nenhuma resistência ou utilização disponível.</p>
       {data.normativeReadiness.physical&&<ul>{data.normativeReadiness.physical.issues.map((v,i)=><li key={i}>{v.code}: {v.message}</li>)}</ul>}
       <p>{demands.kind==="axial"?"Elemento axial: flexão, cortantes e torção não aplicáveis ao modelo.":`Pórtico; seção girada ${demands.axes!.rotationDeg}° conforme a entrada; eixos locais PyNite.`} {demands.segments.length} segmento(s); comprimento original {show(demands.lengthM)} m.</p>

@@ -5,6 +5,7 @@ import type { ConnectionReport } from "@/domain/connection-report";
 import type { ConnectionDeclaration } from "@/domain/connections";
 import { physicalConnectionNodes,saveConnectionDeclaration } from "@/domain/connection-declaration";
 import { Field,Input,Select } from "@/components/ui";
+import { ConnectionGeometryControl } from "./connection-geometry-control";
 
 const vec=(v:number[]|null)=>v?v.map(n=>n===0?"0":n.toExponential(5)).join("; "):"Não aplicável ao modelo axial";
 export function ConnectionsPanel({project,report,combinationId,selectedNode,onSelectNode,onSelectPiece,onChange,onExport}:{project:Project;report:ConnectionReport|null;combinationId:string;selectedNode:string;onSelectNode:(id:string)=>void;onSelectPiece:(id:string)=>void;onChange:(p:Partial<Project>)=>void;onExport:()=>void}){
@@ -30,6 +31,7 @@ export function ConnectionsPanel({project,report,combinationId,selectedNode,onSe
         <button type="button" className="button secondary" onClick={onExport}>Exportar ações e diagnóstico de ligações</button>
       </div>:<p>Sem ações atuais de ligação. Use “Calcular ações de ligações” para obter a transformação nativa do PyNite; não são somados esforços locais sem essa referência.</p>}
       <ConnectionForm key={`${project.id}:${node.nodeId}`} project={project} nodeId={node.nodeId} pieceIds={node.pieceIds} onChange={onChange}/>
+      <ConnectionGeometryControl key={`geometry-${node.nodeId}`} project={project} nodeId={node.nodeId} onChange={onChange}/>
     </>}
   </section>;
 }
