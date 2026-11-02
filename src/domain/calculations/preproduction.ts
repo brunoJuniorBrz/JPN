@@ -35,20 +35,22 @@ export function buildPreproductionDossier(project: Project) {
   }
 
   const fabrication = new Map<string, (typeof project.workspace.fabrication)[number]>();
+  const duplicateIds = new Set<string>();
   const ids = new Set(model.pieces.map(p => p.id));
   for (const item of project.workspace.fabrication) {
     if (!ids.has(item.pieceId)) {
       add("FABRICATION_ORPHAN", "Comprimento cadastrado para peça ausente da geometria atual.", item.pieceId);
     }
     if (fabrication.has(item.pieceId)) {
-      add("FABRICATION_DUPLICATE", "Há mais de um cadastro de comprimento final para esta peça.", item.pieceId);
+      add("FABRICATION_DUPLICATE", "Há mais de um cadastro de comprimento final para esta peça; os registros foram invalidados.", item.pieceId);
+      duplicateIds.add(item.pieceId);
     }
     fabrication.set(item.pieceId, item);
   }
 
   const pieces = model.pieces.map(piece => {
     const profile = piece.profile, declared = fabrication.get(piece.id);
-    const current = declared?.signature === signature;
+    const current = declared?.signature === signature && !duplicateIds.has(piece.id);
     if (!profile.name.trim() || profile.name.startsWith("VISUAL PROVISÓRIO"))
       add("PROFILE_MISSING", "Perfil comercial definitivo não declarado.", piece.id);
     if (!profile.steelGrade.trim()) add("STEEL_MISSING", "Aço do perfil não declarado.", piece.id);
@@ -58,6 +60,7 @@ export function buildPreproductionDossier(project: Project) {
       add("STOCK_MISSING", "Comprimento comercial não confirmado.", piece.id);
     if (profile.massKgM === null) add("MASS_MISSING", "Massa linear não confirmada.", piece.id);
     if (!declared) add("FINAL_LENGTH_MISSING", "Comprimento final de fabricação não declarado.", piece.id);
+    else if (duplicateIds.has(piece.id)) add("FINAL_LENGTH_STALE", "Comprimento final bloqueado por registros duplicados.", piece.id);
     else if (!current) add("FINAL_LENGTH_STALE", "Comprimento declarado pertence a uma revisão geométrica anterior.", piece.id);
     return {
       id: piece.id, role: piece.role,
