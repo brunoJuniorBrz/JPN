@@ -1,0 +1,206 @@
+[
+  {
+    "file": "src/domain/connection-report.test.ts",
+    "status": "passed",
+    "assertions": [
+      {
+        "fullName": "JPN → PyNite real → Rᵀ → todas as juntas, combinações e reações globais",
+        "status": "passed",
+        "duration": 6.254500000000917,
+        "failureMessages": []
+      },
+      {
+        "fullName": "ações de junta têm sinal oposto ao nativo e cortes contínuos não ganham rótulas/emendas",
+        "status": "passed",
+        "duration": 7.997400000000198,
+        "failureMessages": []
+      },
+      {
+        "fullName": "recusa bases presumidas, ações alteradas e dupla contagem de UDL como carga nodal",
+        "status": "passed",
+        "duration": 294.101200000001,
+        "failureMessages": []
+      },
+      {
+        "fullName": "declarações físicas são manuais, únicas, persistidas e não alteram apoios/liberações",
+        "status": "passed",
+        "duration": 56.95169999999962,
+        "failureMessages": []
+      },
+      {
+        "fullName": "declaração e mudanças físicas tornam a análise/relatório anterior obsoletos",
+        "status": "passed",
+        "duration": 1775.9820999999993,
+        "failureMessages": []
+      },
+      {
+        "fullName": "peso próprio axial entra como carga nodal; pórtico permanece distribuído",
+        "status": "passed",
+        "duration": 5921.433099999998,
+        "failureMessages": []
+      },
+      {
+        "fullName": "nó exclusivamente axial não recebe resíduos rotacionais ou vínculos artificiais",
+        "status": "passed",
+        "duration": 4912.7011999999995,
+        "failureMessages": []
+      },
+      {
+        "fullName": "erros físicos e numéricos produzem diagnósticos explícitos, sem aprovação de estabilidade",
+        "status": "passed",
+        "duration": 0.31899999999950523,
+        "failureMessages": []
+      },
+      {
+        "fullName": "M26 integra cobertura, solicitações contínuas, ações de juntas e M25 sem promover aprovação",
+        "status": "passed",
+        "duration": 3604.6716000000015,
+        "failureMessages": []
+      }
+    ]
+  },
+  {
+    "file": "src/domain/continuous-demands.test.ts",
+    "status": "passed",
+    "assertions": [
+      {
+        "fullName": "isola raízes repetidas, limites, escalas e polinômio nulo sem falsos extremos",
+        "status": "passed",
+        "duration": 5.8367000000000075,
+        "failureMessages": []
+      },
+      {
+        "fullName": "viga propped: máximo entre amostras e flecha quartica independente; segmentada=false",
+        "status": "passed",
+        "duration": 2342.1431,
+        "failureMessages": []
+      },
+      {
+        "fullName": "viga propped: máximo entre amostras e flecha quartica independente; segmentada=true",
+        "status": "passed",
+        "duration": 2058.7208,
+        "failureMessages": []
+      },
+      {
+        "fullName": "referência simple, seção girada e cargas globais/locais, sinais e concomitância",
+        "status": "passed",
+        "duration": 2558.4746999999998,
+        "failureMessages": []
+      },
+      {
+        "fullName": "referência cantilever, seção girada e cargas globais/locais, sinais e concomitância",
+        "status": "passed",
+        "duration": 2204.7671,
+        "failureMessages": []
+      },
+      {
+        "fullName": "legacy v1 mantém esforços contínuos nodais e deslocamentos unsupported; corrupção bloqueada",
+        "status": "passed",
+        "duration": 2042.4454999999998,
+        "failureMessages": []
+      },
+      {
+        "fullName": "balanço espacial inclinado, seção girada 37° e vetor concomitante em posições não amostradas",
+        "status": "passed",
+        "duration": 960.2299999999996,
+        "failureMessages": []
+      },
+      {
+        "fullName": "liberações flexionais nativas preservam a curva contínua e momentos liberados nulos",
+        "status": "passed",
+        "duration": 1035.583200000001,
+        "failureMessages": []
+      }
+    ]
+  },
+  {
+    "file": "src/domain/m26-integration.test.ts",
+    "status": "passed",
+    "assertions": [
+      {
+        "fullName": "Ue: resolução dimensional, r²=I/A e conversão cm→mm; preenchimento não aprova norma",
+        "status": "passed",
+        "duration": 18.741800000000012,
+        "failureMessages": []
+      },
+      {
+        "fullName": "Ue incompleto, família incompatível, contenção órfã, espessura/dobras e material incoerentes bloqueados",
+        "status": "passed",
+        "duration": 6.179900000000032,
+        "failureMessages": []
+      },
+      {
+        "fullName": "M22/M24 + propriedades novas preservam M25, backup e estados preliminares",
+        "status": "passed",
+        "duration": 150.0836,
+        "failureMessages": []
+      },
+      {
+        "fullName": "furação estruturada não deriva áreas de texto; duplicados, referências e área líquida inválida bloqueados",
+        "status": "passed",
+        "duration": 2.813299999999913,
+        "failureMessages": []
+      },
+      {
+        "fullName": "cinco candidatos não são goldens; unidade suspeita continua em quarentena, sem resistência gabarito",
+        "status": "passed",
+        "duration": 1.1508999999999787,
+        "failureMessages": []
+      }
+    ]
+  },
+  {
+    "file": "src/lib/exports/preproduction.test.ts",
+    "status": "passed",
+    "assertions": [
+      {
+        "fullName": "M25 - conferir conteúdo real dos documentos exportados abre o Excel e confronta IDs, quantidade, comprimento e avisos com o modelo físico",
+        "status": "passed",
+        "duration": 208.01170000000002,
+        "failureMessages": []
+      },
+      {
+        "fullName": "M25 - conferir conteúdo real dos documentos exportados reabre o PDF e confere avisos, pendências e IDs das peças presentes no documento",
+        "status": "passed",
+        "duration": 274.29150000000027,
+        "failureMessages": []
+      }
+    ]
+  },
+  {
+    "file": "src/domain/calculations/preproduction.test.ts",
+    "status": "passed",
+    "assertions": [
+      {
+        "fullName": "M25: dossiê preliminar para planejamento de materiais não inventa preços, aço, comprimentos comerciais ou aprovação a partir do projeto visual",
+        "status": "passed",
+        "duration": 64.74579999999997,
+        "failureMessages": []
+      },
+      {
+        "fullName": "M25: dossiê preliminar para planejamento de materiais reconcilia peças, grupos, massa e cortes usando a mesma geometria 3D, sem aprovar",
+        "status": "passed",
+        "duration": 30.422399999999982,
+        "failureMessages": []
+      },
+      {
+        "fullName": "M25: dossiê preliminar para planejamento de materiais invalida todas as medidas finais cadastradas na revisão geométrica anterior",
+        "status": "passed",
+        "duration": 20.573800000000006,
+        "failureMessages": []
+      },
+      {
+        "fullName": "M25: dossiê preliminar para planejamento de materiais detecta registros duplicados ou órfãos, sem permitir que se tornem comprimentos finais",
+        "status": "passed",
+        "duration": 14.290099999999995,
+        "failureMessages": []
+      },
+      {
+        "fullName": "M25: dossiê preliminar para planejamento de materiais não contabiliza como massa completa um perfil com massa linear desconhecida",
+        "status": "passed",
+        "duration": 16.056100000000015,
+        "failureMessages": []
+      }
+    ]
+  }
+]

@@ -5,6 +5,8 @@ import { demandComponents, type DemandComponent, type DemandRow } from "@/domain
 import type { Project } from "@/domain/models";
 import { resistancePreparationSchema, resistantSectionGeometrySchema } from "@/domain/resistance-preparation";
 import { Field, Input, Select } from "@/components/ui";
+import { ContinuousDemandsPanel } from "./continuous-demands-panel";
+import { ColdFormedPropertiesForm } from "./cold-formed-properties-form";
 
 const labels:Record<DemandComponent,string>={nN:"N",vyN:"Vy",vzN:"Vz",tNm:"T",myNm:"My",mzNm:"Mz"};
 const show=(n:number|null)=>n===null?"Não aplicável":n===0?"0":n.toExponential(5);
@@ -31,6 +33,9 @@ export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExpo
     </details>
     {data&&demands&&rows&&<div data-testid="resistance-selected" data-piece-id={selectedPiece}>
       <h4>{selectedPiece} · {data.profileDesignation??"Perfil físico ainda sem designação"}</h4>
+      <ContinuousDemandsPanel report={report.continuousDemands} pieceId={selectedPiece}/>
+      <p data-testid="normative-readiness">Prontidão normativa: {data.normativeReadiness.status}; combinações: {data.normativeReadiness.combinationStatus}. Nenhuma resistência ou utilização disponível.</p>
+      {data.normativeReadiness.physical&&<ul>{data.normativeReadiness.physical.issues.map((v,i)=><li key={i}>{v.code}: {v.message}</li>)}</ul>}
       <p>{demands.kind==="axial"?"Elemento axial: flexão, cortantes e torção não aplicáveis ao modelo.":`Pórtico; seção girada ${demands.axes!.rotationDeg}° conforme a entrada; eixos locais PyNite.`} {demands.segments.length} segmento(s); comprimento original {show(demands.lengthM)} m.</p>
       <div style={{overflowX:"auto"}} role="region" aria-label="Extremos concomitantes da peça selecionada" tabIndex={0}><table><thead><tr><th>Critério</th><th>Segmento</th><th>Combinação</th><th>x segmento / peça</th><th>Esforços simultâneos</th></tr></thead><tbody>
         {demandComponents.flatMap(k=>{const ext=demands.critical[k];return ext?(["minimum","maximum"] as const).map(c=><tr key={`${k}-${c}`}><td>{labels[k]} {c==="minimum"?"mínimo":"máximo"}</td><ConcurrentRow row={rows.get(ext[c])!}/></tr>):[];})}
@@ -40,6 +45,7 @@ export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExpo
       <details><summary>Verificações e informações pendentes de {selectedPiece}</summary><ul>{data.verifications.map(v=><li key={v.id}><strong>{v.label}: PENDENTE</strong><ul>{v.blockers.map((b,i)=><li key={i}>{b}</li>)}</ul></li>)}</ul></details>
       <details><summary>Controle analítico N/A — não normativo</summary><p>Tensão média axial; não inclui tensões extremas de flexão, flambagem ou interação.</p><ul>{[demands.critical.nN!.minimum,demands.critical.nN!.maximum].map((id,i)=><li key={i}>{rows.get(id)!.segmentId} / {rows.get(id)!.combinationId}: {show(data.analyticalControls.axialMeanStress.find(s=>s.sampleId===id)!.stressMPa)} MPa</li>)}</ul></details>
       <ResistantGeometryForm key={selectedPiece} project={project} pieceId={selectedPiece} onChange={onChange}/>
+      <ColdFormedPropertiesForm key={`ue-${selectedPiece}`} project={project} pieceId={selectedPiece} onChange={onChange}/>
     </div>}
     <p style={{overflowWrap:"anywhere"}}>Entrada {report.binding.inputSha256}; resultado {report.binding.resultSha256}; relatório {report.reportSha256}.</p>
     <button type="button" className="button secondary" onClick={onExport}>Exportar relatório resistente preliminar</button>

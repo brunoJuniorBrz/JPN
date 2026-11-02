@@ -7,6 +7,8 @@ import { mixedInputHash } from "./mixed-analysis";
 import { extractMemberDemands, type DemandInput } from "./member-demands";
 import { resistancePreparationSchema } from "./resistance-preparation";
 import { elasticMemberReference } from "./resistance-elastic-reference";
+import { extractContinuousDemands } from "./continuous-demands";
+import { coldFormedDiagnostics } from "./cold-formed-properties";
 
 const normativeModes=[
   {id:"tension",label:"Tração: escoamento bruto e ruptura da seção efetiva/líquida"},
@@ -25,11 +27,12 @@ export function axialMeanStressMPa(normalN:number,areaCm2:number|null){
 
 /** Engineering blockers and idealized controls, NEVER an implementation of
  * unavailable ABNT clauses. States cannot be promoted by supplying a string. */
-export async function buildResistanceReport(project:Project,prepared:DemandInput,value:unknown){
+export async function buildResistanceReport(project:Project,prepared:DemandInput,value:unknown,jointTrace?:unknown){
   const current=await (project.workspace.spatialPreparation?.loading?adaptLoadedMixedProject(project):adaptMixedProject(project));
   if(current.input_sha256!==prepared.input_sha256||current.preparation_sha256!==prepared.preparation_sha256||canonicalSpatialInput(current.mapping)!==canonicalSpatialInput(prepared.mapping))
     throw new Error("STALE_RESISTANCE_ANALYSIS: projeto/discretização/declarações diferem da análise; execute novamente.");
   const demands=await extractMemberDemands(prepared,value),draft=project.workspace.spatialPreparation!,model=generateStructure(project).model!;
+  const continuousDemands=jointTrace?await extractContinuousDemands(prepared,value,jointTrace):null;
   const declarations=draft.resistance??[];
   if(new Set(declarations.map(d=>d.pieceId)).size!==declarations.length||declarations.some(d=>!model.pieces.some(p=>p.id===d.pieceId)))throw new Error("RESISTANCE_DECLARATIONS: cadastro resistente duplicado ou peça órfã.");
   const pieces=demands.pieces.map(demand=>{
@@ -71,6 +74,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
     const controls=elasticMemberReference(piece,group,d);
     return {pieceId:piece.id,role:piece.role,profileDesignation:d?.profileDesignation??null,family:d?.family??null,
       status:"incomplete" as const,allApplicableVerificationsComplete:false as const,approved:false as const,
+      normativeReadiness:{status:!d?"pending-data":coldFormedDiagnostics(d,group,demand.lengthM).status,physical: d?coldFormedDiagnostics(d,group,demand.lengthM):null,continuousDemandStatus:continuousDemands?"continuous-verified":"unsupported",interactionStatus:"unsupported",combinationStatus:"pending-normative-source",normativeSourceStatus:"pending-normative-source",designResistance:null,utilization:null,clausesApplied:[] as string[],blockers:["Nenhum procedimento normativo completo disponível no registro do motor; fontes textuais não habilitam aprovação.",...issues]},
       dataIssues:issues,physicalProperties:group,declaration:d,verifications,
       analyticalControls:{normative:false as const,status:"reference-only" as const,
         description:"N/A é apenas tensão média axial elástica; não representa tensões extremas de flexão, resistência, utilização ou segurança.",axialMeanStress,idealizedReferences:controls}};
@@ -79,15 +83,15 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
   const report={schema_version:"jpn.resistance-report/1" as const,status:"partial-demands-and-preparation" as const,
     approvedForFabrication:false as const,structureStatus:"NOT_APPROVED_FOR_FABRICATION" as const,
     normativeProceduresImplemented:[] as string[],binding,physicalInput:current.request,
-    engineeringCombinations:draft.engineeringCombinations??null,demands,pieces,
+    engineeringCombinations:draft.engineeringCombinations??null,demands,pieces,continuousDemands,
     remaining:["Seleção e validação normativa das ações/combinações ainda pendentes na M22.","Procedimentos resistentes normativos integrais ainda indisponíveis; nenhuma verificação ATENDE/NÃO ATENDE emitida.","Missão 24: ligações, apoios, contenções, estabilidade global/efeitos adicionais e revisão do engenheiro."]};
   return {...report,reportSha256:await mixedInputHash(report)};
 }
 export type ResistanceReport=Awaited<ReturnType<typeof buildResistanceReport>>;
 
-export async function assertResistanceReportCurrent(report:ResistanceReport,project:Project,prepared:DemandInput,result:unknown){
+export async function assertResistanceReportCurrent(report:ResistanceReport,project:Project,prepared:DemandInput,result:unknown,jointTrace?:unknown){
   const {reportSha256,...body}=report;
   if(await mixedInputHash(body)!==reportSha256)throw new Error("STALE_RESISTANCE_REPORT: conteúdo do relatório foi alterado.");
-  const next=await buildResistanceReport(project,prepared,result);
+  const next=await buildResistanceReport(project,prepared,result,jointTrace);
   if(next.reportSha256!==reportSha256)throw new Error("STALE_RESISTANCE_REPORT: dados, norma ou resultado do solver mudaram.");
 }

@@ -9,7 +9,9 @@
       "integration/m21-studio-release-candidate": false,
       "feat/engineering-m22-m24": false,
       "feat/m23-resistant-design": false,
-      "feat/m24-connections-stability": false
+      "feat/m24-connections-stability": false,
+      "feat/m25-preproduction-dossier": false,
+      "feat/m26-integrated-normative-engine": false
     }
   },
   "functions": {

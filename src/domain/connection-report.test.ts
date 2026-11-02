@@ -2,6 +2,8 @@ import { beforeAll,afterAll,expect,it,vi } from "vitest";
 import { windReferenceProject } from "./examples/wind-project";
 import { loadedMixedReferenceProject } from "./examples/loaded-mixed-project";
 import { generateStructure } from "./calculations/structure";
+import { buildResistanceReport,assertResistanceReportCurrent } from "./resistance-report";
+import { buildPreproductionDossier } from "./calculations/preproduction";
 import { adaptLoadedMixedProject } from "./loaded-mixed-adapter";
 import { buildConnectionReport,assertConnectionReportCurrent } from "./connection-report";
 import { verifyJointActionTrace } from "./member-end-actions";
@@ -80,6 +82,7 @@ it("peso próprio axial entra como carga nodal; pórtico permanece distribuído"
   const r=await buildConnectionReport(p,a,o.result,o.joint_actions);expect(r.combinations.every(c=>c.globalBalance.withinTolerance)).toBe(true);
   expect(o.result.schema_version).toBe("jpn.mixed3d-result/2");if(o.result.schema_version!=="jpn.mixed3d-result/2")throw Error("Expected weight");
   const sw=o.result.loading.self_weight!;expect(sw.members.some(m=>m.representation==="half-to-end-nodes")).toBe(true);expect(sw.members.some(m=>m.representation==="consistent-frame-udl")).toBe(true);
+  const continuous=(await buildResistanceReport(p,a,o.result,o.joint_actions)).continuousDemands!;expect(continuous.pieces.some(p=>p.fields.some(f=>f.loadLocalNM.some(x=>x!==0)))).toBe(true);
 },20000);
 it("nó exclusivamente axial não recebe resíduos rotacionais ou vínculos artificiais",async()=>{
   const p=windReferenceProject(),d=p.workspace.spatialPreparation!,column=generateStructure(p).model!.pieces.find(m=>m.role==="column")!;
@@ -98,3 +101,10 @@ it("erros físicos e numéricos produzem diagnósticos explícitos, sem aprovaç
   for(const code of ["UNSTABLE","ILL_CONDITIONED","DISCONNECTED_MODEL","UNSUPPORTED_RELEASE","EQUILIBRIUM_FAILURE","UNRESOLVED_CONTACT"])expect(stabilityFailureExplanation(code)).toBeTruthy();
   expect(stabilityFailureExplanation("UNRECOGNIZED")).toBeNull();
 });
+it("M26 integra cobertura, solicitações contínuas, ações de juntas e M25 sem promover aprovação",async()=>{
+  const before=buildPreproductionDossier(project),r=await buildResistanceReport(project,prepared,result,trace);
+  expect(r.continuousDemands!.pieces).toHaveLength(207);expect(r.continuousDemands!.pieces.flatMap(p=>p.fields)).toHaveLength(243*4);
+  expect(r.continuousDemands!.pieces.every(p=>p.fields.every(f=>f.displacementStatus===(p.kind==="frame"?"continuous-verified":"unsupported")))).toBe(true);
+  expect(buildPreproductionDossier(project)).toEqual(before);expect(r.pieces.every(p=>!p.approved&&p.normativeReadiness.utilization===null)).toBe(true);
+  await assertResistanceReportCurrent(r,project,prepared,result,trace);await expect(assertResistanceReportCurrent(r,project,prepared,result)).rejects.toThrow(/STALE_RESISTANCE_REPORT/);
+},20000);

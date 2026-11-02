@@ -8,6 +8,9 @@ for(const width of [375,1440])test(`M24 ações, nó no 3D, declaração física
   await p.getByRole("button",{name:"Calcular ações de ligações",exact:true}).click();const panel=p.getByTestId("connections-panel");await expect(panel.getByTestId("connection-actions")).toBeVisible({timeout:30000});
   const download=page.waitForEvent("download");await panel.getByRole("button",{name:"Exportar ações e diagnóstico de ligações",exact:true}).click();const file=await download,out=JSON.parse(await readFile((await file.path())!,"utf8"));
   expect(out.physicalNodes).toHaveLength(132);expect(out.approvedForFabrication).toBe(false);expect(out.diagnostics.normativeStabilityVerified).toBe(false);
+  const resistanceDownload=page.waitForEvent("download");await p.getByRole("button",{name:"Exportar relatório resistente preliminar",exact:true}).click();const resistanceFile=await resistanceDownload,resistance=JSON.parse(await readFile((await resistanceFile.path())!,"utf8"));
+  expect(resistance.continuousDemands.schema_version).toBe("jpn.continuous-demands/1");expect(resistance.continuousDemands.pieces).toHaveLength(207);expect(resistance.continuousDemands.interactionStatus).toBe("unsupported");expect(resistance.approvedForFabrication).toBe(false);
+  await p.getByTestId("continuous-demands").locator(":scope > summary").click();await expect(p.getByTestId("continuous-demands")).toContainText("contínuo verificado");
   const c=out.combinations.find((c:{combinationId:string})=>c.combinationId==="WP");expect(c.joints.reduce((s:number,j:{ends:unknown[]})=>s+j.ends.length,0)).toBe(486);expect(c.globalBalance.withinTolerance).toBe(true);
   const base=c.joints.find((j:{support:unknown;ends:unknown[]})=>j.support&&j.ends.length===1);expect(base).toBeTruthy();
   await panel.getByLabel("Nó ou ligação física").selectOption(base.nodeId);await p.getByLabel("Selecionar nós físicos no 3D",{exact:true}).check();
