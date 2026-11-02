@@ -1,0 +1,295 @@
+{
+  "schema_version": "jpn.m22-validation/1",
+  "date_local": "2026-11-02",
+  "timezone": "America/Sao_Paulo",
+  "base": "92b9a2836e9cdb50553f98173f300e425acef877",
+  "branch": "feat/engineering-m22-m24",
+  "base_ci": {
+    "run": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41451828840",
+    "application": "success",
+    "structural_ubuntu": "success",
+    "structural_windows": "success"
+  },
+  "new_branch_ci": "not executed locally; inspect new PR checks; base success does not prove this branch",
+  "environment": {
+    "os": "Windows 10",
+    "python": "3.12.10",
+    "PyNiteFEA": "3.2.1",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "node": "24.13.0",
+    "pnpm": "12.15.0",
+    "OPENBLAS_NUM_THREADS": 1,
+    "OMP_NUM_THREADS": 1,
+    "MKL_NUM_THREADS": 1
+  },
+  "commands": [
+    {
+      "command": "pnpm exec vitest run roof-load-path, roof-load-path-independent, loaded-mixed, resistance-elastic-reference (exact src/domain/*.test.ts paths)",
+      "phase": "baseline",
+      "exit_code": 0,
+      "passed": 91,
+      "failed": 0
+    },
+    {
+      "command": "pnpm exec vitest run src/domain/wind-load-path.test.ts",
+      "phase": "initial directed",
+      "passed": 15,
+      "failed": 2,
+      "note": "Reference fall direction and JSON negative-zero equality corrected; math and tolerances unchanged."
+    },
+    {
+      "command": "pnpm exec vitest run src/domain/wind-load-path.test.ts",
+      "phase": "directed after corrections",
+      "exit_code": 0,
+      "passed": 17,
+      "failed": 0
+    },
+    {
+      "command": "python engine/validate.py",
+      "exit_code": 0,
+      "pytest": {
+        "tests": 1444,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exit_code": 0
+      },
+      "random_comparisons_passed": 1000,
+      "elapsed_seconds": 66.035021699965
+    },
+    {
+      "command": "python engine/audit_loading.py",
+      "exit_code": 0,
+      "status": "passed",
+      "references": [
+        {
+          "case": "cantilever",
+          "expected_deflection_m": -9.999999999999999e-05,
+          "actual_deflection_m": -9.999999999999999e-05,
+          "absolute_error_m": 0.0
+        },
+        {
+          "case": "simple",
+          "expected_deflection_m": -1.0416666666666665e-05,
+          "actual_deflection_m": -1.0416666666666663e-05,
+          "absolute_error_m": 1.6940658945086007e-21
+        },
+        {
+          "case": "fixed",
+          "expected_deflection_m": -2.083333333333333e-06,
+          "actual_deflection_m": -2.0833333333333343e-06,
+          "absolute_error_m": 1.2705494208814505e-21
+        }
+      ],
+      "isolated_weight": {
+        "expected_mass_kg": 21,
+        "actual_mass_kg": 21.0,
+        "expected_tip_m": -0.00010666666666666665,
+        "actual_tip_m": -0.00010666666666666665
+      },
+      "independent_fixture": {
+        "reference_mass_kg": 4556.486694873053,
+        "static_members": 243,
+        "nodes": 132,
+        "force_residual_n": [
+          2.4158453015843406e-12,
+          7.58433316150331e-11,
+          -7.462404028046876e-10
+        ],
+        "moment_residual_nm": [
+          -6.8248482421040535e-09,
+          4.005414666607976e-09,
+          2.346496330574155e-10
+        ]
+      }
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm lint",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "command": "pnpm test --reporter=json --outputFile=../m22-vitest.json",
+      "exit_code": 0,
+      "passed": 303,
+      "failed": 0,
+      "pending": 0,
+      "new_wind_cases": 18
+    },
+    {
+      "command": "python tests/verify_dxf.py",
+      "exit_code": 0,
+      "ezdxf": "1.4.5",
+      "lines_3d": 130,
+      "units": "mm",
+      "audit_errors": 0
+    },
+    {
+      "command": "pnpm test:e2e --reporter=json",
+      "exit_code": 1,
+      "stats": {
+        "startTime": "2026-11-02T13:59:57.798Z",
+        "duration": 262714.95,
+        "expected": 61,
+        "skipped": 0,
+        "unexpected": 2,
+        "flaky": 0
+      },
+      "failure": "Two existing loaded-mixed scenarios used ambiguous descendant summary selector after adding the nested panel."
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/loaded-mixed.spec.ts tests/e2e/wind-load-path.spec.ts --reporter=json",
+      "exit_code": 0,
+      "stats": {
+        "startTime": "2026-11-02T14:06:17.898Z",
+        "duration": 54033.111,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "correction": "Only locator changed to :scope > summary; physical assertions preserved. Full suite not rerun for this selector-only fix."
+    },
+    {
+      "command": "pnpm build",
+      "exit_code": 0
+    }
+  ],
+  "wind_independent_reference": {
+    "geometry_m": {
+      "width": 6,
+      "length": 8,
+      "z": "3+0.25*x"
+    },
+    "zones_pa": [
+      [
+        0,
+        1.3,
+        700
+      ],
+      [
+        1.3,
+        6,
+        -400
+      ]
+    ],
+    "force_n": [
+      -1940,
+      0,
+      7760
+    ],
+    "moment_nm": [
+      31040,
+      -59119.25,
+      7760
+    ]
+  },
+  "real_roof_reference": {
+    "nodes": 132,
+    "pieces": 207,
+    "segments": 243,
+    "vertical_reactions_n": {
+      "WP": 50000,
+      "WS": -50000,
+      "DOUBLE": 100000,
+      "SUM": 70000
+    },
+    "unstable_model": "UNSTABLE; no artificial restraints",
+    "approved_for_fabrication": false
+  },
+  "wind_test_timings_ms": [
+    {
+      "test": "zonas assimétricas: integral independente de pressão, área inclinada, força e todos os momentos",
+      "duration_ms": 120.90369999999996
+    },
+    {
+      "test": "inversão, planos e cumeeira — width-positive/mono",
+      "duration_ms": 114.18080000000009
+    },
+    {
+      "test": "inversão, planos e cumeeira — width-positive/gable",
+      "duration_ms": 59.17870000000005
+    },
+    {
+      "test": "inversão, planos e cumeeira — width-negative/mono",
+      "duration_ms": 67.16150000000005
+    },
+    {
+      "test": "inversão, planos e cumeeira — width-negative/gable",
+      "duration_ms": 130.39790000000016
+    },
+    {
+      "test": "inversão, planos e cumeeira — length-positive/mono",
+      "duration_ms": 78.25319999999988
+    },
+    {
+      "test": "inversão, planos e cumeeira — length-positive/gable",
+      "duration_ms": 26.739499999999907
+    },
+    {
+      "test": "inversão, planos e cumeeira — length-negative/mono",
+      "duration_ms": 57.895500000000084
+    },
+    {
+      "test": "inversão, planos e cumeeira — length-negative/gable",
+      "duration_ms": 64.63360000000011
+    },
+    {
+      "test": "zonas longitudinais só em extremos reais de peças; sem média silenciosa",
+      "duration_ms": 44.94450000000006
+    },
+    {
+      "test": "pressão líquida zero explícita preserva áreas e não cria ações artificiais",
+      "duration_ms": 57.45920000000001
+    },
+    {
+      "test": "bloqueia lacunas, sobreposições, superfícies órfãs, cpi incompatível e dados degenerados",
+      "duration_ms": 223.2186999999999
+    },
+    {
+      "test": "combinações: aritmética independente gamma×psi, categorias e exclusões, zeros explícitos",
+      "duration_ms": 22.09479999999985
+    },
+    {
+      "test": "importação atômica, persistência e backups; não aprova nem altera materiais/cargas existentes",
+      "duration_ms": 67.47039999999993
+    },
+    {
+      "test": "vento bloqueia física ausente, axiais transversais, dupla contagem e revisão obsoleta",
+      "duration_ms": 367.5526
+    },
+    {
+      "test": "cobertura real gerada → vento zonal → PyNite real: reações, momentos, sinais e superposição",
+      "duration_ms": 6945.9746
+    },
+    {
+      "test": "vento em estrutura sem vínculos suficientes continua recusado pelo Python real",
+      "duration_ms": 3591.355800000001
+    },
+    {
+      "test": "q de zona inclinada → balanço misto real contra solução fechada biaxial independente",
+      "duration_ms": 959.8534999999993
+    }
+  ],
+  "performance_limitations": "Timings include process startup and concurrent suite execution; no dedicated peak-memory or worst-case zonal benchmark. Existing physical solver limits unchanged.",
+  "unchanged_engine_files_verified": 55,
+  "unchanged_reserved_paths_verified": [
+    "src/domain/calculations/cutting.ts",
+    "src/lib/exports/cutting.ts",
+    "src/lib/exports/takeoff.ts",
+    "src/lib/exports/cad.ts",
+    "src/components/planning/project-workbench.tsx"
+  ],
+  "remote_execution_this_mission": false,
+  "deploy_manual": false,
+  "merge": false,
+  "normative_status": "pending; no ABNT clauses or automatic coefficient tables implemented",
+  "m23": "not implemented in this increment",
+  "m24": "not implemented in this increment"
+}

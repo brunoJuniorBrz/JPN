@@ -1,4 +1,5 @@
 "use client";
+import { WindEngineeringPanel } from "./wind-engineering-panel";
 import { RoofLoadPathPanel } from "./roof-load-path-panel";
 import { useState } from "react";
 import type { Project } from "@/domain/models";
@@ -46,7 +47,7 @@ export function StructuralLoadsPanel({project,onChange,onSelectPiece}:{project:P
     {loading.selfWeight&&<p>Peso ativo: {loading.selfWeight.caseId}, g={loading.selfWeight.gravity.join("; ")} m/s². <button className="button secondary" onClick={()=>attempt(()=>change({...loading,selfWeight:null}))}>Desativar peso próprio</button> O caso permanece no cadastro para revisão; remova/revise suas combinações explicitamente.</p>}
     {overlapNeeded&&<div className="notice" data-testid="self-weight-overlap-review">
       <strong>Atenção: possível dupla contagem de ações automáticas</strong>
-      <p>A combinação reúne peso próprio ou ações por área com outras ações. Confira se as fontes são independentes. A revisão se vincula às cargas, geometria, grupos e combinações atuais; não confirma segurança ou dimensionamento.</p>
+      <p>A combinação reúne peso próprio, ações por área ou vento com outras ações. Confira se as fontes são independentes. A revisão se vincula às cargas, geometria, grupos e combinações atuais; não confirma segurança ou dimensionamento.</p>
       <div className="form-grid">{input("Fonte da conferência de duplicidade",overlapSource,setOverlapSource)}{input("Revisão da conferência de duplicidade",overlapRevision,setOverlapRevision)}</div>
       <button type="button" className="button secondary" onClick={()=>attempt(()=>{
         if(!overlapSource.trim()||!overlapRevision.trim())throw new Error("Declare fonte e revisão da conferência.");
@@ -74,6 +75,7 @@ export function StructuralLoadsPanel({project,onChange,onSelectPiece}:{project:P
     <button className="button secondary" onClick={()=>attempt(()=>{const dir=direction.map(number) as [number,number,number];if(Math.abs(Math.hypot(...dir)-1)>1e-10)throw new Error("Declare vetor unitário da direção.");change({...loading,roofArea:[...loading.roofArea,{caseId:areaCase||activeCase,knM2:number(pressure),projection:projection as "horizontal"|"roof-surface",direction:dir,source:areaSource,revision:areaRevision,loadPath:path}]});})}>Registrar ação por área pendente</button>
     {loading.roofArea.map((l,i)=><p key={i}>PENDENTE: {l.knM2} kN/m² · {l.projection} · {l.caseId} · {l.loadPath} <button className="button secondary" onClick={()=>change({...loading,roofArea:loading.roofArea.filter((_,j)=>j!==i)})}>Remover ação por área {i+1}</button></p>)}
     <RoofLoadPathPanel project={project} onChange={onChange} onSelectPiece={onSelectPiece}/>
+    <WindEngineeringPanel project={project} onChange={onChange}/>
     <h4>Base resistente da peça selecionada — sem verificação normativa</h4>
     <Field label="Família real do perfil"><Select value={family} onChange={e=>setFamily(e.target.value)}><option value="">Pendente</option><option value="rolled">Laminado</option><option value="welded">Soldado</option><option value="tubular">Tubular</option><option value="cold-formed">Formado a frio</option></Select></Field>
     <div className="form-grid">{input("fy declarado (MPa)",fy,setFy)}{input("fu declarado (MPa)",fu,setFu)}{input("Comprimento de flambagem Y (m)",ly,setLy)}{input("Comprimento de flambagem Z (m)",lz,setLz)}{input("Distância de contenção lateral (m)",lb,setLb)}</div>

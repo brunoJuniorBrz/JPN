@@ -5,7 +5,8 @@
       "feat/roof-area-load-path": false,
       "audit/mission21-independent": false,
       "feat/resistance-elastic-reference": false,
-      "integration/m21-studio-release-candidate": false
+      "integration/m21-studio-release-candidate": false,
+      "feat/engineering-m22-m24": false
     }
   }
 }
