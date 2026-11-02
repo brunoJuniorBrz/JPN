@@ -1,4 +1,6 @@
 "use client";
+import { ResistanceReportPanel } from "./resistance-report-panel";
+import { buildResistanceReport, assertResistanceReportCurrent, type ResistanceReport } from "@/domain/resistance-report";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
@@ -20,7 +22,7 @@ import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { Structure3D } from "./structure-3d";
 
 type Prepared = Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>>;
-type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown };
+type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string };
 const show = (v: number) => v === 0 ? "0" : v.toExponential(5);
 export function MixedAnalysisWorkspace({ project, onChange }: { project: Project; onChange: (patch: Partial<Project>) => void }) {
   const [example, setExample] = useState<Project | null>(null), [pane, setPane] = useState("prepare");
@@ -90,7 +92,10 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
       const parsed = anyMixedResultSchema.parse(out.result); if(parsed.schema_version!==prepared.request.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error("Versão de resposta incompatível."); verifyMixedResult(prepared.request, parsed, prepared.input_sha256);
       verifyLoadingTrace(prepared.request,parsed);
       if (controller.signal.aborted || ticket.current.value !== mine) return;
-      setSession({ identity, prepared, result: parsed, execution: out.execution }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
+      let resistance: ResistanceReport | null = null, resistanceError = "";
+      try { resistance = await buildResistanceReport(active, prepared, parsed); } catch(e) { resistanceError = (e as Error).message; }
+      if (controller.signal.aborted || ticket.current.value !== mine) return;
+      setSession({ identity, prepared, result: parsed, execution: out.execution, resistance, resistanceError }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
     } catch (e) { if (ticket.current.value === mine) setError(controller.signal.aborted ? "Execução cancelada ou prazo excedido; nenhum resultado publicado." : (e as Error).message); }
     finally { clearTimeout(timeout); if (ticket.current.value === mine) setBusyIdentity(null); }
   }
@@ -140,6 +145,8 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
         {node && <ul data-testid="mixed-node"><li>Translações XYZ (mm): {node.translation_m.map(v => show(v * 1000)).join("; ")}</li><li>{node.active_rotations ? `Rotações XYZ (rad): ${node.rotation_rad.map(show).join("; ")}` : "Rotações inativas: nó exclusivamente axial, sem vínculos ou rigidez rotacional artificiais."}</li><li>{current.prepared.request.supports.some(s => s.node === selectedNode) ? "Reações no apoio" : "Resíduo nodal (não é apoio)"} XYZ (kN): {node.reaction_force_n.map(v => show(v / 1000)).join("; ")}</li><li>{node.active_rotations ? `Momentos de reação/resíduo XYZ (kN·m): ${node.reaction_moment_nm.map(v => show(v / 1000)).join("; ")}` : "Momentos de reação não aplicáveis ao nó axial."}</li></ul>}
         <p>Equilíbrio global: resíduo relativo {show(result.equilibrium.relative_residual)}; forças XYZ (N) {result.equilibrium.force_n.map(show).join("; ")}; momentos XYZ (N·m) {result.equilibrium.moment_nm.map(show).join("; ")}. O motor também verifica equilíbrio nodal antes de publicar.</p>
         <p>{current.result.diagnostics.free_dofs} graus livres · condição escalada {show(current.result.diagnostics.scaled_condition)} · {show(current.result.diagnostics.elapsed_seconds)} s.</p>
+        {current.resistanceError && <p role="alert" data-testid="resistance-blocked">Relatório resistente bloqueado: {current.resistanceError}</p>}
+        {current.resistance && <ResistanceReportPanel project={active} onChange={edit} report={current.resistance} selectedPiece={selectedPiece} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setNodeId("");}} onExport={()=>{const mine=ticket.current.value;void assertResistanceReportCurrent(current.resistance!,active,current.prepared,current.result).then(()=>{if(ticket.current.value===mine)exportJSON(current.resistance,"jpn-relatorio-resistente-preliminar.json");}).catch(e=>{if(ticket.current.value===mine)setError((e as Error).message);});}}/>}
         <details><summary>Hipóteses e limites do cálculo</summary><ul>{current.result.assumptions.map(a => <li key={a}>{a}</li>)}</ul><p>Geometria original preservada. Deformada gráfica ainda não implementada. Juntas esféricas nas duas extremidades de pórticos e contatos independentes permanecem recusados.</p></details>
         <div className="actions"><button className="button secondary" onClick={() => exportJSON(current.prepared, "jpn-misto-entradas-rastreabilidade.json")}>Exportar entradas mistas</button><button className="button secondary" onClick={() => exportJSON({ prepared: current.prepared, result: current.result, execution: current.execution }, "jpn-misto-resultados-rastreabilidade.json")}>Exportar resultados mistos</button></div>
       </div>}

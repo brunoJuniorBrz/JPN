@@ -1,0 +1,229 @@
+{
+  "schema_version": "jpn.m23-validation/1",
+  "date_local": "2026-11-02",
+  "timezone": "America/Sao_Paulo",
+  "base": "280a4c89b6e41a2a5295142dcd2b5bfc6d7208e0",
+  "branch": "feat/m23-resistant-design",
+  "classification": "M23 partial: demands and resistance preparation; NO normative procedure implemented",
+  "base_ci": {
+    "run": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41459494014",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "new_branch_ci": "Inspect draft PR; base CI is not evidence for new branch.",
+  "environment": {
+    "python": "3.12.10",
+    "PyNiteFEA": "3.2.1",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "node": "24.13.0",
+    "pnpm": "12.15.0",
+    "platform": "Windows",
+    "OPENBLAS_NUM_THREADS": 1,
+    "OMP_NUM_THREADS": 1,
+    "MKL_NUM_THREADS": 1
+  },
+  "commands": [
+    {
+      "command": "pnpm exec vitest run src/domain/resistance-elastic-reference.test.ts src/domain/loaded-mixed.test.ts",
+      "phase": "baseline",
+      "exit_code": 0,
+      "passed": 10,
+      "failed": 0
+    },
+    {
+      "command": "pnpm exec vitest run src/domain/member-demands.test.ts",
+      "phase": "targeted",
+      "exit_code": 0,
+      "passed": 10,
+      "failed": 0
+    },
+    {
+      "command": "python engine/validate.py",
+      "exit_code": 0,
+      "pytest": {
+        "tests": 1444,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exit_code": 0
+      },
+      "random_passed": 1000,
+      "elapsed_seconds": 65.2495982000255
+    },
+    {
+      "command": "pnpm typecheck",
+      "phase": "final after UI preservation fix",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm lint",
+      "phase": "final after UI preservation fix",
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "command": "pnpm test --reporter=json --outputFile=../m23-vitest.json",
+      "exit_code": 0,
+      "passed": 313,
+      "failed": 0,
+      "pending": 0,
+      "new_member_demand_tests": 10
+    },
+    {
+      "command": "python tests/verify_dxf.py",
+      "exit_code": 0,
+      "lines_3d": 130,
+      "units": "mm",
+      "audit_errors": 0
+    },
+    {
+      "command": "pnpm test:e2e --reporter=json",
+      "exit_code": 0,
+      "stats": {
+        "startTime": "2026-11-02T15:01:32.495Z",
+        "duration": 316943.927,
+        "expected": 65,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/resistance-report.spec.ts --reporter=json",
+      "phase": "after final UI fixes, including one added physical-property editing regression",
+      "exit_code": 0,
+      "stats": {
+        "startTime": "2026-11-02T15:07:30.342Z",
+        "duration": 43954.265,
+        "expected": 3,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
+    },
+    {
+      "command": "pnpm build",
+      "phase": "final after UI preservation fix",
+      "exit_code": 0
+    }
+  ],
+  "development_issues": [
+    {
+      "type": "TypeScript",
+      "result": "Initial undefined-node narrowing diagnostics fixed before tests; final typechecks pass."
+    },
+    {
+      "type": "UI data preservation",
+      "result": "Code review found legacy base editor could drop new optional geometry/designation. Minimal merge fix; final real-Python browser regression passes. No claimed pre-fix red execution."
+    }
+  ],
+  "new_test_durations_ms": [
+    {
+      "test": "pórtico segmentado real: N/V/M, flecha e rotação contra balanço analítico independente",
+      "duration_ms": 6.208300000000236
+    },
+    {
+      "test": "máximos de combinações diferentes conservam vetores concomitantes e não fabricam interação",
+      "duration_ms": 3.0328000000008615
+    },
+    {
+      "test": "axial real: sinal, extensão, rotações inativas e componentes não aplicáveis",
+      "duration_ms": 1.483699999998862
+    },
+    {
+      "test": "v1 nodal continua extraindo cinco estações sem usar recuperação de UDL",
+      "duration_ms": 1.4663999999993393
+    },
+    {
+      "test": "recusa hash, versões, mapeamentos e amostras corrompidos; NaN e infinito",
+      "duration_ms": 12.054200000000492
+    },
+    {
+      "test": "JPN → M22 → Python real → solicitações → relatório: 207 peças, dados físicos e bloqueios normativos",
+      "duration_ms": 0.8029000000005908
+    },
+    {
+      "test": "mudanças de norma, material, cargas, apoios, giro, perfil e discretização invalidam relatório",
+      "duration_ms": 3324.477999999999
+    },
+    {
+      "test": "propriedades inválidas, inconsistências e perfis não identificados permanecem pendentes",
+      "duration_ms": 4792.301000000001
+    },
+    {
+      "test": "cadastro físico e relatório preservam unidades, backups, hashes e referências não normativas",
+      "duration_ms": 123.19490000000224
+    },
+    {
+      "test": "controle N/A: conversões conhecidas N/kN/cm²/m²/Pa/MPa e limites numéricos",
+      "duration_ms": 0.356500000001688
+    }
+  ],
+  "analytic_references": {
+    "segmented_cantilever": {
+      "length_m": 4,
+      "segments_m": [
+        3,
+        1
+      ],
+      "E_pa": 200000000000.0,
+      "Iy_m4": 1e-05,
+      "Iz_m4": 1e-05,
+      "rotation_deg": 37,
+      "q_n_m": -100,
+      "normal_n": 1000,
+      "tip_z_m": -0.0016,
+      "tip_rx_rad": -0.0005333333333333333,
+      "method": "Independent Euler-Bernoulli closed-form deflection, rotation, shear and moment; actual raw solver vectors preserved."
+    },
+    "axial": {
+      "length_m": 2,
+      "area_m2": 0.001,
+      "E_pa": 200000000000.0,
+      "forces_n": [
+        1000,
+        -2000
+      ],
+      "positive_extension_m": 1e-05
+    },
+    "unit_controls": {
+      "10000_N_over_10_cm2_MPa": 10,
+      "minus5000_N_over_2_cm2_MPa": -25
+    },
+    "concurrency": "C1 N=1000; C2 N=100 with twice UDL; C3 N=-2000. Bending extremum retains C2 N=100, never another combination axial maximum."
+  },
+  "roof": {
+    "generated_dimensions_m": [
+      10,
+      20,
+      4
+    ],
+    "nodes": 132,
+    "original_pieces": 207,
+    "segments": 243,
+    "source": "Synthetic fully declared M22 reference, executed with real PyNiteFEA; not a commercial design"
+  },
+  "proof_limits": [
+    "Five sampled frame stations, no guaranteed continuous extrema.",
+    "Axial shear/moments are null, not invented zero capacities.",
+    "Idealized N/A and Euler are not design resistance.",
+    "No normative formulas, clauses, utilization or approval implemented.",
+    "Viewport tests are not a physical iPhone test.",
+    "No new remote HTTP validation/deployment.",
+    "No dedicated demand-extractor peak-memory or worst-case benchmark.",
+    "Full suite ran once; only affected browser tests, typecheck, lint and build repeated for final UI fixes."
+  ],
+  "unchanged_engine_files_verified": 55,
+  "unchanged_reserved_paths_verified": [
+    "src/domain/calculations/cutting.ts",
+    "src/lib/exports/cutting.ts",
+    "src/lib/exports/takeoff.ts",
+    "src/components/planning/project-workbench.tsx"
+  ],
+  "normative_procedures_implemented": [],
+  "approved_for_fabrication": false,
+  "merge": false,
+  "manual_deploy": false
+}
