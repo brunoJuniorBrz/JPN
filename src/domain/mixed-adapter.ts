@@ -5,6 +5,7 @@ import { newSpatialPreparation, spatialPreparationSchema, spatialPreparationRevi
 import { ConnectivityError, discretizeGeometry } from "./spatial-connectivity";
 import { mixedInputHash, mixedRequestSchema } from "./mixed-analysis";
 import { spatialSI } from "./spatial-analysis";
+import { verifyEngineeringCombinations } from "./engineering-combinations";
 
 export function mixedPieceKind(piece: StructurePiece, draft: SpatialPreparation) {
   return draft.memberKinds?.find(m => m.pieceId === piece.id)?.kind ?? draft.groups[piece.role].elementKind;
@@ -42,6 +43,8 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
 
 export async function prepareMixedInput(project: Project, loaded = false) {
   const draft = spatialPreparationSchema.parse(project.workspace.spatialPreparation ?? newSpatialPreparation(project));
+  if (!loaded && draft.loading?.wind) throw new Error("WIND_LOADED_REQUIRED: vento exige o adaptador com cargas distribuídas.");
+  if (draft.engineeringCombinations) verifyEngineeringCombinations(draft.engineeringCombinations,draft.cases,draft.combinations);
   const review = mixedPreparationReview(project, draft, loaded), blockers = review.issues.filter(i => i.code !== "TOPOLOGY");
   if (blockers.length) throw new ConnectivityError("PREPARATION_INCOMPLETE", blockers.slice(0, 12).map(i => `${i.code}: ${i.message}`).join(" "));
   if (!review.geometry || !draft.connectivity) throw new ConnectivityError("CONNECTIVITY_PENDING", "Revise e registre a conectividade física.");
