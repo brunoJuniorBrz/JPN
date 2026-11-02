@@ -17,6 +17,7 @@ jobs:
       - run: python -m pip install --no-build-isolation --no-deps -e ./engine
       - run: python -m pip check
       - run: python engine/validate.py
+      - run: python engine/audit_loading.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
