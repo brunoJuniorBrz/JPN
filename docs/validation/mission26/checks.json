@@ -1,0 +1,199 @@
+{
+  "schema_version": "jpn.m26-local-evidence/1",
+  "generated_at_utc": "2026-11-02T17:46:47.539262+00:00",
+  "scope": "partial-integration-continuous-demands-and-physical-readiness",
+  "base_sha": "6c3022749288f29f70648d6dd699fc5b8191d59f",
+  "integrated": {
+    "M24": "f2c94b7e1ffb1d0e48214ade907b897d0dec8b7c",
+    "M25": "085c22876226a2b9de4f18e589368236c2619715",
+    "real_reference_campaign": "34eb8cf13093ca943dbb886f5b3646f997ef5a0e"
+  },
+  "base_ci": {
+    "id": 41486638811,
+    "conclusion": "success"
+  },
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "PyNiteFEA": "3.2.1",
+    "pytest": "9.2.0",
+    "node": "24.13.0",
+    "pnpm": "12.15.0",
+    "OPENBLAS_NUM_THREADS": 1,
+    "OMP_NUM_THREADS": 1,
+    "MKL_NUM_THREADS": 1
+  },
+  "commands": [
+    {
+      "command": "pnpm vitest run src/domain/calculations/preproduction.test.ts src/lib/exports/preproduction.test.ts src/domain/member-demands.test.ts src/domain/connection-report.test.ts",
+      "exit_code": 0,
+      "passed": 25
+    },
+    {
+      "command": "python engine/validate.py",
+      "exit_code": 0,
+      "pytest": {
+        "tests": 1473,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "exit_code": 0
+      },
+      "seconds": 67.49544679996325,
+      "independent_campaign": {
+        "generator": "random.Random(seed)",
+        "seeds_inclusive": [
+          0,
+          999
+        ],
+        "passed": 1000,
+        "failures": [],
+        "max_absolute_deviation": {
+          "displacement_m": {
+            "absolute": 2.0459328675670463e-14,
+            "seed": 471
+          },
+          "reaction_n": {
+            "absolute": 1.6542617231607437e-07,
+            "seed": 471
+          },
+          "axial_n": {
+            "absolute": 1.680455170571804e-07,
+            "seed": 471
+          }
+        },
+        "comparison_tolerances": {
+          "relative": 1e-07,
+          "displacement_absolute_m": 1e-11,
+          "force_absolute_n": 1e-05
+        }
+      }
+    },
+    {
+      "command": "python engine/audit_loading.py",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm lint",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm test --reporter=json --outputFile=../m26-vitest-final.json",
+      "exit_code": 0,
+      "numTotalTests": 342,
+      "numPassedTests": 342,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "success": true
+    },
+    {
+      "command": "python tests/verify_dxf.py",
+      "exit_code": 0,
+      "entities": 130,
+      "units": "mm"
+    },
+    {
+      "command": "pnpm test:e2e --reporter=json",
+      "exit_code": 0,
+      "startTime": "2026-11-02T17:36:53.446Z",
+      "duration": 405143.605,
+      "expected": 70,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0,
+      "widths_px": [
+        375,
+        1440
+      ]
+    },
+    {
+      "command": "pnpm build",
+      "exit_code": 0
+    }
+  ],
+  "coverage": {
+    "continuous_force_components": [
+      "N",
+      "Vy",
+      "Vz",
+      "T",
+      "My",
+      "Mz"
+    ],
+    "frame_loads": "full-span uniform translational and nodal, first-order",
+    "local_translations": "integrated native actions with E/A/I and endpoint translations; checked at native samples",
+    "relative_deflections": "segment chord, local components",
+    "interaction_extrema": "unsupported",
+    "v1_continuous_displacement": "unsupported",
+    "self_weight": "frame UDL and axial nodal lumping remain separate",
+    "legacy_samples_unchanged": true
+  },
+  "integration_guards": {
+    "M25_production_files_byte_identical_to_pinned_branch": true,
+    "roadmap_both_priorities_preserved": true,
+    "vercel_union_verified": true,
+    "M26_git_deploy_disabled": true,
+    "all_python_math_files_identical_to_base": true,
+    "solver_limits_and_auth_unchanged": true,
+    "same_dossier_before_after_new_preparation_and_backup": true
+  },
+  "benchmarks": {
+    "analytical_independent": {
+      "propped_L_m": 4,
+      "q_local_n_m": [
+        40,
+        -100,
+        -70
+      ],
+      "tip_axial_n": 1234,
+      "tip_torsion_nm": 20,
+      "interior_moment_x_m": 2.5,
+      "interior_mz_nm": 112.5,
+      "legacy_sample_max_mz_nm": 100,
+      "deflection_root": "(15-sqrt(33))*L/16",
+      "cut_x_m": 1.3,
+      "section_rotation_deg": 37,
+      "inclined_direction": [
+        2,
+        3,
+        4
+      ],
+      "combination_factors": [
+        1,
+        -2
+      ]
+    },
+    "normative_candidates": {
+      "total": 5,
+      "usable_for_pass_fail": 0,
+      "quarantined": 2,
+      "normative_resistance_comparisons_executed": 0
+    }
+  },
+  "normative_sources": {
+    "official_abnt_catalog": "accessed search interface; individual editions not conclusively verified",
+    "CBCA": "official downloads require login",
+    "UPF_article": "publisher original inspected, printed pages 10/11 rendered; flexure units unreconciled",
+    "clauses_implemented": []
+  },
+  "not_executed": [
+    "Normative complete pass/fail or insufficient-resistance calculation (procedure unavailable)",
+    "New remote HTTP/Vercel smoke",
+    "Linux locally; remote CI separate",
+    "Second-order/warping or global normative stability",
+    "Whole-piece relative deflection, displacement vector norm and resistance interaction extrema",
+    "Full geometric Ue section-property derivation/effective-width method",
+    "A new memory/latency curve at maximum model limits",
+    "Direct WebGL raycast/touch marker hit; accessible selection and marker synchronization tested"
+  ],
+  "failed_test_runs": [],
+  "approved_for_fabrication": false,
+  "merge": false,
+  "deploy": false
+}
