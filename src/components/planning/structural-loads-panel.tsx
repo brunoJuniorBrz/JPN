@@ -8,6 +8,7 @@ import { newSpatialPreparation, pieceRoles } from "@/domain/spatial-preparation"
 import { densitySchema, emptyLoading, loadingDraftSchema, needsSelfWeightOverlapReview, selfWeightOverlapReviewBasis, type LoadingDraft } from "@/domain/structural-loading";
 import { resistanceDiagnostics, resistancePreparationSchema } from "@/domain/resistance-preparation";
 import { elasticMemberReference } from "@/domain/resistance-elastic-reference";
+import { structureSignature } from "@/domain/calculations/project-basis";
 import { Field, Input, Select } from "@/components/ui";
 
 export function StructuralLoadsPanel({project,onChange,onSelectPiece}:{project:Project;onChange:(patch:Partial<Project>)=>void;onSelectPiece?:(id:string)=>void}){
@@ -25,7 +26,8 @@ export function StructuralLoadsPanel({project,onChange,onSelectPiece}:{project:P
   const number=(s:string)=>{if(!s.trim())throw new Error("Informe todos os valores, inclusive zeros explícitos.");const v=Number(s.replace(",","."));if(!Number.isFinite(v))throw new Error("Número inválido.");return v;};
   function change(next:LoadingDraft){onChange({workspace:{...project.workspace,spatialPreparation:{...d,loading:loadingDraftSchema.parse(next)}}});}
   const selected=pieces.find(p=>p.id===piece)??pieces[0], activeCase=d.cases.some(c=>c.id===qCase)?qCase:d.cases[0]?.id??"";
-  const elasticReference=selected ? elasticMemberReference(selected,d.groups[selected.role],d.resistance?.find(v=>v.pieceId===selected.id)) : null;
+  const resistanceGeometryStale = d.geometrySignature !== structureSignature(project);
+  const elasticReference=selected && !resistanceGeometryStale ? elasticMemberReference(selected,d.groups[selected.role],d.resistance?.find(v=>v.pieceId===selected.id)) : null;
   const overlapNeeded=needsSelfWeightOverlapReview(d,loading);
   const overlapValid=!overlapNeeded||(loading.overlapReview?.confirmed===true&&loading.overlapReview.basis===selfWeightOverlapReviewBasis(d,loading));
   const input=(label:string,value:string,change:(s:string)=>void)=><Field key={label} label={label}><Input value={value} onChange={e=>change(e.target.value)} maxLength={1000}/></Field>;
@@ -79,6 +81,7 @@ export function StructuralLoadsPanel({project,onChange,onSelectPiece}:{project:P
     <p>A, Iy, Iz e J permanecem nas seções físicas. Dados adicionais de instabilidade e geometria efetiva ainda exigem revisão. Nenhum resultado de aprovação será produzido, mesmo com estes campos preenchidos.</p>
     <button className="button secondary" onClick={()=>attempt(()=>{if(!selected)throw new Error("Peça ausente.");const v=resistancePreparationSchema.parse({pieceId:selected.id,family:family||null,fyMpa:fy?number(fy):null,fuMpa:fu?number(fu):null,bucklingYM:ly?number(ly):null,bucklingZM:lz?number(lz):null,lateralRestraintM:lb?number(lb):null,source:resSource,revision:resRevision,sectionProperties:{wyCm3:wy?number(wy):null,wzCm3:wz?number(wz):null},restraintDescription:restraint,normativeReference:clause});onChange({workspace:{...project.workspace,spatialPreparation:{...d,resistance:[...(d.resistance??[]).filter(x=>x.pieceId!==v.pieceId),v]}}});})}>Registrar base resistente pendente</button>
     {(d.resistance??[]).map(v=><p key={v.pieceId}>{v.pieceId}: {resistanceDiagnostics(v).issues.join(" ")}</p>)}
+    {resistanceGeometryStale && <p role="alert">Referências teóricas bloqueadas: geometria/revisão física desatualizadas. Atualize a preparação antes de consultar esta peça.</p>}
     {elasticReference && <section className="notice" data-testid="resistance-elastic-reference" aria-label="Referências analíticas não normativas">
       <h4>Referências elásticas — {selected?.id ?? "peça não selecionada"} (não dimensionamento)</h4>
       <p>Valores teóricos derivados SOMENTE das propriedades físicas declaradas para esta peça. Nenhuma verificação de norma, estabilidade real, ligação ou segurança foi concluída.</p>
