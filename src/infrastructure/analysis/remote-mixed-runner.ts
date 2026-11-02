@@ -1,3 +1,4 @@
+import { jointActionTraceSchema, verifyJointActionTrace } from "@/domain/member-end-actions";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { anyMixedRequestSchema, anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
@@ -6,7 +7,7 @@ import { SolverFailure } from "./runner";
 
 export const remoteMixedLimits = { inputBytes:500000, outputBytes:2000000, milliseconds:28000 } as const;
 const execution=z.object({memory_limit_bytes:z.literal(805306368),memory_kind:z.enum(["linux-address-space","windows-job-process-commit"]),timeout_seconds:z.literal(20),concurrency_per_instance:z.literal(1),isolation:z.literal("subprocess")}).strict();
-const envelope=z.object({schema_version:z.literal("jpn.http-mixed/1"),request_sha256:z.string().regex(/^[a-f0-9]{64}$/),execution,result:anyMixedResultSchema}).strict();
+const envelope=z.object({schema_version:z.literal("jpn.http-mixed/1"),request_sha256:z.string().regex(/^[a-f0-9]{64}$/),execution,result:anyMixedResultSchema,joint_actions:jointActionTraceSchema.optional()}).strict();
 const health=z.object({schema_version:z.literal("jpn.http-mixed/1"),status:z.literal("ready"),contracts:z.array(z.enum(["jpn.mixed3d/1","jpn.mixed3d/2"])).length(2),dependencies:z.object({python:z.literal("3.12"),PyNiteFEA:z.literal("3.2.1"),numpy:z.string(),scipy:z.string()}).strict(),execution}).strict();
 const globals=globalThis as typeof globalThis & {__jpnRemoteMixedGate?:{active:number}};
 const gate=globals.__jpnRemoteMixedGate??={active:0};
@@ -48,11 +49,11 @@ async function readResponse(response:Response,signal:AbortSignal){
   try{while(true){const chunk=await reader.read();if(signal.aborted)throw new SolverFailure("CANCELLED","Leitura cancelada.");if(chunk.done)break;bytes+=chunk.value.byteLength;if(bytes>remoteMixedLimits.outputBytes){await reader.cancel();throw new SolverFailure("OUTPUT_LIMIT","Resposta excede 2 MB.");}chunks.push(chunk.value);}}finally{signal.removeEventListener("abort",abort);reader.releaseLock();}
   try{return JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(Buffer.concat(chunks)));}catch{throw new SolverFailure("INVALID_RESPONSE","Backend retornou conteúdo incompatível, possivelmente uma página de proteção.");}
 }
-export async function runRemoteMixed(payload:string,mode:"health"|"analysis"="analysis",signal?:AbortSignal){
+export async function runRemoteMixed(payload:string,mode:"health"|"analysis"|"connections"="analysis",signal?:AbortSignal){
   const config=configuration();
   if(Buffer.byteLength(payload)>remoteMixedLimits.inputBytes)throw new SolverFailure("INPUT_LIMIT","Entrada excede 500 kB.");
   let request:ReturnType<typeof anyMixedRequestSchema.parse>|undefined;
-  if(mode==="analysis"){try{request=anyMixedRequestSchema.parse(JSON.parse(payload));}catch{throw new SolverFailure("INVALID_INPUT","Modelo misto incompatível com o contrato SI.");}}
+  if(mode!=="health"){try{request=anyMixedRequestSchema.parse(JSON.parse(payload));}catch{throw new SolverFailure("INVALID_INPUT","Modelo misto incompatível com o contrato SI.");}}
   if(gate.active)throw new SolverFailure("BUSY","Uma consulta remota já está em execução nesta instância.");
   gate.active++;
   const controller=new AbortController();let timeout:ReturnType<typeof setTimeout>|undefined,hasResponse=false;
@@ -65,7 +66,7 @@ export async function runRemoteMixed(payload:string,mode:"health"|"analysis"="an
   try{
     return await Promise.race([interrupted,(async()=>{
       if(controller.signal.aborted)throw new SolverFailure("CANCELLED","Consulta cancelada.");
-      const response=await fetch(config.origin+(mode==="health"?"/health":"/api/analyze-mixed"),{method:mode==="health"?"GET":"POST",headers:{Authorization:`Bearer ${config.token}`,...(mode==="analysis"?{"Content-Type":"application/json"}:{}),...(config.bypass?{"x-vercel-protection-bypass":config.bypass}:{})},...(mode==="analysis"?{body:payload}:{}),signal:controller.signal,redirect:"error",cache:"no-store"});
+      const response=await fetch(config.origin+(mode==="health"?"/health":"/api/analyze-mixed"),{method:mode==="health"?"GET":"POST",headers:{...(mode==="connections"?{"X-JPN-Joint-Actions":"1"}:{}),Authorization:`Bearer ${config.token}`,...(mode!=="health"?{"Content-Type":"application/json"}:{}),...(config.bypass?{"x-vercel-protection-bypass":config.bypass}:{})},...(mode!=="health"?{body:payload}:{}),signal:controller.signal,redirect:"error",cache:"no-store"});
       hasResponse=true;
       if(response.status===401||response.status===403){await response.body?.cancel();throw new SolverFailure(response.status===401?"REMOTE_UNAUTHORIZED":"REMOTE_FORBIDDEN","Backend recusou as credenciais ou a proteção de deployment. Revise a configuração privada.");}
       const raw=await readResponse(response,controller.signal);
@@ -78,7 +79,8 @@ export async function runRemoteMixed(payload:string,mode:"health"|"analysis"="an
       const out=envelope.parse(raw);
       if(out.request_sha256!==createHash("sha256").update(payload).digest("hex")||out.result.schema_version!==request!.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error();
       verifyMixedResult(request!,out.result,await mixedInputHash(request));verifyLoadingTrace(request!,out.result);
-      return {schema_version:"jpn.remote-mixed/1" as const,status:"completed" as const,request_sha256:out.request_sha256,result:out.result,execution:{...out.execution,transport:"remote" as const,local_only:false as const}};
+      if(mode==="connections"){if(!out.joint_actions)throw new SolverFailure("JOINT_TRACE_UNAVAILABLE","Backend ainda não fornece ações de ligação; requer publicação autorizada dessa versão.");verifyJointActionTrace(request!,out.result,out.joint_actions);}
+      return {...(out.joint_actions?{joint_actions:out.joint_actions}:{}),schema_version:"jpn.remote-mixed/1" as const,status:"completed" as const,request_sha256:out.request_sha256,result:out.result,execution:{...out.execution,transport:"remote" as const,local_only:false as const}};
     })()]);
   }catch(e){if(e instanceof SolverFailure)throw e;throw new SolverFailure(controller.signal.aborted?"CANCELLED":hasResponse?"INVALID_RESPONSE":"UNAVAILABLE","Resposta remota inválida ou backend indisponível; nenhum resultado publicado.");}
   finally{clearTimeout(timeout);signal?.removeEventListener("abort",cancel);gate.active--;}

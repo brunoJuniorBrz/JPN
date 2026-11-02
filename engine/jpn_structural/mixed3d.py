@@ -138,7 +138,7 @@ def validate_mixed3d(data, *, distributed_cases=()):
     return data,points,frames,supported
 
 
-def analyze_mixed3d(raw, *, _loading=None):
+def analyze_mixed3d(raw, *, _loading=None, _joint_actions=None):
     started=time.perf_counter()
     data,points,frame_nodes,supports=validate_mixed3d(raw, distributed_cases=() if _loading is None else {l['case'] for l in _loading['frame_loads']})
     try:
@@ -226,9 +226,13 @@ def analyze_mixed3d(raw, *, _loading=None):
         raise AnalysisError('NUMERICAL_FAILURE',f'PyNite falhou: {type(exc).__name__}; sem resultado.') from exc
     span=max(float(np.ptp(np.array(list(points.values())),axis=0).max()),1e-5)
     result={}
+    if _joint_actions is not None:
+        _joint_actions.update(schema_version='jpn.member-end-actions/1', units='SI', members={}, combinations={})
     for combo in data['combinations']:
         name=combo['id'];nodes={};members={}
         assembled={nid:np.zeros(6) for nid in points};external_nodes={}
+        if _joint_actions is not None:
+            _joint_actions['combinations'][name] = dict(nodal_loads={}, members={})
         forces=np.zeros(3);moments=np.zeros(3);force_scale=0.;moment_scale=0.
         origin=next(iter(points.values()))
         for nid,n in model.nodes.items():
@@ -246,6 +250,8 @@ def analyze_mixed3d(raw, *, _loading=None):
                     load+=combo['factors'].get(l['case'],0)*np.array([l[k] for k in
                         ('fx_n','fy_n','fz_n','mx_nm','my_nm','mz_nm')])
             external=load+reaction
+            if _joint_actions is not None:
+                _joint_actions['combinations'][name]['nodal_loads'][nid] = load.tolist()
             external_nodes[nid]=external
             forces+=external[:3]
             moments+=external[3:]+np.cross(points[nid]-origin,external[:3])
@@ -270,6 +276,11 @@ def analyze_mixed3d(raw, *, _loading=None):
             members[mid]=dict(kind='axial',axial_n=value,length_m=length,extension_m=extension)
             assembled[m['start']][:3]-=value*direction
             assembled[m['end']][:3]+=value*direction
+            if _joint_actions is not None:
+                # Actual PyNite spring global actions, not guessed transverse DOFs.
+                native = np.asarray(spring.F(name)).ravel()
+                _joint_actions['members'][mid] = dict(kind='axial', start=m['start'], end=m['end'], global_to_local=np.asarray(spring.T()[:3,:3]).tolist())
+                _joint_actions['combinations'][name]['members'][mid] = dict(kind='axial', node_on_member_force_n=[native[:3].tolist(), native[6:9].tolist()])
         for mid,beam in model.members.items():
             sub=next(iter(beam.sub_members.values()))
             actions=np.asarray(sub.f(name)).ravel()
@@ -297,6 +308,9 @@ def analyze_mixed3d(raw, *, _loading=None):
                     stations.append(dict(zip(('x_m','n_n','vy_n','vz_n','t_nm','my_nm','mz_nm'),map(float,values)),translation_local_m=translation))
                 members[mid]['stations']=stations
             global_actions=sub.T().T@actions
+            if _joint_actions is not None:
+                _joint_actions['members'][mid] = dict(kind='frame', start=beam.i_node.name, end=beam.j_node.name, global_to_local=np.asarray(sub.T()[:3,:3]).tolist())
+                _joint_actions['combinations'][name]['members'][mid] = dict(kind='frame', node_on_member_global=global_actions.tolist())
             assembled[beam.i_node.name]+=global_actions[:6]
             assembled[beam.j_node.name]+=global_actions[6:]
         # External resultant balance alone cannot validate internal joint actions.
@@ -325,4 +339,6 @@ def analyze_mixed3d(raw, *, _loading=None):
         output.update(schema_version='jpn.mixed3d-result/2', input_sha256=input_hash(_loading['original']), loading=_loading['trace'])
         output['solver']['adapter']='jpn-mixed3d/2'
         output['assumptions'][-1]='Cargas uniformes de pórtico consistentes; peso de axiais concentrado metade em cada nó por hipótese explícita. Sem vento automático, resistência normativa ou fabricação.'
+    if _joint_actions is not None:
+        _joint_actions['input_sha256'] = output['input_sha256']
     return output

@@ -12,6 +12,7 @@ import { spatialContacts } from "./spatial-readiness";
 import { connectivityDeclarationSchema } from "./spatial-connectivity";
 import { roofRegionsSchema } from "./roof-regions";
 import { engineeringCombinationsSchema } from "./engineering-combinations";
+import { connectionsSchema } from "./connections";
 
 // Human declarations, NOT finite-element input. A pending field is never
 // translated to zero, a free support or a material property by default.
@@ -41,6 +42,7 @@ export const spatialPreparationSchema = z.object({
   roofRegions:roofRegionsSchema.optional(),
   resistance: z.array(resistancePreparationSchema).max(5000).optional(),
   engineeringCombinations: engineeringCombinationsSchema.optional(),
+  connections: connectionsSchema.optional(),
 }).strict();
 export type SpatialPreparation = z.infer<typeof spatialPreparationSchema>;
 export type PhysicalLoad = SpatialPreparation["loads"][number];

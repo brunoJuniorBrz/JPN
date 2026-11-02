@@ -90,7 +90,7 @@ def _worker_python():
     return str(python)
 
 
-def _worker(payload, health=False):
+def _worker(payload, health=False, joint_actions=False):
     """Bound both pipes while running; wait for exit before releasing capacity."""
     global _disabled
     if _disabled:
@@ -114,7 +114,7 @@ def _worker(payload, health=False):
             logging.info('jpn_worker_visibility parent_packages=%s pythonpath_present=%s runtime_venv=%s',
                 all(importlib.util.find_spec(name) is not None for name in ('Pynite', 'scipy', 'numpy')),
                 bool(os.environ.get('PYTHONPATH')), python != sys.executable)
-        process = subprocess.Popen([python, '-I', '-X', 'utf8', str(WORKER), *(['--health'] if health else [])],
+        process = subprocess.Popen([python, '-I', '-X', 'utf8', str(WORKER), *(['--health'] if health else []), *(['--joint-actions'] if joint_actions else [])],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             cwd=str(WORKER.parent), env={**os.environ, 'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'})
         def abort(code):
@@ -256,13 +256,18 @@ def _handle(environ):
         raise TransportError('INVALID_INPUT', 'Send finite JSON without duplicate keys.')
     if not isinstance(request, dict) or request.get('schema_version') not in CONTRACTS:
         raise TransportError('UNSUPPORTED_MODEL', 'Only jpn.mixed3d/1 and jpn.mixed3d/2 are accepted.')
-    output = _worker(payload)
+    trace_header = environ.get('HTTP_X_JPN_JOINT_ACTIONS', '')
+    if trace_header not in ('', '1'):
+        raise TransportError('INVALID_INPUT', 'Invalid joint-action option.')
+    output = _worker(payload, joint_actions=True) if trace_header else _worker(payload)
     result = output.get('result', {})
     expected = request['schema_version'].replace('mixed3d/', 'mixed3d-result/')
     if output.get('status') != 'completed' or result.get('schema_version') != expected or result.get('status') != 'analysis_completed_experimental' or result.get('project') != request.get('project') or not re.fullmatch(r'[a-f0-9]{64}', result.get('input_sha256', '')):
         raise TransportError('INVALID_RESPONSE', 'Result does not match the request.', 503)
+    if trace_header and output.get('joint_actions', {}).get('input_sha256') != result['input_sha256']:
+        raise TransportError('INVALID_RESPONSE', 'Joint-action trace unavailable or stale.', 503)
     return dict(schema_version='jpn.http-mixed/1', request_sha256=hashlib.sha256(payload).hexdigest(),
-                result=result, execution=_execution(output))
+                result=result, execution=_execution(output), **({'joint_actions': output['joint_actions']} if trace_header else {}))
 
 
 def app(environ, start_response):
@@ -279,7 +284,8 @@ def app(environ, start_response):
         logging.error('jpn_mixed_backend_unexpected exception_type=%s', type(exc).__name__)
         status, body = 503, dict(error=dict(code='SERVICE_FAILURE', message='Request failed; no result published.'))
     try:
-        encoded = json.dumps(body, allow_nan=False, ensure_ascii=False).encode('utf-8')
+        encoded = json.dumps(body, allow_nan=False, ensure_ascii=False,
+                             separators=(',', ':') if 'joint_actions' in body else None).encode('utf-8')
         if len(encoded) > OUTPUT_BYTES:
             status, encoded = 422, b'{"error":{"code":"OUTPUT_LIMIT","message":"Response exceeds 2 MB."}}'
     except (ValueError, MemoryError):

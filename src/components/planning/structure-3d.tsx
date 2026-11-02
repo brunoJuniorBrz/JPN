@@ -8,12 +8,15 @@ import { initialPresentationOptions, presentationEnvelope, type PresentationOpti
 import { drawPresentationAnnotations, presentationDimensions, dimensionLabels } from "./presentation-capture";
 import { resolveSection } from "@/domain/profile-section";
 import { fitIsometricCamera } from "./camera-fit";
+import { scenePoint } from "./profile-geometry";
 import { buildProfileScene, pieceIdFromHit, viewerQuality, type ViewerMode } from "./profile-scene";
 
-export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number> }) {
+export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, selectedNodeId, onSelectNode, inspectNodes=false }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
+  const selectNode=useRef(onSelectNode),nodePicking=useRef(inspectNodes),nodeTools=useRef<(enabled:boolean,id:string)=>void>(()=>{});
+  useEffect(()=>{selectNode.current=onSelectNode;},[onSelectNode]);
   const [failure, setFailure] = useState("");
   const [pictureError, setPictureError] = useState("");
   const [presentationOptions, setPresentationOptions] = useState<PresentationOptions>(initialPresentationOptions);
@@ -67,6 +70,11 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const grid = new THREE.GridHelper(gridStep * 20, 20, 0xaab6a0, 0xdce2d5); grid.position.set(center.x, 0, center.z); scene.add(grid);
     resources.push(grid.geometry, ...(Array.isArray(grid.material) ? grid.material : [grid.material]));
     const render = () => { renderer.render(scene,camera); canvas.dataset.drawCalls = String(renderer.info.render.calls); canvas.dataset.triangles = String(renderer.info.render.triangles); if (environment) { const sources = environment.status(); canvas.dataset.carSource = sources.carSource; canvas.dataset.personSource = sources.personSource; } };
+    const nodeGeometry=new THREE.SphereGeometry(span/150,8,6),nodeMaterial=new THREE.MeshBasicMaterial({depthTest:false,transparent:true,opacity:.9});
+    const nodeMarkers=new THREE.InstancedMesh(nodeGeometry,nodeMaterial,model.nodes.length);nodeMarkers.renderOrder=10;nodeMarkers.visible=false;scene.add(nodeMarkers);resources.push(nodeGeometry,nodeMaterial);
+    const nodeMatrix=new THREE.Matrix4();model.nodes.forEach((n,i)=>{nodeMatrix.makeTranslation(scenePoint(n).x,scenePoint(n).y,scenePoint(n).z);nodeMarkers.setMatrixAt(i,nodeMatrix);nodeMarkers.setColorAt(i,new THREE.Color(0x8262b5));});
+    nodeMarkers.instanceMatrix.needsUpdate=true;
+    nodeTools.current=(enabled,id)=>{nodePicking.current=enabled;nodeMarkers.visible=enabled;model.nodes.forEach((n,i)=>nodeMarkers.setColorAt(i,new THREE.Color(n.id===id?0xe89f27:0x8262b5)));if(nodeMarkers.instanceColor)nodeMarkers.instanceColor.needsUpdate=true;canvas.dataset.selectedNode=id;canvas.dataset.nodeMarkers=enabled?String(model.nodes.length):"0";render();};
     colorize.current = colors => { profiles.setColors(colors); canvas.dataset.analysisMode = colors ? "experimental" : "none"; render(); };
     let framingBounds = bounds, activeMode: ViewerMode | "finished" = "profiles", disposed = false;
     let cameraFramed = false;
@@ -186,18 +194,20 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       const rect = renderer.domElement.getBoundingClientRect();
       raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), camera);
       if (activeMode === "finished") return;
+      if(nodePicking.current&&nodeMarkers.visible){const nodeHit=raycaster.intersectObject(nodeMarkers,false)[0];if(nodeHit?.instanceId!==undefined){const id=model.nodes[nodeHit.instanceId]?.id;if(id){canvas.dataset.pickedNode=id;selectNode.current?.(id);return;}}}
       const hit = raycaster.intersectObjects(profiles.targets(), false)[0];
       const id = hit ? pieceIdFromHit(hit) : null; if (id) { canvas.dataset.pickedPiece = id; select.current(id); }
     };
     const lost = (e: Event) => { e.preventDefault(); setFailure("O dispositivo perdeu o contexto gráfico. As vistas 2D continuam disponíveis."); };
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("webglcontextlost", lost);
     resize();
-    return () => { disposed = true; environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); sun.shadow.dispose();renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; };
+    return () => { disposed = true; environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); sun.shadow.dispose();renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; };
   }, [model, gridSpacingM, envelope, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
   useEffect(() => { colorize.current(analysisColors); }, [analysisColors, model]);
+  useEffect(()=>{nodeTools.current(inspectNodes&&mode!=="finished",selectedNodeId??"");},[inspectNodes,selectedNodeId,mode,model]);
   useEffect(() => {
     applyVisibility.current(mode === "finished" ? roles : visibleRoles, mode === "finished" ? null : activeIsolation);
   }, [visibleRoles, activeIsolation, mode, model]);

@@ -1,0 +1,30 @@
+import { expect,test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
+
+for(const width of [375,1440])test(`M24 ações, nó no 3D, declaração física e invalidação em ${width}px`,async({page})=>{
+  test.setTimeout(150000);await page.setViewportSize({width,height:950});const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
+  await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");await page.getByRole("button",{name:"Gerar modelo 3D"}).click();await page.getByRole("button",{name:"Análise Estrutural Experimental",exact:true}).click();
+  const p=page.getByTestId("mixed-workspace");await p.getByRole("button",{name:"Abrir exemplo de vento zonal",exact:true}).click();await expect(p.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:60000});
+  await p.getByRole("button",{name:"Calcular ações de ligações",exact:true}).click();const panel=p.getByTestId("connections-panel");await expect(panel.getByTestId("connection-actions")).toBeVisible({timeout:30000});
+  const download=page.waitForEvent("download");await panel.getByRole("button",{name:"Exportar ações e diagnóstico de ligações",exact:true}).click();const file=await download,out=JSON.parse(await readFile((await file.path())!,"utf8"));
+  expect(out.physicalNodes).toHaveLength(132);expect(out.approvedForFabrication).toBe(false);expect(out.diagnostics.normativeStabilityVerified).toBe(false);
+  const c=out.combinations.find((c:{combinationId:string})=>c.combinationId==="WP");expect(c.joints.reduce((s:number,j:{ends:unknown[]})=>s+j.ends.length,0)).toBe(486);expect(c.globalBalance.withinTolerance).toBe(true);
+  const base=c.joints.find((j:{support:unknown;ends:unknown[]})=>j.support&&j.ends.length===1);expect(base).toBeTruthy();
+  await panel.getByLabel("Nó ou ligação física").selectOption(base.nodeId);await p.getByLabel("Selecionar nós físicos no 3D",{exact:true}).check();
+  const canvas=p.getByTestId("mixed-viewer").locator("canvas");await expect(canvas).toHaveAttribute("data-selected-node",base.nodeId);await expect(canvas).toHaveAttribute("data-node-markers","132");
+  await expect(panel.getByTestId("connection-actions")).toHaveAttribute("data-node-id",base.nodeId);await expect(panel).toContainText("Reação do apoio SOBRE a estrutura");await expect(panel.getByTestId("connection-equilibrium")).toContainText("Conferido nesta combinação");
+  await p.getByLabel("Combinação mista").selectOption("WS");await expect(panel.getByTestId("connection-actions")).toContainText("Combinação WS");
+  const form=panel.getByTestId("connection-form");await form.locator(":scope > summary").click();
+  await form.getByLabel("ID da ligação",{exact:true}).fill("BASE-DECLARADA");await form.getByLabel("Tipologia da ligação").selectOption("column-base");
+  const participants=out.physicalNodes.find((n:{nodeId:string})=>n.nodeId===base.nodeId).participants;
+  for(const part of participants)await form.getByLabel(`Transferência de ${part.pieceId}`,{exact:true}).selectOption("as-modeled");
+  for(const [name,value]of [["Hipótese de transferência","Ensaio explícito: transmissão conforme modelo; ancoragem ainda não dimensionada"],["Excentricidade global X (m)","0"],["Excentricidade global Y (m)","0"],["Excentricidade global Z (m)","0"],["Fonte da ligação","Declaração sintética de teste"],["Revisão da ligação","M24-R1"],["Responsável pela ligação","Autor do ensaio"]])await form.getByLabel(name,{exact:true}).fill(value);
+  await form.getByRole("button",{name:"Adicionar chapa pendente",exact:true}).click();await form.locator("details > summary").filter({hasText:/^plate ·/}).click();
+  await form.getByLabel("plate 1 — source",{exact:true}).fill("Chapa ainda sem dimensões; não autorizada para compra");await form.getByLabel("plate 1 — revision",{exact:true}).fill("PENDENTE-1");
+  await form.getByRole("button",{name:"Registrar ligação e invalidar análise",exact:true}).click();await expect(p.getByTestId("mixed-no-results")).toBeVisible();await expect(panel.getByTestId("connection-actions")).toHaveCount(0);
+  await p.getByRole("button",{name:"Calcular ações de ligações",exact:true}).click();await expect(panel.getByTestId("connection-actions")).toBeVisible({timeout:30000});await expect(panel).toContainText("Ligação fisicamente declarada");
+  const wait=page.waitForEvent("download");await panel.getByRole("button",{name:"Exportar ações e diagnóstico de ligações",exact:true}).click();const finalFile=await wait,final=JSON.parse(await readFile((await finalFile.path())!,"utf8"));
+  expect(final.binding.inputSha256).not.toBe(out.binding.inputSha256);const declared=final.physicalNodes.find((n:{nodeId:string})=>n.nodeId===base.nodeId);
+  expect(declared.state.hypothesisConsistent).toBe(true);expect(declared.state.resistanceVerified).toBe(false);expect(declared.declaration.components[0].thicknessMm).toBeNull();expect(declared.componentData[0].missingFields).toContain("thicknessMm");
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
+});
