@@ -7,7 +7,8 @@
       "audit/mission21-independent": false,
       "feat/resistance-elastic-reference": false,
       "integration/m21-studio-release-candidate": false,
-      "feat/engineering-m22-m24": false
+      "feat/engineering-m22-m24": false,
+      "feat/m23-resistant-design": false
     }
   },
   "functions": {
