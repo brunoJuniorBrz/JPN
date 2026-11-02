@@ -5,7 +5,8 @@
     "deploymentEnabled": {
       "feat/roof-area-load-path": false,
       "audit/mission21-independent": false,
-      "feat/resistance-elastic-reference": false
+      "feat/resistance-elastic-reference": false,
+      "integration/m21-studio-release-candidate": false
     }
   },
   "functions": {
