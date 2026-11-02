@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { emptyPhysicalGroup } from "./physical-declaration";
+import { emptyPhysicalGroup, type PhysicalGroup } from "./physical-declaration";
 import { elasticMemberReference } from "./resistance-elastic-reference";
 import { emptyProfile, type StructurePiece } from "./structure";
 import { resistancePreparationSchema } from "./resistance-preparation";
@@ -8,7 +8,7 @@ const piece: StructurePiece = {
   id: "T1-BS1", role: "topChord", start: "N1", end: "N2",
   lengthMm: 2000, profile: emptyProfile(), massKg: null,
 };
-const group = () => ({
+const group = (): PhysicalGroup => ({
   ...emptyPhysicalGroup(),
   steelGrade: "Aço sintético", materialSource: "Ensaio de referência", materialRevision: "R1",
   sectionSource: "Seção analítica sintética", sectionRevision: "R1", rotationDeg: 0,
