@@ -1,4 +1,8 @@
 "use client";
+import { ConnectionsPanel } from "./connections-panel";
+import { buildConnectionReport, assertConnectionReportCurrent, type ConnectionReport } from "@/domain/connection-report";
+import { jointActionTraceSchema, type JointActionTrace } from "@/domain/member-end-actions";
+import { stabilityFailureExplanation } from "@/domain/connection-declaration";
 import { ResistanceReportPanel } from "./resistance-report-panel";
 import { buildResistanceReport, assertResistanceReportCurrent, type ResistanceReport } from "@/domain/resistance-report";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -22,7 +26,7 @@ import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { Structure3D } from "./structure-3d";
 
 type Prepared = Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>>;
-type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string };
+type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; jointActions: JointActionTrace | null };
 const show = (v: number) => v === 0 ? "0" : v.toExponential(5);
 export function MixedAnalysisWorkspace({ project, onChange }: { project: Project; onChange: (patch: Partial<Project>) => void }) {
   const [example, setExample] = useState<Project | null>(null), [pane, setPane] = useState("prepare");
@@ -30,6 +34,7 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
   const signature = structureSignature(active), identity = JSON.stringify([example ? "example" : "work", active.id, signature, draft]);
   const model = useMemo(() => generateStructure(active).model, [active]);
   const connectivity = useMemo(() => { try { return model ? { inspected: inspectConnectivity(model), error: "" } : { error: "Geometria incompleta." }; } catch (e) { return { error: (e as Error).message }; } }, [model]);
+  const [connectionNodeId,setConnectionNodeId]=useState(""),[inspectNodes,setInspectNodes]=useState(false);
   const [source, setSource] = useState(""), [confirm, setConfirm] = useState(false);
   const [health, setHealth] = useState("Verificando executor Python…"), [ready, setReady] = useState(false);
   const [healthRevision, setHealthRevision] = useState(0);
@@ -80,13 +85,13 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
     }
     return values;
   }, [current, result]);
-  async function execute() {
+  async function execute(includeConnections=false) {
     const controller = new AbortController(), mine = ++ticket.current.value; request.current?.abort(); request.current = controller;
     setBusyIdentity(identity); setError(""); setSession(null);
     const timeout = setTimeout(() => controller.abort(), 33000);
     try {
       const prepared = await (draft.loading ? adaptLoadedMixedProject(active) : adaptMixedProject(active)); if (controller.signal.aborted || ticket.current.value !== mine) return;
-      const response = await fetch("/api/experimental/mixed3d", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(prepared.request), signal: controller.signal });
+      const response = await fetch("/api/experimental/mixed3d", { method: "POST", headers: { "Content-Type": "application/json", ...(includeConnections?{"X-JPN-Joint-Actions":"1"}:{}) }, body: JSON.stringify(prepared.request), signal: controller.signal });
       const out = await response.json(); if (!response.ok) throw new Error(`${out.error?.code ?? response.status}: ${out.error?.message ?? "Análise recusada."}`);
       if (out.status !== "completed" || !((out.schema_version==="jpn.local-mixed/1"&&out.execution?.local_only===true)||(out.schema_version==="jpn.remote-mixed/1"&&out.execution?.local_only===false&&out.execution?.transport==="remote"))) throw new Error("Origem de execução incompatível.");
       const parsed = anyMixedResultSchema.parse(out.result); if(parsed.schema_version!==prepared.request.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error("Versão de resposta incompatível."); verifyMixedResult(prepared.request, parsed, prepared.input_sha256);
@@ -95,7 +100,11 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
       let resistance: ResistanceReport | null = null, resistanceError = "";
       try { resistance = await buildResistanceReport(active, prepared, parsed); } catch(e) { resistanceError = (e as Error).message; }
       if (controller.signal.aborted || ticket.current.value !== mine) return;
-      setSession({ identity, prepared, result: parsed, execution: out.execution, resistance, resistanceError }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
+      let connections: ConnectionReport | null = null, connectionError = "", jointActions: JointActionTrace | null = null;
+      if(includeConnections){try{jointActions=jointActionTraceSchema.parse(out.joint_actions);connections=await buildConnectionReport(active,prepared,parsed,jointActions);}catch(e){connectionError=(e as Error).message;}}
+      if(controller.signal.aborted||ticket.current.value!==mine)return;
+      if(!prepared.request.nodes.some(n=>n.id===connectionNodeId))setConnectionNodeId(prepared.request.nodes[0].id);
+      setSession({ identity, prepared, result: parsed, execution: out.execution, resistance, resistanceError, connections, connectionError, jointActions }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
     } catch (e) { if (ticket.current.value === mine) setError(controller.signal.aborted ? "Execução cancelada ou prazo excedido; nenhum resultado publicado." : (e as Error).message); }
     finally { clearTimeout(timeout); if (ticket.current.value === mine) setBusyIdentity(null); }
   }
@@ -121,12 +130,14 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
         <button className="button secondary" disabled={!confirm || !source.trim() || !connectivity.inspected} onClick={() => edit({ workspace: { ...active.workspace, spatialPreparation: { ...draft, connectivity: { version: 1, geometrySignature: signature, reviewSource: source, junctions: connectivity.inspected!.junctions.map(j => ({ nodeId: j.nodeId, pieceIds: j.pieceIds, decision: "connect" })) } } } })}>Registrar conectividade revisada</button>
       </details>
     </>}
-    <div className="actions"><button className="button" disabled={!ready || busy} onClick={() => void execute()}>{busy ? "Executando Python…" : `Executar análise mista ${executionMode==="remote"?"online":"local"}`}</button>{busy && <button className="button secondary" onClick={invalidate}>Cancelar execução</button>}</div>
+    <div className="actions"><button className="button secondary" disabled={!ready||busy} onClick={()=>void execute(true)}>Calcular ações de ligações</button><button className="button" disabled={!ready || busy} onClick={() => void execute()}>{busy ? "Executando Python…" : `Executar análise mista ${executionMode==="remote"?"online":"local"}`}</button>{busy && <button className="button secondary" onClick={invalidate}>Cancelar execução</button>}</div>
     {error && <p className="field-error" role="alert">{error}</p>}
+    {error&&stabilityFailureExplanation(error.split(":")[0])&&<p data-testid="connection-stability-failure">{stabilityFailureExplanation(error.split(":")[0])}</p>}
     {pane === "results" && <>
       {!current && <p className="notice" data-testid="mixed-no-results">Sem resultado atual. Execute após revisar os dados; alterações invalidam resultados anteriores.</p>}
       <Field label="Peça na análise mista"><Select value={selectedPiece} onChange={e => { setPieceId(e.target.value); setSegmentId(""); setNodeId(""); }}>{model?.pieces.map(p => <option key={p.id} value={p.id}>{p.id} · {p.role}</option>)}</Select></Field>
-      {model && <div data-testid="mixed-viewer"><Structure3D model={model} roof={active.roof} planning={active.planning} projectName={active.name} selected={selectedPiece} onSelect={id => { setPieceId(id); setSegmentId(""); setNodeId(""); }} analysisColors={colors ?? {}} /></div>}
+      <label className="checkbox-label"><input type="checkbox" checked={inspectNodes} onChange={e=>setInspectNodes(e.target.checked)}/>Selecionar nós físicos no 3D</label>
+      {model && <div data-testid="mixed-viewer"><Structure3D inspectNodes={inspectNodes} selectedNodeId={connectionNodeId} onSelectNode={id=>{setConnectionNodeId(id);setNodeId(id);}} model={model} roof={active.roof} planning={active.planning} projectName={active.name} selected={selectedPiece} onSelect={id => { setPieceId(id); setSegmentId(""); setNodeId(""); }} analysisColors={colors ?? {}} /></div>}
       <p>Legenda: pórtico azul; axial em tração turquesa; compressão violeta; nulo cinza; sinais diferentes entre segmentos ocre. Seleção laranja. Cores não verificam resistência.</p>
       {current && result && <div data-testid="mixed-results">
         <p>{current.prepared.request.nodes.length} nós · {new Set(current.prepared.mapping.members.map(m => m.originalId)).size} peças · {current.prepared.request.members.length} segmentos · {current.prepared.request.members.filter(m => m.kind === "axial").length} axiais.</p>
@@ -151,5 +162,7 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
         <div className="actions"><button className="button secondary" onClick={() => exportJSON(current.prepared, "jpn-misto-entradas-rastreabilidade.json")}>Exportar entradas mistas</button><button className="button secondary" onClick={() => exportJSON({ prepared: current.prepared, result: current.result, execution: current.execution }, "jpn-misto-resultados-rastreabilidade.json")}>Exportar resultados mistos</button></div>
       </div>}
     </>}
+    {current?.connectionError&&<p role="alert" data-testid="connection-report-blocked">Relatório de ligações bloqueado: {current.connectionError}</p>}
+    <ConnectionsPanel project={active} report={current?.connections??null} combinationId={combo} selectedNode={connectionNodeId} onSelectNode={id=>{setConnectionNodeId(id);setNodeId(id);setPane("results");}} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setPane("results");}} onChange={edit} onExport={()=>{if(!current?.connections||!current.jointActions)return;const mine=ticket.current.value;void assertConnectionReportCurrent(current.connections,active,current.prepared,current.result,current.jointActions).then(()=>{if(ticket.current.value===mine)exportJSON(current.connections,"jpn-ligacoes-acoes-preliminares.json");}).catch(e=>{if(ticket.current.value===mine)setError((e as Error).message);});}}/>
   </section>;
 }

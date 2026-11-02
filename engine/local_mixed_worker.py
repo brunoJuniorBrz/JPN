@@ -84,12 +84,21 @@ def main():
         def nonfinite(_):
             raise ValueError('Nonfinite JSON constant')
         data = json.loads(body.decode('utf-8'), object_pairs_hook=_unique_object, parse_constant=nonfinite)
+        joint_actions = {} if '--joint-actions' in sys.argv else None
         if type(data) is dict and data.get('schema_version')=='jpn.mixed3d/2':
             from jpn_structural.mixed3d_loads import analyze_loaded_mixed3d
-            result=analyze_loaded_mixed3d(data)
+            result=analyze_loaded_mixed3d(data, _joint_actions=joint_actions)
         else:
-            result = analyze_mixed3d(data)
-        return dict(schema_version='jpn.local-mixed/1', status='completed', execution=limits, result=result)
+            result = analyze_mixed3d(data, _joint_actions=joint_actions)
+        if joint_actions is not None:
+            # The installed PyNite native global actions are audited directly in
+            # Python tests. Transport only its actual bases + compiled nodal
+            # loads: duplicating every global vector would exceed the existing
+            # 2 MB cap. No rounding or change to FE results is performed.
+            for combination in joint_actions['combinations'].values():
+                combination.pop('members')
+        return dict(schema_version='jpn.local-mixed/1', status='completed', execution=limits, result=result,
+                    **({'joint_actions': joint_actions} if joint_actions is not None else {}))
     except MemoryError:
         return dict(status='error', error=dict(code='MEMORY_LIMIT', message='Limite de memória do processo atingido; nenhum resultado publicado.'))
     except (ValueError, TypeError, RecursionError, OverflowError, UnicodeError) as exc:
@@ -107,7 +116,8 @@ def main():
 if __name__ == '__main__':
     output = main()
     try:
-        body = json.dumps(output, ensure_ascii=False, allow_nan=False).encode('utf-8')
+        body = json.dumps(output, ensure_ascii=False, allow_nan=False,
+                          separators=(',', ':') if '--joint-actions' in sys.argv else None).encode('utf-8')
         if len(body) > 2000000:
             body = b'{"status":"error","error":{"code":"OUTPUT_LIMIT","message":"Resposta excede 2 MB."}}'
             output = {'status': 'error'}

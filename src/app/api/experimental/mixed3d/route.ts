@@ -48,6 +48,8 @@ export async function POST(request: Request) {
   if (!remote&&!permitted(request, true)) return Response.json({ error: { code: "LOCAL_ONLY", message: "Origem local de desenvolvimento exigida." } }, { status: 403 });
   if (!request.headers.get("content-type")?.startsWith("application/json")) return failure(new SolverFailure("INVALID_INPUT", "Envie JSON pelo formulário local."));
   try {
-    const payload=await readInput(request);return reply(await (remote?runRemoteMixed(payload,"analysis",request.signal):runLocalMixed(payload,"analysis",request.signal)));
+    const option=request.headers.get("X-JPN-Joint-Actions");if(option!==null&&option!=="1")throw new SolverFailure("INVALID_INPUT","Opção de ações de ligação inválida.");
+    const mode=option==="1"?"connections":"analysis";
+    const payload=await readInput(request);return reply(await (remote?runRemoteMixed(payload,mode,request.signal):runLocalMixed(payload,mode,request.signal)));
   } catch (e) { return failure(e); }
 }
