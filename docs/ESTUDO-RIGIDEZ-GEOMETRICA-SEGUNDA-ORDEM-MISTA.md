@@ -212,6 +212,6 @@ A primeira execução roda os testes e imprime resultados sintéticos estruturad
 
 ## 10. Regra de entrega
 
-Este PR é apenas documentação e um banco de ensaios independente, baseado no PR #37. Sem alterações em `engine/`, ``src/domain/`, bloqueios normativos, bancos de dados, interface ou deploy. O profissional responsável continua obrigado a revisar o modelo, os carregamentos, a conformidade normativa e as hipóteses antes de qualquer aquisição/fabricação.
+Este PR é apenas documentação e um banco de ensaios independente, baseado no PR #37. Sem alterações em `engine/`, `src/domain/`, bloqueios normativos, bancos de dados, interface ou deploy. O profissional responsável continua obrigado a revisar o modelo, os carregamentos, a conformidade normativa e as hipóteses antes de qualquer aquisição/fabricação.
 
 **Conclusão executiva:** a melhor próxima mudança não é substituir o JPN. É desenvolver e testar um **`Kg` misto verificável**, pois a infraestrutura de primeira ordem e de resistência parcial já existe e é mais valiosa quando preservada.
