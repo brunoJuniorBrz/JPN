@@ -26,7 +26,7 @@ export function groupMaterialsForDisplay(groups: readonly MaterialGroup[]): Mate
   const mapped = new Map<string, MaterialDisplayGroup>();
   for (const group of groups) {
     const profile = group.profile;
-    const signature = JSON.stringify([group.role, profile.name, profile.section, profile.steelGrade, profile.source]);
+    const signature = JSON.stringify([group.role, profile]);
     let target = mapped.get(signature);
     if (!target) {
       target = {
