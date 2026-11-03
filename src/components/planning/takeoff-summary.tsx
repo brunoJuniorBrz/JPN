@@ -7,7 +7,7 @@ import { roleLabels, type PieceRole } from "@/domain/structure";
 import { formatMeasure } from "@/domain/calculations/units";
 import { useData } from "@/components/data-provider";
 import { downloadBlob, exportFilename } from "@/lib/exports/proposal";
-import { groupMaterialsForDisplay, summarizePending } from "./result-presentation";
+import { groupMaterialsForDisplay, summarizePending, locatePending, locatePendingGroup, type PendingTarget } from "./result-presentation";
 import { StructurePreview } from "./structure-preview";
 
 export type ResultSection = "model" | "materials" | "engineering" | "files";
@@ -19,10 +19,11 @@ const sections: {id: ResultSection; label: string}[] = [
 ];
 
 export function TakeoffSummary({ project, onConfigureProfile, onEditStructure, startIn3D = false,
-  open3DRequest = 0, activeSection = "model", onSectionChange = () => {} }: {
+  open3DRequest = 0, activeSection = "model", onSectionChange = () => {}, onResolvePending }: {
   project: Project; onConfigureProfile?: (role: PieceRole) => void; onEditStructure?: () => void;
   startIn3D?: boolean; open3DRequest?: number;
   activeSection?: ResultSection; onSectionChange?: (section: ResultSection) => void;
+  onResolvePending?: (target: PendingTarget) => void;
 }) {
   const result = useMemo(() => generateStructure(project), [project]); const { model } = result;
   const grouped = useMemo(() => model ? groupMaterialsForDisplay(model.groups) : [], [model]);
@@ -75,7 +76,7 @@ export function TakeoffSummary({ project, onConfigureProfile, onEditStructure, s
         <span>{label}</span>{id==="engineering" && <small className="result-pending-count">{result.pending.length>0?`${result.pending.length} pendências`:"Verificação pendente"}</small>}
       </button>)}
     </nav>
-    {!model ? <div className="pending-box"><h3>Faltam dados para gerar as peças</h3><ul>{result.pending.map(p=><li key={p}>{p}</li>)}</ul></div> : <>
+    {!model ? <div className="pending-box"><h3>Faltam dados para gerar as peças</h3><ul>{result.pending.map(p=><li key={p}>{p}{onResolvePending && locatePending(p) && <button className="button secondary result-pending-action" type="button" onClick={() => onResolvePending(locatePending(p)!)}>Corrigir dados</button>}</li>)}</ul></div> : <>
       {/* Keep the viewer subtree mounted when switching tabs: Safari should not
           create/destroy WebGL contexts with each result-section change. */}
       <div role="tabpanel" id="result-panel-model" aria-labelledby="result-tab-model"
@@ -111,9 +112,15 @@ export function TakeoffSummary({ project, onConfigureProfile, onEditStructure, s
         <section className="technical-review">
           <h3>Pendências da revisão técnica</h3>
           <p><strong>{result.pending.length} ocorrências</strong> em {pending.length} grupos de avisos. O levantamento não representa verificação estrutural aprovada.</p>
-          {pending.length ? <ul>{pending.map((item,index) => <li key={index}>{item.text}
-            {item.sources.length>1 && <details><summary>Ver as {item.count} ocorrências originais</summary><ul>{item.sources.map((source,i)=><li key={i}>{source}</li>)}</ul></details>}
-          </li>)}</ul> : <p>Não há pendências cadastrais nesta geometria. As verificações normativas ainda não estão completas.</p>}
+          {pending.length ? <ul>{pending.map((item,index) => {
+            const target = locatePendingGroup(item);
+            return <li key={index}>{item.text}
+              {target && onResolvePending && <button className="button secondary result-pending-action" type="button" onClick={() => onResolvePending(target)}>
+                {target.role ? "Editar perfil" : target.step === 1 ? "Editar medidas" : "Corrigir na estrutura"}
+              </button>}
+              {item.sources.length>1 && <details><summary>Ver as {item.count} ocorrências originais</summary><ul>{item.sources.map((source,i)=><li key={i}>{source}</li>)}</ul></details>}
+            </li>;
+          })}</ul> : <p>Não há pendências cadastrais nesta geometria. As verificações normativas ainda não estão completas.</p>}
           <details><summary>Hipóteses e limites desta geração geométrica</summary><ul>{result.notes.map((n,i)=><li key={i}>{n}</li>)}</ul></details>
         </section>
       </div>
