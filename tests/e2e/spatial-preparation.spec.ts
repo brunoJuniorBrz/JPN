@@ -1,4 +1,4 @@
-import { openEngineeringTool, openResultTab } from "./result-tabs";
+import { openEngineeringTool } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 
 for (const viewport of [375, 1440]) test(`preparação física é editável, persistente e segura em ${viewport}px`, async ({ page }) => {
