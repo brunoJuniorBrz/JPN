@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { Project } from "./models";
 import type { ResistanceReport } from "./resistance-report";
-import { coldformedDesignResultSchema,verifiedColdformedRequestSchema,prepareColdformedDesign } from "./coldformed-design";
+import { coldformedDesignResultSchema,verifiedColdformedRequestSchema,prepareColdformedDesign,requireCurrentBucklingNumerics } from "./coldformed-design";
 import { availableNormativeProcedures } from "./normative-procedures";
 import { mixedInputHash } from "./mixed-analysis";
 import { axialConnectionMinimum } from "./axial-connection-minimum";
@@ -19,6 +19,7 @@ export async function buildResistanceAssessment(project:Project,base:ResistanceR
   const seen=new Set<string>(),records:MemberExecution[]=[];
   for(const value of values){
     const record=memberExecutionSchema.parse(value),input=record.request.design,result=record.result,key=JSON.stringify([input.piece_id,input.combination_id]);
+    requireCurrentBucklingNumerics(record.request,result);
     if(seen.has(key))throw Error("DUPLICATE_RESISTANCE_EXECUTION");seen.add(key);
     const declaration=project.workspace.spatialPreparation?.memberDesign?.find(d=>d.pieceId===input.piece_id&&d.combinationId===input.combination_id);
     if(!declaration)throw Error("RESISTANCE_EXECUTION_WITHOUT_DECLARATION");

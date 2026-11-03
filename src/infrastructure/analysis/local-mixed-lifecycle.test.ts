@@ -1,7 +1,7 @@
 import { EventEmitter } from "node:events";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-const fake = vi.hoisted(() => ({ spawn: vi.fn() }));
-vi.mock("node:child_process", () => ({ spawn: fake.spawn }));
+const fake = vi.hoisted(() => ({ spawn: vi.fn(), execFile:vi.fn((...args:unknown[])=>{(args.at(-1) as ()=>void)();}) }));
+vi.mock("node:child_process", () => ({ spawn: fake.spawn,execFile:fake.execFile }));
 import { localMixedLimits, runLocalMixed } from "./local-mixed-runner";
 type Child = EventEmitter & { pid?: number; stdin: EventEmitter & { end: ReturnType<typeof vi.fn> }; stdout: EventEmitter; stderr: EventEmitter; kill: ReturnType<typeof vi.fn> };
 let child: Child;

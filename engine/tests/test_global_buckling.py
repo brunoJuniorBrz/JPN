@@ -32,3 +32,17 @@ def test_global_units_geometry_scaling_and_uncoupled_euler_limit():
 def test_incompatible_or_degenerate_properties_rejected(i,value):
     args=[200e9,200e9/2.6,.001,8e-6,1.2e-6,2e-9,1e-10,.02,2.,2.,2.];args[i]=value
     with pytest.raises(AnalysisError):global_compression(*args)
+
+
+@pytest.mark.parametrize('geometry_scale',[.001,1.,1000.])
+@pytest.mark.parametrize('elastic_scale',[1e-12,1.,1e8])
+def test_unequal_lengths_and_extreme_scales_against_dimensionless_energy_eigenproblem(geometry_scale,elastic_scale):
+    E,G,A,Iy,Iz,J,Iw,s,Ly,Lz,Lw = 200e9,200e9/2.6,.001,8e-6,1.2e-6,2e-9,1e-10,.02,2.,3.,4.
+    r2=(Iy+Iz)/A+s*s
+    reference=np.diag([math.pi**2*E*Iy/Ly**2,math.pi**2*E*Iz/Lz**2,
+                       (G*J+math.pi**2*E*Iw/Lw**2)/r2])
+    metric=np.array([[1.,0.,s/math.sqrt(r2)],[0.,1.,0.],[s/math.sqrt(r2),0.,1.]])
+    expected=eigh(reference/np.max(reference),metric,eigvals_only=True)[0]*np.max(reference)
+    g,e=geometry_scale,elastic_scale
+    actual=global_compression(E*e,G*e,A*g**2,Iy*g**4,Iz*g**4,J*g**4,Iw*g**6,s*g,Ly*g,Lz*g,Lw*g)
+    assert actual['global_n']/(e*g*g)==pytest.approx(expected,rel=1e-12)
