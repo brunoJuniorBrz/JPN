@@ -1,0 +1,17 @@
+.........................F......                                         [100%]
+================================== FAILURES ===================================
+_ test_arbitrarily_high_declared_critical_values_never_become_independent_pass _
+
+    def test_arbitrarily_high_declared_critical_values_never_become_independent_pass():
+        p=member();p['critical']={k:triplet(1e20,1e20,1e20) for k in p['critical']}
+        out=analyze_coldformed_design(p)
+>       assert out['status']=='CONDITIONAL-EXTERNAL-INPUTS'
+E       AssertionError: assert 'FAIL' == 'CONDITIONAL-EXTERNAL-INPUTS'
+E         
+E         - CONDITIONAL-EXTERNAL-INPUTS
+E         + FAIL
+
+engine\tests\test_coldformed_design.py:122: AssertionError
+=========================== short test summary info ===========================
+FAILED engine\tests\test_coldformed_design.py::test_arbitrarily_high_declared_critical_values_never_become_independent_pass
+1 failed, 31 passed in 0.50s

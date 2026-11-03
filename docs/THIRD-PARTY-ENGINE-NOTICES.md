@@ -22,3 +22,11 @@ SciPy ou PyNite desse motor. O perfil FSM é outro ambiente Python, pois pycufsm
 0.2.0 falha com conversões escalares removidas no NumPy 2.5.4. Não há monkeypatch
 de NumPy nem downgrade do solver principal. As depreciações conhecidas do perfil
 FSM compatível são registradas no resultado; outros avisos bloqueiam a execução.
+
+O novo perfil isolado `requirements-sections-fsm.lock` combina sectionproperties
+3.10.2 e pycufsm 0.2.0 com NumPy 2.3.3 e SciPy 1.15.3. Ele não contém PyNite:
+PyNiteFEA 3.2.1 requer NumPy >=2.4, incompatível com a conversão escalar usada
+nessa versão do pycufsm. O solver misto continua no perfil principal. O worker
+de seção utiliza o perfil combinado explicitamente configurado; não faz
+downgrade global nem fallback silencioso. As licenças dos mesmos artefatos
+sectionproperties/pycufsm e dos dados originais CUFSM continuam aplicáveis.

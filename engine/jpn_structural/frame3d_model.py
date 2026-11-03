@@ -4,6 +4,7 @@ import json
 import math
 import re
 import struct
+from numbers import Real
 from .model import AnalysisError
 
 DOFS = ('UX', 'UY', 'UZ', 'RX', 'RY', 'RZ')
@@ -17,7 +18,7 @@ def fail(code, message):
 
 def canonical(value):
     """Sorted keys + IEEE754 tags: identical across Python and ECMAScript."""
-    if type(value) in (int, float):
+    if isinstance(value,Real) and not isinstance(value,bool):
         return {'$f64': struct.pack('>d', float(value) if value != 0 else 0.).hex()}
     if isinstance(value, dict):
         return {k: canonical(value[k]) for k in sorted(value)}

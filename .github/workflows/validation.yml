@@ -41,13 +41,19 @@ jobs:
       - run: python -m venv .venv
       - run: .venv/bin/python -m pip install -r engine/requirements-sections.lock
       - run: .venv/bin/python -m pip install --no-build-isolation --no-deps -e ./engine
+      - run: python -m venv .tools/sections-fsm
+      - run: .tools/sections-fsm/bin/python -m pip install -r engine/requirements-sections-fsm.lock
       - run: npx --yes pnpm@12.15.0 install --frozen-lockfile
       - run: npx --yes pnpm@12.15.0 typecheck
       - run: npx --yes pnpm@12.15.0 lint
       - run: npx --yes pnpm@12.15.0 test
+        env:
+          JPN_SECTION_FSM_PYTHON_EXECUTABLE: .tools/sections-fsm/bin/python
       - run: .venv/bin/python tests/verify_dxf.py
       - run: npx --yes pnpm@12.15.0 exec playwright install --with-deps chromium
       - run: npx --yes pnpm@12.15.0 test:e2e
+        env:
+          JPN_SECTION_FSM_PYTHON_EXECUTABLE: .tools/sections-fsm/bin/python
       - run: npx --yes pnpm@12.15.0 build
 
   optional-numerical-profiles:
@@ -56,7 +62,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        profile: [sections, fsm]
+        profile: [sections, fsm, sections-fsm]
     env:
       OPENBLAS_NUM_THREADS: '1'
       OMP_NUM_THREADS: '1'
@@ -72,3 +78,5 @@ jobs:
         run: python -m pytest engine/section_tests/test_section_properties.py engine/section_tests/test_verified_design.py -q
       - if: matrix.profile == 'fsm'
         run: python -m pytest engine/section_tests/test_elastic_strip.py -q
+      - if: matrix.profile == 'sections-fsm'
+        run: python -m pytest engine/section_tests/test_member_buckling.py -q

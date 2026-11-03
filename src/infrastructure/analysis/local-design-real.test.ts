@@ -13,7 +13,7 @@ it("real HTTP resistance path recalculates geometry and executes NBR14762 tensio
   enabled();const response=await POST(request()),out=await response.json();expect(response.status).toBe(200);
   const result=coldformedDesignResultSchema.required({geometry_audit:true,calculation_input_sha256:true}).parse(out.result);
   expect(out.execution.memory_limit_bytes).toBe(805306368);expect(result.input_sha256).toBe(await mixedInputHash(input));
-  const check=result.checks.find(c=>c.id==="tension")!;expect(check.status).toBe("PASS");
+  const check=result.checks.find(c=>c.id==="tension")!;expect(check.status).toBe("CONDITIONAL");
   if(check.status!=="BLOCKED")expect(check.resistance).toBeCloseTo(record.cases[0].independent.tension_resistance_n,6);
   expect(result.computed_structural_approval).toBe(false);
 },25000);

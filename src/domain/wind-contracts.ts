@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { engineeringId as id, engineeringSource as source, engineeringReferenceSchema as reference } from "./engineering-combinations";
+import { windSpeedInputSchema } from "./wind-speed";
 const n = z.number().finite();
 const bounds = z.tuple([n,n,n,n]).refine(([a,b,c,d]) => c > a && d > b, "WIND_ZONE: retângulo degenerado.");
 
@@ -20,6 +21,7 @@ export const windDeclarationSchema = z.object({
     loadPath: source, reference,
   }).strict(),
   cases: z.array(z.object({ id, incidenceDeg: n.min(0).lt(360),
+    speedCalculation:windSpeedInputSchema.optional(),
     dynamicPressurePa: n.positive().max(1e6), reference,
     zones: z.array(z.object({ id, regionId: id, boundsM: bounds,
       kind: z.enum(["edge", "corner", "interior"]),

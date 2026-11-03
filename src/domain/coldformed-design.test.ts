@@ -5,9 +5,10 @@ import { windReferenceProject } from "./examples/wind-project";
 import { applyEngineeringCombinations } from "./apply-engineering-combinations";
 import { adaptLoadedMixedProject } from "./loaded-mixed-adapter";
 import { buildResistanceReport,type ResistanceReport } from "./resistance-report";
-import { memberDesignBasis,prepareColdformedDesign,type MemberDesignDeclaration } from "./coldformed-design";
+import { memberDesignBasis,prepareColdformedDesign,requireCommonMemberAxes,type MemberDesignDeclaration } from "./coldformed-design";
 import { projectSchema, type Project } from "./models";
 import { resistancePreparationSchema } from "./resistance-preparation";
+import { buildResistanceAssessment } from "./resistance-assessment";
 
 let project:Project,report:ResistanceReport,declaration:MemberDesignDeclaration,pieceId:string;
 beforeAll(async()=>{
@@ -60,4 +61,23 @@ it("combination editing preserves loads and sources, removes overlap approval, r
   value.combinations[0].terms.find(t=>t.caseId==="WS")!.gamma=1;
   expect(()=>applyEngineeringCombinations(project,value)).toThrow(/exclusivas/);
   value.combinations[0].terms.push(value.combinations[0].terms[0]);expect(()=>applyEngineeringCombinations(project,value)).toThrow();
+});
+
+it("validates all three axes: uniform 90 degree roll works, mixed roll, sign reflections and corrupted frames block",()=>{
+  const zero=[[1,0,0],[0,1,0],[0,0,1]],roll90=[[1,0,0],[0,0,1],[0,-1,0]];
+  expect(()=>requireCommonMemberAxes([roll90,roll90])).not.toThrow();
+  expect(()=>requireCommonMemberAxes([zero,roll90])).toThrow(/três eixos/);
+  expect(()=>requireCommonMemberAxes([[[1,0,0],[0,1,0],[0,0,-1]]])).toThrow(/refletido/);
+  expect(()=>requireCommonMemberAxes([[[1,0,0],[0,1,1],[0,0,1]]])).toThrow(/ortonormal/);
+  expect(()=>requireCommonMemberAxes([[[NaN,0,0],[0,1,0],[0,0,1]]])).toThrow(/inválido/);
+});
+it("never merges biaxial segment fields with a different transverse reference",async()=>{
+  const r=structuredClone(report),p=r.continuousDemands!.pieces.find(p=>p.pieceId===pieceId)!,f=p.fields.find(f=>f.combinationId==="WP")!;
+  const second=structuredClone(f);second.segmentId="SECOND-REFERENCE";second.forcePolynomials={...second.forcePolynomials,myNm:[1000,-2000],mzNm:[-300,500]};
+  second.globalToLocal=[f.globalToLocal[0],f.globalToLocal[2],f.globalToLocal[1].map(v=>-v)] as typeof second.globalToLocal;p.fields.push(second);
+  await expect(prepareColdformedDesign(project,r,declaration)).rejects.toThrow(/três eixos/);
+});
+it("the assessment distinguishes availability from execution and authenticates its base",async()=>{
+  const a=await buildResistanceAssessment(project,report,[]);expect(a.schema_version).toBe("jpn.resistance-report/3");expect(a.procedureExecutions).toEqual([]);expect(a.normativeProceduresImplemented).toEqual(a.releaseGate.implementedNormativeProcedures);expect(a.procedureRegistry.every(p=>p.executions.length===0)).toBe(true);expect(a.computedStructuralApproval).toBe(false);
+  await expect(buildResistanceAssessment(project,{...report,reportSha256:"0".repeat(64)},[])).rejects.toThrow(/TAMPERED/);
 });

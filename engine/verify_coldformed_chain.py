@@ -53,7 +53,7 @@ def verify():
         checked=analyze_verified_coldformed(request);check=next(c for c in checked['checks'] if c['id']=='tension')
         independent_capacity=checked['geometry_audit']['computed_properties']['area_m2']*250e6/1.1
         if not math.isclose(check['resistance'],independent_capacity,rel_tol=1e-12):raise AssertionError('Tension resistance differs from independent gross-yield solution')
-        if check['status']!=('PASS' if load==1000 else 'FAIL'):raise AssertionError('Incorrect resistance verdict')
+        if check['status']!=('CONDITIONAL' if load==1000 else 'FAIL'):raise AssertionError('Incorrect resistance verdict')
         rows.append(dict(load_n=load,solver_input=current,solver_result=result,design_input=request,design_result=checked,
           independent=dict(k_beam_n_m=kb,k_tie_n_m=kt,axial_n=independent_force,tip_z_m=independent_displacement,tension_resistance_n=independent_capacity)))
     return dict(schema_version='jpn.coldformed-chain-evidence/1',status='passed',section=section,cases=rows,

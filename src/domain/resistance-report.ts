@@ -13,6 +13,8 @@ import { comparePhysicalProperty } from "./property-precision";
 import { extractWholePieceDeflections } from "./whole-piece-deflection";
 import { evaluateDeclaredService } from "./declared-service";
 import { buildEngineReleaseGate } from "./engine-release-gate";
+import { availableNormativeProcedures,normativeProcedureRegistry } from "./normative-procedures";
+import { calculateWindSpeed } from "./wind-speed";
 
 const normativeModes=[
   {id:"tension",label:"Tração: escoamento bruto e ruptura da seção efetiva/líquida"},
@@ -96,8 +98,9 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
   const binding={...demands.binding,evaluatorVersion:"jpn.resistance-report/2.1",declarationsSha256:await mixedInputHash(declarations)};
   const report={schema_version:"jpn.resistance-report/2" as const,status:"partial-demands-and-preparation" as const,
     approvedForFabrication:false as const,structureStatus:"NOT_APPROVED_FOR_FABRICATION" as const,
-    normativeProceduresImplemented:["NBR14762:2010-C.3","NBR14762:2010-C.4","NBR14762:2010-9.6.2","NBR14762:2010-9.8.3","NBR14762:2010-9.9"],binding,physicalInput:current.request,
+    normativeProceduresImplemented:[...availableNormativeProcedures],procedureRegistry:normativeProcedureRegistry,binding,physicalInput:current.request,
     engineeringCombinations:draft.engineeringCombinations??null,demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
+    loadProcedureExecutions:(draft.loading?.wind?.cases??[]).filter(c=>c.speedCalculation).map(c=>({caseId:c.id,procedures:["NBR6123:2023-4.2","NBR6123:2023-5.3.3"],status:"calculated-partial" as const,result:calculateWindSpeed(c.speedCalculation)})),
     remaining:["Seleção e validação normativa das ações/combinações ainda pendentes na M22.","Procedimentos parciais Ue/MRD disponíveis separadamente; todos os estados-limites da família e da obra ainda não estão concluídos.","Missão 24: ligações, apoios, contenções, estabilidade global/efeitos adicionais e revisão do engenheiro."]};
   const full={...report,releaseGate:buildEngineReleaseGate(project,report)};
   return {...full,reportSha256:await mixedInputHash(full)};

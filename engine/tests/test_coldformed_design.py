@@ -79,7 +79,8 @@ def test_continuous_governing_interaction_not_union_of_component_maxima_and_fail
     assert c['status']=='FAIL' and not r['computed_structural_approval']
     for key in ('myNm','mzNm'):f[key]=[x/2 for x in f[key]]
     r=analyze_coldformed_design(raw);c=next(c for c in r['checks'] if c['id']=='combined-9.9')
-    assert c['status']=='PASS' and c['utilization']==pytest.approx(.6875)
+    assert c['status']=='CONDITIONAL' and c['utilization']==pytest.approx(.6875)
+    assert c['conditional_dependencies']
 
 
 def test_segmented_original_piece_continuity_and_critical_location():
@@ -105,7 +106,7 @@ def test_missing_modes_torsion_variable_axial_force_and_shear_interaction_block(
 def test_pure_tension_needs_no_fabricated_elastic_mode_and_cannot_mask_bending():
     p=member();p['study']['minimum_search']='not-required-pure-tension';p['critical']={k:None for k in p['critical']}
     p['fields'][0]['forces'].update(nN=[1000],myNm=[0])
-    r=analyze_coldformed_design(p);assert r['status']=='PASS-IMPLEMENTED-CHECKS'
+    r=analyze_coldformed_design(p);assert r['status']=='CONDITIONAL-EXTERNAL-INPUTS'
     p['fields'][0]['forces']['myNm']=[1]
     with pytest.raises(AnalysisError,match='Pure-tension'):analyze_coldformed_design(p)
 
@@ -113,3 +114,12 @@ def test_pure_tension_needs_no_fabricated_elastic_mode_and_cannot_mask_bending()
 def test_connection_declaration_must_be_an_object_not_an_uncaught_attribute_error():
     p=member();p['tension']=[]
     with pytest.raises(AnalysisError,match='explicit object'):analyze_coldformed_design(p)
+
+
+def test_arbitrarily_high_declared_critical_values_never_become_independent_pass():
+    p=member();p['critical']={k:triplet(1e20,1e20,1e20) for k in p['critical']}
+    p['fields'][0]['forces']['myNm']=[0,4000,-4000]
+    out=analyze_coldformed_design(p)
+    assert out['status']=='CONDITIONAL-EXTERNAL-INPUTS'
+    assert all(c['status']=='CONDITIONAL' for c in out['checks'] if c['id']in ('compression','my_positive','combined-9.9'))
+    assert not out['computed_structural_approval']

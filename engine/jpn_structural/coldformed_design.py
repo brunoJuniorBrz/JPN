@@ -87,7 +87,7 @@ def evaluate(c, u):
 def _reference(raw):
     obj(raw, 'source revision responsible basis_sha256 boundary_and_load_pattern minimum_search', 'elastic study')
     for k in ('source', 'revision', 'responsible', 'boundary_and_load_pattern'):text(raw[k], k)
-    if raw['minimum_search'] not in ('reviewed-elastic-mode-minima','not-required-pure-tension'):fail('CRITICAL_MINIMUM_PENDING', 'A sampled signature curve is not a reviewed minimum by mode.')
+    if raw['minimum_search'] not in ('reviewed-elastic-mode-minima','not-required-pure-tension','computed-cfsm-ss'):fail('CRITICAL_MINIMUM_PENDING', 'A sampled signature curve is not a reviewed minimum by mode.')
 
 
 def _critical(raw):
@@ -96,7 +96,7 @@ def _critical(raw):
     for k in raw:number(raw[k], 1e-12, 1e20, k)
 
 
-def analyze_coldformed_design(raw):
+def analyze_coldformed_design(raw,*,_computed_modes=()):
     obj(raw, 'schema_version units piece_id combination_id binding section study critical tension web fields', 'member design')
     if raw['schema_version'] != VERSION or raw['units'] != 'SI':fail('UNSUPPORTED_MODEL', 'Use the explicit SI cold-formed design contract.')
     for k in ('piece_id', 'combination_id'):text(raw[k], k)
@@ -159,8 +159,13 @@ def analyze_coldformed_design(raw):
     def emit(key, demand, capacity, governing, clause):
         if capacity is None:return blocked(key, 'Required capacity/elastic critical data missing.')
         ratio = demand/capacity
-        checks.append(dict(id=key, status='PASS' if ratio <= 1 else 'FAIL', demand=demand, resistance=capacity,
-                           utilization=ratio, governing=governing, clauses=clause))
+        dependencies=[]
+        if key in ('compression','my_positive','my_negative','mz_positive','mz_negative','combined-9.9'):
+            dependencies.append('cFSM eigenvalues were computed in explicit modal spaces and a finite half-wave domain; completeness beyond that domain and complete physical-mode applicability are not certified.' if key in _computed_modes else 'Elastic critical values/mode minima are externally declared, not computationally verified by this execution.')
+        if key in ('tension','combined-9.9') and tension:
+            dependencies.append('Net areas/Ct or the all-elements-welded hypothesis are externally declared; complete member-hole/cutout/weld geometry is not verified.')
+        checks.append(dict(id=key, status='FAIL' if ratio>1 else 'CONDITIONAL' if dependencies else 'PASS', demand=demand, resistance=capacity,
+                           utilization=ratio, governing=governing, clauses=clause,conditional_dependencies=dependencies))
     def point(f, u):
         return dict(segment_id=f['segment_id'], position_m=f['offset_m']+u*f['length_m'],
                     segment_position_m=u*f['length_m'], combination_id=raw['combination_id'],
@@ -225,10 +230,10 @@ def analyze_coldformed_design(raw):
         emit('compression-slenderness',geometric,200.,None,['9.7.4'])
     if not checks:blocked('no-demand','No nonzero design demand in this combination.')
     if any(not math.isfinite(x['design']) or x['design']<=0 for x in capacities.values()):fail('NUMERICAL_FAILURE','Nonpositive/nonfinite resistance.')
-    return dict(schema_version='jpn.coldformed-design-result/1', units='SI', input_sha256=input_hash(raw),
+    return dict(schema_version='jpn.coldformed-design-result/2', units='SI', input_sha256=input_hash(raw),
                 binding=raw['binding'], piece_id=raw['piece_id'], combination_id=raw['combination_id'], standard=STANDARD,
-                evaluator_version='jpn.nbr14762-mrd/1', capacities=capacities, checks=checks,
-                status='FAIL' if any(c['status']=='FAIL' for c in checks) else 'BLOCKED' if any(c['status']=='BLOCKED' for c in checks) else 'PASS-IMPLEMENTED-CHECKS',
+                evaluator_version='jpn.nbr14762-mrd/2', capacities=capacities, checks=checks,
+                status='FAIL' if any(c['status']=='FAIL' for c in checks) else 'BLOCKED' if any(c['status']=='BLOCKED' for c in checks) else ('CONDITIONAL-MODEL-LIMITS' if _computed_modes else 'CONDITIONAL-EXTERNAL-INPUTS') if any(c['status']=='CONDITIONAL' for c in checks) else 'PASS-IMPLEMENTED-CHECKS',
                 member_all_limit_states_verified=False, computed_structural_approval=False, approved_for_fabrication=False,
                 remaining=['Connections/net-section provenance and load introduction/web crippling are not fully verified.',
                            'Complete normative action/combination and global stability validation remain separate.',

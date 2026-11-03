@@ -4,6 +4,7 @@ import { structureSignature } from "./calculations/project-basis";
 import { generatedRoofRegions } from "./roof-load-path";
 import { regionElevation, roofGeometryToleranceM as eps } from "./roof-regions";
 import { windDeclarationSchema } from "./wind-contracts";
+import { calculateWindSpeed } from "./wind-speed";
 
 type V = [number, number, number];
 const add = (a: V, b: V) => a.forEach((_, i) => a[i] += b[i]);
@@ -53,6 +54,11 @@ export function distributeWindActions(project: Project, value: unknown) {
     return {r,rows};
   });
   const cases = d.cases.map(c => {
+    if(c.speedCalculation){
+      const speed=calculateWindSpeed(c.speedCalculation),height=Math.max(...model.nodes.map(n=>n.z))/1000;
+      const same=(a:number,b:number)=>Math.abs(a-b)<=128*Number.EPSILON*Math.max(1,Math.abs(a),Math.abs(b));
+      if(!same(speed.dynamicPressurePa,c.dynamicPressurePa)||!same(speed.input.v0Mps,d.building.basicVelocityMS)||!same(speed.input.heightM,height))fail(`${c.id}: STALE_WIND_SPEED — pressão, V0 ou altura divergem do cálculo rastreável; calcule novamente.`);
+    }
     if (new Set(c.zones.map(z => z.id)).size !== c.zones.length) fail(`${c.id}: IDs de zonas repetidos.`);
     if (new Set(c.zones.map(z => z.internalCoefficient)).size !== 1) fail(`${c.id}: volume fechado único exige uma hipótese de pressão interna por caso.`);
     for (const z of c.zones) if (!surfaces.regions.some(r => r.id === z.regionId)) fail(`${c.id}: zona refere superfície inexistente.`);

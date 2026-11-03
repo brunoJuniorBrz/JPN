@@ -18,7 +18,9 @@ export async function runLocalSection(payload:string,signal?:AbortSignal,kind:"s
   const input=kind==="design"?verifiedColdformedRequestSchema.parse(JSON.parse(payload)):sectionAnalysisRequestSchema.parse(JSON.parse(payload));if(gate.active>=1)throw new SolverFailure("BUSY","Outro cálculo está em execução.");gate.active++;
   try{
     const raw=await new Promise<unknown>((resolve,reject)=>{
-      const executable=process.env.JPN_SECTION_PYTHON_EXECUTABLE||process.env.JPN_PYTHON_EXECUTABLE||path.resolve(process.platform==="win32"?".venv/Scripts/python.exe":".venv/bin/python");
+      const automatic=kind==="design"&&"design"in input&&input.design.study.minimum_search==="computed-cfsm-ss";
+      if(automatic&&!process.env.JPN_SECTION_FSM_PYTHON_EXECUTABLE)return reject(new SolverFailure("UNAVAILABLE","Configure o perfil isolado requirements-sections-fsm.lock em JPN_SECTION_FSM_PYTHON_EXECUTABLE. O solver principal não será alterado."));
+      const executable=(automatic?process.env.JPN_SECTION_FSM_PYTHON_EXECUTABLE:process.env.JPN_SECTION_PYTHON_EXECUTABLE)||process.env.JPN_PYTHON_EXECUTABLE||path.resolve(process.platform==="win32"?".venv/Scripts/python.exe":".venv/bin/python");
       const child=spawn(executable,["-I","-X","utf8",path.resolve("engine/section_worker.py")],{windowsHide:true,stdio:["pipe","pipe","pipe"],env:{...process.env,OPENBLAS_NUM_THREADS:"1",OMP_NUM_THREADS:"1",MKL_NUM_THREADS:"1"}});
       const chunks:Buffer[]=[];let bytes=0,stderr=0,settled=false,failure:SolverFailure|null=null,cleanup:ReturnType<typeof setTimeout>|undefined;
       const finish=(value?:unknown,error?:Error)=>{if(settled)return;settled=true;clearTimeout(timer);clearTimeout(cleanup);signal?.removeEventListener("abort",cancel);if(error)reject(error);else resolve(value);};

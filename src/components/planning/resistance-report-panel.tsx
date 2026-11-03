@@ -10,6 +10,8 @@ import { ColdFormedPropertiesForm } from "./cold-formed-properties-form";
 import { SectionAnalysisControl } from "./section-analysis-control";
 import { DeclaredServiceControl } from "./declared-service-control";
 import { ColdformedDesignControl } from "./coldformed-design-control";
+import type { MemberExecution } from "@/domain/resistance-assessment";
+import { axialConnectionMinimum } from "@/domain/axial-connection-minimum";
 
 const labels:Record<DemandComponent,string>={nN:"N",vyN:"Vy",vzN:"Vz",tNm:"T",myNm:"My",mzNm:"Mz"};
 const show=(n:number|null)=>n===null?"Não aplicável":n===0?"0":n.toExponential(5);
@@ -17,7 +19,7 @@ function ConcurrentRow({row}:{row:DemandRow}){
   return <><td>{row.segmentId}</td><td>{row.combinationId}</td><td>{show(row.segmentPositionM)} / {show(row.originalPositionM)} m</td><td>{demandComponents.map(k=>`${labels[k]}=${show(row.forces[k])}`).join("; ")}</td></>;
 }
 
-export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExport,project,onChange}:{report:ResistanceReport;selectedPiece:string;onSelectPiece:(id:string)=>void;onExport:()=>void;project:Project;onChange:(patch:Partial<Project>)=>void}){
+export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExport,project,onChange,executions=[],onComputed}:{report:ResistanceReport;selectedPiece:string;onSelectPiece:(id:string)=>void;onExport:()=>void;project:Project;onChange:(patch:Partial<Project>)=>void;executions?:MemberExecution[];onComputed?:(r:MemberExecution)=>void}){
   const [component,setComponent]=useState<DemandComponent>("nN");
   const data=report.pieces.find(p=>p.pieceId===selectedPiece),demands=report.demands.pieces.find(p=>p.pieceId===selectedPiece);
   const rows=demands?new Map(demands.samples.map(s=>[s.id,s])):null;
@@ -41,7 +43,14 @@ export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExpo
       <ContinuousDemandsPanel report={report.continuousDemands} pieceId={selectedPiece}/>
       <DeclaredServiceControl key={`service-${selectedPiece}`} project={project} pieceId={selectedPiece} report={report} onChange={onChange}/>
       <SectionAnalysisControl key={`section-${selectedPiece}`} project={project} pieceId={selectedPiece} onChange={onChange}/>
-      <ColdformedDesignControl key={`design-${selectedPiece}`} project={project} report={report} pieceId={selectedPiece} onChange={onChange}/>
+      <ColdformedDesignControl key={`design-${selectedPiece}`} project={project} report={report} pieceId={selectedPiece} onChange={onChange} onComputed={onComputed}/>
+      <details data-testid="normative-execution-ledger"><summary>Procedimentos disponíveis e efetivamente executados</summary>
+        <p>Disponibilidade no motor não significa execução nesta peça. Os registros abaixo pertencem à análise atual e são incluídos na exportação; um PASS parcial não promove a estrutura.</p>
+        <ul>{report.procedureRegistry.map(p=><li key={p.id}>{p.id}: disponível, experimental</li>)}</ul>
+        {executions.filter(r=>r.result.piece_id===selectedPiece).map(r=><div key={r.result.combination_id}><p>{r.result.piece_id} / {r.result.combination_id}: {r.result.status}</p><ul>{r.result.checks.map(c=><li key={c.id}>{c.id}: {c.status}</li>)}</ul></div>)}
+        {demands.kind==="axial"&&executions.filter(r=>r.result.piece_id===selectedPiece).flatMap(r=>r.result.checks.filter(c=>["tension","compression"].includes(c.id)).map(c=>{const minimum=axialConnectionMinimum(c.governing?.forces.nN??null,"resistance"in c?c.resistance:null,c.status);return <p key={`${r.result.combination_id}-${c.id}`}>10.1(a), participante axial / {r.result.combination_id}: mínimo de cálculo da ligação {minimum.designMinimumMagnitudeN===null?"bloqueado":`${minimum.designMinimumMagnitudeN.toPrecision(8)} N`}. Ações do solver preservadas; junta completa ainda não verificada.</p>;}))}
+        {!executions.some(r=>r.result.piece_id===selectedPiece)&&<p>Nenhum procedimento resistente executado nesta peça.</p>}
+      </details>
       <p data-testid="normative-readiness">Prontidão normativa: {data.normativeReadiness.status}; combinações: {data.normativeReadiness.combinationStatus}. Execute o controle resistente para obter resistências/utilizações dos procedimentos suportados.</p>
       {data.normativeReadiness.physical&&<ul>{data.normativeReadiness.physical.issues.map((v,i)=><li key={i}>{v.code}: {v.message}</li>)}</ul>}
       <p>{demands.kind==="axial"?"Elemento axial: flexão, cortantes e torção não aplicáveis ao modelo.":`Pórtico; seção girada ${demands.axes!.rotationDeg}° conforme a entrada; eixos locais PyNite.`} {demands.segments.length} segmento(s); comprimento original {show(demands.lengthM)} m.</p>

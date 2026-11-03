@@ -4,11 +4,13 @@ import math
 from .frame3d_model import obj, number, input_hash, fail
 from .section_analysis import analyze_section
 from .coldformed_design import analyze_coldformed_design
+from .coldformed_connection import audit_member_connection
 
 
 def analyze_verified_coldformed(raw):
-    obj(raw,'schema_version geometry_analysis solver_j_m4 property_resolutions design','verified member design')
+    obj(raw,'schema_version geometry_analysis solver_j_m4 property_resolutions design'+(' connection_context' if 'connection_context'in raw else '')+(' stability_model' if 'stability_model'in raw else ''),'verified member design')
     if raw['schema_version']!='jpn.verified-coldformed/1':fail('UNSUPPORTED_MODEL','Verified physical section request required.')
+    connection_audit=audit_member_connection(raw.get('connection_context'),raw['design']['piece_id'],raw['design']['tension'])
     geometry=analyze_section(raw['geometry_analysis'])
     if raw['geometry_analysis']['geometry']['shape']!='u-stiffened':fail('UNSUPPORTED_FAMILY','Physical Ue required.')
     if geometry['convergence']['status']!='observed':fail('SECTION_NOT_CONVERGED','Section refinement target not achieved; resistance execution blocked.')
@@ -38,9 +40,19 @@ def analyze_verified_coldformed(raw):
         if not math.isclose(web[key],value,rel_tol=128*2.220446049250313e-16,abs_tol=0):fail('PHYSICAL_PROPERTY_MISMATCH','Web dimensions differ from the physical Ue.')
     normalized=copy.deepcopy(raw['design'])
     normalized['section'].update({k:v for k,v in actual.items() if k!='j_m4'})
-    result=analyze_coldformed_design(normalized)
+    buckling=None
+    if normalized['study']['minimum_search']=='computed-cfsm-ss':
+        from .member_buckling import compute_member_buckling
+        analyze_coldformed_design(normalized)  # strict preflight before eigen-analysis
+        if 'stability_model' not in raw:fail('INVALID_INPUT','Explicit member boundary/load model required.')
+        buckling=compute_member_buckling(raw['stability_model'],geometry,normalized,raw['geometry_analysis']['poisson'],g)
+        normalized['critical']['compression']=buckling['compression_critical_n']
+    elif 'stability_model' in raw:fail('INVALID_INPUT','Stability model requires automatic cFSM study type.')
+    result=analyze_coldformed_design(normalized,_computed_modes=('compression',) if buckling else ())
     result['calculation_input_sha256']=result['input_sha256']
     result['input_sha256']=input_hash(raw)
+    result['connection_audit']=connection_audit
+    if buckling:result['buckling_audit']=buckling
     result['geometry_audit']=dict(library=geometry['library'],geometry_input_sha256=geometry['input_sha256'],
         differences=differences,refinement=geometry['convergence'],computed_properties=actual,
         note='Gross section computed, effective properties and elastic critical mode classification are separate.')

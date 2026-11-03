@@ -67,5 +67,5 @@ def test_real_mixed_solver_to_tension_resistance_matches_independent_parallel_st
     out=analyze_verified_coldformed(raw);c=next(c for c in out['checks'] if c['id']=='tension')
     expected=out['geometry_audit']['computed_properties']['area_m2']*250e6/1.1
     assert c['resistance']==pytest.approx(expected,rel=1e-12)
-    assert c['status']==('PASS' if load==1000 else 'FAIL')
+    assert c['status']==('CONDITIONAL' if load==1000 else 'FAIL')
     assert not out['approved_for_fabrication']
