@@ -72,7 +72,7 @@ export function TakeoffSummary({ project, onConfigureProfile, onEditStructure, s
           window.requestAnimationFrame(() => document.getElementById(`result-tab-${target}`)?.focus());
         }}
         onClick={() => onSectionChange(id)}>
-        <span>{label}</span>{id==="engineering" && result.pending.length>0 && <small className="result-pending-count">{result.pending.length} pendências</small>}
+        <span>{label}</span>{id==="engineering" && <small className="result-pending-count">{result.pending.length>0?`${result.pending.length} pendências`:"Verificação pendente"}</small>}
       </button>)}
     </nav>
     {!model ? <div className="pending-box"><h3>Faltam dados para gerar as peças</h3><ul>{result.pending.map(p=><li key={p}>{p}</li>)}</ul></div> : <>
@@ -104,7 +104,7 @@ export function TakeoffSummary({ project, onConfigureProfile, onEditStructure, s
             <td>{group.massKg===null?"Não determinada":formatMeasure(group.massKg,2)}</td>
           </tr>)}</tbody></table>
         </div>
-        {!model.massComplete && <p className="field-hint">Massa não determinada para todos os perfis: informe as massas por metro antes de utilizar o peso total.</p>}
+        {!model.massComplete && <p className="field-hint">A massa total não está determinada: há perfis sem massa por metro cadastrada.</p>}
       </div>
       <div role="tabpanel" id="result-panel-engineering" aria-labelledby="result-tab-engineering"
         hidden={activeSection!=="engineering"} className="result-section-panel">
