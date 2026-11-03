@@ -1,4 +1,4 @@
-import { openEngineeringTool, openResultTab } from "./result-tabs";
+import { openEngineeringTool } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 import { emptySnapshot } from "../../src/domain/models";
 import { spatialAdapterExample } from "../../src/domain/examples/spatial-adapter-example";
