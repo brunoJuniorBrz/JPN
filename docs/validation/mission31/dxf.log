@@ -1,0 +1,2 @@
+'name' table stringOffset incorrect. Expected: 222; Actual: 224
+ezdxf 1.4.5: 130 3D lines verified, units mm, no audit errors

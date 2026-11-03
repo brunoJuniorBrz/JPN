@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="6" skipped="0" tests="7" time="2.313" timestamp="2026-11-03T15:39:27.275201-03:00" hostname="OXXYGEN270"><testcase classname="tests.test_resistance_integrity" name="test_partial_frame_vector_is_not_admitted_as_an_axial_result[vyN]" time="0.007"><failure message="Failed: DID NOT RAISE AnalysisError">component = 'vyN'
+
+    @pytest.mark.parametrize('component', ['vyN', 'vzN', 'tNm', 'myNm', 'mzNm'])
+    def test_partial_frame_vector_is_not_admitted_as_an_axial_result(component):
+        raw = member()
+        raw['fields'][0]['forces'][component] = None
+&gt;       with pytest.raises(AnalysisError) as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_resistance_integrity.py:15: Failed</failure></testcase><testcase classname="tests.test_resistance_integrity" name="test_partial_frame_vector_is_not_admitted_as_an_axial_result[vzN]" time="0.002"><failure message="Failed: DID NOT RAISE AnalysisError">component = 'vzN'
+
+    @pytest.mark.parametrize('component', ['vyN', 'vzN', 'tNm', 'myNm', 'mzNm'])
+    def test_partial_frame_vector_is_not_admitted_as_an_axial_result(component):
+        raw = member()
+        raw['fields'][0]['forces'][component] = None
+&gt;       with pytest.raises(AnalysisError) as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_resistance_integrity.py:15: Failed</failure></testcase><testcase classname="tests.test_resistance_integrity" name="test_partial_frame_vector_is_not_admitted_as_an_axial_result[tNm]" time="0.002"><failure message="Failed: DID NOT RAISE AnalysisError">component = 'tNm'
+
+    @pytest.mark.parametrize('component', ['vyN', 'vzN', 'tNm', 'myNm', 'mzNm'])
+    def test_partial_frame_vector_is_not_admitted_as_an_axial_result(component):
+        raw = member()
+        raw['fields'][0]['forces'][component] = None
+&gt;       with pytest.raises(AnalysisError) as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_resistance_integrity.py:15: Failed</failure></testcase><testcase classname="tests.test_resistance_integrity" name="test_partial_frame_vector_is_not_admitted_as_an_axial_result[myNm]" time="0.007"><failure message="Failed: DID NOT RAISE AnalysisError">component = 'myNm'
+
+    @pytest.mark.parametrize('component', ['vyN', 'vzN', 'tNm', 'myNm', 'mzNm'])
+    def test_partial_frame_vector_is_not_admitted_as_an_axial_result(component):
+        raw = member()
+        raw['fields'][0]['forces'][component] = None
+&gt;       with pytest.raises(AnalysisError) as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_resistance_integrity.py:15: Failed</failure></testcase><testcase classname="tests.test_resistance_integrity" name="test_partial_frame_vector_is_not_admitted_as_an_axial_result[mzNm]" time="0.003"><failure message="Failed: DID NOT RAISE AnalysisError">component = 'mzNm'
+
+    @pytest.mark.parametrize('component', ['vyN', 'vzN', 'tNm', 'myNm', 'mzNm'])
+    def test_partial_frame_vector_is_not_admitted_as_an_axial_result(component):
+        raw = member()
+        raw['fields'][0]['forces'][component] = None
+&gt;       with pytest.raises(AnalysisError) as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_resistance_integrity.py:15: Failed</failure></testcase><testcase classname="tests.test_resistance_integrity" name="test_original_member_cannot_switch_between_frame_and_axial_kinematics" time="0.003"><failure message="Failed: DID NOT RAISE AnalysisError">def test_original_member_cannot_switch_between_frame_and_axial_kinematics():
+        raw = member()
+        first = raw['fields'][0]
+        first['length_m'] = 1.
+        second = deepcopy(first)
+        second.update(segment_id='F2', offset_m=1.)
+        second['forces'] = {key: ([-10000.] if key == 'nN' else None)
+                            for key in second['forces']}
+        raw['fields'].append(second)
+&gt;       with pytest.raises(AnalysisError) as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_resistance_integrity.py:29: Failed</failure></testcase><testcase classname="tests.test_resistance_integrity" name="test_real_axial_null_components_remain_absent_and_conditional" time="0.002" /></testsuite></testsuites>

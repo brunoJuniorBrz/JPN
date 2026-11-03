@@ -1,0 +1,8 @@
+{
+  "sha": "00e61f68d1013f2d34dfa74554c84edc27efad72",
+  "source_tree_clean_before": true,
+  "source_tree_clean_after": true,
+  "exit_code": 0,
+  "elapsed_seconds": 119.40457779998542,
+  "source_isolation": "Detached clean worktree; explicit PYTHONPATH and worker paths use baseline engine"
+}

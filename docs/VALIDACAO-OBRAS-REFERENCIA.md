@@ -1,5 +1,13 @@
 # JPN — Campanha de validação com projetos reais e memoriais de referência
 
+**Adendo M31, 03/11/2026:** foram executadas comparações parciais do fator S2
+das REF-01 e REF-04, com campos das figuras conferidos visualmente e intervalos
+de arredondamento da publicação. A contradição de V0 da REF-01 é preservada
+como bloqueio, sem escolher silenciosamente um valor. As duas estruturas
+completas ainda não foram reproduzidas. Veja a [auditoria M31](MISSAO-31-AUDITORIA-EVOLUCAO-ESTRUTURAL.md)
+e seus dados mínimos/pendências por referência; o texto abaixo permanece como
+registro histórico da triagem anterior.
+
 **Registro da pesquisa:** 02/11/2026  
 **Prioridade:** **ALTA — PRIMEIRA CAMPANHA APÓS A INTEGRAÇÃO DO MOTOR M22–M24 E A IMPLEMENTAÇÃO DAS VERIFICAÇÕES RESISTENTES NORMATIVAS PENDENTES DA M23.**  
 **Estado:** fontes públicas identificadas e triagem inicial realizada; **nenhuma comparação JPN × projeto de referência executada**. Não inferir homologação, segurança, conformidade normativa ou autorização de fabricação deste documento.
