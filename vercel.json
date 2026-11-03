@@ -11,7 +11,8 @@
       "feat/m24-connections-stability": false,
       "feat/m25-preproduction-dossier": false,
       "feat/m26-integrated-normative-engine": false,
-      "feat/m27-m30-structural-engine-complete": false
+      "feat/m27-m30-structural-engine-complete": false,
+      "feat/m31-structural-audit": false
     }
   }
 }

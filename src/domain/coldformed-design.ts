@@ -13,14 +13,19 @@ export const memberDesignDeclarationSchema=z.object({schema_version:z.literal("j
   unstiffenedSingleWeb:z.boolean(),
 }).strict();
 export type MemberDesignDeclaration=z.infer<typeof memberDesignDeclarationSchema>;
-const forces=z.object({nN:z.array(n).min(1).max(3),vyN:z.array(n).min(1).max(3).nullable(),vzN:z.array(n).min(1).max(3).nullable(),tNm:z.array(n).min(1).max(3).nullable(),myNm:z.array(n).min(1).max(3).nullable(),mzNm:z.array(n).min(1).max(3).nullable()}).strict();
+const forces=z.object({nN:z.array(n).min(1).max(3),vyN:z.array(n).min(1).max(3).nullable(),vzN:z.array(n).min(1).max(3).nullable(),tNm:z.array(n).min(1).max(3).nullable(),myNm:z.array(n).min(1).max(3).nullable(),mzNm:z.array(n).min(1).max(3).nullable()}).strict().superRefine((value,ctx)=>{
+  const present=[value.vyN,value.vzN,value.tNm,value.myNm,value.mzNm].map(v=>v!==null);
+  if(present.some(Boolean)&&!present.every(Boolean))ctx.addIssue({code:"custom",message:"INCOMPLETE_FORCE_FIELD: pórtico exige seis componentes; somente axial admite as cinco componentes transversais ausentes."});
+});
 const binding=z.object({mechanical_sha256:sha,analysis_input_sha256:sha,analysis_result_sha256:sha}).strict();
 const connectionContextSchema=z.object({piece_id:text,joints:z.array(z.object({id:text,node_id:text,source:text,revision:text,fixing:z.enum(["pending","bolted","welded","combined"]),has_bolts:z.boolean(),holes:z.array(z.object({id:text,component_id:text,diameter_mm:n.nonnegative().max(1e6).nullable(),y_mm:n.min(-1e6).max(1e6).nullable(),z_mm:n.min(-1e6).max(1e6).nullable()}).strict()).max(500),welds:z.array(z.object({id:text,type:text.nullable(),size_mm:positive.nullable(),length_mm:positive.nullable()}).strict()).max(100)}).strict()).max(30)}).strict();
 export const coldformedDesignRequestSchema=z.object({schema_version:z.literal("jpn.coldformed-design/1"),units:z.literal("SI"),piece_id:text,combination_id:text,binding,
   section:z.object({family:z.literal("cold-formed"),shape:z.literal("u-stiffened"),area_m2:positive,fy_pa:positive,fu_pa:positive,e_pa:positive,iy_m4:positive,iz_m4:positive,wy_m3:positive,wz_m3:positive,effective_length_y_m:positive,effective_length_z_m:positive,source:text,revision:text}).strict(),
   study:memberDesignDeclarationSchema.shape.study,critical:memberDesignDeclarationSchema.shape.critical,tension:memberDesignDeclarationSchema.shape.tension,
   web:z.object({flat_height_m:positive,thickness_m:positive,unstiffened_single_web:z.boolean()}).strict(),
-  fields:z.array(z.object({segment_id:text,offset_m:n.nonnegative(),length_m:positive,forces}).strict()).min(1).max(320),
+  fields:z.array(z.object({segment_id:text,offset_m:n.nonnegative(),length_m:positive,forces}).strict()).min(1).max(320).superRefine((fields,ctx)=>{
+    if(new Set(fields.map(f=>f.forces.myNm===null?"axial":"frame")).size>1)ctx.addIssue({code:"custom",message:"INCONSISTENT_FORCE_MODEL: a peça original não pode alternar entre resultados de pórtico e axial."});
+  }),
 }).strict();
 const point=z.object({segment_id:text,position_m:n,segment_position_m:n,combination_id:text,forces:z.object({nN:n,vyN:n.nullable(),vzN:n.nullable(),tNm:n.nullable(),myNm:n.nullable(),mzNm:n.nullable()}).strict()}).strict();
 const check=z.discriminatedUnion("status",[
@@ -30,10 +35,11 @@ const check=z.discriminatedUnion("status",[
 const capacity=z.object({design:positive,characteristic:positive.optional(),gamma:positive.optional(),modes:z.record(z.string(),positive).optional(),slenderness:z.union([n,z.record(z.string(),n)]).optional(),governing_mode:text.optional(),clauses:z.array(text),branch:text.optional(),kv:n.optional()}).strict();
 const stabilityModelSchema=z.object({boundary:z.literal("fork-fork-free-warping"),load_pattern:z.literal("uniform-compression"),intermediate_restraints:z.literal("none"),length_m:positive,half_waves_max:z.literal(64),target:z.literal(.001)}).strict();
 const modalFamily=z.object({critical_stress_mpa:positive,half_wave_number:n.int().min(1).max(64),half_wavelength_mm:positive,modal_dimension:n.int().positive(),curve_mpa:z.array(positive).length(64)}).strict();
-const bucklingAuditSchema=z.object({schema_version:z.literal("jpn.computed-member-buckling/1"),method:z.literal("NBR14762-global-and-constrained-FSM"),library:z.object({pycufsm:z.literal("0.2.0"),numpy:z.literal("2.3.3"),scipy:z.literal("1.15.3"),license:z.literal("AFL-3.0")}).strict(),model:stabilityModelSchema,model_sha256:sha,
+const modalNumericalAudit=z.object({method:z.literal("orthonormal-elastic-metric-inverse-eigenproblem"),refinements:z.array(z.object({projected_relative_residual:n.nonnegative().max(1e-8),energy_relative_residual:n.nonnegative(),energy_accumulation_bound:n.nonnegative(),scaled_elastic_condition:positive.max(1e10),basis_condition:positive,governing_energy_bounds:z.object({local:n.nonnegative().max(.001),distortional:n.nonnegative().max(.001)}).strict()}).strict()).length(3)}).strict();
+const bucklingAuditSchema=z.object({schema_version:z.literal("jpn.computed-member-buckling/1"),method:z.literal("NBR14762-global-and-constrained-FSM"),library:z.object({pycufsm:z.literal("0.2.0"),numpy:z.literal("2.3.3"),scipy:z.literal("1.15.3"),license:z.literal("AFL-3.0")}).strict(),model:stabilityModelSchema,model_sha256:sha,numerical_audit:modalNumericalAudit.optional(),
   global_result:z.object({global_n:positive,flexure_y_n:positive,flexure_z_n:positive,torsion_n:positive,flexural_torsional_n:positive,r0_squared_m2:positive,clauses:z.array(text),axes:text}).strict(),compression_critical_n:z.object({global:positive,local:positive,distortional:positive}).strict(),refinements:z.array(z.object({nodes:n.int().positive().max(96),arc_segments:n.int().positive(),flat_segments:n.int().positive(),midline_area_mm2:positive,families:z.object({local:modalFamily,distortional:modalFamily}).strict()}).strict()).length(3),relative_changes:z.object({local:n.nonnegative(),distortional:n.nonnegative()}).strict(),half_wave_numbers:z.array(n.int().positive()).length(64),elapsed_seconds:n.nonnegative(),search_coverage:z.literal("all-integer-half-waves-1-through-64"),error_bound_certified:z.literal(false),full_member_approval:z.literal(false)}).strict();
 export const coldformedDesignResultSchema=z.object({schema_version:z.literal("jpn.coldformed-design-result/2"),units:z.literal("SI"),input_sha256:sha,binding,piece_id:text,combination_id:text,
-  standard:z.literal("ABNT NBR 14762:2010"),evaluator_version:z.literal("jpn.nbr14762-mrd/2"),capacities:z.record(z.string(),capacity),checks:z.array(check),status:z.enum(["FAIL","BLOCKED","CONDITIONAL-EXTERNAL-INPUTS","CONDITIONAL-MODEL-LIMITS","PASS-IMPLEMENTED-CHECKS"]),
+  standard:z.literal("ABNT NBR 14762:2010"),evaluator_version:z.enum(["jpn.nbr14762-mrd/2","jpn.nbr14762-mrd/3"]),capacities:z.record(z.string(),capacity),checks:z.array(check),status:z.enum(["FAIL","BLOCKED","CONDITIONAL-EXTERNAL-INPUTS","CONDITIONAL-MODEL-LIMITS","PASS-IMPLEMENTED-CHECKS"]),
   calculation_input_sha256:sha.optional(),geometry_audit:z.object({library:z.object({name:z.literal("sectionproperties"),version:z.literal("3.10.2"),license:z.literal("MIT")}).strict(),geometry_input_sha256:sha,differences:z.record(z.string(),z.object({declared:n,computed:n,resolution:n,absolute_difference:n}).strict()),refinement:z.object({status:z.literal("observed"),relativeChanges:z.record(z.string(),n),target:n,boundaryArcPoints:z.literal(64),errorBoundCertified:z.literal(false)}).strict(),computed_properties:z.record(z.string(),n),note:text}).strict().optional(),
   connection_audit:z.object({status:z.literal("conditional-unverified"),input_sha256:sha.nullable(),connection_ids:z.array(text),hole_count:n.int().nonnegative(),warning:text}).strict().optional(),
   buckling_audit:bucklingAuditSchema.optional(),
@@ -41,6 +47,12 @@ export const coldformedDesignResultSchema=z.object({schema_version:z.literal("jp
 }).strict();
 
 export const verifiedColdformedRequestSchema=z.object({schema_version:z.literal("jpn.verified-coldformed/1"),geometry_analysis:sectionAnalysisRequestSchema,solver_j_m4:positive,property_resolutions:z.object({area_m2:n.nonnegative(),iy_m4:n.nonnegative(),iz_m4:n.nonnegative(),wy_m3:n.nonnegative(),wz_m3:n.nonnegative(),j_m4:n.nonnegative()}).strict(),design:coldformedDesignRequestSchema,connection_context:connectionContextSchema.optional(),stability_model:stabilityModelSchema.optional()}).strict();
+
+/** Historical /2 records remain readable, but cannot be reused as current
+ * automatic buckling after the eigenpair correction changed the evaluator. */
+export function requireCurrentBucklingNumerics(request:z.infer<typeof verifiedColdformedRequestSchema>,result:z.infer<typeof coldformedDesignResultSchema>){
+  if(request.design.study.minimum_search==="computed-cfsm-ss"&&(result.evaluator_version!=="jpn.nbr14762-mrd/3"||!result.buckling_audit?.numerical_audit))throw Error("OUTDATED_BUCKLING_EVALUATOR: recalcule a flambagem com conferência de autovetores e energia.");
+}
 
 export function requireCommonMemberAxes(matrices:number[][][]){
   if(!matrices.length)throw Error("Esforços contínuos ausentes.");

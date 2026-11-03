@@ -57,38 +57,47 @@ def compute_member_buckling(model,section_result,design,poisson,geometry):
     if not math.isclose(sum(f['length_m'] for f in design['fields']),length,rel_tol=1e-12,abs_tol=1e-10):fail('BUCKLING_LENGTH_MISMATCH','Fields and physical member length differ.')
     if (version('pycufsm'),version('numpy'),version('scipy'),version('sectionproperties'))!=('0.2.0','2.3.3','1.15.3','3.10.2'):fail('DEPENDENCY_VERSION','Use the isolated requirements-sections-fsm.lock; main solver dependencies are unchanged.')
     import numpy as np
-    from pycufsm import fsm
     from pycufsm.pre import cutwp
-    from pycufsm.solve import cfsm
+    from .constrained_modes import ConstrainedModes
     props=section_result['properties'];s=design['section'];E=s['e_pa'];G=E/(2*(1+poisson))
     global_=global_compression(E,G,props['areaMm2']*1e-6,props['iyMm4']*1e-12,props['izMm4']*1e-12,props['jMm4']*1e-12,props['warpingMm6']*1e-18,(props['shearCenterYMm']-props['centroidYMm'])*1e-3,length,length,length)
-    history=[];started=time.perf_counter();waves=np.arange(1,65);lengths=length*1000/waves
+    history=[];numerical_history=[];started=time.perf_counter();waves=np.arange(1,65);lengths=length*1000/waves
     for arc,flat in [(2,6),(4,8),(8,12)]:
         nodes,edges=midline_u(geometry,arc,flat)
         with warnings.catch_warnings(record=True) as preparation_warnings:
             warnings.simplefilter('default',DeprecationWarning)
             sect=cutwp.prop2(nodes[:,1:3],edges[:,1:4])
-            *_,nd,nl,permutation=cfsm.base_properties(nodes=nodes,elements=edges)
+            problem=ConstrainedModes(nodes,edges,np.array([[0,E/1e6,E/1e6,poisson,poisson,G/1e6]]),sect)
         for warning in preparation_warnings:
             if not issubclass(warning.category,DeprecationWarning) or 'Conversion of an array with ndim > 0 to a scalar' not in str(warning.message):fail('NUMERICAL_FAILURE','Unrecognized cFSM preparation warning: '+str(warning.message)[:200])
+        nd,nl=problem.nd,problem.nl
         if len(nodes)>96 or nd<=0 or nl<=0:fail('BUCKLING_MODEL_LIMIT','Modal model exceeds the audited 96-node resource domain or lacks required spaces.')
         families={}
-        for family in ('local','distortional'):
-            config=dict(glob=[0]*4,dist=[int(family=='distortional')]*int(nd),local=[int(family=='local')]*int(nl),other=[0]*(2*(len(nodes)-1)),o_space=1,couple=1,orth=1,norm=1)
-            with warnings.catch_warnings(record=True) as caught:
-                warnings.simplefilter('default',DeprecationWarning)
-                signature,_,_=fsm.strip(props=np.array([[0,E/1e6,E/1e6,poisson,poisson,G/1e6]]),nodes=nodes,elements=edges,lengths=lengths,springs=np.array([]),constraints=np.array([]),GBT_con=config,B_C='S-S',m_all=np.ones((64,1)),n_eigs=1,sect_props=sect)
-            for warning in caught:
-                if not issubclass(warning.category,DeprecationWarning) or 'Conversion of an array with ndim > 0 to a scalar' not in str(warning.message):fail('NUMERICAL_FAILURE','Unrecognized cFSM warning: '+str(warning.message)[:200])
-            curve=[float(v) for v in signature]
+        curves={family:[] for family in ('local','distortional')}
+        energy_bounds={family:[] for family in curves}
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter('default',DeprecationWarning)
+            for wavelength in lengths:
+                values=problem.evaluate(wavelength)
+                for family,value in values.items():
+                    curves[family].append(float(value))
+                    energy_bounds[family].append(float(problem.last[family]['energy_accumulation_bound']))
+        for warning in caught:
+            if not issubclass(warning.category,DeprecationWarning) or 'Conversion of an array with ndim > 0 to a scalar' not in str(warning.message):fail('NUMERICAL_FAILURE','Unrecognized cFSM warning: '+str(warning.message)[:200])
+        governing_energy_bounds={}
+        for family,curve in curves.items():
             if any(not math.isfinite(v) or v<=0 for v in curve):fail('NUMERICAL_FAILURE','Nonpositive/nonfinite modal eigenvalue.')
             k=int(np.argmin(curve))
             if k in (0,63):fail('BUCKLING_SEARCH_INCOMPLETE','Mode minimum is at the wave search boundary; increase validated search domain rather than adopting an endpoint.')
+            if energy_bounds[family][k]>model['target']:fail('BUCKLING_NUMERICAL_PRECISION','Accumulation bound at the governing modal value exceeds the declared mesh target; no resistance admitted.')
+            governing_energy_bounds[family]=energy_bounds[family][k]
             families[family]=dict(critical_stress_mpa=curve[k],half_wave_number=int(waves[k]),half_wavelength_mm=float(lengths[k]),modal_dimension=int(nl if family=='local' else nd),curve_mpa=curve)
         history.append(dict(nodes=len(nodes),arc_segments=arc,flat_segments=flat,midline_area_mm2=float(sect['A']),families=families))
+        numerical_history.append({**{key:float(value) for key,value in problem.maximum.items()},'governing_energy_bounds':governing_energy_bounds})
     fine,coarse=history[-1],history[-2]
     changes={k:abs(fine['families'][k]['critical_stress_mpa']-coarse['families'][k]['critical_stress_mpa'])/fine['families'][k]['critical_stress_mpa'] for k in ('local','distortional')}
     if max(changes.values())>model['target']:fail('BUCKLING_NOT_CONVERGED','cFSM modal refinement target not met: '+str(changes)+'. No critical values admitted to MRD.')
     critical=dict(global_=global_['global_n'],local=fine['families']['local']['critical_stress_mpa']*props['areaMm2'],distortional=fine['families']['distortional']['critical_stress_mpa']*props['areaMm2'])
     return dict(schema_version='jpn.computed-member-buckling/1',method='NBR14762-global-and-constrained-FSM',library=dict(pycufsm='0.2.0',numpy='2.3.3',scipy='1.15.3',license='AFL-3.0'),model=model,model_sha256=input_hash(model),global_result=global_,compression_critical_n={'global':critical['global_'],'local':critical['local'],'distortional':critical['distortional']},refinements=history,relative_changes=changes,half_wave_numbers=waves.tolist(),elapsed_seconds=time.perf_counter()-started,
-        search_coverage='all-integer-half-waves-1-through-64',error_bound_certified=False,full_member_approval=False)
+        search_coverage='all-integer-half-waves-1-through-64',error_bound_certified=False,full_member_approval=False,
+        numerical_audit=dict(method='orthonormal-elastic-metric-inverse-eigenproblem',refinements=numerical_history))

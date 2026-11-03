@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="11" time="89.417" timestamp="2026-11-03T15:37:16.922700-03:00" hostname="OXXYGEN270"><testcase classname="section_tests.test_member_buckling" name="test_real_capped_worker_mixed_inputs_computed_modes_and_independent_decimal_mrd[0]" time="20.075"><failure message="subprocess.TimeoutExpired: Command '['C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\sections-fsm\\Scripts\\python.exe', '-I', '-X', 'utf8', 'C:\\Users\\Usuario\\Desktop\\jpn-missao31\\engine\\section_worker.py']' timed out after 20 seconds">case = 0
+
+    @pytest.mark.parametrize('case',[0,1])
+    def test_real_capped_worker_mixed_inputs_computed_modes_and_independent_decimal_mrd(case):
+        row=json.loads(EVIDENCE.read_text(encoding='utf-8'))['cases'][case];raw=row['design_input']
+        assert raw['design']['binding']['analysis_input_sha256']==input_hash(row['solver_input'])
+        assert raw['design']['binding']['analysis_result_sha256']==input_hash(row['solver_result'])
+        assert row['solver_result']['combinations']['ULS-CONTROL']['members']['COLUMN']['axial_n']==pytest.approx(-row['load_n'])
+&gt;       p=subprocess.run([sys.executable,'-I','-X','utf8',str(ROOT/'section_worker.py')],input=json.dumps(raw).encode(),capture_output=True,timeout=20,env={**os.environ,'OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1','MKL_NUM_THREADS':'1'})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+engine\section_tests\test_member_buckling.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;Popen: returncode: 1 args: ['C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.to...&gt;
+input = b'{"schema_version": "jpn.verified-coldformed/1", "geometry_analysis": {"schema_version": "jpn.section-analysis/1", "u...ern": "uniform-compression", "intermediate_restraints": "none", "length_m": 2, "half_waves_max": 64, "target": 0.001}}'
+endtime = 162963.515, orig_timeout = 20
+
+    def _communicate(self, input, endtime, orig_timeout):
+        # Start reader threads feeding into a list hanging off of this
+        # object, unless they've already been started.
+        if self.stdout and not hasattr(self, "_stdout_buff"):
+            self._stdout_buff = []
+            self.stdout_thread = \
+                    threading.Thread(target=self._readerthread,
+                                     args=(self.stdout, self._stdout_buff))
+            self.stdout_thread.daemon = True
+            self.stdout_thread.start()
+        if self.stderr and not hasattr(self, "_stderr_buff"):
+            self._stderr_buff = []
+            self.stderr_thread = \
+                    threading.Thread(target=self._readerthread,
+                                     args=(self.stderr, self._stderr_buff))
+            self.stderr_thread.daemon = True
+            self.stderr_thread.start()
+    
+        if self.stdin:
+            self._stdin_write(input)
+    
+        # Wait for the reader threads, or time out.  If we time out, the
+        # threads remain reading and the fds left open in case the user
+        # calls communicate again.
+        if self.stdout is not None:
+            self.stdout_thread.join(self._remaining_time(endtime))
+            if self.stdout_thread.is_alive():
+&gt;               raise TimeoutExpired(self.args, orig_timeout)
+E               subprocess.TimeoutExpired: Command '['C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\sections-fsm\\Scripts\\python.exe', '-I', '-X', 'utf8', 'C:\\Users\\Usuario\\Desktop\\jpn-missao31\\engine\\section_worker.py']' timed out after 20 seconds
+
+..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:1630: TimeoutExpired</failure></testcase><testcase classname="section_tests.test_member_buckling" name="test_real_capped_worker_mixed_inputs_computed_modes_and_independent_decimal_mrd[1]" time="20.051"><failure message="subprocess.TimeoutExpired: Command '['C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\sections-fsm\\Scripts\\python.exe', '-I', '-X', 'utf8', 'C:\\Users\\Usuario\\Desktop\\jpn-missao31\\engine\\section_worker.py']' timed out after 20 seconds">case = 1
+
+    @pytest.mark.parametrize('case',[0,1])
+    def test_real_capped_worker_mixed_inputs_computed_modes_and_independent_decimal_mrd(case):
+        row=json.loads(EVIDENCE.read_text(encoding='utf-8'))['cases'][case];raw=row['design_input']
+        assert raw['design']['binding']['analysis_input_sha256']==input_hash(row['solver_input'])
+        assert raw['design']['binding']['analysis_result_sha256']==input_hash(row['solver_result'])
+        assert row['solver_result']['combinations']['ULS-CONTROL']['members']['COLUMN']['axial_n']==pytest.approx(-row['load_n'])
+&gt;       p=subprocess.run([sys.executable,'-I','-X','utf8',str(ROOT/'section_worker.py')],input=json.dumps(raw).encode(),capture_output=True,timeout=20,env={**os.environ,'OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1','MKL_NUM_THREADS':'1'})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+engine\section_tests\test_member_buckling.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;Popen: returncode: 1 args: ['C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.to...&gt;
+input = b'{"schema_version": "jpn.verified-coldformed/1", "geometry_analysis": {"schema_version": "jpn.section-analysis/1", "u...ern": "uniform-compression", "intermediate_restraints": "none", "length_m": 2, "half_waves_max": 64, "target": 0.001}}'
+endtime = 162983.921, orig_timeout = 20
+
+    def _communicate(self, input, endtime, orig_timeout):
+        # Start reader threads feeding into a list hanging off of this
+        # object, unless they've already been started.
+        if self.stdout and not hasattr(self, "_stdout_buff"):
+            self._stdout_buff = []
+            self.stdout_thread = \
+                    threading.Thread(target=self._readerthread,
+                                     args=(self.stdout, self._stdout_buff))
+            self.stdout_thread.daemon = True
+            self.stdout_thread.start()
+        if self.stderr and not hasattr(self, "_stderr_buff"):
+            self._stderr_buff = []
+            self.stderr_thread = \
+                    threading.Thread(target=self._readerthread,
+                                     args=(self.stderr, self._stderr_buff))
+            self.stderr_thread.daemon = True
+            self.stderr_thread.start()
+    
+        if self.stdin:
+            self._stdin_write(input)
+    
+        # Wait for the reader threads, or time out.  If we time out, the
+        # threads remain reading and the fds left open in case the user
+        # calls communicate again.
+        if self.stdout is not None:
+            self.stdout_thread.join(self._remaining_time(endtime))
+            if self.stdout_thread.is_alive():
+&gt;               raise TimeoutExpired(self.args, orig_timeout)
+E               subprocess.TimeoutExpired: Command '['C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\sections-fsm\\Scripts\\python.exe', '-I', '-X', 'utf8', 'C:\\Users\\Usuario\\Desktop\\jpn-missao31\\engine\\section_worker.py']' timed out after 20 seconds
+
+..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:1630: TimeoutExpired</failure></testcase><testcase classname="section_tests.test_member_buckling" name="test_combined_runtime_against_original_matlab_eigenvalues[cwlip_P]" time="6.327" /><testcase classname="section_tests.test_member_buckling" name="test_combined_runtime_against_original_matlab_eigenvalues[cwlip_Mx]" time="7.161" /><testcase classname="section_tests.test_member_buckling" name="test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality" time="0.618" /><testcase classname="section_tests.test_member_buckling" name="test_rounded_member_that_does_not_refine_is_not_admitted_to_mrd" time="28.710" /><testcase classname="section_tests.test_member_buckling" name="test_unsupported_conditions_cannot_silently_relax_the_computation[boundary-clamped-free]" time="0.002" /><testcase classname="section_tests.test_member_buckling" name="test_unsupported_conditions_cannot_silently_relax_the_computation[intermediate_restraints-assumed-purlins]" time="0.002" /><testcase classname="section_tests.test_member_buckling" name="test_unsupported_conditions_cannot_silently_relax_the_computation[load_pattern-biaxial-bending]" time="0.002" /><testcase classname="section_tests.test_member_buckling" name="test_unsupported_conditions_cannot_silently_relax_the_computation[half_waves_max-4]" time="0.011" /><testcase classname="section_tests.test_member_buckling" name="test_unsupported_conditions_cannot_silently_relax_the_computation[target-0.01]" time="0.002" /></testsuite></testsuites>

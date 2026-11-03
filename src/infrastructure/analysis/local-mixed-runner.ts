@@ -6,6 +6,7 @@ import { z } from "zod";
 import { mixedInputHash, verifyMixedResult } from "@/domain/mixed-analysis";
 import { anyMixedRequestSchema, anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
 import { SolverFailure } from "./runner";
+import { terminateWorker } from "./worker-process";
 
 export const localMixedLimits = { inputBytes: 500000, outputBytes: 2000000, milliseconds: 20000, memoryBytes: 768 * 1024 * 1024, concurrency: 1 } as const;
 const executionSchema = z.object({ memory_limit_bytes: z.literal(localMixedLimits.memoryBytes), memory_kind: z.enum(["windows-job-process-commit", "linux-address-space"]), local_only: z.literal(true) }).strict();
@@ -42,7 +43,7 @@ export async function runLocalMixed(payload: string, mode: "health" | "analysis"
       };
       const stop = (code: string, message: string) => {
         if (settled || failure) return;
-        failure = new SolverFailure(code, message); child.kill();
+        failure = new SolverFailure(code, message); terminateWorker(child);
         cleanup = setTimeout(() => { gate.disabled = true; finish(undefined, new SolverFailure("CLEANUP_FAILURE", "Processo não confirmou encerramento. Executor local bloqueado.")); }, 1500);
       };
       const cancel = () => stop("CANCELLED", "Entradas alteradas ou consulta cancelada; resultado descartado.");

@@ -1,5 +1,11 @@
 # Resistência Ue/MRD: incremento executável após as fontes fornecidas
 
+**Atualização M31:** a [auditoria posterior](MISSAO-31-AUDITORIA-EVOLUCAO-ESTRUTURAL.md)
+corrige vetores incompletos, encerramento de processos Windows e a avaliação
+numérica dos espaços cFSM. Resultados automáticos do avaliador `/2` precisam
+ser recalculados pelo `/3` antes de compor um relatório atual. As evidências
+históricas abaixo são preservadas, sem promover aprovação da peça/estrutura.
+
 Branch `feat/m27-m30-structural-engine-complete`, continuação do PR draft #37.
 Sem merge, deploy ou alteração das hipóteses dos projetos existentes.
 

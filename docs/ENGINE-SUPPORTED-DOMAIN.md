@@ -1,5 +1,11 @@
 # Domínio efetivamente implementado — campanha M27–M30
 
+Adendo posterior: a [Missão 31](MISSAO-31-AUDITORIA-EVOLUCAO-ESTRUTURAL.md)
+introduz avaliação cFSM com conferência de energia/resíduo e uma experiência
+offline de P-Delta de barra-coluna reta, prismática e discretizada explicitamente.
+Ela não habilita segunda ordem do modelo misto nem pórticos gerais. O quadro
+abaixo registra o domínio da entrega anterior; os bloqueios globais continuam.
+
 Estado: **NÃO PRONTO — BLOQUEADO para dimensionamento estrutural completo**.
 Esta entrega acrescenta cálculo funcional ao domínio experimental. Não anuncia
 uma família de perfis homologada ou cobertura autorizada para construção.

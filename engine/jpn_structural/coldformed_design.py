@@ -131,6 +131,7 @@ def analyze_coldformed_design(raw,*,_computed_modes=()):
     fields = raw['fields']
     if type(fields) is not list or not 1 <= len(fields) <= 320:fail('INPUT_LIMIT', '1–320 segments required.')
     ids = set()
+    force_models = set()
     for f in fields:
         obj(f, 'segment_id offset_m length_m forces', 'continuous field');text(f['segment_id'], 'segment id')
         if f['segment_id'] in ids:fail('DUPLICATE_ID', 'Repeated segment.')
@@ -141,6 +142,12 @@ def analyze_coldformed_design(raw,*,_computed_modes=()):
                 if type(c) is not list or not 1 <= len(c) <= 3:fail('INVALID_INPUT', 'Uniform-load force polynomial degree at most two.')
                 for v in c:number(v, -1e15, 1e15, 'force coefficient')
         if f['forces']['nN'] is None:fail('INVALID_INPUT', 'Axial field required.')
+        present = [f['forces'][key] is not None for key in FORCES[1:]]
+        if any(present) and not all(present):
+            fail('INCOMPLETE_FORCE_FIELD', 'A frame needs all six force components, including explicit zeros. Only a purely axial element may omit all five transverse components; missing results are not zero loads.')
+        force_models.add('frame' if all(present) else 'axial')
+    if len(force_models) != 1:
+        fail('INCONSISTENT_FORCE_MODEL', 'One original member cannot mix frame and axial-only result fields.')
     fields = sorted(fields, key=lambda f:f['offset_m'])
     cursor = 0.
     for f in fields:
