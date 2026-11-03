@@ -208,6 +208,8 @@ A primeira execução roda os testes e imprime resultados sintéticos estruturad
 
 **Evidência executada nesta sessão:** Python 3.13.5, 6 testes `unittest` OK, incluindo as nove combinações de `P,L`; a saída JSON registra `normative_approval=false` e `full_3d_solver_validation=false`. NENHUM caso de uso profissional foi liberado.
 
+**Reexecução de controle:** também passou `python -m unittest discover -s validation/geometric-stiffness-audit -p 'kg_reference.py'` em uma cópia de mesma extensão e conteúdo. O arquivo executado tem 6.830 caracteres e SHA-256 local `5366ebba643cb748368bd773263e2f127995f2b919d9f2a0b6e7aa8dbccb2d52`. Foi tentado `git ls-remote https://github.com/hpgavin/frame3dd.git HEAD`, porém este ambiente não conseguiu resolver o host GitHub; portanto não houve compilação do código externo.
+
 **Não realizado:** executar o PyNite, compilar Stabileo ou Frame3DD; executar dois projetos externos completos; validar todas as famílias de seções; conferir oficialmente todos os coeficientes e revisões normativas. Essas pendências permanecem abertas.
 
 ## 10. Regra de entrega
