@@ -22,7 +22,7 @@ export function ProjectWorkbench({ project, onChange, onEditStructure, activeSec
   const [label, setLabel] = useState(""), [author, setAuthor] = useState(""), [pieceId, setPieceId] = useState(""), [lengthMm, setLengthMm] = useState<number | null>(null);
   const model = generateStructure(project).model, config = project.workspace.cutting;
   let plan: ReturnType<typeof projectCutting> | null = null, pending = "";
-  try { plan = projectCutting(project); } catch (e) { pending = (e as Error).message; }
+  if (activeSection === "materials") { try { plan = projectCutting(project); } catch (e) { pending = (e as Error).message; } }
   function openPreparation(stage: typeof preparationStage) { setPreparationStage(stage); setTab("prepare"); }
   function changeCutting(patch: Partial<typeof config>) { onChange({ workspace: { ...project.workspace, cutting: { ...config, ...patch } } }); }
   function action(run: () => void) { setError(""); setMessage(""); try { run(); } catch (e) { setError((e as Error).message); } }
