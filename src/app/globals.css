@@ -665,3 +665,13 @@ body { font-size: 16px; }
 @media (max-width:600px) {
   .view-switch.viewer-switch--3d button { flex:1 1 auto; }
 }
+
+/* UX increment: keep corrective actions and bounded piece search usable on phone. */
+.result-pending-action { margin: 8px 0 6px 12px; min-height: 36px; padding: 7px 12px; vertical-align: middle; }
+.piece-search-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.piece-search-tools .field { min-width: 0; }
+[data-profile-role] { scroll-margin-block: 90px; }
+@media (max-width: 640px) {
+  .piece-search-tools { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .result-pending-action { display: flex; width: max-content; max-width: 100%; margin: 7px 0 8px; }
+}
