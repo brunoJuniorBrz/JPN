@@ -8,7 +8,8 @@ import { resolveSection, sectionOrientation } from "@/domain/profile-section";
 import { structureViews } from "@/domain/calculations/structure";
 import { DrawingCanvas } from "@/components/geometry/roof-preview";
 import { formatMeasure } from "@/domain/calculations/units";
-import { Field, Select } from "@/components/ui";
+import { Field, Input, Select } from "@/components/ui";
+import { findPieces } from "./piece-search";
 import type { ViewName } from "@/domain/calculations/geometry";
 import { profiles3DDemo } from "@/domain/profiles-3d-demo";
 const Structure3D = dynamic(() => import("./structure-3d").then(m => m.Structure3D), { ssr: false, loading: () => <p role="status">Carregando visualização 3D…</p> });
@@ -16,10 +17,12 @@ const Structure3D = dynamic(() => import("./structure-3d").then(m => m.Structure
 export function StructurePreview({ project, result, onConfigureProfile, onEditStructure, startIn3D = false }: { project: Project; result: StructureResult; onConfigureProfile?: (role: PieceRole) => void; onEditStructure?: () => void; startIn3D?: boolean }) {
   const [view, setView] = useState<ViewName>("plan"), [detail, setDetail] = useState(false), [selected, setSelected] = useState("");
   const [three, setThree] = useState(startIn3D), [dimensions, setDimensions] = useState(true);
-  const [demo, setDemo] = useState(false);
+  const [demo, setDemo] = useState(false), [pieceQuery, setPieceQuery] = useState("");
   const activeModel = useMemo(() => demo && three ? profiles3DDemo(project) : result.model, [demo, three, project, result.model]);
   const model = useMemo(() => structureViews(project, result, detail), [project, result, detail]);
   if (!model || !result.model) return null;
+  const eligiblePieces = (three ? activeModel! : result.model).pieces.filter(p => !detail || p.id.startsWith("T1-"));
+  const pieceMatches = findPieces(eligiblePieces, pieceQuery);
   const selectedPiece = activeModel!.pieces.find(p => p.id === selected);
   const selectedSection = selectedPiece ? resolveSection(selectedPiece.profile) : null;
   return <section id="jpn-viewer" className="drawing-panel" aria-label="Estrutura gerada"><div className="drawing-heading"><h3>Peças da estrutura</h3><span>Geometria em mm</span></div>
@@ -33,7 +36,22 @@ export function StructurePreview({ project, result, onConfigureProfile, onEditSt
     {three && demo && <div className="notice" data-testid="profile-demo-notice"><strong>DEMONSTRAÇÃO VISUAL · DIMENSÕES SINTÉTICAS</strong><p>Este modelo mostra perfis completos. Seu projeto e seus quantitativos permanecem preservados.</p><button type="button" className="button secondary" onClick={() => { setDemo(false); setSelected(""); }}>Voltar ao meu projeto</button></div>}
     {three ? <Structure3D key={demo ? "demo" : "project"} model={activeModel!} roof={project.roof} planning={project.planning} projectName={project.name} selected={selected} onSelect={setSelected} onDemonstrate={demo ? undefined : () => { setDemo(true); setDetail(false); setSelected(""); }} onConfigureProfile={!demo && onConfigureProfile ? () => onConfigureProfile(selectedPiece?.role ?? result.model!.pieces.find(p => !resolveSection(p.profile).section)?.role ?? "column") : undefined} /> : <DrawingCanvas key={`${view}-${detail}`} model={{ ...model, views: { ...model.views, [view]: { ...model.views[view], entities: model.views[view].entities.filter(e => dimensions || e.layer !== "COTAS") } } }} view={view} selected={selected} onSelect={setSelected} />}
     {!three && <p className="drawing-help">Toque em uma barra ou selecione abaixo. Arraste para mover e use dois dedos para ampliar. Marrom: pilares · azul: terças · verde: tesouras.</p>}
-    <Field label="Selecionar peça no desenho"><Select value={selected} onChange={e => setSelected(e.target.value)}><option value="">Escolha uma peça</option>{(three ? activeModel! : result.model).pieces.filter(p => !detail || p.id.startsWith("T1-")).map(p => <option key={p.id} value={p.id}>{p.id} · {roleLabels[p.role]} · {formatMeasure(p.lengthMm / 1000)} m</option>)}</Select></Field>
+    <div className="piece-search-tools">
+      <Field label="Buscar peça por ID ou categoria"><Input type="search" value={pieceQuery} onChange={e => setPieceQuery(e.target.value)}
+        onKeyDown={e => { if (e.key === "Enter" && pieceMatches.matches[0]) { e.preventDefault(); setSelected(pieceMatches.matches[0].id); } }}
+        placeholder="Ex.: P12, T1-BS1 ou Terças" /></Field>
+      <Field label="Selecionar peça no desenho"><Select value={selected} onChange={e => setSelected(e.target.value)}>
+        <option value="">Escolha uma peça</option>
+        {selected && !pieceMatches.matches.some(p => p.id === selected) && selectedPiece && <option value={selected}>{selected} · selecionada</option>}
+        {pieceMatches.matches.map(p => <option key={p.id} value={p.id}>{p.id} · {roleLabels[p.role]} · {formatMeasure(p.lengthMm / 1000)} m</option>)}
+      </Select></Field>
+    </div>
+    <p className="field-hint" role="status" data-testid="piece-search-count">
+      {pieceMatches.total === 0 ? "Nenhuma peça corresponde à busca." :
+        pieceMatches.total > pieceMatches.matches.length ? `${pieceMatches.total} peças encontradas; mostrando as primeiras ${pieceMatches.matches.length}. Digite o ID para refinar.` :
+        `${pieceMatches.total} ${pieceMatches.total === 1 ? "peça encontrada" : "peças encontradas"}.`}
+      {pieceQuery && pieceMatches.matches.length > 0 ? " Pressione Enter para selecionar a primeira." : ""}
+    </p>
     {selectedPiece && <div className="notice" role="status"><strong>{selectedPiece.id}</strong> · {roleLabels[selectedPiece.role]} · {selectedPiece.profile.name || "Perfil não definido"} · {formatMeasure(selectedPiece.lengthMm / 1000)} m entre eixos · {selectedPiece.massKg === null ? "Massa pendente" : `${formatMeasure(selectedPiece.massKg)} kg`}<p>{selectedSection?.dimensions}</p><p>{selectedSection?.warning || "Seção ideal prismática; sem raios ou filetes presumidos."}</p><p>{sectionOrientation(selectedPiece.profile)}</p>{!demo && onConfigureProfile && <button type="button" className="button secondary" onClick={() => onConfigureProfile(selectedPiece.role)}>Editar perfil deste grupo</button>}</div>}
     <p className="preliminary-banner">GEOMETRIA PRELIMINAR · RESISTÊNCIA AINDA NÃO VERIFICADA</p>
     {selectedPiece && <p className="field-hint">Peças equivalentes neste grupo: {activeModel!.groups.find(g => g.pieceIds.includes(selectedPiece.id))?.pieceIds.length ?? 1}. Fonte do perfil: {selectedPiece.profile.source || "Pendente"}.</p>}
