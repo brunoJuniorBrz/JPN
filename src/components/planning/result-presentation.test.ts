@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { planningExample } from "@/domain/planning-example";
 import { generateStructure } from "@/domain/calculations/structure";
 import { roleLabels } from "@/domain/structure";
-import { groupMaterialsForDisplay, summarizePending } from "./result-presentation";
+import { groupMaterialsForDisplay, summarizePending, locatePending, locatePendingGroup } from "./result-presentation";
 
 describe("result presentation is derived, never engineering data", () => {
   it("groups equal profiles, preserves every length and ID, and does not mutate the model", () => {
@@ -46,6 +46,27 @@ describe("result presentation is derived, never engineering data", () => {
     expect(grouped[0].count).toBe(15);
     expect(grouped[0].sources).toHaveLength(15);
     expect(new Set(grouped[0].sources)).toEqual(new Set(notices));
+  });
+
+  it("routes known profile issues to the exact group without altering notices", () => {
+    expect(locatePending("Terças: massa por metro desconhecida.")).toEqual({ step: 2, role: "purlin" });
+    expect(locatePending("Informe a largura da cobertura.")).toEqual({ step: 1 });
+    expect(locatePending("Informe o espaçamento máximo entre tesouras.")).toEqual({ step: 2 });
+    expect(locatePending("Verificar estabilidade global.")).toBeNull();
+  });
+
+  it("routes grouped multi-role notices to structure without choosing an arbitrary profile", () => {
+    const notices = Object.values(roleLabels).flatMap(role => [
+      `${role}: classe do aço não informada.`,
+      `${role}: massa por metro desconhecida.`,
+      `${role}: comprimento comercial não informado.`,
+    ]);
+    const grouped = summarizePending(notices);
+    expect(locatePendingGroup(grouped[0])).toEqual({ step: 2 });
+    expect(locatePendingGroup({ text: "mixed", count: 2, sources: [
+      "Terças: massa por metro desconhecida.", "Informe a largura da cobertura.",
+    ] })).toBeNull();
+    expect(locatePendingGroup({ text: "unknown", count: 1, sources: ["Falha normativa não suportada"] })).toBeNull();
   });
 
   it("leaves unrelated structural warnings visible and distinct", () => {
