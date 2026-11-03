@@ -22,6 +22,20 @@ As linhas dos modos Estrutural e Misto também respeitam camadas e isolamento po
 
 Os controles são estados locais do componente React, não persistidos no levantamento. A camada de apresentação ignora temporariamente os filtros, restaurando-os ao voltar aos modos técnicos.
 
+## Incremento visual: inspeção rápida (03/11/2026)
+
+- A peça selecionada apresenta uma **ficha visual concisa** junto ao modelo: ID, categoria, comprimento em metros e nome/seção declarada. Essa ficha utiliza apenas `StructureModel`, sem cálculos adicionais, e é explicitamente identificada como **não dimensionada**.
+- A ficha permite **aproximar** a câmera da peça e **limpar a seleção**. Se o usuário selecionar uma categoria atualmente oculta, oferece **Mostrar categoria** para evitar a impressão de que a peça desapareceu.
+- O controle **Recolher ferramentas** torna o 3D menos congestionado em telas pequenas; **Mostrar ferramentas** restaura camadas, isolamento e posições de câmera. Os modos Estrutural, Perfis 3D, Misto e Acabado não são alterados.
+- Os controles usam alvos de toque de pelo menos 44 px e se reorganizam em 375 px. O painel não altera geometria, câmera automaticamente, quantitativos ou estado persistido.
+- Foram acrescentados cenários Playwright em 375 px e 1440 px para ficha contextual, categoria oculta, recolhimento/restauração e verificação de que o projeto não muda.
+
+### Situação de validação remota
+
+- A base anterior do PR #23 (`1536e7e`) havia passado CI.
+- A CI do incremento de 03/11/2026 não conseguiu iniciar os passos: os jobs de aplicação e estrutural finalizaram em poucos segundos com status failure, **sem steps/logs fornecidos pelo GitHub**. Isso não demonstra falha de TypeScript/teste, mas tampouco equivale a validação. Testes novos aguardam execução efetiva em um runner.
+- Não houve merge nem deploy. O motor estrutural não foi tocado.
+
 ## Validação planejada
 
 - Teste unitário verifica filtros por categoria, isolamento, desenho de eixos, restauração exata de transformações, seleção e imutabilidade do `StructureModel`.
