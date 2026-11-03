@@ -63,6 +63,31 @@ export interface PendingPresentation {
   sources: string[];
 }
 
+/** Navigate only known geometric/material registration issues. Unknown engineering
+ * warnings have no inferred fix: never imply that a field edit approves design. */
+export type PendingTarget = { step: 1 | 2; role?: PieceRole };
+
+export function locatePending(issue: string): PendingTarget | null {
+  const role = (Object.entries(roleLabels) as [PieceRole, string][])
+    .find(([, label]) => issue.startsWith(`${label}:`))?.[0];
+  if (role) return { step: 2, role };
+  if (/tesour|terças|espaçamento|pain[eé]is|balanços|vãos|distribuição|5\\.000 peças|pilares com altura positiva/i.test(issue))
+    return { step: 2 };
+  if (/medidas|largura|comprimento|altura|inclinação|caimento|cobertura|telhado|desnível/i.test(issue))
+    return { step: 1 };
+  return null;
+}
+
+export function locatePendingGroup(group: PendingPresentation): PendingTarget | null {
+  if (!group.sources.length) return null;
+  const destinations = group.sources.map(locatePending);
+  if (destinations.some(value => value === null)) return null;
+  const known = destinations as PendingTarget[];
+  if (known.some(value => value.step !== known[0].step)) return null;
+  const roles = [...new Set(known.map(value => value.role).filter((role): role is PieceRole => !!role))];
+  return roles.length === 1 ? { step: known[0].step, role: roles[0] } : { step: known[0].step };
+}
+
 /** Summarize repeated material-registration notices without hiding their
  * original text; the detail disclosure keeps every warning accessible. */
 export function summarizePending(pending: readonly string[]): PendingPresentation[] {
