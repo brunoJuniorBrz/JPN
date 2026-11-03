@@ -570,3 +570,34 @@ body { font-size: 16px; }
 @media (max-width: 370px) {
   .inspection-layer-options { grid-template-columns: 1fr; }
 }
+
+/* 3D Studio: lightweight selection summary and space-saving mobile inspection. */
+.inspection-collapse {
+  order: 10; flex: 0 1 auto; min-height: 44px; padding: 7px 11px;
+  border: 1px solid #c4d2c2; background: #fff; border-radius: 7px;
+  color: #304a3b; font-size: 12px; font-weight: 650; cursor: pointer;
+}
+.inspection-tools--collapsed { justify-content: flex-end; padding: 6px 8px; }
+.inspection-selected-piece {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  margin: -2px 0 14px; padding: 12px 14px; border: 1px solid #d4dfd5;
+  background: #f2f6f1; border-radius: 10px; min-width: 0;
+}
+.inspection-selected-description { display: grid; gap: 4px; min-width: 0; flex: 1 1 230px; }
+.inspection-selected-description strong { color: #253c2e; font-size: 14px; overflow-wrap: anywhere; }
+.inspection-selected-description > span:not(.inspection-selected-kicker) { color: #576758; font-size: 12px; overflow-wrap: anywhere; }
+.inspection-selected-kicker { font-size: 10px; letter-spacing: .07em; font-weight: 750; color: #56705b; }
+.inspection-selected-description .inspection-selected-hidden { color: #8a5329 !important; }
+.inspection-selected-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.inspection-selected-actions button {
+  min-height: 44px; padding: 8px 12px; border: 1px solid #bdcdbd;
+  border-radius: 7px; background: #fff; color: #304a3b;
+  font-size: 12px; font-weight: 650; cursor: pointer;
+}
+.inspection-collapse:focus-visible, .inspection-selected-actions button:focus-visible { outline: 3px solid #468a84; outline-offset: 2px; }
+@media (max-width: 600px) {
+  .inspection-collapse { grid-column: 1 / -1; order: -1; width: 100%; }
+  .inspection-selected-piece { margin-bottom: 10px; padding: 10px; gap: 8px; }
+  .inspection-selected-actions { width: 100%; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .inspection-selected-actions button { min-width: 0; }
+}
