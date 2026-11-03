@@ -1,3 +1,4 @@
+import { openEngineeringTool } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
@@ -8,7 +9,7 @@ for (const width of [375, 1440]) test(`fluxo misto real, rastreabilidade 3D e in
   await page.getByLabel("Largura (m)").fill("10"); await page.getByLabel("Comprimento (m)").fill("20"); await page.getByLabel("Altura (m)").fill("4");
   await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
   await page.getByRole("button", { name: "Salvar levantamento" }).click();
-  await page.getByRole("button", { name: "Análise Estrutural Experimental", exact: true }).click();
+  await openEngineeringTool(page, "Análise Estrutural Experimental");
   const panel = page.getByTestId("mixed-workspace");
   await expect(panel.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1", { timeout: 20000 });
   await panel.getByRole("button", { name: "Executar análise mista local" }).click();
