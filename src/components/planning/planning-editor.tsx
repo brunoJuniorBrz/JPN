@@ -33,6 +33,12 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
     const frame = window.requestAnimationFrame(() => document.getElementById("jpn-viewer")?.scrollIntoView({ behavior: "smooth", block: "start" }));
     return () => window.cancelAnimationFrame(frame);
   }, [step, open3D]);
+  useEffect(() => {
+    if (step !== 2 || !profileToEdit) return;
+    const frame = window.requestAnimationFrame(() =>
+      document.querySelector(`[data-profile-role="${profileToEdit}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [step, profileToEdit]);
   function update(patch: Partial<Project>) {
     let next = { ...project, ...patch };
     // Recalculate geometrically linked budget rows without changing manually
@@ -76,7 +82,7 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
         {step === 0 && <GeneralForm project={project} onChange={update} errors={submitted || initial ? errors : {}} />}
         {step === 1 && (project.category === "Cobertura metálica" ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>)}
         {step === 2 && <StructureForm project={project} onChange={update} profileToEdit={profileToEdit} />}
-        {step === 3 && <><TakeoffSummary project={project} activeSection={resultSection} onSectionChange={setResultSection} startIn3D={open3D} open3DRequest={open3DRequest} onEditStructure={() => { setProfileToEdit(undefined); go(2); }} onConfigureProfile={role => { setProfileToEdit(role); go(2); }} /><ProjectWorkbench project={project} activeSection={resultSection} onChange={update} onEditStructure={() => { setProfileToEdit(undefined); go(2); }} /></>}
+        {step === 3 && <><TakeoffSummary project={project} activeSection={resultSection} onSectionChange={setResultSection} onResolvePending={target => { setProfileToEdit(target.role); go(target.step); }} startIn3D={open3D} open3DRequest={open3DRequest} onEditStructure={() => { setProfileToEdit(undefined); go(2); }} onConfigureProfile={role => { setProfileToEdit(role); go(2); }} /><ProjectWorkbench project={project} activeSection={resultSection} onChange={update} onEditStructure={() => { setProfileToEdit(undefined); go(2); }} /></>}
       </div>
       <div className="workflow-footer"><span className="field-hint">Quantitativos independentes de preços</span><div className="actions">{step > 0 && <button type="button" className="button secondary" onClick={() => go(step - 1)}><ArrowLeft size={18} />Voltar</button>}{step < 3 ? <button type="button" className="button" onClick={() => go(step + 1)}>{!initial ? "Salvar e continuar" : `Ir para ${steps[step + 1].toLowerCase()}`}<ArrowRight size={18} /></button> : <button type="button" className="button" onClick={save}><Save size={18} />Salvar levantamento</button>}</div></div>
       <p className="editor-save-note" role="status">{message || (!initial ? "O projeto será criado ao continuar." : saveState === "pending" ? "Salvando…" : saveState === "error" ? "Confira o aviso de armazenamento." : "Alterações salvas neste navegador.")}</p>
