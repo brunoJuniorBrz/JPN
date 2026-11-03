@@ -60,6 +60,17 @@ export function TakeoffSummary({ project, onConfigureProfile, onEditStructure, s
       {sections.map(({id,label}) => <button key={id} type="button" role="tab"
         id={`result-tab-${id}`} aria-controls={`result-panel-${id}`}
         aria-selected={activeSection===id} tabIndex={activeSection===id?0:-1}
+        onKeyDown={event => {
+          const index = sections.findIndex(section => section.id === id);
+          const next = event.key === "ArrowRight" ? (index+1)%sections.length
+            : event.key === "ArrowLeft" ? (index+sections.length-1)%sections.length
+            : event.key === "Home" ? 0 : event.key === "End" ? sections.length-1 : -1;
+          if (next < 0) return;
+          event.preventDefault();
+          const target = sections[next].id;
+          onSectionChange(target);
+          window.requestAnimationFrame(() => document.getElementById(`result-tab-${target}`)?.focus());
+        }}
         onClick={() => onSectionChange(id)}>
         <span>{label}</span>{id==="engineering" && result.pending.length>0 && <small className="result-pending-count">{result.pending.length} pendências</small>}
       </button>)}
