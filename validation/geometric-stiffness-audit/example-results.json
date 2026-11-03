@@ -1,0 +1,61 @@
+{
+  "study": "JPN theoretical geometric-stiffness crosscheck / independent formula transcription",
+  "scope": "Source-based formulas, exact Hermite integration, 3D truss projector, synthetic 1-DOF. No upstream executable compared.",
+  "bending_exact_agreement_cases": 9,
+  "synthetic_torsion": {
+    "r0_squared_m2": 0.0040999999999999995,
+    "j_over_a_m2": 0.000012499999999999999,
+    "stabileo_wagner_coefficient": -122.99999999999999,
+    "frame3dd_torsion_coefficient": -0.375,
+    "magnitude_ratio": 327.99999999999994
+  },
+  "mixed_one_dof": [
+    {
+      "p_over_pcr": 0,
+      "p_n": 0,
+      "k_elastic_n_per_m": 75000,
+      "k_geometric_n_per_m": 0,
+      "displacement_mm": 1.3333333333333333,
+      "first_order_mm": 1.3333333333333333,
+      "amplification": 1
+    },
+    {
+      "p_over_pcr": 0.2,
+      "p_n": 60000,
+      "k_elastic_n_per_m": 75000,
+      "k_geometric_n_per_m": -15000,
+      "displacement_mm": 1.6666666666666667,
+      "first_order_mm": 1.3333333333333333,
+      "amplification": 1.25
+    },
+    {
+      "p_over_pcr": 0.5,
+      "p_n": 150000,
+      "k_elastic_n_per_m": 75000,
+      "k_geometric_n_per_m": -37500,
+      "displacement_mm": 2.6666666666666665,
+      "first_order_mm": 1.3333333333333333,
+      "amplification": 2
+    },
+    {
+      "p_over_pcr": 0.8,
+      "p_n": 240000,
+      "k_elastic_n_per_m": 75000,
+      "k_geometric_n_per_m": -60000,
+      "displacement_mm": 6.666666666666667,
+      "first_order_mm": 1.3333333333333333,
+      "amplification": 5.000000000000001
+    },
+    {
+      "p_over_pcr": 0.95,
+      "p_n": 285000,
+      "k_elastic_n_per_m": 75000,
+      "k_geometric_n_per_m": -71250,
+      "displacement_mm": 26.666666666666668,
+      "first_order_mm": 1.3333333333333333,
+      "amplification": 19.999999999999982
+    }
+  ],
+  "normative_approval": false,
+  "full_3d_solver_validation": false
+}
