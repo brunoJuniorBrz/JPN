@@ -27,12 +27,12 @@ A concordância de fórmulas de flexão entre Stabileo e Frame3DD ajuda a valida
 | Stabileo | [`self-checks.md`](https://github.com/lambdaclass/stabileo/blob/58fc63cef585918c5025acc71488f73f5fbf4afc/docs/safety/self-checks.md) | Checagens de equilíbrio, autovalores, diagnósticos e limitações |
 | Frame3DD | [`src/frame3dd.c`](https://github.com/hpgavin/frame3dd/blob/73a022adf1ba9d168640254bf22557e21dfb5fc4/src/frame3dd.c) | Função `geometric_K` e matriz geométrica 12x12 |
 | Frame3DD | [manual](https://hpgavin.github.io/frame3dd/web/Frame3DD-manual.html) | Ressalvas para aproximação de treliças e instabilidade |
-| PyNite | [`FEModel3D.py`](https://github.com/JWock82/Pynite/blob/36a7d1030a8dc64eaafc4909a8c9fe92c287cea9/Pynite/FEModel3D.py) | `Ke` e `Kg`, em particular quais elementos são somados |
-| PyNite | [`Spring3D.py`](https://github.com/JWock82/Pynite/blob/36a7d1030a8dc64eaafc4909a8c9fe92c287cea9/Pynite/Spring3D.py) | Molas 3D com `Ke`, sem `Kg` correspondente |
+| PyNite | [`FEModel3D.py`](https://github.com/JWock82/Pynite/blob/3.2.1/Pynite/FEModel3D.py) | `Ke` e `Kg`, em particular quais elementos são somados |
+| PyNite | [`Spring3D.py`](https://github.com/JWock82/Pynite/blob/3.2.1/Pynite/Spring3D.py) | Molas 3D com `Ke`, sem `Kg` correspondente |
 | HyperFrame | [`nbr6123/wind.ts`](https://github.com/candidoalfilho/hyperframe/blob/dfcab43a78b583265b9a2c795dae7e3e2e917aa2/packages/engine/src/nbr/nbr6123/wind.ts) | Modelo de vento por pavimento, interpolação de arrasto e fontes declaradas |
 | HyperFrame | [`nbr8681/combinations.ts`](https://github.com/candidoalfilho/hyperframe/blob/dfcab43a78b583265b9a2c795dae7e3e2e917aa2/packages/engine/src/nbr/nbr8681/combinations.ts) | Geração algorítmica ELU/ELS; cabeçalho referencia NBR 8681:2003 |
 
-**Atenção às revisões:** o snapshot do PyNite acima é um commit público de código, não foi demonstrado ser byte a byte idêntico ao pacote instalado 3.2.1; o JPN declara essa versão. É preciso conferir o wheel exato antes de usar o resultado como prova contra o binário. Os arquivos Stabileo foram examinados em pontos distintos durante uma branch ativa; o documento usa permalinks fixados. Uma documentação antiga do Stabileo ainda afirma que faltam alguns termos torsionais; o código fixado examinado **já os implementa**. Sempre dar precedência ao comportamento efetivamente ensaiado, não ao texto isolado.
+**Atenção às revisões:** a tag pública `3.2.1` do PyNite foi consultada e os blobs `FEModel3D.py` (SHA `b0433dbd85a0b6b46256e5d435a196028e062cd9`) e `Spring3D.py` (SHA `a66bf50ffa602b730c951fcee3eb1c78996b8071`) coincidem com os do commit inicialmente inspecionado. Isso verifica os dois arquivos de fonte da versão declarada, mas não reproduz ainda a execução do wheel/venv do Codex. Os arquivos Stabileo foram examinados em pontos distintos durante uma branch ativa; o documento usa permalinks fixados. Uma documentação antiga do Stabileo ainda afirma que faltam alguns termos torsionais; o código fixado examinado **já os implementa**. Sempre dar precedência ao comportamento efetivamente ensaiado, não ao texto isolado.
 
 ## 3. O que as matrizes representam
 
