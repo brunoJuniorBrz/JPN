@@ -6,6 +6,7 @@ import { distributeWindActions } from "@/domain/wind-load-path";
 import { generatedRoofRegions } from "@/domain/roof-load-path";
 import { structureSignature } from "@/domain/calculations/project-basis";
 import { downloadText } from "@/lib/format";
+import { WindSpeedControl } from "./wind-speed-control";
 
 export function WindEngineeringPanel({project,onChange}:{project:Project;onChange:(patch:Partial<Project>)=>void}) {
   const [json,setJson] = useState(""), [message,setMessage] = useState("");
@@ -27,6 +28,7 @@ export function WindEngineeringPanel({project,onChange}:{project:Project;onChang
     } catch(e) { setMessage((e as Error).message); }
   }
   return <details className="technical-details" data-testid="wind-engineering"><summary>Vento zonal e combinações declaradas — experimental</summary>
+    <WindSpeedControl project={project} onChange={onChange}/>
     <p>Cobertura retangular de uma ou duas águas, volume fechado único, ação estática normal à superfície. Fachadas, telhas e fixadores locais não são verificados. Não há seleção automática de coeficientes ABNT nem aprovação normativa.</p>
     <p>Importação técnica versionada: q em Pa fornecido pelo engenheiro; pressão líquida q × (cpe − cpi), positiva para dentro e negativa para fora. Área da superfície inclinada em m². Coordenadas globais XYZ em metros. Zonas retangulares devem cobrir cada água sem lacunas ou sobreposição. Fronteiras longitudinais devem coincidir com extremos das peças de terça.</p>
     <p>O caminho suportado exige telhamento biapoiado entre terças: transmission = simply-supported-sheeting-to-parallel-purlins; enclosure = enclosed. Outras hipóteses são recusadas. Fatores gamma e psi devem ser declarados para todos os casos, inclusive zeros, com categoria, grupo de exclusão, finalidade ULS/SLS, fonte, edição, cláusula e responsável.</p>

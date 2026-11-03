@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { PhysicalGroup } from "./physical-declaration";
+import { comparePhysicalProperty } from "./property-precision";
 // Resolution is an absolute last reported digit in the UNIT OF THE KEY, not
 // a universal percentage tolerance. Unknown values remain null.
 const q=z.object({value:z.number().finite(),resolution:z.number().finite().positive()}).strict().nullable();
@@ -28,7 +29,7 @@ export function coldFormedDiagnostics(d:{family:string|null;geometry?:{shape:str
   for(const [key,v]of Object.entries(p))if(v===null)add("MISSING_PROPERTY",`${key}: dado físico ausente.`);
   const band=(v:NonNullable<typeof p.areaCm2>):[number,number]=>[v.value-v.resolution/2,v.value+v.resolution/2];
   const overlaps=(v:NonNullable<typeof p.areaCm2>,a:number,b=a)=>{const [lo,hi]=band(v),eps=64*Number.EPSILON*Math.max(Math.abs(lo),Math.abs(hi),Math.abs(a),Math.abs(b));return lo<=b+eps&&hi>=a-eps;};
-  for(const key of ["areaCm2","iyCm4","izCm4","jCm4"] as const)if(p[key]&&group[key]!==null&&!overlaps(p[key]!,group[key]!))add("SOLVER_PROPERTY_MISMATCH",`${key}: intervalos declarados não incluem a propriedade usada no solver.`);
+  for(const key of ["areaCm2","iyCm4","izCm4","jCm4"] as const)if(p[key]&&group[key]!==null&&comparePhysicalProperty(p[key]!.value,group[key]!,p[key]!.resolution).status!=="consistent")add("SOLVER_PROPERTY_MISMATCH",`${key}: intervalos declarados não incluem a propriedade usada no solver.`);
   if(p.nominalThicknessMm&&p.effectiveThicknessMm&&band(p.effectiveThicknessMm)[0]>band(p.nominalThicknessMm)[1])add("INCOHERENT_THICKNESS","Espessura efetiva excede nominal além da resolução declarada.");
   if(h&&b&&c&&t&&r!==null&&r!==undefined)for(const [key,x]of [["flatWebMm",h-2*(r+t)],["flatFlangeMm",b-2*(r+t)],["flatLipMm",c-r-t]] as const)if(p[key]&&!overlaps(p[key]!,x))add("FLAT_WIDTH_MISMATCH",`${key}: dimensão externa de aço e dobras não conferem.`);
   for(const [inertia,radius]of [["iyCm4","radiusYMm"],["izCm4","radiusZMm"]] as const)if(p.areaCm2&&p[inertia]&&p[radius]){

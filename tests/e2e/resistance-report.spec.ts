@@ -8,7 +8,7 @@ for(const width of [375,1440])test(`M23 solicitações reais, relatório e sele�
   await p.getByRole("button",{name:"Executar análise mista local",exact:true}).click();const report=p.getByTestId("resistance-report");await expect(report).toContainText("M23 parcial",{timeout:30000});
   await expect(report).toContainText("NÃO APROVADA PARA FABRICAÇÃO");
   const download=page.waitForEvent("download");await report.getByRole("button",{name:"Exportar relatório resistente preliminar",exact:true}).click();const file=await download,out=JSON.parse(await readFile((await file.path())!,"utf8"));
-  expect(out.pieces).toHaveLength(207);expect(out.approvedForFabrication).toBe(false);expect(out.normativeProceduresImplemented).toEqual([]);expect(out.physicalInput.members).toHaveLength(243);
+  expect(out.pieces).toHaveLength(207);expect(out.approvedForFabrication).toBe(false);expect(out.normativeProceduresImplemented).toContain("NBR14762:2010-C.3");expect(out.physicalInput.members).toHaveLength(243);
   const feDownload=page.waitForEvent("download");await p.getByRole("button",{name:"Exportar resultados mistos",exact:true}).click();const feFile=await feDownload,fe=JSON.parse(await readFile((await feFile.path())!,"utf8"));expect(out.binding.inputSha256).toBe(fe.result.input_sha256);
   expect(out.demands.sampling.continuousExtremaLocated).toBe(false);expect(out.binding.solver.version).toBe("3.2.1");
   const beam=out.demands.pieces.find((x:{kind:string;segments:unknown[]})=>x.kind==="frame"&&x.segments.length>1);expect(beam).toBeTruthy();
@@ -22,8 +22,8 @@ for(const width of [375,1440])test(`M23 solicitações reais, relatório e sele�
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
 });
 
-test("cadastro resistente preserva geometria física ao revisar fy e invalida a análise",async({page})=>{
-  test.setTimeout(120000);await page.setViewportSize({width:1440,height:950});
+for(const width of [375,1440])test(`cadastro resistente, seção Python e limite de flecha em ${width}px`,async({page})=>{
+  test.setTimeout(120000);await page.setViewportSize({width,height:950});
   await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");await page.getByRole("button",{name:"Gerar modelo 3D"}).click();await page.getByRole("button",{name:"Análise Estrutural Experimental",exact:true}).click();
   const p=page.getByTestId("mixed-workspace");await p.getByRole("button",{name:"Abrir exemplo de vento zonal",exact:true}).click();await expect(p.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:60000});
   async function setBase(fy:string){
@@ -42,7 +42,17 @@ test("cadastro resistente preserva geometria física ao revisar fy e invalida a 
   for(const [label,value]of [["Fonte das propriedades Ue","Fonte sintética independente"],["Revisão das propriedades Ue","M26-R1"],["Responsável pelas propriedades Ue","Ensaio, não obra real"],["Origem e referência da seção Ue","Origem do desenho da seção de ensaio"],["Ue nominalThicknessMm","2"],["Resolução Ue nominalThicknessMm","0.001"]])await props.getByLabel(label,{exact:true}).fill(value);
   await props.getByRole("checkbox").check();await props.getByRole("button",{name:"Registrar propriedades Ue e invalidar análise",exact:true}).click();await expect(p.getByTestId("mixed-no-results")).toBeVisible();
   await p.getByRole("button",{name:"Calcular ações de ligações",exact:true}).click();await expect(p.getByTestId("resistance-report")).toBeVisible({timeout:30000});
+  const section=p.getByTestId("section-analysis");await section.locator(":scope > summary").click();
+  await section.getByLabel("Poisson declarado para análise da seção").fill("0.3");await section.getByLabel("Responsável pela análise da seção").fill("Synthetic end-to-end validation");
+  await section.getByRole("button",{name:"Calcular seção física local",exact:true}).click();await expect(section.getByTestId("section-properties-result")).toContainText("jMm4",{timeout:25000});
+  await expect(section.getByTestId("section-properties-result")).toContainText("resistência normativa não calculadas");
+  const sectionWait=page.waitForEvent("download");await section.getByRole("button",{name:"Exportar cálculo da seção",exact:true}).click();const sectionFile=await sectionWait,sectionRecord=JSON.parse(await readFile((await sectionFile.path())!,"utf8"));expect(sectionRecord.result.library.version).toBe("3.10.2");expect(sectionRecord.input.geometry.wallThickness).toBe(2);expect(sectionRecord.result.approvedForFabrication).toBe(false);
+  const service=p.getByTestId("declared-service");await service.locator(":scope > summary").click();
+  await service.getByLabel("Limite de flecha declarado (mm)").fill("0.000000001");await service.getByLabel("Grandeza de flecha").selectOption("vector-norm");
+  await service.getByRole("checkbox").first().check();await service.getByLabel("Fonte do limite de flecha").fill("Synthetic rejection case, not an ABNT limit");await service.getByLabel("Revisão do limite de flecha").fill("1");await service.getByLabel("Responsável pelo limite de flecha").fill("Independent test");
+  await service.getByRole("button",{name:"Registrar limite declarado e invalidar análise",exact:true}).click();await expect(p.getByTestId("mixed-no-results")).toBeVisible();
+  await p.getByRole("button",{name:"Calcular ações de ligações",exact:true}).click();await expect(p.getByTestId("resistance-report")).toBeVisible({timeout:30000});
   const wait=page.waitForEvent("download");await p.getByRole("button",{name:"Exportar relatório resistente preliminar",exact:true}).click();const file=await wait,out=JSON.parse(await readFile((await file.path())!,"utf8"));const piece=out.pieces.find((x:{pieceId:string})=>x.pieceId==="TE1-V1");
-  expect(piece.declaration.fyMpa).toBe(300);expect(piece.declaration.profileDesignation).toBe("U enrijecido físico de ensaio");expect(piece.declaration.geometry.dimensionsMm.wallThickness).toBe(2);expect(piece.declaration.geometry.revision).toBe("G1");expect(piece.approved).toBe(false);expect(piece.declaration.coldFormed.revision).toBe("M26-R1");expect(piece.declaration.coldFormed.nominalThicknessMm.value).toBe(2);expect(piece.declaration.coldFormed.areaCm2).toBeNull();expect(out.continuousDemands.pieces).toHaveLength(207);
+  expect(piece.declaration.fyMpa).toBe(300);expect(piece.declaration.profileDesignation).toBe("U enrijecido físico de ensaio");expect(piece.declaration.geometry.dimensionsMm.wallThickness).toBe(2);expect(piece.declaration.geometry.revision).toBe("G1");expect(piece.approved).toBe(false);expect(piece.declaration.coldFormed.revision).toBe("M26-R1");expect(piece.declaration.coldFormed.nominalThicknessMm.value).toBe(2);expect(piece.declaration.coldFormed.areaCm2).toBeNull();expect(out.continuousDemands.pieces).toHaveLength(207);expect(out.schema_version).toBe("jpn.resistance-report/3");expect(out.releaseGate.status).toBe("NOT_READY_BLOCKED");expect(out.serviceChecks.find((c:{criterion:{pieceId:string}})=>c.criterion.pieceId==="TE1-V1").status).toBe("exceeds-declared-limit");expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 

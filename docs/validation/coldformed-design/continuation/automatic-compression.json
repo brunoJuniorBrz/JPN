@@ -1,0 +1,2277 @@
+{
+  "schema_version": "jpn.automatic-compression-evidence/1",
+  "cases": [
+    {
+      "load_n": 1000.0,
+      "solver_input": {
+        "schema_version": "jpn.mixed3d/1",
+        "units": "SI",
+        "theory": "linear-elastic-frame-axial",
+        "project": {
+          "id": "AUTO-CFSM-COLUMN",
+          "revision": "1",
+          "source": "Explicit synthetic guided-column control; not a commercial roof or approved connection"
+        },
+        "nodes": [
+          {
+            "id": "A",
+            "x_m": 0,
+            "y_m": 0,
+            "z_m": 0
+          },
+          {
+            "id": "B",
+            "x_m": 0,
+            "y_m": 0,
+            "z_m": 2
+          },
+          {
+            "id": "D",
+            "x_m": 2,
+            "y_m": 0,
+            "z_m": 0
+          }
+        ],
+        "materials": [
+          {
+            "id": "M",
+            "e_pa": 200000000000.0,
+            "g_pa": 76923076923.07692,
+            "nu": 0.3,
+            "source": "Explicit synthetic guided-column control; not a commercial roof or approved connection",
+            "revision": "1"
+          }
+        ],
+        "sections": [
+          {
+            "id": "S",
+            "area_m2": 0.01,
+            "iy_m4": 1e-05,
+            "iz_m4": 1e-05,
+            "j_m4": 1e-05,
+            "source": "Synthetic unloaded cantilever only",
+            "revision": "1"
+          }
+        ],
+        "members": [
+          {
+            "id": "FRAME",
+            "kind": "frame",
+            "start": "A",
+            "end": "D",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "COLUMN",
+            "kind": "axial",
+            "start": "A",
+            "end": "B",
+            "e_pa": 200000000000.0,
+            "area_m2": 0.000385141,
+            "source": "Explicit synthetic guided-column control; not a commercial roof or approved connection",
+            "revision": "1"
+          }
+        ],
+        "supports": [
+          {
+            "node": "A",
+            "restrained": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ]
+          },
+          {
+            "node": "B",
+            "restrained": [
+              true,
+              true,
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        ],
+        "cases": [
+          {
+            "id": "P",
+            "source": "Explicit synthetic guided-column control; not a commercial roof or approved connection"
+          }
+        ],
+        "combinations": [
+          {
+            "id": "ULS-CONTROL",
+            "factors": {
+              "P": 1
+            }
+          }
+        ],
+        "nodal_loads": [
+          {
+            "node": "B",
+            "case": "P",
+            "fx_n": 0,
+            "fy_n": 0,
+            "fz_n": -1000.0,
+            "mx_nm": 0,
+            "my_nm": 0,
+            "mz_nm": 0
+          }
+        ]
+      },
+      "solver_result": {
+        "schema_version": "jpn.mixed3d-result/1",
+        "status": "analysis_completed_experimental",
+        "units": "SI",
+        "project": {
+          "id": "AUTO-CFSM-COLUMN",
+          "revision": "1",
+          "source": "Explicit synthetic guided-column control; not a commercial roof or approved connection"
+        },
+        "input_sha256": "a93b19b9f37073d18685276fd33c3e670646b2be4f53c446ba9f46ec8ee8bdb7",
+        "solver": {
+          "name": "PyNiteFEA",
+          "version": "3.2.1",
+          "adapter": "jpn-mixed3d/1"
+        },
+        "assumptions": [
+          "Primeira ordem, p\u00f3rtico Euler-Bernoulli e mola axial bilateral EA/L.",
+          "Rota\u00e7\u00e3o inativa em n\u00f3s apenas axiais \u00e9 eliminada matematicamente, n\u00e3o representa apoio.",
+          "Sem peso pr\u00f3prio, vento, flambagem, resist\u00eancia normativa ou libera\u00e7\u00e3o para fabrica\u00e7\u00e3o."
+        ],
+        "diagnostics": {
+          "free_dofs": 7,
+          "scaled_condition": 13.928203230275516,
+          "elapsed_seconds": 0.022721299959812313
+        },
+        "combinations": {
+          "ULS-CONTROL": {
+            "nodes": {
+              "A": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  1000.0
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "active_rotations": true
+              },
+              "B": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  -2.5964516891216465e-05
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "active_rotations": false
+              },
+              "D": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "active_rotations": true
+              }
+            },
+            "members": {
+              "COLUMN": {
+                "kind": "axial",
+                "axial_n": -1000.0,
+                "length_m": 2.0,
+                "extension_m": -2.5964516891216465e-05
+              },
+              "FRAME": {
+                "kind": "frame",
+                "length_m": 2.0,
+                "end_actions_local": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "equilibrium": {
+              "force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "relative_residual": 0.0
+            }
+          }
+        }
+      },
+      "design_input": {
+        "schema_version": "jpn.verified-coldformed/1",
+        "geometry_analysis": {
+          "schema_version": "jpn.section-analysis/1",
+          "units": "mm",
+          "geometry": {
+            "shape": "u-stiffened",
+            "height": 200,
+            "width": 75,
+            "lip": 20,
+            "wallThickness": 1,
+            "insideRadius": 0
+          },
+          "poisson": 0.3,
+          "source": "Explicit synthetic sharp-inner-corner Ue; not a commercial product",
+          "revision": "CFSM-1",
+          "responsible": "Independent numerical control",
+          "convergence": 0.001
+        },
+        "solver_j_m4": 1.28302e-10,
+        "property_resolutions": {
+          "area_m2": 1e-09,
+          "iy_m4": 1e-11,
+          "iz_m4": 1e-12,
+          "wy_m3": 1e-10,
+          "wz_m3": 1e-11,
+          "j_m4": 1e-15
+        },
+        "design": {
+          "schema_version": "jpn.coldformed-design/1",
+          "units": "SI",
+          "piece_id": "COLUMN",
+          "combination_id": "ULS-CONTROL",
+          "binding": {
+            "mechanical_sha256": "3d86a49d48352dae19a9389d00170b543d19cc0ab1fdacea5d6d4e67dd3626e6",
+            "analysis_input_sha256": "a93b19b9f37073d18685276fd33c3e670646b2be4f53c446ba9f46ec8ee8bdb7",
+            "analysis_result_sha256": "77e2c2e2b9295fe76795eabdfd0c2c0466b37f20d37decf2db657908d8d2f0fa"
+          },
+          "section": {
+            "family": "cold-formed",
+            "shape": "u-stiffened",
+            "area_m2": 0.000385141,
+            "iy_m4": 2.4289e-06,
+            "iz_m4": 3.01227e-07,
+            "wy_m3": 2.4289e-05,
+            "wz_m3": 5.69739e-06,
+            "fy_pa": 250000000.0,
+            "fu_pa": 400000000.0,
+            "e_pa": 200000000000.0,
+            "effective_length_y_m": 2,
+            "effective_length_z_m": 2,
+            "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+            "revision": "1"
+          },
+          "study": {
+            "source": "Explicit S-S fork supports, free warping, end restraints only, uniform axial compression",
+            "revision": "CFSM-1",
+            "responsible": "Independent control",
+            "basis_sha256": "3d86a49d48352dae19a9389d00170b543d19cc0ab1fdacea5d6d4e67dd3626e6",
+            "boundary_and_load_pattern": "Synthetic elastic member, 2 m physical span, no intermediate connections; no inferred supports",
+            "minimum_search": "computed-cfsm-ss"
+          },
+          "critical": {
+            "compression": null,
+            "my_positive": null,
+            "my_negative": null,
+            "mz_positive": null,
+            "mz_negative": null
+          },
+          "tension": null,
+          "web": {
+            "flat_height_m": 0.198,
+            "thickness_m": 0.001,
+            "unstiffened_single_web": true
+          },
+          "fields": [
+            {
+              "segment_id": "COLUMN",
+              "offset_m": 0,
+              "length_m": 2,
+              "forces": {
+                "nN": [
+                  -1000.0
+                ],
+                "vyN": null,
+                "vzN": null,
+                "tNm": null,
+                "myNm": null,
+                "mzNm": null
+              }
+            }
+          ]
+        },
+        "stability_model": {
+          "boundary": "fork-fork-free-warping",
+          "load_pattern": "uniform-compression",
+          "intermediate_restraints": "none",
+          "length_m": 2,
+          "half_waves_max": 64,
+          "target": 0.001
+        }
+      },
+      "independent": {
+        "axial_n": -1000.0,
+        "tip_z_m": -2.5964516891216465e-05,
+        "reaction_z_n": 1000.0
+      },
+      "design_result": {
+        "schema_version": "jpn.coldformed-design-result/2",
+        "units": "SI",
+        "input_sha256": "1a36203f82a3de10caa1c73b449e6e619ec6675474f331c565f36b464eb2649b",
+        "binding": {
+          "mechanical_sha256": "3d86a49d48352dae19a9389d00170b543d19cc0ab1fdacea5d6d4e67dd3626e6",
+          "analysis_input_sha256": "a93b19b9f37073d18685276fd33c3e670646b2be4f53c446ba9f46ec8ee8bdb7",
+          "analysis_result_sha256": "77e2c2e2b9295fe76795eabdfd0c2c0466b37f20d37decf2db657908d8d2f0fa"
+        },
+        "piece_id": "COLUMN",
+        "combination_id": "ULS-CONTROL",
+        "standard": "ABNT NBR 14762:2010",
+        "evaluator_version": "jpn.nbr14762-mrd/2",
+        "capacities": {
+          "compression": {
+            "characteristic": 27218.995947583535,
+            "design": 22682.49662298628,
+            "gamma": 1.2,
+            "modes": {
+              "global_": 67892.72252271678,
+              "local": 31758.34762110271,
+              "distortional": 27218.995947583535
+            },
+            "slenderness": {
+              "global_": 0.9136492613680196,
+              "local": 2.341999992090418,
+              "distortional": 2.6817964625753303
+            },
+            "governing_mode": "distortional",
+            "clauses": [
+              "C.1",
+              "C.2",
+              "C.3.1",
+              "C.3.2",
+              "C.3.3"
+            ]
+          },
+          "shear_z": {
+            "design": 4155.1882460973375,
+            "characteristic": 4570.707070707072,
+            "gamma": 1.1,
+            "slenderness": 198.0,
+            "branch": "elastic-buckling",
+            "kv": 5.0,
+            "clauses": [
+              "9.8.3"
+            ]
+          }
+        },
+        "checks": [
+          {
+            "id": "compression",
+            "status": "CONDITIONAL",
+            "demand": 1000.0,
+            "resistance": 22682.49662298628,
+            "utilization": 0.0440868576603956,
+            "governing": {
+              "segment_id": "COLUMN",
+              "position_m": 0.0,
+              "segment_position_m": 0.0,
+              "combination_id": "ULS-CONTROL",
+              "forces": {
+                "nN": -1000.0,
+                "vyN": null,
+                "vzN": null,
+                "tNm": null,
+                "myNm": null,
+                "mzNm": null
+              }
+            },
+            "clauses": [
+              "C.1",
+              "C.2",
+              "C.3.1",
+              "C.3.2",
+              "C.3.3"
+            ],
+            "conditional_dependencies": [
+              "cFSM eigenvalues were computed in explicit modal spaces and a finite half-wave domain; completeness beyond that domain and complete physical-mode applicability are not certified."
+            ]
+          },
+          {
+            "id": "compression-slenderness",
+            "status": "PASS",
+            "demand": 71.51436944836223,
+            "resistance": 200.0,
+            "utilization": 0.3575718472418112,
+            "governing": null,
+            "clauses": [
+              "9.7.4"
+            ],
+            "conditional_dependencies": []
+          }
+        ],
+        "status": "CONDITIONAL-MODEL-LIMITS",
+        "member_all_limit_states_verified": false,
+        "computed_structural_approval": false,
+        "approved_for_fabrication": false,
+        "remaining": [
+          "Connections/net-section provenance and load introduction/web crippling are not fully verified.",
+          "Complete normative action/combination and global stability validation remain separate.",
+          "C.5 effective inertia is not substituted silently into the gross-section displacement field."
+        ],
+        "calculation_input_sha256": "49218119ab52596af2d1139117de30f9b29c68fdee892337adf212caf8150974",
+        "connection_audit": {
+          "status": "conditional-unverified",
+          "input_sha256": null,
+          "connection_ids": [],
+          "hole_count": 0,
+          "warning": "Known contradictions checked; this inventory does not prove absence of cutouts, weld coverage of every section element or governing net paths/Ct. Tension stays conditional."
+        },
+        "buckling_audit": {
+          "schema_version": "jpn.computed-member-buckling/1",
+          "method": "NBR14762-global-and-constrained-FSM",
+          "library": {
+            "pycufsm": "0.2.0",
+            "numpy": "2.3.3",
+            "scipy": "1.15.3",
+            "license": "AFL-3.0"
+          },
+          "model": {
+            "boundary": "fork-fork-free-warping",
+            "load_pattern": "uniform-compression",
+            "intermediate_restraints": "none",
+            "length_m": 2,
+            "half_waves_max": 64,
+            "target": 0.001
+          },
+          "model_sha256": "14b5078e34b97e99e2ce06c3c5ab6872625f885efe4d5cba88e887046bcbda40",
+          "global_result": {
+            "global_n": 115345.60431185535,
+            "flexure_y_n": 1198613.9273402528,
+            "flexure_z_n": 148649.4027028046,
+            "torsion_n": 119059.36209605109,
+            "flexural_torsional_n": 115345.60431185535,
+            "r0_squared_m2": 0.010161114843694195,
+            "clauses": [
+              "9.7.2.1(a-c)",
+              "9.7.2.2"
+            ],
+            "axes": "NBR x,y = JPN section local y,z"
+          },
+          "compression_critical_n": {
+            "global": 115345.60431185535,
+            "local": 12377.970572149934,
+            "distortional": 13387.77597478384
+          },
+          "refinements": [
+            {
+              "nodes": 39,
+              "arc_segments": 2,
+              "flat_segments": 6,
+              "midline_area_mm2": 385.0614674589208,
+              "families": {
+                "local": {
+                  "critical_stress_mpa": 32.10211132051012,
+                  "half_wave_number": 15,
+                  "half_wavelength_mm": 133.33333333333334,
+                  "modal_dimension": 66,
+                  "curve_mpa": [
+                    2419.4494604005295,
+                    613.629231525371,
+                    279.4132312032105,
+                    162.66825946540308,
+                    108.8852027734863,
+                    79.93854035644719,
+                    62.764961938189266,
+                    51.90787577356548,
+                    44.760608394393785,
+                    39.9503409038043,
+                    36.69829568088223,
+                    34.536022316891135,
+                    33.168047260429645,
+                    32.40054631613099,
+                    32.10211132051012,
+                    32.1811083429775,
+                    32.572067487419645,
+                    33.22721002271635,
+                    34.11101065212235,
+                    35.19661323575819,
+                    36.46341176017803,
+                    37.895383031158694,
+                    39.4799156209948,
+                    41.20697327144239,
+                    43.06848795749382,
+                    45.05791335050914,
+                    47.16989205279987,
+                    49.40000467988288,
+                    51.744578593856026,
+                    54.20054063629187,
+                    56.76530267596091,
+                    59.43667188306298,
+                    62.21277981556293,
+                    65.09202594482501,
+                    68.07303235755593,
+                    71.15460717801972,
+                    74.33571484271694,
+                    77.61545179814878,
+                    80.993026519498,
+                    84.46774299230583,
+                    88.03898698724275,
+                    91.70621459950597,
+                    95.46894263411907,
+                    99.32674050495329,
+                    103.27922337916102,
+                    107.32604635209269,
+                    111.46689947909988,
+                    115.70150352194405,
+                    120.02960629392086,
+                    124.45097950908928,
+                    128.9654160569006,
+                    133.5727276371589,
+                    138.2727427021895,
+                    143.06530465994965,
+                    147.95027030182416,
+                    152.9275084223471,
+                    157.99689860484096,
+                    163.15833015000257,
+                    168.41170112869605,
+                    173.75691754224226,
+                    179.19389257652776,
+                    184.72254593807062,
+                    190.34280326157003,
+                    196.05459558055458
+                  ]
+                },
+                "distortional": {
+                  "critical_stress_mpa": 34.87692974879699,
+                  "half_wave_number": 16,
+                  "half_wavelength_mm": 125.0,
+                  "modal_dimension": 10,
+                  "curve_mpa": [
+                    362.3214262313079,
+                    152.21449360632974,
+                    157.25767795440376,
+                    146.92260137958513,
+                    112.48908416055794,
+                    86.10900409632723,
+                    68.7524923534034,
+                    57.28738689786961,
+                    49.5492387776398,
+                    44.2414154726003,
+                    40.58304917430529,
+                    38.08914328350045,
+                    36.447998462990476,
+                    35.452749596685734,
+                    34.96207807660109,
+                    34.87692974879699,
+                    35.12627295252966,
+                    35.658125442259696,
+                    36.433747458065916,
+                    37.42379209122449,
+                    38.60569604808637,
+                    39.961876330140406,
+                    41.478461144139985,
+                    43.144382382791825,
+                    44.95071674711695,
+                    46.890200705783286,
+                    48.956869224408486,
+                    51.14578310813825,
+                    53.452821426062414,
+                    55.87452143235437,
+                    58.40795426894379,
+                    61.05062743422735,
+                    63.800407596735916,
+                    66.6554591265142,
+                    69.61419468533822,
+                    72.67523523729429,
+                    75.83737753034217,
+                    79.09956740091636,
+                    82.4608777904606,
+                    85.92049049819315,
+                    89.47768097759769,
+                    93.13180558386185,
+                    96.88229085120727,
+                    100.72862439977288,
+                    104.67034721826813,
+                    108.70704708251688,
+                    112.83835290327649,
+                    117.06392987742592,
+                    121.38347529333525,
+                    125.79671490208887,
+                    130.303399764003,
+                    134.9033034975427,
+                    139.59621987653364,
+                    144.38196072090122,
+                    149.26035404436382,
+                    154.23124242127602,
+                    159.29448154303822,
+                    164.44993893974925,
+                    169.6974928457812,
+                    175.0370311903964,
+                    180.46845069789273,
+                    185.99165608383117,
+                    191.60655933596468,
+                    197.31307906911795
+                  ]
+                }
+              }
+            },
+            {
+              "nodes": 57,
+              "arc_segments": 4,
+              "flat_segments": 8,
+              "midline_area_mm2": 385.12144515225805,
+              "families": {
+                "local": {
+                  "critical_stress_mpa": 32.12540845626473,
+                  "half_wave_number": 15,
+                  "half_wavelength_mm": 133.33333333333334,
+                  "modal_dimension": 94,
+                  "curve_mpa": [
+                    2423.945278524784,
+                    614.762231247507,
+                    279.9233027783408,
+                    162.9600895982216,
+                    109.07578183870481,
+                    80.07386953850397,
+                    62.866719367025546,
+                    51.98758041344164,
+                    44.82492674241422,
+                    40.0033845663626,
+                    36.742727611601005,
+                    34.57363478143535,
+                    33.200084065705546,
+                    32.42789223143687,
+                    32.12540845626473,
+                    32.20083037070951,
+                    32.58856852513043,
+                    33.2407577358224,
+                    34.1218092279321,
+                    35.204819670593864,
+                    36.46914762945083,
+                    37.89874313467644,
+                    39.48097442963075,
+                    41.205789791645756,
+                    43.06510944245313,
+                    45.05237815529229,
+                    47.16223184653178,
+                    49.39024616775239,
+                    51.73274486201202,
+                    54.18665220239681,
+                    56.749378309543566,
+                    59.41872924422432,
+                    62.1928359483166,
+                    65.0700976550973,
+                    68.04913649872688,
+                    71.12876086256088,
+                    74.30793559373332,
+                    77.58575765392783,
+                    80.96143610013391,
+                    84.43427553628483,
+                    88.00366236420088,
+                    91.66905330452325,
+                    95.42996576851866,
+                    99.28596974575508,
+                    103.23668094117646,
+                    107.28175494465822,
+                    111.42088225903049,
+                    115.65378404454805,
+                    119.98020846319118,
+                    124.3999275281072,
+                    128.91273437885587,
+                    133.518440918129,
+                    138.21687575542393,
+                    143.00788241266758,
+                    147.8913177541537,
+                    152.8670506088068,
+                    157.9349605584704,
+                    163.09493686909573,
+                    168.34687754601703,
+                    173.69068849682333,
+                    179.12628278789157,
+                    184.65357998291213,
+                    190.27250555259315,
+                    195.9829903473621
+                  ]
+                },
+                "distortional": {
+                  "critical_stress_mpa": 34.79439301236742,
+                  "half_wave_number": 16,
+                  "half_wavelength_mm": 125.0,
+                  "modal_dimension": 18,
+                  "curve_mpa": [
+                    358.66759486442334,
+                    153.08136340172084,
+                    157.04929879329913,
+                    146.4713523980493,
+                    112.11106731792914,
+                    85.8147937531645,
+                    68.5205429563463,
+                    57.09847918057416,
+                    49.39022854656355,
+                    44.10375978234856,
+                    40.46108007596105,
+                    37.979016236688125,
+                    36.34706003131677,
+                    35.359141453864446,
+                    34.874480621882384,
+                    34.79439301236742,
+                    35.04810283826551,
+                    35.583804900950945,
+                    36.36288237163451,
+                    37.35607301352472,
+                    38.54087129802031,
+                    39.89973363260226,
+                    41.41881445347613,
+                    43.087063301896436,
+                    44.895568411093755,
+                    46.83707400259917,
+                    48.90562046390348,
+                    51.096272590108335,
+                    53.40491286350487,
+                    55.82808159959824,
+                    58.3628531050644,
+                    61.00673821266007,
+                    63.75760724712335,
+                    66.61362850125825,
+                    69.57321883377628,
+                    72.63500366956511,
+                    75.79778441348735,
+                    79.06051170556904,
+                    82.42226336281377,
+                    85.8822261185012,
+                    89.43968034716714,
+                    93.0939872809562,
+                    96.84457824424018,
+                    100.6909455368913,
+                    104.6326346915766,
+                    108.66923787263629,
+                    112.80038821472682,
+                    117.0257549540749,
+                    121.3450392370242,
+                    125.75797048276178,
+                    130.2643032310077,
+                    134.86381439094498,
+                    139.55630084234375,
+                    144.34157733084584,
+                    149.21947461975265,
+                    154.1898378650343,
+                    159.25252517708842,
+                    164.40740634994143,
+                    169.65436173549526,
+                    174.99328123956064,
+                    180.4240634323523,
+                    185.94661474967828,
+                    191.56084878326516,
+                    197.26668564169015
+                  ]
+                }
+              }
+            },
+            {
+              "nodes": 93,
+              "arc_segments": 8,
+              "flat_segments": 12,
+              "midline_area_mm2": 385.1365484905459,
+              "families": {
+                "local": {
+                  "critical_stress_mpa": 32.138780306395816,
+                  "half_wave_number": 15,
+                  "half_wavelength_mm": 133.33333333333334,
+                  "modal_dimension": 150,
+                  "curve_mpa": [
+                    2426.352239014545,
+                    615.3687034023308,
+                    280.19627819855714,
+                    163.11625526966895,
+                    109.17778685148427,
+                    80.1463539139537,
+                    62.92129948204108,
+                    52.03043254173785,
+                    44.85962822497306,
+                    40.03214387632343,
+                    36.76697655260837,
+                    34.594337870095075,
+                    33.21791096932491,
+                    32.443319132304225,
+                    32.138780306395816,
+                    32.21240059294376,
+                    32.59852514978364,
+                    33.24924112292036,
+                    34.128924359368945,
+                    35.2106448829363,
+                    36.47374094337639,
+                    37.902146925663736,
+                    39.48321892752403,
+                    41.20689574970741,
+                    43.06509019449226,
+                    45.051241225894735,
+                    47.15998022313963,
+                    49.38687931168473,
+                    51.728259528598684,
+                    54.1810430993198,
+                    56.742638636796,
+                    59.41085113472544,
+                    62.18381083024858,
+                    65.0599165491141,
+                    68.03779026308297,
+                    71.11624039437407,
+                    74.29423199350312,
+                    77.57086235827329,
+                    80.94534099287404,
+                    84.41697303139895,
+                    87.98514547572495,
+                    91.64931569735265,
+                    95.40900179854998,
+                    99.26377448596085,
+                    103.21325019933019,
+                    107.25708527202723,
+                    111.39497095381617,
+                    115.62662914735411,
+                    119.95180874816025,
+                    124.3702824900163,
+                    128.8818442173082,
+                    133.48630651803546,
+                    138.18349866552197,
+                    142.97326482221862,
+                    147.85546246870192,
+                    152.82996102432912,
+                    157.89664063513757,
+                    163.05539110429828,
+                    168.30611094751814,
+                    173.64870655578656,
+                    179.08309145218985,
+                    184.60918563010623,
+                    190.22691496434234,
+                    195.9362106841252
+                  ]
+                },
+                "distortional": {
+                  "critical_stress_mpa": 34.76068943102106,
+                  "half_wave_number": 16,
+                  "half_wavelength_mm": 125.0,
+                  "modal_dimension": 34,
+                  "curve_mpa": [
+                    376.98224771877466,
+                    96.44596592446926,
+                    147.12508850134404,
+                    142.6829446234827,
+                    110.18742812298089,
+                    85.83723744413169,
+                    68.38083980032033,
+                    57.00507264808322,
+                    49.31373587685999,
+                    44.044857724860975,
+                    40.407598406551976,
+                    37.93232927005071,
+                    36.30489060297494,
+                    35.3202875759857,
+                    34.8384847195461,
+                    34.76068943102106,
+                    35.016293698900064,
+                    35.55363428168593,
+                    36.334096865869746,
+                    37.328490621513666,
+                    38.514336403879774,
+                    39.87411508170984,
+                    41.394006613978135,
+                    43.062971230002134,
+                    44.872110139697504,
+                    46.81417681619419,
+                    48.883217598818185,
+                    51.07430400175037,
+                    53.38332313431835,
+                    55.806819525349844,
+                    58.341871092593735,
+                    60.985991689765676,
+                    63.7370541867784,
+                    66.59322942171707,
+                    69.55293641753765,
+                    72.61480254273042,
+                    75.77763121499902,
+                    79.04037470919079,
+                    82.4021126133265,
+                    85.86203314412155,
+                    89.41941820016024,
+                    93.07363037502417,
+                    96.82410239042079,
+                    100.67032784478391,
+                    104.6118534735139,
+                    108.64827265514066,
+                    112.77921965592397,
+                    117.00436483565097,
+                    121.32341036082828,
+                    125.7360866263982,
+                    130.24214922455857,
+                    134.8413759571446,
+                    139.5335646117934,
+                    144.31853080205298,
+                    149.1961061359763,
+                    154.1661365449987,
+                    159.2284809229054,
+                    164.3830098134994,
+                    169.6296042683924,
+                    174.9681548899084,
+                    180.39856091477378,
+                    185.92072938111752,
+                    191.53457451244233,
+                    197.24001703321747
+                  ]
+                }
+              }
+            }
+          ],
+          "relative_changes": {
+            "local": 0.0004160658868695642,
+            "distortional": 0.0009695889781829518
+          },
+          "half_wave_numbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64
+          ],
+          "elapsed_seconds": 7.381049400020856,
+          "search_coverage": "all-integer-half-waves-1-through-64",
+          "error_bound_certified": false,
+          "full_member_approval": false
+        },
+        "geometry_audit": {
+          "library": {
+            "name": "sectionproperties",
+            "version": "3.10.2",
+            "license": "MIT"
+          },
+          "geometry_input_sha256": "e7382b5bc8cf4dea3f2f77a8916c856c04fbc671933d08833c225af47b666d3a",
+          "differences": {
+            "area_m2": {
+              "declared": 0.000385141,
+              "computed": 0.00038514126715899797,
+              "resolution": 1e-09,
+              "absolute_difference": 2.671589979948673e-10
+            },
+            "iy_m4": {
+              "declared": 2.4289e-06,
+              "computed": 2.4288996369661094e-06,
+              "resolution": 1e-11,
+              "absolute_difference": 3.630338907873625e-13
+            },
+            "iz_m4": {
+              "declared": 3.01227e-07,
+              "computed": 3.0122666859149374e-07,
+              "resolution": 1e-12,
+              "absolute_difference": 3.31408506238799e-13
+            },
+            "wy_m3": {
+              "declared": 2.4289e-05,
+              "computed": 2.4288996369660933e-05,
+              "resolution": 1e-10,
+              "absolute_difference": 3.630339067962852e-12
+            },
+            "wz_m3": {
+              "declared": 5.69739e-06,
+              "computed": 5.6973910749848565e-06,
+              "resolution": 1e-11,
+              "absolute_difference": 1.0749848565152391e-12
+            },
+            "j_m4": {
+              "declared": 1.28302e-10,
+              "computed": 1.2830212312191725e-10,
+              "resolution": 1e-15,
+              "absolute_difference": 1.2312191724567318e-16
+            }
+          },
+          "refinement": {
+            "status": "observed",
+            "relativeChanges": {
+              "jMm4": 0.00028487854988320735,
+              "warpingMm6": 3.491614051413239e-09,
+              "shearCenterYMm": 4.75872781180442e-10,
+              "shearCenterZMm": 2.393363018882155e-10
+            },
+            "target": 0.001,
+            "boundaryArcPoints": 64,
+            "errorBoundCertified": false
+          },
+          "computed_properties": {
+            "area_m2": 0.00038514126715899797,
+            "iy_m4": 2.4288996369661094e-06,
+            "iz_m4": 3.0122666859149374e-07,
+            "wy_m3": 2.4288996369660933e-05,
+            "wz_m3": 5.6973910749848565e-06,
+            "j_m4": 1.2830212312191725e-10
+          },
+          "note": "Gross section computed, effective properties and elastic critical mode classification are separate."
+        }
+      }
+    },
+    {
+      "load_n": 200000.0,
+      "solver_input": {
+        "schema_version": "jpn.mixed3d/1",
+        "units": "SI",
+        "theory": "linear-elastic-frame-axial",
+        "project": {
+          "id": "AUTO-CFSM-COLUMN",
+          "revision": "1",
+          "source": "Explicit synthetic guided-column control; not a commercial roof or approved connection"
+        },
+        "nodes": [
+          {
+            "id": "A",
+            "x_m": 0,
+            "y_m": 0,
+            "z_m": 0
+          },
+          {
+            "id": "B",
+            "x_m": 0,
+            "y_m": 0,
+            "z_m": 2
+          },
+          {
+            "id": "D",
+            "x_m": 2,
+            "y_m": 0,
+            "z_m": 0
+          }
+        ],
+        "materials": [
+          {
+            "id": "M",
+            "e_pa": 200000000000.0,
+            "g_pa": 76923076923.07692,
+            "nu": 0.3,
+            "source": "Explicit synthetic guided-column control; not a commercial roof or approved connection",
+            "revision": "1"
+          }
+        ],
+        "sections": [
+          {
+            "id": "S",
+            "area_m2": 0.01,
+            "iy_m4": 1e-05,
+            "iz_m4": 1e-05,
+            "j_m4": 1e-05,
+            "source": "Synthetic unloaded cantilever only",
+            "revision": "1"
+          }
+        ],
+        "members": [
+          {
+            "id": "FRAME",
+            "kind": "frame",
+            "start": "A",
+            "end": "D",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "COLUMN",
+            "kind": "axial",
+            "start": "A",
+            "end": "B",
+            "e_pa": 200000000000.0,
+            "area_m2": 0.000385141,
+            "source": "Explicit synthetic guided-column control; not a commercial roof or approved connection",
+            "revision": "1"
+          }
+        ],
+        "supports": [
+          {
+            "node": "A",
+            "restrained": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ]
+          },
+          {
+            "node": "B",
+            "restrained": [
+              true,
+              true,
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        ],
+        "cases": [
+          {
+            "id": "P",
+            "source": "Explicit synthetic guided-column control; not a commercial roof or approved connection"
+          }
+        ],
+        "combinations": [
+          {
+            "id": "ULS-CONTROL",
+            "factors": {
+              "P": 1
+            }
+          }
+        ],
+        "nodal_loads": [
+          {
+            "node": "B",
+            "case": "P",
+            "fx_n": 0,
+            "fy_n": 0,
+            "fz_n": -200000.0,
+            "mx_nm": 0,
+            "my_nm": 0,
+            "mz_nm": 0
+          }
+        ]
+      },
+      "solver_result": {
+        "schema_version": "jpn.mixed3d-result/1",
+        "status": "analysis_completed_experimental",
+        "units": "SI",
+        "project": {
+          "id": "AUTO-CFSM-COLUMN",
+          "revision": "1",
+          "source": "Explicit synthetic guided-column control; not a commercial roof or approved connection"
+        },
+        "input_sha256": "a5993dc4f67e70c57b08de996f0f5b1bb2b57b3475a2b0609b7d62b04705a2ba",
+        "solver": {
+          "name": "PyNiteFEA",
+          "version": "3.2.1",
+          "adapter": "jpn-mixed3d/1"
+        },
+        "assumptions": [
+          "Primeira ordem, p\u00f3rtico Euler-Bernoulli e mola axial bilateral EA/L.",
+          "Rota\u00e7\u00e3o inativa em n\u00f3s apenas axiais \u00e9 eliminada matematicamente, n\u00e3o representa apoio.",
+          "Sem peso pr\u00f3prio, vento, flambagem, resist\u00eancia normativa ou libera\u00e7\u00e3o para fabrica\u00e7\u00e3o."
+        ],
+        "diagnostics": {
+          "free_dofs": 7,
+          "scaled_condition": 13.928203230275516,
+          "elapsed_seconds": 0.004316799982916564
+        },
+        "combinations": {
+          "ULS-CONTROL": {
+            "nodes": {
+              "A": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  200000.0
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "active_rotations": true
+              },
+              "B": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  -0.005192903378243293
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "active_rotations": false
+              },
+              "D": {
+                "translation_m": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "rotation_rad": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_force_n": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "reaction_moment_nm": [
+                  0.0,
+                  0.0,
+                  0.0
+                ],
+                "active_rotations": true
+              }
+            },
+            "members": {
+              "COLUMN": {
+                "kind": "axial",
+                "axial_n": -200000.0,
+                "length_m": 2.0,
+                "extension_m": -0.005192903378243293
+              },
+              "FRAME": {
+                "kind": "frame",
+                "length_m": 2.0,
+                "end_actions_local": [
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0,
+                  0.0
+                ]
+              }
+            },
+            "equilibrium": {
+              "force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "relative_residual": 0.0
+            }
+          }
+        }
+      },
+      "design_input": {
+        "schema_version": "jpn.verified-coldformed/1",
+        "geometry_analysis": {
+          "schema_version": "jpn.section-analysis/1",
+          "units": "mm",
+          "geometry": {
+            "shape": "u-stiffened",
+            "height": 200,
+            "width": 75,
+            "lip": 20,
+            "wallThickness": 1,
+            "insideRadius": 0
+          },
+          "poisson": 0.3,
+          "source": "Explicit synthetic sharp-inner-corner Ue; not a commercial product",
+          "revision": "CFSM-1",
+          "responsible": "Independent numerical control",
+          "convergence": 0.001
+        },
+        "solver_j_m4": 1.28302e-10,
+        "property_resolutions": {
+          "area_m2": 1e-09,
+          "iy_m4": 1e-11,
+          "iz_m4": 1e-12,
+          "wy_m3": 1e-10,
+          "wz_m3": 1e-11,
+          "j_m4": 1e-15
+        },
+        "design": {
+          "schema_version": "jpn.coldformed-design/1",
+          "units": "SI",
+          "piece_id": "COLUMN",
+          "combination_id": "ULS-CONTROL",
+          "binding": {
+            "mechanical_sha256": "b82f0cf305e2474d91d4b01b7dcb9fd125bc429bad1b8d0206c1b858e6bb2eab",
+            "analysis_input_sha256": "a5993dc4f67e70c57b08de996f0f5b1bb2b57b3475a2b0609b7d62b04705a2ba",
+            "analysis_result_sha256": "d92d47148c971618b28cb39ab31d372b71d74c75649322522178e038b152e17e"
+          },
+          "section": {
+            "family": "cold-formed",
+            "shape": "u-stiffened",
+            "area_m2": 0.000385141,
+            "iy_m4": 2.4289e-06,
+            "iz_m4": 3.01227e-07,
+            "wy_m3": 2.4289e-05,
+            "wz_m3": 5.69739e-06,
+            "fy_pa": 250000000.0,
+            "fu_pa": 400000000.0,
+            "e_pa": 200000000000.0,
+            "effective_length_y_m": 2,
+            "effective_length_z_m": 2,
+            "source": "Synthetic analytical beam/tie; not a commercial profile or building",
+            "revision": "1"
+          },
+          "study": {
+            "source": "Explicit S-S fork supports, free warping, end restraints only, uniform axial compression",
+            "revision": "CFSM-1",
+            "responsible": "Independent control",
+            "basis_sha256": "b82f0cf305e2474d91d4b01b7dcb9fd125bc429bad1b8d0206c1b858e6bb2eab",
+            "boundary_and_load_pattern": "Synthetic elastic member, 2 m physical span, no intermediate connections; no inferred supports",
+            "minimum_search": "computed-cfsm-ss"
+          },
+          "critical": {
+            "compression": null,
+            "my_positive": null,
+            "my_negative": null,
+            "mz_positive": null,
+            "mz_negative": null
+          },
+          "tension": null,
+          "web": {
+            "flat_height_m": 0.198,
+            "thickness_m": 0.001,
+            "unstiffened_single_web": true
+          },
+          "fields": [
+            {
+              "segment_id": "COLUMN",
+              "offset_m": 0,
+              "length_m": 2,
+              "forces": {
+                "nN": [
+                  -200000.0
+                ],
+                "vyN": null,
+                "vzN": null,
+                "tNm": null,
+                "myNm": null,
+                "mzNm": null
+              }
+            }
+          ]
+        },
+        "stability_model": {
+          "boundary": "fork-fork-free-warping",
+          "load_pattern": "uniform-compression",
+          "intermediate_restraints": "none",
+          "length_m": 2,
+          "half_waves_max": 64,
+          "target": 0.001
+        }
+      },
+      "independent": {
+        "axial_n": -200000.0,
+        "tip_z_m": -0.005192903378243293,
+        "reaction_z_n": 200000.0
+      },
+      "design_result": {
+        "schema_version": "jpn.coldformed-design-result/2",
+        "units": "SI",
+        "input_sha256": "7257b7c4889fc7b41c3d6ff081102b282b288f08ddaa2e05c1d698691c3d0276",
+        "binding": {
+          "mechanical_sha256": "b82f0cf305e2474d91d4b01b7dcb9fd125bc429bad1b8d0206c1b858e6bb2eab",
+          "analysis_input_sha256": "a5993dc4f67e70c57b08de996f0f5b1bb2b57b3475a2b0609b7d62b04705a2ba",
+          "analysis_result_sha256": "d92d47148c971618b28cb39ab31d372b71d74c75649322522178e038b152e17e"
+        },
+        "piece_id": "COLUMN",
+        "combination_id": "ULS-CONTROL",
+        "standard": "ABNT NBR 14762:2010",
+        "evaluator_version": "jpn.nbr14762-mrd/2",
+        "capacities": {
+          "compression": {
+            "characteristic": 27218.995947583535,
+            "design": 22682.49662298628,
+            "gamma": 1.2,
+            "modes": {
+              "global_": 67892.72252271678,
+              "local": 31758.34762110271,
+              "distortional": 27218.995947583535
+            },
+            "slenderness": {
+              "global_": 0.9136492613680196,
+              "local": 2.341999992090418,
+              "distortional": 2.6817964625753303
+            },
+            "governing_mode": "distortional",
+            "clauses": [
+              "C.1",
+              "C.2",
+              "C.3.1",
+              "C.3.2",
+              "C.3.3"
+            ]
+          },
+          "shear_z": {
+            "design": 4155.1882460973375,
+            "characteristic": 4570.707070707072,
+            "gamma": 1.1,
+            "slenderness": 198.0,
+            "branch": "elastic-buckling",
+            "kv": 5.0,
+            "clauses": [
+              "9.8.3"
+            ]
+          }
+        },
+        "checks": [
+          {
+            "id": "compression",
+            "status": "FAIL",
+            "demand": 200000.0,
+            "resistance": 22682.49662298628,
+            "utilization": 8.81737153207912,
+            "governing": {
+              "segment_id": "COLUMN",
+              "position_m": 0.0,
+              "segment_position_m": 0.0,
+              "combination_id": "ULS-CONTROL",
+              "forces": {
+                "nN": -200000.0,
+                "vyN": null,
+                "vzN": null,
+                "tNm": null,
+                "myNm": null,
+                "mzNm": null
+              }
+            },
+            "clauses": [
+              "C.1",
+              "C.2",
+              "C.3.1",
+              "C.3.2",
+              "C.3.3"
+            ],
+            "conditional_dependencies": [
+              "cFSM eigenvalues were computed in explicit modal spaces and a finite half-wave domain; completeness beyond that domain and complete physical-mode applicability are not certified."
+            ]
+          },
+          {
+            "id": "compression-slenderness",
+            "status": "PASS",
+            "demand": 71.51436944836223,
+            "resistance": 200.0,
+            "utilization": 0.3575718472418112,
+            "governing": null,
+            "clauses": [
+              "9.7.4"
+            ],
+            "conditional_dependencies": []
+          }
+        ],
+        "status": "FAIL",
+        "member_all_limit_states_verified": false,
+        "computed_structural_approval": false,
+        "approved_for_fabrication": false,
+        "remaining": [
+          "Connections/net-section provenance and load introduction/web crippling are not fully verified.",
+          "Complete normative action/combination and global stability validation remain separate.",
+          "C.5 effective inertia is not substituted silently into the gross-section displacement field."
+        ],
+        "calculation_input_sha256": "93225dcd807315280bb10f0cd1d2dab9b782410e7114b4d856953d84cba8738b",
+        "connection_audit": {
+          "status": "conditional-unverified",
+          "input_sha256": null,
+          "connection_ids": [],
+          "hole_count": 0,
+          "warning": "Known contradictions checked; this inventory does not prove absence of cutouts, weld coverage of every section element or governing net paths/Ct. Tension stays conditional."
+        },
+        "buckling_audit": {
+          "schema_version": "jpn.computed-member-buckling/1",
+          "method": "NBR14762-global-and-constrained-FSM",
+          "library": {
+            "pycufsm": "0.2.0",
+            "numpy": "2.3.3",
+            "scipy": "1.15.3",
+            "license": "AFL-3.0"
+          },
+          "model": {
+            "boundary": "fork-fork-free-warping",
+            "load_pattern": "uniform-compression",
+            "intermediate_restraints": "none",
+            "length_m": 2,
+            "half_waves_max": 64,
+            "target": 0.001
+          },
+          "model_sha256": "14b5078e34b97e99e2ce06c3c5ab6872625f885efe4d5cba88e887046bcbda40",
+          "global_result": {
+            "global_n": 115345.60431185535,
+            "flexure_y_n": 1198613.9273402528,
+            "flexure_z_n": 148649.4027028046,
+            "torsion_n": 119059.36209605109,
+            "flexural_torsional_n": 115345.60431185535,
+            "r0_squared_m2": 0.010161114843694195,
+            "clauses": [
+              "9.7.2.1(a-c)",
+              "9.7.2.2"
+            ],
+            "axes": "NBR x,y = JPN section local y,z"
+          },
+          "compression_critical_n": {
+            "global": 115345.60431185535,
+            "local": 12377.970572149934,
+            "distortional": 13387.77597478384
+          },
+          "refinements": [
+            {
+              "nodes": 39,
+              "arc_segments": 2,
+              "flat_segments": 6,
+              "midline_area_mm2": 385.0614674589208,
+              "families": {
+                "local": {
+                  "critical_stress_mpa": 32.10211132051012,
+                  "half_wave_number": 15,
+                  "half_wavelength_mm": 133.33333333333334,
+                  "modal_dimension": 66,
+                  "curve_mpa": [
+                    2419.4494604005295,
+                    613.629231525371,
+                    279.4132312032105,
+                    162.66825946540308,
+                    108.8852027734863,
+                    79.93854035644719,
+                    62.764961938189266,
+                    51.90787577356548,
+                    44.760608394393785,
+                    39.9503409038043,
+                    36.69829568088223,
+                    34.536022316891135,
+                    33.168047260429645,
+                    32.40054631613099,
+                    32.10211132051012,
+                    32.1811083429775,
+                    32.572067487419645,
+                    33.22721002271635,
+                    34.11101065212235,
+                    35.19661323575819,
+                    36.46341176017803,
+                    37.895383031158694,
+                    39.4799156209948,
+                    41.20697327144239,
+                    43.06848795749382,
+                    45.05791335050914,
+                    47.16989205279987,
+                    49.40000467988288,
+                    51.744578593856026,
+                    54.20054063629187,
+                    56.76530267596091,
+                    59.43667188306298,
+                    62.21277981556293,
+                    65.09202594482501,
+                    68.07303235755593,
+                    71.15460717801972,
+                    74.33571484271694,
+                    77.61545179814878,
+                    80.993026519498,
+                    84.46774299230583,
+                    88.03898698724275,
+                    91.70621459950597,
+                    95.46894263411907,
+                    99.32674050495329,
+                    103.27922337916102,
+                    107.32604635209269,
+                    111.46689947909988,
+                    115.70150352194405,
+                    120.02960629392086,
+                    124.45097950908928,
+                    128.9654160569006,
+                    133.5727276371589,
+                    138.2727427021895,
+                    143.06530465994965,
+                    147.95027030182416,
+                    152.9275084223471,
+                    157.99689860484096,
+                    163.15833015000257,
+                    168.41170112869605,
+                    173.75691754224226,
+                    179.19389257652776,
+                    184.72254593807062,
+                    190.34280326157003,
+                    196.05459558055458
+                  ]
+                },
+                "distortional": {
+                  "critical_stress_mpa": 34.87692974879699,
+                  "half_wave_number": 16,
+                  "half_wavelength_mm": 125.0,
+                  "modal_dimension": 10,
+                  "curve_mpa": [
+                    362.3214262313079,
+                    152.21449360632974,
+                    157.25767795440376,
+                    146.92260137958513,
+                    112.48908416055794,
+                    86.10900409632723,
+                    68.7524923534034,
+                    57.28738689786961,
+                    49.5492387776398,
+                    44.2414154726003,
+                    40.58304917430529,
+                    38.08914328350045,
+                    36.447998462990476,
+                    35.452749596685734,
+                    34.96207807660109,
+                    34.87692974879699,
+                    35.12627295252966,
+                    35.658125442259696,
+                    36.433747458065916,
+                    37.42379209122449,
+                    38.60569604808637,
+                    39.961876330140406,
+                    41.478461144139985,
+                    43.144382382791825,
+                    44.95071674711695,
+                    46.890200705783286,
+                    48.956869224408486,
+                    51.14578310813825,
+                    53.452821426062414,
+                    55.87452143235437,
+                    58.40795426894379,
+                    61.05062743422735,
+                    63.800407596735916,
+                    66.6554591265142,
+                    69.61419468533822,
+                    72.67523523729429,
+                    75.83737753034217,
+                    79.09956740091636,
+                    82.4608777904606,
+                    85.92049049819315,
+                    89.47768097759769,
+                    93.13180558386185,
+                    96.88229085120727,
+                    100.72862439977288,
+                    104.67034721826813,
+                    108.70704708251688,
+                    112.83835290327649,
+                    117.06392987742592,
+                    121.38347529333525,
+                    125.79671490208887,
+                    130.303399764003,
+                    134.9033034975427,
+                    139.59621987653364,
+                    144.38196072090122,
+                    149.26035404436382,
+                    154.23124242127602,
+                    159.29448154303822,
+                    164.44993893974925,
+                    169.6974928457812,
+                    175.0370311903964,
+                    180.46845069789273,
+                    185.99165608383117,
+                    191.60655933596468,
+                    197.31307906911795
+                  ]
+                }
+              }
+            },
+            {
+              "nodes": 57,
+              "arc_segments": 4,
+              "flat_segments": 8,
+              "midline_area_mm2": 385.12144515225805,
+              "families": {
+                "local": {
+                  "critical_stress_mpa": 32.12540845626473,
+                  "half_wave_number": 15,
+                  "half_wavelength_mm": 133.33333333333334,
+                  "modal_dimension": 94,
+                  "curve_mpa": [
+                    2423.945278524784,
+                    614.762231247507,
+                    279.9233027783408,
+                    162.9600895982216,
+                    109.07578183870481,
+                    80.07386953850397,
+                    62.866719367025546,
+                    51.98758041344164,
+                    44.82492674241422,
+                    40.0033845663626,
+                    36.742727611601005,
+                    34.57363478143535,
+                    33.200084065705546,
+                    32.42789223143687,
+                    32.12540845626473,
+                    32.20083037070951,
+                    32.58856852513043,
+                    33.2407577358224,
+                    34.1218092279321,
+                    35.204819670593864,
+                    36.46914762945083,
+                    37.89874313467644,
+                    39.48097442963075,
+                    41.205789791645756,
+                    43.06510944245313,
+                    45.05237815529229,
+                    47.16223184653178,
+                    49.39024616775239,
+                    51.73274486201202,
+                    54.18665220239681,
+                    56.749378309543566,
+                    59.41872924422432,
+                    62.1928359483166,
+                    65.0700976550973,
+                    68.04913649872688,
+                    71.12876086256088,
+                    74.30793559373332,
+                    77.58575765392783,
+                    80.96143610013391,
+                    84.43427553628483,
+                    88.00366236420088,
+                    91.66905330452325,
+                    95.42996576851866,
+                    99.28596974575508,
+                    103.23668094117646,
+                    107.28175494465822,
+                    111.42088225903049,
+                    115.65378404454805,
+                    119.98020846319118,
+                    124.3999275281072,
+                    128.91273437885587,
+                    133.518440918129,
+                    138.21687575542393,
+                    143.00788241266758,
+                    147.8913177541537,
+                    152.8670506088068,
+                    157.9349605584704,
+                    163.09493686909573,
+                    168.34687754601703,
+                    173.69068849682333,
+                    179.12628278789157,
+                    184.65357998291213,
+                    190.27250555259315,
+                    195.9829903473621
+                  ]
+                },
+                "distortional": {
+                  "critical_stress_mpa": 34.79439301236742,
+                  "half_wave_number": 16,
+                  "half_wavelength_mm": 125.0,
+                  "modal_dimension": 18,
+                  "curve_mpa": [
+                    358.66759486442334,
+                    153.08136340172084,
+                    157.04929879329913,
+                    146.4713523980493,
+                    112.11106731792914,
+                    85.8147937531645,
+                    68.5205429563463,
+                    57.09847918057416,
+                    49.39022854656355,
+                    44.10375978234856,
+                    40.46108007596105,
+                    37.979016236688125,
+                    36.34706003131677,
+                    35.359141453864446,
+                    34.874480621882384,
+                    34.79439301236742,
+                    35.04810283826551,
+                    35.583804900950945,
+                    36.36288237163451,
+                    37.35607301352472,
+                    38.54087129802031,
+                    39.89973363260226,
+                    41.41881445347613,
+                    43.087063301896436,
+                    44.895568411093755,
+                    46.83707400259917,
+                    48.90562046390348,
+                    51.096272590108335,
+                    53.40491286350487,
+                    55.82808159959824,
+                    58.3628531050644,
+                    61.00673821266007,
+                    63.75760724712335,
+                    66.61362850125825,
+                    69.57321883377628,
+                    72.63500366956511,
+                    75.79778441348735,
+                    79.06051170556904,
+                    82.42226336281377,
+                    85.8822261185012,
+                    89.43968034716714,
+                    93.0939872809562,
+                    96.84457824424018,
+                    100.6909455368913,
+                    104.6326346915766,
+                    108.66923787263629,
+                    112.80038821472682,
+                    117.0257549540749,
+                    121.3450392370242,
+                    125.75797048276178,
+                    130.2643032310077,
+                    134.86381439094498,
+                    139.55630084234375,
+                    144.34157733084584,
+                    149.21947461975265,
+                    154.1898378650343,
+                    159.25252517708842,
+                    164.40740634994143,
+                    169.65436173549526,
+                    174.99328123956064,
+                    180.4240634323523,
+                    185.94661474967828,
+                    191.56084878326516,
+                    197.26668564169015
+                  ]
+                }
+              }
+            },
+            {
+              "nodes": 93,
+              "arc_segments": 8,
+              "flat_segments": 12,
+              "midline_area_mm2": 385.1365484905459,
+              "families": {
+                "local": {
+                  "critical_stress_mpa": 32.138780306395816,
+                  "half_wave_number": 15,
+                  "half_wavelength_mm": 133.33333333333334,
+                  "modal_dimension": 150,
+                  "curve_mpa": [
+                    2426.352239014545,
+                    615.3687034023308,
+                    280.19627819855714,
+                    163.11625526966895,
+                    109.17778685148427,
+                    80.1463539139537,
+                    62.92129948204108,
+                    52.03043254173785,
+                    44.85962822497306,
+                    40.03214387632343,
+                    36.76697655260837,
+                    34.594337870095075,
+                    33.21791096932491,
+                    32.443319132304225,
+                    32.138780306395816,
+                    32.21240059294376,
+                    32.59852514978364,
+                    33.24924112292036,
+                    34.128924359368945,
+                    35.2106448829363,
+                    36.47374094337639,
+                    37.902146925663736,
+                    39.48321892752403,
+                    41.20689574970741,
+                    43.06509019449226,
+                    45.051241225894735,
+                    47.15998022313963,
+                    49.38687931168473,
+                    51.728259528598684,
+                    54.1810430993198,
+                    56.742638636796,
+                    59.41085113472544,
+                    62.18381083024858,
+                    65.0599165491141,
+                    68.03779026308297,
+                    71.11624039437407,
+                    74.29423199350312,
+                    77.57086235827329,
+                    80.94534099287404,
+                    84.41697303139895,
+                    87.98514547572495,
+                    91.64931569735265,
+                    95.40900179854998,
+                    99.26377448596085,
+                    103.21325019933019,
+                    107.25708527202723,
+                    111.39497095381617,
+                    115.62662914735411,
+                    119.95180874816025,
+                    124.3702824900163,
+                    128.8818442173082,
+                    133.48630651803546,
+                    138.18349866552197,
+                    142.97326482221862,
+                    147.85546246870192,
+                    152.82996102432912,
+                    157.89664063513757,
+                    163.05539110429828,
+                    168.30611094751814,
+                    173.64870655578656,
+                    179.08309145218985,
+                    184.60918563010623,
+                    190.22691496434234,
+                    195.9362106841252
+                  ]
+                },
+                "distortional": {
+                  "critical_stress_mpa": 34.76068943102106,
+                  "half_wave_number": 16,
+                  "half_wavelength_mm": 125.0,
+                  "modal_dimension": 34,
+                  "curve_mpa": [
+                    376.98224771877466,
+                    96.44596592446926,
+                    147.12508850134404,
+                    142.6829446234827,
+                    110.18742812298089,
+                    85.83723744413169,
+                    68.38083980032033,
+                    57.00507264808322,
+                    49.31373587685999,
+                    44.044857724860975,
+                    40.407598406551976,
+                    37.93232927005071,
+                    36.30489060297494,
+                    35.3202875759857,
+                    34.8384847195461,
+                    34.76068943102106,
+                    35.016293698900064,
+                    35.55363428168593,
+                    36.334096865869746,
+                    37.328490621513666,
+                    38.514336403879774,
+                    39.87411508170984,
+                    41.394006613978135,
+                    43.062971230002134,
+                    44.872110139697504,
+                    46.81417681619419,
+                    48.883217598818185,
+                    51.07430400175037,
+                    53.38332313431835,
+                    55.806819525349844,
+                    58.341871092593735,
+                    60.985991689765676,
+                    63.7370541867784,
+                    66.59322942171707,
+                    69.55293641753765,
+                    72.61480254273042,
+                    75.77763121499902,
+                    79.04037470919079,
+                    82.4021126133265,
+                    85.86203314412155,
+                    89.41941820016024,
+                    93.07363037502417,
+                    96.82410239042079,
+                    100.67032784478391,
+                    104.6118534735139,
+                    108.64827265514066,
+                    112.77921965592397,
+                    117.00436483565097,
+                    121.32341036082828,
+                    125.7360866263982,
+                    130.24214922455857,
+                    134.8413759571446,
+                    139.5335646117934,
+                    144.31853080205298,
+                    149.1961061359763,
+                    154.1661365449987,
+                    159.2284809229054,
+                    164.3830098134994,
+                    169.6296042683924,
+                    174.9681548899084,
+                    180.39856091477378,
+                    185.92072938111752,
+                    191.53457451244233,
+                    197.24001703321747
+                  ]
+                }
+              }
+            }
+          ],
+          "relative_changes": {
+            "local": 0.0004160658868695642,
+            "distortional": 0.0009695889781829518
+          },
+          "half_wave_numbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26,
+            27,
+            28,
+            29,
+            30,
+            31,
+            32,
+            33,
+            34,
+            35,
+            36,
+            37,
+            38,
+            39,
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64
+          ],
+          "elapsed_seconds": 7.2571119999629445,
+          "search_coverage": "all-integer-half-waves-1-through-64",
+          "error_bound_certified": false,
+          "full_member_approval": false
+        },
+        "geometry_audit": {
+          "library": {
+            "name": "sectionproperties",
+            "version": "3.10.2",
+            "license": "MIT"
+          },
+          "geometry_input_sha256": "e7382b5bc8cf4dea3f2f77a8916c856c04fbc671933d08833c225af47b666d3a",
+          "differences": {
+            "area_m2": {
+              "declared": 0.000385141,
+              "computed": 0.00038514126715899797,
+              "resolution": 1e-09,
+              "absolute_difference": 2.671589979948673e-10
+            },
+            "iy_m4": {
+              "declared": 2.4289e-06,
+              "computed": 2.4288996369661094e-06,
+              "resolution": 1e-11,
+              "absolute_difference": 3.630338907873625e-13
+            },
+            "iz_m4": {
+              "declared": 3.01227e-07,
+              "computed": 3.0122666859149374e-07,
+              "resolution": 1e-12,
+              "absolute_difference": 3.31408506238799e-13
+            },
+            "wy_m3": {
+              "declared": 2.4289e-05,
+              "computed": 2.4288996369660933e-05,
+              "resolution": 1e-10,
+              "absolute_difference": 3.630339067962852e-12
+            },
+            "wz_m3": {
+              "declared": 5.69739e-06,
+              "computed": 5.6973910749848565e-06,
+              "resolution": 1e-11,
+              "absolute_difference": 1.0749848565152391e-12
+            },
+            "j_m4": {
+              "declared": 1.28302e-10,
+              "computed": 1.2830212312191725e-10,
+              "resolution": 1e-15,
+              "absolute_difference": 1.2312191724567318e-16
+            }
+          },
+          "refinement": {
+            "status": "observed",
+            "relativeChanges": {
+              "jMm4": 0.00028487854988320735,
+              "warpingMm6": 3.491614051413239e-09,
+              "shearCenterYMm": 4.75872781180442e-10,
+              "shearCenterZMm": 2.393363018882155e-10
+            },
+            "target": 0.001,
+            "boundaryArcPoints": 64,
+            "errorBoundCertified": false
+          },
+          "computed_properties": {
+            "area_m2": 0.00038514126715899797,
+            "iy_m4": 2.4288996369661094e-06,
+            "iz_m4": 3.0122666859149374e-07,
+            "wy_m3": 2.4288996369660933e-05,
+            "wz_m3": 5.6973910749848565e-06,
+            "j_m4": 1.2830212312191725e-10
+          },
+          "note": "Gross section computed, effective properties and elastic critical mode classification are separate."
+        }
+      }
+    }
+  ]
+}

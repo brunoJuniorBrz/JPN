@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree
+
+
+ Test Files  4 passed (4)
+      Tests  17 passed (17)
+   Start at  20:55:38
+   Duration  14.23s (tests 97%, import 2%, transform 1%)
+

@@ -5,6 +5,7 @@ import { jointActionTraceSchema, type JointActionTrace } from "@/domain/member-e
 import { stabilityFailureExplanation } from "@/domain/connection-declaration";
 import { ResistanceReportPanel } from "./resistance-report-panel";
 import { buildResistanceReport, assertResistanceReportCurrent, type ResistanceReport } from "@/domain/resistance-report";
+import { buildResistanceAssessment,type MemberExecution } from "@/domain/resistance-assessment";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
@@ -26,7 +27,7 @@ import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { Structure3D } from "./structure-3d";
 
 type Prepared = Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>>;
-type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; jointActions: JointActionTrace | null };
+type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; jointActions: JointActionTrace | null;designExecutions?:MemberExecution[] };
 const show = (v: number) => v === 0 ? "0" : v.toExponential(5);
 export function MixedAnalysisWorkspace({ project, onChange }: { project: Project; onChange: (patch: Partial<Project>) => void }) {
   const [example, setExample] = useState<Project | null>(null), [pane, setPane] = useState("prepare");
@@ -109,6 +110,14 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
     finally { clearTimeout(timeout); if (ticket.current.value === mine) setBusyIdentity(null); }
   }
   function exportJSON(value: unknown, name: string) { downloadText(JSON.stringify(value, null, 2), name); }
+  async function exportResistance(){
+    if(!current?.resistance)return;const mine=ticket.current.value;
+    try{
+      await assertResistanceReportCurrent(current.resistance,active,current.prepared,current.result,current.jointActions??undefined);
+      const assessment=await buildResistanceAssessment(active,current.resistance,current.designExecutions??[]);
+      if(ticket.current.value===mine)exportJSON(assessment,"jpn-relatorio-resistente-preliminar.json");
+    }catch(e){if(ticket.current.value===mine)setError((e as Error).message);}
+  }
   return <section aria-label="Análise Estrutural Experimental" data-testid="mixed-workspace" className="mixed-workspace">
     <h3>Análise Estrutural Experimental</h3>
     <p>Primeira ordem e elasticidade linear. Peso próprio somente quando ativado com densidades e gravidade declaradas. Sem dimensionamento resistente ou autorização para fabricar.</p>
@@ -157,7 +166,7 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
         <p>Equilíbrio global: resíduo relativo {show(result.equilibrium.relative_residual)}; forças XYZ (N) {result.equilibrium.force_n.map(show).join("; ")}; momentos XYZ (N·m) {result.equilibrium.moment_nm.map(show).join("; ")}. O motor também verifica equilíbrio nodal antes de publicar.</p>
         <p>{current.result.diagnostics.free_dofs} graus livres · condição escalada {show(current.result.diagnostics.scaled_condition)} · {show(current.result.diagnostics.elapsed_seconds)} s.</p>
         {current.resistanceError && <p role="alert" data-testid="resistance-blocked">Relatório resistente bloqueado: {current.resistanceError}</p>}
-        {current.resistance && <ResistanceReportPanel project={active} onChange={edit} report={current.resistance} selectedPiece={selectedPiece} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setNodeId("");}} onExport={()=>{const mine=ticket.current.value;void assertResistanceReportCurrent(current.resistance!,active,current.prepared,current.result,current.jointActions??undefined).then(()=>{if(ticket.current.value===mine)exportJSON(current.resistance,"jpn-relatorio-resistente-preliminar.json");}).catch(e=>{if(ticket.current.value===mine)setError((e as Error).message);});}}/>}
+        {current.resistance && <ResistanceReportPanel project={active} onChange={edit} report={current.resistance} executions={current.designExecutions??[]} onComputed={r=>setSession(previous=>previous?.identity===identity?{...previous,designExecutions:[...(previous.designExecutions??[]).filter(x=>x.result.piece_id!==r.result.piece_id||x.result.combination_id!==r.result.combination_id),r]}:previous)} selectedPiece={selectedPiece} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setNodeId("");}} onExport={()=>void exportResistance()}/>}
         <details><summary>Hipóteses e limites do cálculo</summary><ul>{current.result.assumptions.map(a => <li key={a}>{a}</li>)}</ul><p>Geometria original preservada. Deformada gráfica ainda não implementada. Juntas esféricas nas duas extremidades de pórticos e contatos independentes permanecem recusados.</p></details>
         <div className="actions"><button className="button secondary" onClick={() => exportJSON(current.prepared, "jpn-misto-entradas-rastreabilidade.json")}>Exportar entradas mistas</button><button className="button secondary" onClick={() => exportJSON({ prepared: current.prepared, result: current.result, execution: current.execution }, "jpn-misto-resultados-rastreabilidade.json")}>Exportar resultados mistos</button></div>
       </div>}

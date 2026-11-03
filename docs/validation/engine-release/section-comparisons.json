@@ -1,0 +1,438 @@
+[
+  {
+    "input": {
+      "schema_version": "jpn.section-analysis/1",
+      "units": "mm",
+      "geometry": {
+        "shape": "rectangle",
+        "height": 40,
+        "width": 20
+      },
+      "poisson": 0.3,
+      "source": "Synthetic physical test dimensions; not a commercial section",
+      "revision": "1",
+      "responsible": "Independent numerical validation",
+      "convergence": 0.001
+    },
+    "result": {
+      "schema_version": "jpn.section-analysis-result/1",
+      "units": "mm",
+      "input_sha256": "92b938f0834ed6fdb01a73adc6b8bb1d733020319918767840efc48553c8cc6e",
+      "source": {
+        "source": "Synthetic physical test dimensions; not a commercial section",
+        "revision": "1",
+        "responsible": "Independent numerical validation"
+      },
+      "library": {
+        "name": "sectionproperties",
+        "version": "3.10.2",
+        "license": "MIT"
+      },
+      "axes": "library x,y \u2192 JPN local y,z; bottom-left section origin",
+      "properties": {
+        "areaMm2": 800.0000000000003,
+        "centroidYMm": 9.999999999999996,
+        "centroidZMm": 19.99999999999999,
+        "iyMm4": 106666.6666666668,
+        "izMm4": 26666.666666666686,
+        "iyzMm4": 5.820766091346741e-11,
+        "jMm4": 73194.37270908599,
+        "warpingMm6": 1300725.4471464527,
+        "shearCenterYMm": 9.999935119340561,
+        "shearCenterZMm": 20.0001797909103,
+        "wyPositiveMm3": 5333.333333333338,
+        "wyNegativeMm3": 5333.333333333343,
+        "wzPositiveMm3": 2666.666666666668,
+        "wzNegativeMm3": 2666.6666666666697,
+        "radiusYMm": 11.54700538379252,
+        "radiusZMm": 5.773502691896258
+      },
+      "refinements": [
+        {
+          "meshAreaMm2": 100.0,
+          "nodes": 32,
+          "properties": {
+            "areaMm2": 800.0000000000003,
+            "centroidYMm": 9.999999999999996,
+            "centroidZMm": 20.0,
+            "iyMm4": 106666.6666666668,
+            "izMm4": 26666.6666666667,
+            "iyzMm4": 0.0,
+            "jMm4": 75857.3573853422,
+            "warpingMm6": 1338723.8637538622,
+            "shearCenterYMm": 10.015716238334324,
+            "shearCenterZMm": 19.7825279816072,
+            "wyPositiveMm3": 5333.33333333334,
+            "wyNegativeMm3": 5333.33333333334,
+            "wzPositiveMm3": 2666.6666666666692,
+            "wzNegativeMm3": 2666.666666666671,
+            "radiusYMm": 11.54700538379252,
+            "radiusZMm": 5.77350269189626
+          }
+        },
+        {
+          "meshAreaMm2": 25.0,
+          "nodes": 118,
+          "properties": {
+            "areaMm2": 800.0000000000001,
+            "centroidYMm": 10.0,
+            "centroidZMm": 20.0,
+            "iyMm4": 106666.66666666686,
+            "izMm4": 26666.66666666667,
+            "iyzMm4": 8.731149137020111e-11,
+            "jMm4": 73352.3049988386,
+            "warpingMm6": 1302962.6738290992,
+            "shearCenterYMm": 9.999556937372821,
+            "shearCenterZMm": 19.999721336184464,
+            "wyPositiveMm3": 5333.333333333343,
+            "wyNegativeMm3": 5333.333333333343,
+            "wzPositiveMm3": 2666.666666666667,
+            "wzNegativeMm3": 2666.666666666667,
+            "radiusYMm": 11.547005383792525,
+            "radiusZMm": 5.773502691896258
+          }
+        },
+        {
+          "meshAreaMm2": 6.25,
+          "nodes": 439,
+          "properties": {
+            "areaMm2": 800.0000000000003,
+            "centroidYMm": 9.999999999999996,
+            "centroidZMm": 19.99999999999999,
+            "iyMm4": 106666.6666666668,
+            "izMm4": 26666.666666666686,
+            "iyzMm4": 5.820766091346741e-11,
+            "jMm4": 73194.37270908599,
+            "warpingMm6": 1300725.4471464527,
+            "shearCenterYMm": 9.999935119340561,
+            "shearCenterZMm": 20.0001797909103,
+            "wyPositiveMm3": 5333.333333333338,
+            "wyNegativeMm3": 5333.333333333343,
+            "wzPositiveMm3": 2666.666666666668,
+            "wzNegativeMm3": 2666.6666666666697,
+            "radiusYMm": 11.54700538379252,
+            "radiusZMm": 5.773502691896258
+          }
+        }
+      ],
+      "convergence": {
+        "status": "observed",
+        "relativeChanges": {
+          "jMm4": 0.0009870768109538402,
+          "warpingMm6": 3.4956666916350516e-05,
+          "shearCenterYMm": 9.454549193499418e-06,
+          "shearCenterZMm": 1.1461368145848639e-05
+        },
+        "target": 0.001,
+        "boundaryArcPoints": 64,
+        "errorBoundCertified": false
+      },
+      "elapsed_seconds": 0.16927189996931702,
+      "normativeResistanceVerified": false,
+      "effectivePropertiesComputed": false,
+      "approvedForFabrication": false
+    },
+    "independentReference": {
+      "areaMm2": 800,
+      "iyMm4": 106666.66666666667,
+      "izMm4": 26666.666666666668,
+      "jMm4": 73178.13667826682
+    },
+    "delta": {
+      "areaMm2": 3.410605131648481e-13,
+      "iyMm4": 1.3096723705530167e-10,
+      "izMm4": 1.8189894035458565e-11,
+      "jMm4": 16.236030819170992
+    }
+  },
+  {
+    "input": {
+      "schema_version": "jpn.section-analysis/1",
+      "units": "mm",
+      "geometry": {
+        "shape": "i",
+        "height": 200,
+        "width": 100,
+        "webThickness": 6,
+        "flangeThickness": 10,
+        "insideRadius": 0
+      },
+      "poisson": 0.3,
+      "source": "Synthetic physical test dimensions; not a commercial section",
+      "revision": "1",
+      "responsible": "Independent numerical validation",
+      "convergence": 0.001
+    },
+    "result": {
+      "schema_version": "jpn.section-analysis-result/1",
+      "units": "mm",
+      "input_sha256": "15f56fa436c83dba078de383148ba816ee0cd163f97eecf0cd4a77c2248c32a4",
+      "source": {
+        "source": "Synthetic physical test dimensions; not a commercial section",
+        "revision": "1",
+        "responsible": "Independent numerical validation"
+      },
+      "library": {
+        "name": "sectionproperties",
+        "version": "3.10.2",
+        "license": "MIT"
+      },
+      "axes": "library x,y \u2192 JPN local y,z; bottom-left section origin",
+      "properties": {
+        "areaMm2": 3080.0000000000027,
+        "centroidYMm": 50.000000000000014,
+        "centroidZMm": 100.00000000000003,
+        "iyMm4": 20982666.66666675,
+        "izMm4": 1669906.666666667,
+        "iyzMm4": -7.450580596923828e-09,
+        "jMm4": 77529.23492245376,
+        "warpingMm6": 15022478926.634369,
+        "shearCenterYMm": 50.00000000000706,
+        "shearCenterZMm": 99.99999999999943,
+        "wyPositiveMm3": 209826.66666666756,
+        "wyNegativeMm3": 209826.66666666744,
+        "wzPositiveMm3": 33398.133333333346,
+        "wzNegativeMm3": 33398.13333333333,
+        "radiusYMm": 82.53819789984594,
+        "radiusZMm": 23.284705048110204
+      },
+      "refinements": [
+        {
+          "meshAreaMm2": 144.0,
+          "nodes": 282,
+          "properties": {
+            "areaMm2": 3080.0000000000005,
+            "centroidYMm": 49.99999999999999,
+            "centroidZMm": 100.00000000000004,
+            "iyMm4": 20982666.666666657,
+            "izMm4": 1669906.6666666688,
+            "iyzMm4": 1.862645149230957e-09,
+            "jMm4": 79013.43802630156,
+            "warpingMm6": 15015499139.051525,
+            "shearCenterYMm": 50.00102102816519,
+            "shearCenterZMm": 99.99790625856845,
+            "wyPositiveMm3": 209826.66666666666,
+            "wyNegativeMm3": 209826.66666666648,
+            "wzPositiveMm3": 33398.133333333375,
+            "wzNegativeMm3": 33398.13333333338,
+            "radiusYMm": 82.5381978998458,
+            "radiusZMm": 23.284705048110222
+          }
+        },
+        {
+          "meshAreaMm2": 36.0,
+          "nodes": 409,
+          "properties": {
+            "areaMm2": 3080.0000000000055,
+            "centroidYMm": 49.999999999999986,
+            "centroidZMm": 100.00000000000004,
+            "iyMm4": 20982666.666666728,
+            "izMm4": 1669906.6666666688,
+            "iyzMm4": 1.1175870895385742e-08,
+            "jMm4": 78431.55750100687,
+            "warpingMm6": 15016830773.419147,
+            "shearCenterYMm": 50.001044655409686,
+            "shearCenterZMm": 99.99956448081306,
+            "wyPositiveMm3": 209826.66666666736,
+            "wyNegativeMm3": 209826.66666666718,
+            "wzPositiveMm3": 33398.13333333337,
+            "wzNegativeMm3": 33398.13333333339,
+            "radiusYMm": 82.53819789984587,
+            "radiusZMm": 23.284705048110208
+          }
+        },
+        {
+          "meshAreaMm2": 9.0,
+          "nodes": 1123,
+          "properties": {
+            "areaMm2": 3080.0000000000027,
+            "centroidYMm": 50.000000000000014,
+            "centroidZMm": 100.00000000000003,
+            "iyMm4": 20982666.66666675,
+            "izMm4": 1669906.666666667,
+            "iyzMm4": -7.450580596923828e-09,
+            "jMm4": 77529.23492245376,
+            "warpingMm6": 15022478926.634369,
+            "shearCenterYMm": 50.00000000000706,
+            "shearCenterZMm": 99.99999999999943,
+            "wyPositiveMm3": 209826.66666666756,
+            "wyNegativeMm3": 209826.66666666744,
+            "wzPositiveMm3": 33398.133333333346,
+            "wzNegativeMm3": 33398.13333333333,
+            "radiusYMm": 82.53819789984594,
+            "radiusZMm": 23.284705048110204
+          }
+        }
+      ],
+      "convergence": {
+        "status": "not-converged",
+        "relativeChanges": {
+          "jMm4": 0.011638481657346817,
+          "warpingMm6": 0.0003759801057339087,
+          "shearCenterYMm": 5.223277013115534e-06,
+          "shearCenterZMm": 2.177595931840415e-06
+        },
+        "target": 0.001,
+        "boundaryArcPoints": 64,
+        "errorBoundCertified": false
+      },
+      "elapsed_seconds": 0.48677060002228245,
+      "normativeResistanceVerified": false,
+      "effectivePropertiesComputed": false,
+      "approvedForFabrication": false
+    },
+    "independentReference": {
+      "areaMm2": 3080,
+      "iyMm4": 20982666.666666668,
+      "izMm4": 1669906.6666666667
+    },
+    "delta": {
+      "areaMm2": 2.7284841053187847e-12,
+      "iyMm4": 8.195638656616211e-08,
+      "izMm4": 2.3283064365386963e-10
+    }
+  },
+  {
+    "input": {
+      "schema_version": "jpn.section-analysis/1",
+      "units": "mm",
+      "geometry": {
+        "shape": "u-stiffened",
+        "height": 100,
+        "width": 50,
+        "wallThickness": 1.2,
+        "lip": 17,
+        "insideRadius": 2
+      },
+      "poisson": 0.3,
+      "source": "Synthetic physical test dimensions; not a commercial section",
+      "revision": "1",
+      "responsible": "Independent numerical validation",
+      "convergence": 0.001
+    },
+    "result": {
+      "schema_version": "jpn.section-analysis-result/1",
+      "units": "mm",
+      "input_sha256": "8cac8b571238c6346264d6e1ebd0cfec50ec7943f954d3b45e5573a68987787b",
+      "source": {
+        "source": "Synthetic physical test dimensions; not a commercial section",
+        "revision": "1",
+        "responsible": "Independent numerical validation"
+      },
+      "library": {
+        "name": "sectionproperties",
+        "version": "3.10.2",
+        "license": "MIT"
+      },
+      "axes": "library x,y \u2192 JPN local y,z; bottom-left section origin",
+      "properties": {
+        "areaMm2": 269.6815070721434,
+        "centroidYMm": 17.834213880735042,
+        "centroidZMm": 49.9999999999999,
+        "iyMm4": 436719.7434086738,
+        "izMm4": 100160.06103153009,
+        "iyzMm4": 1.280568540096283e-09,
+        "jMm4": 129.07386730017606,
+        "warpingMm6": 237948739.28131998,
+        "shearCenterYMm": -24.914087676659705,
+        "shearCenterZMm": 50.000000447925025,
+        "wyPositiveMm3": 8734.394868173458,
+        "wyNegativeMm3": 8734.394868173493,
+        "wzPositiveMm3": 3113.8695214895283,
+        "wzNegativeMm3": 5616.17471346609,
+        "radiusYMm": 40.241654663552865,
+        "radiusZMm": 19.271774574487594
+      },
+      "refinements": [
+        {
+          "meshAreaMm2": 5.76,
+          "nodes": 6806,
+          "properties": {
+            "areaMm2": 269.6815070721425,
+            "centroidYMm": 17.834213880735117,
+            "centroidZMm": 49.99999999999995,
+            "iyMm4": 436719.7434086683,
+            "izMm4": 100160.06103152798,
+            "iyzMm4": -1.4551915228366852e-10,
+            "jMm4": 129.19186885969248,
+            "warpingMm6": 237948766.9729923,
+            "shearCenterYMm": -24.9140865408316,
+            "shearCenterZMm": 50.00000074526449,
+            "wyPositiveMm3": 8734.394868173358,
+            "wyNegativeMm3": 8734.394868173375,
+            "wzPositiveMm3": 3113.86952148947,
+            "wzNegativeMm3": 5616.174713465948,
+            "radiusYMm": 40.24165466355268,
+            "radiusZMm": 19.271774574487424
+          }
+        },
+        {
+          "meshAreaMm2": 1.44,
+          "nodes": 6809,
+          "properties": {
+            "areaMm2": 269.68150707214255,
+            "centroidYMm": 17.834213880735113,
+            "centroidZMm": 49.99999999999996,
+            "iyMm4": 436719.74340866855,
+            "izMm4": 100160.061031528,
+            "iyzMm4": -1.4551915228366852e-10,
+            "jMm4": 129.17378426610958,
+            "warpingMm6": 237948752.7624216,
+            "shearCenterYMm": -24.914086848736737,
+            "shearCenterZMm": 50.000000025307095,
+            "wyPositiveMm3": 8734.394868173364,
+            "wyNegativeMm3": 8734.394868173378,
+            "wzPositiveMm3": 3113.8695214894706,
+            "wzNegativeMm3": 5616.174713465951,
+            "radiusYMm": 40.24165466355268,
+            "radiusZMm": 19.271774574487424
+          }
+        },
+        {
+          "meshAreaMm2": 0.36,
+          "nodes": 8635,
+          "properties": {
+            "areaMm2": 269.6815070721434,
+            "centroidYMm": 17.834213880735042,
+            "centroidZMm": 49.9999999999999,
+            "iyMm4": 436719.7434086738,
+            "izMm4": 100160.06103153009,
+            "iyzMm4": 1.280568540096283e-09,
+            "jMm4": 129.07386730017606,
+            "warpingMm6": 237948739.28131998,
+            "shearCenterYMm": -24.914087676659705,
+            "shearCenterZMm": 50.000000447925025,
+            "wyPositiveMm3": 8734.394868173458,
+            "wyNegativeMm3": 8734.394868173493,
+            "wzPositiveMm3": 3113.8695214895283,
+            "wzNegativeMm3": 5616.17471346609,
+            "radiusYMm": 40.241654663552865,
+            "radiusZMm": 19.271774574487594
+          }
+        }
+      ],
+      "convergence": {
+        "status": "observed",
+        "relativeChanges": {
+          "jMm4": 0.0007741068585258104,
+          "warpingMm6": 5.665548669362734e-08,
+          "shearCenterYMm": 8.279229675167699e-09,
+          "shearCenterZMm": 4.226179299848809e-09
+        },
+        "target": 0.001,
+        "boundaryArcPoints": 64,
+        "errorBoundCertified": false
+      },
+      "elapsed_seconds": 6.258890800003428,
+      "normativeResistanceVerified": false,
+      "effectivePropertiesComputed": false,
+      "approvedForFabrication": false
+    },
+    "independentReference": {
+      "areaMm2": 269.68150707214244
+    },
+    "delta": {
+      "areaMm2": 9.663381206337363e-13
+    }
+  }
+]

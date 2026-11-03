@@ -3,6 +3,7 @@ import { generateStructure } from "./calculations/structure";
 import { structureSignature } from "./calculations/project-basis";
 import { discretizeGeometry } from "./spatial-connectivity";
 import { connectionSchema,connectionsSchema } from "./connections";
+import { auditConnectionGeometry } from "./connection-geometry-audit";
 
 export function physicalConnectionNodes(project:Project){
   const model=generateStructure(project).model,draft=project.workspace.spatialPreparation;
@@ -15,6 +16,7 @@ export function saveConnectionDeclaration(project:Project,value:unknown):Project
   if(d.connections&&d.connections.geometrySignature!==signature)throw new Error("STALE_CONNECTION_GEOMETRY: revisão integral do cadastro existente necessária; nenhum vínculo foi renovado silenciosamente.");
   const node=nodes.find(n=>n.nodeId===c.nodeId);
   if(!node||node.pieceIds.length!==c.participants.length||c.participants.some(p=>!node.pieceIds.includes(p.pieceId)))throw new Error("CONNECTION_PARTICIPANTS: nó ou participantes não correspondem ao modelo físico.");
+  const audit=auditConnectionGeometry(c);if(audit.status==="invalid-geometry")throw new Error("CONNECTION_GEOMETRY_INVALID: "+audit.issues.filter(x=>x.severity==="error").map(x=>x.message).join(" "));
   const next=connectionsSchema.parse({schema_version:"jpn.connections/1",geometrySignature:signature,connections:[...(d.connections?.connections??[]).filter(x=>x.nodeId!==c.nodeId),c]});
   return {...project,workspace:{...project.workspace,spatialPreparation:{...d,connections:next}}};
 }

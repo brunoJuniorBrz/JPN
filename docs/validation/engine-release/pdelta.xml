@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="5" time="1.037" timestamp="2026-11-02T15:38:17.631415-03:00" hostname="DESKTOP-20BN1M6"><testcase classname="tests.test_second_order_release_audit" name="test_native_frame_pdelta_mesh_converges_to_independent_continuum[0.2]" time="0.309" /><testcase classname="tests.test_second_order_release_audit" name="test_native_frame_pdelta_mesh_converges_to_independent_continuum[0.6]" time="0.009"><failure message="assert False&#10; +  where False = &lt;built-in function isclose&gt;(np.float64(889.3765789159962), ((100.0 * 4.0) + (185055.08252042547 * np.float64(0.0026444922609302583))), rel_tol=1e-08, abs_tol=1e-05)&#10; +    where &lt;built-in function isclose&gt; = math.isclose">ratio = 0.6
+
+    @pytest.mark.parametrize('ratio', [.2, .6, .85])
+    def test_native_frame_pdelta_mesh_converges_to_independent_continuum(ratio):
+        assert version('PyNiteFEA') == '3.2.1'
+        errors=[]
+        for count in (8,16,32):
+            m, expected, rotation, P, H, L = cantilever(count,ratio)
+            actual=m.nodes[str(count)].DX['S']
+            errors.append(abs(actual-expected))
+            # Dimensional discretization bound, tightened by refinement, NOT a code
+            # resistance/SLS acceptance percentage or a reference chosen by software.
+            assert abs(actual-expected) &lt; abs(expected)*(ratio/count)**2
+            assert abs(m.nodes[str(count)].RZ['S']-rotation) &lt; abs(rotation)*(ratio/count)**2
+&gt;           assert math.isclose(m.nodes['0'].RxnMZ['S'], H*L+P*actual, rel_tol=1e-8, abs_tol=1e-5)
+E           assert False
+E            +  where False = &lt;built-in function isclose&gt;(np.float64(889.3765789159962), ((100.0 * 4.0) + (185055.08252042547 * np.float64(0.0026444922609302583))), rel_tol=1e-08, abs_tol=1e-05)
+E            +    where &lt;built-in function isclose&gt; = math.isclose
+
+engine\tests\test_second_order_release_audit.py:48: AssertionError</failure></testcase><testcase classname="tests.test_second_order_release_audit" name="test_native_frame_pdelta_mesh_converges_to_independent_continuum[0.85]" time="0.006"><failure message="assert False&#10; +  where False = &lt;built-in function isclose&gt;(np.float64(2241.6900068607524), ((100.0 * 4.0) + (262161.3669039361 * np.float64(0.007025027451396786))), rel_tol=1e-08, abs_tol=1e-05)&#10; +    where &lt;built-in function isclose&gt; = math.isclose">ratio = 0.85
+
+    @pytest.mark.parametrize('ratio', [.2, .6, .85])
+    def test_native_frame_pdelta_mesh_converges_to_independent_continuum(ratio):
+        assert version('PyNiteFEA') == '3.2.1'
+        errors=[]
+        for count in (8,16,32):
+            m, expected, rotation, P, H, L = cantilever(count,ratio)
+            actual=m.nodes[str(count)].DX['S']
+            errors.append(abs(actual-expected))
+            # Dimensional discretization bound, tightened by refinement, NOT a code
+            # resistance/SLS acceptance percentage or a reference chosen by software.
+            assert abs(actual-expected) &lt; abs(expected)*(ratio/count)**2
+            assert abs(m.nodes[str(count)].RZ['S']-rotation) &lt; abs(rotation)*(ratio/count)**2
+&gt;           assert math.isclose(m.nodes['0'].RxnMZ['S'], H*L+P*actual, rel_tol=1e-8, abs_tol=1e-5)
+E           assert False
+E            +  where False = &lt;built-in function isclose&gt;(np.float64(2241.6900068607524), ((100.0 * 4.0) + (262161.3669039361 * np.float64(0.007025027451396786))), rel_tol=1e-08, abs_tol=1e-05)
+E            +    where &lt;built-in function isclose&gt; = math.isclose
+
+engine\tests\test_second_order_release_audit.py:48: AssertionError</failure></testcase><testcase classname="tests.test_second_order_release_audit" name="test_native_spring_has_no_geometric_stiffness_for_loaded_axial_bars" time="0.000" /><testcase classname="tests.test_second_order_release_audit" name="test_native_pdelta_nonconvergence_is_not_a_completed_result" time="0.010" /></testsuite></testsuites>

@@ -9,6 +9,7 @@ import { extractMemberDemands,type DemandInput } from "./member-demands";
 import { connectionsSchema } from "./connections";
 import { verifyJointActionTrace,toGlobal,cross3,scale3,type V3,type V6 } from "./member-end-actions";
 import { canonicalSpatialInput } from "./spatial-analysis";
+import { auditConnectionGeometry } from "./connection-geometry-audit";
 
 const add6=(a:V6,b:V6)=>a.forEach((_,i)=>a[i]+=b[i]);
 const zero6=():V6=>[0,0,0,0,0,0];
@@ -63,9 +64,10 @@ export async function buildConnectionReport(project:Project,prepared:DemandInput
       if(d.typology==="splice"&&originalEnds.size<2)issues.push("Segmentação interna não é emenda; declare encontro de extremidades de pelo menos duas peças distintas.");
       for(const component of d.components)if(component.kind==="restraint"&&component.pieceId&&!pieces.has(component.pieceId))issues.push(`${component.id}: contenção refere peça física inexistente.`);
     }
+    const geometryAudit=d?auditConnectionGeometry(d):null;if(geometryAudit?.status==="invalid-geometry")issues.push(...geometryAudit.issues.filter(i=>i.severity==="error").map(i=>i.message));
     return {nodeId:node.id,positionM:[node.x_m,node.y_m,node.z_m] as V3,
       participants:originalIds.map(id=>({pieceId:id,role:pieces.get(id)!.role,segments:segments.filter(s=>s.originalId===id)})),declaration:d,
-      componentData:d?.components.map(c=>({componentId:c.id,kind:c.kind,missingFields:Object.entries(c).filter(([,v])=>v===null||v==="").map(([k])=>k)}))??[],
+      componentData:d?.components.map(c=>({componentId:c.id,kind:c.kind,missingFields:Object.entries(c).filter(([,v])=>v===null||v==="").map(([k])=>k)}))??[],geometryAudit,
       state:{identified:true as const,physicallyDeclared:!!d,hypothesisConsistent:!!d&&!issues.length,resistanceVerified:false as const,fabricationApproved:false as const},issues};
   });
   const combinations=request.combinations.map(combo=>{

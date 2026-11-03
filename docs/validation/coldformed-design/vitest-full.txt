@@ -1,0 +1,1 @@
+JSON report written to C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree/docs/validation/coldformed-design/vitest.json

@@ -1,0 +1,50 @@
+.FF..                                                                    [100%]
+================================== FAILURES ===================================
+____ test_native_frame_pdelta_mesh_converges_to_independent_continuum[0.6] ____
+
+ratio = 0.6
+
+    @pytest.mark.parametrize('ratio', [.2, .6, .85])
+    def test_native_frame_pdelta_mesh_converges_to_independent_continuum(ratio):
+        assert version('PyNiteFEA') == '3.2.1'
+        errors=[]
+        for count in (8,16,32):
+            m, expected, rotation, P, H, L = cantilever(count,ratio)
+            actual=m.nodes[str(count)].DX['S']
+            errors.append(abs(actual-expected))
+            # Dimensional discretization bound, tightened by refinement, NOT a code
+            # resistance/SLS acceptance percentage or a reference chosen by software.
+            assert abs(actual-expected) < abs(expected)*(ratio/count)**2
+            assert abs(m.nodes[str(count)].RZ['S']-rotation) < abs(rotation)*(ratio/count)**2
+>           assert math.isclose(m.nodes['0'].RxnMZ['S'], H*L+P*actual, rel_tol=1e-8, abs_tol=1e-5)
+E           assert False
+E            +  where False = <built-in function isclose>(np.float64(889.3765789159962), ((100.0 * 4.0) + (185055.08252042547 * np.float64(0.0026444922609302583))), rel_tol=1e-08, abs_tol=1e-05)
+E            +    where <built-in function isclose> = math.isclose
+
+engine\tests\test_second_order_release_audit.py:48: AssertionError
+___ test_native_frame_pdelta_mesh_converges_to_independent_continuum[0.85] ____
+
+ratio = 0.85
+
+    @pytest.mark.parametrize('ratio', [.2, .6, .85])
+    def test_native_frame_pdelta_mesh_converges_to_independent_continuum(ratio):
+        assert version('PyNiteFEA') == '3.2.1'
+        errors=[]
+        for count in (8,16,32):
+            m, expected, rotation, P, H, L = cantilever(count,ratio)
+            actual=m.nodes[str(count)].DX['S']
+            errors.append(abs(actual-expected))
+            # Dimensional discretization bound, tightened by refinement, NOT a code
+            # resistance/SLS acceptance percentage or a reference chosen by software.
+            assert abs(actual-expected) < abs(expected)*(ratio/count)**2
+            assert abs(m.nodes[str(count)].RZ['S']-rotation) < abs(rotation)*(ratio/count)**2
+>           assert math.isclose(m.nodes['0'].RxnMZ['S'], H*L+P*actual, rel_tol=1e-8, abs_tol=1e-5)
+E           assert False
+E            +  where False = <built-in function isclose>(np.float64(2241.6900068607524), ((100.0 * 4.0) + (262161.3669039361 * np.float64(0.007025027451396786))), rel_tol=1e-08, abs_tol=1e-05)
+E            +    where <built-in function isclose> = math.isclose
+
+engine\tests\test_second_order_release_audit.py:48: AssertionError
+=========================== short test summary info ===========================
+FAILED engine\tests\test_second_order_release_audit.py::test_native_frame_pdelta_mesh_converges_to_independent_continuum[0.6]
+FAILED engine\tests\test_second_order_release_audit.py::test_native_frame_pdelta_mesh_converges_to_independent_continuum[0.85]
+2 failed, 3 passed in 1.04s
