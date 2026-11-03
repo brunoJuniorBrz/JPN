@@ -28,7 +28,9 @@ for (const width of [375, 1440]) test(`resultado organizado preserva modelo, avi
   expect(await rows.count()).toBeGreaterThan(0);
   await rows.first().locator("details").first().locator("summary").click();
   await expect(rows.first().locator("details").first()).toHaveAttribute("open","");
-  await openResultTab(page,"Engenharia");
+  await page.getByRole("tab",{name:/^Materiais/}).focus();
+  await page.getByRole("tab",{name:/^Materiais/}).press("ArrowRight");
+  await expect(page.getByRole("tab",{name:/^Engenharia/})).toHaveAttribute("aria-selected","true");
   await expect(page.getByRole("heading",{name:"Pendências da revisão técnica"})).toBeVisible();
   await expect(page.getByRole("tab",{name:/^Engenharia/})).toContainText("pendências");
   await expect(page.getByTestId("result-safety-warning")).toBeVisible();
