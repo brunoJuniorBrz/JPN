@@ -658,3 +658,10 @@ body { font-size: 16px; }
   .result-business-action .button { width:100%; }
   .result-model-context { font-size:11px; }
 }
+
+/* The 2D camera choices disappear while 3D is active, avoiding duplicate controls. */
+.view-switch.viewer-switch--3d { display:flex; align-items:center; gap:8px; }
+.view-switch.viewer-switch--3d button { flex:0 1 auto; padding-inline:16px; min-width:175px; }
+@media (max-width:600px) {
+  .view-switch.viewer-switch--3d button { flex:1 1 auto; }
+}
