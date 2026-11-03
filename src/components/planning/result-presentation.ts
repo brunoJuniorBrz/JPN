@@ -71,7 +71,7 @@ export function locatePending(issue: string): PendingTarget | null {
   const role = (Object.entries(roleLabels) as [PieceRole, string][])
     .find(([, label]) => issue.startsWith(`${label}:`))?.[0];
   if (role) return { step: 2, role };
-  if (/tesour|terças|espaçamento|pain[eé]is|balanços|vãos|distribuição|5\\.000 peças|pilares com altura positiva/i.test(issue))
+  if (/tesour|terças|espaçamento|pain[eé]is|balanços|vãos|distribuição|5\.000 peças|pilares com altura positiva/i.test(issue))
     return { step: 2 };
   if (/medidas|largura|comprimento|altura|inclinação|caimento|cobertura|telhado|desnível/i.test(issue))
     return { step: 1 };
