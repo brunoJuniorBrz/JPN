@@ -28,4 +28,29 @@ Os controles são estados locais do componente React, não persistidos no levant
 - Testes Playwright nas larguras de 375 px e 1440 px verificam camadas, isolamento, orientação da câmera, redimensionamento, alternância com Acabado e ausência de alterações no armazenamento e quantitativos.
 - Rodar lint, verificação TypeScript, Vitest, build e Playwright em ambiente com dependências do projeto antes de integrar.
 
-**Limites:** não há cortes de seção, medições entre dois pontos, vista ortográfica real, ligações físicas, verificações resistentes ou detalhamento para fabricação nesta versão. Nenhum filtro da cena deve ser confundido com remoção de elementos estruturais.
+**Limites:** não há cortes de seção, vista ortográfica real, ligações físicas, verificações resistentes ou detalhamento para fabricação nesta versão. Nenhum filtro da cena deve ser confundido com remoção de elementos estruturais.
+
+## Incremento isolado — medição geométrica entre nós
+
+A ferramenta **Medir entre nós** está disponível nos modos Estrutural, Perfis 3D e Misto.
+Marque dois nós diretamente na cena, ou escolha **Nó inicial** e **Nó final**
+nos seletores acessíveis para teclado/tela sensível ao toque. A cena destaca
+os pontos escolhidos e desenha a linha entre eles. A interface mostra a
+distância euclidiana e os componentes assinados ΔX/ΔY/ΔZ em metros.
+
+Os dados são extraídos dos IDs e das coordenadas em milímetros de
+`StructureModel.nodes`, com precisão integral no cálculo e arredondamento
+somente na apresentação. **Nova medida** reinicia a seleção, e
+**Encerrar medição** remove os marcadores e a linha de medição. Ao entrar
+no modo Acabado, a ferramenta não aparece e seu desenho é ocultado;
+os modos estruturais são preservados.
+
+Esta ferramenta é apenas visual: não muda geometria, apoios, cargas,
+quantitativo, propriedades resistentes, arquivos de saída ou persistência.
+Não representa corte, tolerância de fabricação, levantamento em campo ou
+medida verificada para execução.
+
+Testes: casos unitários de diagonal 3D, direção/repetição, nós ausentes e
+imutabilidade; testes Playwright nas larguras de 375 px e 1440 px, com
+medição em cena, limpeza, ausência de scroll horizontal e persistência
+local inalterada.
