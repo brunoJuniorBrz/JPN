@@ -1,0 +1,151 @@
+{
+  "schema_version": "jpn.m33a-private-validation/1",
+  "extractSha256": "a760be935d816be960cb1b6ae5e4413dfbefedeb5b053dde20831bb7d9bb7357",
+  "notes": "Derived results only. No PDF, screenshots, protected tables or private catalog embedded. Transcription and engineering applicability remain DECLARED_UNVERIFIED.",
+  "records": [
+    {
+      "test": "hand-integrals-and-combination-arithmetic",
+      "typology": "mono",
+      "passed": true,
+      "windCases": 4,
+      "combinationCount": 54,
+      "provenance": "PDF-derived selected coefficients; synthetic geometry/actions; independent closed-form force/moment and scalar oracles",
+      "state": "DECLARED_UNVERIFIED",
+      "signature": "8d578661991711a17b2bdb8931feef717bf596b74292f07ad0d56f64c5825dca",
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    },
+    {
+      "test": "hand-integrals-and-combination-arithmetic",
+      "typology": "gable",
+      "passed": true,
+      "windCases": 4,
+      "combinationCount": 54,
+      "provenance": "PDF-derived selected coefficients; synthetic geometry/actions; independent closed-form force/moment and scalar oracles",
+      "state": "DECLARED_UNVERIFIED",
+      "signature": "ad228cb587412befe918ccf0b93619dd9479ea48a237eb0a9a243fd9bc53b56e",
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    },
+    {
+      "test": "native-solver-and-envelope",
+      "typology": "mono",
+      "purpose": "ULS",
+      "passed": true,
+      "combinations": 28,
+      "maxRelativeResidual": 1.971065734457979e-14,
+      "signature": "df90ebacdd5762c5496d56132dd4f5f8414910328eed4eecda37a5a3b7e658e9",
+      "governing": {
+        "combinationId": "C6",
+        "value": 18903.998519614903
+      },
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    },
+    {
+      "test": "native-solver-and-envelope",
+      "typology": "mono",
+      "purpose": "SLS-characteristic",
+      "passed": true,
+      "combinations": 14,
+      "maxRelativeResidual": 1.859812302832402e-14,
+      "signature": "f4114cbae6e2a019b841a9b085007a9f2a9fad1d2fe29819c4938232f489dce8",
+      "governing": {
+        "combinationId": "C1",
+        "value": 13156.92193816531
+      },
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    },
+    {
+      "test": "native-solver-and-envelope",
+      "typology": "mono",
+      "purpose": "SLS-frequent",
+      "passed": true,
+      "combinations": 10,
+      "maxRelativeResidual": 1.8224166857788404e-14,
+      "signature": "ff7675ea7bd01a59da7109685ca63497c880f70a298ecafbaa1d92b189bfcadf",
+      "governing": {
+        "combinationId": "C1",
+        "value": 10456.921938165311
+      },
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    },
+    {
+      "test": "native-solver-and-envelope",
+      "typology": "mono",
+      "purpose": "SLS-quasi-permanent",
+      "passed": true,
+      "combinations": 2,
+      "maxRelativeResidual": 8.884499454730744e-16,
+      "signature": "41edcb06ee0e2d683b1bc2e5e3073b532fa5d1b876176fdb18f34ac2a5cb9390",
+      "governing": {
+        "combinationId": "C2",
+        "value": 9556.921938165311
+      },
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    },
+    {
+      "test": "native-solver-and-envelope",
+      "typology": "gable",
+      "purpose": "ULS",
+      "passed": true,
+      "combinations": 28,
+      "maxRelativeResidual": 1.7327821535858674e-14,
+      "signature": "33214ebe601d0104afa3e8c58cf78b003ad05c8c891335ba7da43d4509aca6b7",
+      "governing": {
+        "combinationId": "C15",
+        "value": -23611.947589944266
+      },
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    },
+    {
+      "test": "native-solver-and-envelope",
+      "typology": "gable",
+      "purpose": "SLS-characteristic",
+      "passed": true,
+      "combinations": 14,
+      "maxRelativeResidual": 1.7143047851698413e-14,
+      "signature": "848a3ec2efc087c7b872395b2c6d42f3da784b1d7f71aa8835f51e1fb7fa30f7",
+      "governing": {
+        "combinationId": "C8",
+        "value": -15411.057185805017
+      },
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    },
+    {
+      "test": "native-solver-and-envelope",
+      "typology": "gable",
+      "purpose": "SLS-frequent",
+      "passed": true,
+      "combinations": 10,
+      "maxRelativeResidual": 1.304028837022573e-14,
+      "signature": "21df2fc714b8333bd0a42082f61225bacc8d24b885209477d1541a9013aad356",
+      "governing": {
+        "combinationId": "C7",
+        "value": 11462.326898717367
+      },
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    },
+    {
+      "test": "native-solver-and-envelope",
+      "typology": "gable",
+      "purpose": "SLS-quasi-permanent",
+      "passed": true,
+      "combinations": 2,
+      "maxRelativeResidual": 7.18816895058391e-16,
+      "signature": "194a0acfdca7367aeac4b86ea5da4213bd03ecc914dd4012b630c1eecb50ba61",
+      "governing": {
+        "combinationId": "C2",
+        "value": 10491.168824543143
+      },
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    }
+  ]
+}

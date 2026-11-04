@@ -2,7 +2,8 @@
   "schema_version": "jpn.normative-source-audit/1",
   "baseCommit": "566e068010446c3af8cb4889391ac177dcf752e3",
   "inventory": "docs/validation/coldformed-design/supplied-standards.json",
-  "method": "Git history, supplied-document hashes, implementation, adjacent tests and frozen pre-M33 solver output. Original PDFs were not re-read or redistributed on this machine.",
+  "method": "HISTORICAL snapshot through 83420da: Git history, supplied-document hashes, implementation, adjacent tests and frozen pre-M33 solver output. Superseded for the newly read wind/combination subset by supplied-source-review-m33a.json; PDFs remain private.",
+  "supersededBy": "data/normas/supplied-source-review-m33a.json",
   "historicalNotice": "ENGINE-NORMATIVE-TRACEABILITY.md explicitly marks its initial no-full-text/no-implementation table as historical. Later user-supplied sources and implementations supersede that initial snapshot.",
   "procedures": [
     {

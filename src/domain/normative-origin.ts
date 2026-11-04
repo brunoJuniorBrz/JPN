@@ -8,18 +8,19 @@ import { windDeclarationSchema } from "./wind-contracts";
 import { compileEngineeringCombinations,engineeringId,type EngineeringCombinations } from "./engineering-combinations";
 import { distributeWindActions } from "./wind-load-path";
 import { adaptLoadedMixedProject } from "./loaded-mixed-adapter";
-import { normativeWindDataSchema,normativeFactorsDataSchema,normativeActionSchema,openingsSchema,
+import { normativeWindDataSchema,normativeFactorsDataSchema,normativeActionSchema,openingsSchema,reviewedRoofScopeSchema,
   type NormativeSource,type NormativeAction,type NormativeFactorsData,type ProcedureState } from "./normative-origin-contracts";
+import { buildReviewedRoofCatalog,assertReviewedRoofScope } from "./reviewed-roof-catalog";
 import recovered from "../../data/normas/nbr6123-2023-speed.json" with { type: "json" };
 
-export const normativeOriginVersion="jpn.normative-origin/1";
+export const normativeOriginVersion="jpn.normative-origin/2";
 export const normativeOriginInputSchema=z.object({speed:windSpeedInputSchema,openings:openingsSchema,
   incidencesDeg:z.array(z.number().finite().min(0).lt(360)).min(1).max(4),
   purposes:z.array(z.enum(["ULS","SLS-characteristic","SLS-frequent","SLS-quasi-permanent"])).min(1).max(4),
-  use:z.string().trim().min(1),windFactorClass:engineeringId,actions:z.array(normativeActionSchema).max(6),
+  use:z.string().trim().min(1),windFactorClass:engineeringId,actions:z.array(normativeActionSchema).max(6),reviewedRoof:reviewedRoofScopeSchema.optional(),
 }).strict();
 export type NormativeOriginInput=z.infer<typeof normativeOriginInputSchema>;
-export interface NormativeFiles {wind?:unknown;factors?:unknown;loadErrors?:string[]}
+export interface NormativeFiles {wind?:unknown;factors?:unknown;reviewedExtract?:unknown;loadErrors?:string[]}
 type Audit={procedure:string;state:ProcedureState;source:unknown;inputs:unknown;selectionRule:string;coefficient:unknown;calculationVersion:string};
 const fail=(message:string):never=>{throw Error(message);};
 const declared="DECLARED_UNVERIFIED" as const;
@@ -59,6 +60,7 @@ function wind(project:Project,input:NormativeOriginInput,raw:unknown,testOnly:bo
     });
     if(matches.length!==1)fail(`WIND_DOMAIN: incidence ${incidenceDeg}: ${matches.length} linhas aplicáveis; requer seleção única exata, aberturas e domínio completos`);
     const row=matches[0];
+    if(row.source.edition==="2023-corrected-2025")assertReviewedRoofScope(project,input);
     if(new Set(row.cpiCases.map(c=>c.id)).size!==row.cpiCases.length)fail("DUPLICATE_CPI");
     return row.cpiCases.map((internal,j)=>{
       const id=`W${input.incidencesDeg.indexOf(incidenceDeg)}_${j}`;
@@ -92,6 +94,8 @@ function combinations(actions:NormativeAction[],raw:unknown,use:string,purposes:
   if(new Set(data.recipes.map(r=>r.id)).size!==data.recipes.length)fail("DUPLICATE_RECIPE");
   if(new Set(data.factors.map(f=>canonical([f.factorClass,f.category,f.role,f.effect,f.purpose]))).size!==data.factors.length)fail("DUPLICATE_FACTOR_DOMAIN");
   const result:EngineeringCombinations["combinations"]=[];
+  const vectors=new Map<string,string>();
+  let candidates=0;
   const provenance=new WeakMap<object,NormativeFactorsData["factors"][number]>();
   for(const recipe of data.recipes.filter(r=>purposes.includes(r.purpose))){
     const variables=actions.filter(a=>a.category!=="permanent");
@@ -102,8 +106,17 @@ function combinations(actions:NormativeAction[],raw:unknown,use:string,purposes:
       const walk=(i:number,terms:EngineeringCombinations["combinations"][number]["terms"],groups:Set<string>)=>{
         if(i===actions.length){
           if(!terms.some(t=>t.gamma*t.psi>0))return;
+          if(++candidates>16384)fail("COMBINATION_CANDIDATE_LIMIT: no truncation");
+          const vector=canonical([recipe.purpose,terms.map(t=>[t.caseId,t.gamma*t.psi])]),equivalent=vectors.get(vector);
+          if(equivalent){
+            trace.push(audit(`equivalent-combination:${equivalent}`,recipe.source,{recipe:recipe.id,leader,
+              alternatives:terms.map(t=>({caseId:t.caseId,role:provenance.get(t)!.role,effect:provenance.get(t)!.effect}))},
+              terms.map(t=>({caseId:t.caseId,gamma:t.gamma,psi:t.psi})),"exact same purpose and whole-action factor vector; no averaging or dropped physical pattern"));
+            return;
+          }
           if(result.length>=256)fail("COMBINATION_LIMIT_256: no truncation");
           const id=`C${result.length+1}`;
+          vectors.set(vector,id);
           result.push({id,purpose:recipe.purpose,hypothesis:`${recipe.id}; leading=${leader??"none"}; catalog=${data.revision}`,reference:reference(recipe.source,data.revision),terms});
           for(const t of terms)trace.push(audit(`factor:${id}:${t.caseId}`,provenance.get(t),{recipe:recipe.id,leader,action:actions.find(a=>a.caseId===t.caseId)},
             {gamma:t.gamma,psi:t.psi,factor:t.gamma*t.psi},"exact factor row; exclusive actions inactive"));
@@ -143,14 +156,22 @@ async function generate(project:Project,value:unknown,files:NormativeFiles,testO
   let generatedWind:ReturnType<typeof wind>|null=null,batches:ReturnType<typeof combinations>=[];
   if(!input.success){const reason=`INPUT_DOMAIN: ${input.error.issues[0].message}`;blockers.push(reason);trace.push(audit("input-domain",null,value,null,reason,"BLOCKED_UNSUPPORTED"));}
   else {
+    let effective=files;
+    let extractValid=true;
+    if(files.reviewedExtract!==undefined){
+      try{const catalog=buildReviewedRoofCatalog(project,input.data,files.reviewedExtract);
+        effective={...files,wind:catalog.wind,factors:catalog.factors};
+        trace.push(audit("2025-reviewed-subset-applicability",{wind:catalog.wind.rows[0].source,factors:catalog.factors.source},catalog.applicability,null,"private extract; exact selected rows; declarations require engineering review"));
+      }catch(e){extractValid=false;blockers.push(String(e));trace.push(audit("2025-reviewed-subset-applicability",null,input.data,null,String(e),"BLOCKED_UNSUPPORTED"));}
+    }
     try{const speed=calculateWindSpeed(input.data.speed);
       trace.push(audit("S1/S2/Vk/q-original-2023",recovered,{speed:input.data.speed},speed,"existing wind-speed/1", "SUPPORTED_VERIFIED"));
       trace.push(audit("V0/S3/classification",input.data.speed.reference,input.data.speed,null,"declared dependencies; errata 2025 not verified"));
     }catch(e){blockers.push(String(e));trace.push(audit("S1/S2/Vk/q-original-2023",recovered,input.data.speed,null,String(e),"BLOCKED_UNSUPPORTED"));}
-    try{generatedWind=wind(project,input.data,files.wind,testOnly,trace);}catch(e){blockers.push(String(e));trace.push(audit("Cpe/Cpi/zones",files.wind??null,input.data,null,String(e),"BLOCKED_UNSUPPORTED"));}
+    try{if(!extractValid)fail("PRIVATE_EXTRACT_INVALID: no fallback");generatedWind=wind(project,input.data,effective.wind,testOnly,trace);}catch(e){blockers.push(String(e));trace.push(audit("Cpe/Cpi/zones",effective.wind??null,input.data,null,String(e),"BLOCKED_UNSUPPORTED"));}
     if(generatedWind){
       const actions=[...input.data.actions,...generatedWind.declaration.cases.map(c=>({caseId:c.id,category:"wind" as const,exclusiveGroup:"M33W",factorClass:input.data.windFactorClass}))];
-      try{batches=combinations(actions,files.factors,input.data.use,input.data.purposes,testOnly,trace);}catch(e){blockers.push(String(e));trace.push(audit("NBR8681:2025-combinations",files.factors??null,input.data.actions,null,String(e),"BLOCKED_UNSUPPORTED"));}
+      try{batches=combinations(actions,effective.factors,input.data.use,input.data.purposes,testOnly,trace);}catch(e){blockers.push(String(e));trace.push(audit("NBR8681:2025-combinations",effective.factors??null,input.data.actions,null,String(e),"BLOCKED_UNSUPPORTED"));}
     }else {
       const reason=files.factors===undefined?"FACTORS_2025_MISSING: supplied capture recorded; numerical factors/domain unavailable in Git":"WIND_PRECONDITION_BLOCKED: cannot assemble physical action set";
       blockers.push(reason);trace.push(audit("NBR8681:2025-combinations",files.factors??null,input.data.actions,null,reason,"BLOCKED_UNSUPPORTED"));

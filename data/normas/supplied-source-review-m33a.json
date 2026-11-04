@@ -1,0 +1,32 @@
+{
+  "schema_version": "jpn.supplied-source-review/1",
+  "reviewDate": "2026-11-04",
+  "phase1Gate": {"sha": "08e9f71cb7b33adc834382ecdc5bc7bf997674cd", "run": "41899046892", "allNineJobsPassedBeforeNormativeEdits": true},
+  "method": "Only owner-supplied PDFs and existing Git references. Original scanned pages read visually; corrected/full 2025 documents checked by text and table/formula renderings. No web copies. Human independent transcription and building applicability review remain pending.",
+  "sources": [
+    {"id": "wind-original", "standard": "ABNT NBR 6123", "edition": "2023-original", "pdfPages": 107, "sha256": "338214bb4a840030d24e0685a9e9e73db6241437758f54696965c4805288b966"},
+    {"id": "wind-corrected-partial", "standard": "ABNT NBR 6123", "edition": "2023, corrected 08.04.2025", "pdfPages": 60, "lastPrintedPage": 48, "sha256": "02528d067892eb645aceec8edf56e73e85c15614d6af2c112e243fdda67a7a90"},
+    {"id": "combinations-2025", "standard": "ABNT NBR 8681", "edition": "2025", "pdfPages": 29, "sha256": "f4020c7171308ad2b9577c3618f15fad67e413ec0caed70d83f7a7a51a3d2b9c"}
+  ],
+  "comparison": [
+    {"item": "4.2; 5.2(a); 5.3.3; Tables1,2,4", "finding": "No numerical difference found in the selected flat-terrain S1, recovered S2 exposure/Fr data, group3 S3, Vk, q and density; existing original-edition speed implementation retained. This is not a whole-standard equivalence claim.", "pdfPagesOriginal": [20,22,26,27,29], "pdfPagesCorrected": [20,22,26,27,29]},
+    {"item": "5.3.3 definition of Fr", "finding": "Original explicitly says category II always; corrected wording omits that phrase. Table2 global numerical factors unchanged. No new category-dependent factor invented.", "pdfPagesOriginal": [26], "pdfPagesCorrected": [26]},
+    {"item": "Table7, alpha90, EFI", "finding": "Six negative original entries become positive, with same magnitude. Confirmed: h/b<=1/2 theta45/60; 1/2<h/b<=3/2 theta45/60; 3/2<h/b<=6 theta50/60. Only theta45 h/b<=1/2 is admitted by the current implementation.", "pdfPagesOriginal": [33], "pdfPagesCorrected": [33]},
+    {"item": "Tables7,8 geometry; Table8 theta30 global Ce", "finding": "Selected zone geometry and mono theta30 global coefficients unchanged in compared pages. Eaves h is distinct from maximum speed reference height. Local cpe medio is not substituted for primary-structure Ce.", "pdfPagesOriginal": [33,34], "pdfPagesCorrected": [33,34]},
+    {"item": "6.3.2.1(c), dominant leeward opening", "finding": "Original reference points to Table4; corrected reference points to Table6. Dominant openings remain blocked; this comparison does not implement that procedure.", "pdfPagesOriginal": [55], "pdfPagesCorrected": [56]},
+    {"item": "6.3.2.1(a,b); 6.3.2.2", "finding": "Compared simplified opposite/four-face and airtight internal-pressure alternatives unchanged numerically. Only airtight fixed-window 6.3.2.2 implemented, retaining both internal alternatives. Equal permeability is not inferred from gross geometry.", "pdfPagesOriginal": [55,56], "pdfPagesCorrected": [56,57]}
+  ],
+  "implementedSubset": {
+    "wind": "Primary global roof Ce; square plan a=b, b=+X, a=+Y; width-positive fall; no overhangs/projections/lanterns; gable theta45, eaves h/b<=0.5, alpha0/90; mono theta30, low-eaves h/b<2, alpha90/270; declared airtight fixed windows, negligible accidental breakage, one pressure volume, no separate ceiling pressure, no neighbor amplification, static T<=1s, classA dimensions<=20m, group3 S3. Existing speed provider requires flat uniform terrain.",
+    "combinations": "NBR8681:2025 5.1.2.3, 5.1.3.1, 5.1.4.1-.4, 5.1.5.2-.4; Tables1,4,6: individual steel self-weight or industrialized-roof G, roof-use Q, wind principal/accompanying; normal ULS and rare/frequent/quasi-permanent SLS. Wire SLS-characteristic means 2025 rare (accompanying psi1). Whole permanent action has one gamma; favorable variable actions omitted whole; all wind alternatives exclusive.",
+    "dataState": "DECLARED_UNVERIFIED; selected coefficients transcribed and manually compared in private validation, not independently certified by file import",
+    "arithmeticState": "Existing providers/distributor/compiler/solver reused; exact factor-vector equivalences tracked without averaging; generic cases remain pending-engineer-review",
+    "privateExtractSchema": "jpn.owner-normative-extract/1",
+    "privateExtractSha256": "a760be935d816be960cb1b6ae5e4413dfbefedeb5b053dde20831bb7d9bb7357"
+  },
+  "privateConfiguration": {"environment": "JPN_NORMATIVE_DATA_DIR", "file": "m33a-reviewed-extract.json", "locationRule": "Absolute administrator-owned directory outside repository; no fallback if invalid/missing. Schema exported by reviewed-roof-catalog.ts. Owner must provision licensed data separately on another computer.", "validationCommand": "node node_modules/vitest/vitest.mjs run --config validation/m33a/private.config.ts", "validationExtraPrivateFile": "manual-oracles.json (independent hand-integral and scalar checks)", "nativeRunnerEnvironment": "NODE_ENV=development; JPN_LOCAL_MIXED_ENABLED=1; JPN_LOCAL_MIXED_ORIGIN=http://127.0.0.1:3000"},
+  "blocked": ["Other slopes/aspect ratios/incidences and interpolation", "Other opening/permeability/dominant-opening cases and detailed pressure method", "Local cladding/purlin/fixing cpe medio checks and simultaneous local scenarios", "Dynamic wind, neighbors, overhangs, protrusions, lanterns, isolated/composed roofs", "Procedures needing unavailable corrected pages after48 or unexamined conditions", "Other occupancy/action classes, grouped/indirect actions, temperature, fatigue, exceptional/construction combinations", "Site V0/classification/applicability independent engineering review", "Dated NBR14762:2010/6.7 and NBR8681 compatibility; full material/service/joint/stability verification"],
+  "releaseStatus": "NOT_READY_BLOCKED", "currentEditionCorrectionsVerified": false,
+  "computedStructuralApproval": false, "fabricationRelease": false,
+  "protectedDocumentsOrExtensiveTablesPublished": false
+}

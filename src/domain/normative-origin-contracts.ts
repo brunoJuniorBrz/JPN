@@ -6,9 +6,12 @@ const range=z.tuple([n.nonnegative(),n.nonnegative()]).refine(([a,b])=>b>=a,"Inv
 export const normativeSourceSchema=z.object({standard:engineeringSource,edition:engineeringSource,errata:engineeringSource,
   item:engineeringSource,domain:engineeringSource,transcriber:engineeringSource,documentSha256:z.string().regex(/^[a-f0-9]{64}$/),
 }).strict();
-const source6123=normativeSourceSchema.extend({standard:z.literal("ABNT NBR 6123"),edition:z.literal("2023-original"),errata:z.literal("2025-not-verified")});
+const source6123=z.union([
+  normativeSourceSchema.extend({standard:z.literal("ABNT NBR 6123"),edition:z.literal("2023-original"),errata:z.literal("2025-not-verified")}),
+  normativeSourceSchema.extend({standard:z.literal("ABNT NBR 6123"),edition:z.literal("2023-corrected-2025"),errata:z.literal("08.04.2025-partial-through-48")}),
+]);
 const source8681=normativeSourceSchema.extend({standard:z.literal("ABNT NBR 8681"),edition:z.literal("2025")});
-const coefficient=(source:typeof source6123|typeof source8681)=>z.object({value:n.min(-100).max(100),source}).strict();
+const coefficient=<S extends z.ZodType>(source:S)=>z.object({value:n.min(-100).max(100),source}).strict();
 const origin=z.enum(["OWNER_TRANSCRIPTION","TEST_ONLY_NOT_NORMATIVE"]);
 export const openingsSchema=z.object({enclosure:z.literal("enclosed"),classification:engineeringId.refine(v=>!['unknown','pending','undeclared'].includes(v.toLowerCase())),dominantFace:z.enum(["none","x-negative","x-positive","y-negative","y-positive","roof"]),
   faceAreasM2:z.tuple([n.nonnegative(),n.nonnegative(),n.nonnegative(),n.nonnegative(),n.nonnegative()]),
@@ -45,4 +48,14 @@ export type NormativeWindData=z.infer<typeof normativeWindDataSchema>;
 export type NormativeFactorsData=z.infer<typeof normativeFactorsDataSchema>;
 export type NormativeAction=z.infer<typeof normativeActionSchema>;
 export type NormativeSource=z.infer<typeof normativeSourceSchema>;
+/** Applicability declarations are inputs, never evidence of structural approval. */
+export const reviewedRoofScopeSchema=z.object({
+  procedure:z.literal("6123-global-Ce-airtight/1"),
+  axes:z.literal("b=+X;a=+Y;alpha0=+Y;alpha90=+X;alpha270=-X"),
+  roofImpermeable:z.literal(true),effectivelyAirtight:z.literal(true),fixedWindows:z.literal(true),
+  negligibleAccidentalWindowBreakage:z.literal(true),singleInternalPressure:z.literal(true),
+  noRoofProjections:z.literal(true),noLanterns:z.literal(true),noSeparateCeilingPressure:z.literal(true),
+  noNeighborAmplification:z.literal(true),staticPeriodAtMostOneSecond:z.literal(true),
+  s3Group:z.literal(3),source:engineeringSource,revision:engineeringSource,
+}).strict();
 export type ProcedureState="SUPPORTED_VERIFIED"|"DECLARED_UNVERIFIED"|"BLOCKED_UNSUPPORTED";
