@@ -28,7 +28,7 @@ Os controles são estados locais do componente React, não persistidos no levant
 - Testes Playwright nas larguras de 375 px e 1440 px verificam camadas, isolamento, orientação da câmera, redimensionamento, alternância com Acabado e ausência de alterações no armazenamento e quantitativos.
 - Rodar lint, verificação TypeScript, Vitest, build e Playwright em ambiente com dependências do projeto antes de integrar.
 
-**Limites:** não há cortes de seção, medições entre dois pontos, vista ortográfica real, ligações físicas, verificações resistentes ou detalhamento para fabricação nesta versão. Nenhum filtro da cena deve ser confundido com remoção de elementos estruturais.
+**Limites:** não há cortes de seção, vista ortográfica real, ligações físicas, verificações resistentes ou detalhamento para fabricação nesta versão. Nenhum filtro da cena deve ser confundido com remoção de elementos estruturais.
 
 ## Incremento isolado — medição geométrica entre nós
 
