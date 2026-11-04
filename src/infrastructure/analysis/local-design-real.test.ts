@@ -10,7 +10,7 @@ function enabled(){vi.stubEnv("NODE_ENV","development");vi.stubEnv("JPN_LOCAL_MI
 function request(body=JSON.stringify(input),origin="http://127.0.0.1:3000",host="127.0.0.1:3000"){return new Request("http://127.0.0.1:3000/api/experimental/design",{method:"POST",headers:{origin,host,"content-type":"application/json"},body});}
 afterEach(()=>vi.unstubAllEnvs());
 it("real HTTP resistance path recalculates geometry and executes NBR14762 tension under the OS cap",async()=>{
-  enabled();const response=await POST(request()),out=await response.json();expect(response.status).toBe(200);
+  enabled();const response=await POST(request()),out=await response.json();expect(response.status,JSON.stringify(out)).toBe(200);
   const result=coldformedDesignResultSchema.required({geometry_audit:true,calculation_input_sha256:true}).parse(out.result);
   expect(out.execution.memory_limit_bytes).toBe(805306368);expect(result.input_sha256).toBe(await mixedInputHash(input));
   const check=result.checks.find(c=>c.id==="tension")!;expect(check.status).toBe("CONDITIONAL");

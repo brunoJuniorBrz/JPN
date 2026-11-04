@@ -8,6 +8,7 @@ import time
 from importlib.metadata import version
 
 from .frame3d_model import obj,number,text,input_hash,fail
+from .section_shape_cache import exact_shape_cache
 
 
 def analyze_section(raw):
@@ -53,7 +54,8 @@ def analyze_section(raw):
             fail('MESH_LIMIT','Requested refinement exceeds resource domain; no properties approved.')
         geom.create_mesh(mesh_sizes=[mesh_area]);s=Section(geometry=geom)
         if len(s.mesh_nodes)>40000:fail('MESH_LIMIT','Mesh exceeds 40000 nodes.')
-        s.calculate_geometric_properties();s.calculate_warping_properties()
+        with exact_shape_cache():
+            s.calculate_geometric_properties();s.calculate_warping_properties()
         iy,iz,iyz=map(float,s.get_eic(e_ref=1.));z=s.get_ez(e_ref=1.);area=float(s.get_area())
         cy,cz=map(float,s.get_c());scy,scz=map(float,s.get_sc())
         values=dict(areaMm2=area,centroidYMm=cy,centroidZMm=cz,iyMm4=iy,izMm4=iz,iyzMm4=iyz,

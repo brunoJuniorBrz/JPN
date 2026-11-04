@@ -103,3 +103,13 @@ Os flags `computedStructuralApproval`, `fabricationRelease`, `approved_for_fabri
 2. Transcrição revisada de gamma/psi/receitas da NBR 8681:2025 e seus domínios por finalidade, categoria, papel e efeito; confirmação da cobertura da captura e requisitos não visíveis nela.
 3. Texto/escopo da errata 6123:2025 para comparação com a edição original, antes de mudar seu identificador; compatibilidade explícita com prescrições próprias/datadas da 14762.
 4. Revisão independente das transcrições e casos normativos externos equivalentes. Os arquivos e seus testes permitem esse próximo passo sem reenviar PDFs ao Git público.
+
+## Continuação — fase 1: estabilização antes da incorporação normativa
+
+Base conferida: `83420da`; run PR `41891925170`: importação JSON sem atributo no Playwright e um timeout cFSM Windows; o push havia passado.
+Ambos os imports do catálogo usam agora `with { type: "json" }`, sem duplicação ou mudança dos dados. Coleta Playwright: 73 testes; TypeScript e 9 testes Vitest direcionados aprovados.
+O perfil do caminho HTTP identificou custo em integrações FE repetidas e fatorações da mesma matriz para RHS distintos. Cache por coordenadas/quadratura exatas e LU do backend SciPy original, limitado à malha, preserva as verificações nativas. Nenhum resultado de pedido anterior é utilizado.
+Montagens locais cFSM com entradas byte a byte idênticas também são reutilizadas na mesma semionda. Permanecem 64 semiondas, todas as malhas, tolerâncias, limites e desligamento da árvore Windows.
+Testes: 59 cFSM (incluem 3 de cache) e 11 de seção (incluem os mesmos 3), aprovados; workers cFSM 12,808/12,757 s e HTTP resistente 15,651 s neste ambiente. A melhoria não constitui garantia universal de tempo.
+O teste HTTP passa a registrar o corpo de erro em uma falha, para distinguir TIMEOUT/BUSY/MEMORY_LIMIT. CI do SHA de estabilização será conferida antes de iniciar alterações normativas.
+Os três novos PDFs foram localizados; nenhum conteúdo normativo foi incorporado nesta fase. Resultados e evidências em `validation/m33a/stabilization/`.

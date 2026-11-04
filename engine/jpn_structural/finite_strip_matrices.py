@@ -25,13 +25,18 @@ class FiniteStripMatrices:
 
     def assemble(self,length,*,transverse_needed=True):
         k=np.zeros((self.size,self.size));g=k.copy();transverse=k.copy()
+        identical={}
         for nodes,edges,el,gamma,dofs in self.strips:
-            local_k,local_g=self.kernel.k_kg_global(nodes=nodes,elements=edges,el_props=el,
-                props=self.props,length=length,B_C='S-S',m_a=np.ones(1))
+            key=(nodes.tobytes(),edges.tobytes(),el.tobytes())
+            if key not in identical:
+                local_k,local_g=self.kernel.k_kg_global(nodes=nodes,elements=edges,el_props=el,
+                    props=self.props,length=length,B_C='S-S',m_a=np.ones(1))
+                local_t=self.kernel.kglobal_transv(nodes=nodes,elements=edges,el_props=el,
+                    props=self.props,length=length,B_C='S-S',m_i=1.) if transverse_needed else None
+                identical[key]=(local_k,local_g,local_t)
+            local_k,local_g,local_t=identical[key]
             index=np.ix_(dofs,dofs)
             k[index]+=gamma@local_k@gamma.T;g[index]+=gamma@local_g@gamma.T
             if transverse_needed:
-                local_t=self.kernel.kglobal_transv(nodes=nodes,elements=edges,el_props=el,
-                    props=self.props,length=length,B_C='S-S',m_i=1.)
                 transverse[index]+=gamma@local_t@gamma.T
         return k,g,transverse

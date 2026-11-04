@@ -10,7 +10,7 @@ import { distributeWindActions } from "./wind-load-path";
 import { adaptLoadedMixedProject } from "./loaded-mixed-adapter";
 import { normativeWindDataSchema,normativeFactorsDataSchema,normativeActionSchema,openingsSchema,
   type NormativeSource,type NormativeAction,type NormativeFactorsData,type ProcedureState } from "./normative-origin-contracts";
-import recovered from "../../data/normas/nbr6123-2023-speed.json";
+import recovered from "../../data/normas/nbr6123-2023-speed.json" with { type: "json" };
 
 export const normativeOriginVersion="jpn.normative-origin/1";
 export const normativeOriginInputSchema=z.object({speed:windSpeedInputSchema,openings:openingsSchema,

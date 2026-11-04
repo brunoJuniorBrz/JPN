@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { engineeringReferenceSchema } from "./engineering-combinations";
-import recovered from "../../data/normas/nbr6123-2023-speed.json";
+import recovered from "../../data/normas/nbr6123-2023-speed.json" with { type: "json" };
 
 export const windSpeedInputSchema=z.object({schema_version:z.literal("jpn.wind-speed/1"),edition:z.literal("2023-original"),
   v0Mps:z.number().finite().positive().max(150),heightM:z.number().finite().positive().max(500),heightReference:z.literal("model-base-z0"),
