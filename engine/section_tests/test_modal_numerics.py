@@ -41,7 +41,12 @@ def test_positive_upstream_scalar_can_contradict_its_returned_mode_energy():
         quality=stable.last['distortional']
         assert quality['projected_relative_residual'] <= 1e-8
         assert quality['energy_relative_residual'] <= quality['energy_accumulation_bound']
-        # Independent variational UPPER bound: the returned upstream mode is
-        # one admissible vector in the same space; the minimum cannot exceed it.
-        assert result <= energy*(1+quality['energy_accumulation_bound'])
+        # M32 demonstrated that the upstream vector can belong to a DIFFERENT
+        # physical space. It is not a valid Rayleigh-Ritz upper bound here.
+        # Use an actually admissible trial vector in the corrected space;
+        # original CUFSM/Octave separately checks the physical kinematics.
+        ck,cg,spaces=stable.spaces(wavelength)
+        trial=spaces['distortional'][:,0]
+        upper=float(trial@ck@trial/(trial@cg@trial))
+        assert result <= upper*(1+quality['energy_accumulation_bound'])
         assert quality['modal_rank'] == int(stable.nd)

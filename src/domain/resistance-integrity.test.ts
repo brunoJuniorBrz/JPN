@@ -30,3 +30,9 @@ it("keeps old automatic results readable but rejects their reuse after the evalu
   expect(result.evaluator_version).toBe("jpn.nbr14762-mrd/2");
   expect(()=>requireCurrentBucklingNumerics(request,result)).toThrow(/OUTDATED_BUCKLING_EVALUATOR/);
 });
+it("rejects M31 /3 records until physical modal spaces are recalculated",()=>{
+  const old=JSON.parse(readFileSync("docs/validation/mission31/automatic-compression.json","utf8")).cases[0];
+  const result=coldformedDesignResultSchema.parse(old.design_result),request=verifiedColdformedRequestSchema.parse(old.design_input);
+  expect(result.evaluator_version).toBe("jpn.nbr14762-mrd/3");
+  expect(()=>requireCurrentBucklingNumerics(request,result)).toThrow(/OUTDATED_BUCKLING_EVALUATOR/);
+});

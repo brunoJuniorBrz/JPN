@@ -13,13 +13,18 @@ def main():
         if sys.version_info[:2] != (3, 12):
             raise ValueError('Python 3.12 required')
         from jpn_structural.__main__ import _unique_object
-        from jpn_structural.frame_pdelta import analyze_frame_pdelta
         body = sys.stdin.buffer.read(500001)
         if len(body) > 500000:
             raise ValueError('INPUT_LIMIT')
         def nonfinite(value):
             raise ValueError('Nonfinite JSON: '+value)
-        result = analyze_frame_pdelta(json.loads(body.decode('utf8'), object_pairs_hook=_unique_object, parse_constant=nonfinite))
+        request = json.loads(body.decode('utf8'), object_pairs_hook=_unique_object, parse_constant=nonfinite)
+        if isinstance(request,dict) and request.get('schema_version') == 'jpn.mixed-initial-stress/1':
+            from jpn_structural.mixed_initial_stress import analyze_mixed_initial_stress
+            result = analyze_mixed_initial_stress(request)
+        else:
+            from jpn_structural.frame_pdelta import analyze_frame_pdelta
+            result = analyze_frame_pdelta(request)
         out = dict(status='completed', execution=limits, result=result)
         encoded = json.dumps(out, allow_nan=False).encode('utf8')
         if len(encoded) > 2000000:

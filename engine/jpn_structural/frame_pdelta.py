@@ -16,6 +16,7 @@ from scipy.linalg import eigvalsh
 from .frame3d import analyze_frame3d
 from .frame3d_model import obj, input_hash, fail, validate
 from .model import AnalysisError
+from .reduced_equilibrium import reduced_equilibrium
 
 
 def _native_model(data):
@@ -133,15 +134,13 @@ def analyze_frame_pdelta(raw):
                         fail('ILL_CONDITIONED', 'Tangent conditioning exceeds the existing numerical domain.')
                 # Check the actual initial-stress equation, not merely the
                 # native routine's successful return or active-set counter.
-                residual = (tangent @ displacement - applied).ravel()
-                units = np.tile([1., 1., 1., length_scale, length_scale, length_scale], len(model.nodes))
-                denominator = max(float(np.linalg.norm((tangent @ displacement).ravel()/units)),
-                                  float(np.linalg.norm(applied.ravel()/units)), 1e-30)
-                relative = float(np.linalg.norm(residual[free]/units[free])/denominator)
+                residual, reduced = reduced_equilibrium(tangent, displacement, applied, free, length_scale)
+                relative = reduced['relative_residual']
                 if relative > 1e-8:
                     fail('NONCONVERGENCE', 'Initial-stress tangent/load residual exceeds 1e-8; native return is insufficient.')
                 updated_tangent = model.Ke(name, sparse=False) + model.Kg(name, sparse=False, first_step=False)
-                axial_update_residual = float(np.linalg.norm(((updated_tangent @ displacement-applied).ravel()/units)[free])/denominator)
+                _, updated = reduced_equilibrium(updated_tangent, displacement, applied, free, length_scale)
+                axial_update_residual = updated['relative_residual']
                 nodes = {}
                 force_sum = np.zeros(3)
                 moment_sum = np.zeros(3)
@@ -188,6 +187,7 @@ def analyze_frame_pdelta(raw):
                     members[mid] = dict(end_actions_local=(initial_elements[name][mid] @ element.d(name)).ravel().tolist(),
                         native_end_actions_local=element.f(name).ravel().tolist(), local_axes=element.T()[:3, :3].tolist())
                 combinations[name] = dict(nodes=nodes, members=members, tangent_condition=condition,
+                    reduced_equilibrium=reduced,
                     tangent_relative_residual=relative, updated_axial_tangent_relative_residual=axial_update_residual,
                     nonlinear_deformed_moment_relative_residual=float(np.linalg.norm(nonlinear_moment_sum))/length_scale/max(external_scale, 1e-30),
                     equilibrium=dict(relative_residual=equilibrium,
@@ -197,7 +197,7 @@ def analyze_frame_pdelta(raw):
     except Exception as exc:
         raise AnalysisError('NUMERICAL_FAILURE', 'Native P-Delta failed or did not converge; no partial result: '+type(exc).__name__) from exc
     return dict(schema_version='jpn.frame-pdelta-result/1', input_sha256=input_hash(raw), units='SI',
-        status='experimental-frame-only', solver=dict(name='PyNiteFEA', version='3.2.1', method='analyze_PDelta'),
+        status='experimental-frame-only', solver=dict(name='PyNiteFEA', version='3.2.1', method='analyze_PDelta', residual_evaluator='jpn.reduced-equilibrium/2'),
         first_order=linear, combinations=combinations, elapsed_seconds=time.perf_counter()-started,
         equilibrium_model='native-two-step-initial-stress', nonlinear_iteration_convergence_verified=False,
         mesh_convergence_verified=False, normative_second_order_verified=False,

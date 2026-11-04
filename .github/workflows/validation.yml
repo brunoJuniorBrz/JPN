@@ -83,4 +83,4 @@ jobs:
       - if: matrix.profile == 'fsm'
         run: python -m pytest engine/section_tests/test_elastic_strip.py -q
       - if: matrix.profile == 'sections-fsm'
-        run: python -m pytest engine/section_tests/test_member_buckling.py engine/section_tests/test_modal_numerics.py -q
+        run: python -m pytest engine/section_tests/test_member_buckling.py engine/section_tests/test_modal_numerics.py engine/section_tests/test_modal_kinematics.py -q
