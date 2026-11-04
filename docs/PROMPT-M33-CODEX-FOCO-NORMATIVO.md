@@ -1,6 +1,6 @@
-# Prompt enxuto — Codex M33 (depois da integração auditada da M32)
+# Prompt enxuto — Codex M33 (sobre a base cumulativa da M32)
 
-Você está trabalhando em `brunoJuniorBrz/JPN`. O objetivo é entregar um **beta de origem normativa de vento e combinações, limitado e comprovável**, para coberturas retangulares de uma e duas águas. **Não reconstrua o solver, o renderizador ou o caminho de carregamentos.**
+Você está trabalhando em `brunoJuniorBrz/JPN`. **Antes de tudo, leia `docs/MAPA-INTEGRACAO-REAL-POS-M32.md`: a branch do PR #44 já contém M26–M32, não reexecute uma falsa missão de integração de todo o motor.** O objetivo é entregar um **beta de origem normativa de vento e combinações, limitado e comprovável**, para coberturas retangulares de uma e duas águas. **Não reconstrua o solver, o renderizador ou o caminho de carregamentos.**
 
 ## Ler primeiro — trabalho já adiantado
 
@@ -8,7 +8,7 @@ Você está trabalhando em `brunoJuniorBrz/JPN`. O objetivo é entregar um **bet
 - `docs/VALIDACAO-OBRAS-REFERENCIA.md`: REF-04 (principal vento), REF-01 (V0 contraditório, não usar como oracle), REF-02 (normas históricas).
 - `docs/ENTREGA-MISSAO-22-VENTO-COMBINACOES.md`: caminho físico existente e restrições importantes.
 - `docs/ROADMAP-3D-CONSTRUTIVO-JPN.md`: melhorias 3D já existentes; **fora do escopo da M33**.
-- PR #44 `566e068010446c3af8cb4889391ac177dcf752e3` (confirmar HEAD), PR #41 e PR #42 como dependências. Não mesclar automaticamente branches de pesquisa ou disparar deploy.
+- PR #44 `566e068010446c3af8cb4889391ac177dcf752e3` (confirmar HEAD) **já contém M26–M32**. PR #42 é estudo paralelo, não dependência de merge. #38 (ligações isoladas) e #39/#40 (UX paralela) não estão incorporados. Não mesclar automaticamente branches de pesquisa nem disparar deploy.
 
 Arquivos a reutilizar: `wind-speed.ts`, `wind-contracts.ts`, `wind-load-path.ts`, `roof-regions.ts`, `roof-load-path.ts`, `engineering-combinations.ts`, `loaded-mixed-adapter.ts` e `engine-release-gate.ts`. Já existem testes detalhados de conservação e integração PyNite em `wind-load-path.test.ts`; não os reescreva.
 
@@ -39,6 +39,6 @@ Arquivos a reutilizar: `wind-speed.ts`, `wind-contracts.ts`, `wind-load-path.ts`
 
 ## Forma de entrega
 
-Branch nova a partir da base consolidada e auditada, PR em rascunho, sem deploy/merge automático. Código de cálculo, testes, fixtures, fontes e relatório técnico com matriz SUPPORT/DECLARED/BLOCKED. Se uma norma completa ou uma figura não puder ser obtida legalmente, não improvise: entregue o progresso comprovado e os bloqueios. Evite investir créditos em telhas 3D, IFC, CSS, refatoração geral, formatting global, CAD, orçamento ou implementação nova de FEM nesta missão.
+Branch nova **a partir do HEAD atual do PR #44**, que já é a base cumulativa de M26–M32; ler as notas do PR #45 sem ter que mesclar uma missão separada só para começar. A incorporação seletiva da UX #39/#40 e a promoção posterior para `main` podem ser tratadas em checkpoint próprio e não exigem reimplementar o motor. PR em rascunho, sem deploy/merge automático. Código de cálculo, testes, fixtures, fontes e relatório técnico com matriz SUPPORT/DECLARED/BLOCKED. Se uma norma completa ou uma figura não puder ser obtida legalmente, não improvise: entregue o progresso comprovado e os bloqueios. Evite investir créditos em telhas 3D, IFC, CSS, refatoração geral, formatting global, CAD, orçamento ou implementação nova de FEM nesta missão.
 
 **Pronto para M34 = geração de cargas e combinações no subconjunto suportado com referência independente, integração real e bloqueios corretos; NÃO = obra aprovada para fabricação.**
