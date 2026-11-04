@@ -1,6 +1,6 @@
 # M33 — pré-auditoria independente: origem normativa de vento e combinações
 
-**Estado:** documento de preparação, não implementação normativa; base exata PR #44, SHA `566e068010446c3af8cb4889391ac177dcf752e3`. Não houve alteração dos cálculos. O PR #44 é experimental e não deve ser promovido automaticamente à main.
+**Estado:** documento de preparação, não implementação normativa; base exata PR #44, SHA `566e068010446c3af8cb4889391ac177dcf752e3`. Não houve alteração dos cálculos. **O PR #44 já contém a cadeia acumulada de código M26–M32 e está 85 commits à frente da main, sem commits faltantes da main; NÃO há uma missão de reimplementação/merge de M26–M32 como pré-requisito técnico da M33.** Consulte `docs/MAPA-INTEGRACAO-REAL-POS-M32.md` para saber quais PRs paralelos não estão incluídos. A promoção de release à main ainda exige revisão.
 
 ## 1. Descobertas já verificadas no código
 
@@ -71,4 +71,4 @@ Cada fixture futura deve declarar `status` (`normative-oracle`, `historical-refe
 
 **Codex — somente trabalho que exige codificação e execução especializadas:** consultar texto aplicável completo, extrair e implementar coeficientes/zonas e Cpi nos domínios comprovados, compor fatores atuais da NBR 8681:2025, testar seleção/interpolação/exceções, integração pelo caminho de cargas já existente e executar comparações independentes reproduzíveis.
 
-**Sequência:** consolidar ramo M32 de produção após auditoria → congelar fixtures verificáveis → implementar seleção normativa isolada → integrar/validar → beta de cobertura na M34. Não mergear este documento automaticamente à main.
+**Sequência correta:** usar o HEAD do PR #44 como base cumulativa de M26–M32 → congelar fixtures verificáveis → implementar seleção normativa isolada em branch separada → integrar/validar → beta de cobertura na M34. Em paralelo, preparar uma candidata de produto para incorporação **seletiva** de UX #39/#40 (ainda fora da M32) e eventual promoção revisada à main. PR #38 (ligações isoladas) é assunto posterior de resistência e ligações; #42 permanece pesquisa. Não mergear este documento automaticamente à main.
