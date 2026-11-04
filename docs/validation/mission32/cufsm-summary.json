@@ -8,15 +8,15 @@
   },
   "cufsm_commit": "ab449cef8d05bb489df591d2e5b4e74571a793f5",
   "maxima": {
-    "eigenvalue_relative_difference": 3.994236020478098e-06,
+    "eigenvalue_relative_difference": 3.9947970118029285e-06,
     "subspace_error": 4.987990363996353e-10,
-    "projected_relative_residual": 7.660597046249763e-09,
-    "energy_relative_residual": 4.889898943846696e-07,
-    "energy_accumulation_bound": 0.04295650020127189,
+    "projected_relative_residual": 8.532533143803888e-09,
+    "energy_relative_residual": 3.2478373614079665e-07,
+    "energy_accumulation_bound": 0.04295653518351068,
     "scaled_elastic_condition": 39369689.09961097,
     "basis_condition": 768272.8346320058,
     "modal_rank": 150,
-    "inverse_refinement_steps": 2
+    "inverse_refinement_steps": 1
   },
   "failures": [],
   "eigenpairs": 1188,

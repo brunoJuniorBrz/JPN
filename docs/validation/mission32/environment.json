@@ -1,6 +1,6 @@
 {
   "initial_sha": "0d7ebc2729fb4f370a7d99fa7f6f4751d6f12696",
-  "validated_code_sha": "6317bfe8d0499fc310c8e632558db9a196f36bf4",
+  "validated_code_sha": "810fdbfb21412f38f98c2676d4939b4a8703cf45",
   "platform": "Windows-10-10.0.19045-SP0",
   "node": "v24.22.0",
   "profiles": {
@@ -72,5 +72,6 @@
     "total_original_runs": 594,
     "subsequent_python_comparisons": "All 594 re-evaluated for final implementation; cached original outputs use identical inputs",
     "compatibility_warning_disabled": "Octave:possible-matlab-short-circuit-operator; no numerical warning disabled"
-  }
+  },
+  "initial_full_campaign_code_sha": "6317bfe8d0499fc310c8e632558db9a196f36bf4"
 }

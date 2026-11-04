@@ -1,0 +1,8 @@
+{
+  "reference_code_sha": "6317bfe8d0499fc310c8e632558db9a196f36bf4",
+  "function": "_refine_inverse_pair",
+  "test": "test_refinement_targets_original_pencil_despite_scaled_rounding",
+  "test_reaches_original_implementation": true,
+  "test_fails_before_correction": true,
+  "execution": "Extracted exact AST function from git show and substituted only the function binding in the same regression test; no working tree code mutation"
+}

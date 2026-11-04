@@ -1,6 +1,6 @@
 {
   "initial_sha": "0d7ebc2729fb4f370a7d99fa7f6f4751d6f12696",
-  "numerical_code_sha": "6317bfe8d0499fc310c8e632558db9a196f36bf4",
+  "numerical_code_sha": "810fdbfb21412f38f98c2676d4939b4a8703cf45",
   "platform": "Windows-10-10.0.19045-SP0",
   "all_steps_passed": false,
   "known_unresolved_failure": "Intermittent 20-second physical-section worker timeout: final full profile 7 passed/1 failed and isolated attempt failed; subsequent paired baseline and current-branch attempts both passed. Cause unresolved; overall campaign not fully green.",
@@ -17,7 +17,7 @@
     }
   ],
   "python_core": {
-    "tests": 1630,
+    "tests": 1631,
     "failures": 0,
     "errors": 0,
     "skipped": 0,
@@ -74,6 +74,18 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0
+    },
+    "member-original-pencil": {
+      "tests": 56,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "inverse-original-pencil": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
     }
   },
   "repeated_mixed_tests_already_in_core_count": true,
@@ -96,15 +108,15 @@
     "eigenpairs": 1188,
     "fixture_cases": 36,
     "maxima": {
-      "eigenvalue_relative_difference": 3.994236020478098e-06,
+      "eigenvalue_relative_difference": 3.9947970118029285e-06,
       "subspace_error": 4.987990363996353e-10,
-      "projected_relative_residual": 7.660597046249763e-09,
-      "energy_relative_residual": 4.889898943846696e-07,
-      "energy_accumulation_bound": 0.04295650020127189,
+      "projected_relative_residual": 8.532533143803888e-09,
+      "energy_relative_residual": 3.2478373614079665e-07,
+      "energy_accumulation_bound": 0.04295653518351068,
       "scaled_elastic_condition": 39369689.09961097,
       "basis_condition": 768272.8346320058,
       "modal_rank": 150,
-      "inverse_refinement_steps": 2
+      "inverse_refinement_steps": 1
     },
     "failures": []
   },
@@ -230,5 +242,9 @@
   "normative_second_order_verified": false,
   "approved_for_fabrication": false,
   "merged": false,
-  "deployed": false
+  "deployed": false,
+  "initial_full_campaign_code_sha": "6317bfe8d0499fc310c8e632558db9a196f36bf4",
+  "post_ci_correction_checks": "post-ci-checks.json",
+  "ci_snapshot": "ci-original-pencil.json",
+  "full_browser_campaign_code_sha": "6317bfe8d0499fc310c8e632558db9a196f36bf4"
 }

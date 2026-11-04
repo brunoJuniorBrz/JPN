@@ -14,7 +14,7 @@ HEADs conferidos antes de modificar código:
 
 Branch de implementação: `feat/m32-numerics-mixed-second-order`, derivada do HEAD do #43. O #42 foi consultado como pesquisa, sem merge. Foram lidos o handoff, os oito oráculos, o estudo de matrizes, o relatório M31 e os módulos efetivamente utilizados. A pasta antiga da loja e as branches concorrentes foram preservadas. Publicação automática desta branch desativada nos dois `vercel.json`; sem merge ou deploy.
 
-SHA dos algoritmos numéricos auditados: `6317bfe8d0499fc310c8e632558db9a196f36bf4`, após o commit inicial de implementação `3850e2a855ae6ed65f404f4b917e2292dae40e0a`. Documentação, evidências e descrições de procedência dos exemplos compõem um commit posterior, sem alterar esses algoritmos. O SHA final de entrega e o estado da CI constam no PR.
+SHA final dos algoritmos numéricos auditados: `810fdbfb21412f38f98c2676d4939b4a8703cf45`. Implementação inicial em `3850e2a855ae6ed65f404f4b917e2292dae40e0a`; primeira regressão completa em `6317bfe8d0499fc310c8e632558db9a196f36bf4`; publicação inicial em `96e3794a708555df62318220b37e8950ac9c70a2`. A CI dessa publicação encontrou instabilidade numérica no Linux, corrigida no SHA final acima. Os retestes e seus limites constam abaixo. O SHA de entrega, posterior de evidências, consta no [PR #44](https://github.com/brunoJuniorBrz/JPN/pull/44).
 
 ## Ambiente e referências executáveis
 
@@ -67,7 +67,7 @@ As correções em `modal_kinematics.py` são limitadas ao domínio Ue aberto:
 
 A SVD, solução inversa em métrica elástica, resíduo `1e-8`, condicionamento `1e10`, conferência de energia e limite de acumulação da M31 continuam. O teste variacional passou a usar um vetor realmente admissível no espaço corrigido: um autovetor da biblioteca antiga, pertencente a outro espaço, não é automaticamente um limite superior válido.
 
-A busca contínua reproduziu uma falha adicional do resíduo projetado em `1999,9999999999998 mm`, após converter `exp(log(2000))`. A simetria de energia agora é reaplicada depois do escalonamento diagonal, que pode introduzir assimetrias de uma ulp. Quando o par ainda excede `1e-8`, permitem-se até três correções Newton do **mesmo autoproblema**, mantendo somente um par melhor. O sistema aumentado usa `Gs-mu Ks`, o vetor `Ks v` e a normalização `vᵀ Ks v=1`; depois se repetem as verificações originais de resíduo, energia, positividade e condicionamento. Se não cumprir os critérios, continua recusado. Isso refina um autovetor/autovalor e não representa iteração geométrica da estrutura. Dois oráculos diagonais independentes e o ponto de arredondamento cobrem essa correção. A campanha externa final teve no máximo duas correções por par.
+A busca contínua reproduziu uma falha adicional do resíduo projetado em `1999,9999999999998 mm`, após converter `exp(log(2000))`. A simetria de energia agora é reaplicada depois do escalonamento diagonal, que pode introduzir assimetrias de uma ulp. Quando o par ainda excede `1e-8`, permitem-se até três correções Newton do **mesmo autoproblema**, mantendo somente um par melhor. O sistema aumentado usa `Gs-mu Ks` como Jacobiano/precondicionador, mas seu vetor de normalização e resíduo são formados a partir de `K p` e `G p` originais, com `p=v/scale`; depois se repetem as verificações originais de resíduo, energia, positividade e condicionamento. Se não cumprir os critérios, continua recusado. Isso refina um autovetor/autovalor e não representa iteração geométrica da estrutura. Dois oráculos diagonais independentes, um caso de direção elástica suave com arredondamento simétrico controlado e o ponto de arredondamento cobrem essa correção. O novo caso tem condição aproximada 2e8; um primeiro ensaio com condição 2e9 encontrou o piso de cancelamento do matvec double e foi preservado como tentativa de desenvolvimento, sem alegação de solução universal. A campanha externa final teve no máximo uma correção por par.
 
 ### Campanha cruzada
 
@@ -79,9 +79,9 @@ A busca contínua reproduziu uma falha adicional do resíduo projetado em `1999,
 | Malhas por geometria | Arco/plano 2/6, 4/8, 8/12 |
 | Comprimentos | `2.000/m mm`, m=1…64, mais dois valores quase iguais em torno do caso sensível |
 | Comparações executadas | 594 casos, 1.188 autovalores/modos; zero falhas nos critérios fixados |
-| Maior diferença relativa entre autovalores | `3,99424e-6` |
+| Maior diferença relativa entre autovalores | `3,99480e-6` |
 | Maior diferença de projeção entre espaços | `4,98799e-10` |
-| Maior resíduo projetado JPN | `7,66060e-9` |
+| Maior resíduo projetado JPN | `8,53254e-9` |
 | Maior condição elástica escalonada | `3,93697e7` |
 | Fixtures de regressão do executável externo | 36 casos, com valores e modos originais |
 
@@ -185,6 +185,14 @@ Evidências de falhas e ajustes:
 
 A campanha completa de regressão, suas falhas eventualmente encontradas, correções e contagens finais são registradas no fechamento, com comandos/saídas em `docs/validation/mission32/`. Resultados M31 são histórico, não aprovação automática desta missão.
 
+### Falha Linux identificada depois da primeira publicação
+
+A CI do SHA `96e3794` executou realmente os testes e encontrou quatro recusas cFSM no Linux (52 aprovados), todas por resíduo projetado acima de `1e-8`; não foi falha de inicialização de runner. O refinamento anterior usava o resíduo do pencil escalonado/simetrizado. Isso podia melhorar esse problema arredondado sem melhorar suficientemente o resíduo das matrizes projetadas originais.
+
+O commit `810fdbf` mantém o Jacobiano escalonado, mas corrige o resíduo e a normalização calculados das matrizes originais. Tolerâncias e número máximo de correções não mudaram. Os 594 casos externos foram reavaliados contra os mesmos resultados originais, com entradas idênticas; zero falhas e máximo de uma correção. As 36 fixtures mantêm valores/modos externos; apenas o hash do JSON bruto mudou. O núcleo foi repetido: 1.631 testes e 1.000 comparações aprovados. Os 56 testes cFSM, os diagnósticos contínuos, os workers automáticos e os 389 Vitest também foram repetidos. Os oito jobs numéricos da CI desse código passaram, cobrindo núcleo e os três perfis em Linux/Windows; o estado da aplicação e do HEAD final é registrado no PR e no snapshot correspondente.
+
+Ver [falha remota original](validation/mission32/initial/ci-linux-residual-failure.log), [log Linux após correção](validation/mission32/ci-linux-cfsm-original-pencil.log), [retestes locais](validation/mission32/post-ci-checks.json) e [snapshot da CI do código](validation/mission32/ci-original-pencil.json).
+
 ## Reprodução
 
 Preparar os ambientes pelos lockfiles preexistentes, sem instalar o pacote principal no perfil FSM opcional. Com os executáveis do computador atual, configurar `JPN_PYTHON_EXECUTABLE`, `JPN_SECTION_FSM_PYTHON_EXECUTABLE` e BLAS/OMP/MKL em uma thread. A lista exata de comandos e versões está em `checks.json` e `environment.json`.
@@ -230,17 +238,17 @@ Usar o Python do perfil combinado somente para testes cFSM e seus drivers. Para 
 
 ## Fechamento
 
-A regressão foi executada nesta branch, com algoritmos numéricos no SHA `6317bfe8d0499fc310c8e632558db9a196f36bf4`. O commit seguinte publica evidências, relatório, gráfico e descrições de procedência, sem mudar os algoritmos. O SHA final e a CI remota são informados no PR separado em rascunho, com base no #43.
+A primeira regressão completa e os 73 Playwright locais foram executados em `6317bfe8d0499fc310c8e632558db9a196f36bf4`. Depois da falha Linux, núcleo, campanha externa, perfil cFSM, diagnósticos, workers e Vitest foram repetidos em `810fdbfb21412f38f98c2676d4939b4a8703cf45`, preservando os resultados e falhas anteriores. A alteração posterior de evidências não muda os algoritmos; o SHA final e a CI remota constam no PR #44 em rascunho, com base no #43.
 
 | Verificação executada | Resultado |
 |---|---|
 | Oito oráculos do handoff | 8 aprovados |
-| Núcleo Python | 1.630 aprovados; zero falhas, erros ou skips |
+| Núcleo Python | 1.631 aprovados; zero falhas, erros ou skips |
 | Campanha independente do núcleo | 1.000 comparações aprovadas |
-| Propriedades de seção, última suíte completa | 7 aprovados, 1 timeout; reteste isolado também falhou |
+| Propriedades de seção, última suíte local completa | 7 aprovados, 1 timeout; reteste isolado também falhou; perfil passou depois na CI Linux/Windows |
 | Controle sequencial do caso com timeout | Base limpa e branch atual passaram; causa da intermitência não resolvida |
 | Perfil FSM legado / cFSM combinado | 4 / 56 aprovados, sem skips |
-| Protótipo misto | 38 aprovados, já incluídos nos 1.630; repetição após ajuste de descrições também passou |
+| Protótipo misto | 38 aprovados, já incluídos nos 1.631; repetição após ajuste de descrições também passou |
 | CUFSM original/Octave | 594 casos, 1.188 autopares; zero falhas nos critérios da comparação |
 | TypeScript / ESLint | Aprovados |
 | Vitest | 389 aprovados, 47 arquivos; zero pendentes |

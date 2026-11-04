@@ -331,5 +331,7 @@
     ],
     "interpretation": "Intermittent timeout remains unresolved; passing controls do not erase previous failures or establish an infrastructure-only cause",
     "worker_timeout_seconds": 20
-  }
+  },
+  "post_ci_correction": "post-ci-checks.json",
+  "post_ci_correction_code_sha": "810fdbfb21412f38f98c2676d4939b4a8703cf45"
 }

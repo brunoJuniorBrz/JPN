@@ -1,0 +1,77 @@
+{
+  "schema_version": "jpn.modal-numerics-audit/1",
+  "input_sha256": "1a36203f82a3de10caa1c73b449e6e619ec6675474f331c565f36b464eb2649b",
+  "dependencies": {
+    "numpy": "2.3.3",
+    "scipy": "1.15.3",
+    "pycufsm": "0.2.0"
+  },
+  "results": [
+    {
+      "half_wavelength_mm": 125.0,
+      "upstream_stress_mpa": 34.76068943102106,
+      "upstream_mode_rayleigh_mpa": 34.76067039172684,
+      "upstream_relative_difference": 5.477251735487013e-07,
+      "guarded_stress_mpa": 34.74099103506363,
+      "numerical_audit": {
+        "projected_relative_residual": 1.2798050371417104e-10,
+        "energy_relative_residual": 2.320421632623192e-12,
+        "energy_accumulation_bound": 1.4356817620879286e-07,
+        "scaled_elastic_condition": 293593.20491299115,
+        "basis_condition": 756542.8998415242,
+        "modal_rank": 34,
+        "inverse_refinement_steps": 0
+      }
+    },
+    {
+      "half_wavelength_mm": 870.2079655673336,
+      "upstream_stress_mpa": 5.189560944791603,
+      "upstream_mode_rayleigh_mpa": 161.81774246237686,
+      "upstream_relative_difference": 0.9679295924796493,
+      "guarded_stress_mpa": 104.34885574758475,
+      "numerical_audit": {
+        "projected_relative_residual": 3.206494087358242e-09,
+        "energy_relative_residual": 6.911256677807199e-08,
+        "energy_accumulation_bound": 0.01273410551282683,
+        "scaled_elastic_condition": 13197171.356485477,
+        "basis_condition": 768071.3273950549,
+        "modal_rank": 34,
+        "inverse_refinement_steps": 0
+      }
+    },
+    {
+      "half_wavelength_mm": 870.208,
+      "upstream_stress_mpa": 197.59711494898892,
+      "upstream_mode_rayleigh_mpa": 150.9261398069187,
+      "upstream_relative_difference": 0.30923056272277843,
+      "guarded_stress_mpa": 104.34889802474402,
+      "numerical_audit": {
+        "projected_relative_residual": 1.930251232750271e-09,
+        "energy_relative_residual": 2.0903394677098832e-07,
+        "energy_accumulation_bound": 0.01273410383625317,
+        "scaled_elastic_condition": 13197162.482540403,
+        "basis_condition": 768071.327414092,
+        "modal_rank": 34,
+        "inverse_refinement_steps": 0
+      }
+    },
+    {
+      "half_wavelength_mm": 1000.0,
+      "upstream_stress_mpa": 96.44596592446926,
+      "upstream_mode_rayleigh_mpa": 153.63055324926438,
+      "upstream_relative_difference": 0.3722214501956103,
+      "guarded_stress_mpa": 100.38279629157996,
+      "numerical_audit": {
+        "projected_relative_residual": 3.358478905894331e-09,
+        "energy_relative_residual": 1.2632786208704166e-07,
+        "energy_accumulation_bound": 0.018615877390954598,
+        "scaled_elastic_condition": 18313632.282411758,
+        "basis_condition": 768131.6467832996,
+        "modal_rank": 34,
+        "inverse_refinement_steps": 0
+      }
+    }
+  ],
+  "verification": "independent energy identity and projected residual; not a complete external classification benchmark",
+  "approved_for_fabrication": false
+}

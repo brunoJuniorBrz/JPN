@@ -1,0 +1,666 @@
+{
+  "numerical_code_sha": "810fdbfb21412f38f98c2676d4939b4a8703cf45",
+  "source_url": "https://api.github.com/repos/brunoJuniorBrz/JPN/actions/runs/41843740909/jobs?per_page=30",
+  "run_url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41843740909",
+  "initial_failed_sha": "96e3794a708555df62318220b37e8950ac9c70a2",
+  "jobs": [
+    {
+      "id": 126621746291,
+      "name": "application",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-11-04T14:03:13Z",
+      "completed_at": null,
+      "runner_id": 1000001639,
+      "html_url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41843740909/job/126621746291",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m venv .venv",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run .venv/bin/python -m pip install -r engine/requirements-sections.lock",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run .venv/bin/python -m pip install --no-build-isolation --no-deps -e ./engine",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m venv .tools/sections-fsm",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run .tools/sections-fsm/bin/python -m pip install -r engine/requirements-sections-fsm.lock",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npx --yes pnpm@12.15.0 install --frozen-lockfile",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npx --yes pnpm@12.15.0 typecheck",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npx --yes pnpm@12.15.0 lint",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npx --yes pnpm@12.15.0 test",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run .venv/bin/python tests/verify_dxf.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npx --yes pnpm@12.15.0 exec playwright install --with-deps chromium",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run npx --yes pnpm@12.15.0 test:e2e",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "name": "Run npx --yes pnpm@12.15.0 build",
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "status": "pending",
+          "conclusion": null
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "pending",
+          "conclusion": null
+        }
+      ]
+    },
+    {
+      "id": 126621746630,
+      "name": "structural (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T14:03:13Z",
+      "completed_at": "2026-11-04T14:04:55Z",
+      "runner_id": 1000001642,
+      "html_url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41843740909/job/126621746630",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r engine/requirements-validation.lock",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install --no-build-isolation --no-deps -e ./engine",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python engine/validate.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python engine/audit_loading.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126621746698,
+      "name": "optional-numerical-profiles (windows-latest, sections)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T14:03:13Z",
+      "completed_at": "2026-11-04T14:06:31Z",
+      "runner_id": 1000001644,
+      "html_url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41843740909/job/126621746698",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r engine/requirements-sections.lock",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_section_properties.py engine/section_tests/test_verified_design.py -q",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_elastic_strip.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_member_buckling.py engine/section_tests/test_modal_numerics.py engine/section_tests/test_modal_kinematics.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126621746792,
+      "name": "optional-numerical-profiles (ubuntu-latest, fsm)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T14:03:15Z",
+      "completed_at": "2026-11-04T14:03:31Z",
+      "runner_id": 1000001640,
+      "html_url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41843740909/job/126621746792",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r engine/requirements-fsm.lock",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_section_properties.py engine/section_tests/test_verified_design.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_elastic_strip.py -q",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_member_buckling.py engine/section_tests/test_modal_numerics.py engine/section_tests/test_modal_kinematics.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126621746842,
+      "name": "optional-numerical-profiles (ubuntu-latest, sections)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T14:03:13Z",
+      "completed_at": "2026-11-04T14:05:39Z",
+      "runner_id": 1000001641,
+      "html_url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41843740909/job/126621746842",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r engine/requirements-sections.lock",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_section_properties.py engine/section_tests/test_verified_design.py -q",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_elastic_strip.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_member_buckling.py engine/section_tests/test_modal_numerics.py engine/section_tests/test_modal_kinematics.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126621746848,
+      "name": "optional-numerical-profiles (ubuntu-latest, sections-fsm)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T14:03:13Z",
+      "completed_at": "2026-11-04T14:04:20Z",
+      "runner_id": 1000001643,
+      "html_url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41843740909/job/126621746848",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r engine/requirements-sections-fsm.lock",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_section_properties.py engine/section_tests/test_verified_design.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_elastic_strip.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_member_buckling.py engine/section_tests/test_modal_numerics.py engine/section_tests/test_modal_kinematics.py -q",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126621747090,
+      "name": "structural (windows-latest)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T14:03:13Z",
+      "completed_at": "2026-11-04T14:05:58Z",
+      "runner_id": 1000001646,
+      "html_url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41843740909/job/126621747090",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r engine/requirements-validation.lock",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install --no-build-isolation --no-deps -e ./engine",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python engine/validate.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python engine/audit_loading.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126621747194,
+      "name": "optional-numerical-profiles (windows-latest, sections-fsm)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T14:03:13Z",
+      "completed_at": "2026-11-04T14:04:59Z",
+      "runner_id": 1000001645,
+      "html_url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41843740909/job/126621747194",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r engine/requirements-sections-fsm.lock",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_section_properties.py engine/section_tests/test_verified_design.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_elastic_strip.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_member_buckling.py engine/section_tests/test_modal_numerics.py engine/section_tests/test_modal_kinematics.py -q",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 126621747879,
+      "name": "optional-numerical-profiles (windows-latest, fsm)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-04T14:03:14Z",
+      "completed_at": "2026-11-04T14:04:05Z",
+      "runner_id": 1000001647,
+      "html_url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41843740909/job/126621747879",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip install -r engine/requirements-fsm.lock",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pip check",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_section_properties.py engine/section_tests/test_verified_design.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_elastic_strip.py -q",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run python -m pytest engine/section_tests/test_member_buckling.py engine/section_tests/test_modal_numerics.py engine/section_tests/test_modal_kinematics.py -q",
+          "status": "completed",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}
