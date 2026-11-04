@@ -553,6 +553,17 @@ body { font-size: 16px; }
   cursor: pointer; min-height: 40px;
 }
 .inspection-layer-options input { width: 18px; height: 18px; accent-color: #375a44; flex: none; }
+/* Inspection-only geometry, independent of analysis and project persistence. */
+.inspection-measurement {
+  display: flex; flex: 1 0 100%; align-items: center; flex-wrap: wrap; gap: 8px 12px;
+  background: white; border: 1px solid #cad6c6; border-radius: 6px; padding: 10px 12px;
+  font-size: 13px;
+}
+.inspection-measurement label { display: grid; gap: 4px; flex: 1 1 165px; }
+.inspection-measurement select { min-height: 44px; width: 100%; }
+.inspection-measurement strong { color: #273d34; }
+.inspection-measurement small { flex: 1 0 100%; color: #53645c; }
+.inspection-measurement > button { min-height: 44px; margin-left: auto; }
 .inspection-view-buttons { display: flex; flex: 1 1 215px; gap: 4px; }
 .inspection-view-buttons button {
   flex: 1; min-width: 0; min-height: 44px; padding: 6px;
@@ -565,6 +576,8 @@ body { font-size: 16px; }
   .inspection-layers { grid-column: 1 / -1; min-width: 0; }
   .inspection-tools > .button { width: 100%; }
   .inspection-view-buttons { grid-column: 1 / -1; width: 100%; }
+  .inspection-measurement { grid-column: 1 / -1; }
+  .inspection-measurement > button { width: 100%; margin-left: 0; }
   .inspection-layer-options { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 370px) {
