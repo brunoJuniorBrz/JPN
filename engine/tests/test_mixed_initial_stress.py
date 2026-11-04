@@ -25,12 +25,14 @@ def request(model):
 
 def parallel(ratio=.2,lateral=100.):
     data=beam_and_axial();k=3*200e9*1e-5/2**3;ka=200e9*.001
+    data['cases'][0]['source']='Synthetic M32 coupled beam/axial forces; explicit SI nodal loads'
     data['nodal_loads'][0].update(fy_n=lateral,fz_n=ratio*k*(ka+k)/ka)
     return request(data)
 
 
 def portal():
     data=beam_and_axial();template=data['members'][0]
+    data['cases'][0]['source']='Synthetic M32 vertical and biaxial nodal forces at L4 and R4'
     data['nodes']=[];data['members']=[]
     for side,x in [('L',0.),('R',4.)]:
         for i in range(5):data['nodes'].append(dict(id=side+str(i),x_m=x,y_m=0.,z_m=3*i/4))

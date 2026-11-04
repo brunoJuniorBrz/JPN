@@ -1,0 +1,76 @@
+{
+  "initial_sha": "0d7ebc2729fb4f370a7d99fa7f6f4751d6f12696",
+  "validated_code_sha": "6317bfe8d0499fc310c8e632558db9a196f36bf4",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "node": "v24.22.0",
+  "profiles": {
+    "main": {
+      "python": "3.12.16",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "PyNiteFEA": "3.2.1",
+      "sectionproperties": "3.10.2",
+      "pycufsm": null,
+      "pytest": "9.2.0"
+    },
+    "combined": {
+      "python": "3.12.16",
+      "numpy": "2.3.3",
+      "scipy": "1.15.3",
+      "PyNiteFEA": null,
+      "sectionproperties": "3.10.2",
+      "pycufsm": "0.2.0",
+      "pytest": "9.2.0"
+    },
+    "legacy-fsm": {
+      "python": "3.12.16",
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "PyNiteFEA": null,
+      "sectionproperties": null,
+      "pycufsm": "0.2.0",
+      "pytest": "9.2.0"
+    }
+  },
+  "external_sources": {
+    "cufsm": {
+      "commit": "ab449cef8d05bb489df591d2e5b4e74571a793f5",
+      "source_clean": true
+    },
+    "stabileo": {
+      "commit": "58fc63cef585918c5025acc71488f73f5fbf4afc",
+      "source_clean": true
+    },
+    "frame3dd": {
+      "commit": "73a022adf1ba9d168640254bf22557e21dfb5fc4",
+      "source_clean": true
+    },
+    "HPGnumlib": {
+      "commit": "2861fe6a3764661dd020784f6d79577e08afdb9e",
+      "source_clean": true
+    }
+  },
+  "octave": "GNU Octave 11.3.0, official Windows portable 7z",
+  "gcc": "gcc.exe (GCC) 15.2.0",
+  "rust": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "pycufsm_original_source_hashes": {
+    "solve/analysis_c.pyx": "d1ff66e9fcaff208a9db04473f30314f16603e1d9f7a9211dad21d77e9698031",
+    "solve/analysis_p.py": "c9f9b463c614332f9e42cd943298e8c3eb3ba9c32333cfab6be0fa5599646d54",
+    "solve/cfsm.py": "ffbd5658d6c9b0e87882b1d9a4c93419d5face3cceba5740bdae9240ac5975d5",
+    "pre/cutwp.py": "b1a21554898874fe70ee0a85903169157222405ee8373f42b00c00974eb33c93"
+  },
+  "numerical_threads": {
+    "OPENBLAS_NUM_THREADS": 1,
+    "OMP_NUM_THREADS": 1,
+    "MKL_NUM_THREADS": 1
+  },
+  "third_party_numerical_sources_modified": false,
+  "portability_note": "Windows HPGutil copy disables only unused POSIX ownership helper; original checkout untouched",
+  "cufsm_native_batches": {
+    "first_batch_completed_before_interruption": 192,
+    "resumed_remaining": 402,
+    "total_original_runs": 594,
+    "subsequent_python_comparisons": "All 594 re-evaluated for final implementation; cached original outputs use identical inputs",
+    "compatibility_warning_disabled": "Octave:possible-matlab-short-circuit-operator; no numerical warning disabled"
+  }
+}

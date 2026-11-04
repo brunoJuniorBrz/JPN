@@ -115,7 +115,7 @@
     "cases": [
       {
         "id": "L",
-        "source": "Explicit point load -1000 N at B"
+        "source": "Synthetic M32 coupled beam/axial forces; explicit SI nodal loads"
       }
     ],
     "nodal_loads": [

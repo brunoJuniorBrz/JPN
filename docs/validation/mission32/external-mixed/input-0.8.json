@@ -1,0 +1,109 @@
+{
+  "analysis": "pdelta",
+  "maxIter": 30,
+  "tolerance": 1e-10,
+  "model": {
+    "nodes": {
+      "1": {
+        "id": 1,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "2": {
+        "id": 2,
+        "x": 2.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "3": {
+        "id": 3,
+        "x": 2.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    },
+    "materials": {
+      "1": {
+        "id": 1,
+        "e": 200000.0,
+        "nu": 0.3
+      },
+      "3": {
+        "id": 3,
+        "e": 200000.0,
+        "nu": 0.3
+      }
+    },
+    "sections": {
+      "1": {
+        "id": 1,
+        "a": 0.01,
+        "iy": 1e-05,
+        "iz": 1e-05,
+        "j": 1e-05
+      },
+      "3": {
+        "id": 3,
+        "a": 0.001,
+        "iy": 0.0,
+        "iz": 0.0,
+        "j": 0.0
+      }
+    },
+    "elements": {
+      "1": {
+        "id": 1,
+        "type": "frame",
+        "nodeI": 1,
+        "nodeJ": 2,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "2": {
+        "id": 2,
+        "type": "truss",
+        "nodeI": 2,
+        "nodeJ": 3,
+        "materialId": 3,
+        "sectionId": 3
+      }
+    },
+    "supports": {
+      "1": {
+        "nodeId": 1,
+        "rx": true,
+        "ry": true,
+        "rz": true,
+        "rrx": true,
+        "rry": true,
+        "rrz": true
+      },
+      "3": {
+        "nodeId": 3,
+        "rx": true,
+        "ry": true,
+        "rz": true,
+        "rrx": false,
+        "rry": false,
+        "rrz": false
+      }
+    },
+    "loads": [
+      {
+        "type": "nodal",
+        "data": {
+          "nodeId": 2,
+          "fx": 0.0,
+          "fy": 0.1,
+          "fz": 602.2500000000001,
+          "mx": 0.0,
+          "my": 0.0,
+          "mz": 0.0
+        }
+      }
+    ],
+    "leftHand": false
+  }
+}

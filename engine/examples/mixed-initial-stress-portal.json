@@ -467,7 +467,7 @@
     "cases": [
       {
         "id": "L",
-        "source": "Explicit point load -1000 N at B"
+        "source": "Synthetic M32 vertical and biaxial nodal forces at L4 and R4"
       }
     ],
     "nodal_loads": [
