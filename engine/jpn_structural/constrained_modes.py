@@ -32,7 +32,13 @@ def _refine_inverse_pair(k,g,ks,gs,scale,vector,inverse):
     best,best_mu=vector.copy(),mu;residual=quality(best,best_mu);steps=0
     for _ in range(3):
         if residual<=1e-8:break
-        metric=ks@current;equation=gs@current-mu*metric
+        # Correct the ORIGINAL projected matrices. Re-forming the residual
+        # with the equilibrated/symmetrized matrices solves their rounded
+        # pencil instead: a few ulps can matter in a soft elastic direction.
+        # The scaled pencil remains the Newton preconditioner/Jacobian.
+        projected=current/scale
+        metric=(k@projected)/scale
+        equation=(g@projected-mu*(k@projected))/scale
         border=np.block([[gs-mu*ks,-metric[:,None]],[-metric[None,:],np.zeros((1,1))]])
         try:
             delta=solve(border,np.r_[-equation,.5*(current@metric-1.)],assume_a='sym')
