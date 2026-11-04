@@ -1,0 +1,25 @@
+{
+  "base_sha": "566e068010446c3af8cb4889391ac177dcf752e3",
+  "source_sha": "84c7248d6ce32a5516f613c69fa95be4b5b7bd12",
+  "git_diff_changed_paths": [],
+  "all_preserved": true,
+  "paths": [
+    "engine/jpn_structural",
+    "src/domain/wind-load-path.ts",
+    "src/domain/engineering-combinations.ts",
+    "src/domain/roof-regions.ts",
+    "src/domain/roof-load-path.ts",
+    "src/domain/loaded-mixed-adapter.ts",
+    "src/domain/engine-release-gate.ts",
+    "src/components",
+    "pnpm-lock.yaml",
+    "package.json",
+    "engine/requirements-*.lock"
+  ],
+  "comparison": "git diff BASE --name-only -- selected paths, after new implementation commit",
+  "baseline_fixture": "src/domain/test-support/m33a-solver-baseline.json",
+  "baseline_capture": "Before wind-speed extraction; 1 native regression test passed",
+  "pdfs_added": false,
+  "merged": false,
+  "deployed": false
+}

@@ -1,0 +1,91 @@
+{
+  "source_sha": "84c7248d6ce32a5516f613c69fa95be4b5b7bd12",
+  "base_sha": "566e068010446c3af8cb4889391ac177dcf752e3",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "python": "3.12.16",
+  "node": "v24.22.0",
+  "started_utc": "2026-11-04T18:41:55.227956+00:00",
+  "steps": [
+    {
+      "name": "typecheck",
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 6.516,
+      "log": "typecheck.log"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "."
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 17.542,
+      "log": "lint.log"
+    },
+    {
+      "name": "vitest",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--reporter=dot",
+        "--reporter=json",
+        "--outputFile=${ROOT}\\validation\\m33a\\results/vitest.json"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 312.936,
+      "log": "vitest.log"
+    },
+    {
+      "name": "core",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "engine/validate.py",
+        "--output-dir",
+        "${ROOT}\\validation\\m33a\\results\\core"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 128.401,
+      "log": "core.log"
+    },
+    {
+      "name": "dxf",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "tests/verify_dxf.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.234,
+      "log": "dxf.log"
+    },
+    {
+      "name": "build",
+      "command": [
+        "node",
+        "node_modules/next/dist/bin/next",
+        "build"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 37.693,
+      "log": "build.log"
+    }
+  ],
+  "browser_and_optional_profiles": "GitHub CI; not repeated locally in M33A",
+  "normative_second_order_verified": false,
+  "approved_for_fabrication": false,
+  "all_passed": false,
+  "remaining_checks_completed": true,
+  "finished_utc": "2026-11-04T18:52:52.861165+00:00",
+  "known_failure": "Full Vitest: legacy real HTTP NBR14762 tension route returned 503 at 20.286s; isolated same test passed in 18.83s total. Intermittent limit-related failure, cause not established; original cap retained.",
+  "isolated_test": {
+    "command": "vitest run src/infrastructure/analysis/local-design-real.test.ts -t \"real HTTP resistance\"",
+    "result": "1 passed, 1 excluded by filter; no test source edits",
+    "evidence": "design-isolated.json"
+  }
+}

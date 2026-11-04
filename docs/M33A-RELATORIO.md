@@ -2,6 +2,7 @@
 
 Base: PR #44, `566e068010446c3af8cb4889391ac177dcf752e3`, confirmado no GitHub.
 Branch: `feat/m33a-normative-wind-combinations`; PR draft, sem merge/deploy.
+Código efetivamente testado: `84c7248d6ce32a5516f613c69fa95be4b5b7bd12`; o commit posterior publica apenas evidências/fechamento.
 O preflight e o mapa foram consultados em `research/m33-normative-preflight-and-visual-roadmap`, HEAD `e505f4b`, sem merge.
 
 ## Auditoria das fontes fornecidas
@@ -77,9 +78,21 @@ REF-02 não foi utilizada como oráculo 2025. Sem nova validação global de obr
 A saída WP completa do solver foi congelada **antes** da alteração: `src/domain/test-support/m33a-solver-baseline.json`.
 Comando inicial filtrado: `vitest run src/domain/m33a-solver-regression.test.ts`; 1 aprovado com o Python real.
 Os casos sintéticos novos percorrem arquivo → seleção → zonas → terças → combinações → solver, em uma e duas águas, verificando reações, momentos e esforços disponíveis.
-Testes de desenvolvimento foram filtrados; falhas iniciais de preparação dos casos foram preservadas, sem skips novos ou relaxamento dos gates/tolerâncias.
+Testes de desenvolvimento foram filtrados; falhas iniciais de preparação e o fator duplicado não recusado inicialmente foram preservados. A validação passou a recusar domínios de fatores duplicados. Sem skips novos ou relaxamento dos gates/tolerâncias; exclusões nas rodadas filtradas não são skips da suíte final.
 
-Fechamento: resultados, SHA efetivamente testado, ambiente e comandos em `validation/m33a/results/checks.json`.
+Fechamento: resultados, SHA, ambiente e comandos em `validation/m33a/results/checks.json`; agregado em `summary.json`, no mesmo diretório.
+
+| Check local, executado uma vez no fechamento | Resultado |
+|---|---|
+| TypeScript / ESLint | Aprovados |
+| Vitest completo | **421 aprovados / 1 falha / 0 pendentes**, 422 testes, 49 arquivos |
+| Novos testes M33-A, incluídos no total | **33 aprovados**, inclusive regressão congelada e duas cadeias com solver real |
+| Teste HTTP resistente existente, isolado após falha | **1 aprovado**; outro teste excluído pelo filtro, sem alteração de fonte |
+| Núcleo Python | **1.631 aprovados**, zero falhas/erros/skips; **1.000 comparações independentes** |
+| CAD/DXF | ezdxf 1.4.5: 130 linhas 3D, mm, zero erros de auditoria |
+| Build de produção | Aprovado |
+
+**O fechamento local não está integralmente verde.** O teste HTTP existente de tração NBR14762 retornou 503 após 20,286 s; o reteste isolado passou em 18,83 s totais. Causa da intermitência não estabelecida. Falha e passagem preservadas; nenhum limite/tolerância foi elevado. A suíte completa não foi repetida. Solver/distribuidor/compilador/gate e locks foram preservados, conforme `preservation.json`.
 Executar uma vez: `python validation/m33a/run_checks.py` (Python principal já preparado, Node 24, ambientes/locks existentes).
 A matriz numérica Linux/Windows e os Playwright ficam para a CI; não são apresentados como nova execução local da M33-A.
 Os flags `computedStructuralApproval`, `fabricationRelease`, `approved_for_fabrication` e `normative_second_order_verified` continuam falsos.

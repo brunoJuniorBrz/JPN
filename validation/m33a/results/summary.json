@@ -1,0 +1,53 @@
+{
+  "source_sha": "84c7248d6ce32a5516f613c69fa95be4b5b7bd12",
+  "base_sha": "566e068010446c3af8cb4889391ac177dcf752e3",
+  "all_passed": false,
+  "vitest": {
+    "passed": 421,
+    "failed": 1,
+    "pending": 0
+  },
+  "new_tests_passed": 33,
+  "new_test_files": 2,
+  "known_failure": [
+    {
+      "file": "C:/Users/Usuario/Desktop/jpn-missao31/src/infrastructure/analysis/local-design-real.test.ts",
+      "test": "real HTTP resistance path recalculates geometry and executes NBR14762 tension under the OS cap",
+      "duration_ms": 20286.1354,
+      "failure": [
+        "AssertionError: expected 503 to be 200 // Object.is equality\n    at C:/Users/Usuario/Desktop/jpn-missao31/src/infrastructure/analysis/local-design-real.test.ts:13:100\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///C:/Users/Usuario/Desktop/jpn-missao31/node_modules/.pnpm/vitest@5.0.5_@types+node@24_5356d5606e42d59c741df85cc9f69cb2/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:2801:20"
+      ]
+    }
+  ],
+  "isolated_same_test": {
+    "passed": 1,
+    "excluded_by_filter": 1,
+    "evidence": "design-isolated.json"
+  },
+  "python": {
+    "tests": 1631,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "independent_comparisons": 1000,
+  "typecheck": true,
+  "lint": true,
+  "dxf": "130 3D lines in mm, no audit errors",
+  "build": true,
+  "full_suite_executions_local": 1,
+  "browser_optional_profiles": "delegated to GitHub CI",
+  "verified_data_recovered": "S1/S2/Vk/q, partial NBR6123:2023 original; inherited provenance per value",
+  "blocked_real_data": [
+    "Cpe/Cpi/zones transcription",
+    "NBR8681:2025 gamma/psi/domain transcription",
+    "NBR6123:2025 errata comparison"
+  ],
+  "supplied_documents_acknowledged": 5,
+  "pdfs_redistributed": false,
+  "merged": false,
+  "deployed": false,
+  "computedStructuralApproval": false,
+  "fabricationRelease": false
+}
