@@ -1,0 +1,23 @@
+{
+  "command": [
+    "C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\external\\octave\\octave-11.3.0-w64\\mingw64\\bin\\gcc.exe",
+    "-O2",
+    "-IC:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\external\\HPGnumlib",
+    "C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\external\\frame3dd\\src\\main.c",
+    "C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\external\\frame3dd\\src\\frame3dd.c",
+    "C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\external\\frame3dd\\src\\frame3dd_io.c",
+    "C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\external\\frame3dd\\src\\coordtrans.c",
+    "C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\external\\HPGnumlib\\HPGmatrix.c",
+    "C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\external\\HPGnumlib\\NRutil.c",
+    "C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\external\\HPGnumlib\\HPGeig.c",
+    ".tools\\frame3dd\\HPGutil-windows.c",
+    "-lm",
+    "-o",
+    "C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\frame3dd\\frame3dd.exe"
+  ],
+  "exit_code": 0,
+  "original_utility_sha256": "5c7cb57d4cbf8e3e9f976da376f34d9865ad518db4251d6a75eaa38ad70edf2b",
+  "patched_utility_sha256": "b50d3aae03fcd642fcde5eed9efaa72069f9f21880096d130d623000df96126d",
+  "numerical_sources_modified": false,
+  "portability_change": "Unused POSIX chOwnGrpMod replaced by no-op; pwd/grp headers removed"
+}

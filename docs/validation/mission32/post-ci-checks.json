@@ -1,0 +1,78 @@
+{
+  "numerical_code_sha": "810fdbfb21412f38f98c2676d4939b4a8703cf45",
+  "steps": [
+    {
+      "name": "member-original-pencil",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "engine/section_tests/test_member_buckling.py",
+        "engine/section_tests/test_modal_numerics.py",
+        "engine/section_tests/test_modal_kinematics.py",
+        "-q",
+        "--junitxml=${ROOT}\\docs\\validation\\mission32/member-original-pencil.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 51.533,
+      "log": "member-original-pencil.log"
+    },
+    {
+      "name": "modal-original-pencil",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "engine/audit_modal_numerics.py",
+        "engine/examples/coldformed-auto-compression.json",
+        "--output",
+        "${ROOT}\\docs\\validation\\mission32\\modal-original-pencil.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.484,
+      "log": "modal-original-pencil.log"
+    },
+    {
+      "name": "wavelengths-original-pencil",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "engine/audit_member_modes.py",
+        "engine/examples/coldformed-auto-compression.json",
+        "--output",
+        "${ROOT}\\docs\\validation\\mission32\\wavelengths-original-pencil.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 3.677,
+      "log": "wavelengths-original-pencil.log"
+    },
+    {
+      "name": "compression-original-pencil",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "engine/verify_auto_compression.py",
+        "--member-python",
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "--output",
+        "${ROOT}\\docs\\validation\\mission32\\compression-original-pencil.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 40.744,
+      "log": "compression-original-pencil.log"
+    },
+    {
+      "name": "vitest-original-pencil",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=${ROOT}\\docs\\validation\\mission32/vitest-original-pencil.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 275.838,
+      "log": "vitest-original-pencil.log"
+    }
+  ],
+  "started_utc": "2026-11-04T14:06:55.738878+00:00",
+  "all_steps_passed": true,
+  "finished_utc": "2026-11-04T14:13:09.017820+00:00"
+}

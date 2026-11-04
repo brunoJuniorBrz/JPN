@@ -100,4 +100,5 @@ def compute_member_buckling(model,section_result,design,poisson,geometry):
     critical=dict(global_=global_['global_n'],local=fine['families']['local']['critical_stress_mpa']*props['areaMm2'],distortional=fine['families']['distortional']['critical_stress_mpa']*props['areaMm2'])
     return dict(schema_version='jpn.computed-member-buckling/1',method='NBR14762-global-and-constrained-FSM',library=dict(pycufsm='0.2.0',numpy='2.3.3',scipy='1.15.3',license='AFL-3.0'),model=model,model_sha256=input_hash(model),global_result=global_,compression_critical_n={'global':critical['global_'],'local':critical['local'],'distortional':critical['distortional']},refinements=history,relative_changes=changes,half_wave_numbers=waves.tolist(),elapsed_seconds=time.perf_counter()-started,
         search_coverage='all-integer-half-waves-1-through-64',error_bound_certified=False,full_member_approval=False,
-        numerical_audit=dict(method='orthonormal-elastic-metric-inverse-eigenproblem',refinements=numerical_history))
+        numerical_audit=dict(method='orthonormal-elastic-metric-inverse-eigenproblem',
+            kinematics_version='jpn.cfsm-kinematics/2',matrix_backend='pycufsm.element-kernels-double-transforms/0.2.0',refinements=numerical_history))

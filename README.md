@@ -1,5 +1,10 @@
 # JPN Projetos — v0.6.0
 
+Continuação para auditoria: [Missão 32 — equilíbrio reduzido, cFSM e protótipo misto](docs/MISSAO-32-ESTABILIZACAO-E-SEGUNDA-ORDEM-MISTA.md).
+Inclui comparação executável com CUFSM/Octave, Stabileo e Frame3DD, avaliador
+automático `/4` com recálculo de históricos e CLI mista de tensão inicial.
+O protótipo continua com liberação bloqueada e não autoriza fabricação.
+
 Auditoria posterior do motor: [Missão 31 — correções numéricas e limites](docs/MISSAO-31-AUDITORIA-EVOLUCAO-ESTRUTURAL.md).
 Inclui conferência de autovetores/energia no cFSM, recálculo obrigatório dos
 resultados automáticos anteriores e experimento local de barra-coluna P-Delta.

@@ -1,0 +1,13 @@
+test_90deg_rotation_preserves_geometric_energy (test_m32_oracles.MixedStabilityReferenceTests.test_90deg_rotation_preserves_geometric_energy) ... ok
+test_compression_tangent_limit_in_one_dof_surrogate (test_m32_oracles.MixedStabilityReferenceTests.test_compression_tangent_limit_in_one_dof_surrogate) ... ok
+test_free_residual_scaling_when_only_free_load_exists (test_m32_oracles.MixedStabilityReferenceTests.test_free_residual_scaling_when_only_free_load_exists) ... ok
+test_full_truss_symmetric_and_global_end_force_balance (test_m32_oracles.MixedStabilityReferenceTests.test_full_truss_symmetric_and_global_end_force_balance) ... ok
+test_geometric_energy_and_sign_of_axial_truss (test_m32_oracles.MixedStabilityReferenceTests.test_geometric_energy_and_sign_of_axial_truss) ... ok
+test_pr41_free_dof_residual_can_be_masked_by_supported_load (test_m32_oracles.MixedStabilityReferenceTests.test_pr41_free_dof_residual_can_be_masked_by_supported_load) ... ok
+test_reversing_member_order_keeps_physical_energy (test_m32_oracles.MixedStabilityReferenceTests.test_reversing_member_order_keeps_physical_energy) ... ok
+test_rigid_translation_and_axial_extension_do_not_change_geometric_energy (test_m32_oracles.MixedStabilityReferenceTests.test_rigid_translation_and_axial_extension_do_not_change_geometric_energy) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.003s
+
+OK

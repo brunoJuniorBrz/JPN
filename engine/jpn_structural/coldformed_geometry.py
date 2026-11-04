@@ -54,7 +54,7 @@ def analyze_verified_coldformed(raw):
     result['connection_audit']=connection_audit
     if buckling:
         result['buckling_audit']=buckling
-        result['evaluator_version']='jpn.nbr14762-mrd/3'
+        result['evaluator_version']='jpn.nbr14762-mrd/4'
     result['geometry_audit']=dict(library=geometry['library'],geometry_input_sha256=geometry['input_sha256'],
         differences=differences,refinement=geometry['convergence'],computed_properties=actual,
         note='Gross section computed, effective properties and elastic critical mode classification are separate.')

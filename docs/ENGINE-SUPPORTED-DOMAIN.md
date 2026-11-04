@@ -1,5 +1,11 @@
 # Domínio efetivamente implementado — campanha M27–M30
 
+Atualização posterior: a [Missão 32](MISSAO-32-ESTABILIZACAO-E-SEGUNDA-ORDEM-MISTA.md)
+corrige o resíduo reduzido e os espaços cFSM com comparação executável externa.
+Resultados automáticos `/2` e `/3` exigem recálculo pelo `/4`. O novo protótipo
+misto é exclusivo da CLI, usa tensão inicial em duas etapas e mantém sua
+liberação bloqueada. O quadro abaixo conserva o domínio histórico M27–M30.
+
 Adendo posterior: a [Missão 31](MISSAO-31-AUDITORIA-EVOLUCAO-ESTRUTURAL.md)
 introduz avaliação cFSM com conferência de energia/resíduo e uma experiência
 offline de P-Delta de barra-coluna reta, prismática e discretizada explicitamente.

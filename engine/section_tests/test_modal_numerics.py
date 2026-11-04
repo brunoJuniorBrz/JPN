@@ -41,7 +41,22 @@ def test_positive_upstream_scalar_can_contradict_its_returned_mode_energy():
         quality=stable.last['distortional']
         assert quality['projected_relative_residual'] <= 1e-8
         assert quality['energy_relative_residual'] <= quality['energy_accumulation_bound']
-        # Independent variational UPPER bound: the returned upstream mode is
-        # one admissible vector in the same space; the minimum cannot exceed it.
-        assert result <= energy*(1+quality['energy_accumulation_bound'])
+        # M32 demonstrated that the upstream vector can belong to a DIFFERENT
+        # physical space. It is not a valid Rayleigh-Ritz upper bound here.
+        # Use an actually admissible trial vector in the corrected space;
+        # original CUFSM/Octave separately checks the physical kinematics.
+        ck,cg,spaces=stable.spaces(wavelength)
+        trial=spaces['distortional'][:,0]
+        upper=float(trial@ck@trial/(trial@cg@trial))
+        assert result <= upper*(1+quality['energy_accumulation_bound'])
         assert quality['modal_rank'] == int(stable.nd)
+
+
+def test_continuous_endpoint_roundoff_keeps_the_original_projected_residual_gate():
+    raw=json.loads((Path(__file__).parents[1]/'examples/coldformed-auto-compression.json').read_text())
+    nodes,edges=midline_u(raw['geometry_analysis']['geometry'],8,12)
+    props=np.array([[0.,200000.,200000.,.3,.3,200000/2.6]])
+    stable=ConstrainedModes(nodes,edges,props,cutwp.prop2(nodes[:,1:3],edges[:,1:4]))
+    for wavelength in [2000.,1999.9999999999998]:
+        value=stable.evaluate(wavelength,('distortional',))['distortional']
+        assert value>0 and stable.last['distortional']['projected_relative_residual']<=1e-8
