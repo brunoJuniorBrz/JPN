@@ -10,11 +10,38 @@ as the positive-definite metric. Elastic diagonal equilibration is explicit.
 import math
 
 import numpy as np
-from scipy.linalg import eigh, svd
+from scipy.linalg import eigh, svd, solve
 
 from .frame3d_model import fail
 from .modal_kinematics import longitudinal_modes, local_modes, corner_constraints
 from .finite_strip_matrices import FiniteStripMatrices
+
+
+def _refine_inverse_pair(k,g,ks,gs,scale,vector,inverse):
+    """At most three bordered Newton corrections of the SAME eigenproblem.
+
+    Used only when the original pair misses the unchanged 1e-8 residual gate.
+    Never accepts a worse pair, drops modes, regularizes stiffness or changes
+    the target matrix. Failure remains a controlled numerical rejection.
+    """
+    def quality(v,mu):
+        if not np.isfinite(v).all() or not math.isfinite(mu) or mu<=0:return math.inf
+        p=v/scale;ku,gu=k@p,g@p
+        return float(np.linalg.norm(ku-gu/mu)/max(np.linalg.norm(ku)+np.linalg.norm(gu)/mu,1e-300))
+    current=vector.copy();mu=float(inverse)
+    best,best_mu=vector.copy(),mu;residual=quality(best,best_mu);steps=0
+    for _ in range(3):
+        if residual<=1e-8:break
+        metric=ks@current;equation=gs@current-mu*metric
+        border=np.block([[gs-mu*ks,-metric[:,None]],[-metric[None,:],np.zeros((1,1))]])
+        try:
+            delta=solve(border,np.r_[-equation,.5*(current@metric-1.)],assume_a='sym')
+        except (np.linalg.LinAlgError,ValueError,Warning):break
+        steps+=1;current+=delta[:-1];mu+=float(delta[-1])
+        candidate=quality(current,mu)
+        if candidate<residual:best,best_mu,residual=current.copy(),mu,candidate
+        if not np.isfinite(current).all() or not math.isfinite(mu) or mu<=0:break
+    return best,best_mu,steps
 
 
 def constrained_eigenpair(elastic, geometric, basis, *, _factorization=None):
@@ -38,6 +65,9 @@ def constrained_eigenpair(elastic, geometric, basis, *, _factorization=None):
         fail('UNSTABLE', 'Modal elastic energy is nonpositive.')
     scale = np.sqrt(diagonal)
     ks, gs = k/scale[:, None]/scale[None, :], g/scale[:, None]/scale[None, :]
+    # Division in opposite row/column order can introduce antisymmetric ulps;
+    # preserve the symmetric energy problem before calling the symmetric solver.
+    ks,gs=(ks+ks.T)/2,(gs+gs.T)/2
     spectrum = eigh(ks, eigvals_only=True)
     if spectrum[0] <= 10*len(spectrum)*np.finfo(float).eps*spectrum[-1]:
         fail('ILL_CONDITIONED', 'Modal elastic metric is singular or unresolved.')
@@ -47,8 +77,9 @@ def constrained_eigenpair(elastic, geometric, basis, *, _factorization=None):
     inverse, vectors = eigh(gs, ks, subset_by_index=[len(k)-1, len(k)-1])
     if not math.isfinite(float(inverse[0])) or inverse[0] <= 0:
         fail('NUMERICAL_FAILURE', 'No positive compressive geometric-energy eigenvalue.')
-    critical = 1/float(inverse[0])
-    projected = vectors[:, 0]/scale
+    vector,mu,refinements=_refine_inverse_pair(k,g,ks,gs,scale,vectors[:,0],float(inverse[0]))
+    critical = 1/mu
+    projected = vector/scale
     mode = q @ projected
     ku, gu = k @ projected, g @ projected
     residual = float(np.linalg.norm(ku-critical*gu)/max(np.linalg.norm(ku)+critical*np.linalg.norm(gu), 1e-300))
@@ -72,7 +103,7 @@ def constrained_eigenpair(elastic, geometric, basis, *, _factorization=None):
     return critical, mode, dict(projected_relative_residual=residual,
         energy_relative_residual=energy_residual, energy_accumulation_bound=energy_bound,
         scaled_elastic_condition=condition, basis_condition=float(singular[0]/singular[-1]),
-        modal_rank=len(singular))
+        modal_rank=len(singular),inverse_refinement_steps=refinements)
 
 
 class ConstrainedModes:

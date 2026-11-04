@@ -50,3 +50,13 @@ def test_positive_upstream_scalar_can_contradict_its_returned_mode_energy():
         upper=float(trial@ck@trial/(trial@cg@trial))
         assert result <= upper*(1+quality['energy_accumulation_bound'])
         assert quality['modal_rank'] == int(stable.nd)
+
+
+def test_continuous_endpoint_roundoff_keeps_the_original_projected_residual_gate():
+    raw=json.loads((Path(__file__).parents[1]/'examples/coldformed-auto-compression.json').read_text())
+    nodes,edges=midline_u(raw['geometry_analysis']['geometry'],8,12)
+    props=np.array([[0.,200000.,200000.,.3,.3,200000/2.6]])
+    stable=ConstrainedModes(nodes,edges,props,cutwp.prop2(nodes[:,1:3],edges[:,1:4]))
+    for wavelength in [2000.,1999.9999999999998]:
+        value=stable.evaluate(wavelength,('distortional',))['distortional']
+        assert value>0 and stable.last['distortional']['projected_relative_residual']<=1e-8
