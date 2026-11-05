@@ -9,14 +9,24 @@ import { drawPresentationAnnotations, presentationDimensions, dimensionLabels } 
 import { resolveSection } from "@/domain/profile-section";
 import { fitIsometricCamera } from "./camera-fit";
 import { scenePoint } from "./profile-geometry";
+import { calculateNodeMeasurement, nextMeasurementNode } from "./node-measurement";
 import { buildProfileScene, pieceIdFromHit, viewerQuality, type ViewerMode } from "./profile-scene";
 
 export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, selectedNodeId, onSelectNode, inspectNodes=false }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
-  const selectNode=useRef(onSelectNode),nodePicking=useRef(inspectNodes),nodeTools=useRef<(enabled:boolean,id:string)=>void>(()=>{});
+  const selectNode=useRef(onSelectNode),nodePicking=useRef(inspectNodes),nodeTools=useRef<(enabled:boolean,id:string,measurementActive?:boolean,ids?:readonly string[])=>void>(()=>{});
   useEffect(()=>{selectNode.current=onSelectNode;},[onSelectNode]);
+  const [measuring, setMeasuring] = useState(false);
+  const [measurementSelection, setMeasurementSelection] = useState<{model:StructureModel;ids:string[]}>({model,ids:[]});
+  const measuredNodes = useMemo(() => measurementSelection.model === model ? measurementSelection.ids : [], [measurementSelection, model]);
+  const measurement = useMemo(() => calculateNodeMeasurement(model.nodes, measuredNodes), [model, measuredNodes]);
+  const measurePicking = useRef(false);
+  const measurePick = useRef<(id: string) => void>(() => {});
+  useEffect(() => {
+    measurePick.current = id => setMeasurementSelection(current => ({model,ids:nextMeasurementNode(current.model===model?current.ids:[],id)}));
+  }, [model]);
   const [failure, setFailure] = useState("");
   const [pictureError, setPictureError] = useState("");
   const [presentationOptions, setPresentationOptions] = useState<PresentationOptions>(initialPresentationOptions);
@@ -77,7 +87,38 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const nodeMarkers=new THREE.InstancedMesh(nodeGeometry,nodeMaterial,model.nodes.length);nodeMarkers.renderOrder=10;nodeMarkers.visible=false;scene.add(nodeMarkers);resources.push(nodeGeometry,nodeMaterial);
     const nodeMatrix=new THREE.Matrix4();model.nodes.forEach((n,i)=>{nodeMatrix.makeTranslation(scenePoint(n).x,scenePoint(n).y,scenePoint(n).z);nodeMarkers.setMatrixAt(i,nodeMatrix);nodeMarkers.setColorAt(i,new THREE.Color(0x8262b5));});
     nodeMarkers.instanceMatrix.needsUpdate=true;
-    nodeTools.current=(enabled,id)=>{nodePicking.current=enabled;nodeMarkers.visible=enabled;model.nodes.forEach((n,i)=>nodeMarkers.setColorAt(i,new THREE.Color(n.id===id?0xe89f27:0x8262b5)));if(nodeMarkers.instanceColor)nodeMarkers.instanceColor.needsUpdate=true;canvas.dataset.selectedNode=id;canvas.dataset.nodeMarkers=enabled?String(model.nodes.length):"0";render();};
+    // Visual-only measuring overlay; points come from real model node IDs, in mm.
+    const measureGeometry = new THREE.BufferGeometry();
+    measureGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(6), 3));
+    const measureMaterial = new THREE.LineBasicMaterial({ color: 0xd34a32, depthTest: false, depthWrite: false });
+    const measureLine = new THREE.Line(measureGeometry, measureMaterial);
+    measureLine.visible = false; measureLine.renderOrder = 12; scene.add(measureLine);
+    resources.push(measureGeometry, measureMaterial);
+    nodeTools.current=(enabled,id,measurementActive=false,ids=[])=>{
+      nodePicking.current=enabled;measurePicking.current=measurementActive;
+      nodeMarkers.visible=enabled||measurementActive;
+      model.nodes.forEach((n,i)=>nodeMarkers.setColorAt(i,new THREE.Color(
+        measurementActive&&ids.includes(n.id)?0xd34a32:n.id===id?0xe89f27:0x8262b5
+      )));
+      if(nodeMarkers.instanceColor)nodeMarkers.instanceColor.needsUpdate=true;
+      measureLine.visible=false;
+      const value=measurementActive?calculateNodeMeasurement(model.nodes,ids):null;
+      if(value){
+        const a=model.nodes.find(n=>n.id===value.from)!,b=model.nodes.find(n=>n.id===value.to)!;
+        const start=scenePoint(a),end=scenePoint(b);
+        const positions=measureGeometry.getAttribute("position") as THREE.BufferAttribute;
+        positions.setXYZ(0,start.x,start.y,start.z);
+        positions.setXYZ(1,end.x,end.y,end.z);
+        positions.needsUpdate=true;measureGeometry.computeBoundingSphere();
+        measureLine.visible=true;
+      }
+      canvas.dataset.selectedNode=id;
+      canvas.dataset.nodeMarkers=nodeMarkers.visible?String(model.nodes.length):"0";
+      canvas.dataset.measuring=measurementActive?"true":"false";
+      canvas.dataset.measurementNodes=measurementActive?ids.join(","):"";
+      canvas.dataset.measurementLengthMm=value?String(value.lengthMm):"";
+      render();
+    };
     colorize.current = colors => { profiles.setColors(colors); canvas.dataset.analysisMode = colors ? "experimental" : "none"; render(); };
     let framingBounds = bounds, activeMode: ViewerMode | "finished" = "profiles", disposed = false;
     let cameraFramed = false;
@@ -197,7 +238,15 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       const rect = renderer.domElement.getBoundingClientRect();
       raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), camera);
       if (activeMode === "finished") return;
-      if(nodePicking.current&&nodeMarkers.visible){const nodeHit=raycaster.intersectObject(nodeMarkers,false)[0];if(nodeHit?.instanceId!==undefined){const id=model.nodes[nodeHit.instanceId]?.id;if(id){canvas.dataset.pickedNode=id;selectNode.current?.(id);return;}}}
+      if((nodePicking.current||measurePicking.current)&&nodeMarkers.visible){
+        const nodeHit=raycaster.intersectObject(nodeMarkers,false)[0];
+        if(nodeHit?.instanceId!==undefined){const id=model.nodes[nodeHit.instanceId]?.id;if(id){
+          canvas.dataset.pickedNode=id;
+          if(measurePicking.current)measurePick.current(id);
+          else selectNode.current?.(id);
+          return;
+        }}
+      }
       const hit = raycaster.intersectObjects(profiles.targets(), false)[0];
       const id = hit ? pieceIdFromHit(hit) : null; if (id) { canvas.dataset.pickedPiece = id; select.current(id); }
     };
@@ -210,7 +259,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
   useEffect(() => { colorize.current(analysisColors); }, [analysisColors, model]);
-  useEffect(()=>{nodeTools.current(inspectNodes&&mode!=="finished",selectedNodeId??"");},[inspectNodes,selectedNodeId,mode,model]);
+  useEffect(()=>{nodeTools.current(inspectNodes&&mode!=="finished",selectedNodeId??"",measuring&&mode!=="finished",measuredNodes);},[inspectNodes,selectedNodeId,mode,model,measuring,measuredNodes]);
   useEffect(() => {
     applyVisibility.current(mode === "finished" ? roles : visibleRoles, mode === "finished" ? null : activeIsolation);
   }, [visibleRoles, activeIsolation, mode, model]);
@@ -246,12 +295,37 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       <button type="button" className="button secondary" disabled={!activeIsolation && visibleRoles.length === roles.length} onClick={() => {
         setVisibleRoles([...roles]); setIsolatedId(null);
       }}>Mostrar tudo</button>
+      <button type="button" className="button secondary" aria-pressed={measuring} onClick={() => {
+        setMeasuring(value => !value); setMeasurementSelection({model,ids:[]});
+      }}>{measuring ? "Encerrar medição" : "Medir entre nós"}</button>
       <div className="inspection-view-buttons" role="group" aria-label="Orientação da câmera 3D">
         <button type="button" onClick={() => cameraView.current("top")}>Superior</button>
         <button type="button" onClick={() => cameraView.current("front")}>Frontal</button>
         <button type="button" onClick={() => cameraView.current("side")}>Lateral</button>
       </div>
       </>}
+      {measuring && <div className="inspection-measurement" role="status" aria-live="polite" data-testid="3d-measurement">
+        <label>Nó inicial
+          <select className="input" aria-label="Nó inicial da medição" value={measuredNodes[0]??""} onChange={event =>
+            setMeasurementSelection({model,ids:event.target.value?[event.target.value]:[]})}>
+            <option value="">Selecionar nó</option>
+            {model.nodes.map(n=><option key={n.id} value={n.id}>{n.id}</option>)}
+          </select>
+        </label>
+        <label>Nó final
+          <select className="input" aria-label="Nó final da medição" disabled={!measuredNodes[0]} value={measuredNodes[1]??""} onChange={event =>
+            setMeasurementSelection({model,ids:event.target.value?[measuredNodes[0],event.target.value]:[measuredNodes[0]]})}>
+            <option value="">Selecionar nó</option>
+            {model.nodes.filter(n=>n.id!==measuredNodes[0]).map(n=><option key={n.id} value={n.id}>{n.id}</option>)}
+          </select>
+        </label>
+        {measurement ? <>
+          <strong>{measurement.from} → {measurement.to}: {(measurement.lengthMm/1000).toLocaleString("pt-BR",{maximumFractionDigits:3})} m</strong>
+          <span>ΔX {(measurement.dxMm/1000).toLocaleString("pt-BR",{maximumFractionDigits:3})} m · ΔY {(measurement.dyMm/1000).toLocaleString("pt-BR",{maximumFractionDigits:3})} m · ΔZ {(measurement.dzMm/1000).toLocaleString("pt-BR",{maximumFractionDigits:3})} m</span>
+          <button type="button" className="button secondary" onClick={() => setMeasurementSelection({model,ids:[]})}>Nova medida</button>
+        </> : <span>{measuredNodes.length===1 ? `Primeiro nó: ${measuredNodes[0]}. Selecione outro nó no desenho.` : "Selecione dois nós destacados no modelo para medir a distância direta."}</span>}
+        <small>Medida geométrica visual, sem tolerâncias de montagem ou aprovação estrutural.</small>
+      </div>}
     </div>}
     {!failure && mode !== "structural" && <div className="notice structure-profile-notice" data-testid="profile-coverage">
       <strong>{model.pieces.length - fallbackCount} peças com seção 3D · {fallbackCount} em linha.</strong>
