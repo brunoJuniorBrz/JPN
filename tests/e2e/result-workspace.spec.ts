@@ -9,7 +9,7 @@ for (const width of [375, 1440]) test(`resultado organizado preserva modelo, avi
   await page.getByLabel("Comprimento (m)").fill("35");
   await page.getByLabel("Altura (m)").fill("5");
   await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
-  const canvas=page.getByRole("img",{name:"Modelo 3D da estrutura"});
+  const canvas=page.getByRole("img",{name:"Modelo 3D da estrutura",includeHidden:true});
   await expect(canvas).toBeVisible();
   const before=await page.evaluate(()=>localStorage.getItem("jpn-projetos:v1"));
   const totals=await page.getByTestId("takeoff-totals").innerText();
@@ -26,7 +26,7 @@ for (const width of [375, 1440]) test(`resultado organizado preserva modelo, avi
   await expect(page.getByText("Simular aproveitamento de barras")).toBeVisible();
   const rows=page.locator(".result-materials-table tbody tr");
   expect(await rows.count()).toBeGreaterThan(0);
-  await rows.first().locator("details").first().locator("summary").click();
+  await rows.first().locator("details").first().locator(":scope > summary").click();
   await expect(rows.first().locator("details").first()).toHaveAttribute("open","");
   await page.getByRole("tab",{name:/^Materiais/}).focus();
   await page.getByRole("tab",{name:/^Materiais/}).press("ArrowRight");

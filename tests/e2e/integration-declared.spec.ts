@@ -24,6 +24,7 @@ for(const width of [390,1440])test(`projeto declarado salvo -> solver real -> re
   expect(payload.project.id).toBe(ownerId);expect(payload.nodes.find((n:{id:string})=>n.id==="B2").x_m).toBe(2);
   expect(out.result.combinations.Q1.nodes.B2.translation_m[2]).toBeCloseTo(-.0125,10);
   await expect(panel.getByTestId("mixed-result-state")).toContainText("Resultado calculado");
+  await expect(panel.locator('[data-piece-id="AX1"] > line').first()).toHaveAttribute("stroke","#27858f");
   const downloadEvent=page.waitForEvent("download");await panel.getByRole("button",{name:"Exportar resultados mistos",exact:true}).click();const download=await downloadEvent;
   const exported=await readFile((await download.path())!,"utf8");
   // Switching the parent result tabs must preserve the completed calculation.

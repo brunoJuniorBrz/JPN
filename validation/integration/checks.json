@@ -1,0 +1,39 @@
+{
+  "scope": "integration/jpn-functional-main; final CI and main SHA recorded in PR #50",
+  "local": {
+    "typescript": "passed",
+    "eslint": "passed",
+    "productionBuild": "passed; also required in final SHA CI",
+    "vitest": {
+      "initialTotal": 503,
+      "initialPassed": 499,
+      "initialFailures": "3 fixed-duration numerical timeouts with concurrent browser/build work; 1 missing FSM environment variable",
+      "resolution": "environment configured, campaigns isolated; all four failing tests passed on targeted reruns, without changing tolerances or runtime limits"
+    },
+    "pythonCampaigns": [
+      {"report": "parallel-python.xml", "passed": 52},
+      {"report": "frame-compatibility.xml", "passed": 110},
+      {"report": "mixed-python.xml", "passed": 28}
+    ],
+    "realBrowserFlows": {
+      "declaredDesktopMobile": "2 passed; saved owner project, API/Python, manual displacement, export, restore, stale rejection and recalculation",
+      "generatedBackup": "1 passed; actual imported copy sent to Python; legacy golden coordinates/members/displacements preserved; DXF exported",
+      "coldformedDesktopMobile": "2 passed; real sectionproperties and resistance workers, 20-second cap unchanged",
+      "mixedBusyAndResults": "3 passed",
+      "preproductionPdfXlsx": "2 passed",
+      "studioMeasurement": "2 passed",
+      "pieceSearchAndPendingNavigation": "4 passed",
+      "resultTabsAndCanvasIdentity": "2 passed; hidden-element and direct-summary locators corrected, assertions retained"
+    },
+    "independentDxfReader": "ezdxf 1.4.5: 130 legacy 3D lines verified in mm, no audit errors; declared bars also reopened with dxf-parser and compared to actual declared coordinates"
+  },
+  "deployment": {
+    "mainGitDeployments": false,
+    "integrationGitDeployments": false,
+    "projects": ["jpn", "jpn-structural-engine"],
+    "integrationDeploymentsObserved": 0,
+    "manualPromotion": false
+  },
+  "computedStructuralApproval": false,
+  "fabricationRelease": false
+}

@@ -6,7 +6,7 @@ import { calculateNodeMeasurement } from "./node-measurement";
 import { Field,Select } from "@/components/ui";
 
 /** Orthographic views of the declared coordinates. No roof envelope or visual solid is fabricated. */
-export function PhysicalLineView({model,selected="",onSelect=()=>{},selectedNodeId="",onSelectNode=()=>{}}:{model:PhysicalGeometry;selected?:string;onSelect?:(id:string)=>void;selectedNodeId?:string;onSelectNode?:(id:string)=>void}){
+export function PhysicalLineView({model,selected="",onSelect=()=>{},selectedNodeId="",onSelectNode=()=>{},analysisColors}:{model:PhysicalGeometry;selected?:string;onSelect?:(id:string)=>void;selectedNodeId?:string;onSelectNode?:(id:string)=>void;analysisColors?:Record<string,number>}){
   const [view,setView]=useState("iso"),[from,setFrom]=useState(""),[to,setTo]=useState("");
   const points=useMemo(()=>{
     const projected=model.nodes.map(n=>({node:n,u:view==="top"||view==="front"?n.x:view==="side"?n.y:(n.x-n.y)*Math.cos(Math.PI/6),
@@ -21,7 +21,7 @@ export function PhysicalLineView({model,selected="",onSelect=()=>{},selectedNode
     <div className="actions" aria-label="Vistas do modelo declarado">{[["iso","Isométrica 3D"],["top","Superior"],["front","Frontal"],["side","Lateral"]].map(([id,label])=><button type="button" className="button secondary" key={id} aria-pressed={view===id} onClick={()=>setView(id)}>{label}</button>)}</div>
     <svg viewBox="0 0 800 440" role="img" aria-label="Nós e barras da estrutura declarada" className="physical-line-svg">
       {model.pieces.map(piece=>{const a=points.get(piece.start)!,b=points.get(piece.end)!;return <g key={piece.id} data-piece-id={piece.id} data-start={piece.start} data-end={piece.end}>
-        <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={selected===piece.id?"#bd4c27":"#315b69"} strokeWidth={selected===piece.id?6:3}/>
+        <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={selected===piece.id?"#bd4c27":analysisColors?.[piece.id]!==undefined?`#${analysisColors[piece.id].toString(16).padStart(6,"0")}`:"#315b69"} strokeWidth={selected===piece.id?6:3}/>
         <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="transparent" strokeWidth={20} onClick={()=>onSelect(piece.id)}/>
         <text x={(a.x+b.x)/2+8} y={(a.y+b.y)/2-8} fontSize={13}>{piece.id}</text>
       </g>;})}
