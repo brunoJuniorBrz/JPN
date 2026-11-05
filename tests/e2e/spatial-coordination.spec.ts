@@ -1,3 +1,4 @@
+import { openEngineeringTool } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
@@ -12,7 +13,7 @@ for (const width of [375, 1440]) {
     await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
     await expect(page.getByRole("img",{name:"Modelo 3D da estrutura"})).toBeVisible();
     const before=await page.getByTestId("takeoff-totals").innerText();
-    await page.getByRole("button",{name:"Ver roteiro estrutural"}).click();
+    await openEngineeringTool(page, "Roteiro estrutural");
     const status=page.getByTestId("coordination-status");
     await expect(status).toContainText("análise da obra ainda bloqueada");
     await expect(status).toContainText("207 peças");
@@ -48,12 +49,12 @@ test("roteiro detecta preparação obsoleta depois de alterar geometria e preser
   await page.getByLabel("Comprimento (m)").fill("12");
   await page.getByLabel("Altura (m)").fill("3");
   await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
-  await page.getByRole("button",{name:"Preparar análise",exact:true}).click();
+  await openEngineeringTool(page, "Preparar análise");
   await page.getByLabel("Classe do aço").fill("Aço declarado, não aprovado");
   await page.getByRole("navigation",{name:"Etapas do levantamento"}).getByRole("button",{name:/Estrutura/}).click();
   await page.getByLabel("Espaçamento máximo entre tesouras (m)").fill("3");
   await page.getByRole("navigation",{name:"Etapas do levantamento"}).getByRole("button",{name:/Resultado/}).click();
-  await page.getByRole("button",{name:"Ver roteiro estrutural"}).click();
+  await openEngineeringTool(page, "Roteiro estrutural");
   await expect(page.getByTestId("coordination-status")).toContainText("Geometria alterada");
   await page.locator(".spatial-overview-step").filter({hasText:"Geometria e revisão"}).getByRole("button",{name:"Revisar geometria"}).click();
   await expect(page.getByLabel("Espaçamento máximo entre tesouras (m)")).toHaveValue("3");

@@ -1,3 +1,4 @@
+import { openEngineeringTool } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 import { emptySnapshot } from "../../src/domain/models";
 import { spatialAdapterExample } from "../../src/domain/examples/spatial-adapter-example";
@@ -10,7 +11,7 @@ for (const width of [375, 1440]) {
     page.on("pageerror", e => errors.push(e.message));
     await page.addInitScript(value => { if (!localStorage.getItem("jpn-projetos:v1")) localStorage.setItem("jpn-projetos:v1", JSON.stringify(value)); }, { ...emptySnapshot(), exampleInstalled: true, projects: [project] });
     await page.goto(`/projetos/${project.id}?fluxo=levantamento&etapa=3`);
-    await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
+    await openEngineeringTool(page, "Preparar análise");
     await page.getByRole("button", { name: "4. Conferência" }).click();
     const before = await page.getByTestId("takeoff-totals").innerText();
     await page.getByRole("button", { name: "Preparar modelo físico desta obra" }).click();
@@ -37,7 +38,7 @@ for (const width of [375, 1440]) {
     await page.getByRole("button", { name: "Salvar levantamento" }).click();
     await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!).projects[0].workspace.spatialPreparation.connectivity.reviewSource)).toBe("Revisão explícita R2 do teste");
     await page.reload();
-    await page.getByRole("button", { name: "Preparar análise", exact: true }).click();
+    await openEngineeringTool(page, "Preparar análise");
     await page.getByRole("button", { name: "4. Conferência" }).click();
     await expect(page.getByLabel("Fonte da revisão de conectividade")).toHaveValue("Revisão explícita R2 do teste");
     await expect(results).toHaveCount(0);
@@ -48,7 +49,7 @@ for (const width of [375, 1440]) {
     await page.goto("/projetos/novo");
     await page.getByLabel("Largura (m)").fill("10"); await page.getByLabel("Comprimento (m)").fill("20"); await page.getByLabel("Altura (m)").fill("4");
     await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
-    await page.getByRole("button", { name: "Preparar análise", exact: true }).click(); await page.getByRole("button", { name: "4. Conferência" }).click();
+    await openEngineeringTool(page, "Preparar análise"); await page.getByRole("button", { name: "4. Conferência" }).click();
     await page.getByRole("button", { name: "Preparar modelo físico desta obra" }).click();
     await expect(page.getByRole("alert").filter({ hasText: "PROPERTIES" })).toBeVisible();
     await expect(page.getByTestId("adapter-prepared")).toHaveCount(0);

@@ -27,8 +27,11 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const dimensions = envelope ? dimensionLabels(presentationDimensions(envelope)) : [];
   const [expanded, setExpanded] = useState(false);
   const [visibleRoles, setVisibleRoles] = useState<PieceRole[]>([...roles]);
+  const [toolsCollapsed, setToolsCollapsed] = useState(false);
   const [isolatedId, setIsolatedId] = useState<string | null>(null);
   const activeIsolation = isolatedId === selected ? isolatedId : null;
+  const selectedPiece = model.pieces.find(piece => piece.id === selected);
+  const selectedPieceHidden = !!selectedPiece && !visibleRoles.includes(selectedPiece.role);
   const applyVisibility = useRef<(visible: readonly PieceRole[], isolated: string | null) => void>(() => {});
   const cameraView = useRef<(view: "iso" | "top" | "front" | "side") => void>(() => {});
   // Opening the viewer always starts with solid profiles, regardless of the mode last used.
@@ -223,7 +226,9 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   return <div className={expanded ? "structure-viewer structure-viewer--expanded" : "structure-viewer"}>
     {expanded && <div className="structure-viewer-heading"><strong>Apresentação da estrutura · 3D</strong><button type="button" className="button secondary" onClick={() => setExpanded(false)}>Fechar tela cheia</button></div>}
     {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).filter(([value]) => !analysisColors || value !== "finished").map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
-    {!failure && mode !== "finished" && <div className="inspection-tools" aria-label="Ferramentas de inspeção 3D">
+    {!failure && mode !== "finished" && <div className={toolsCollapsed ? "inspection-tools inspection-tools--collapsed" : "inspection-tools"} aria-label="Ferramentas de inspeção 3D">
+      <button type="button" className="inspection-collapse" aria-expanded={!toolsCollapsed} onClick={() => setToolsCollapsed(value => !value)}>{toolsCollapsed ? "Mostrar ferramentas" : "Recolher ferramentas"}</button>
+      {!toolsCollapsed && <>
       <details className="inspection-layers">
         <summary>Camadas · {visibleRoles.length} de {roles.length}</summary>
         <div className="inspection-layer-options">
@@ -246,6 +251,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
         <button type="button" onClick={() => cameraView.current("front")}>Frontal</button>
         <button type="button" onClick={() => cameraView.current("side")}>Lateral</button>
       </div>
+      </>}
     </div>}
     {!failure && mode !== "structural" && <div className="notice structure-profile-notice" data-testid="profile-coverage">
       <strong>{model.pieces.length - fallbackCount} peças com seção 3D · {fallbackCount} em linha.</strong>
@@ -258,6 +264,18 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
         {presentationOptions.showDimensions && <div className="presentation-dimensions">{dimensions.map(label=><span key={label}>{label}</span>)}</div>}
       </div>}
     </div>
+    {!failure && mode !== "finished" && selectedPiece && <aside className="inspection-selected-piece" data-testid="inspection-selected-piece" aria-label="Detalhes da peça selecionada">
+      <div className="inspection-selected-description">
+        <span className="inspection-selected-kicker">INSPEÇÃO VISUAL · NÃO DIMENSIONADO</span>
+        <strong>{selectedPiece.id} · {roleLabels[selectedPiece.role]}</strong>
+        <span>{(selectedPiece.lengthMm / 1000).toLocaleString("pt-BR", {maximumFractionDigits: 3})} m · {selectedPiece.profile.section || selectedPiece.profile.name || "Seção não informada"}</span>
+        {selectedPieceHidden && <span className="inspection-selected-hidden">Esta categoria está oculta nas camadas.</span>}
+      </div>
+      <div className="inspection-selected-actions">
+        {selectedPieceHidden ? <button type="button" onClick={() => {setVisibleRoles(current => roles.filter(role => role === selectedPiece.role || current.includes(role)));setIsolatedId(null);}}>Mostrar categoria</button> : <button type="button" onClick={() => focus.current(selectedPiece.id)}>Aproximar</button>}
+        <button type="button" onClick={() => {setIsolatedId(null);onSelect("");}}>Limpar seleção</button>
+      </div>
+    </aside>}
     {!failure && mode === "finished" && <section className="presentation-controls" aria-label="Personalizar apresentação da obra">
       <div className="presentation-controls-head"><strong>Personalizar visualização</strong><span>Elementos cenográficos, sem alteração do orçamento ou da estrutura</span></div>
       <div className="presentation-settings">

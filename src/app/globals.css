@@ -570,3 +570,108 @@ body { font-size: 16px; }
 @media (max-width: 370px) {
   .inspection-layer-options { grid-template-columns: 1fr; }
 }
+
+/* 3D Studio: lightweight selection summary and space-saving mobile inspection. */
+.inspection-collapse {
+  order: 10; flex: 0 1 auto; min-height: 44px; padding: 7px 11px;
+  border: 1px solid #c4d2c2; background: #fff; border-radius: 7px;
+  color: #304a3b; font-size: 12px; font-weight: 650; cursor: pointer;
+}
+.inspection-tools--collapsed { justify-content: flex-end; padding: 6px 8px; }
+.inspection-selected-piece {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  margin: -2px 0 14px; padding: 12px 14px; border: 1px solid #d4dfd5;
+  background: #f2f6f1; border-radius: 10px; min-width: 0;
+}
+.inspection-selected-description { display: grid; gap: 4px; min-width: 0; flex: 1 1 230px; }
+.inspection-selected-description strong { color: #253c2e; font-size: 14px; overflow-wrap: anywhere; }
+.inspection-selected-description > span:not(.inspection-selected-kicker) { color: #576758; font-size: 12px; overflow-wrap: anywhere; }
+.inspection-selected-kicker { font-size: 10px; letter-spacing: .07em; font-weight: 750; color: #56705b; }
+.inspection-selected-description .inspection-selected-hidden { color: #8a5329 !important; }
+.inspection-selected-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.inspection-selected-actions button {
+  min-height: 44px; padding: 8px 12px; border: 1px solid #bdcdbd;
+  border-radius: 7px; background: #fff; color: #304a3b;
+  font-size: 12px; font-weight: 650; cursor: pointer;
+}
+.inspection-collapse:focus-visible, .inspection-selected-actions button:focus-visible { outline: 3px solid #468a84; outline-offset: 2px; }
+@media (max-width: 600px) {
+  .inspection-collapse { grid-column: 1 / -1; order: -1; width: 100%; }
+  .inspection-selected-piece { margin-bottom: 10px; padding: 10px; gap: 8px; }
+  .inspection-selected-actions { width: 100%; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .inspection-selected-actions button { min-width: 0; }
+}
+
+/* Result workspace: one common model/revision, only one visible work area. */
+.result-workspace { min-width: 0; }
+.result-workspace-heading { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:10px; margin:4px 0 12px; }
+.result-workspace-heading h2 { margin:0 0 4px; font-size:clamp(19px,2vw,25px); }
+.result-workspace-heading p { margin:0; font-size:13px; }
+.result-preliminary-tag { display:inline-block; padding:5px 9px; border:1px solid #e4d7ad; border-radius:7px; background:#fff8e4; font-size:11px; font-weight:750; color:#705927; letter-spacing:.035em; white-space:nowrap; }
+.result-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:10px 0; }
+.result-metrics > div { min-width:0; padding:12px 14px; background:#f0f5ef; border:1px solid #e3eae1; border-radius:9px; display:flex; flex-direction:column; gap:4px; }
+.result-metrics span { font-size:11px; color:#536354; }
+.result-metrics strong { font-size:clamp(16px,2vw,22px); font-variant-numeric:tabular-nums; color:#263a2d; overflow-wrap:anywhere; }
+.result-permanent-warning { position:sticky; top:0; z-index:12; background:#fff5df; border:1px solid #ead2a1; color:#6c4a1d; border-radius:8px; padding:10px 12px; font-size:12px; line-height:1.5; margin:10px 0; }
+.result-permanent-warning strong { font-size:11px; letter-spacing:.035em; }
+.result-section-tabs { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; margin:12px 0; }
+.result-section-tabs button { display:flex; min-width:0; align-items:center; justify-content:center; flex-wrap:wrap; gap:3px 6px; min-height:52px; padding:8px 6px; background:#f6f8f5; border:1px solid #d9e2d5; border-radius:8px; color:#324638; cursor:pointer; font-size:13px; font-weight:650; }
+.result-section-tabs button[aria-selected="true"] { color:#fff; background:#263c2e; border-color:#263c2e; }
+.result-section-tabs button:focus-visible { outline:3px solid #459c9b; outline-offset:2px; }
+.result-pending-count { font-size:10px; background:#fae6c4; color:#714c1a; border-radius:999px; padding:2px 6px; font-weight:700; line-height:1.4; white-space:nowrap; }
+.result-section-tabs button[aria-selected="true"] .result-pending-count { background:#f8e5c5; color:#6d4b1d; }
+.result-section-panel[hidden] { display:none !important; }
+.result-section-panel { min-width:0; padding:4px 0 12px; }
+.result-section-panel > h3 { margin:8px 0; }
+.result-section-panel .technical-review { margin-top:4px; }
+.result-section-panel .technical-review details { margin:8px 0; }
+.result-section-panel .technical-review summary { cursor:pointer; }
+.result-model-panel .drawing-panel { margin-top:0; }
+.result-model-panel .structure-3d { height:min(68dvh,720px); min-height:430px; }
+.result-model-context { font-size:12px; color:#5d6a60; margin:6px 0 10px; }
+.result-materials-table { min-width:580px; }
+.result-materials-table td { vertical-align:top; }
+.result-materials-table small { color:#66756a; }
+.result-material-lengths { margin-top:8px; font-size:12px; }
+.result-material-lengths > summary, .result-material-lengths li details summary { cursor:pointer; color:#285b51; font-weight:600; }
+.result-material-lengths ul { margin:7px 0 4px; padding-left:16px; }
+.result-material-lengths li { padding:3px 0; }
+.result-material-lengths li span { display:block; overflow-wrap:anywhere; font-size:11px; color:#596b5f; }
+.result-business-action { display:flex; align-items:center; justify-content:space-between; gap:15px; flex-wrap:wrap; border:1px solid #dfe7db; border-radius:9px; padding:13px; background:#f8faf6; margin:10px 0; }
+.result-business-action h3 { margin:0 0 5px; }
+.result-business-action p { margin:0; font-size:13px; }
+.result-cutting-details { padding:12px; border:1px solid #dfe7db; border-radius:9px; margin:12px 0; }
+.result-cutting-details > summary { min-height:44px; display:flex; align-items:center; font-weight:700; cursor:pointer; }
+.result-cutting-details[open] > summary { margin-bottom:12px; border-bottom:1px solid #dfe7db; }
+.project-workbench[aria-label="Ferramentas de engenharia"] > .field { margin:12px 0; }
+@media (max-width:600px) {
+  .result-workspace-heading { gap:6px; }
+  .result-workspace-heading h2 { font-size:20px; }
+  .result-metrics { gap:5px; }
+  .result-metrics > div { padding:9px 7px; }
+  .result-metrics span { font-size:10px; }
+  .result-metrics strong { font-size:15px; }
+  .result-permanent-warning { font-size:11px; padding:8px 10px; }
+  .result-section-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; }
+  .result-section-tabs button { min-height:46px; }
+  .result-model-panel .structure-3d { height:min(72dvh,660px); min-height:365px; }
+  .result-business-action .button { width:100%; }
+  .result-model-context { font-size:11px; }
+}
+
+/* The 2D camera choices disappear while 3D is active, avoiding duplicate controls. */
+.view-switch.viewer-switch--3d { display:flex; align-items:center; gap:8px; }
+.view-switch.viewer-switch--3d button { flex:0 1 auto; padding-inline:16px; min-width:175px; }
+@media (max-width:600px) {
+  .view-switch.viewer-switch--3d button { flex:1 1 auto; }
+}
+
+/* UX increment: keep corrective actions and bounded piece search usable on phone. */
+.result-pending-action { margin: 8px 0 6px 12px; min-height: 36px; padding: 7px 12px; vertical-align: middle; }
+.piece-search-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.piece-search-tools .field { min-width: 0; }
+[data-profile-role] { scroll-margin-block: 90px; }
+@media (max-width: 640px) {
+  .piece-search-tools { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .result-pending-action { display: flex; width: max-content; max-width: 100%; margin: 7px 0 8px; }
+}

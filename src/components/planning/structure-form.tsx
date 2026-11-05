@@ -21,7 +21,7 @@ export function StructureForm({ project, onChange, profileToEdit }: { project: P
       <NumberField label="Número de painéis por tesoura" value={config.panels} min={1} max={40} decimals={0} onChange={panels => update({ panels })} hint="Divisões iguais ao longo do vão horizontal." />
     </div>
     <h3>Perfis usados no levantamento</h3><p className="muted">Você pode gerar as peças antes de definir os perfis. A massa é calculada quando houver kg/m. A seleção automática por resistência será incorporada ao motor de dimensionamento.</p>
-    {roles.map(role => <details className="technical-details" key={role} open={profileToEdit === role || undefined}><summary>{roleLabels[role]} · {config.profiles[role].name || "Perfil a definir"}</summary>
+    {roles.map(role => <details className="technical-details" data-profile-role={role} key={role} open={profileToEdit === role || undefined}><summary>{roleLabels[role]} · {config.profiles[role].name || "Perfil a definir"}</summary>
       <Field label={"Perfil publicado (massa e dimensões) — " + roleLabels[role]}><Select value="" onChange={e => {
         const chosen = catalogEntryById(e.target.value);
         if (chosen) update({ profiles: { ...config.profiles, [role]: planningProfileFromCatalog(chosen) } });
