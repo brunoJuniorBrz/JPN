@@ -11,6 +11,7 @@ export function importPhysicalModel(project:Project,text:string):Project{
   const next={...project,name:project.name.trim()|| (complete.success?complete.data.name:"Estrutura declarada"),
     client:project.client.trim()||(complete.success?complete.data.client:"Cliente a informar"),
     workspace:{...project.workspace,physicalStructure:structuredClone(structure),
+      ...(complete.success?{roofOutline:structuredClone(complete.data.workspace.roofOutline)}:{}),
       spatialPreparation:complete.success?structuredClone(complete.data.workspace.spatialPreparation):undefined}};
   if(!next.workspace.spatialPreparation)next.workspace.spatialPreparation=newSpatialPreparation(next);
   return projectSchema.parse(next);

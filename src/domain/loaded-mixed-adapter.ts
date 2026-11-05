@@ -10,7 +10,7 @@ import { verifyEngineeringCombinations } from "./engineering-combinations";
 export async function adaptLoadedMixedProject(project:Project){
   const loading=project.workspace.spatialPreparation?.loading;
   if(!loading)throw new Error("Declare carregamentos físicos.");
-  if(loading.selfWeight||loading.uniform.length||loading.roofArea.length||loading.wind||loading.roofDistribution)assertGeneratedPhysicalStructure(project,"carregamentos automáticos ou distribuídos");
+  if(loading.roofArea.length||loading.wind||loading.roofDistribution)assertGeneratedPhysicalStructure(project,"ações por área/vento sem caminho de transmissão validado");
   const roof_load_path=loading.roofArea.length?distributeRoofActions(project,loading.roofArea,loading.roofDistribution):null;
   const draft=project.workspace.spatialPreparation!;
   const wind_load_path=loading.wind?distributeWindActions(project,loading.wind):null;
@@ -28,7 +28,11 @@ export async function adaptLoadedMixedProject(project:Project){
       throw new Error("POSSIBLE_DOUBLE_COUNT: ações automáticas e outras cargas coexistem na mesma combinação. Revise origem e independência das ações e registre confirmação rastreável para ESTA revisão antes de calcular.");
   }
   const prepared=await prepareMixedInput(project,true), pieces=new Map(resolvePhysicalStructure(project).model!.pieces.map(p=>[p.id,p]));
-  for(const l of loading.uniform)if(!pieces.has(l.pieceId))throw new Error("Carga uniforme refere peça inexistente.");
+  for(const l of loading.uniform){
+    if(!pieces.has(l.pieceId))throw new Error("Carga uniforme refere peça inexistente.");
+    const mapped=prepared.mapping.members.filter(m=>m.originalId===l.pieceId);
+    if(!mapped.length||mapped.some(m=>prepared.request.members.find(p=>p.id===m.id)?.kind!=="frame"))throw Error("UNIFORM_AXIAL_UNSUPPORTED: carga distribuída exige pórtico físico; não atribuir flexão a barra axial.");
+  }
   const member_loads=loading.uniform.flatMap(l=>prepared.mapping.members.filter(m=>m.originalId===l.pieceId).map(m=>({id:`${l.id}:${m.id}`,member:m.id,case:l.caseId,coordinate_system:l.coordinates,force_per_length_n_m:l.knM.map(v=>v*1000),source:l.source,revision:l.revision})));
   for(const action of roof_load_path?.actions??[])for(const l of action.loads){
     const mapped=prepared.mapping.members.filter(m=>m.originalId===l.pieceId);

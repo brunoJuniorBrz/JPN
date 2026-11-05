@@ -35,7 +35,7 @@ export const materialLineSchema = z.object({
   purchaseUnit: z.enum(units), measurementUnit: z.enum(units),
   measurementPerPurchase: z.number().finite().positive().max(1000000).nullable(),
   source: z.enum(["manual", "roof-area", "slope-length", "support-count", "takeoff"]),
-  quantityOrigin: z.object({ signature: z.string().max(100000), role: z.string().max(40), pieceIds: z.array(z.string()).max(5000) }).strict().optional(),
+  quantityOrigin: z.object({ signature: z.string().max(100000), role: z.string().max(40), pieceIds: z.array(z.string()).max(5000),kind:z.literal("declared-bars").optional(),groupKey:z.string().max(1000).optional(),modelRevision:z.string().max(1000).optional() }).strict().optional(),
   manualQuantity: quantity, wastePercent: percent.nullable(), unitPriceCents: money,
 }).strict();
 export type MaterialLine = z.infer<typeof materialLineSchema>;

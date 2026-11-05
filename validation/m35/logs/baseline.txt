@@ -1,0 +1,70 @@
+corepack : ✓ Lockfile passes supply-chain policies (verified 5d ago)
+No linha:4 caractere:1
++ corepack pnpm exec vitest run src/domain/tom-real-commercial.test.ts  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (✓ Lockfile pass...erified 5d ago):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+dependencies:
++ @tarikjabiri/dxf 2.10.0
++ exceljs 4.4.0
++ jspdf 4.2.1
++ jspdf-autotable 5.0.9
++ lucide-react 1.61.0
++ next 16.4.3
++ react 19.3.1
++ react-dom 19.3.1
++ three 0.187.0
++ zod 4.6.7
+
+devDependencies:
++ @playwright/test 1.64.1
++ @tailwindcss/postcss 4.3.3
++ @types/node 24.19.2
++ @types/react 19.3.0
++ @types/react-dom 19.3.0
++ @types/three 0.187.0
++ dxf-parser 1.1.2
++ eslint 9.39.5
++ eslint-config-next 16.4.3
++ pdfjs-dist 6.4.299
++ postcss 8.5.31
++ tailwindcss 4.3.3
++ typescript 5.9.3
++ vitest 5.0.5
+
+Done in 748ms using pnpm v12.15.0
+
+ RUN  v5.0.5 C:/Users/Bruno/Downloads/JPN-main/.tools/mission35-worktree
+
+ ❯ src/domain/physical-model-import.test.ts (9 tests | 1 failed) 46ms
+   × restores actual frozen numerical output only for the current request; imported preparation and origin claims cannot approve it 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/domain/physical-model-import.test.ts > restores actual frozen numerical output only for the current 
+request; imported preparation and origin claims cannot approve it
+Error: ENOENT: no such file or directory, open 
+'C:\Users\Bruno\Downloads\JPN-main\.tools\mission35-worktree\validation\m34ab\legacy-golden.json'
+ ❯ src/domain/physical-model-import.test.ts:27:27
+     25| });
+     26| it("restores actual frozen numerical output only for the current reque…
+     27|   const golden=JSON.parse(readFileSync("validation/m34ab/legacy-golden…
+       |                           ^
+     28|   const text=JSON.stringify({prepared:{forged:"ignored"},result:golden…
+     29|   expect(r.prepared.input_sha256).toBe(golden.inputSha256);expect(r.ex…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 12 passed (13)
+   Start at  17:53:01
+   Duration  2.98s (import 75%, transform 19%, tests 4%, worker 1%)
+
+    Isolate  2 workers spawned · ~287ms startup each (spawn + environment, per file)
+             at least ~287ms faster with isolate: false — reuses workers across files instead of one per file
+
