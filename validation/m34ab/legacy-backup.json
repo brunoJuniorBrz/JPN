@@ -1,0 +1,1992 @@
+{
+  "format": "jpn-projetos-backup",
+  "exportedAt": "2026-11-05T14:18:43.608Z",
+  "data": {
+    "version": 4,
+    "revision": 0,
+    "exampleInstalled": false,
+    "projects": [
+      {
+        "id": "16161616-1616-4161-8161-161616161616",
+        "name": "EXEMPLO MISTO SINTÉTICO — 10 × 20 m",
+        "client": "Cliente a informar — pré-projeto",
+        "phone": "",
+        "location": "",
+        "description": "Gerado pela entrada rápida. Distribuição, inclinação e perfis apenas sugeridos para apresentação em 3D; todos os parâmetros são editáveis.",
+        "category": "Cobertura metálica",
+        "status": "Em elaboração",
+        "createdAt": "2026-11-05T14:18:39.122Z",
+        "updatedAt": "2026-11-05T14:18:39.122Z",
+        "technicalNotes": "PRÉ-PROJETO VISUAL: sem cálculo de vento, cargas, estabilidade, resistência ou ligações. Não usar para compras, cortes ou fabricação antes do dimensionamento e detalhamento profissional.",
+        "commercialNotes": "",
+        "technicalContact": "",
+        "technicalStatus": "preliminary",
+        "roof": {
+          "widthM": 10,
+          "lengthM": 20,
+          "lowHeightM": 4,
+          "slopePercent": 10,
+          "fall": "width-positive",
+          "profileDescription": "",
+          "supports": [],
+          "revision": 1
+        },
+        "estimate": {
+          "materials": [],
+          "labor": [],
+          "expenses": [],
+          "charges": [],
+          "pricingMode": "markup",
+          "pricingPercent": 0,
+          "deadline": "",
+          "paymentTerms": "",
+          "validity": "",
+          "exclusions": ""
+        },
+        "isExample": false,
+        "planning": {
+          "version": 1,
+          "frameSpacingM": 4,
+          "purlinSpacingM": 1.5,
+          "trussDepthM": 0.8333333333333334,
+          "panels": 6,
+          "profiles": {
+            "column": {
+              "name": "VISUAL PROVISÓRIO — Perfil I 240 × 160 mm (alma 8, mesa 12)",
+              "steelGrade": "",
+              "section": "Pré-visualização geométrica; perfil comercial não selecionado.",
+              "source": "Seção sintética de visualização 3D; não dimensionada e não cotada.",
+              "massKgM": null,
+              "stockLengthM": null,
+              "data": {
+                "kind": "i",
+                "dimensions": "Perfil I 240 × 160 mm (alma 8, mesa 12)",
+                "thicknessMm": null,
+                "areaCm2": null,
+                "elasticModulusGpa": null,
+                "iyCm4": null,
+                "izCm4": null,
+                "origin": "declared",
+                "sourceDate": "",
+                "calculationReference": ""
+              },
+              "visualSection": {
+                "family": "i",
+                "heightMm": 240,
+                "flangeWidthMm": 160,
+                "webThicknessMm": 8,
+                "flangeThicknessMm": 12,
+                "rollDeg": 0
+              },
+              "pricePerMeterCents": null
+            },
+            "topChord": {
+              "name": "VISUAL PROVISÓRIO — Tubo retangular 160 × 100 × 5 mm",
+              "steelGrade": "",
+              "section": "Pré-visualização geométrica; perfil comercial não selecionado.",
+              "source": "Seção sintética de visualização 3D; não dimensionada e não cotada.",
+              "massKgM": null,
+              "stockLengthM": null,
+              "data": {
+                "kind": "tube",
+                "dimensions": "Tubo retangular 160 × 100 × 5 mm",
+                "thicknessMm": 5,
+                "areaCm2": null,
+                "elasticModulusGpa": null,
+                "iyCm4": null,
+                "izCm4": null,
+                "origin": "declared",
+                "sourceDate": "",
+                "calculationReference": ""
+              },
+              "visualSection": {
+                "family": "rectangular-tube",
+                "widthMm": 100,
+                "heightMm": 160,
+                "rollDeg": 0
+              },
+              "pricePerMeterCents": null
+            },
+            "bottomChord": {
+              "name": "VISUAL PROVISÓRIO — Tubo quadrado 100 × 100 × 4 mm",
+              "steelGrade": "",
+              "section": "Pré-visualização geométrica; perfil comercial não selecionado.",
+              "source": "Seção sintética de visualização 3D; não dimensionada e não cotada.",
+              "massKgM": null,
+              "stockLengthM": null,
+              "data": {
+                "kind": "tube",
+                "dimensions": "Tubo quadrado 100 × 100 × 4 mm",
+                "thicknessMm": 4,
+                "areaCm2": null,
+                "elasticModulusGpa": null,
+                "iyCm4": null,
+                "izCm4": null,
+                "origin": "declared",
+                "sourceDate": "",
+                "calculationReference": ""
+              },
+              "visualSection": {
+                "family": "square-tube",
+                "sideMm": 100,
+                "rollDeg": 0
+              },
+              "pricePerMeterCents": null
+            },
+            "web": {
+              "name": "VISUAL PROVISÓRIO — Cantoneira L 70 × 70 × 5 mm",
+              "steelGrade": "",
+              "section": "Pré-visualização geométrica; perfil comercial não selecionado.",
+              "source": "Seção sintética de visualização 3D; não dimensionada e não cotada.",
+              "massKgM": null,
+              "stockLengthM": null,
+              "data": {
+                "kind": "angle",
+                "dimensions": "Cantoneira L 70 × 70 × 5 mm",
+                "thicknessMm": 5,
+                "areaCm2": null,
+                "elasticModulusGpa": null,
+                "iyCm4": null,
+                "izCm4": null,
+                "origin": "declared",
+                "sourceDate": "",
+                "calculationReference": ""
+              },
+              "visualSection": {
+                "family": "angle",
+                "legXmm": 70,
+                "legYmm": 70,
+                "rollDeg": 0
+              },
+              "pricePerMeterCents": null
+            },
+            "purlin": {
+              "name": "VISUAL PROVISÓRIO — Perfil U 160 × 60 × 4 mm",
+              "steelGrade": "",
+              "section": "Pré-visualização geométrica; perfil comercial não selecionado.",
+              "source": "Seção sintética de visualização 3D; não dimensionada e não cotada.",
+              "massKgM": null,
+              "stockLengthM": null,
+              "data": {
+                "kind": "channel",
+                "dimensions": "Perfil U 160 × 60 × 4 mm",
+                "thicknessMm": 4,
+                "areaCm2": null,
+                "elasticModulusGpa": null,
+                "iyCm4": null,
+                "izCm4": null,
+                "origin": "declared",
+                "sourceDate": "",
+                "calculationReference": ""
+              },
+              "visualSection": {
+                "family": "channel",
+                "heightMm": 160,
+                "flangeWidthMm": 60,
+                "opening": "positive-x",
+                "rollDeg": 0
+              },
+              "pricePerMeterCents": null
+            }
+          },
+          "specificationNotes": "CONFIGURAÇÃO AUTOMÁTICA PROVISÓRIA. Espaçamentos, painéis, inclinação e seções visuais são valores iniciais editáveis, não escolhidos por dimensionamento estrutural.",
+          "typology": "gable",
+          "overhangStartM": 0,
+          "overhangEndM": 0
+        },
+        "workspace": {
+          "cutting": {
+            "kerfMm": null,
+            "endTrimMm": null,
+            "minimumRemnantMm": null,
+            "useFabrication": false
+          },
+          "fabrication": [],
+          "spatialPreparation": {
+            "version": 1,
+            "geometrySignature": "{\"planning\":{\"frameSpacingM\":4,\"overhangEndM\":0,\"overhangStartM\":0,\"panels\":6,\"profiles\":{\"bottomChord\":{\"data\":{\"areaCm2\":null,\"calculationReference\":\"\",\"dimensions\":\"Tubo quadrado 100 × 100 × 4 mm\",\"elasticModulusGpa\":null,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"tube\",\"origin\":\"declared\",\"sourceDate\":\"\",\"thicknessMm\":4},\"massKgM\":null,\"name\":\"VISUAL PROVISÓRIO — Tubo quadrado 100 × 100 × 4 mm\",\"pricePerMeterCents\":null,\"section\":\"Pré-visualização geométrica; perfil comercial não selecionado.\",\"source\":\"Seção sintética de visualização 3D; não dimensionada e não cotada.\",\"steelGrade\":\"\",\"stockLengthM\":null,\"visualSection\":{\"family\":\"square-tube\",\"rollDeg\":0,\"sideMm\":100}},\"column\":{\"data\":{\"areaCm2\":null,\"calculationReference\":\"\",\"dimensions\":\"Perfil I 240 × 160 mm (alma 8, mesa 12)\",\"elasticModulusGpa\":null,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"i\",\"origin\":\"declared\",\"sourceDate\":\"\",\"thicknessMm\":null},\"massKgM\":null,\"name\":\"VISUAL PROVISÓRIO — Perfil I 240 × 160 mm (alma 8, mesa 12)\",\"pricePerMeterCents\":null,\"section\":\"Pré-visualização geométrica; perfil comercial não selecionado.\",\"source\":\"Seção sintética de visualização 3D; não dimensionada e não cotada.\",\"steelGrade\":\"\",\"stockLengthM\":null,\"visualSection\":{\"family\":\"i\",\"flangeThicknessMm\":12,\"flangeWidthMm\":160,\"heightMm\":240,\"rollDeg\":0,\"webThicknessMm\":8}},\"purlin\":{\"data\":{\"areaCm2\":null,\"calculationReference\":\"\",\"dimensions\":\"Perfil U 160 × 60 × 4 mm\",\"elasticModulusGpa\":null,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"channel\",\"origin\":\"declared\",\"sourceDate\":\"\",\"thicknessMm\":4},\"massKgM\":null,\"name\":\"VISUAL PROVISÓRIO — Perfil U 160 × 60 × 4 mm\",\"pricePerMeterCents\":null,\"section\":\"Pré-visualização geométrica; perfil comercial não selecionado.\",\"source\":\"Seção sintética de visualização 3D; não dimensionada e não cotada.\",\"steelGrade\":\"\",\"stockLengthM\":null,\"visualSection\":{\"family\":\"channel\",\"flangeWidthMm\":60,\"heightMm\":160,\"opening\":\"positive-x\",\"rollDeg\":0}},\"topChord\":{\"data\":{\"areaCm2\":null,\"calculationReference\":\"\",\"dimensions\":\"Tubo retangular 160 × 100 × 5 mm\",\"elasticModulusGpa\":null,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"tube\",\"origin\":\"declared\",\"sourceDate\":\"\",\"thicknessMm\":5},\"massKgM\":null,\"name\":\"VISUAL PROVISÓRIO — Tubo retangular 160 × 100 × 5 mm\",\"pricePerMeterCents\":null,\"section\":\"Pré-visualização geométrica; perfil comercial não selecionado.\",\"source\":\"Seção sintética de visualização 3D; não dimensionada e não cotada.\",\"steelGrade\":\"\",\"stockLengthM\":null,\"visualSection\":{\"family\":\"rectangular-tube\",\"heightMm\":160,\"rollDeg\":0,\"widthMm\":100}},\"web\":{\"data\":{\"areaCm2\":null,\"calculationReference\":\"\",\"dimensions\":\"Cantoneira L 70 × 70 × 5 mm\",\"elasticModulusGpa\":null,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"angle\",\"origin\":\"declared\",\"sourceDate\":\"\",\"thicknessMm\":5},\"massKgM\":null,\"name\":\"VISUAL PROVISÓRIO — Cantoneira L 70 × 70 × 5 mm\",\"pricePerMeterCents\":null,\"section\":\"Pré-visualização geométrica; perfil comercial não selecionado.\",\"source\":\"Seção sintética de visualização 3D; não dimensionada e não cotada.\",\"steelGrade\":\"\",\"stockLengthM\":null,\"visualSection\":{\"family\":\"angle\",\"legXmm\":70,\"legYmm\":70,\"rollDeg\":0}}},\"purlinSpacingM\":1.5,\"specificationNotes\":\"CONFIGURAÇÃO AUTOMÁTICA PROVISÓRIA. Espaçamentos, painéis, inclinação e seções visuais são valores iniciais editáveis, não escolhidos por dimensionamento estrutural.\",\"trussDepthM\":0.8333333333333334,\"typology\":\"gable\",\"version\":1},\"roof\":{\"fall\":\"width-positive\",\"lengthM\":20,\"lowHeightM\":4,\"profileDescription\":\"\",\"revision\":1,\"slopePercent\":10,\"supports\":[],\"widthM\":10}}",
+            "groups": {
+              "column": {
+                "steelGrade": "Material isótropo sintético de verificação",
+                "materialSource": "Fixture matemática; E=200 GPa, nu=0,3, G=E/(2(1+nu))",
+                "materialRevision": "1",
+                "eGpa": 200,
+                "gGpa": 76.92307692307692,
+                "nu": 0.3,
+                "areaCm2": 100,
+                "iyCm4": 8000,
+                "izCm4": 8000,
+                "jCm4": 16000,
+                "sectionSource": "Seção sintética: A=0,01 m²; Iy=Iz=8e-5 m4; J=1,6e-4 m4; não é perfil comercial aprovado",
+                "sectionRevision": "1",
+                "rotationDeg": 0,
+                "connection": "rigid",
+                "elementKind": "frame"
+              },
+              "topChord": {
+                "steelGrade": "Material isótropo sintético de verificação",
+                "materialSource": "Fixture matemática; E=200 GPa, nu=0,3, G=E/(2(1+nu))",
+                "materialRevision": "1",
+                "eGpa": 200,
+                "gGpa": 76.92307692307692,
+                "nu": 0.3,
+                "areaCm2": 100,
+                "iyCm4": 8000,
+                "izCm4": 8000,
+                "jCm4": 16000,
+                "sectionSource": "Seção sintética: A=0,01 m²; Iy=Iz=8e-5 m4; J=1,6e-4 m4; não é perfil comercial aprovado",
+                "sectionRevision": "1",
+                "rotationDeg": 0,
+                "connection": "rigid",
+                "elementKind": "frame"
+              },
+              "bottomChord": {
+                "steelGrade": "Material isótropo sintético de verificação",
+                "materialSource": "Fixture matemática; E=200 GPa, nu=0,3, G=E/(2(1+nu))",
+                "materialRevision": "1",
+                "eGpa": 200,
+                "gGpa": 76.92307692307692,
+                "nu": 0.3,
+                "areaCm2": 100,
+                "iyCm4": 8000,
+                "izCm4": 8000,
+                "jCm4": 16000,
+                "sectionSource": "Seção sintética: A=0,01 m²; Iy=Iz=8e-5 m4; J=1,6e-4 m4; não é perfil comercial aprovado",
+                "sectionRevision": "1",
+                "rotationDeg": 0,
+                "connection": "rigid",
+                "elementKind": "frame"
+              },
+              "web": {
+                "steelGrade": "Material isótropo sintético de verificação",
+                "materialSource": "Fixture matemática; E=200 GPa, nu=0,3, G=E/(2(1+nu))",
+                "materialRevision": "1",
+                "eGpa": 200,
+                "gGpa": 76.92307692307692,
+                "nu": 0.3,
+                "areaCm2": 100,
+                "iyCm4": 8000,
+                "izCm4": 8000,
+                "jCm4": 16000,
+                "sectionSource": "Seção sintética: A=0,01 m²; Iy=Iz=8e-5 m4; J=1,6e-4 m4; não é perfil comercial aprovado",
+                "sectionRevision": "1",
+                "rotationDeg": 0,
+                "connection": "rigid",
+                "elementKind": "frame"
+              },
+              "purlin": {
+                "steelGrade": "Material isótropo sintético de verificação",
+                "materialSource": "Fixture matemática; E=200 GPa, nu=0,3, G=E/(2(1+nu))",
+                "materialRevision": "1",
+                "eGpa": 200,
+                "gGpa": 76.92307692307692,
+                "nu": 0.3,
+                "areaCm2": 100,
+                "iyCm4": 8000,
+                "izCm4": 8000,
+                "jCm4": 16000,
+                "sectionSource": "Seção sintética: A=0,01 m²; Iy=Iz=8e-5 m4; J=1,6e-4 m4; não é perfil comercial aprovado",
+                "sectionRevision": "1",
+                "rotationDeg": 0,
+                "connection": "rigid",
+                "elementKind": "frame"
+              }
+            },
+            "supports": [
+              {
+                "nodeId": "N15",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N16",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N31",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N32",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N47",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N48",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N63",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N64",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N79",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N80",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N95",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              },
+              {
+                "nodeId": "N96",
+                "dofs": [
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed",
+                  "fixed"
+                ]
+              }
+            ],
+            "memberConnections": [
+              {
+                "pieceId": "T1-D1",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T1-D2",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T1-D3",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T1-D4",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T1-D5",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T1-D6",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T2-D1",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T2-D2",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T2-D3",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T2-D4",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T2-D5",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T2-D6",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T3-D1",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T3-D2",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T3-D3",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T3-D4",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T3-D5",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T3-D6",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T4-D1",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T4-D2",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T4-D3",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T4-D4",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T4-D5",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T4-D6",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T5-D1",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T5-D2",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T5-D3",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T5-D4",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T5-D5",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T5-D6",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T6-D1",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T6-D2",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T6-D3",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T6-D4",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T6-D5",
+                "start": "axial",
+                "end": "axial"
+              },
+              {
+                "pieceId": "T6-D6",
+                "start": "axial",
+                "end": "axial"
+              }
+            ],
+            "cases": [
+              {
+                "id": "TESTE",
+                "source": "Carga nodal sintética de verificação: (0,2; 0,3; -1) kN; sem peso próprio automático"
+              },
+              {
+                "id": "INVERSO",
+                "source": "Mesma carga sintética invertida para verificar linearidade; nenhuma combinação normativa"
+              }
+            ],
+            "loads": [
+              {
+                "id": "22222222-2222-4222-8222-222222222222",
+                "caseId": "TESTE",
+                "nodeId": "N11",
+                "fxKn": 0.2,
+                "fyKn": 0.3,
+                "fzKn": -1,
+                "mxKnm": 0,
+                "myKnm": 0,
+                "mzKnm": 0
+              },
+              {
+                "id": "33333333-3333-4333-8333-333333333333",
+                "caseId": "INVERSO",
+                "nodeId": "N11",
+                "fxKn": -0.2,
+                "fyKn": -0.3,
+                "fzKn": 1,
+                "mxKnm": 0,
+                "myKnm": 0,
+                "mzKnm": 0
+              }
+            ],
+            "combinations": [
+              {
+                "id": "TESTE-1",
+                "factors": {
+                  "TESTE": 1,
+                  "INVERSO": 0
+                }
+              },
+              {
+                "id": "INVERSO-1",
+                "factors": {
+                  "TESTE": 0,
+                  "INVERSO": 1
+                }
+              }
+            ],
+            "connectionsReview": "Fixture mista: pilares, banzos, terças e montantes verticais são pórticos rígidos. Somente as diagonais inclinadas listadas por ID são barras axiais bilaterais sem momentos. Todas as juntas listadas conectam as translações, respeitando os tipos declarados. A hipótese alternativa de todos os montantes/diagonais axiais permanece instável e bloqueada.",
+            "lateralSystem": "Fixture: estabilidade pela ação dos pórticos rígidos, bases engastadas e barras axiais explicitamente presentes. Verificação numérica experimental, sem aprovação resistente.",
+            "loadPathReview": "Força nodal sintética na cumeeira: transferência por frames e axiais até os 12 engastes. Sem peso próprio ou vento presumido.",
+            "connectivity": {
+              "version": 1,
+              "geometrySignature": "{\"planning\":{\"frameSpacingM\":4,\"overhangEndM\":0,\"overhangStartM\":0,\"panels\":6,\"profiles\":{\"bottomChord\":{\"data\":{\"areaCm2\":null,\"calculationReference\":\"\",\"dimensions\":\"Tubo quadrado 100 × 100 × 4 mm\",\"elasticModulusGpa\":null,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"tube\",\"origin\":\"declared\",\"sourceDate\":\"\",\"thicknessMm\":4},\"massKgM\":null,\"name\":\"VISUAL PROVISÓRIO — Tubo quadrado 100 × 100 × 4 mm\",\"pricePerMeterCents\":null,\"section\":\"Pré-visualização geométrica; perfil comercial não selecionado.\",\"source\":\"Seção sintética de visualização 3D; não dimensionada e não cotada.\",\"steelGrade\":\"\",\"stockLengthM\":null,\"visualSection\":{\"family\":\"square-tube\",\"rollDeg\":0,\"sideMm\":100}},\"column\":{\"data\":{\"areaCm2\":null,\"calculationReference\":\"\",\"dimensions\":\"Perfil I 240 × 160 mm (alma 8, mesa 12)\",\"elasticModulusGpa\":null,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"i\",\"origin\":\"declared\",\"sourceDate\":\"\",\"thicknessMm\":null},\"massKgM\":null,\"name\":\"VISUAL PROVISÓRIO — Perfil I 240 × 160 mm (alma 8, mesa 12)\",\"pricePerMeterCents\":null,\"section\":\"Pré-visualização geométrica; perfil comercial não selecionado.\",\"source\":\"Seção sintética de visualização 3D; não dimensionada e não cotada.\",\"steelGrade\":\"\",\"stockLengthM\":null,\"visualSection\":{\"family\":\"i\",\"flangeThicknessMm\":12,\"flangeWidthMm\":160,\"heightMm\":240,\"rollDeg\":0,\"webThicknessMm\":8}},\"purlin\":{\"data\":{\"areaCm2\":null,\"calculationReference\":\"\",\"dimensions\":\"Perfil U 160 × 60 × 4 mm\",\"elasticModulusGpa\":null,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"channel\",\"origin\":\"declared\",\"sourceDate\":\"\",\"thicknessMm\":4},\"massKgM\":null,\"name\":\"VISUAL PROVISÓRIO — Perfil U 160 × 60 × 4 mm\",\"pricePerMeterCents\":null,\"section\":\"Pré-visualização geométrica; perfil comercial não selecionado.\",\"source\":\"Seção sintética de visualização 3D; não dimensionada e não cotada.\",\"steelGrade\":\"\",\"stockLengthM\":null,\"visualSection\":{\"family\":\"channel\",\"flangeWidthMm\":60,\"heightMm\":160,\"opening\":\"positive-x\",\"rollDeg\":0}},\"topChord\":{\"data\":{\"areaCm2\":null,\"calculationReference\":\"\",\"dimensions\":\"Tubo retangular 160 × 100 × 5 mm\",\"elasticModulusGpa\":null,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"tube\",\"origin\":\"declared\",\"sourceDate\":\"\",\"thicknessMm\":5},\"massKgM\":null,\"name\":\"VISUAL PROVISÓRIO — Tubo retangular 160 × 100 × 5 mm\",\"pricePerMeterCents\":null,\"section\":\"Pré-visualização geométrica; perfil comercial não selecionado.\",\"source\":\"Seção sintética de visualização 3D; não dimensionada e não cotada.\",\"steelGrade\":\"\",\"stockLengthM\":null,\"visualSection\":{\"family\":\"rectangular-tube\",\"heightMm\":160,\"rollDeg\":0,\"widthMm\":100}},\"web\":{\"data\":{\"areaCm2\":null,\"calculationReference\":\"\",\"dimensions\":\"Cantoneira L 70 × 70 × 5 mm\",\"elasticModulusGpa\":null,\"iyCm4\":null,\"izCm4\":null,\"kind\":\"angle\",\"origin\":\"declared\",\"sourceDate\":\"\",\"thicknessMm\":5},\"massKgM\":null,\"name\":\"VISUAL PROVISÓRIO — Cantoneira L 70 × 70 × 5 mm\",\"pricePerMeterCents\":null,\"section\":\"Pré-visualização geométrica; perfil comercial não selecionado.\",\"source\":\"Seção sintética de visualização 3D; não dimensionada e não cotada.\",\"steelGrade\":\"\",\"stockLengthM\":null,\"visualSection\":{\"family\":\"angle\",\"legXmm\":70,\"legYmm\":70,\"rollDeg\":0}}},\"purlinSpacingM\":1.5,\"specificationNotes\":\"CONFIGURAÇÃO AUTOMÁTICA PROVISÓRIA. Espaçamentos, painéis, inclinação e seções visuais são valores iniciais editáveis, não escolhidos por dimensionamento estrutural.\",\"trussDepthM\":0.8333333333333334,\"typology\":\"gable\",\"version\":1},\"roof\":{\"fall\":\"width-positive\",\"lengthM\":20,\"lowHeightM\":4,\"profileDescription\":\"\",\"revision\":1,\"slopePercent\":10,\"supports\":[],\"widthM\":10}}",
+              "reviewSource": "Fixture mista: pilares, banzos, terças e montantes verticais são pórticos rígidos. Somente as diagonais inclinadas listadas por ID são barras axiais bilaterais sem momentos. Todas as juntas listadas conectam as translações, respeitando os tipos declarados. A hipótese alternativa de todos os montantes/diagonais axiais permanece instável e bloqueada.",
+              "junctions": [
+                {
+                  "nodeId": "N1",
+                  "pieceIds": [
+                    "P1",
+                    "T1-BI1",
+                    "T1-D1",
+                    "T1-M1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N10",
+                  "pieceIds": [
+                    "T1-BS2",
+                    "T1-BS3",
+                    "T1-D2",
+                    "T1-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N100",
+                  "pieceIds": [
+                    "T4-BS1",
+                    "TE2-V3",
+                    "TE2-V4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N101",
+                  "pieceIds": [
+                    "T5-BS1",
+                    "TE2-V4",
+                    "TE2-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N102",
+                  "pieceIds": [
+                    "T6-BS1",
+                    "TE2-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N103",
+                  "pieceIds": [
+                    "T1-BS2",
+                    "TE3-V1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N104",
+                  "pieceIds": [
+                    "T2-BS2",
+                    "TE3-V1",
+                    "TE3-V2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N105",
+                  "pieceIds": [
+                    "T3-BS2",
+                    "TE3-V2",
+                    "TE3-V3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N106",
+                  "pieceIds": [
+                    "T4-BS2",
+                    "TE3-V3",
+                    "TE3-V4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N107",
+                  "pieceIds": [
+                    "T5-BS2",
+                    "TE3-V4",
+                    "TE3-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N108",
+                  "pieceIds": [
+                    "T6-BS2",
+                    "TE3-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N109",
+                  "pieceIds": [
+                    "T1-BS3",
+                    "TE4-V1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N11",
+                  "pieceIds": [
+                    "T1-BS3",
+                    "T1-BS4",
+                    "T1-D3",
+                    "T1-D4",
+                    "T1-M4",
+                    "TE5-V1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N110",
+                  "pieceIds": [
+                    "T2-BS3",
+                    "TE4-V1",
+                    "TE4-V2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N111",
+                  "pieceIds": [
+                    "T3-BS3",
+                    "TE4-V2",
+                    "TE4-V3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N112",
+                  "pieceIds": [
+                    "T4-BS3",
+                    "TE4-V3",
+                    "TE4-V4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N113",
+                  "pieceIds": [
+                    "T5-BS3",
+                    "TE4-V4",
+                    "TE4-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N114",
+                  "pieceIds": [
+                    "T6-BS3",
+                    "TE4-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N115",
+                  "pieceIds": [
+                    "T1-BS4",
+                    "TE6-V1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N116",
+                  "pieceIds": [
+                    "T2-BS4",
+                    "TE6-V1",
+                    "TE6-V2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N117",
+                  "pieceIds": [
+                    "T3-BS4",
+                    "TE6-V2",
+                    "TE6-V3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N118",
+                  "pieceIds": [
+                    "T4-BS4",
+                    "TE6-V3",
+                    "TE6-V4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N119",
+                  "pieceIds": [
+                    "T5-BS4",
+                    "TE6-V4",
+                    "TE6-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N12",
+                  "pieceIds": [
+                    "T1-BS4",
+                    "T1-BS5",
+                    "T1-D5",
+                    "T1-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N120",
+                  "pieceIds": [
+                    "T6-BS4",
+                    "TE6-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N121",
+                  "pieceIds": [
+                    "T1-BS5",
+                    "TE7-V1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N122",
+                  "pieceIds": [
+                    "T2-BS5",
+                    "TE7-V1",
+                    "TE7-V2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N123",
+                  "pieceIds": [
+                    "T3-BS5",
+                    "TE7-V2",
+                    "TE7-V3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N124",
+                  "pieceIds": [
+                    "T4-BS5",
+                    "TE7-V3",
+                    "TE7-V4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N125",
+                  "pieceIds": [
+                    "T5-BS5",
+                    "TE7-V4",
+                    "TE7-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N126",
+                  "pieceIds": [
+                    "T6-BS5",
+                    "TE7-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N127",
+                  "pieceIds": [
+                    "T1-BS6",
+                    "TE8-V1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N128",
+                  "pieceIds": [
+                    "T2-BS6",
+                    "TE8-V1",
+                    "TE8-V2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N129",
+                  "pieceIds": [
+                    "T3-BS6",
+                    "TE8-V2",
+                    "TE8-V3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N13",
+                  "pieceIds": [
+                    "T1-BS5",
+                    "T1-BS6",
+                    "T1-D6",
+                    "T1-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N130",
+                  "pieceIds": [
+                    "T4-BS6",
+                    "TE8-V3",
+                    "TE8-V4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N131",
+                  "pieceIds": [
+                    "T5-BS6",
+                    "TE8-V4",
+                    "TE8-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N132",
+                  "pieceIds": [
+                    "T6-BS6",
+                    "TE8-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N14",
+                  "pieceIds": [
+                    "T1-BS6",
+                    "T1-M7",
+                    "TE9-V1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N17",
+                  "pieceIds": [
+                    "P3",
+                    "T2-BI1",
+                    "T2-D1",
+                    "T2-M1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N18",
+                  "pieceIds": [
+                    "T2-BI1",
+                    "T2-BI2",
+                    "T2-D2",
+                    "T2-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N19",
+                  "pieceIds": [
+                    "T2-BI2",
+                    "T2-BI3",
+                    "T2-D3",
+                    "T2-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N2",
+                  "pieceIds": [
+                    "T1-BI1",
+                    "T1-BI2",
+                    "T1-D2",
+                    "T1-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N20",
+                  "pieceIds": [
+                    "T2-BI3",
+                    "T2-BI4",
+                    "T2-M4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N21",
+                  "pieceIds": [
+                    "T2-BI4",
+                    "T2-BI5",
+                    "T2-D4",
+                    "T2-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N22",
+                  "pieceIds": [
+                    "T2-BI5",
+                    "T2-BI6",
+                    "T2-D5",
+                    "T2-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N23",
+                  "pieceIds": [
+                    "P4",
+                    "T2-BI6",
+                    "T2-D6",
+                    "T2-M7"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N24",
+                  "pieceIds": [
+                    "T2-BS1",
+                    "T2-M1",
+                    "TE1-V1",
+                    "TE1-V2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N25",
+                  "pieceIds": [
+                    "T2-BS1",
+                    "T2-BS2",
+                    "T2-D1",
+                    "T2-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N26",
+                  "pieceIds": [
+                    "T2-BS2",
+                    "T2-BS3",
+                    "T2-D2",
+                    "T2-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N27",
+                  "pieceIds": [
+                    "T2-BS3",
+                    "T2-BS4",
+                    "T2-D3",
+                    "T2-D4",
+                    "T2-M4",
+                    "TE5-V1",
+                    "TE5-V2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N28",
+                  "pieceIds": [
+                    "T2-BS4",
+                    "T2-BS5",
+                    "T2-D5",
+                    "T2-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N29",
+                  "pieceIds": [
+                    "T2-BS5",
+                    "T2-BS6",
+                    "T2-D6",
+                    "T2-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N3",
+                  "pieceIds": [
+                    "T1-BI2",
+                    "T1-BI3",
+                    "T1-D3",
+                    "T1-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N30",
+                  "pieceIds": [
+                    "T2-BS6",
+                    "T2-M7",
+                    "TE9-V1",
+                    "TE9-V2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N33",
+                  "pieceIds": [
+                    "P5",
+                    "T3-BI1",
+                    "T3-D1",
+                    "T3-M1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N34",
+                  "pieceIds": [
+                    "T3-BI1",
+                    "T3-BI2",
+                    "T3-D2",
+                    "T3-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N35",
+                  "pieceIds": [
+                    "T3-BI2",
+                    "T3-BI3",
+                    "T3-D3",
+                    "T3-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N36",
+                  "pieceIds": [
+                    "T3-BI3",
+                    "T3-BI4",
+                    "T3-M4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N37",
+                  "pieceIds": [
+                    "T3-BI4",
+                    "T3-BI5",
+                    "T3-D4",
+                    "T3-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N38",
+                  "pieceIds": [
+                    "T3-BI5",
+                    "T3-BI6",
+                    "T3-D5",
+                    "T3-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N39",
+                  "pieceIds": [
+                    "P6",
+                    "T3-BI6",
+                    "T3-D6",
+                    "T3-M7"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N4",
+                  "pieceIds": [
+                    "T1-BI3",
+                    "T1-BI4",
+                    "T1-M4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N40",
+                  "pieceIds": [
+                    "T3-BS1",
+                    "T3-M1",
+                    "TE1-V2",
+                    "TE1-V3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N41",
+                  "pieceIds": [
+                    "T3-BS1",
+                    "T3-BS2",
+                    "T3-D1",
+                    "T3-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N42",
+                  "pieceIds": [
+                    "T3-BS2",
+                    "T3-BS3",
+                    "T3-D2",
+                    "T3-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N43",
+                  "pieceIds": [
+                    "T3-BS3",
+                    "T3-BS4",
+                    "T3-D3",
+                    "T3-D4",
+                    "T3-M4",
+                    "TE5-V2",
+                    "TE5-V3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N44",
+                  "pieceIds": [
+                    "T3-BS4",
+                    "T3-BS5",
+                    "T3-D5",
+                    "T3-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N45",
+                  "pieceIds": [
+                    "T3-BS5",
+                    "T3-BS6",
+                    "T3-D6",
+                    "T3-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N46",
+                  "pieceIds": [
+                    "T3-BS6",
+                    "T3-M7",
+                    "TE9-V2",
+                    "TE9-V3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N49",
+                  "pieceIds": [
+                    "P7",
+                    "T4-BI1",
+                    "T4-D1",
+                    "T4-M1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N5",
+                  "pieceIds": [
+                    "T1-BI4",
+                    "T1-BI5",
+                    "T1-D4",
+                    "T1-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N50",
+                  "pieceIds": [
+                    "T4-BI1",
+                    "T4-BI2",
+                    "T4-D2",
+                    "T4-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N51",
+                  "pieceIds": [
+                    "T4-BI2",
+                    "T4-BI3",
+                    "T4-D3",
+                    "T4-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N52",
+                  "pieceIds": [
+                    "T4-BI3",
+                    "T4-BI4",
+                    "T4-M4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N53",
+                  "pieceIds": [
+                    "T4-BI4",
+                    "T4-BI5",
+                    "T4-D4",
+                    "T4-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N54",
+                  "pieceIds": [
+                    "T4-BI5",
+                    "T4-BI6",
+                    "T4-D5",
+                    "T4-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N55",
+                  "pieceIds": [
+                    "P8",
+                    "T4-BI6",
+                    "T4-D6",
+                    "T4-M7"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N56",
+                  "pieceIds": [
+                    "T4-BS1",
+                    "T4-M1",
+                    "TE1-V3",
+                    "TE1-V4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N57",
+                  "pieceIds": [
+                    "T4-BS1",
+                    "T4-BS2",
+                    "T4-D1",
+                    "T4-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N58",
+                  "pieceIds": [
+                    "T4-BS2",
+                    "T4-BS3",
+                    "T4-D2",
+                    "T4-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N59",
+                  "pieceIds": [
+                    "T4-BS3",
+                    "T4-BS4",
+                    "T4-D3",
+                    "T4-D4",
+                    "T4-M4",
+                    "TE5-V3",
+                    "TE5-V4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N6",
+                  "pieceIds": [
+                    "T1-BI5",
+                    "T1-BI6",
+                    "T1-D5",
+                    "T1-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N60",
+                  "pieceIds": [
+                    "T4-BS4",
+                    "T4-BS5",
+                    "T4-D5",
+                    "T4-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N61",
+                  "pieceIds": [
+                    "T4-BS5",
+                    "T4-BS6",
+                    "T4-D6",
+                    "T4-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N62",
+                  "pieceIds": [
+                    "T4-BS6",
+                    "T4-M7",
+                    "TE9-V3",
+                    "TE9-V4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N65",
+                  "pieceIds": [
+                    "P9",
+                    "T5-BI1",
+                    "T5-D1",
+                    "T5-M1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N66",
+                  "pieceIds": [
+                    "T5-BI1",
+                    "T5-BI2",
+                    "T5-D2",
+                    "T5-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N67",
+                  "pieceIds": [
+                    "T5-BI2",
+                    "T5-BI3",
+                    "T5-D3",
+                    "T5-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N68",
+                  "pieceIds": [
+                    "T5-BI3",
+                    "T5-BI4",
+                    "T5-M4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N69",
+                  "pieceIds": [
+                    "T5-BI4",
+                    "T5-BI5",
+                    "T5-D4",
+                    "T5-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N7",
+                  "pieceIds": [
+                    "P2",
+                    "T1-BI6",
+                    "T1-D6",
+                    "T1-M7"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N70",
+                  "pieceIds": [
+                    "T5-BI5",
+                    "T5-BI6",
+                    "T5-D5",
+                    "T5-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N71",
+                  "pieceIds": [
+                    "P10",
+                    "T5-BI6",
+                    "T5-D6",
+                    "T5-M7"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N72",
+                  "pieceIds": [
+                    "T5-BS1",
+                    "T5-M1",
+                    "TE1-V4",
+                    "TE1-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N73",
+                  "pieceIds": [
+                    "T5-BS1",
+                    "T5-BS2",
+                    "T5-D1",
+                    "T5-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N74",
+                  "pieceIds": [
+                    "T5-BS2",
+                    "T5-BS3",
+                    "T5-D2",
+                    "T5-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N75",
+                  "pieceIds": [
+                    "T5-BS3",
+                    "T5-BS4",
+                    "T5-D3",
+                    "T5-D4",
+                    "T5-M4",
+                    "TE5-V4",
+                    "TE5-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N76",
+                  "pieceIds": [
+                    "T5-BS4",
+                    "T5-BS5",
+                    "T5-D5",
+                    "T5-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N77",
+                  "pieceIds": [
+                    "T5-BS5",
+                    "T5-BS6",
+                    "T5-D6",
+                    "T5-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N78",
+                  "pieceIds": [
+                    "T5-BS6",
+                    "T5-M7",
+                    "TE9-V4",
+                    "TE9-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N8",
+                  "pieceIds": [
+                    "T1-BS1",
+                    "T1-M1",
+                    "TE1-V1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N81",
+                  "pieceIds": [
+                    "P11",
+                    "T6-BI1",
+                    "T6-D1",
+                    "T6-M1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N82",
+                  "pieceIds": [
+                    "T6-BI1",
+                    "T6-BI2",
+                    "T6-D2",
+                    "T6-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N83",
+                  "pieceIds": [
+                    "T6-BI2",
+                    "T6-BI3",
+                    "T6-D3",
+                    "T6-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N84",
+                  "pieceIds": [
+                    "T6-BI3",
+                    "T6-BI4",
+                    "T6-M4"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N85",
+                  "pieceIds": [
+                    "T6-BI4",
+                    "T6-BI5",
+                    "T6-D4",
+                    "T6-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N86",
+                  "pieceIds": [
+                    "T6-BI5",
+                    "T6-BI6",
+                    "T6-D5",
+                    "T6-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N87",
+                  "pieceIds": [
+                    "P12",
+                    "T6-BI6",
+                    "T6-D6",
+                    "T6-M7"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N88",
+                  "pieceIds": [
+                    "T6-BS1",
+                    "T6-M1",
+                    "TE1-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N89",
+                  "pieceIds": [
+                    "T6-BS1",
+                    "T6-BS2",
+                    "T6-D1",
+                    "T6-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N9",
+                  "pieceIds": [
+                    "T1-BS1",
+                    "T1-BS2",
+                    "T1-D1",
+                    "T1-M2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N90",
+                  "pieceIds": [
+                    "T6-BS2",
+                    "T6-BS3",
+                    "T6-D2",
+                    "T6-M3"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N91",
+                  "pieceIds": [
+                    "T6-BS3",
+                    "T6-BS4",
+                    "T6-D3",
+                    "T6-D4",
+                    "T6-M4",
+                    "TE5-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N92",
+                  "pieceIds": [
+                    "T6-BS4",
+                    "T6-BS5",
+                    "T6-D5",
+                    "T6-M5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N93",
+                  "pieceIds": [
+                    "T6-BS5",
+                    "T6-BS6",
+                    "T6-D6",
+                    "T6-M6"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N94",
+                  "pieceIds": [
+                    "T6-BS6",
+                    "T6-M7",
+                    "TE9-V5"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N97",
+                  "pieceIds": [
+                    "T1-BS1",
+                    "TE2-V1"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N98",
+                  "pieceIds": [
+                    "T2-BS1",
+                    "TE2-V1",
+                    "TE2-V2"
+                  ],
+                  "decision": "connect"
+                },
+                {
+                  "nodeId": "N99",
+                  "pieceIds": [
+                    "T3-BS1",
+                    "TE2-V2",
+                    "TE2-V3"
+                  ],
+                  "decision": "connect"
+                }
+              ]
+            },
+            "memberKinds": [
+              {
+                "pieceId": "T1-D1",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T1-D2",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T1-D3",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T1-D4",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T1-D5",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T1-D6",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T2-D1",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T2-D2",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T2-D3",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T2-D4",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T2-D5",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T2-D6",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T3-D1",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T3-D2",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T3-D3",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T3-D4",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T3-D5",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T3-D6",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T4-D1",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T4-D2",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T4-D3",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T4-D4",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T4-D5",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T4-D6",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T5-D1",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T5-D2",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T5-D3",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T5-D4",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T5-D5",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T5-D6",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T6-D1",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T6-D2",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T6-D3",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T6-D4",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T6-D5",
+                "kind": "axial"
+              },
+              {
+                "pieceId": "T6-D6",
+                "kind": "axial"
+              }
+            ]
+          },
+          "analysis": null
+        },
+        "revisions": []
+      }
+    ],
+    "materials": [],
+    "settings": {
+      "companyName": "JPN Projetos",
+      "businessInfo": "",
+      "defaultWastePercent": 0,
+      "pricingMode": "markup",
+      "defaultPricingPercent": 0,
+      "currency": "BRL",
+      "compactView": false
+    }
+  }
+}

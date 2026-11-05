@@ -3,16 +3,28 @@ import { generateStructure } from "./structure";
 import { roles, roleLabels } from "../structure";
 
 // Content identity for dependent drafts, not a cryptographic signature or approval.
-export function structureSignature(project: Pick<Project, "roof" | "planning">): string {
+export function structureSignature(project: Pick<Project, "roof" | "planning"> & Partial<Pick<Project,"workspace">>): string {
   const canonical = (value: unknown): unknown => {
     if (Array.isArray(value)) return value.map(canonical);
     if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b, "en")).map(([key, item]) => [key, canonical(item)]));
     return value;
   };
+  if(project.workspace?.physicalStructure){
+    const d=project.workspace.spatialPreparation,assignments=d?.physicalCatalog?.assignments??[];
+    const pieces=project.workspace.physicalStructure.pieces.map(p=>{
+      // A display category has no physical effect only when properties, class
+      // and both endpoint connections are explicitly independent of its group.
+      const ends=d?.memberConnections.find(m=>m.pieceId===p.id);
+      const explicit=assignments.some(a=>a.pieceId===p.id)&&d?.memberKinds?.some(m=>m.pieceId===p.id)&&ends&&![ends.start,ends.end].includes("inherit");
+      return explicit?{id:p.id,start:p.start,end:p.end}:p;
+    });
+    return JSON.stringify(canonical({physicalStructure:{...project.workspace.physicalStructure,pieces},assignments}));
+  }
   return JSON.stringify(canonical({ roof: project.roof, planning: project.planning }));
 }
 
 export function transferTakeoff(project: Project, wastePercent: number): Project {
+  if(project.workspace.physicalStructure)throw Error("DECLARED_STRUCTURE_UNSUPPORTED: quantitativos de cobertura não se aplicam à geometria física declarada.");
   const result = generateStructure(project);
   if (!result.model || !project.planning) throw new Error("Gere a geometria antes de transferir os quantitativos.");
   const signature = structureSignature(project);

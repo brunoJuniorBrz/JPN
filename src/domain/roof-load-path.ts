@@ -1,6 +1,7 @@
 import type { Project } from "./models";
 import type { StructureModel } from "./structure";
 import { generateStructure } from "./calculations/structure";
+import { assertGeneratedPhysicalStructure } from "./physical-structure";
 import { structureSignature } from "./calculations/project-basis";
 import { roofDistributionSchema,roofRegionsSchema,regionElevation,roofGeometryToleranceM as eps,type RoofRegion } from "./roof-regions";
 
@@ -14,7 +15,9 @@ function positions(model:StructureModel){return new Map(model.nodes.map(n=>[n.id
 
 /** These are the actual legacy generator surfaces, including longitudinal
  * overhangs. No structural supports or section properties are inferred. */
-export function generatedRoofRegions(project:Project,model=generateStructure(project).model){
+export function generatedRoofRegions(project:Project,model?:StructureModel|null){
+  assertGeneratedPhysicalStructure(project,"regiões e cargas de cobertura");
+  if(model===undefined)model=generateStructure(project).model;
   if(!model||!project.planning||project.roof.widthM===null||project.roof.lengthM===null)fail("ROOF_GEOMETRY_PENDING: geometria incompleta.");
   const across=project.roof.fall.startsWith("width"),u=across?0:1;
   const points=positions(model),purlins=model.pieces.filter(p=>p.role==="purlin");
@@ -33,6 +36,7 @@ export function generatedRoofRegions(project:Project,model=generateStructure(pro
 }
 
 export function distributeRoofActions(project:Project,actions:RoofAreaAction[],declaration:unknown){
+  assertGeneratedPhysicalStructure(project,"distribuição de cargas de cobertura");
   if(actions.length>10)fail("ROOF_MODEL_LIMIT: mais de dez ações de área.");
   const method=roofDistributionSchema.safeParse(declaration);
   if(!method.success)fail("ROOF_LOAD_PATH_PENDING: declare a distribuição por faixas tributárias antes de calcular.");

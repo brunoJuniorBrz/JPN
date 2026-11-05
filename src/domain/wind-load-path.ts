@@ -1,5 +1,6 @@
 import type { Project } from "./models";
 import { generateStructure } from "./calculations/structure";
+import { assertGeneratedPhysicalStructure } from "./physical-structure";
 import { structureSignature } from "./calculations/project-basis";
 import { generatedRoofRegions } from "./roof-load-path";
 import { regionElevation, roofGeometryToleranceM as eps } from "./roof-regions";
@@ -20,6 +21,7 @@ const overlap = (a: number[], b: number[]) => Math.max(0,Math.min(a[2],b[2])-Mat
  * for rectangular, piecewise-constant zones on the supported planar surfaces.
  * No claim about sheeting/fixing local design or stiffness is made. */
 export function distributeWindActions(project: Project, value: unknown) {
+  assertGeneratedPhysicalStructure(project,"vento automático");
   const d = windDeclarationSchema.parse(value);
   if (d.geometrySignature !== structureSignature(project)) fail("STALE_WIND: geometria/perfis mudaram; refaça a revisão de zonas.");
   if (project.workspace.spatialPreparation?.roofRegions) fail("regiões compostas ainda não suportadas.");

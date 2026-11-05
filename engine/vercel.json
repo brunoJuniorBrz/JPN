@@ -15,7 +15,8 @@
       "feat/m27-m30-structural-engine-complete": false,
       "feat/m31-structural-audit": false,
       "feat/m32-numerics-mixed-second-order": false,
-      "feat/m33a-normative-wind-combinations": false
+      "feat/m33a-normative-wind-combinations": false,
+      "feat/m34ab-flexible-physical-model": false
     }
   },
   "functions": {

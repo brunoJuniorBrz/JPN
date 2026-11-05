@@ -2,13 +2,15 @@ import type { Project } from "./models";
 import { prepareMixedInput } from "./mixed-adapter";
 import { loadedMixedRequestSchema, needsSelfWeightOverlapReview, selfWeightOverlapReviewBasis } from "./structural-loading";
 import { mixedInputHash } from "./mixed-analysis";
-import { generateStructure } from "./calculations/structure";
+import { resolvePhysicalStructure,assertGeneratedPhysicalStructure } from "./physical-structure";
+import { resolveMemberPhysical } from "./member-physical";
 import { distributeRoofActions } from "./roof-load-path";
 import { distributeWindActions } from "./wind-load-path";
 import { verifyEngineeringCombinations } from "./engineering-combinations";
 export async function adaptLoadedMixedProject(project:Project){
   const loading=project.workspace.spatialPreparation?.loading;
   if(!loading)throw new Error("Declare carregamentos físicos.");
+  if(loading.selfWeight||loading.uniform.length||loading.roofArea.length||loading.wind||loading.roofDistribution)assertGeneratedPhysicalStructure(project,"carregamentos automáticos ou distribuídos");
   const roof_load_path=loading.roofArea.length?distributeRoofActions(project,loading.roofArea,loading.roofDistribution):null;
   const draft=project.workspace.spatialPreparation!;
   const wind_load_path=loading.wind?distributeWindActions(project,loading.wind):null;
@@ -25,7 +27,7 @@ export async function adaptLoadedMixedProject(project:Project){
     if(!review?.confirmed||!review.source.trim()||!review.revision.trim()||review.basis!==selfWeightOverlapReviewBasis(draft,loading))
       throw new Error("POSSIBLE_DOUBLE_COUNT: ações automáticas e outras cargas coexistem na mesma combinação. Revise origem e independência das ações e registre confirmação rastreável para ESTA revisão antes de calcular.");
   }
-  const prepared=await prepareMixedInput(project,true), pieces=new Map(generateStructure(project).model!.pieces.map(p=>[p.id,p]));
+  const prepared=await prepareMixedInput(project,true), pieces=new Map(resolvePhysicalStructure(project).model!.pieces.map(p=>[p.id,p]));
   for(const l of loading.uniform)if(!pieces.has(l.pieceId))throw new Error("Carga uniforme refere peça inexistente.");
   const member_loads=loading.uniform.flatMap(l=>prepared.mapping.members.filter(m=>m.originalId===l.pieceId).map(m=>({id:`${l.id}:${m.id}`,member:m.id,case:l.caseId,coordinate_system:l.coordinates,force_per_length_n_m:l.knM.map(v=>v*1000),source:l.source,revision:l.revision})));
   for(const action of roof_load_path?.actions??[])for(const l of action.loads){
@@ -40,7 +42,7 @@ export async function adaptLoadedMixedProject(project:Project){
     for(const m of mapped)member_loads.push({id:`WIND:${action.caseId}:${m.id}`,member:m.id,case:action.caseId,coordinate_system:"global",force_per_length_n_m:l.forcePerLengthNM,source:c.reference.source,revision:c.reference.revision});
   }
   const self_weight=loading.selfWeight?{case:loading.selfWeight.caseId,gravity_m_s2:loading.selfWeight.gravity,axial_lumping:loading.selfWeight.axialLumping,densities:prepared.mapping.members.map(m=>{
-    const d=draft.groups[pieces.get(m.originalId)!.role].density;if(!d)throw new Error(`${m.originalId}: densidade, fonte e revisão pendentes.`);
+    const d=resolveMemberPhysical(pieces.get(m.originalId)!,draft).properties.density;if(!d)throw new Error(`${m.originalId}: densidade, fonte e revisão pendentes.`);
     return {member:m.id,kg_m3:d.kgM3,source:d.source,revision:d.revision};})}:null;
   const request=loadedMixedRequestSchema.parse({...prepared.request,schema_version:"jpn.mixed3d/2",member_loads,self_weight});
   return {...prepared,schema_version:"jpn.mixed-adapter/2" as const,request,roof_load_path,wind_load_path,engineering_combinations,input_sha256:await mixedInputHash(request)};

@@ -1,5 +1,6 @@
 import type { Project } from "./models";
-import { generateStructure } from "./calculations/structure";
+import { resolvePhysicalStructure } from "./physical-structure";
+import { resolveMemberPhysical } from "./member-physical";
 import { adaptMixedProject } from "./mixed-adapter";
 import { adaptLoadedMixedProject } from "./loaded-mixed-adapter";
 import { canonicalSpatialInput } from "./spatial-analysis";
@@ -37,7 +38,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
   const current=await (project.workspace.spatialPreparation?.loading?adaptLoadedMixedProject(project):adaptMixedProject(project));
   if(current.input_sha256!==prepared.input_sha256||current.preparation_sha256!==prepared.preparation_sha256||canonicalSpatialInput(current.mapping)!==canonicalSpatialInput(prepared.mapping))
     throw new Error("STALE_RESISTANCE_ANALYSIS: projeto/discretização/declarações diferem da análise; execute novamente.");
-  const demands=await extractMemberDemands(prepared,value),draft=project.workspace.spatialPreparation!,model=generateStructure(project).model!;
+  const demands=await extractMemberDemands(prepared,value),draft=project.workspace.spatialPreparation!,model=resolvePhysicalStructure(project).model!;
   const continuousDemands=jointTrace?await extractContinuousDemands(prepared,value,jointTrace):null;
   const wholePieceDeflections=continuousDemands?await extractWholePieceDeflections(continuousDemands):null;
   const serviceChecks=evaluateDeclaredService(draft.serviceCriteria??[],wholePieceDeflections,draft.engineeringCombinations?.combinations.filter(c=>c.purpose.startsWith("SLS")).map(c=>c.id)??[]);
@@ -46,7 +47,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
   const pieces=demands.pieces.map(demand=>{
     const piece=model.pieces.find(p=>p.id===demand.pieceId);
     if(!piece)throw new Error("RESISTANCE_DECLARATIONS: peça original sem geometria atual.");
-    const group=draft.groups[piece.role],parsed=resistancePreparationSchema.safeParse(declarations.find(d=>d.pieceId===piece.id)),d=parsed.success?parsed.data:null;
+    const group=resolveMemberPhysical(piece,draft).properties,parsed=resistancePreparationSchema.safeParse(declarations.find(d=>d.pieceId===piece.id)),d=parsed.success?parsed.data:null;
     const issues:string[]=[];
     if(!d)issues.push("Cadastre família, aço, fontes, propriedades e condições resistentes desta peça.");
     else{

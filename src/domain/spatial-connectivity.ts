@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { StructureModel } from "./structure";
+import type { PhysicalGeometry } from "./structure";
 
 export const CONNECTIVITY_LIMITS = { nodes: 250, members: 600 } as const;
 export const connectivityDeclarationSchema = z.object({
@@ -20,7 +20,7 @@ export class ConnectivityError extends Error {
 }
 function fail(code: string, message: string, pieces: string[] = [], nodes: string[] = []): never { throw new ConnectivityError(code, message, pieces, nodes); }
 
-export function inspectConnectivity(model: StructureModel) {
+export function inspectConnectivity(model: PhysicalGeometry) {
   if (model.units !== "mm") fail("UNSUPPORTED_UNITS", "Geometria deve declarar unidade mm; nenhuma conversão implícita foi aplicada.");
   if (model.nodes.length > CONNECTIVITY_LIMITS.nodes || model.pieces.length > CONNECTIVITY_LIMITS.members) fail("MODEL_LIMIT", "Geometria excede 250 nós ou 600 peças, antes da segmentação.");
   const points = new Map(model.nodes.map(n => [n.id, [n.x, n.y, n.z] as V]));
@@ -78,7 +78,7 @@ export function inspectConnectivity(model: StructureModel) {
   return { junctions, cuts };
 }
 
-export function discretizeGeometry(model: StructureModel, declaration: ConnectivityDeclaration, geometrySignature: string) {
+export function discretizeGeometry(model: PhysicalGeometry, declaration: ConnectivityDeclaration, geometrySignature: string) {
   const parsed = connectivityDeclarationSchema.safeParse(declaration);
   if (!parsed.success) fail("CONNECTIVITY_PENDING", "Declare as conexões e sua fonte antes de segmentar.");
   const reviewed = parsed.data;

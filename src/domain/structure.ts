@@ -42,6 +42,9 @@ export function emptyPlanning(): Planning {
 }
 export interface Node3D { id: string; x: number; y: number; z: number; }
 export interface StructurePiece { id: string; role: PieceRole; start: string; end: string; lengthMm: number; profile: ProfileSpec; massKg: number | null; }
+/** Shared geometry only: no fabricated roof metrics or visual section. */
+export type PhysicalPiece = Pick<StructurePiece,"id"|"role"|"start"|"end"|"lengthMm">;
+export interface PhysicalGeometry { units:"mm"; nodes:Node3D[]; pieces:PhysicalPiece[]; }
 export interface MaterialGroup { key: string; role: PieceRole; profile: ProfileSpec; pieceIds: string[]; lengthMm: number; totalLengthM: number; massKg: number | null; }
 export interface StructureModel {
   units: "mm"; nodes: Node3D[]; pieces: StructurePiece[]; groups: MaterialGroup[];
