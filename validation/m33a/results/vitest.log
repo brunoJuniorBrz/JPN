@@ -1,0 +1,33 @@
+
+ RUN  v5.0.5 C:/Users/Usuario/Desktop/jpn-missao31
+
+······································································x·······························································································································································································································································································································································
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/infrastructure/analysis/local-design-real.test.ts > real HTTP resistance path recalculates geometry and executes NBR14762 tension under the OS cap
+AssertionError: expected 503 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 503
+
+ ❯ src/infrastructure/analysis/local-design-real.test.ts:13:100
+     11| afterEach(()=>vi.unstubAllEnvs());
+     12| it("real HTTP resistance path recalculates geometry and executes NBR14…
+     13|   enabled();const response=await POST(request()),out=await response.js…
+       |                                                                                                    ^
+     14|   const result=coldformedDesignResultSchema.required({geometry_audit:t…
+     15|   expect(out.execution.memory_limit_bytes).toBe(805306368);expect(resu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 48 passed (49)
+      Tests  1 failed | 421 passed (422)
+   Start at  15:42:20
+   Duration  311.96s (tests 94%, import 6%)
+
+JSON report written to C:/Users/Usuario/Desktop/jpn-missao31/validation/m33a/results/vitest.json

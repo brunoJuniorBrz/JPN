@@ -1,0 +1,40 @@
+{
+  "kind": "synthetic-first-order-not-design",
+  "node": "v24.13.0",
+  "originalPieces": 207,
+  "nodes": 132,
+  "segments": 243,
+  "combinations": 4,
+  "elapsedMs": {
+    "adapt": 118.39750000000004,
+    "protectedWorker": 4370.1683,
+    "continuousAndWholePieceReport": 1753.7690999999995,
+    "total": 6242.3349
+  },
+  "memory": {
+    "before": {
+      "rss": 76513280,
+      "heapTotal": 54374400,
+      "heapUsed": 18429096,
+      "external": 2486317,
+      "arrayBuffers": 26388
+    },
+    "after": {
+      "rss": 374517760,
+      "heapTotal": 280911872,
+      "heapUsed": 189196624,
+      "external": 21223123,
+      "arrayBuffers": 18737724
+    },
+    "note": "Node snapshots only, not a certified peak. Python peak RSS monitored separately."
+  },
+  "bytes": {
+    "request": 99779,
+    "workerEnvelope": 1611829,
+    "resistanceReport": 13013489
+  },
+  "wholePieceRows": 5489,
+  "inputSha256": "cac67faa476089b51112645170fb42d1cad785fdc0b1c6b4867e3cabdd8f27ff",
+  "reportSha256": "ae2705a4aff0cfc36ab16bce744229880efca853425f3de19b82ebc25ee0071e",
+  "gate": "NOT_READY_BLOCKED"
+}

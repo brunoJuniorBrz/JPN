@@ -1,0 +1,106 @@
+{
+  "initial_sha": "00e61f68d1013f2d34dfa74554c84edc27efad72",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "python_core": {
+    "tests": 1580,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 0
+  },
+  "independent_comparisons": 1000,
+  "reference_maxima": {
+    "displacement_m": {
+      "absolute": 2.0459328675670463e-14,
+      "seed": 471
+    },
+    "reaction_n": {
+      "absolute": 1.6542617231607437e-07,
+      "seed": 471
+    },
+    "axial_n": {
+      "absolute": 1.680455170571804e-07,
+      "seed": 471
+    }
+  },
+  "optional_profiles": {
+    "sections": {
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "fsm": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "member-buckling": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "pr38_separate_worktree": {
+    "tests": 29,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "vitest": {
+    "numPassedTests": 388,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "success": true
+  },
+  "playwright": {
+    "startTime": "2026-11-03T19:20:14.391Z",
+    "duration": 1173600.832,
+    "expected": 73,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "all_pipeline_steps_passed": true,
+  "pdelta_comparison": {
+    "load_ratio_to_euler": 0.6,
+    "actual_tip_m": 0.002644496838676522,
+    "closed_form_tip_m": 0.002644497144467381,
+    "relative_difference": 1.1563289446302889e-07,
+    "method": "Native initial-stress, straight beam-column only; not mixed nonlinear convergence"
+  },
+  "compression_examples": [
+    {
+      "load_n": 1000.0,
+      "status": "CONDITIONAL-MODEL-LIMITS",
+      "computed_resistance_n": 22682.489777153096,
+      "evaluator_version": "jpn.nbr14762-mrd/3"
+    },
+    {
+      "load_n": 200000.0,
+      "status": "FAIL",
+      "computed_resistance_n": 22682.489777153096,
+      "evaluator_version": "jpn.nbr14762-mrd/3"
+    }
+  ],
+  "full_roof_benchmarks_completed": false,
+  "pr38_integrated": false,
+  "merged_main": false,
+  "deployed": false,
+  "fabrication_approved": false,
+  "validated_code_sha": "b32fb29bfc6a6f163e9a708c65282b21d3e8af87",
+  "baseline_clean_worktree": {
+    "sha": "00e61f68d1013f2d34dfa74554c84edc27efad72",
+    "pytest": {
+      "tests": 1524,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "independent_comparisons": 1000,
+    "checks": "baseline/checks.json"
+  }
+}

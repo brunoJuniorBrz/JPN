@@ -1,0 +1,20 @@
+{
+  "sha": "0d7ebc2729fb4f370a7d99fa7f6f4751d6f12696",
+  "source_tree_clean_before": true,
+  "source_tree_clean_after": true,
+  "exit_code": 0,
+  "elapsed_seconds": 47.904472900001565,
+  "actual_import": "${ROOT}\\.tools\\base43\\engine\\jpn_structural\\__init__.py",
+  "command": [
+    "${ROOT}\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pytest",
+    "engine/section_tests/test_verified_design.py::test_real_worker_refuses_contradictory_geometry_and_runs_matching_section",
+    "-q",
+    "--junitxml=${ROOT}\\docs\\validation\\mission32\\baseline\\sections.xml"
+  ],
+  "threads": 1,
+  "numerical_environment": "Same main venv as final branch",
+  "source_isolation": "Clean detached worktree, explicit PYTHONPATH, actual import path and worker __file__ point to baseline engine",
+  "production_worker_timeout_seconds": 20
+}

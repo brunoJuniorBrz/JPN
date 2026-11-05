@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="16" time="12.960" timestamp="2026-11-03T15:44:13.615523-03:00" hostname="OXXYGEN270"><testcase classname="tests.test_frame_pdelta" name="test_compressed_and_tensioned_cantilever_converges_to_exact_continuum[0.2]" time="3.417"><failure message="jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.">ratio = 0.2
+
+    @pytest.mark.parametrize('ratio', [.2, .6, .85, -.6])
+    def test_compressed_and_tensioned_cantilever_converges_to_exact_continuum(ratio):
+        E, I, L, H = 200e9, 1e-5, 4., 100.
+        P = abs(ratio)*math.pi**2*E*I/(4*L*L)
+        k = math.sqrt(P/(E*I))
+        exact = H/P*(math.tan(k*L)/k-L) if ratio&gt;0 else H/P*(L-math.tanh(k*L)/k)
+        errors = []
+        for count in (8, 16, 32):
+&gt;           out = analyze_frame_pdelta(column(count, ratio))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+engine\tests\test_frame_pdelta.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+engine\jpn_structural\frame_pdelta.py:124: in analyze_frame_pdelta
+    fail('NONCONVERGENCE', 'Final tangent/load residual exceeds 1e-8; native return is insufficient.')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'NONCONVERGENCE'
+message = 'Final tangent/load residual exceeds 1e-8; native return is insufficient.'
+
+    def fail(code, message):
+&gt;       raise AnalysisError(code, message)
+E       jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.
+
+engine\jpn_structural\frame3d_model.py:16: AnalysisError</failure></testcase><testcase classname="tests.test_frame_pdelta" name="test_compressed_and_tensioned_cantilever_converges_to_exact_continuum[0.6]" time="0.104"><failure message="jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.">ratio = 0.6
+
+    @pytest.mark.parametrize('ratio', [.2, .6, .85, -.6])
+    def test_compressed_and_tensioned_cantilever_converges_to_exact_continuum(ratio):
+        E, I, L, H = 200e9, 1e-5, 4., 100.
+        P = abs(ratio)*math.pi**2*E*I/(4*L*L)
+        k = math.sqrt(P/(E*I))
+        exact = H/P*(math.tan(k*L)/k-L) if ratio&gt;0 else H/P*(L-math.tanh(k*L)/k)
+        errors = []
+        for count in (8, 16, 32):
+&gt;           out = analyze_frame_pdelta(column(count, ratio))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+engine\tests\test_frame_pdelta.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+engine\jpn_structural\frame_pdelta.py:124: in analyze_frame_pdelta
+    fail('NONCONVERGENCE', 'Final tangent/load residual exceeds 1e-8; native return is insufficient.')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'NONCONVERGENCE'
+message = 'Final tangent/load residual exceeds 1e-8; native return is insufficient.'
+
+    def fail(code, message):
+&gt;       raise AnalysisError(code, message)
+E       jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.
+
+engine\jpn_structural\frame3d_model.py:16: AnalysisError</failure></testcase><testcase classname="tests.test_frame_pdelta" name="test_compressed_and_tensioned_cantilever_converges_to_exact_continuum[0.85]" time="0.061"><failure message="jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.">ratio = 0.85
+
+    @pytest.mark.parametrize('ratio', [.2, .6, .85, -.6])
+    def test_compressed_and_tensioned_cantilever_converges_to_exact_continuum(ratio):
+        E, I, L, H = 200e9, 1e-5, 4., 100.
+        P = abs(ratio)*math.pi**2*E*I/(4*L*L)
+        k = math.sqrt(P/(E*I))
+        exact = H/P*(math.tan(k*L)/k-L) if ratio&gt;0 else H/P*(L-math.tanh(k*L)/k)
+        errors = []
+        for count in (8, 16, 32):
+&gt;           out = analyze_frame_pdelta(column(count, ratio))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+engine\tests\test_frame_pdelta.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+engine\jpn_structural\frame_pdelta.py:124: in analyze_frame_pdelta
+    fail('NONCONVERGENCE', 'Final tangent/load residual exceeds 1e-8; native return is insufficient.')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'NONCONVERGENCE'
+message = 'Final tangent/load residual exceeds 1e-8; native return is insufficient.'
+
+    def fail(code, message):
+&gt;       raise AnalysisError(code, message)
+E       jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.
+
+engine\jpn_structural\frame3d_model.py:16: AnalysisError</failure></testcase><testcase classname="tests.test_frame_pdelta" name="test_compressed_and_tensioned_cantilever_converges_to_exact_continuum[-0.6]" time="0.139"><failure message="jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.">ratio = -0.6
+
+    @pytest.mark.parametrize('ratio', [.2, .6, .85, -.6])
+    def test_compressed_and_tensioned_cantilever_converges_to_exact_continuum(ratio):
+        E, I, L, H = 200e9, 1e-5, 4., 100.
+        P = abs(ratio)*math.pi**2*E*I/(4*L*L)
+        k = math.sqrt(P/(E*I))
+        exact = H/P*(math.tan(k*L)/k-L) if ratio&gt;0 else H/P*(L-math.tanh(k*L)/k)
+        errors = []
+        for count in (8, 16, 32):
+&gt;           out = analyze_frame_pdelta(column(count, ratio))
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+engine\tests\test_frame_pdelta.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+engine\jpn_structural\frame_pdelta.py:124: in analyze_frame_pdelta
+    fail('NONCONVERGENCE', 'Final tangent/load residual exceeds 1e-8; native return is insufficient.')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'NONCONVERGENCE'
+message = 'Final tangent/load residual exceeds 1e-8; native return is insufficient.'
+
+    def fail(code, message):
+&gt;       raise AnalysisError(code, message)
+E       jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.
+
+engine\jpn_structural\frame3d_model.py:16: AnalysisError</failure></testcase><testcase classname="tests.test_frame_pdelta" name="test_pin_pin_column_with_center_transverse_force_has_independent_closed_solution" time="0.682"><failure message="jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.">def test_pin_pin_column_with_center_transverse_force_has_independent_closed_solution():
+        raw = column(32, .6, pinned=True)
+        E, I, L, H = 200e9, 1e-5, 4., 100.
+        P = .6*math.pi**2*E*I/L**2
+        k = math.sqrt(P/(E*I))
+        exact = H/(2*P)*(math.tan(k*L/2)/k-L/2)
+&gt;       result = analyze_frame_pdelta(raw)['combinations']['TESTE-1']
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+engine\tests\test_frame_pdelta.py:60: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+engine\jpn_structural\frame_pdelta.py:124: in analyze_frame_pdelta
+    fail('NONCONVERGENCE', 'Final tangent/load residual exceeds 1e-8; native return is insufficient.')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'NONCONVERGENCE'
+message = 'Final tangent/load residual exceeds 1e-8; native return is insufficient.'
+
+    def fail(code, message):
+&gt;       raise AnalysisError(code, message)
+E       jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.
+
+engine\jpn_structural\frame3d_model.py:16: AnalysisError</failure></testcase><testcase classname="tests.test_frame_pdelta" name="test_native_positive_return_above_euler_does_not_admit_negative_tangent[1.01]" time="0.379" /><testcase classname="tests.test_frame_pdelta" name="test_native_positive_return_above_euler_does_not_admit_negative_tangent[1.2]" time="0.333" /><testcase classname="tests.test_frame_pdelta" name="test_sign_superposition_and_no_input_or_first_order_mutation" time="0.277"><failure message="jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.">def test_sign_superposition_and_no_input_or_first_order_mutation():
+        raw = column(16, .6)
+        before = copy.deepcopy(raw)
+&gt;       positive = analyze_frame_pdelta(raw)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+engine\tests\test_frame_pdelta.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+engine\jpn_structural\frame_pdelta.py:124: in analyze_frame_pdelta
+    fail('NONCONVERGENCE', 'Final tangent/load residual exceeds 1e-8; native return is insufficient.')
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+code = 'NONCONVERGENCE'
+message = 'Final tangent/load residual exceeds 1e-8; native return is insufficient.'
+
+    def fail(code, message):
+&gt;       raise AnalysisError(code, message)
+E       jpn_structural.model.AnalysisError: Final tangent/load residual exceeds 1e-8; native return is insufficient.
+
+engine\jpn_structural\frame3d_model.py:16: AnalysisError</failure></testcase><testcase classname="tests.test_frame_pdelta" name="test_unsupported_and_unstable_models_never_fall_back_to_linear_approval[&lt;lambda&gt;0]" time="0.002" /><testcase classname="tests.test_frame_pdelta" name="test_unsupported_and_unstable_models_never_fall_back_to_linear_approval[&lt;lambda&gt;1]" time="0.004" /><testcase classname="tests.test_frame_pdelta" name="test_unsupported_and_unstable_models_never_fall_back_to_linear_approval[&lt;lambda&gt;2]" time="0.025" /><testcase classname="tests.test_frame_pdelta" name="test_unsupported_and_unstable_models_never_fall_back_to_linear_approval[&lt;lambda&gt;3]" time="0.034"><failure message="numpy._core._exceptions._UFuncOutputCastingError: Cannot cast ufunc 'divide' output from dtype('float64') to dtype('int64') with casting rule 'same_kind'">mutation = &lt;function &lt;lambda&gt; at 0x0000022F14FD3060&gt;
+
+    @pytest.mark.parametrize('mutation', [
+        lambda r:r.update(max_iterations=0),
+        lambda r:r.update(max_iterations=True),
+        lambda r:r['model']['members'][0]['release_end'].__setitem__(4, True),
+        lambda r:r.update(model=portal()),
+        lambda r:r['model']['supports'].clear(),
+        lambda r:r['model']['sections'][0].update(iy_m4=0.),
+        lambda r:r['model']['nodes'][1].update(z_m=0.),
+    ])
+    def test_unsupported_and_unstable_models_never_fall_back_to_linear_approval(mutation):
+        raw = column(8)
+        mutation(raw)
+        with pytest.raises(AnalysisError):
+&gt;           analyze_frame_pdelta(raw)
+
+engine\tests\test_frame_pdelta.py:97: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+raw = {'schema_version': 'jpn.frame-pdelta/1', 'model': {'schema_version': 'jpn.frame3d/1', 'units': 'SI', 'theory': 'linear...rce': 'Fixture sintética de validação por trabalho virtual; não é a cobertura do usuário'}, ...}, 'max_iterations': 30}
+
+    def analyze_frame_pdelta(raw):
+        obj(raw, 'schema_version model max_iterations', 'frame P-Delta request')
+        if raw['schema_version'] != 'jpn.frame-pdelta/1':
+            fail('UNSUPPORTED_MODEL', 'Explicit experimental frame P-Delta contract required.')
+        if type(raw['max_iterations']) is not int or not 1 &lt;= raw['max_iterations'] &lt;= 30:
+            fail('INVALID_INPUT', 'Native iteration limit must be an integer from 1 to 30.')
+        data = raw['model']
+        # Strict validation, connectivity, true local bases, initial stability,
+        # conditioning, small motions and equilibrium all use the existing path.
+        linear = analyze_frame3d(data)
+        if len(data['nodes']) &gt; 100 or len(data['members']) &gt; 128:
+            fail('INPUT_LIMIT', 'Experimental P-Delta limit: 100 explicit nodes and 128 frames.')
+        if any(any(m['release_start'] + m['release_end']) for m in data['members']):
+            fail('UNSUPPORTED_RELEASE', 'This initial P-Delta domain admits unreleased frames only.')
+        # Deliberately narrow first release: a straight prismatic beam-column,
+        # explicitly discretized by the caller. General sway frames require a
+        # separate independent validation campaign; they are not inferred here.
+        points = {n['id']: np.array([n[k] for k in ('x_m', 'y_m', 'z_m')]) for n in data['nodes']}
+        first = data['members'][0]
+        direction = points[first['end']]-points[first['start']]
+&gt;       direction /= np.linalg.norm(direction)
+E       numpy._core._exceptions._UFuncOutputCastingError: Cannot cast ufunc 'divide' output from dtype('float64') to dtype('int64') with casting rule 'same_kind'
+
+engine\jpn_structural\frame_pdelta.py:65: UFuncTypeError</failure></testcase><testcase classname="tests.test_frame_pdelta" name="test_unsupported_and_unstable_models_never_fall_back_to_linear_approval[&lt;lambda&gt;4]" time="0.008" /><testcase classname="tests.test_frame_pdelta" name="test_unsupported_and_unstable_models_never_fall_back_to_linear_approval[&lt;lambda&gt;5]" time="0.001" /><testcase classname="tests.test_frame_pdelta" name="test_unsupported_and_unstable_models_never_fall_back_to_linear_approval[&lt;lambda&gt;6]" time="0.001" /><testcase classname="tests.test_frame_pdelta" name="test_real_isolated_worker_has_os_cap_and_preserves_first_order_result" time="4.811"><failure message="AssertionError: {'status': 'error', 'error': {'code': 'NONCONVERGENCE', 'message': 'Final tangent/load residual exceeds 1e-8; native return is insufficient.'}}&#10;assert 2 == 0&#10; +  where 2 = CompletedProcess(args=['C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.venv\\Scripts\\python.exe', '-I', '-X', 'utf8', 'C...ONCONVERGENCE&quot;, &quot;message&quot;: &quot;Final tangent/load residual exceeds 1e-8; native return is insufficient.&quot;}}\n', stderr=b'').returncode">def test_real_isolated_worker_has_os_cap_and_preserves_first_order_result():
+        worker = Path(__file__).resolve().parents[1]/'second_order_worker.py'
+        run = subprocess.run([sys.executable, '-I', '-X', 'utf8', str(worker)],
+            input=json.dumps(column(8, .2)).encode(), capture_output=True, timeout=20,
+            env={**os.environ, 'OPENBLAS_NUM_THREADS':'1', 'OMP_NUM_THREADS':'1', 'MKL_NUM_THREADS':'1'})
+        result = json.loads(run.stdout)
+&gt;       assert run.returncode == 0, result
+E       AssertionError: {'status': 'error', 'error': {'code': 'NONCONVERGENCE', 'message': 'Final tangent/load residual exceeds 1e-8; native return is insufficient.'}}
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.venv\\Scripts\\python.exe', '-I', '-X', 'utf8', 'C...ONCONVERGENCE", "message": "Final tangent/load residual exceeds 1e-8; native return is insufficient."}}\n', stderr=b'').returncode
+
+engine\tests\test_frame_pdelta.py:106: AssertionError</failure></testcase></testsuite></testsuites>

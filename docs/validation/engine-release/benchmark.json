@@ -1,0 +1,117 @@
+{
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "threads": 1,
+  "results": [
+    {
+      "name": "synthetic-roof-207-pieces",
+      "nodes": 132,
+      "segments": 243,
+      "combinations": 3,
+      "input_bytes": 107810,
+      "output_bytes": 1304091,
+      "peak_rss_bytes": 98828288,
+      "elapsed_seconds": 4.36759290000191,
+      "timed_out": false,
+      "returncode": 0,
+      "status": "completed",
+      "error": null,
+      "stderr_bytes": 0,
+      "input_sha256": "413ac3676a9b47e0e657efbb401655ad0b71d9e4c7235e5bd6313863f1ad2bc9",
+      "equilibrium": {
+        "TOTAL": {
+          "force_n": [
+            2.411382260260666e-12,
+            7.58433316150331e-11,
+            -7.639755494892597e-10
+          ],
+          "moment_nm": [
+            -6.83940015733242e-09,
+            3.899913281202316e-09,
+            2.346942634706522e-10
+          ],
+          "relative_residual": 8.161786440604733e-15
+        },
+        "PESO": {
+          "force_n": [
+            -3.8686409576103534e-11,
+            2.0392576516314875e-12,
+            -7.421476766467094e-10
+          ],
+          "moment_nm": [
+            -6.7229848355054855e-09,
+            3.6670826375484467e-09,
+            -8.499312420253203e-11
+          ],
+          "relative_residual": 8.14810390828813e-15
+        },
+        "INVERSO-TOTAL": {
+          "force_n": [
+            -2.411382260260666e-12,
+            -7.58433316150331e-11,
+            7.639755494892597e-10
+          ],
+          "moment_nm": [
+            6.83940015733242e-09,
+            -3.899913281202316e-09,
+            -2.346942634706522e-10
+          ],
+          "relative_residual": 8.161786440604733e-15
+        }
+      },
+      "completed_within_http_caps": true
+    },
+    {
+      "name": "synthetic-maximum-size-one-combination",
+      "nodes": 150,
+      "segments": 320,
+      "combinations": 1,
+      "input_bytes": 147792,
+      "output_bytes": 518452,
+      "peak_rss_bytes": 102993920,
+      "elapsed_seconds": 5.623334100004286,
+      "timed_out": false,
+      "returncode": 0,
+      "status": "completed",
+      "error": null,
+      "stderr_bytes": 0,
+      "input_sha256": "1c63278c1b938c516061a3ae9cc0c1aa2ff46a3639f5b11a0745257751c46b3c",
+      "equilibrium": {
+        "PERF-C0": {
+          "force_n": [
+            8.095724146341463e-12,
+            -3.225864020350855e-12,
+            -7.785274647176266e-10
+          ],
+          "moment_nm": [
+            -6.548361852765083e-09,
+            4.103640094399452e-09,
+            6.052602808113648e-11
+          ],
+          "relative_residual": 3.293402517485786e-15
+        }
+      },
+      "completed_within_http_caps": true
+    },
+    {
+      "name": "synthetic-resource-maximum",
+      "nodes": 150,
+      "segments": 320,
+      "combinations": 10,
+      "input_bytes": 148359,
+      "output_bytes": 85,
+      "peak_rss_bytes": 109289472,
+      "elapsed_seconds": 8.255869199987501,
+      "timed_out": false,
+      "returncode": 2,
+      "status": "error",
+      "error": {
+        "code": "OUTPUT_LIMIT",
+        "message": "Resposta excede 2 MB."
+      },
+      "stderr_bytes": 0,
+      "input_sha256": null,
+      "equilibrium": {},
+      "completed_within_http_caps": false
+    }
+  ]
+}

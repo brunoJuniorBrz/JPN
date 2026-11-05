@@ -22,7 +22,7 @@ LIMITS = dict(nodes=150, members=320, materials=50, sections=50,
               supports=150, cases=10, nodal_loads=500, combinations=10)
 
 
-def validate_mixed3d(data):
+def validate_mixed3d(data, *, distributed_cases=()):
     obj(data, 'schema_version units theory project nodes members materials sections supports cases nodal_loads combinations', 'modelo')
     if (data['schema_version'], data['units'], data['theory']) != ('jpn.mixed3d/1', 'SI', 'linear-elastic-frame-axial'):
         fail('UNSUPPORTED_MODEL', 'Somente pórticos Euler-Bernoulli e barras axiais bilaterais 3D em SI.')
@@ -45,7 +45,7 @@ def validate_mixed3d(data):
         if len(names) != len(set(names)):
             fail('DUPLICATE_ID', f'{field}: IDs duplicados.')
         ids[field] = set(names)
-    if len(data['nodes']) < 2 or not all(data[k] for k in ('members','cases','combinations','nodal_loads')):
+    if len(data['nodes']) < 2 or not all(data[k] for k in ('members','cases','combinations')) or (not data['nodal_loads'] and not distributed_cases):
         fail('INCOMPLETE_MODEL', 'Informe nós, barras, casos, cargas e combinações.')
     points={}
     for n in data['nodes']:
@@ -122,7 +122,7 @@ def validate_mixed3d(data):
             number(l[k],-1e9,1e9,k)
         if l['node'] not in frames and any(l[k]!=0 for k in ('mx_nm','my_nm','mz_nm')):
             fail('INACTIVE_DOF','Nó axial não aceita momento nodal.')
-    if any(not any(l['case']==case for l in data['nodal_loads']) for case in ids['cases']):
+    if any(case not in distributed_cases and not any(l['case']==case for l in data['nodal_loads']) for case in ids['cases']):
         fail('INCOMPLETE_MODEL','Declare ações de cada caso.')
     for combo in data['combinations']:
         obj(combo,'id factors','combinação')
@@ -138,9 +138,9 @@ def validate_mixed3d(data):
     return data,points,frames,supported
 
 
-def analyze_mixed3d(raw):
+def analyze_mixed3d(raw, *, _loading=None, _joint_actions=None):
     started=time.perf_counter()
-    data,points,frame_nodes,supports=validate_mixed3d(raw)
+    data,points,frame_nodes,supports=validate_mixed3d(raw, distributed_cases=() if _loading is None else {l['case'] for l in _loading['frame_loads']})
     try:
         if version('PyNiteFEA')!='3.2.1':
             fail('DEPENDENCY_VERSION','Exigido PyNiteFEA 3.2.1.')
@@ -179,6 +179,11 @@ def analyze_mixed3d(raw):
                 model.add_node_load(l['node'],direction,l[k],l['case'])
     for c in data['combinations']:
         model.add_load_combo(c['id'],c['factors'])
+    if _loading is not None:
+        for load in _loading['frame_loads']:
+            for direction,value in zip(('FX','FY','FZ') if load['coordinate_system']=='global' else ('Fx','Fy','Fz'), load['force_per_length_n_m']):
+                if value:
+                    model.add_member_dist_load(load['member'],direction,value,value,case=load['case'])
     try:
         with contextlib.redirect_stdout(io.StringIO()),warnings.catch_warnings():
             warnings.simplefilter('error')
@@ -221,9 +226,13 @@ def analyze_mixed3d(raw):
         raise AnalysisError('NUMERICAL_FAILURE',f'PyNite falhou: {type(exc).__name__}; sem resultado.') from exc
     span=max(float(np.ptp(np.array(list(points.values())),axis=0).max()),1e-5)
     result={}
+    if _joint_actions is not None:
+        _joint_actions.update(schema_version='jpn.member-end-actions/1', units='SI', members={}, combinations={})
     for combo in data['combinations']:
         name=combo['id'];nodes={};members={}
         assembled={nid:np.zeros(6) for nid in points};external_nodes={}
+        if _joint_actions is not None:
+            _joint_actions['combinations'][name] = dict(nodal_loads={}, members={})
         forces=np.zeros(3);moments=np.zeros(3);force_scale=0.;moment_scale=0.
         origin=next(iter(points.values()))
         for nid,n in model.nodes.items():
@@ -241,6 +250,8 @@ def analyze_mixed3d(raw):
                     load+=combo['factors'].get(l['case'],0)*np.array([l[k] for k in
                         ('fx_n','fy_n','fz_n','mx_nm','my_nm','mz_nm')])
             external=load+reaction
+            if _joint_actions is not None:
+                _joint_actions['combinations'][name]['nodal_loads'][nid] = load.tolist()
             external_nodes[nid]=external
             forces+=external[:3]
             moments+=external[3:]+np.cross(points[nid]-origin,external[:3])
@@ -265,13 +276,41 @@ def analyze_mixed3d(raw):
             members[mid]=dict(kind='axial',axial_n=value,length_m=length,extension_m=extension)
             assembled[m['start']][:3]-=value*direction
             assembled[m['end']][:3]+=value*direction
+            if _joint_actions is not None:
+                # Actual PyNite spring global actions, not guessed transverse DOFs.
+                native = np.asarray(spring.F(name)).ravel()
+                _joint_actions['members'][mid] = dict(kind='axial', start=m['start'], end=m['end'], global_to_local=np.asarray(spring.T()[:3,:3]).tolist())
+                _joint_actions['combinations'][name]['members'][mid] = dict(kind='axial', node_on_member_force_n=[native[:3].tolist(), native[6:9].tolist()])
         for mid,beam in model.members.items():
             sub=next(iter(beam.sub_members.values()))
             actions=np.asarray(sub.f(name)).ravel()
             if len(actions)!=12 or not np.isfinite(actions).all():
                 fail('NUMERICAL_FAILURE','Forças de pórtico inválidas.')
             members[mid]=dict(kind='frame',length_m=float(beam.L()),end_actions_local=actions.tolist())
+            if _loading is not None:
+                axes=np.asarray(sub.T()[:3,:3]); q=np.zeros(3); length=float(beam.L())
+                for load in _loading['frame_loads']:
+                    if load['member']==mid:
+                        vector=combo['factors'].get(load['case'],0)*np.array(load['force_per_length_n_m'])
+                        q+=vector if load['coordinate_system']=='local' else axes@vector
+                resultant=axes.T@q*length
+                forces+=resultant
+                moments+=np.cross((points[beam.i_node.name]+points[beam.j_node.name])/2-origin,resultant)
+                force_scale+=float(np.linalg.norm(resultant))
+                stations=[]
+                for fraction in (0.,.25,.5,.75,1.):
+                    x=fraction*length
+                    translation=[float(sub.deflection(d,x,name)) for d in ('dx','dy','dz')]
+                    values=[x,-actions[0]-q[0]*x,-actions[1]-q[1]*x,-actions[2]-q[2]*x,-actions[3],
+                            -actions[4]-actions[2]*x-q[2]*x*x/2,-actions[5]+actions[1]*x+q[1]*x*x/2]
+                    if not np.isfinite(values+translation).all(): fail('NUMERICAL_FAILURE','Recuperação interna não finita.')
+                    if max(abs(v) for v in translation)/span>.01: fail('MODEL_LIMIT','Deslocamento interno fora do domínio linear.')
+                    stations.append(dict(zip(('x_m','n_n','vy_n','vz_n','t_nm','my_nm','mz_nm'),map(float,values)),translation_local_m=translation))
+                members[mid]['stations']=stations
             global_actions=sub.T().T@actions
+            if _joint_actions is not None:
+                _joint_actions['members'][mid] = dict(kind='frame', start=beam.i_node.name, end=beam.j_node.name, global_to_local=np.asarray(sub.T()[:3,:3]).tolist())
+                _joint_actions['combinations'][name]['members'][mid] = dict(kind='frame', node_on_member_global=global_actions.tolist())
             assembled[beam.i_node.name]+=global_actions[:6]
             assembled[beam.j_node.name]+=global_actions[6:]
         # External resultant balance alone cannot validate internal joint actions.
@@ -287,7 +326,7 @@ def analyze_mixed3d(raw):
             fail('EQUILIBRIUM_FAILURE','Equilíbrio global ou nodal não atendido.')
         result[name]=dict(nodes=nodes,members=members,
              equilibrium=dict(force_n=forces.tolist(),moment_nm=moments.tolist(),relative_residual=residual))
-    return dict(schema_version='jpn.mixed3d-result/1',status='analysis_completed_experimental',
+    output=dict(schema_version='jpn.mixed3d-result/1',status='analysis_completed_experimental',
         units='SI',project=data['project'],input_sha256=input_hash(data),
         solver=dict(name='PyNiteFEA',version=version('PyNiteFEA'),adapter='jpn-mixed3d/1'),
         assumptions=['Primeira ordem, pórtico Euler-Bernoulli e mola axial bilateral EA/L.',
@@ -296,3 +335,10 @@ def analyze_mixed3d(raw):
         diagnostics=dict(free_dofs=len(free),scaled_condition=condition,
                          elapsed_seconds=time.perf_counter()-started),
         combinations=result)
+    if _loading is not None:
+        output.update(schema_version='jpn.mixed3d-result/2', input_sha256=input_hash(_loading['original']), loading=_loading['trace'])
+        output['solver']['adapter']='jpn-mixed3d/2'
+        output['assumptions'][-1]='Cargas uniformes de pórtico consistentes; peso de axiais concentrado metade em cada nó por hipótese explícita. Sem vento automático, resistência normativa ou fabricação.'
+    if _joint_actions is not None:
+        _joint_actions['input_sha256'] = output['input_sha256']
+    return output

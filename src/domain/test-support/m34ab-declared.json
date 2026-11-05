@@ -1,0 +1,381 @@
+{
+  "id": "34343434-3434-4434-8434-343434343434",
+  "name": "M34 synthetic arbitrary stepped cantilever and axial branch",
+  "client": "Independent mechanics verification",
+  "phone": "",
+  "location": "",
+  "description": "Gerado pela entrada rápida. Distribuição, inclinação e perfis apenas sugeridos para apresentação em 3D; todos os parâmetros são editáveis.",
+  "category": "Outros",
+  "status": "Em elaboração",
+  "createdAt": "2026-11-05T14:18:39.122Z",
+  "updatedAt": "2026-11-05T14:18:39.122Z",
+  "technicalNotes": "PRÉ-PROJETO VISUAL: sem cálculo de vento, cargas, estabilidade, resistência ou ligações. Não usar para compras, cortes ou fabricação antes do dimensionamento e detalhamento profissional.",
+  "commercialNotes": "",
+  "technicalContact": "",
+  "technicalStatus": "preliminary",
+  "roof": {
+    "widthM": null,
+    "lengthM": null,
+    "lowHeightM": null,
+    "slopePercent": null,
+    "fall": "width-positive",
+    "profileDescription": "",
+    "supports": [],
+    "revision": 1
+  },
+  "estimate": {
+    "materials": [],
+    "labor": [],
+    "expenses": [],
+    "charges": [],
+    "pricingMode": "markup",
+    "pricingPercent": 0,
+    "deadline": "",
+    "paymentTerms": "",
+    "validity": "",
+    "exclusions": ""
+  },
+  "isExample": false,
+  "planning": null,
+  "workspace": {
+    "cutting": {
+      "kerfMm": null,
+      "endTrimMm": null,
+      "minimumRemnantMm": null,
+      "useFabrication": false
+    },
+    "fabrication": [],
+    "spatialPreparation": {
+      "version": 1,
+      "geometrySignature": "{\"assignments\":[{\"materialId\":\"STEEL\",\"pieceId\":\"F1\",\"rotationDeg\":0,\"sectionId\":\"S1\"},{\"materialId\":\"STEEL\",\"pieceId\":\"F2\",\"rotationDeg\":0,\"sectionId\":\"S2\"},{\"materialId\":\"AXIAL\",\"pieceId\":\"AX1\",\"rotationDeg\":null,\"sectionId\":\"SAX\"}],\"physicalStructure\":{\"nodes\":[{\"id\":\"B0\",\"x\":0,\"y\":0,\"z\":0},{\"id\":\"B1\",\"x\":1000,\"y\":0,\"z\":0},{\"id\":\"B2\",\"x\":2000,\"y\":0,\"z\":0},{\"id\":\"A1\",\"x\":0,\"y\":1000,\"z\":0}],\"pieces\":[{\"end\":\"B1\",\"id\":\"F1\",\"start\":\"B0\"},{\"end\":\"B2\",\"id\":\"F2\",\"start\":\"B1\"},{\"end\":\"A1\",\"id\":\"AX1\",\"start\":\"B0\"}],\"provenance\":\"Explicit independent coordinates; never created by a roof generator\",\"revision\":\"M34-R1\",\"schema_version\":\"jpn.declared-structure/1\",\"source\":\"declared\",\"units\":\"mm\"}}",
+      "groups": {
+        "column": {
+          "steelGrade": "",
+          "materialSource": "",
+          "materialRevision": "",
+          "sectionSource": "",
+          "sectionRevision": "",
+          "eGpa": null,
+          "gGpa": null,
+          "nu": null,
+          "areaCm2": null,
+          "iyCm4": null,
+          "izCm4": null,
+          "jCm4": null,
+          "rotationDeg": null,
+          "connection": "pending"
+        },
+        "topChord": {
+          "steelGrade": "",
+          "materialSource": "",
+          "materialRevision": "",
+          "sectionSource": "",
+          "sectionRevision": "",
+          "eGpa": null,
+          "gGpa": null,
+          "nu": null,
+          "areaCm2": null,
+          "iyCm4": null,
+          "izCm4": null,
+          "jCm4": null,
+          "rotationDeg": null,
+          "connection": "pending"
+        },
+        "bottomChord": {
+          "steelGrade": "",
+          "materialSource": "",
+          "materialRevision": "",
+          "sectionSource": "",
+          "sectionRevision": "",
+          "eGpa": null,
+          "gGpa": null,
+          "nu": null,
+          "areaCm2": null,
+          "iyCm4": null,
+          "izCm4": null,
+          "jCm4": null,
+          "rotationDeg": null,
+          "connection": "pending"
+        },
+        "web": {
+          "steelGrade": "",
+          "materialSource": "",
+          "materialRevision": "",
+          "sectionSource": "",
+          "sectionRevision": "",
+          "eGpa": null,
+          "gGpa": null,
+          "nu": null,
+          "areaCm2": null,
+          "iyCm4": null,
+          "izCm4": null,
+          "jCm4": null,
+          "rotationDeg": null,
+          "connection": "pending"
+        },
+        "purlin": {
+          "steelGrade": "",
+          "materialSource": "",
+          "materialRevision": "",
+          "sectionSource": "",
+          "sectionRevision": "",
+          "eGpa": null,
+          "gGpa": null,
+          "nu": null,
+          "areaCm2": null,
+          "iyCm4": null,
+          "izCm4": null,
+          "jCm4": null,
+          "rotationDeg": null,
+          "connection": "pending"
+        }
+      },
+      "supports": [
+        {
+          "nodeId": "B0",
+          "dofs": [
+            "fixed",
+            "fixed",
+            "fixed",
+            "fixed",
+            "fixed",
+            "fixed"
+          ]
+        },
+        {
+          "nodeId": "A1",
+          "dofs": [
+            "fixed",
+            "free",
+            "fixed",
+            "free",
+            "free",
+            "free"
+          ]
+        }
+      ],
+      "memberConnections": [
+        {
+          "pieceId": "F1",
+          "start": "rigid",
+          "end": "rigid"
+        },
+        {
+          "pieceId": "F2",
+          "start": "rigid",
+          "end": "rigid"
+        },
+        {
+          "pieceId": "AX1",
+          "start": "axial",
+          "end": "axial"
+        }
+      ],
+      "memberKinds": [
+        {
+          "pieceId": "F1",
+          "kind": "frame"
+        },
+        {
+          "pieceId": "F2",
+          "kind": "frame"
+        },
+        {
+          "pieceId": "AX1",
+          "kind": "axial"
+        }
+      ],
+      "cases": [
+        {
+          "id": "Q",
+          "source": "Synthetic declared nodal loads only, not ABNT actions"
+        }
+      ],
+      "loads": [
+        {
+          "id": "34343434-3434-4434-8434-343434343435",
+          "caseId": "Q",
+          "nodeId": "B2",
+          "fxKn": 1,
+          "fyKn": 0,
+          "fzKn": -1,
+          "mxKnm": 0,
+          "myKnm": 0,
+          "mzKnm": 0
+        },
+        {
+          "id": "34343434-3434-4434-8434-343434343436",
+          "caseId": "Q",
+          "nodeId": "A1",
+          "fxKn": 0,
+          "fyKn": 0.5,
+          "fzKn": 0,
+          "mxKnm": 0,
+          "myKnm": 0,
+          "mzKnm": 0
+        }
+      ],
+      "combinations": [
+        {
+          "id": "Q1",
+          "factors": {
+            "Q": 1
+          }
+        }
+      ],
+      "connectionsReview": "Explicit rigid continuous cantilever joints; independent axial connection at B0, no inferred connection",
+      "lateralSystem": "Actual fixed root; axial tip transverse translations explicitly restrained; no artificial spring or added restraint",
+      "loadPathReview": "Declared nodal forces -> physical members -> explicit supports, no automatic loading",
+      "connectivity": {
+        "version": 1,
+        "geometrySignature": "{\"assignments\":[{\"materialId\":\"STEEL\",\"pieceId\":\"F1\",\"rotationDeg\":0,\"sectionId\":\"S1\"},{\"materialId\":\"STEEL\",\"pieceId\":\"F2\",\"rotationDeg\":0,\"sectionId\":\"S2\"},{\"materialId\":\"AXIAL\",\"pieceId\":\"AX1\",\"rotationDeg\":null,\"sectionId\":\"SAX\"}],\"physicalStructure\":{\"nodes\":[{\"id\":\"B0\",\"x\":0,\"y\":0,\"z\":0},{\"id\":\"B1\",\"x\":1000,\"y\":0,\"z\":0},{\"id\":\"B2\",\"x\":2000,\"y\":0,\"z\":0},{\"id\":\"A1\",\"x\":0,\"y\":1000,\"z\":0}],\"pieces\":[{\"end\":\"B1\",\"id\":\"F1\",\"start\":\"B0\"},{\"end\":\"B2\",\"id\":\"F2\",\"start\":\"B1\"},{\"end\":\"A1\",\"id\":\"AX1\",\"start\":\"B0\"}],\"provenance\":\"Explicit independent coordinates; never created by a roof generator\",\"revision\":\"M34-R1\",\"schema_version\":\"jpn.declared-structure/1\",\"source\":\"declared\",\"units\":\"mm\"}}",
+        "reviewSource": "Explicit reviewed joints at the provided nodes",
+        "junctions": [
+          {
+            "nodeId": "B0",
+            "pieceIds": [
+              "AX1",
+              "F1"
+            ],
+            "decision": "connect"
+          },
+          {
+            "nodeId": "B1",
+            "pieceIds": [
+              "F1",
+              "F2"
+            ],
+            "decision": "connect"
+          }
+        ]
+      },
+      "physicalCatalog": {
+        "schema_version": "jpn.physical-catalog/1",
+        "materials": [
+          {
+            "id": "STEEL",
+            "steelGrade": "Synthetic isotropic elastic material; not a certified steel",
+            "materialSource": "Independent E=200GPa, nu=0.3, G=E/(2*(1+nu))",
+            "materialRevision": "1",
+            "eGpa": 200,
+            "gGpa": 76.92307692307692,
+            "nu": 0.3
+          },
+          {
+            "id": "AXIAL",
+            "steelGrade": "Synthetic isotropic elastic material; not a certified steel",
+            "materialSource": "Independent E=200GPa, nu=0.3, G=E/(2*(1+nu))",
+            "materialRevision": "1",
+            "eGpa": 200,
+            "gGpa": null,
+            "nu": null
+          }
+        ],
+        "sections": [
+          {
+            "id": "S1",
+            "areaCm2": 10,
+            "iyCm4": 100,
+            "izCm4": 100,
+            "jCm4": 200,
+            "sectionSource": "Synthetic A=0.001m2; Iy=Iz=1e-6m4; J=2e-6m4",
+            "sectionRevision": "1"
+          },
+          {
+            "id": "S2",
+            "areaCm2": 20,
+            "iyCm4": 200,
+            "izCm4": 200,
+            "jCm4": 400,
+            "sectionSource": "Synthetic second physical section, same display role",
+            "sectionRevision": "1"
+          },
+          {
+            "id": "SAX",
+            "areaCm2": 4,
+            "iyCm4": null,
+            "izCm4": null,
+            "jCm4": null,
+            "sectionSource": "Axial-only A=0.0004m2; no bending or torsion properties invented",
+            "sectionRevision": "1"
+          }
+        ],
+        "assignments": [
+          {
+            "pieceId": "F1",
+            "materialId": "STEEL",
+            "sectionId": "S1",
+            "rotationDeg": 0
+          },
+          {
+            "pieceId": "F2",
+            "materialId": "STEEL",
+            "sectionId": "S2",
+            "rotationDeg": 0
+          },
+          {
+            "pieceId": "AX1",
+            "materialId": "AXIAL",
+            "sectionId": "SAX",
+            "rotationDeg": null
+          }
+        ]
+      }
+    },
+    "analysis": null,
+    "physicalStructure": {
+      "schema_version": "jpn.declared-structure/1",
+      "source": "declared",
+      "units": "mm",
+      "revision": "M34-R1",
+      "provenance": "Explicit independent coordinates; never created by a roof generator",
+      "nodes": [
+        {
+          "id": "B0",
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        {
+          "id": "B1",
+          "x": 1000,
+          "y": 0,
+          "z": 0
+        },
+        {
+          "id": "B2",
+          "x": 2000,
+          "y": 0,
+          "z": 0
+        },
+        {
+          "id": "A1",
+          "x": 0,
+          "y": 1000,
+          "z": 0
+        }
+      ],
+      "pieces": [
+        {
+          "id": "F1",
+          "start": "B0",
+          "end": "B1",
+          "role": "column"
+        },
+        {
+          "id": "F2",
+          "start": "B1",
+          "end": "B2",
+          "role": "column"
+        },
+        {
+          "id": "AX1",
+          "start": "B0",
+          "end": "A1",
+          "role": "web"
+        }
+      ]
+    }
+  },
+  "revisions": []
+}

@@ -1,0 +1,123 @@
+{
+  "initial-concurrent-baseline": {
+    "numPassedTests": 359,
+    "numFailedTests": 10,
+    "numPendingTests": 8,
+    "success": false,
+    "failures": [
+      {
+        "file": "coldformed-design.test.ts",
+        "assertions": []
+      },
+      {
+        "file": "connection-report.test.ts",
+        "assertions": [
+          {
+            "name": "peso próprio axial entra como carga nodal; pórtico permanece distribuído",
+            "messages": [
+              "Error: Test timed out in 20000ms."
+            ]
+          },
+          {
+            "name": "nó exclusivamente axial não recebe resíduos rotacionais ou vínculos artificiais",
+            "messages": [
+              "Error: Test timed out in 20000ms."
+            ]
+          },
+          {
+            "name": "M26 integra cobertura, solicitações contínuas, ações de juntas e M25 sem promover aprovação",
+            "messages": [
+              "Error: Test timed out in 20000ms."
+            ]
+          }
+        ]
+      },
+      {
+        "file": "loaded-mixed.test.ts",
+        "assertions": [
+          {
+            "name": "executa versão 2 com Python real: massa, equilíbrio, forças invertidas, estações e identidade",
+            "messages": [
+              "Error: Test timed out in 20000ms."
+            ]
+          },
+          {
+            "name": "cobertura criada pelo gerador comum admite peso/carga após declarações reais explícitas, sem abrir fixture",
+            "messages": [
+              "Error: Análise excedeu 20 segundos; processo interrompido."
+            ]
+          }
+        ]
+      },
+      {
+        "file": "roof-load-path.test.ts",
+        "assertions": [
+          {
+            "name": "Python real aceita pressão zero declarada e recusa cobertura sem vínculos suficientes",
+            "messages": [
+              "Error: Test timed out in 20000ms."
+            ]
+          }
+        ]
+      },
+      {
+        "file": "wind-load-path.test.ts",
+        "assertions": [
+          {
+            "name": "cobertura real gerada → vento zonal → PyNite real: reações, momentos, sinais e superposição",
+            "messages": [
+              "Error: Test timed out in 20000ms."
+            ]
+          },
+          {
+            "name": "vento em estrutura sem vínculos suficientes continua recusado pelo Python real",
+            "messages": [
+              "Error: expected Error: Uma análise local já está em execu… { code: '…' } to match object { code: 'UNSTABLE' }"
+            ]
+          }
+        ]
+      },
+      {
+        "file": "local-buckling-real.test.ts",
+        "assertions": [
+          {
+            "name": "executes automatic modes and MRD through the real isolated HTTP handler",
+            "messages": [
+              "AssertionError: expected 503 to be 200 // Object.is equality"
+            ]
+          }
+        ]
+      },
+      {
+        "file": "local-design-real.test.ts",
+        "assertions": [
+          {
+            "name": "real HTTP resistance path recalculates geometry and executes NBR14762 tension under the OS cap",
+            "messages": [
+              "AssertionError: expected 503 to be 200 // Object.is equality"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "intermediate-module-cache": {
+    "numPassedTests": 387,
+    "numFailedTests": 1,
+    "numPendingTests": 0,
+    "success": false,
+    "failures": [
+      {
+        "file": "resistance-integrity.test.ts",
+        "assertions": [
+          {
+            "name": "keeps old automatic results readable but rejects their reuse after the evaluator changed",
+            "messages": [
+              "AssertionError: expected [Function] to throw error matching /OUTDATED_BUCKLING_EVALUATOR/ but got '(0 , __vite_ssr_import_2__.requireCur…'"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+
+ RUN  v5.0.5 C:/Users/Usuario/Desktop/jpn-missao31
+
+·································································································································································································································································································································································································································································································
+
+ Test Files  52 passed (52)
+      Tests  481 passed (481)
+   Start at  11:45:08
+   Duration  323.63s (tests 93%, import 7%)
+
+    Isolate  52 workers spawned · ~206ms startup each (spawn + environment, per file)
+             at least ~10.50s faster with isolate: false — reuses workers across files instead of one per file
+
+JSON report written to C:/Users/Usuario/Desktop/jpn-missao31/validation/m34ab/full-vitest.json

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="3" time="1.628" timestamp="2026-11-04T08:58:59.457911-03:00" hostname="OXXYGEN270"><testcase classname="tests.test_pdelta_reduced_residual" name="test_real_native_result_with_corrupted_free_displacement_is_rejected[0.0]" time="0.139" /><testcase classname="tests.test_pdelta_reduced_residual" name="test_real_native_result_with_corrupted_free_displacement_is_rejected[1000000000.0]" time="0.064"><failure message="Failed: DID NOT RAISE AnalysisError">monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000012120895580&gt;
+supported_load = 1000000000.0
+
+    @pytest.mark.parametrize('supported_load', [0., 1e9])
+    def test_real_native_result_with_corrupted_free_displacement_is_rejected(monkeypatch, supported_load):
+        raw = column(8, .2)
+        load = dict(raw['model']['nodal_loads'][0], node='N0', fx_n=0., fz_n=supported_load)
+        raw['model']['nodal_loads'].append(load)
+        native = FEModel3D.analyze_PDelta
+    
+        def corrupt_after_real_solve(model, *args, **kwargs):
+            native(model, *args, **kwargs)
+            # Return an intentionally bad free displacement while retaining the
+            # unmodified native nodal state, exposing the adapter's own residual gate.
+            model._D['TESTE-1'][model.nodes['N8'].ID*6, 0] += 1e-9
+    
+        monkeypatch.setattr(FEModel3D, 'analyze_PDelta', corrupt_after_real_solve)
+&gt;       with pytest.raises(AnalysisError, match='Initial-stress tangent/load residual') as caught:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE AnalysisError
+
+engine\tests\test_pdelta_reduced_residual.py:29: Failed</failure></testcase><testcase classname="tests.test_pdelta_reduced_residual" name="test_supported_load_does_not_change_real_valid_solution" time="0.124"><failure message="assert 1.900324714018418e-19 == 2.17837212821...e-15 ± 1.0e-15&#10;  &#10;  comparison failed&#10;  Obtained: 1.900324714018418e-19&#10;  Expected: 2.178372128218258e-15 ± 1.0e-15">def test_supported_load_does_not_change_real_valid_solution():
+        raw = column(8, .2)
+        a = analyze_frame_pdelta(raw)['combinations']['TESTE-1']
+        raw['model']['nodal_loads'].append(dict(raw['model']['nodal_loads'][0], node='N0', fx_n=0., fz_n=1e9))
+        b = analyze_frame_pdelta(raw)['combinations']['TESTE-1']
+        np.testing.assert_array_equal(a['nodes']['N8']['translation_m'], b['nodes']['N8']['translation_m'])
+&gt;       assert b['tangent_relative_residual'] == pytest.approx(a['tangent_relative_residual'], abs=1e-15)
+E       assert 1.900324714018418e-19 == 2.17837212821...e-15 ± 1.0e-15
+E         
+E         comparison failed
+E         Obtained: 1.900324714018418e-19
+E         Expected: 2.178372128218258e-15 ± 1.0e-15
+
+engine\tests\test_pdelta_reduced_residual.py:40: AssertionError</failure></testcase></testsuite></testsuites>

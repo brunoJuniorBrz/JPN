@@ -1,0 +1,311 @@
+{
+  "analysis": "pdelta",
+  "maxIter": 30,
+  "tolerance": 1e-10,
+  "model": {
+    "nodes": {
+      "1": {
+        "id": 1,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "2": {
+        "id": 2,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.25
+      },
+      "3": {
+        "id": 3,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.5
+      },
+      "4": {
+        "id": 4,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.75
+      },
+      "5": {
+        "id": 5,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      },
+      "6": {
+        "id": 6,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.25
+      },
+      "7": {
+        "id": 7,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.5
+      },
+      "8": {
+        "id": 8,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.75
+      },
+      "9": {
+        "id": 9,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 2.0
+      },
+      "10": {
+        "id": 10,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 2.25
+      },
+      "11": {
+        "id": 11,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 2.5
+      },
+      "12": {
+        "id": 12,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 2.75
+      },
+      "13": {
+        "id": 13,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 3.0
+      },
+      "14": {
+        "id": 14,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 3.25
+      },
+      "15": {
+        "id": 15,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 3.5
+      },
+      "16": {
+        "id": 16,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 3.75
+      },
+      "17": {
+        "id": 17,
+        "x": 0.0,
+        "y": 0.0,
+        "z": 4.0
+      }
+    },
+    "materials": {
+      "1": {
+        "id": 1,
+        "e": 200000.0,
+        "nu": 0.3
+      }
+    },
+    "sections": {
+      "1": {
+        "id": 1,
+        "a": 0.01,
+        "iy": 1e-05,
+        "iz": 1e-05,
+        "j": 2e-05
+      }
+    },
+    "elements": {
+      "1": {
+        "id": 1,
+        "type": "frame",
+        "nodeI": 1,
+        "nodeJ": 2,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "2": {
+        "id": 2,
+        "type": "frame",
+        "nodeI": 2,
+        "nodeJ": 3,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "3": {
+        "id": 3,
+        "type": "frame",
+        "nodeI": 3,
+        "nodeJ": 4,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "4": {
+        "id": 4,
+        "type": "frame",
+        "nodeI": 4,
+        "nodeJ": 5,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "5": {
+        "id": 5,
+        "type": "frame",
+        "nodeI": 5,
+        "nodeJ": 6,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "6": {
+        "id": 6,
+        "type": "frame",
+        "nodeI": 6,
+        "nodeJ": 7,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "7": {
+        "id": 7,
+        "type": "frame",
+        "nodeI": 7,
+        "nodeJ": 8,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "8": {
+        "id": 8,
+        "type": "frame",
+        "nodeI": 8,
+        "nodeJ": 9,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "9": {
+        "id": 9,
+        "type": "frame",
+        "nodeI": 9,
+        "nodeJ": 10,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "10": {
+        "id": 10,
+        "type": "frame",
+        "nodeI": 10,
+        "nodeJ": 11,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "11": {
+        "id": 11,
+        "type": "frame",
+        "nodeI": 11,
+        "nodeJ": 12,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "12": {
+        "id": 12,
+        "type": "frame",
+        "nodeI": 12,
+        "nodeJ": 13,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "13": {
+        "id": 13,
+        "type": "frame",
+        "nodeI": 13,
+        "nodeJ": 14,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "14": {
+        "id": 14,
+        "type": "frame",
+        "nodeI": 14,
+        "nodeJ": 15,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "15": {
+        "id": 15,
+        "type": "frame",
+        "nodeI": 15,
+        "nodeJ": 16,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      },
+      "16": {
+        "id": 16,
+        "type": "frame",
+        "nodeI": 16,
+        "nodeJ": 17,
+        "materialId": 1,
+        "sectionId": 1,
+        "rollAngle": 0
+      }
+    },
+    "supports": {
+      "1": {
+        "nodeId": 1,
+        "rx": true,
+        "ry": true,
+        "rz": true,
+        "rrx": true,
+        "rry": true,
+        "rrz": true
+      }
+    },
+    "loads": [
+      {
+        "type": "nodal",
+        "data": {
+          "nodeId": 17,
+          "fx": 0.0,
+          "fy": 0.0,
+          "fz": -185.05508252042546,
+          "mx": 0.0,
+          "my": 0.0,
+          "mz": 0.0
+        }
+      },
+      {
+        "type": "nodal",
+        "data": {
+          "nodeId": 17,
+          "fx": 0.1,
+          "fy": 0.0,
+          "fz": 0.0,
+          "mx": 0.0,
+          "my": 0.0,
+          "mz": 0.0
+        }
+      }
+    ],
+    "leftHand": false
+  }
+}

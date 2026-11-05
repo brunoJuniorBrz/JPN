@@ -1,0 +1,154 @@
+{
+  "initial_sha": "0d7ebc2729fb4f370a7d99fa7f6f4751d6f12696",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "python": "3.12.16",
+  "started_utc": "2026-11-04T12:53:46.169549+00:00",
+  "steps": [
+    {
+      "name": "pip-main",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.817,
+      "log": "pip-main.log"
+    },
+    {
+      "name": "pip-combined",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.802,
+      "log": "pip-combined.log"
+    },
+    {
+      "name": "pip-fsm",
+      "command": [
+        "${ROOT}\\.tools\\fsm\\Scripts\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.687,
+      "log": "pip-fsm.log"
+    },
+    {
+      "name": "handoff-oracles",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "validation/mission32-handoff",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.171,
+      "log": "handoff-oracles.log"
+    },
+    {
+      "name": "python-core",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "engine/validate.py",
+        "--output-dir",
+        "${ROOT}\\docs\\validation\\mission32\\core"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 126.029,
+      "log": "python-core.log"
+    },
+    {
+      "name": "loading-audit",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "engine/audit_loading.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.406,
+      "log": "loading-audit.log"
+    },
+    {
+      "name": "sections",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "engine/section_tests/test_section_properties.py",
+        "engine/section_tests/test_verified_design.py",
+        "-q",
+        "--junitxml=${ROOT}\\docs\\validation\\mission32/sections.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 165.933,
+      "log": "sections.log"
+    },
+    {
+      "name": "fsm",
+      "command": [
+        "${ROOT}\\.tools\\fsm\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "engine/section_tests/test_elastic_strip.py",
+        "-q",
+        "--junitxml=${ROOT}\\docs\\validation\\mission32/fsm.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 11.093,
+      "log": "fsm.log"
+    },
+    {
+      "name": "member-buckling",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "engine/section_tests/test_member_buckling.py",
+        "engine/section_tests/test_modal_numerics.py",
+        "engine/section_tests/test_modal_kinematics.py",
+        "-q",
+        "--junitxml=${ROOT}\\docs\\validation\\mission32/member-buckling.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 50.699,
+      "log": "member-buckling.log"
+    },
+    {
+      "name": "modal-reproduction",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "engine/audit_modal_numerics.py",
+        "engine/examples/coldformed-auto-compression.json",
+        "--output",
+        "${ROOT}\\docs\\validation\\mission32\\modal-numerics.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.675,
+      "log": "modal-reproduction.log"
+    },
+    {
+      "name": "modal-wavelengths",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "engine/audit_member_modes.py",
+        "engine/examples/coldformed-auto-compression.json",
+        "--output",
+        "${ROOT}\\docs\\validation\\mission32\\mode-search.json"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 3.47,
+      "log": "modal-wavelengths.log"
+    }
+  ]
+}

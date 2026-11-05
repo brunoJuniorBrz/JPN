@@ -1,0 +1,142 @@
+{
+  "schema_version": "jpn.m33a-completion/1",
+  "date": "2026-11-05",
+  "implementation_sha": "08b3ee38fe8bbc046d87a21767e393c00163e1f5",
+  "scope_status": "IMPLEMENTED_AND_VALIDATED_RESTRICTED_DOMAIN",
+  "code_changes_in_completion": "Only add the response error body to the existing cFSM HTTP test assertion; no formula, solver, timeout, tolerance, mesh or automatic retry change.",
+  "reference_ci": {
+    "schema_version": "jpn.m33a-ci-evidence/1",
+    "source_sha": "08b3ee38fe8bbc046d87a21767e393c00163e1f5",
+    "run_id": 41906539622,
+    "url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41906539622",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 126842585656,
+        "name": "application",
+        "conclusion": "success",
+        "completed_at": "2026-11-04T20:37:27Z"
+      },
+      {
+        "id": 126842586016,
+        "name": "optional-numerical-profiles (ubuntu-latest, sections)",
+        "conclusion": "success",
+        "completed_at": "2026-11-04T20:28:10Z"
+      },
+      {
+        "id": 126842586052,
+        "name": "structural (ubuntu-latest)",
+        "conclusion": "success",
+        "completed_at": "2026-11-04T20:27:49Z"
+      },
+      {
+        "id": 126842586170,
+        "name": "structural (windows-latest)",
+        "conclusion": "success",
+        "completed_at": "2026-11-04T20:28:30Z"
+      },
+      {
+        "id": 126842586263,
+        "name": "optional-numerical-profiles (windows-latest, sections-fsm)",
+        "conclusion": "success",
+        "completed_at": "2026-11-04T20:27:54Z"
+      },
+      {
+        "id": 126842586300,
+        "name": "optional-numerical-profiles (windows-latest, fsm)",
+        "conclusion": "success",
+        "completed_at": "2026-11-04T20:26:51Z"
+      },
+      {
+        "id": 126842586452,
+        "name": "optional-numerical-profiles (ubuntu-latest, fsm)",
+        "conclusion": "success",
+        "completed_at": "2026-11-04T20:26:21Z"
+      },
+      {
+        "id": 126842586473,
+        "name": "optional-numerical-profiles (windows-latest, sections)",
+        "conclusion": "success",
+        "completed_at": "2026-11-04T20:28:56Z"
+      },
+      {
+        "id": 126842586501,
+        "name": "optional-numerical-profiles (ubuntu-latest, sections-fsm)",
+        "conclusion": "success",
+        "completed_at": "2026-11-04T20:26:42Z"
+      }
+    ],
+    "application": {
+      "vitest_passed": 438,
+      "test_files_passed": 50,
+      "playwright_passed": 73,
+      "typecheck": "passed",
+      "lint": "passed",
+      "production_build": "passed"
+    },
+    "note": "Captured from the GitHub run/job API and application job log. Code SHA is the normative checkpoint; completion commits publish validation/documentation only."
+  },
+  "final_commit_ci": "Authoritative final-commit status is linked from PR46; not inferred from parent CI.",
+  "local": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "public_full_suite": {
+      "passed": 437,
+      "failed": 1,
+      "reason": "cFSM Python profile environment variable missing at assertion before worker execution",
+      "artifact": "public-tests.json"
+    },
+    "configured_http_first_recheck": {
+      "passed": 3,
+      "failed": 1,
+      "failure": "HTTP503 at 20.216s; response body was not captured by the then-existing assertion; exact failure class cannot be proved retrospectively",
+      "artifact": "http-recheck.json"
+    },
+    "diagnostic_isolated_retest": {
+      "passed": 1,
+      "excluded_by_name_filter": 1,
+      "artifact": "http-diagnostic.json"
+    },
+    "final_configured_http": {
+      "passed": 4,
+      "failed": 0,
+      "pending": 0,
+      "artifact": "http-final.json"
+    },
+    "private_validation": {
+      "passed": 10,
+      "failed": 0,
+      "pending": 0,
+      "solver_combinations": 108,
+      "max_relative_residual": 1.971065734457979e-14,
+      "artifacts": [
+        "private-tests.json",
+        "private-validation-results.json"
+      ]
+    }
+  },
+  "private_extract_sha256": "a760be935d816be960cb1b6ae5e4413dfbefedeb5b053dde20831bb7d9bb7357",
+  "independent_manual_oracles_sha256": "346192dd5d5e50b1a79bf8930d452ac901fc492606b239a8aac8fe0b0d4d906d",
+  "preserved_limits": {
+    "worker_seconds": 20,
+    "worker_memory_bytes": 805306368,
+    "automatic_retry": false
+  },
+  "remaining": {
+    "local_http_intermitency": "Not claimed eliminated; preserve failure and improved diagnostics. No automatic retry or timeout increase.",
+    "normative_domain_and_structural_verifications": "See supplied-source-review-m33a.json blocked list; transcription and applicability DECLARED_UNVERIFIED; independent engineering review pending."
+  },
+  "release_status": "NOT_READY_BLOCKED",
+  "computedStructuralApproval": false,
+  "fabricationRelease": false,
+  "protected_pdfs_or_extract_published": false,
+  "artifacts_sha256": {
+    "public-tests.json": "2948da73fbd54941e3cc5b79a4eddd7d0a21ada915380090d92fd1cf9a73d401",
+    "private-tests.json": "47bc49c7b8bdab71dc411c3a16451e6c467278bb77562eef833fadce18ad809d",
+    "private-validation-results.json": "8a3f799c3798642406033ad8c228ed5fce8e49563a4b62cdd279e8559b3060dc",
+    "http-recheck.json": "2aaf6cf03bdd42b0b09e785c5337d12c05d1353c46cb2c50f862cb7f341c9198",
+    "http-diagnostic.json": "3c56f879f7af42d5a57aa3dd63bb77b32fc6588324d596b4cc266a1535e7664a",
+    "http-final.json": "70a4c250bf62c56c8ed703e533b299986e48ac676edf384f65cab29effced3e7",
+    "completion-ci.json": "0e7e180c80b8e5f13b632a532f035aa0cc56509e7e30706678ad1d563a0e3c3e"
+  }
+}

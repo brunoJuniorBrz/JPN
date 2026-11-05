@@ -1,0 +1,142 @@
+{
+  "schema_version": "jpn.mixed-initial-stress/1",
+  "geometric_model": "hermite-bending-and-axial-projector",
+  "model": {
+    "schema_version": "jpn.mixed3d/1",
+    "units": "SI",
+    "theory": "linear-elastic-frame-axial",
+    "project": {
+      "id": "MIXED-1",
+      "revision": "1",
+      "source": "Analytical isolated fixture"
+    },
+    "nodes": [
+      {
+        "id": "A",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 0.0
+      },
+      {
+        "id": "B",
+        "x_m": 2.0,
+        "y_m": 0.0,
+        "z_m": 0.0
+      },
+      {
+        "id": "C",
+        "x_m": 2.0,
+        "y_m": 0.0,
+        "z_m": 1.0
+      }
+    ],
+    "materials": [
+      {
+        "id": "STEEL",
+        "e_pa": 200000000000.0,
+        "g_pa": 76923076923.07692,
+        "nu": 0.3,
+        "source": "Synthetic E and G",
+        "revision": "1"
+      }
+    ],
+    "sections": [
+      {
+        "id": "S",
+        "area_m2": 0.01,
+        "iy_m4": 1e-05,
+        "iz_m4": 1e-05,
+        "j_m4": 1e-05,
+        "source": "Synthetic section",
+        "revision": "1"
+      }
+    ],
+    "members": [
+      {
+        "id": "BEAM",
+        "kind": "frame",
+        "start": "A",
+        "end": "B",
+        "material": "STEEL",
+        "section": "S",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "BRACE",
+        "kind": "axial",
+        "start": "B",
+        "end": "C",
+        "e_pa": 200000000000.0,
+        "area_m2": 0.001,
+        "source": "Synthetic axial area",
+        "revision": "1"
+      }
+    ],
+    "supports": [
+      {
+        "node": "A",
+        "restrained": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      },
+      {
+        "node": "C",
+        "restrained": [
+          true,
+          true,
+          true,
+          false,
+          false,
+          false
+        ]
+      }
+    ],
+    "cases": [
+      {
+        "id": "L",
+        "source": "Synthetic M32 coupled beam/axial forces; explicit SI nodal loads"
+      }
+    ],
+    "nodal_loads": [
+      {
+        "node": "B",
+        "case": "L",
+        "fx_n": 0,
+        "fy_n": 100.0,
+        "fz_n": 150562.50000000003,
+        "mx_nm": 0,
+        "my_nm": 0,
+        "mz_nm": 0
+      }
+    ],
+    "combinations": [
+      {
+        "id": "LC",
+        "factors": {
+          "L": 1
+        }
+      }
+    ]
+  }
+}

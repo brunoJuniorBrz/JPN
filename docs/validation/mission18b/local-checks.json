@@ -1,0 +1,194 @@
+{
+  "base": "adea5a8d588286427526752a37c3d4db5ed635e6",
+  "platform": "Windows",
+  "python": "3.12.10",
+  "node": "24.13.0",
+  "blas_threads": 1,
+  "typecheck_exit": 0,
+  "lint_exit": 0,
+  "vitest": {
+    "passed": 195,
+    "failed": 0,
+    "pending": 0,
+    "total": 195,
+    "success": true
+  },
+  "targeted_before_last_contract_test": {
+    "passed": 28,
+    "failed": 0,
+    "pending": 0,
+    "total": 28,
+    "success": true
+  },
+  "baseline_before_fix": {
+    "passed": 4,
+    "failed": 2,
+    "pending": 0,
+    "total": 6,
+    "success": false
+  },
+  "baseline_failures": [
+    {
+      "test": "recusa falta de densidade, axial transversal, caso duplicado e caminho de cobertura indefinido",
+      "diagnostic": "Error: expected [Function] to throw error matching /densidade/ but got 'POSSIBLE_DOUBLE_COUNT: peso próprio e…'\n    at _Assertion.__VITEST_REJECTS__ (file:///C:/Users/Bruno/Downloads/JPN-main/node_modules/.pnpm/vitest@5.0.5_@types+node@24_5356d5606e42d59c741df85cc9f69cb2/node_modules/vitest/dist/chunks/index.aTZaPVhf.js:2480:33)\n    at _Assertion.propertyGetter (file:///C:/Users/Bruno/Downloads/JPN-main/node_modules/.pnpm/chai@6.3.0/node_modules/chai/index.js:1607:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///C:/Users/Bruno/Downloads/JPN-main/node_modules/.pnpm/chai@6.3.0/node_modules/chai/index.js:1696:22)\n    at C:/Users/Bruno/Downloads/JPN-main/.tools/mission18b-worktree/src/domain/loaded-mixed.test.ts:25:43\n    at file:///C:/Users/Bruno/Downloads/JPN-main/node_modules/.pnpm/vitest@5.0.5_@types+node@24_5356d5606e42d59c741df85cc9f69cb2/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:1632:35\n    at file:///C:/Users/Bruno/Downloads/JPN-main/node_modules/.pnpm/vitest@5.0.5_@types+node@24_5356d5606e42d59c741df85cc9f69cb2/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:2801:26\n    at file:///C:/Users/Bruno/Downloads/JPN-main/node_modules/.pnpm/vitest@5.0.5_@types+node@24_5356d5606e42d59c741df85cc9f69cb2/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:3338:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///C:/Users/Bruno/Downloads/JPN-main/node_modules/.pnpm/vitest@5.0.5_@types+node@24_5356d5606e42d59c741df85cc9f69cb2/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:3333:10)"
+    },
+    {
+      "test": "cobertura criada pelo gerador comum admite peso/carga após declarações reais explícitas, sem abrir fixture",
+      "diagnostic": "ZodError: [\n  {\n    \"origin\": \"array\",\n    \"code\": \"too_small\",\n    \"minimum\": 1,\n    \"inclusive\": true,\n    \"path\": [\n      \"nodal_loads\"\n    ],\n    \"message\": \"Too small: expected array to have >=1 items\"\n  }\n]\n    at adaptLoadedMixedProject (C:/Users/Bruno/Downloads/JPN-main/.tools/mission18b-worktree/src/domain/loaded-mixed-adapter.ts:22:42)\n    at C:/Users/Bruno/Downloads/JPN-main/.tools/mission18b-worktree/src/domain/loaded-mixed.test.ts:100:18\n    at async file:///C:/Users/Bruno/Downloads/JPN-main/node_modules/.pnpm/vitest@5.0.5_@types+node@24_5356d5606e42d59c741df85cc9f69cb2/node_modules/vitest/dist/chunks/run.BPv-BBRv.js:2801:20"
+    }
+  ],
+  "selected_test_evidence": [
+    {
+      "file": "src/domain/loaded-mixed.test.ts",
+      "tests": [
+        {
+          "name": "prepara carga física sem mutação, conserva peso/segmentos e persiste backup compatível",
+          "status": "passed"
+        },
+        {
+          "name": "recusa falta de densidade, axial transversal, caso duplicado e caminho de cobertura indefinido",
+          "status": "passed"
+        },
+        {
+          "name": "executa versão 2 com Python real: massa, equilíbrio, forças invertidas, estações e identidade",
+          "status": "passed"
+        },
+        {
+          "name": "bloqueia potencial dupla contagem entre casos até revisão explícita, revogada por mudança das ações",
+          "status": "passed"
+        },
+        {
+          "name": "não exige revisão de duplicidade quando combinações isolam peso de cargas manuais",
+          "status": "passed"
+        },
+        {
+          "name": "cobertura criada pelo gerador comum admite peso/carga após declarações reais explícitas, sem abrir fixture",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "src/infrastructure/analysis/local-mixed-real.test.ts",
+      "tests": [
+        {
+          "name": "executa adaptador → processo Python 3.12/PyNite 3.2.1 real → resultado estrito, equilíbrio e cargas invertidas",
+          "status": "passed"
+        },
+        {
+          "name": "API não expõe execução em produção, dev comum, origem remota ou Host adulterado",
+          "status": "passed"
+        },
+        {
+          "name": "health da API importa dependências reais e rejeita corpos excessivos antes do processo",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "file": "src/infrastructure/analysis/remote-mixed-runner.test.ts",
+      "tests": [
+        {
+          "name": "valida corpo bruto/canônico e resposta produzida pelo Python real; token só no servidor",
+          "status": "passed"
+        },
+        {
+          "name": "valida v2 sem cargas nodais, inclusive rastreabilidade do peso e bypass opcional",
+          "status": "passed"
+        },
+        {
+          "name": "preserva exigência nodal v1 e rejeita v2 sem qualquer ação física",
+          "status": "passed"
+        },
+        {
+          "name": "recusa integridade adulterada: raw-hash",
+          "status": "passed"
+        },
+        {
+          "name": "recusa integridade adulterada: canonical-hash",
+          "status": "passed"
+        },
+        {
+          "name": "recusa integridade adulterada: project",
+          "status": "passed"
+        },
+        {
+          "name": "recusa integridade adulterada: nodes",
+          "status": "passed"
+        },
+        {
+          "name": "recusa integridade adulterada: units",
+          "status": "passed"
+        },
+        {
+          "name": "recusa integridade adulterada: version",
+          "status": "passed"
+        },
+        {
+          "name": "recusa integridade adulterada: execution",
+          "status": "passed"
+        },
+        {
+          "name": "trata HTTP 401 sem fallback local ou credenciais na mensagem",
+          "status": "passed"
+        },
+        {
+          "name": "trata HTTP 403 sem fallback local ou credenciais na mensagem",
+          "status": "passed"
+        },
+        {
+          "name": "trata HTTP 503 sem fallback local ou credenciais na mensagem",
+          "status": "passed"
+        },
+        {
+          "name": "recusa HTML, excesso de saída e excesso de entrada",
+          "status": "passed"
+        },
+        {
+          "name": "timeout cobre também leitura pendente; cancela stream e não publica resultado",
+          "status": "passed"
+        },
+        {
+          "name": "cancelamento descarta resposta atrasada e impede duas consultas simultâneas",
+          "status": "passed"
+        },
+        {
+          "name": "flag não autentica usuário; autenticação e origem são verificadas antes de fetch",
+          "status": "passed"
+        },
+        {
+          "name": "rota remota permite resultado validado e health sem vazar segredos",
+          "status": "passed"
+        },
+        {
+          "name": "modo remoto é opt-in, exige HTTPS/credenciais e nunca cai em local",
+          "status": "passed"
+        },
+        {
+          "name": "Next → HTTP WSGI → worker Python real: v1/v2, referências independentes, health e autenticação",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "playwright": {
+    "startTime": "2026-11-01T15:38:34.200Z",
+    "duration": 241817.3,
+    "expected": 56,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "dxf": {
+    "exit_code": 0,
+    "ezdxf": "1.4.5",
+    "lines_3d": 130,
+    "units": "mm",
+    "audit_errors": 0
+  },
+  "build": {
+    "exit_code": 0,
+    "status": "passed",
+    "route": "/api/experimental/mixed3d",
+    "runtime": "nodejs"
+  }
+}

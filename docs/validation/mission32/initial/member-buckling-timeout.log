@@ -1,0 +1,151 @@
+F................................................                        [100%]
+================================== FAILURES ===================================
+_ test_real_capped_worker_mixed_inputs_computed_modes_and_independent_decimal_mrd[0] _
+
+case = 0
+
+    @pytest.mark.parametrize('case',[0,1])
+    def test_real_capped_worker_mixed_inputs_computed_modes_and_independent_decimal_mrd(case):
+        row=json.loads(EVIDENCE.read_text(encoding='utf-8'))['cases'][case];raw=row['design_input']
+        assert raw['design']['binding']['analysis_input_sha256']==input_hash(row['solver_input'])
+        assert raw['design']['binding']['analysis_result_sha256']==input_hash(row['solver_result'])
+        assert row['solver_result']['combinations']['ULS-CONTROL']['members']['COLUMN']['axial_n']==pytest.approx(-row['load_n'])
+>       p=subprocess.run([sys.executable,'-I','-X','utf8',str(ROOT/'section_worker.py')],input=json.dumps(raw).encode(),capture_output=True,timeout=20,env={**os.environ,'OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1','MKL_NUM_THREADS':'1'})
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+engine\section_tests\test_member_buckling.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:550: in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:1209: in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: 1 args: ['C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.to...>
+input = b'{"schema_version": "jpn.verified-coldformed/1", "geometry_analysis": {"schema_version": "jpn.section-analysis/1", "u...ern": "uniform-compression", "intermediate_restraints": "none", "length_m": 2, "half_waves_max": 64, "target": 0.001}}'
+endtime = 227973.937, orig_timeout = 20
+
+    def _communicate(self, input, endtime, orig_timeout):
+        # Start reader threads feeding into a list hanging off of this
+        # object, unless they've already been started.
+        if self.stdout and not hasattr(self, "_stdout_buff"):
+            self._stdout_buff = []
+            self.stdout_thread = \
+                    threading.Thread(target=self._readerthread,
+                                     args=(self.stdout, self._stdout_buff))
+            self.stdout_thread.daemon = True
+            self.stdout_thread.start()
+        if self.stderr and not hasattr(self, "_stderr_buff"):
+            self._stderr_buff = []
+            self.stderr_thread = \
+                    threading.Thread(target=self._readerthread,
+                                     args=(self.stderr, self._stderr_buff))
+            self.stderr_thread.daemon = True
+            self.stderr_thread.start()
+    
+        if self.stdin:
+            self._stdin_write(input)
+    
+        # Wait for the reader threads, or time out.  If we time out, the
+        # threads remain reading and the fds left open in case the user
+        # calls communicate again.
+        if self.stdout is not None:
+            self.stdout_thread.join(self._remaining_time(endtime))
+            if self.stdout_thread.is_alive():
+>               raise TimeoutExpired(self.args, orig_timeout)
+E               subprocess.TimeoutExpired: Command '['C:\\Users\\Usuario\\Desktop\\jpn-missao31\\.tools\\sections-fsm\\Scripts\\python.exe', '-I', '-X', 'utf8', 'C:\\Users\\Usuario\\Desktop\\jpn-missao31\\engine\\section_worker.py']' timed out after 20 seconds
+
+..\..\AppData\Roaming\uv\python\cpython-3.12-windows-x86_64-none\Lib\subprocess.py:1630: TimeoutExpired
+============================== warnings summary ===============================
+section_tests/test_member_buckling.py: 3 warnings
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\pre\cutwp.py:137: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    x_diffs[i] = np.diff([coord[start_node, 0], coord[end_node, 0]])
+
+section_tests/test_member_buckling.py: 3 warnings
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\pre\cutwp.py:138: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    y_diffs[i] = np.diff([coord[start_node, 1], coord[end_node, 1]])
+
+section_tests/test_member_buckling.py: 3 warnings
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\pre\cutwp.py:180: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    x_diffs12[i] = np.diff([coord12[start_node, 0], coord12[end_node, 0]])
+
+section_tests/test_member_buckling.py: 3 warnings
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\pre\cutwp.py:181: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    y_diffs12[i] = np.diff([coord12[start_node, 1], coord12[end_node, 1]])
+
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_P]
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_Mx]
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\fsm.py:240: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    K_global, Kg_global = analysis.k_kg_global(
+
+section_tests/test_member_buckling.py: 1 warning
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:1325: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    node1 = int(node_props[ind, 1])
+
+section_tests/test_member_buckling.py: 1 warning
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:1327: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    node2 = int(node_props[ind, 1])
+
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:1272: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    K_global = analysis.kglobal_transv(
+
+section_tests/test_member_buckling.py: 1 warning
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:987: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    b_v_m[n_main_nodes + 2 * n_corner_nodes + k, n_globdist_modes + n_main_nodes + n_sub_nodes + k] = -np.sin(
+
+section_tests/test_member_buckling.py: 1 warning
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:990: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    b_v_m[
+
+section_tests/test_member_buckling.py: 1 warning
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:1006: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    b_v_m[4 * n_main_nodes + k, n_globdist_modes + n_main_nodes + n_sub_nodes + n_edge_nodes + k] = -np.sin(
+
+section_tests/test_member_buckling.py: 1 warning
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:1009: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    b_v_m[
+
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\engine\section_tests\test_modal_numerics.py:33: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    k,g=analysis.k_kg_global(nodes=nodes,elements=edges,el_props=stable.el,props=props,length=wavelength,B_C='S-S',m_a=np.ones(1))
+
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\analysis_p.py:313: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    row = int((np.argwhere(props[:, 0] == mat_num)).reshape(1))
+
+section_tests/test_modal_numerics.py: 1 warning
+section_tests/test_modal_kinematics.py: 36 warnings
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\analysis_p.py:124: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    row = int((np.argwhere(props[:, 0] == mat_num)).reshape(1))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED engine\section_tests\test_member_buckling.py::test_real_capped_worker_mixed_inputs_computed_modes_and_independent_decimal_mrd[0]
+1 failed, 48 passed, 469 warnings in 59.51s

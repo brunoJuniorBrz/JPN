@@ -1,0 +1,280 @@
+{
+  "cases": 594,
+  "versions": {
+    "numpy": "2.3.3",
+    "scipy": "1.15.3",
+    "pycufsm": "0.2.0",
+    "sectionproperties": "3.10.2"
+  },
+  "cufsm_commit": "ab449cef8d05bb489df591d2e5b4e74571a793f5",
+  "maxima": {
+    "eigenvalue_relative_difference": 3.9947970118029285e-06,
+    "subspace_error": 4.987990363996353e-10,
+    "projected_relative_residual": 8.532533143803888e-09,
+    "energy_relative_residual": 3.2478373614079665e-07,
+    "energy_accumulation_bound": 0.04295653518351068,
+    "scaled_elastic_condition": 39369689.09961097,
+    "basis_condition": 768272.8346320058,
+    "modal_rank": 150,
+    "inverse_refinement_steps": 1
+  },
+  "failures": [],
+  "eigenpairs": 1188,
+  "fixture_cases": 36,
+  "discrete_curves": [
+    {
+      "geometry": {
+        "height": 200,
+        "insideRadius": 0,
+        "lip": 20,
+        "shape": "u-stiffened",
+        "wallThickness": 1,
+        "width": 75
+      },
+      "refinements": [
+        {
+          "mesh": [
+            2,
+            6
+          ],
+          "families": {
+            "local": {
+              "half_wave_number": 15,
+              "wavelength_mm": 133.33333333333334,
+              "jpn_stress_mpa": 32.102075171599495,
+              "original_cufsm_stress_mpa": 32.10207517159946,
+              "governing_energy_accumulation_bound": 7.619466587006784e-12
+            },
+            "distortional": {
+              "half_wave_number": 16,
+              "wavelength_mm": 125.0,
+              "jpn_stress_mpa": 34.818376125336144,
+              "original_cufsm_stress_mpa": 34.818376125343875,
+              "governing_energy_accumulation_bound": 6.005493769474452e-10
+            }
+          }
+        },
+        {
+          "mesh": [
+            4,
+            8
+          ],
+          "families": {
+            "local": {
+              "half_wave_number": 15,
+              "wavelength_mm": 133.33333333333334,
+              "jpn_stress_mpa": 32.12540838666493,
+              "original_cufsm_stress_mpa": 32.125408386665086,
+              "governing_energy_accumulation_bound": 3.241099579829653e-11
+            },
+            "distortional": {
+              "half_wave_number": 16,
+              "wavelength_mm": 125.0,
+              "jpn_stress_mpa": 34.76674496997016,
+              "original_cufsm_stress_mpa": 34.76674496997689,
+              "governing_energy_accumulation_bound": 7.2334581473694215e-09
+            }
+          }
+        },
+        {
+          "mesh": [
+            8,
+            12
+          ],
+          "families": {
+            "local": {
+              "half_wave_number": 15,
+              "wavelength_mm": 133.33333333333334,
+              "jpn_stress_mpa": 32.13878030599684,
+              "original_cufsm_stress_mpa": 32.13878030599599,
+              "governing_energy_accumulation_bound": 2.483443898142944e-10
+            },
+            "distortional": {
+              "half_wave_number": 16,
+              "wavelength_mm": 125.0,
+              "jpn_stress_mpa": 34.74099103506363,
+              "original_cufsm_stress_mpa": 34.740991034895046,
+              "governing_energy_accumulation_bound": 1.4356817620879286e-07
+            }
+          }
+        }
+      ],
+      "relative_changes": {
+        "local": 0.00041606804006231736,
+        "distortional": 0.0007413126148456571
+      },
+      "mesh_target_met": true,
+      "governing_energy_target_met": true
+    },
+    {
+      "geometry": {
+        "height": 150,
+        "insideRadius": 2,
+        "lip": 15,
+        "shape": "u-stiffened",
+        "wallThickness": 1.5,
+        "width": 60
+      },
+      "refinements": [
+        {
+          "mesh": [
+            2,
+            6
+          ],
+          "families": {
+            "local": {
+              "half_wave_number": 21,
+              "wavelength_mm": 95.23809523809524,
+              "jpn_stress_mpa": 136.453011290635,
+              "original_cufsm_stress_mpa": 136.45301129063475,
+              "governing_energy_accumulation_bound": 7.579071374188798e-12
+            },
+            "distortional": {
+              "half_wave_number": 20,
+              "wavelength_mm": 100.0,
+              "jpn_stress_mpa": 134.96981869819945,
+              "original_cufsm_stress_mpa": 134.96981869820831,
+              "governing_energy_accumulation_bound": 3.9196603503792376e-10
+            }
+          }
+        },
+        {
+          "mesh": [
+            4,
+            8
+          ],
+          "families": {
+            "local": {
+              "half_wave_number": 21,
+              "wavelength_mm": 95.23809523809524,
+              "jpn_stress_mpa": 137.50166110945958,
+              "original_cufsm_stress_mpa": 137.50166110946083,
+              "governing_energy_accumulation_bound": 3.1981973315169834e-11
+            },
+            "distortional": {
+              "half_wave_number": 20,
+              "wavelength_mm": 100.0,
+              "jpn_stress_mpa": 133.26177225744888,
+              "original_cufsm_stress_mpa": 133.26177225744914,
+              "governing_energy_accumulation_bound": 2.1652588145808992e-09
+            }
+          }
+        },
+        {
+          "mesh": [
+            8,
+            12
+          ],
+          "families": {
+            "local": {
+              "half_wave_number": 21,
+              "wavelength_mm": 95.23809523809524,
+              "jpn_stress_mpa": 138.0606983282996,
+              "original_cufsm_stress_mpa": 138.06069832829778,
+              "governing_energy_accumulation_bound": 2.4402707151325446e-10
+            },
+            "distortional": {
+              "half_wave_number": 20,
+              "wavelength_mm": 100.0,
+              "jpn_stress_mpa": 132.57302596284978,
+              "original_cufsm_stress_mpa": 132.57302596364227,
+              "governing_energy_accumulation_bound": 2.6750173723575268e-08
+            }
+          }
+        }
+      ],
+      "relative_changes": {
+        "local": 0.004049213321452735,
+        "distortional": 0.005195221951048342
+      },
+      "mesh_target_met": false,
+      "governing_energy_target_met": true
+    },
+    {
+      "geometry": {
+        "height": 300,
+        "insideRadius": 3,
+        "lip": 25,
+        "shape": "u-stiffened",
+        "wallThickness": 2,
+        "width": 90
+      },
+      "refinements": [
+        {
+          "mesh": [
+            2,
+            6
+          ],
+          "families": {
+            "local": {
+              "half_wave_number": 10,
+              "wavelength_mm": 200.0,
+              "jpn_stress_mpa": 59.35557243245888,
+              "original_cufsm_stress_mpa": 59.35557243245887,
+              "governing_energy_accumulation_bound": 8.017380522637481e-12
+            },
+            "distortional": {
+              "half_wave_number": 11,
+              "wavelength_mm": 181.8181818181818,
+              "jpn_stress_mpa": 64.14770800897054,
+              "original_cufsm_stress_mpa": 64.14770800897057,
+              "governing_energy_accumulation_bound": 3.735867460373959e-10
+            }
+          }
+        },
+        {
+          "mesh": [
+            4,
+            8
+          ],
+          "families": {
+            "local": {
+              "half_wave_number": 10,
+              "wavelength_mm": 200.0,
+              "jpn_stress_mpa": 59.69839489657631,
+              "original_cufsm_stress_mpa": 59.698394896575714,
+              "governing_energy_accumulation_bound": 3.400817439797715e-11
+            },
+            "distortional": {
+              "half_wave_number": 11,
+              "wavelength_mm": 181.8181818181818,
+              "jpn_stress_mpa": 63.4518859395824,
+              "original_cufsm_stress_mpa": 63.45188593959272,
+              "governing_energy_accumulation_bound": 2.1420771496064556e-09
+            }
+          }
+        },
+        {
+          "mesh": [
+            8,
+            12
+          ],
+          "families": {
+            "local": {
+              "half_wave_number": 10,
+              "wavelength_mm": 200.0,
+              "jpn_stress_mpa": 59.87982776039085,
+              "original_cufsm_stress_mpa": 59.879827760392175,
+              "governing_energy_accumulation_bound": 2.6034283961219497e-10
+            },
+            "distortional": {
+              "half_wave_number": 11,
+              "wavelength_mm": 181.8181818181818,
+              "jpn_stress_mpa": 63.162780655581756,
+              "original_cufsm_stress_mpa": 63.162780655210625,
+              "governing_energy_accumulation_bound": 2.7844080932712954e-08
+            }
+          }
+        }
+      ],
+      "relative_changes": {
+        "local": 0.0030299496608531718,
+        "distortional": 0.004577146240237484
+      },
+      "mesh_target_met": false,
+      "governing_energy_target_met": true
+    }
+  ],
+  "certified_spectrum_tail": false,
+  "approved_for_fabrication": false
+}

@@ -1,0 +1,351 @@
+[WebServer] (node:13708) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:10384) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 73 tests using 1 worker
+
+(node:3652) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/73] [chromium] › tests\e2e\app.spec.ts:20:1 › obra real: cliente, medidas com vírgula, material próprio, custos e resumo persistido
+[WebServer] (node:12256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:9624) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[2/73] [chromium] › tests\e2e\app.spec.ts:74:1 › exemplo: desenho, zoom, apoios, pendências e exclusão de materiais sem alterar projeto
+[WebServer] (node:4172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/73] [chromium] › tests\e2e\app.spec.ts:99:1 › backup versão 2 com geometria, custos e referências e exclusão confirmada
+[WebServer] (node:13344) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[4/73] [chromium] › tests\e2e\app.spec.ts:116:1 › configurações com vírgula e proteção de dados corrompidos
+[WebServer] (node:4504) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[5/73] [chromium] › tests\e2e\app.spec.ts:129:1 › amplia e movimenta o desenho com gestos de toque
+[WebServer] (node:13668) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[6/73] [chromium] › tests\e2e\app.spec.ts:156:3 › cinco etapas preenchidas e navegação em 320px
+[WebServer] (node:1220) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[7/73] [chromium] › tests\e2e\app.spec.ts:156:3 › cinco etapas preenchidas e navegação em 390px
+[WebServer] (node:6384) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[8/73] [chromium] › tests\e2e\app.spec.ts:156:3 › cinco etapas preenchidas e navegação em 768px
+[WebServer] (node:3360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[9/73] [chromium] › tests\e2e\app.spec.ts:156:3 › cinco etapas preenchidas e navegação em 1440px
+[WebServer] (node:10388) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[10/73] [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px
+[WebServer] (node:9548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[11/73] [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 1440px
+[WebServer] (node:6444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[12/73] [chromium] › tests\e2e\connections.spec.ts:4:31 › M24 ações, nó no 3D, declaração física e invalidação em 375px
+[WebServer] (node:13984) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[13/73] [chromium] › tests\e2e\connections.spec.ts:4:31 › M24 ações, nó no 3D, declaração física e invalidação em 1440px
+[WebServer] (node:7460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[14/73] [chromium] › tests\e2e\delivery.spec.ts:20:1 › entrega PDF e planilha, persiste condições e bloqueia PDF incompleto
+[WebServer] (node:4872) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[15/73] [chromium] › tests\e2e\delivery.spec.ts:42:1 › não emite documento se o navegador falhar ao salvar
+[WebServer] (node:10212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[16/73] [chromium] › tests\e2e\loaded-mixed.spec.ts:3:31 › peso explícito e carga distribuída executam Python real em 375px
+[WebServer] (node:9732) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[17/73] [chromium] › tests\e2e\loaded-mixed.spec.ts:3:31 › peso explícito e carga distribuída executam Python real em 1440px
+[WebServer] (node:3936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[18/73] [chromium] › tests\e2e\mixed-local.spec.ts:4:1 › health BUSY transitório espera o executor e recupera sem intervenção
+[WebServer] (node:6288) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[19/73] [chromium] › tests\e2e\mixed-local.spec.ts:28:34 › fluxo misto real, rastreabilidade 3D e invalidação em 375px
+[WebServer] (node:12504) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[20/73] [chromium] › tests\e2e\mixed-local.spec.ts:28:34 › fluxo misto real, rastreabilidade 3D e invalidação em 1440px
+[WebServer] (node:9532) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[21/73] [chromium] › tests\e2e\planning.spec.ts:4:34 › levantamento sem preços, revisão ao final e downloads em 390px
+[WebServer] (node:13712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:12872) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[22/73] [chromium] › tests\e2e\planning.spec.ts:4:34 › levantamento sem preços, revisão ao final e downloads em 1440px
+[WebServer] (node:6672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:11936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[23/73] [chromium] › tests\e2e\planning.spec.ts:36:1 › cria levantamento com perfis pendentes e preserva os dados no backup
+[WebServer] (node:8432) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[24/73] [chromium] › tests\e2e\platform.spec.ts:26:44 › pré-projeto, corte, revisão, CAD e proposta em 320px
+[WebServer] (node:4692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:12232) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[25/73] [chromium] › tests\e2e\platform.spec.ts:26:44 › pré-projeto, corte, revisão, CAD e proposta em 375px
+[WebServer] (node:13416) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[26/73] [chromium] › tests\e2e\platform.spec.ts:26:44 › pré-projeto, corte, revisão, CAD e proposta em 768px
+[WebServer] (node:13156) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:1992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[27/73] [chromium] › tests\e2e\platform.spec.ts:26:44 › pré-projeto, corte, revisão, CAD e proposta em 1440px
+[WebServer] (node:6344) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:12816) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[28/73] [chromium] › tests\e2e\platform.spec.ts:65:1 › análise real de tesoura e invalidação ao alterar a carga
+[WebServer] (node:9112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[29/73] [chromium] › tests\e2e\platform.spec.ts:87:1 › dispositivo sem WebGL mantém fallback 2D utilizável
+[WebServer] (node:6492) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[30/73] [chromium] › tests\e2e\platform.spec.ts:93:1 › exemplo completo nasce apenas ao clicar e preserva a configuração na recarga
+[WebServer] (node:7736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[31/73] [chromium] › tests\e2e\preproduction.spec.ts:5:3 › dossiê M25 continua preliminar e exporta PDF/Excel em 375px
+[WebServer] (node:10460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[32/73] [chromium] › tests\e2e\preproduction.spec.ts:5:3 › dossiê M25 continua preliminar e exporta PDF/Excel em 1440px
+[WebServer] (node:712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[33/73] [chromium] › tests\e2e\presentation-3d.spec.ts:3:33 › modo acabado preserva a estrutura, personaliza telhado e exporta PNG em 375px
+[WebServer] (node:1992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[34/73] [chromium] › tests\e2e\presentation-3d.spec.ts:3:33 › modo acabado preserva a estrutura, personaliza telhado e exporta PNG em 1440px
+[WebServer] (node:6344) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[35/73] [chromium] › tests\e2e\presentation-3d.spec.ts:50:1 › a cobertura de uma água também ativa o Acabado sem mudar os quantitativos
+[36/73] [chromium] › tests\e2e\profiles-3d.spec.ts:23:1 › dispositivo 375px › perfis 3D, seleção, modos e persistência em 375px
+[WebServer] (node:11132) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:11076) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[37/73] [chromium] › tests\e2e\profiles-3d.spec.ts:23:1 › dispositivo 1440px › perfis 3D, seleção, modos e persistência em 1440px
+[WebServer] (node:6188) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:4992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[38/73] [chromium] › tests\e2e\profiles-3d.spec.ts:86:1 › cadastro geométrico incompleto avisa e persiste dimensões sem inferir propriedades
+[WebServer] (node:13388) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[39/73] [chromium] › tests\e2e\profiles-3d.spec.ts:105:34 › exemplo antigo abre demonstração sólida sem modificar o projeto em 375px
+[WebServer] (node:11384) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[40/73] [chromium] › tests\e2e\profiles-3d.spec.ts:105:34 › exemplo antigo abre demonstração sólida sem modificar o projeto em 1440px
+[WebServer] (node:13740) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[41/73] [chromium] › tests\e2e\profiles-3d.spec.ts:143:34 › atalho visível abre o 3D da estrutura no fluxo em 375px
+[WebServer] (node:2360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[42/73] [chromium] › tests\e2e\profiles-3d.spec.ts:143:34 › atalho visível abre o 3D da estrutura no fluxo em 1440px
+[WebServer] (node:12368) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[43/73] [chromium] › tests\e2e\profiles-3d.spec.ts:172:34 › Studio 3D filtra camadas, isola peça e preserva câmera em 375px
+[WebServer] (node:3828) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[44/73] [chromium] › tests\e2e\profiles-3d.spec.ts:172:34 › Studio 3D filtra camadas, isola peça e preserva câmera em 1440px
+[WebServer] (node:5240) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[45/73] [chromium] › tests\e2e\quick-project.spec.ts:4:3 › criação rápida abre perfis sólidos 3D e permite refinar o projeto em 375px
+[WebServer] (node:12316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[46/73] [chromium] › tests\e2e\quick-project.spec.ts:4:3 › criação rápida abre perfis sólidos 3D e permite refinar o projeto em 1440px
+[WebServer] (node:12492) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:6532) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[47/73] [chromium] › tests\e2e\quick-project.spec.ts:50:1 › mantém formulário técnico completo acessível para quem prefere preencher tudo
+[WebServer] (node:13332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[48/73] [chromium] › tests\e2e\quick-project.spec.ts:58:1 › sincroniza linhas vinculadas ao levantamento ao editar geometria, sem alterar materiais manuais
+[WebServer] (node:1420) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[49/73] [chromium] › tests\e2e\resistance-report.spec.ts:4:31 › M23 solicitações reais, relatório e seleção 3D em 375px
+[WebServer] (node:13992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[50/73] [chromium] › tests\e2e\resistance-report.spec.ts:4:31 › M23 solicitações reais, relatório e seleção 3D em 1440px
+[WebServer] (node:2928) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[51/73] [chromium] › tests\e2e\resistance-report.spec.ts:25:31 › cadastro resistente, seção Python e limite de flecha em 375px
+[WebServer] (node:14196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[52/73] [chromium] › tests\e2e\resistance-report.spec.ts:25:31 › cadastro resistente, seção Python e limite de flecha em 1440px
+[WebServer] (node:11804) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[53/73] [chromium] › tests\e2e\roof-load-path.spec.ts:4:31 › área para terças, solver e seleção física em 375px
+[WebServer] (node:1856) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[54/73] [chromium] › tests\e2e\roof-load-path.spec.ts:4:31 › área para terças, solver e seleção física em 1440px
+[WebServer] (node:10632) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[55/73] [chromium] › tests\e2e\showcase.spec.ts:8:34 › demonstrações 3D com orçamento completo em 375px
+[WebServer] (node:14320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:10124) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[56/73] [chromium] › tests\e2e\showcase.spec.ts:8:34 › demonstrações 3D com orçamento completo em 1440px
+[WebServer] (node:12836) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:11588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[57/73] [chromium] › tests\e2e\showcase.spec.ts:40:1 › remove exemplos antigos do navegador, preservando projetos reais e cópias
+[58/73] [chromium] › tests\e2e\spatial-adapter.spec.ts:7:3 › adaptador executa declarações persistidas, exporta IDs e invalida resultados em 375px
+[WebServer] (node:13792) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:5744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[59/73] [chromium] › tests\e2e\spatial-adapter.spec.ts:46:3 › cobertura incompleta continua bloqueada e exemplo independente não altera a obra em 375px
+[WebServer] (node:6440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[60/73] [chromium] › tests\e2e\spatial-adapter.spec.ts:7:3 › adaptador executa declarações persistidas, exporta IDs e invalida resultados em 1440px
+[WebServer] (node:10456) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[61/73] [chromium] › tests\e2e\spatial-adapter.spec.ts:46:3 › cobertura incompleta continua bloqueada e exemplo independente não altera a obra em 1440px
+[WebServer] (node:11484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:1192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[62/73] [chromium] › tests\e2e\spatial-analysis.spec.ts:10:3 › iPhone 375 › entrada rápida preservada, pórtico 3D real, edição e resposta obsoleta
+[WebServer] (node:7736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:10496) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[63/73] [chromium] › tests\e2e\spatial-analysis.spec.ts:10:3 › desktop 1440 › entrada rápida preservada, pórtico 3D real, edição e resposta obsoleta
+[WebServer] (node:12344) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[64/73] [chromium] › tests\e2e\spatial-analysis.spec.ts:45:1 › falha do serviço 3D não interrompe a visualização, o levantamento ou a edição
+[WebServer] (node:2128) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:12816) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[65/73] [chromium] › tests\e2e\spatial-analysis.spec.ts:55:1 › modelo explicitamente vinculado exige nova revisão ao mudar hipótese de ligação
+[66/73] [chromium] › tests\e2e\spatial-coordination.spec.ts:5:3 › roteiro estrutural conecta preparação e análise sem cálculo falso em 375px
+[WebServer] (node:13724) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[67/73] [chromium] › tests\e2e\spatial-coordination.spec.ts:5:3 › roteiro estrutural conecta preparação e análise sem cálculo falso em 1440px
+[WebServer] (node:7388) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[68/73] [chromium] › tests\e2e\spatial-coordination.spec.ts:45:1 › roteiro detecta preparação obsoleta depois de alterar geometria e preserva declaração
+[WebServer] (node:11824) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[69/73] [chromium] › tests\e2e\spatial-preparation.spec.ts:3:37 › preparação física é editável, persistente e segura em 375px
+[WebServer] (node:14200) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[70/73] [chromium] › tests\e2e\spatial-preparation.spec.ts:3:37 › preparação física é editável, persistente e segura em 1440px
+[WebServer] (node:14172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:12484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[71/73] [chromium] › tests\e2e\spatial-preparation.spec.ts:59:1 › alterar espaçamentos mantém declarações e marca o vínculo como desatualizado
+[WebServer] (node:12408) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:13992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[72/73] [chromium] › tests\e2e\wind-load-path.spec.ts:4:32 › vento zonal, combinações e Python real em 375px
+[WebServer] (node:1724) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[73/73] [chromium] › tests\e2e\wind-load-path.spec.ts:4:32 › vento zonal, combinações e Python real em 1440px
+[WebServer] (node:9324) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+  73 passed (19.6m)

@@ -1,0 +1,99 @@
+{
+  "baseCommit": "b05c7fb9d04ad522b2795e58e4f6a9989124ea95",
+  "baseBlobs": 450,
+  "changedBaseBlobs": [
+    ".github/workflows/validation.yml",
+    "engine/vercel.json",
+    "src/components/planning/connections-panel.tsx",
+    "src/components/planning/continuous-demands-panel.tsx",
+    "src/components/planning/resistance-report-panel.tsx",
+    "src/domain/cold-formed-properties.ts",
+    "src/domain/connection-declaration.ts",
+    "src/domain/connection-report.ts",
+    "src/domain/connection-transfer-geometry.ts",
+    "src/domain/continuous-demands.test.ts",
+    "src/domain/continuous-demands.ts",
+    "src/domain/resistance-preparation.ts",
+    "src/domain/resistance-report.ts",
+    "src/domain/spatial-preparation.ts",
+    "tests/e2e/connections.spec.ts",
+    "tests/e2e/resistance-report.spec.ts",
+    "vercel.json"
+  ],
+  "protectedBlobsUnchanged": [
+    {
+      "path": "engine/app.py",
+      "sha": "b6210ea24a277b0d15d01ee75bea42b195ce2b56"
+    },
+    {
+      "path": "engine/jpn_structural/frame3d.py",
+      "sha": "d95db48c66da536372cdd73dd89aaf40b8aed0d1"
+    },
+    {
+      "path": "engine/jpn_structural/mixed3d.py",
+      "sha": "e3e6f8e1e90e4c3dd6352943f6f3e5dadec1f401"
+    },
+    {
+      "path": "engine/jpn_structural/mixed3d_loads.py",
+      "sha": "416e3a6dbe3ef2afbc5d9a6a63c4cf8ad72cffbb"
+    },
+    {
+      "path": "engine/local_mixed_worker.py",
+      "sha": "cf43560c0e704b68570a96dec17e5dd7d137690c"
+    },
+    {
+      "path": "src/infrastructure/persistence/local.test.ts",
+      "sha": "20db13d2160adc11df139a23f6020a10b71ed660"
+    },
+    {
+      "path": "src/infrastructure/persistence/local.ts",
+      "sha": "17c78de8a9c92b027b8682f406eb4cd7ac454138"
+    },
+    {
+      "path": "src/lib/exports/cad.test.ts",
+      "sha": "edd32399d4d8e8b6a63b721d1c227466f266b368"
+    },
+    {
+      "path": "src/lib/exports/cad.ts",
+      "sha": "49330303fd548842686f31006c2756eebdc4bf79"
+    },
+    {
+      "path": "src/lib/exports/cutting.ts",
+      "sha": "4ccad14b8487e3585a17846d7be50b0dbd51cf52"
+    },
+    {
+      "path": "src/lib/exports/exports.test.ts",
+      "sha": "f74e40879817ee9d2b6f39ae92df18affad7b323"
+    },
+    {
+      "path": "src/lib/exports/pdf.ts",
+      "sha": "1c28e88eb78ad4ec992262e5f54407c8719185d6"
+    },
+    {
+      "path": "src/lib/exports/preproduction.test.ts",
+      "sha": "eae044e5e61f5c73e59317d645b7981986795e73"
+    },
+    {
+      "path": "src/lib/exports/preproduction.ts",
+      "sha": "ea365226e4d3ae007964fc9e9bb38b56be93f6d8"
+    },
+    {
+      "path": "src/lib/exports/proposal.ts",
+      "sha": "26d428dc7fa74b62e88f29279e0b068ba5c5b023"
+    },
+    {
+      "path": "src/lib/exports/takeoff.test.ts",
+      "sha": "3ac1958892ce1ae1ca65bdd05c934583d2e5b061"
+    },
+    {
+      "path": "src/lib/exports/takeoff.ts",
+      "sha": "490601816a2b6cb2e3f8b2fc5045b35effe7c0cf"
+    },
+    {
+      "path": "src/lib/exports/workbook.ts",
+      "sha": "df166fdc1884b164991983db500bb069269f653a"
+    }
+  ],
+  "codeCommit": "9e8dcf07c427627ce1fdf06b9e9babdcc3d8ac70",
+  "remoteSourceTreeBlobsVerified": 485
+}

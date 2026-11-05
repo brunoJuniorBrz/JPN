@@ -1,0 +1,17 @@
+{
+  "schema_version": "jpn.section-analysis/1",
+  "units": "mm",
+  "geometry": {
+    "shape": "u-stiffened",
+    "height": 100,
+    "width": 50,
+    "wallThickness": 1.2,
+    "lip": 17,
+    "insideRadius": 2
+  },
+  "poisson": 0.3,
+  "source": "Synthetic physical test dimensions; not a commercial section",
+  "revision": "1",
+  "responsible": "Independent numerical validation",
+  "convergence": 0.001
+}

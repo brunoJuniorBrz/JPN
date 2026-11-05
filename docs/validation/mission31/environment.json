@@ -1,0 +1,35 @@
+{
+  "platform": "Windows-10-10.0.19045-SP0",
+  "node": "v24.22.0",
+  "profiles": {
+    "main": {
+      "python": "3.12.16",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "PyNiteFEA": "3.2.1",
+      "sectionproperties": "3.10.2",
+      "pytest": "9.2.0"
+    },
+    "sections-fsm": {
+      "python": "3.12.16",
+      "numpy": "2.3.3",
+      "scipy": "1.15.3",
+      "sectionproperties": "3.10.2",
+      "pycufsm": "0.2.0",
+      "pytest": "9.2.0"
+    },
+    "fsm": {
+      "python": "3.12.16",
+      "numpy": "2.2.6",
+      "scipy": "1.15.3",
+      "pycufsm": "0.2.0",
+      "pytest": "9.2.0"
+    }
+  },
+  "blas_omp_mkl_threads": 1,
+  "initial_sha": "00e61f68d1013f2d34dfa74554c84edc27efad72",
+  "external_pdfs": {
+    "ref01.pdf": "925bb203abb51613f198f3b479556c8860046bb36a085a4072695c6d48f68d35",
+    "ref04.pdf": "52c717014852b20659801fc1b00999515406f8ca5d6cd1e4052416ffc2580a97"
+  }
+}

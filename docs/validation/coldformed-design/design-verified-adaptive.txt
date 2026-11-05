@@ -1,0 +1,19 @@
+F.                                                                       [100%]
+================================== FAILURES ===================================
+__ test_real_worker_refuses_contradictory_geometry_and_runs_matching_section __
+
+physical = {'schema_version': 'jpn.verified-coldformed/1', 'geometry_analysis': {'schema_version': 'jpn.section-analysis/1', 'uni...ver_j_m4': 5.706047484690789e-10, 'property_resolutions': {'area_m2': 0, 'iy_m4': 0, 'iz_m4': 0, 'wy_m3': 0, ...}, ...}
+
+    def test_real_worker_refuses_contradictory_geometry_and_runs_matching_section(physical):
+        root=Path(__file__).resolve().parents[1]
+        out=subprocess.run([sys.executable,'-I','-X','utf8',str(root/'section_worker.py')],input=json.dumps(physical).encode(),capture_output=True,timeout=20)
+        r=json.loads(out.stdout)
+>       assert out.returncode==0, r
+E       AssertionError: {'status': 'error', 'error': {'code': 'PHYSICAL_PROPERTY_MISMATCH', 'message': 'j_m4: section geometry gives 5.706047484038863e-10; declared/solver value 5.706047484690789e-10. Review the physical section, not the drawing.'}}
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\python\\python.exe', '-I', '-X', 'utf8', 'C:\\U...8863e-10; declared/solver value 5.706047484690789e-10. Review the physical section, not the drawing."}}\n', stderr=b'').returncode
+
+engine\section_tests\test_verified_design.py:28: AssertionError
+=========================== short test summary info ===========================
+FAILED engine\section_tests\test_verified_design.py::test_real_worker_refuses_contradictory_geometry_and_runs_matching_section
+1 failed, 1 passed in 30.87s

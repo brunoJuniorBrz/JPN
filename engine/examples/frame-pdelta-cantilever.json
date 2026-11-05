@@ -1,0 +1,590 @@
+{
+  "schema_version": "jpn.frame-pdelta/1",
+  "model": {
+    "schema_version": "jpn.frame3d/1",
+    "units": "SI",
+    "theory": "linear-elastic-euler-bernoulli",
+    "project": {
+      "id": "M31-CANTILEVER",
+      "revision": "1",
+      "source": "Synthetic 4 m straight beam-column: exact continuum comparison, not a roof or fabrication design"
+    },
+    "nodes": [
+      {
+        "id": "N0",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 0.0
+      },
+      {
+        "id": "N1",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 0.25
+      },
+      {
+        "id": "N2",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 0.5
+      },
+      {
+        "id": "N3",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 0.75
+      },
+      {
+        "id": "N4",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 1.0
+      },
+      {
+        "id": "N5",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 1.25
+      },
+      {
+        "id": "N6",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 1.5
+      },
+      {
+        "id": "N7",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 1.75
+      },
+      {
+        "id": "N8",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 2.0
+      },
+      {
+        "id": "N9",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 2.25
+      },
+      {
+        "id": "N10",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 2.5
+      },
+      {
+        "id": "N11",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 2.75
+      },
+      {
+        "id": "N12",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 3.0
+      },
+      {
+        "id": "N13",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 3.25
+      },
+      {
+        "id": "N14",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 3.5
+      },
+      {
+        "id": "N15",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 3.75
+      },
+      {
+        "id": "N16",
+        "x_m": 0.0,
+        "y_m": 0.0,
+        "z_m": 4.0
+      }
+    ],
+    "materials": [
+      {
+        "id": "ACO-TESTE",
+        "e_pa": 200000000000,
+        "g_pa": 76923076923.07692,
+        "nu": 0.3,
+        "source": "Material isotr\u00f3pico sint\u00e9tico, E e G declarados para valida\u00e7\u00e3o",
+        "revision": "R1"
+      }
+    ],
+    "sections": [
+      {
+        "id": "SECAO-TESTE",
+        "area_m2": 0.01,
+        "iy_m4": 1e-05,
+        "iz_m4": 1e-05,
+        "j_m4": 2e-05,
+        "source": "Propriedades sint\u00e9ticas declaradas, sem cat\u00e1logo comercial",
+        "revision": "R1"
+      }
+    ],
+    "members": [
+      {
+        "id": "F0",
+        "start": "N0",
+        "end": "N1",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F1",
+        "start": "N1",
+        "end": "N2",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F2",
+        "start": "N2",
+        "end": "N3",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F3",
+        "start": "N3",
+        "end": "N4",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F4",
+        "start": "N4",
+        "end": "N5",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F5",
+        "start": "N5",
+        "end": "N6",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F6",
+        "start": "N6",
+        "end": "N7",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F7",
+        "start": "N7",
+        "end": "N8",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F8",
+        "start": "N8",
+        "end": "N9",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F9",
+        "start": "N9",
+        "end": "N10",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F10",
+        "start": "N10",
+        "end": "N11",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F11",
+        "start": "N11",
+        "end": "N12",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F12",
+        "start": "N12",
+        "end": "N13",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F13",
+        "start": "N13",
+        "end": "N14",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F14",
+        "start": "N14",
+        "end": "N15",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      },
+      {
+        "id": "F15",
+        "start": "N15",
+        "end": "N16",
+        "kind": "frame",
+        "material": "ACO-TESTE",
+        "section": "SECAO-TESTE",
+        "rotation_deg": 0,
+        "release_start": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "release_end": [
+          false,
+          false,
+          false,
+          false,
+          false,
+          false
+        ]
+      }
+    ],
+    "supports": [
+      {
+        "node": "N0",
+        "restrained": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    ],
+    "cases": [
+      {
+        "id": "TESTE",
+        "source": "For\u00e7as e momentos nodais sint\u00e9ticos; sem peso pr\u00f3prio ou vento autom\u00e1tico"
+      }
+    ],
+    "nodal_loads": [
+      {
+        "node": "N16",
+        "case": "TESTE",
+        "fx_n": 0.0,
+        "fy_n": 0.0,
+        "fz_n": -185055.08252042547,
+        "mx_nm": 0.0,
+        "my_nm": 0.0,
+        "mz_nm": 0.0
+      },
+      {
+        "node": "N16",
+        "case": "TESTE",
+        "fx_n": 100.0,
+        "fy_n": 0.0,
+        "fz_n": 0.0,
+        "mx_nm": 0.0,
+        "my_nm": 0.0,
+        "mz_nm": 0.0
+      }
+    ],
+    "combinations": [
+      {
+        "id": "TESTE-1",
+        "factors": {
+          "TESTE": 1
+        }
+      }
+    ]
+  },
+  "max_iterations": 30
+}

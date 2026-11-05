@@ -1,17 +1,20 @@
 import type { Project } from "./models";
-import type { StructurePiece } from "./structure";
+import type { PhysicalPiece } from "./structure";
+import { resolveMemberPhysical } from "./member-physical";
 import { structureSignature } from "./calculations/project-basis";
 import { newSpatialPreparation, spatialPreparationSchema, spatialPreparationReview, type SpatialPreparation } from "./spatial-preparation";
 import { ConnectivityError, discretizeGeometry } from "./spatial-connectivity";
 import { mixedInputHash, mixedRequestSchema } from "./mixed-analysis";
 import { spatialSI } from "./spatial-analysis";
+import { verifyEngineeringCombinations } from "./engineering-combinations";
 
-export function mixedPieceKind(piece: StructurePiece, draft: SpatialPreparation) {
+export function mixedPieceKind(piece: PhysicalPiece, draft: SpatialPreparation) {
   return draft.memberKinds?.find(m => m.pieceId === piece.id)?.kind ?? draft.groups[piece.role].elementKind;
 }
-export function mixedPreparationReview(project: Project, draft: SpatialPreparation) {
+export function mixedPreparationReview(project: Project, draft: SpatialPreparation, loaded = false) {
   const common = spatialPreparationReview(project, draft);
   const replaced = new Set(["PROPERTIES", "ISOTROPY", "CONNECTION", "AXIAL", "MEMBER_CONNECTION", "TOPOLOGY"]);
+  if(loaded)replaced.add("LOADS");
   const issues = common.issues.filter(i => !replaced.has(i.code));
   const add = (code: string, message: string) => issues.push({ code, message });
   let mapping: ReturnType<typeof discretizeGeometry> | undefined;
@@ -21,8 +24,10 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
   if (new Set(draft.supports.map(s => s.nodeId)).size !== draft.supports.length) add("DUPLICATE_SUPPORT", "Declarações de apoio duplicadas.");
   if (new Set(draft.memberKinds?.map(m => m.pieceId)).size !== (draft.memberKinds?.length ?? 0)) add("DUPLICATE_KIND", "Tipos físicos duplicados por peça.");
   if (draft.memberKinds?.some(m => !pieces.some(p => p.id === m.pieceId))) add("ORPHAN_KIND", "Tipo físico refere uma peça inexistente.");
+  if(draft.physicalCatalog?.assignments.some(a=>!pieces.some(p=>p.id===a.pieceId)))add("ORPHAN_PHYSICAL_ASSIGNMENT","Atribuição física refere barra inexistente.");
   for (const piece of pieces) {
-    const group = draft.groups[piece.role], kind = mixedPieceKind(piece, draft);
+    let group;try{group=resolveMemberPhysical(piece,draft).properties;}catch(e){add("PHYSICAL_REFERENCE",String(e));continue;}
+    const kind = mixedPieceKind(piece, draft);
     if (!kind) { add("ELEMENT_KIND", `${piece.id}: declare explicitamente pórtico ou barra axial. Uma articulação não define o tipo da peça.`); continue; }
     if (!group.steelGrade.trim() || !group.materialSource.trim() || !group.materialRevision.trim() || !group.sectionSource.trim() || !group.sectionRevision.trim() || group.eGpa === null || group.areaCm2 === null) add("PROPERTIES", `${piece.id}: E, A, material, fontes e revisões são obrigatórios.`);
     const override = draft.memberConnections.find(m => m.pieceId === piece.id);
@@ -39,32 +44,40 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
   return { ...common, mapping, issues, declarationsComplete: !!mapping && !issues.length, analysisReady: false as const };
 }
 
-export async function adaptMixedProject(project: Project) {
+export async function prepareMixedInput(project: Project, loaded = false) {
   const draft = spatialPreparationSchema.parse(project.workspace.spatialPreparation ?? newSpatialPreparation(project));
-  const review = mixedPreparationReview(project, draft), blockers = review.issues.filter(i => i.code !== "TOPOLOGY");
+  if(project.workspace.physicalStructure&&draft.loading&&(draft.loading.selfWeight||draft.loading.uniform.length||draft.loading.roofArea.length||draft.loading.wind||draft.loading.roofDistribution))throw Error("DECLARED_STRUCTURE_UNSUPPORTED: estrutura declarada aceita somente cargas nodais explícitas; vento, cobertura, peso próprio e cargas distribuídas dependem de validação específica.");
+  if (!loaded && draft.loading?.wind) throw new Error("WIND_LOADED_REQUIRED: vento exige o adaptador com cargas distribuídas.");
+  if (draft.engineeringCombinations) verifyEngineeringCombinations(draft.engineeringCombinations,draft.cases,draft.combinations);
+  const review = mixedPreparationReview(project, draft, loaded), blockers = review.issues.filter(i => i.code !== "TOPOLOGY");
   if (blockers.length) throw new ConnectivityError("PREPARATION_INCOMPLETE", blockers.slice(0, 12).map(i => `${i.code}: ${i.message}`).join(" "));
   if (!review.geometry || !draft.connectivity) throw new ConnectivityError("CONNECTIVITY_PENDING", "Revise e registre a conectividade física.");
   const mapping = review.mapping!;
   if (mapping.nodes.length > 150 || mapping.members.length > 320) throw new ConnectivityError("MODEL_LIMIT", "Modelo misto excede 150 nós ou 320 segmentos; nenhum resultado foi forçado.");
   const pieces = new Map(review.geometry.pieces.map(p => [p.id, p]));
   const members = mapping.members.map(s => {
-    const piece = pieces.get(s.originalId)!, group = draft.groups[piece.role], kind = mixedPieceKind(piece, draft)!;
+    const piece = pieces.get(s.originalId)!, physical=resolveMemberPhysical(piece,draft),group = physical.properties, kind = mixedPieceKind(piece, draft)!;
     if (kind === "axial") return { id: s.id, start: s.start, end: s.end, kind, e_pa: spatialSI.modulus(group.eGpa!), area_m2: spatialSI.area(group.areaCm2!), source: `${group.steelGrade}; ${group.materialSource}; A: ${group.sectionSource}`, revision: `${group.materialRevision}; ${group.sectionRevision}` };
     const override = draft.memberConnections.find(m => m.pieceId === piece.id);
     const end = (e: "start" | "end") => override && override[e] !== "inherit" ? override[e] : group.connection;
     const release = (value: boolean): [boolean, boolean, boolean, boolean, boolean, boolean] => [false, false, false, value, value, value];
-    return { id: s.id, start: s.start, end: s.end, kind, material: `MAT-${piece.role}`, section: `SEC-${piece.role}`, rotation_deg: group.rotationDeg!, release_start: release(s.originalStart && end("start") === "pinned"), release_end: release(s.originalEnd && end("end") === "pinned") };
+    return { id: s.id, start: s.start, end: s.end, kind, material: physical.materialId, section: physical.sectionId, rotation_deg: group.rotationDeg!, release_start: release(s.originalStart && end("start") === "pinned"), release_end: release(s.originalEnd && end("end") === "pinned") };
   });
-  const frameRoles = [...new Set(review.geometry.pieces.filter(p => mixedPieceKind(p, draft) === "frame").map(p => p.role))];
+  const framePhysical=review.geometry.pieces.filter(p=>mixedPieceKind(p,draft)==="frame").map(p=>resolveMemberPhysical(p,draft));
+  const materials=[...new Map(framePhysical.map(p=>[p.materialId,p])).values()].map(({materialId:id,properties:p})=>({id,e_pa:spatialSI.modulus(p.eGpa!),g_pa:spatialSI.modulus(p.gGpa!),nu:p.nu!,source:`${p.steelGrade}; ${p.materialSource}`,revision:p.materialRevision}));
+  const sections=[...new Map(framePhysical.map(p=>[p.sectionId,p])).values()].map(({sectionId:id,properties:p})=>({id,area_m2:spatialSI.area(p.areaCm2!),iy_m4:spatialSI.inertia(p.iyCm4!),iz_m4:spatialSI.inertia(p.izCm4!),j_m4:spatialSI.inertia(p.jCm4!),source:p.sectionSource,revision:p.sectionRevision}));
   const revision = await mixedInputHash({ geometry: mapping.geometrySignature, preparation: draft });
-  const request = mixedRequestSchema.parse({ schema_version: "jpn.mixed3d/1", units: "SI", theory: "linear-elastic-frame-axial",
-    project: { id: project.id, revision, source: `JPN adaptador misto/1; declarações ${revision}; experimental, sem aprovação normativa` },
+  const request = { schema_version: "jpn.mixed3d/1", units: "SI", theory: "linear-elastic-frame-axial",
+    project: { id: project.id, revision, source: `JPN adaptador misto/1; ${project.workspace.physicalStructure?"origem jpn.declared-structure/1; ":""}declarações ${revision}; experimental, sem aprovação normativa` },
     nodes: mapping.nodes.map(n => ({ id: n.id, x_m: spatialSI.metres(n.x), y_m: spatialSI.metres(n.y), z_m: spatialSI.metres(n.z) })), members,
-    materials: frameRoles.map(role => { const p = draft.groups[role]; return { id: `MAT-${role}`, e_pa: spatialSI.modulus(p.eGpa!), g_pa: spatialSI.modulus(p.gGpa!), nu: p.nu!, source: `${p.steelGrade}; ${p.materialSource}`, revision: p.materialRevision }; }),
-    sections: frameRoles.map(role => { const p = draft.groups[role]; return { id: `SEC-${role}`, area_m2: spatialSI.area(p.areaCm2!), iy_m4: spatialSI.inertia(p.iyCm4!), iz_m4: spatialSI.inertia(p.izCm4!), j_m4: spatialSI.inertia(p.jCm4!), source: p.sectionSource, revision: p.sectionRevision }; }),
+    materials,sections,
     supports: draft.supports.filter(s => s.dofs.some(d => d === "fixed")).map(s => ({ node: s.nodeId, restrained: s.dofs.map(d => d === "fixed") })),
     cases: draft.cases, combinations: draft.combinations,
     nodal_loads: draft.loads.map(l => ({ node: l.nodeId, case: l.caseId, fx_n: spatialSI.force(l.fxKn!), fy_n: spatialSI.force(l.fyKn!), fz_n: spatialSI.force(l.fzKn!), mx_nm: spatialSI.moment(l.mxKnm!), my_nm: spatialSI.moment(l.myKnm!), mz_nm: spatialSI.moment(l.mzKnm!) })),
-  });
+  };
   return { schema_version: "jpn.mixed-adapter/1" as const, approved_for_fabrication: false as const, preparation_sha256: revision, input_sha256: await mixedInputHash(request), mapping, request };
+}
+export async function adaptMixedProject(project: Project) {
+  const prepared=await prepareMixedInput(project);
+  return {...prepared,request:mixedRequestSchema.parse(prepared.request)};
 }

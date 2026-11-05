@@ -1,0 +1,59 @@
+corepack : $ playwright test tests/e2e/resistance-report.spec.ts
+No linha:2 caractere:234
++ ... HREADS='1'; corepack pnpm test:e2e tests/e2e/resistance-report.spec.t ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ playwright te...-report.spec.ts:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (node:3668) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:15400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:20736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:28716) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\e2e\resistance-report.spec.ts:4:31 › M23 solicitações reais, relatório e seleção 3D em 375px (14.3s)
+[WebServer] (node:13956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [chromium] › tests\e2e\resistance-report.spec.ts:4:31 › M23 solicitações reais, relatório e seleção 3D em 1440px (11.3s)
+[WebServer] (node:28144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 [chromium] › tests\e2e\resistance-report.spec.ts:25:1 › cadastro resistente preserva geometria física ao revisar fy e invalida a análise (2.0m)
+
+
+  1) [chromium] › tests\e2e\resistance-report.spec.ts:25:1 › cadastro resistente preserva geometria física ao revisar fy e invalida a análise 
+
+    Test timeout of 120000ms exceeded.
+
+    Error: locator.fill: Test timeout of 120000ms exceeded.
+    Call log:
+      - waiting for getByTestId('mixed-workspace').getByTestId('section-analysis').getByLabel('Poisson declarado para an?lise da se??o')
+
+
+      44 |   await p.getByRole("button",{name:"Calcular ações de ligações",exact:true}).click();await expect(p.getByTestId("resistance-report")).toBeVisible({timeout:30000});
+      45 |   const section=p.getByTestId("section-analysis");await section.locator(":scope > summary").click();
+    > 46 |   await section.getByLabel("Poisson declarado para an?lise da se??o").fill("0.3");await section.getByLabel("Respons?vel pela an?lise da se??o").fill("Synthetic end-to-end validation");
+         |                                                                       ^
+      47 |   await section.getByRole("button",{name:"Calcular se??o f?sica local",exact:true}).click();await expect(section.getByTestId("section-properties-result")).toContainText("jMm4",{timeout:25000});
+      48 |   await expect(section.getByTestId("section-properties-result")).toContainText("resist?ncia normativa n?o calculadas");
+      49 |   const service=p.getByTestId("declared-service");await service.locator(":scope > summary").click();
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\resistance-report.spec.ts:46:71
+
+    Error Context: test-results\resistance-report-cadastro-a4f88-sar-fy-e-invalida-a-análise-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\resistance-report-cadastro-a4f88-sar-fy-e-invalida-a-análise-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\resistance-report-cadastro-a4f88-sar-fy-e-invalida-a-análise-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\e2e\resistance-report.spec.ts:25:1 › cadastro resistente preserva geometria física ao revisar fy e invalida a análise 
+  2 passed (2.5m)
+[ELIFECYCLE] Command failed with exit code 1.

@@ -1,0 +1,19 @@
+F.                                                                       [100%]
+================================== FAILURES ===================================
+__ test_real_worker_refuses_contradictory_geometry_and_runs_matching_section __
+
+physical = {'schema_version': 'jpn.verified-coldformed/1', 'geometry_analysis': {'schema_version': 'jpn.section-analysis/1', 'uni...m4': 5.70605e-10, 'property_resolutions': {'area_m2': 1e-09, 'iy_m4': 1e-12, 'iz_m4': 1e-12, 'wy_m3': 1e-10, ...}, ...}
+
+    def test_real_worker_refuses_contradictory_geometry_and_runs_matching_section(physical):
+        root=Path(__file__).resolve().parents[1]
+        out=subprocess.run([sys.executable,'-I','-X','utf8',str(root/'section_worker.py')],input=json.dumps(physical).encode(),capture_output=True,timeout=20)
+        r=json.loads(out.stdout)
+>       assert out.returncode==0, r
+E       AssertionError: {'status': 'error', 'error': {'code': 'INVALID_INPUT', 'message': 'net_outside_m2: n�mero finito fora do dom�nio permitido.'}}
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\python\\python.exe', '-I', '-X', 'utf8', 'C:\\U...ode":"INVALID_INPUT","message":"net_outside_m2: n\\u00famero finito fora do dom\\u00ednio permitido."}}\n', stderr=b'').returncode
+
+engine\section_tests\test_verified_design.py:33: AssertionError
+=========================== short test summary info ===========================
+FAILED engine\section_tests\test_verified_design.py::test_real_worker_refuses_contradictory_geometry_and_runs_matching_section
+1 failed, 1 passed in 31.02s

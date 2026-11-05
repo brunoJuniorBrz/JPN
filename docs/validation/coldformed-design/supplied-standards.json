@@ -1,0 +1,47 @@
+{
+  "schema_version": "jpn.normative-source-inventory/1",
+  "access": "User-supplied local documents; not redistributed",
+  "sources": [
+    {
+      "filename": "861234964-NBR-8800.pdf",
+      "sha256": "f2feef740b52821d2774e65e4e6778ea192272ca6feb2d475f7d1ca493cad118",
+      "pdf_pages": 298,
+      "edition_shown": "ABNT NBR 8800:2024 + Errata 1:2025",
+      "review": "298 PDF pages, first five contain the separate errata; not implemented in this increment"
+    },
+    {
+      "filename": "NBR-6123-2023.pdf",
+      "sha256": "338214bb4a840030d24e0685a9e9e73db6241437758f54696965c4805288b966",
+      "pdf_pages": 107,
+      "edition_shown": "ABNT NBR 6123:2023",
+      "review": "Original edition scanned; 2025 errata not demonstrated in supplied file"
+    },
+    {
+      "filename": "toaz.info-nbr-14762-2010-dimensionamento-de-estruturas-de-ao-constituidas-por-perfis--pr_8a6a39e649aa16180a61127fa2e1da4c.pdf",
+      "sha256": "bfb918e14a274580439ed01795b21ed25a436c626189a49dbd63446f49279075",
+      "pdf_pages": 93,
+      "edition_shown": "ABNT NBR 14762:2010",
+      "review": "93 PDF pages; six front pages + 87 numbered; C.1-C.5, 9.6.2, 9.7.4, 9.8.3-9.9 visually inspected"
+    },
+    {
+      "filename": "NBR 6120-2019 - Cargas Para o C\u00e1lculo de Estruturas de Edifica\u00e7\u00f5es _ TOAZ.INFO.pdf",
+      "sha256": "7567f4412d050e5949b692005210c161ee24724b73c042be4ad303887c60c68d",
+      "pdf_pages": 66,
+      "edition_shown": "ABNT NBR 6120:2019",
+      "review": "Original edition scanned, 66 PDF pages; November 2019 corrections not demonstrated"
+    },
+    {
+      "filename": "screencapture-studocu-pt-br-document-instituto-de-pos-graduacao-e-graduacao-teoria-das-estruturas-abnt-nbr-86812025-acoes-e-seguranca-nas-estruturas-169032275-2026-11-02-18_16_48.pdf",
+      "sha256": "8557394384d26b826094abb19ed206c4216780d576563a701a9bfe726cba4324",
+      "pdf_pages": 18,
+      "edition_shown": "ABNT NBR 8681:2025",
+      "review": "User-provided screen capture, 18 PDF pages; visually readable pages through numbered 23, tables/formulae inspected; no automatic normative combination generation implemented"
+    }
+  ],
+  "edition_compatibility": "NBR14762:2010 section 2 cites NBR8681:2003 by dated reference. No silent substitution of 2025 factors; engineer compatibility review required.",
+  "excluded_old_editions": [
+    "NBR14762:2001",
+    "NBR6120:1980",
+    "NBR8681:2003 filename labelled 2013"
+  ]
+}

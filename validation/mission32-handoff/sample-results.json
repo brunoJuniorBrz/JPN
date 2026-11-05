@@ -1,0 +1,48 @@
+{
+  "schema": "jpn.m32-handoff-oracles/1",
+  "scope": "Pure analytic/synthetic controls, no PyNite, Frame3DD or Stabileo execution",
+  "cases": "8 unittest methods including a masked free-DOF residual counterexample",
+  "pdelta_residual_mask_example": {
+    "supported_dof_applied_load_n": 1000000000000,
+    "free_dof_unbalanced_n": 1,
+    "old_full_system_denominator_ratio": 1e-12,
+    "reduced_free_dof_denominator_ratio": 1
+  },
+  "surrogate": [
+    {
+      "compression_fraction": 0.0,
+      "axial_load_n": 0.0,
+      "k_frame_n_per_m": 75000.0,
+      "kg_n_per_m": 0.0,
+      "deflection_m": 0.0013333333333333333,
+      "amplification": 1.0
+    },
+    {
+      "compression_fraction": 0.5,
+      "axial_load_n": 150000.0,
+      "k_frame_n_per_m": 75000.0,
+      "kg_n_per_m": -37500.0,
+      "deflection_m": 0.0026666666666666666,
+      "amplification": 2.0
+    },
+    {
+      "compression_fraction": 0.8,
+      "axial_load_n": 240000.0,
+      "k_frame_n_per_m": 75000.0,
+      "kg_n_per_m": -60000.0,
+      "deflection_m": 0.006666666666666667,
+      "amplification": 5.0
+    },
+    {
+      "compression_fraction": 0.95,
+      "axial_load_n": 285000.0,
+      "k_frame_n_per_m": 75000.0,
+      "kg_n_per_m": -71250.0,
+      "deflection_m": 0.02666666666666667,
+      "amplification": 20.0
+    }
+  ],
+  "normative_approval": false,
+  "integrated_solver_validation": false
+}
+

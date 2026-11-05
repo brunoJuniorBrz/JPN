@@ -1,0 +1,7 @@
+corepack : $ tsc --noEmit
+No linha:3 caractere:1
++ corepack pnpm typecheck *> ..\cont-final-typecheck.txt
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ tsc --noEmit:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

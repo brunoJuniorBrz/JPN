@@ -1,0 +1,26 @@
+[
+  {
+    "name": "sectionproperties",
+    "version": "3.10.2",
+    "metadata_license": "MIT License",
+    "installed_license_sha256": "b9a45f9a197adba20ebd838a68118785a326d242d335f32d7ed3ff5baed9432b",
+    "project_urls": [
+      "Homepage, https://sectionproperties.readthedocs.io",
+      "Documentation, https://sectionproperties.readthedocs.io",
+      "Repository, https://github.com/robbievanleeuwen/section-properties",
+      "Issues, https://github.com/robbievanleeuwen/section-properties/issues",
+      "Changelog, https://github.com/robbievanleeuwen/section-properties/releases"
+    ]
+  },
+  {
+    "name": "pycufsm",
+    "version": "0.2.0",
+    "metadata_license": "AFL-3.0",
+    "installed_license_sha256": "f0955031d396bd18241ff06bbffa1254e3dd0e0c7c601b3e43ff2d4ba52fcd56",
+    "project_urls": [
+      "Documentation, https://pycufsm.readthedocs.io",
+      "Homepage, https://github.com/ClearCalcs/pyCUFSM",
+      "Repository, https://github.com/ClearCalcs/pyCUFSM"
+    ]
+  }
+]

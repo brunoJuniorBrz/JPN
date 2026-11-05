@@ -1,0 +1,26 @@
+# Optional numerical section profile. Install AFTER requirements-validation.lock.
+# No change to the deployed mixed solver's mandatory dependencies.
+-r requirements-validation.lock
+sectionproperties==3.10.2
+cytriangle==3.0.2
+shapely==2.2.0
+more-itertools==11.2.1
+rich==15.0.0
+markdown-it-py==4.2.0
+mdurl==0.1.2
+ipywidgets==8.1.9
+comm==0.2.3
+ipython==9.18.1
+ipython_pygments_lexers==1.1.1
+jedi==0.20.1
+jupyterlab_widgets==3.0.17
+matplotlib-inline==0.2.2
+parso==0.8.7
+prompt_toolkit==3.0.53
+psutil==7.2.2
+stack-data==0.6.3
+traitlets==5.16.1
+widgetsnbextension==4.0.16
+asttokens==3.0.2
+executing==2.3.0
+pure-eval==0.2.4

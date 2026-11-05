@@ -4,6 +4,10 @@ on: [push, pull_request]
 jobs:
   structural:
     runs-on: ${{ matrix.os }}
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
     strategy:
       fail-fast: false
       matrix:
@@ -17,6 +21,7 @@ jobs:
       - run: python -m pip install --no-build-isolation --no-deps -e ./engine
       - run: python -m pip check
       - run: python engine/validate.py
+      - run: python engine/audit_loading.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -25,6 +30,10 @@ jobs:
 
   application:
     runs-on: ubuntu-latest
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -34,13 +43,44 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m venv .venv
-      - run: .venv/bin/python -m pip install -r engine/requirements-validation.lock
+      - run: .venv/bin/python -m pip install -r engine/requirements-sections.lock
       - run: .venv/bin/python -m pip install --no-build-isolation --no-deps -e ./engine
+      - run: python -m venv .tools/sections-fsm
+      - run: .tools/sections-fsm/bin/python -m pip install -r engine/requirements-sections-fsm.lock
       - run: npx --yes pnpm@12.15.0 install --frozen-lockfile
       - run: npx --yes pnpm@12.15.0 typecheck
       - run: npx --yes pnpm@12.15.0 lint
       - run: npx --yes pnpm@12.15.0 test
+        env:
+          JPN_SECTION_FSM_PYTHON_EXECUTABLE: .tools/sections-fsm/bin/python
       - run: .venv/bin/python tests/verify_dxf.py
       - run: npx --yes pnpm@12.15.0 exec playwright install --with-deps chromium
       - run: npx --yes pnpm@12.15.0 test:e2e
+        env:
+          JPN_SECTION_FSM_PYTHON_EXECUTABLE: .tools/sections-fsm/bin/python
       - run: npx --yes pnpm@12.15.0 build
+
+  optional-numerical-profiles:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        profile: [sections, fsm, sections-fsm]
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r engine/requirements-${{ matrix.profile }}.lock
+      - run: python -m pip check
+      - if: matrix.profile == 'sections'
+        run: python -m pytest engine/section_tests/test_section_properties.py engine/section_tests/test_verified_design.py engine/section_tests/test_exact_shape_cache.py -q
+      - if: matrix.profile == 'fsm'
+        run: python -m pytest engine/section_tests/test_elastic_strip.py -q
+      - if: matrix.profile == 'sections-fsm'
+        run: python -m pytest engine/section_tests/test_member_buckling.py engine/section_tests/test_modal_numerics.py engine/section_tests/test_modal_kinematics.py engine/section_tests/test_exact_shape_cache.py -q

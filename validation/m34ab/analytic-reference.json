@@ -1,0 +1,75 @@
+{
+  "schema_version": "jpn.m34ab-analytic/1",
+  "registeredBeforeFirstDeclaredSolverExecution": true,
+  "geometry": "Two 1m Euler-Bernoulli cantilever frame pieces in +X, plus independent 1m axial branch in +Y, sharing the actual fixed B0 node",
+  "loads": "B2: Fx=1000N,Fz=-1000N; A1: Fy=500N",
+  "supports": [
+    {
+      "nodeId": "B0",
+      "dofs": [
+        "fixed",
+        "fixed",
+        "fixed",
+        "fixed",
+        "fixed",
+        "fixed"
+      ]
+    },
+    {
+      "nodeId": "A1",
+      "dofs": [
+        "fixed",
+        "free",
+        "fixed",
+        "free",
+        "free",
+        "free"
+      ]
+    }
+  ],
+  "formulas": [
+    "ux=P/E*(L1/A1+L2/A2)",
+    "uz=-P/E*((L^3-L2^3)/(3*Iy1)+L2^3/(3*Iy2))",
+    "ry=P/E*((L^2-L2^2)/(2*Iy1)+L2^2/(2*Iy2))",
+    "u_axial=F*L/(E*A)",
+    "reactions=-sum(F); moments=-sum(r cross F)"
+  ],
+  "tolerance": {
+    "relative": 1e-08,
+    "absolute_displacement_m": 1e-12,
+    "absolute_force_n": 1e-06,
+    "justification": "Closed-form linear prismatic subspans, direct FE solve; absolute floor for exact zero components, relative guard far below any design tolerance"
+  },
+  "baseline": {
+    "tip_x_m": 7.5e-06,
+    "tip_z_m": -0.0125,
+    "tip_ry_rad": 0.00875,
+    "axial_y_m": 6.25e-06,
+    "reaction_force_n": [
+      -1000,
+      -500,
+      1000
+    ],
+    "reaction_moment_nm": [
+      0,
+      -2000,
+      0
+    ]
+  },
+  "changedFirstSection": {
+    "tip_x_m": 5e-06,
+    "tip_z_m": -0.006666666666666668,
+    "tip_ry_rad": 0.005,
+    "axial_y_m": 6.25e-06,
+    "reaction_force_n": [
+      -1000,
+      -500,
+      1000
+    ],
+    "reaction_moment_nm": [
+      0,
+      -2000,
+      0
+    ]
+  }
+}

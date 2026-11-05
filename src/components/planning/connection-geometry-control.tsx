@@ -1,0 +1,28 @@
+"use client";
+import { useState } from "react";
+import type { Project } from "@/domain/models";
+import { connectionTransferGeometrySchema } from "@/domain/connection-transfer-geometry";
+import { saveConnectionDeclaration } from "@/domain/connection-declaration";
+import { auditConnectionGeometry } from "@/domain/connection-geometry-audit";
+import { Field,Input,Select } from "@/components/ui";
+const number=(v:string)=>v.trim()?Number(v.replace(",",".")):null;
+export function ConnectionGeometryControl({project,nodeId,onChange}:{project:Project;nodeId:string;onChange:(p:Partial<Project>)=>void}){
+  const c=project.workspace.spatialPreparation?.connections?.connections.find(c=>c.nodeId===nodeId),g=c?.transferGeometry,p=g?.rectangularPlate;
+  const [fields,setFields]=useState<Record<string,string>>(()=>Object.fromEntries(["widthYMm","heightZMm","thicknessMm","originYMm","originZMm","coordinateResolutionMm","areaResolutionMm2","netCutCoordinateMm"].map(k=>[k,p?.[k as keyof typeof p]===null||p?.[k as keyof typeof p]===undefined?"":String(p[k as keyof typeof p])])));
+  const [component,setComponent]=useState(p?.componentId??""),[axis,setAxis]=useState(p?.loadAxis??"z"),[source,setSource]=useState(g?.source??""),[revision,setRevision]=useState(g?.revision??""),[reference,setReference]=useState(g?.coordinateReference??"");
+  const [holes,setHoles]=useState(()=>g?.holes.map(h=>Object.fromEntries(Object.entries(h).map(([k,v])=>[k,v===null?"":String(v)])))??[]),[message,setMessage]=useState("");
+  if(!c)return null;const audit=auditConnectionGeometry(c);
+  return <details data-testid="connection-geometry"><summary>Conferir chapa e furação por coordenadas</summary><p>Origem no canto inferior esquerdo; largura em y e altura em z. Distâncias de bordo são do centro do furo ao bordo mais próximo. Calcula um corte reto explicitamente informado, sem verificar a trajetória resistente governante ou a resistência da ligação.</p>
+    <p>Estado: {audit.status}. {audit.section&&`Área bruta ${audit.section.grossAreaMm2} mm²; área do corte ${audit.section.straightCutNetAreaMm2} mm².`}</p><ul>{audit.issues.map((x,i)=><li key={i}>{x.code}: {x.message}</li>)}</ul>
+    <Field label="Componente chapa da furação"><Select value={component} onChange={e=>setComponent(e.target.value)}><option value="">Declare</option>{c.components.filter(p=>p.kind==="plate").map(p=><option key={p.id} value={p.id}>{p.id}</option>)}</Select></Field>
+    <div className="form-grid">{Object.keys(fields).map(k=><Field key={k} label={`Chapa ${k}`}><Input value={fields[k]} onChange={e=>setFields({...fields,[k]:e.target.value})}/></Field>)}</div>
+    <Field label="Eixo da força longitudinal da chapa"><Select value={axis} onChange={e=>setAxis(e.target.value as typeof axis)}><option value="z">z</option><option value="y">y</option></Select></Field>
+    <Field label="Fonte da geometria da ligação"><Input value={source} onChange={e=>setSource(e.target.value)} maxLength={1000}/></Field><Field label="Revisão da geometria da ligação"><Input value={revision} onChange={e=>setRevision(e.target.value)} maxLength={1000}/></Field><Field label="Referência das coordenadas da ligação"><Input value={reference} onChange={e=>setReference(e.target.value)} maxLength={1000}/></Field>
+    <button type="button" className="button secondary" onClick={()=>setHoles([...holes,{id:`H${holes.length+1}`,componentId:component,pieceId:"",diameterMm:"",yMm:"",zMm:"",edgeYMm:"",edgeZMm:""}])}>Adicionar furo por coordenadas</button>
+    {holes.map((hole,i)=><fieldset key={i}><legend>Furo {i+1}</legend><Field label={`Chapa do furo ${i+1}`}><Select value={hole.componentId} onChange={e=>setHoles(holes.map((h,j)=>i===j?{...h,componentId:e.target.value}:h))}><option value="">Declare</option>{c.components.filter(c=>c.kind==="plate").map(c=><option key={c.id} value={c.id}>{c.id}</option>)}</Select></Field><Field label={`Peça do furo ${i+1}`}><Select value={hole.pieceId} onChange={e=>setHoles(holes.map((h,j)=>i===j?{...h,pieceId:e.target.value}:h))}><option value="">Declare</option>{c.participants.map(p=><option key={p.pieceId} value={p.pieceId}>{p.pieceId}</option>)}</Select></Field>{["id","diameterMm","yMm","zMm","edgeYMm","edgeZMm"].map(k=><Field key={k} label={`Furo ${i+1} ${k}`}><Input value={hole[k]} onChange={e=>setHoles(holes.map((h,j)=>i===j?{...h,[k]:e.target.value}:h))}/></Field>)}<button type="button" className="button secondary" onClick={()=>setHoles(holes.filter((_,j)=>i!==j))}>Remover furo {i+1}</button></fieldset>)}
+    <button type="button" className="button secondary" onClick={()=>{try{
+      const transferGeometry=connectionTransferGeometrySchema.parse({...g,schema_version:"jpn.connection-transfer-geometry/1",source,revision,coordinateReference:reference,units:"mm",fixing:g?.fixing??"pending",holes:holes.map(h=>({id:h.id,componentId:h.componentId,pieceId:h.pieceId,...Object.fromEntries(["diameterMm","yMm","zMm","edgeYMm","edgeZMm"].map(k=>[k,number(h[k])]))})),pitches:g?.pitches??[],grossAreaMm2:g?.grossAreaMm2??null,netAreaMm2:g?.netAreaMm2??null,netSectionPath:g?.netSectionPath??null,loadTransferPath:g?.loadTransferPath??null,eccentricityMm:g?.eccentricityMm??null,rectangularPlate:{schema_version:"jpn.rectangular-plate/1",componentId:component,loadAxis:axis,...Object.fromEntries(Object.entries(fields).map(([k,v])=>[k,number(v)]))}});
+      const next=saveConnectionDeclaration(project,{...c,transferGeometry});onChange({workspace:next.workspace});
+    }catch(e){setMessage((e as Error).message);}}}>Conferir e registrar furação</button>{message&&<p role="alert">{message}</p>}
+  </details>;
+}

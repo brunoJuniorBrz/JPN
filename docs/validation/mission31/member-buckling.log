@@ -1,0 +1,82 @@
+............                                                             [100%]
+============================== warnings summary ===============================
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_P]
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_Mx]
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\pre\cutwp.py:137: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    x_diffs[i] = np.diff([coord[start_node, 0], coord[end_node, 0]])
+
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_P]
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_Mx]
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\pre\cutwp.py:138: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    y_diffs[i] = np.diff([coord[start_node, 1], coord[end_node, 1]])
+
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_P]
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_Mx]
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\pre\cutwp.py:180: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    x_diffs12[i] = np.diff([coord12[start_node, 0], coord12[end_node, 0]])
+
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_P]
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_Mx]
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\pre\cutwp.py:181: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    y_diffs12[i] = np.diff([coord12[start_node, 1], coord12[end_node, 1]])
+
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_P]
+section_tests/test_member_buckling.py::test_combined_runtime_against_original_matlab_eigenvalues[cwlip_Mx]
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\fsm.py:240: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    K_global, Kg_global = analysis.k_kg_global(
+
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:1325: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    node1 = int(node_props[ind, 1])
+
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:1327: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    node2 = int(node_props[ind, 1])
+
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:1272: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    K_global = analysis.kglobal_transv(
+
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:987: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    b_v_m[n_main_nodes + 2 * n_corner_nodes + k, n_globdist_modes + n_main_nodes + n_sub_nodes + k] = -np.sin(
+
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:990: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    b_v_m[
+
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:1006: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    b_v_m[4 * n_main_nodes + k, n_globdist_modes + n_main_nodes + n_sub_nodes + n_edge_nodes + k] = -np.sin(
+
+section_tests/test_member_buckling.py::test_projected_modal_spaces_obey_rayleigh_ritz_constraint_inequality
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\.tools\sections-fsm\Lib\site-packages\pycufsm\solve\cfsm.py:1009: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    b_v_m[
+
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\engine\section_tests\test_modal_numerics.py:33: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    k,g=analysis.k_kg_global(nodes=nodes,elements=edges,el_props=stable.el,props=props,length=wavelength,B_C='S-S',m_a=np.ones(1))
+
+section_tests/test_modal_numerics.py::test_positive_upstream_scalar_can_contradict_its_returned_mode_energy
+  C:\Users\Usuario\Desktop\jpn-missao31\engine\jpn_structural\constrained_modes.py:98: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    elastic, geometric = analysis.k_kg_global(nodes=self.nodes, elements=self.edges,
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+12 passed, 36 warnings in 50.45s

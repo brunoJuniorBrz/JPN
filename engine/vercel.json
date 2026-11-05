@@ -1,0 +1,28 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "python",
+  "git": {
+    "deploymentEnabled": {
+      "feat/roof-area-load-path": false,
+      "audit/mission21-independent": false,
+      "feat/resistance-elastic-reference": false,
+      "integration/m21-studio-release-candidate": false,
+      "feat/engineering-m22-m24": false,
+      "feat/m23-resistant-design": false,
+      "feat/m24-connections-stability": false,
+      "feat/m25-preproduction-dossier": false,
+      "feat/m26-integrated-normative-engine": false,
+      "feat/m27-m30-structural-engine-complete": false,
+      "feat/m31-structural-audit": false,
+      "feat/m32-numerics-mixed-second-order": false,
+      "feat/m33a-normative-wind-combinations": false,
+      "feat/m34ab-flexible-physical-model": false
+    }
+  },
+  "functions": {
+    "app.py": {
+      "maxDuration": 30,
+      "excludeFiles": "{tests/**,examples/**,validation-results/**,**/__pycache__/**,**/*.pyc,benchmark_*.py,audit_*.py,validate.py,Dockerfile,.dockerignore}"
+    }
+  }
+}

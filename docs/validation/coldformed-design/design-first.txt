@@ -1,0 +1,21 @@
+.............F.........                                                  [100%]
+================================== FAILURES ===================================
+_____ test_tension_net_outside_connection_shear_three_branches_and_units ______
+
+    def test_tension_net_outside_connection_shear_three_branches_and_units():
+        r=tension_resistance(.001,250e6,400e6,dict(net_outside_m2=.0009,net_connection_m2=.0008,ct=.8))
+        assert r['design']==pytest.approx(155151.51515151514)
+        assert r['governing_mode']=='net_connection'
+        for h,branch in [(.1,'yield'),(.3,'inelastic-buckling'),(.5,'elastic-buckling')]:
+>           r=shear_unstiffened(200e9,250e6,h,.002);assert r['branch']==branch
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError: assert 'elastic-buckling' == 'inelastic-buckling'
+E             
+E             - inelastic-buckling
+E             ? --
+E             + elastic-buckling
+
+engine\tests\test_coldformed_design.py:70: AssertionError
+=========================== short test summary info ===========================
+FAILED engine\tests\test_coldformed_design.py::test_tension_net_outside_connection_shear_three_branches_and_units
+1 failed, 22 passed in 0.47s

@@ -1,0 +1,40 @@
+
+ RUN  v5.0.5 C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree
+
+ ❯ src/domain/wind-speed.test.ts (4 tests | 1 failed) 85ms
+   × matches independent rounded Table 3 entries, using Fr from category II in every category 5ms
+corepack : 
+No linha:2 caractere:88
++ ... +$env:Path; corepack pnpm exec vitest run src/domain/wind-speed.test. ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/domain/wind-speed.test.ts > matches independent rounded Table 3 entries, using Fr from category II in every 
+category
+AssertionError: expected 1.06 to be 1.08 // Object.is equality
+
+- Expected
++ Received
+
+- 1.08
++ 1.06
+
+ ❯ src/domain/wind-speed.test.ts:18:103
+     16| it("matches independent rounded Table 3 entries, using Fr from categor…
+     17|   for(const [category,sizeClass,heightM,expected] of [["I","A",5,1.08]…
+     18|     const r=calculateWindSpeed({...input,category,sizeClass,heightM});…
+       |                                                                                                       ^
+     19|   }
+     20|   expect(calculateWindSpeed({...input,category:"V",heightM:3}).s2).toB…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  20:49:26
+   Duration  505ms (import 46%, transform 30%, tests 22%, worker 1%)
+

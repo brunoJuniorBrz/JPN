@@ -1,13 +1,21 @@
 import { z } from "zod";
-import { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
+import { loadingDraftSchema } from "./structural-loading";
+import { resistancePreparationSchema } from "./resistance-preparation";
+import { physicalGroupSchema, emptyPhysicalGroup,type PhysicalGroup } from "./physical-declaration";
 export { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
 export type { PhysicalGroup } from "./physical-declaration";
 import type { Project } from "./models";
-import type { StructureModel } from "./structure";
-import { generateStructure } from "./calculations/structure";
+import type { PhysicalGeometry } from "./structure";
+import { resolvePhysicalStructure } from "./physical-structure";
+import { physicalCatalogSchema,resolveMemberPhysical } from "./member-physical";
 import { structureSignature } from "./calculations/project-basis";
 import { spatialContacts } from "./spatial-readiness";
 import { connectivityDeclarationSchema } from "./spatial-connectivity";
+import { roofRegionsSchema } from "./roof-regions";
+import { engineeringCombinationsSchema } from "./engineering-combinations";
+import { connectionsSchema } from "./connections";
+import { declaredServiceCriterionSchema } from "./declared-service";
+import { memberDesignDeclarationSchema } from "./coldformed-design";
 
 // Human declarations, NOT finite-element input. A pending field is never
 // translated to zero, a free support or a material property by default.
@@ -24,6 +32,7 @@ const loadSchema = z.object({
 }).strict();
 export const spatialPreparationSchema = z.object({
   version: z.literal(1), geometrySignature: z.string().max(100000),
+  physicalCatalog: physicalCatalogSchema.optional(),
   groups: z.object({ column: physicalGroupSchema, topChord: physicalGroupSchema, bottomChord: physicalGroupSchema, web: physicalGroupSchema, purlin: physicalGroupSchema }).strict(),
   supports: z.array(supportSchema).max(200),
   memberConnections: z.array(z.object({ pieceId: z.string().min(1).max(100), start: z.enum(["inherit", ...connectionChoices]), end: z.enum(["inherit", ...connectionChoices]) }).strict()).max(5000),
@@ -33,11 +42,18 @@ export const spatialPreparationSchema = z.object({
   connectionsReview: meaningful, lateralSystem: meaningful, loadPathReview: meaningful,
   connectivity: connectivityDeclarationSchema.optional(),
   memberKinds: z.array(z.object({ pieceId: z.string().min(1).max(100), kind: z.enum(["frame", "axial"]) }).strict()).max(5000).optional(),
+  loading: loadingDraftSchema.optional(),
+  roofRegions:roofRegionsSchema.optional(),
+  resistance: z.array(resistancePreparationSchema).max(5000).optional(),
+  engineeringCombinations: engineeringCombinationsSchema.optional(),
+  connections: connectionsSchema.optional(),
+  serviceCriteria:z.array(declaredServiceCriterionSchema).max(500).optional(),
+  memberDesign:z.array(memberDesignDeclarationSchema).max(1000).refine(items=>new Set(items.map(d=>JSON.stringify([d.pieceId,d.combinationId]))).size===items.length,"Estudos resistentes duplicados para a mesma peça e combinação.").optional(),
 }).strict();
 export type SpatialPreparation = z.infer<typeof spatialPreparationSchema>;
 export type PhysicalLoad = SpatialPreparation["loads"][number];
 
-export function newSpatialPreparation(project: Pick<Project, "roof" | "planning">): SpatialPreparation {
+export function newSpatialPreparation(project: Pick<Project, "roof" | "planning"> & Partial<Pick<Project,"workspace">>): SpatialPreparation {
   return { version: 1, geometrySignature: structureSignature(project),
     groups: { column: emptyPhysicalGroup(), topChord: emptyPhysicalGroup(), bottomChord: emptyPhysicalGroup(), web: emptyPhysicalGroup(), purlin: emptyPhysicalGroup() },
     supports: [], memberConnections: [], cases: [{ id: "CASO-1", source: "" }], loads: [],
@@ -47,30 +63,37 @@ export function newSpatialPreparation(project: Pick<Project, "roof" | "planning"
 export function emptyPhysicalLoad(caseId: string, nodeId: string): PhysicalLoad {
   return { id: crypto.randomUUID(), caseId, nodeId, fxKn: null, fyKn: null, fzKn: null, mxKnm: null, myKnm: null, mzKnm: null };
 }
-export function baseNodeIds(model: StructureModel) {
+export function baseNodeIds(model: PhysicalGeometry) {
   const ids = new Set(model.pieces.filter(p => p.role === "column").map(p => p.start));
   return model.nodes.filter(n => ids.has(n.id) && Math.abs(n.z) < 1e-6).map(n => n.id);
 }
 export function spatialPreparationReview(project: Project, draft: SpatialPreparation) {
-  const geometry = generateStructure(project).model;
   const issues: { code: string; message: string }[] = [];
   const add = (code: string, message: string) => issues.push({ code, message });
+  let geometry:PhysicalGeometry|null=null;
+  try{geometry=resolvePhysicalStructure(project).model;}catch(e){add("GEOMETRY",e instanceof Error?e.message:String(e));}
+  const declared=project.workspace.physicalStructure!==undefined;
+  if(draft.roofRegions)add("COMPOSED_ROOF_PRELIMINARY","Regiões compostas são preliminares e ainda não analisáveis. O modelo retangular não as substitui.");
   const stale = draft.geometrySignature !== structureSignature(project);
   if (stale) add("STALE_GEOMETRY", "Medidas, distribuição ou perfis mudaram. Revise o cadastro e atualize o vínculo geométrico.");
   if (!geometry) add("GEOMETRY", "A geometria visual está incompleta.");
   const contacts = geometry ? spatialContacts(geometry) : [];
   if (contacts.length) add("TOPOLOGY", `Existem ${contacts.length} pendências de encontros e discretização. O motor precisará resolvê-las antes da análise da obra.`);
-  const base = geometry ? baseNodeIds(geometry) : [];
+  const base = geometry&&!declared ? baseNodeIds(geometry) : [];
   const nodes = new Set(geometry?.nodes.map(n => n.id) ?? []);
   const assigned = new Set(draft.supports.map(s => s.nodeId));
   if (draft.supports.some(s => !nodes.has(s.nodeId))) add("ORPHAN_SUPPORT", "Há apoios referindo nós que não existem mais; revise os registros.");
   if (base.some(id => !assigned.has(id))) add("SUPPORTS", `Faltam declarações para ${base.filter(id => !assigned.has(id)).length} bases de pilares.`);
+  if(declared&&!draft.supports.some(s=>s.dofs.some(d=>d==="fixed")))add("SUPPORTS","Estrutura declarada exige apoios explícitos; nenhum apoio foi presumido pela categoria da barra.");
   if (draft.supports.some(s => s.dofs.some(d => d === "pending"))) add("DOFS", "Existem graus de liberdade pendentes. Livre não é o mesmo que não informado.");
   if (new Set(draft.memberConnections.map(v => v.pieceId)).size !== draft.memberConnections.length) add("DUPLICATE_CONNECTION", "Peças com hipóteses de ligação duplicadas.");
   if (draft.memberConnections.some(v => !geometry?.pieces.some(p => p.id === v.pieceId))) add("ORPHAN_CONNECTION", "Há hipóteses de ligação individuais referindo peças que não existem mais.");
   if (draft.memberConnections.some(v => v.start === "pending" || v.end === "pending")) add("MEMBER_CONNECTION", "Há hipóteses individuais com extremidades ainda pendentes.");
-  for (const role of pieceRoles) {
-    const p = draft.groups[role];
+  const properties:[string,PhysicalGroup][]=[];
+  if(declared||draft.physicalCatalog){
+    for(const piece of geometry?.pieces??[])try{properties.push([piece.id,resolveMemberPhysical(piece,draft).properties]);}catch(e){add("PHYSICAL_REFERENCE",String(e));}
+  }else for(const role of pieceRoles)properties.push([role,draft.groups[role]]);
+  for (const [role,p] of properties) {
     if (!p.steelGrade.trim() || !p.materialSource.trim() || !p.materialRevision.trim()
       || !p.sectionSource.trim() || !p.sectionRevision.trim()
       || [p.eGpa, p.gGpa, p.nu, p.areaCm2, p.iyCm4, p.izCm4, p.jCm4, p.rotationDeg].some(v => v === null)) {

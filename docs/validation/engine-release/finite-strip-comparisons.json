@@ -1,0 +1,3486 @@
+[
+  {
+    "case": "cwlip_P",
+    "source": {
+      "repository": "thinwalled/cufsm-git",
+      "commit": "ab449cef8d05bb489df591d2e5b4e74571a793f5",
+      "path": "examples/2006_dsm_design_guide/files_and_scripts/cwlip_P.mat",
+      "sha256": "05d358291246e1d958ecb96084bf4a4963d28be1e0729a4f98f7b960d4692577",
+      "license": "MIT",
+      "units": "inch-kip",
+      "scope": "elastic finite-strip reference; NOT an ABNT resistance or roof model"
+    },
+    "input": {
+      "schema_version": "jpn.elastic-strip/1",
+      "units": "mm-MPa",
+      "nodes": [
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 18.796,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 15.493999999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 12.191999999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 8.889999999999999,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 5.588,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.467999999999996,
+          "zMm": 3.302,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 60.45199999999999,
+          "zMm": 1.5239999999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 58.674,
+          "zMm": 0.508,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 56.388000000000005,
+          "zMm": 0.0,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 43.687999999999995,
+          "zMm": 0.0,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 30.987999999999996,
+          "zMm": 0.0,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 18.287999999999997,
+          "zMm": 0.0,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 5.588,
+          "zMm": 0.0,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 3.302,
+          "zMm": 0.508,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 1.5239999999999998,
+          "zMm": 1.5239999999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 0.508,
+          "zMm": 3.302,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 0.0,
+          "zMm": 5.588,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 0.0,
+          "zMm": 59.43599999999999,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 0.0,
+          "zMm": 113.53799999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 0.0,
+          "zMm": 167.64,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 0.0,
+          "zMm": 221.488,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 0.508,
+          "zMm": 223.774,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 1.5239999999999998,
+          "zMm": 225.55200000000002,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 3.302,
+          "zMm": 226.56799999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 5.588,
+          "zMm": 227.07599999999996,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 18.287999999999997,
+          "zMm": 227.07599999999996,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 30.987999999999996,
+          "zMm": 227.07599999999996,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 43.687999999999995,
+          "zMm": 227.07599999999996,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 56.388000000000005,
+          "zMm": 227.07599999999996,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 58.674,
+          "zMm": 226.56799999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 60.45199999999999,
+          "zMm": 225.55200000000002,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.467999999999996,
+          "zMm": 223.774,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 221.488,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 218.18599999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 214.88400000000001,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 211.582,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 208.27999999999997,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.21199684824427
+        }
+      ],
+      "strips": [
+        {
+          "start": 0,
+          "end": 1,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 1,
+          "end": 2,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 2,
+          "end": 3,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 3,
+          "end": 4,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 4,
+          "end": 5,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 5,
+          "end": 6,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 6,
+          "end": 7,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 7,
+          "end": 8,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 8,
+          "end": 9,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 9,
+          "end": 10,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 10,
+          "end": 11,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 11,
+          "end": 12,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 12,
+          "end": 13,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 13,
+          "end": 14,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 14,
+          "end": 15,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 15,
+          "end": 16,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 16,
+          "end": 17,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 17,
+          "end": 18,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 18,
+          "end": 19,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 19,
+          "end": 20,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 20,
+          "end": 21,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 21,
+          "end": 22,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 22,
+          "end": 23,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 23,
+          "end": 24,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 24,
+          "end": 25,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 25,
+          "end": 26,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 26,
+          "end": 27,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 27,
+          "end": 28,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 28,
+          "end": 29,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 29,
+          "end": 30,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 30,
+          "end": 31,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 31,
+          "end": 32,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 32,
+          "end": 33,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 33,
+          "end": 34,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 34,
+          "end": 35,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 35,
+          "end": 36,
+          "thicknessMm": 1.4986
+        }
+      ],
+      "material": {
+        "eMpa": 203395.34014846664,
+        "nu": 0.3,
+        "source": "Original CUFSM MATLAB reference",
+        "revision": "ab449cef8d05bb489df591d2e5b4e74571a793f5"
+      },
+      "halfWavelengthsMm": [
+        25.4,
+        27.94,
+        30.479999999999997,
+        33.019999999999996,
+        35.559999999999995,
+        38.099999999999994,
+        40.64,
+        43.18,
+        48.26,
+        50.8,
+        55.88,
+        58.419999999999995,
+        63.5,
+        68.58,
+        71.11999999999999,
+        78.74,
+        83.82,
+        88.89999999999999,
+        96.52,
+        101.6,
+        109.21999999999998,
+        116.83999999999999,
+        127.0,
+        134.61999999999998,
+        144.78,
+        154.93999999999997,
+        167.64,
+        180.33999999999997,
+        193.04,
+        205.73999999999998,
+        220.97999999999996,
+        236.22,
+        254.0,
+        271.78,
+        292.09999999999997,
+        312.42,
+        335.28,
+        360.67999999999995,
+        386.08,
+        414.02,
+        444.5,
+        474.97999999999996,
+        510.54,
+        546.1,
+        586.74,
+        629.92,
+        675.64,
+        723.9,
+        774.6999999999999,
+        830.58,
+        891.54,
+        955.04,
+        1026.1599999999999,
+        1099.82,
+        1178.56,
+        1264.9199999999998,
+        1356.36,
+        1452.8799999999999,
+        1559.56,
+        1671.32,
+        1790.6999999999998,
+        1920.2399999999998,
+        2059.9399999999996,
+        2209.7999999999997,
+        2369.8199999999997,
+        2540.0,
+        2722.88,
+        2921.0,
+        3131.8199999999997,
+        3357.8799999999997,
+        3599.1799999999994,
+        3860.7999999999997,
+        4140.2,
+        4439.92,
+        4759.96,
+        5102.86,
+        5471.16,
+        5867.4,
+        6291.579999999999,
+        6746.24,
+        7233.92,
+        7757.159999999999,
+        8318.5,
+        8917.94,
+        9563.1,
+        10253.98,
+        10995.659999999998,
+        11790.679999999998,
+        12641.579999999998,
+        13555.98,
+        14533.880000000001,
+        15585.44,
+        16710.66,
+        17919.7,
+        19215.1,
+        20601.94,
+        22090.38,
+        23688.04,
+        25400.0
+      ],
+      "boundary": "S-S",
+      "source": "Original elastic DSM2006 example; not ABNT or a roof",
+      "revision": "1",
+      "responsible": "Independent comparison"
+    },
+    "result": {
+      "schema_version": "jpn.elastic-strip-result/1",
+      "input_sha256": "2893c22ef7c959bc0adcc8e59827256eb025958ddea7e7179a561fb4ab8b33ff",
+      "library": {
+        "name": "pyCUFSM",
+        "version": "0.2.0",
+        "installedArtifactLicense": "AFL-3.0",
+        "repositoryHeadLicense": "LGPL-3.0"
+      },
+      "units": "mm-MPa",
+      "results": [
+        {
+          "halfWavelengthMm": 25.4,
+          "loadFactor": 1.7348027938296617
+        },
+        {
+          "halfWavelengthMm": 27.94,
+          "loadFactor": 1.4422135726479508
+        },
+        {
+          "halfWavelengthMm": 30.479999999999997,
+          "loadFactor": 1.2197477946392155
+        },
+        {
+          "halfWavelengthMm": 33.019999999999996,
+          "loadFactor": 1.046687977638225
+        },
+        {
+          "halfWavelengthMm": 35.559999999999995,
+          "loadFactor": 0.9094402606100138
+        },
+        {
+          "halfWavelengthMm": 38.099999999999994,
+          "loadFactor": 0.7987851623198228
+        },
+        {
+          "halfWavelengthMm": 40.64,
+          "loadFactor": 0.7082910378369031
+        },
+        {
+          "halfWavelengthMm": 43.18,
+          "loadFactor": 0.633360424862244
+        },
+        {
+          "halfWavelengthMm": 48.26,
+          "loadFactor": 0.5176214072481944
+        },
+        {
+          "halfWavelengthMm": 50.8,
+          "loadFactor": 0.4724264154702597
+        },
+        {
+          "halfWavelengthMm": 55.88,
+          "loadFactor": 0.40001701964874503
+        },
+        {
+          "halfWavelengthMm": 58.419999999999995,
+          "loadFactor": 0.37078571232551943
+        },
+        {
+          "halfWavelengthMm": 63.5,
+          "loadFactor": 0.3226904657485987
+        },
+        {
+          "halfWavelengthMm": 68.58,
+          "loadFactor": 0.285139245712939
+        },
+        {
+          "halfWavelengthMm": 71.11999999999999,
+          "loadFactor": 0.269408159436188
+        },
+        {
+          "halfWavelengthMm": 78.74,
+          "loadFactor": 0.2313865511174168
+        },
+        {
+          "halfWavelengthMm": 83.82,
+          "loadFactor": 0.2119106683008619
+        },
+        {
+          "halfWavelengthMm": 88.89999999999999,
+          "loadFactor": 0.19593671079524205
+        },
+        {
+          "halfWavelengthMm": 96.52,
+          "loadFactor": 0.1770123133637536
+        },
+        {
+          "halfWavelengthMm": 101.6,
+          "loadFactor": 0.1670121820463044
+        },
+        {
+          "halfWavelengthMm": 109.21999999999998,
+          "loadFactor": 0.15502274099651148
+        },
+        {
+          "halfWavelengthMm": 116.83999999999999,
+          "loadFactor": 0.14586709855304275
+        },
+        {
+          "halfWavelengthMm": 127.0,
+          "loadFactor": 0.13699104127853165
+        },
+        {
+          "halfWavelengthMm": 134.61999999999998,
+          "loadFactor": 0.13226391537595697
+        },
+        {
+          "halfWavelengthMm": 144.78,
+          "loadFactor": 0.12794653242248755
+        },
+        {
+          "halfWavelengthMm": 154.93999999999997,
+          "loadFactor": 0.12542432583426327
+        },
+        {
+          "halfWavelengthMm": 167.64,
+          "loadFactor": 0.12423505668551102
+        },
+        {
+          "halfWavelengthMm": 180.33999999999997,
+          "loadFactor": 0.12475548953880398
+        },
+        {
+          "halfWavelengthMm": 193.04,
+          "loadFactor": 0.12662484171472993
+        },
+        {
+          "halfWavelengthMm": 205.73999999999998,
+          "loadFactor": 0.12958082719224534
+        },
+        {
+          "halfWavelengthMm": 220.97999999999996,
+          "loadFactor": 0.13428574321771247
+        },
+        {
+          "halfWavelengthMm": 236.22,
+          "loadFactor": 0.1400046434305623
+        },
+        {
+          "halfWavelengthMm": 254.0,
+          "loadFactor": 0.1476752224483297
+        },
+        {
+          "halfWavelengthMm": 271.78,
+          "loadFactor": 0.15615106144542404
+        },
+        {
+          "halfWavelengthMm": 292.09999999999997,
+          "loadFactor": 0.1665019345916952
+        },
+        {
+          "halfWavelengthMm": 312.42,
+          "loadFactor": 0.1772307577547038
+        },
+        {
+          "halfWavelengthMm": 335.28,
+          "loadFactor": 0.18934883101128233
+        },
+        {
+          "halfWavelengthMm": 360.67999999999995,
+          "loadFactor": 0.20237094891366642
+        },
+        {
+          "halfWavelengthMm": 386.08,
+          "loadFactor": 0.21442836951940697
+        },
+        {
+          "halfWavelengthMm": 414.02,
+          "loadFactor": 0.22609972052698615
+        },
+        {
+          "halfWavelengthMm": 444.5,
+          "loadFactor": 0.2365755331827335
+        },
+        {
+          "halfWavelengthMm": 474.97999999999996,
+          "loadFactor": 0.24462902693859953
+        },
+        {
+          "halfWavelengthMm": 510.54,
+          "loadFactor": 0.25129684346849657
+        },
+        {
+          "halfWavelengthMm": 546.1,
+          "loadFactor": 0.2557290129045967
+        },
+        {
+          "halfWavelengthMm": 586.74,
+          "loadFactor": 0.2591395535266393
+        },
+        {
+          "halfWavelengthMm": 629.92,
+          "loadFactor": 0.26202568034536783
+        },
+        {
+          "halfWavelengthMm": 675.64,
+          "loadFactor": 0.265315862123818
+        },
+        {
+          "halfWavelengthMm": 723.9,
+          "loadFactor": 0.26981412880190386
+        },
+        {
+          "halfWavelengthMm": 774.6999999999999,
+          "loadFactor": 0.276128767507161
+        },
+        {
+          "halfWavelengthMm": 830.58,
+          "loadFactor": 0.28512173167226834
+        },
+        {
+          "halfWavelengthMm": 891.54,
+          "loadFactor": 0.29730768330640783
+        },
+        {
+          "halfWavelengthMm": 955.04,
+          "loadFactor": 0.3123609796353276
+        },
+        {
+          "halfWavelengthMm": 1026.1599999999999,
+          "loadFactor": 0.331584698992609
+        },
+        {
+          "halfWavelengthMm": 1099.82,
+          "loadFactor": 0.35345703042293564
+        },
+        {
+          "halfWavelengthMm": 1178.56,
+          "loadFactor": 0.37816273338706125
+        },
+        {
+          "halfWavelengthMm": 1264.9199999999998,
+          "loadFactor": 0.4056242329037632
+        },
+        {
+          "halfWavelengthMm": 1356.36,
+          "loadFactor": 0.4335305102770193
+        },
+        {
+          "halfWavelengthMm": 1452.8799999999999,
+          "loadFactor": 0.45971725015315706
+        },
+        {
+          "halfWavelengthMm": 1559.56,
+          "loadFactor": 0.4823602317378425
+        },
+        {
+          "halfWavelengthMm": 1671.32,
+          "loadFactor": 0.4967560367469874
+        },
+        {
+          "halfWavelengthMm": 1790.6999999999998,
+          "loadFactor": 0.5004219608823866
+        },
+        {
+          "halfWavelengthMm": 1920.2399999999998,
+          "loadFactor": 0.4916771063793374
+        },
+        {
+          "halfWavelengthMm": 2059.9399999999996,
+          "loadFactor": 0.4709787805541873
+        },
+        {
+          "halfWavelengthMm": 2209.7999999999997,
+          "loadFactor": 0.4410771298111367
+        },
+        {
+          "halfWavelengthMm": 2369.8199999999997,
+          "loadFactor": 0.4056745878074751
+        },
+        {
+          "halfWavelengthMm": 2540.0,
+          "loadFactor": 0.36815827190470646
+        },
+        {
+          "halfWavelengthMm": 2722.88,
+          "loadFactor": 0.33051634247199074
+        },
+        {
+          "halfWavelengthMm": 2921.0,
+          "loadFactor": 0.29403993009334795
+        },
+        {
+          "halfWavelengthMm": 3131.8199999999997,
+          "loadFactor": 0.2602967417995822
+        },
+        {
+          "halfWavelengthMm": 3357.8799999999997,
+          "loadFactor": 0.2294281828917948
+        },
+        {
+          "halfWavelengthMm": 3599.1799999999994,
+          "loadFactor": 0.20168375045244735
+        },
+        {
+          "halfWavelengthMm": 3860.7999999999997,
+          "loadFactor": 0.17661158320069376
+        },
+        {
+          "halfWavelengthMm": 4140.2,
+          "loadFactor": 0.15446269298860676
+        },
+        {
+          "halfWavelengthMm": 4439.92,
+          "loadFactor": 0.1349013386150403
+        },
+        {
+          "halfWavelengthMm": 4759.96,
+          "loadFactor": 0.11776247853229735
+        },
+        {
+          "halfWavelengthMm": 5102.86,
+          "loadFactor": 0.10272957880395604
+        },
+        {
+          "halfWavelengthMm": 5471.16,
+          "loadFactor": 0.0895403047972115
+        },
+        {
+          "halfWavelengthMm": 5867.4,
+          "loadFactor": 0.07797341990757299
+        },
+        {
+          "halfWavelengthMm": 6291.579999999999,
+          "loadFactor": 0.06789344931562778
+        },
+        {
+          "halfWavelengthMm": 6746.24,
+          "loadFactor": 0.05910415570894251
+        },
+        {
+          "halfWavelengthMm": 7233.92,
+          "loadFactor": 0.05144000790601218
+        },
+        {
+          "halfWavelengthMm": 7757.159999999999,
+          "loadFactor": 0.04475917263975575
+        },
+        {
+          "halfWavelengthMm": 8318.5,
+          "loadFactor": 0.038938947942418214
+        },
+        {
+          "halfWavelengthMm": 8917.94,
+          "loadFactor": 0.033891569710532955
+        },
+        {
+          "halfWavelengthMm": 9563.1,
+          "loadFactor": 0.0294807783739596
+        },
+        {
+          "halfWavelengthMm": 10253.98,
+          "loadFactor": 0.025647353391184947
+        },
+        {
+          "halfWavelengthMm": 10995.659999999998,
+          "loadFactor": 0.02230793246585242
+        },
+        {
+          "halfWavelengthMm": 11790.679999999998,
+          "loadFactor": 0.019403583376687683
+        },
+        {
+          "halfWavelengthMm": 12641.579999999998,
+          "loadFactor": 0.016881100096622345
+        },
+        {
+          "halfWavelengthMm": 13555.98,
+          "loadFactor": 0.014681834087566174
+        },
+        {
+          "halfWavelengthMm": 14533.880000000001,
+          "loadFactor": 0.012773427465258873
+        },
+        {
+          "halfWavelengthMm": 15585.44,
+          "loadFactor": 0.011108531019620487
+        },
+        {
+          "halfWavelengthMm": 16710.66,
+          "loadFactor": 0.009663485701910342
+        },
+        {
+          "halfWavelengthMm": 17919.7,
+          "loadFactor": 0.008403743039185514
+        },
+        {
+          "halfWavelengthMm": 19215.1,
+          "loadFactor": 0.007309144775571599
+        },
+        {
+          "halfWavelengthMm": 20601.94,
+          "loadFactor": 0.0063582390431829745
+        },
+        {
+          "halfWavelengthMm": 22090.38,
+          "loadFactor": 0.005530652415803648
+        },
+        {
+          "halfWavelengthMm": 23688.04,
+          "loadFactor": 0.004809562861599211
+        },
+        {
+          "halfWavelengthMm": 25400.0,
+          "loadFactor": 0.004183515909474621
+        }
+      ],
+      "thinWallAreaMm2": 568.018287451728,
+      "modeClassification": "not-validated",
+      "wavelengthCoverage": "sampled-explicit-grid",
+      "compatibilityWarnings": [
+        "Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)"
+      ],
+      "normativeResistanceVerified": false,
+      "approvedForFabrication": false
+    },
+    "comparisons": [
+      {
+        "halfWavelengthMm": 25.4,
+        "originalCufsmEigenvalue": 1.7348027830291752,
+        "pyCufsmEigenvalue": 1.7348027938296617,
+        "delta": 1.0800486505146978e-08
+      },
+      {
+        "halfWavelengthMm": 27.94,
+        "originalCufsmEigenvalue": 1.4422135618415122,
+        "pyCufsmEigenvalue": 1.4422135726479508,
+        "delta": 1.0806438632826598e-08
+      },
+      {
+        "halfWavelengthMm": 30.479999999999997,
+        "originalCufsmEigenvalue": 1.219747783828159,
+        "pyCufsmEigenvalue": 1.2197477946392155,
+        "delta": 1.0811056494475224e-08
+      },
+      {
+        "halfWavelengthMm": 33.019999999999996,
+        "originalCufsmEigenvalue": 1.0466879668234106,
+        "pyCufsmEigenvalue": 1.046687977638225,
+        "delta": 1.0814814377368975e-08
+      },
+      {
+        "halfWavelengthMm": 35.559999999999995,
+        "originalCufsmEigenvalue": 0.9094402497919828,
+        "pyCufsmEigenvalue": 0.9094402606100138,
+        "delta": 1.0818031026538222e-08
+      },
+      {
+        "halfWavelengthMm": 38.099999999999994,
+        "originalCufsmEigenvalue": 0.7987851514984321,
+        "pyCufsmEigenvalue": 0.7987851623198228,
+        "delta": 1.082139067243304e-08
+      },
+      {
+        "halfWavelengthMm": 40.64,
+        "originalCufsmEigenvalue": 0.7082910270124364,
+        "pyCufsmEigenvalue": 0.7082910378369031,
+        "delta": 1.0824466656345066e-08
+      },
+      {
+        "halfWavelengthMm": 43.18,
+        "originalCufsmEigenvalue": 0.6333604140343866,
+        "pyCufsmEigenvalue": 0.633360424862244,
+        "delta": 1.0827857388484574e-08
+      },
+      {
+        "halfWavelengthMm": 48.26,
+        "originalCufsmEigenvalue": 0.517621396413193,
+        "pyCufsmEigenvalue": 0.5176214072481944,
+        "delta": 1.083500134058113e-08
+      },
+      {
+        "halfWavelengthMm": 50.8,
+        "originalCufsmEigenvalue": 0.47242640463090374,
+        "pyCufsmEigenvalue": 0.4724264154702597,
+        "delta": 1.0839355968350617e-08
+      },
+      {
+        "halfWavelengthMm": 55.88,
+        "originalCufsmEigenvalue": 0.400017008800832,
+        "pyCufsmEigenvalue": 0.40001701964874503,
+        "delta": 1.0847913012312915e-08
+      },
+      {
+        "halfWavelengthMm": 58.419999999999995,
+        "originalCufsmEigenvalue": 0.37078570147260886,
+        "pyCufsmEigenvalue": 0.37078571232551943,
+        "delta": 1.0852910570235963e-08
+      },
+      {
+        "halfWavelengthMm": 63.5,
+        "originalCufsmEigenvalue": 0.32269045488492243,
+        "pyCufsmEigenvalue": 0.3226904657485987,
+        "delta": 1.086367629188345e-08
+      },
+      {
+        "halfWavelengthMm": 68.58,
+        "originalCufsmEigenvalue": 0.28513923483709014,
+        "pyCufsmEigenvalue": 0.285139245712939,
+        "delta": 1.0875848888147743e-08
+      },
+      {
+        "halfWavelengthMm": 71.11999999999999,
+        "originalCufsmEigenvalue": 0.2694081485536671,
+        "pyCufsmEigenvalue": 0.269408159436188,
+        "delta": 1.088252088443653e-08
+      },
+      {
+        "halfWavelengthMm": 78.74,
+        "originalCufsmEigenvalue": 0.231386540214065,
+        "pyCufsmEigenvalue": 0.2313865511174168,
+        "delta": 1.0903351804758543e-08
+      },
+      {
+        "halfWavelengthMm": 83.82,
+        "originalCufsmEigenvalue": 0.2119106573825979,
+        "pyCufsmEigenvalue": 0.2119106683008619,
+        "delta": 1.0918263987358401e-08
+      },
+      {
+        "halfWavelengthMm": 88.89999999999999,
+        "originalCufsmEigenvalue": 0.19593669986170603,
+        "pyCufsmEigenvalue": 0.19593671079524205,
+        "delta": 1.0933536020996115e-08
+      },
+      {
+        "halfWavelengthMm": 96.52,
+        "originalCufsmEigenvalue": 0.1770123024083856,
+        "pyCufsmEigenvalue": 0.1770123133637536,
+        "delta": 1.0955367973908281e-08
+      },
+      {
+        "halfWavelengthMm": 101.6,
+        "originalCufsmEigenvalue": 0.16701217107703994,
+        "pyCufsmEigenvalue": 0.1670121820463044,
+        "delta": 1.096926446897406e-08
+      },
+      {
+        "halfWavelengthMm": 109.21999999999998,
+        "originalCufsmEigenvalue": 0.15502273000716887,
+        "pyCufsmEigenvalue": 0.15502274099651148,
+        "delta": 1.0989342602574226e-08
+      },
+      {
+        "halfWavelengthMm": 116.83999999999999,
+        "originalCufsmEigenvalue": 0.1458670875445349,
+        "pyCufsmEigenvalue": 0.14586709855304275,
+        "delta": 1.1008507855292393e-08
+      },
+      {
+        "halfWavelengthMm": 127.0,
+        "originalCufsmEigenvalue": 0.13699103024946518,
+        "pyCufsmEigenvalue": 0.13699104127853165,
+        "delta": 1.102906646566204e-08
+      },
+      {
+        "halfWavelengthMm": 134.61999999999998,
+        "originalCufsmEigenvalue": 0.1322639043353156,
+        "pyCufsmEigenvalue": 0.13226391537595697,
+        "delta": 1.1040641373361026e-08
+      },
+      {
+        "halfWavelengthMm": 144.78,
+        "originalCufsmEigenvalue": 0.12794652136967835,
+        "pyCufsmEigenvalue": 0.12794653242248755,
+        "delta": 1.1052809195666313e-08
+      },
+      {
+        "halfWavelengthMm": 154.93999999999997,
+        "originalCufsmEigenvalue": 0.12542431477791477,
+        "pyCufsmEigenvalue": 0.12542432583426327,
+        "delta": 1.1056348503402091e-08
+      },
+      {
+        "halfWavelengthMm": 167.64,
+        "originalCufsmEigenvalue": 0.12423504562509796,
+        "pyCufsmEigenvalue": 0.12423505668551102,
+        "delta": 1.106041305765082e-08
+      },
+      {
+        "halfWavelengthMm": 180.33999999999997,
+        "originalCufsmEigenvalue": 0.12475547848775137,
+        "pyCufsmEigenvalue": 0.12475548953880398,
+        "delta": 1.1051052614674539e-08
+      },
+      {
+        "halfWavelengthMm": 193.04,
+        "originalCufsmEigenvalue": 0.12662483068482086,
+        "pyCufsmEigenvalue": 0.12662484171472993,
+        "delta": 1.102990906942658e-08
+      },
+      {
+        "halfWavelengthMm": 205.73999999999998,
+        "originalCufsmEigenvalue": 0.12958081619057682,
+        "pyCufsmEigenvalue": 0.12958082719224534,
+        "delta": 1.100166852063822e-08
+      },
+      {
+        "halfWavelengthMm": 220.97999999999996,
+        "originalCufsmEigenvalue": 0.1342857322607687,
+        "pyCufsmEigenvalue": 0.13428574321771247,
+        "delta": 1.0956943768958283e-08
+      },
+      {
+        "halfWavelengthMm": 236.22,
+        "originalCufsmEigenvalue": 0.14000463253778037,
+        "pyCufsmEigenvalue": 0.1400046434305623,
+        "delta": 1.08927819264526e-08
+      },
+      {
+        "halfWavelengthMm": 254.0,
+        "originalCufsmEigenvalue": 0.1476752116488795,
+        "pyCufsmEigenvalue": 0.1476752224483297,
+        "delta": 1.0799450195220217e-08
+      },
+      {
+        "halfWavelengthMm": 271.78,
+        "originalCufsmEigenvalue": 0.1561510507633799,
+        "pyCufsmEigenvalue": 0.15615106144542404,
+        "delta": 1.0682044138121682e-08
+      },
+      {
+        "halfWavelengthMm": 292.09999999999997,
+        "originalCufsmEigenvalue": 0.1665019240785983,
+        "pyCufsmEigenvalue": 0.1665019345916952,
+        "delta": 1.0513096920794496e-08
+      },
+      {
+        "halfWavelengthMm": 312.42,
+        "originalCufsmEigenvalue": 0.1772307474347475,
+        "pyCufsmEigenvalue": 0.1772307577547038,
+        "delta": 1.031995627842619e-08
+      },
+      {
+        "halfWavelengthMm": 335.28,
+        "originalCufsmEigenvalue": 0.1893488209456501,
+        "pyCufsmEigenvalue": 0.18934883101128233,
+        "delta": 1.0065632244371514e-08
+      },
+      {
+        "halfWavelengthMm": 360.67999999999995,
+        "originalCufsmEigenvalue": 0.20237093916654175,
+        "pyCufsmEigenvalue": 0.20237094891366642,
+        "delta": 9.747124662951023e-09
+      },
+      {
+        "halfWavelengthMm": 386.08,
+        "originalCufsmEigenvalue": 0.21442836011989908,
+        "pyCufsmEigenvalue": 0.21442836951940697,
+        "delta": 9.399507894247705e-09
+      },
+      {
+        "halfWavelengthMm": 414.02,
+        "originalCufsmEigenvalue": 0.2260997115008956,
+        "pyCufsmEigenvalue": 0.22609972052698615,
+        "delta": 9.02609054165282e-09
+      },
+      {
+        "halfWavelengthMm": 444.5,
+        "originalCufsmEigenvalue": 0.23657552451555533,
+        "pyCufsmEigenvalue": 0.2365755331827335,
+        "delta": 8.667178169607936e-09
+      },
+      {
+        "halfWavelengthMm": 474.97999999999996,
+        "originalCufsmEigenvalue": 0.2446290185657269,
+        "pyCufsmEigenvalue": 0.24462902693859953,
+        "delta": 8.372872617457006e-09
+      },
+      {
+        "halfWavelengthMm": 510.54,
+        "originalCufsmEigenvalue": 0.25129683521765095,
+        "pyCufsmEigenvalue": 0.25129684346849657,
+        "delta": 8.250845617840952e-09
+      },
+      {
+        "halfWavelengthMm": 546.1,
+        "originalCufsmEigenvalue": 0.2557290047272309,
+        "pyCufsmEigenvalue": 0.2557290129045967,
+        "delta": 8.177365784511892e-09
+      },
+      {
+        "halfWavelengthMm": 586.74,
+        "originalCufsmEigenvalue": 0.25913954530119915,
+        "pyCufsmEigenvalue": 0.2591395535266393,
+        "delta": 8.22544016232385e-09
+      },
+      {
+        "halfWavelengthMm": 629.92,
+        "originalCufsmEigenvalue": 0.26202567177604424,
+        "pyCufsmEigenvalue": 0.26202568034536783,
+        "delta": 8.56932358406226e-09
+      },
+      {
+        "halfWavelengthMm": 675.64,
+        "originalCufsmEigenvalue": 0.2653158533684469,
+        "pyCufsmEigenvalue": 0.265315862123818,
+        "delta": 8.755371150304114e-09
+      },
+      {
+        "halfWavelengthMm": 723.9,
+        "originalCufsmEigenvalue": 0.26981411938126676,
+        "pyCufsmEigenvalue": 0.26981412880190386,
+        "delta": 9.420637103740859e-09
+      },
+      {
+        "halfWavelengthMm": 774.6999999999999,
+        "originalCufsmEigenvalue": 0.2761287594949436,
+        "pyCufsmEigenvalue": 0.276128767507161,
+        "delta": 8.01221738955249e-09
+      },
+      {
+        "halfWavelengthMm": 830.58,
+        "originalCufsmEigenvalue": 0.28512172200254,
+        "pyCufsmEigenvalue": 0.28512173167226834,
+        "delta": 9.669728351369145e-09
+      },
+      {
+        "halfWavelengthMm": 891.54,
+        "originalCufsmEigenvalue": 0.29730767253055834,
+        "pyCufsmEigenvalue": 0.29730768330640783,
+        "delta": 1.077584949049637e-08
+      },
+      {
+        "halfWavelengthMm": 955.04,
+        "originalCufsmEigenvalue": 0.31236096937340896,
+        "pyCufsmEigenvalue": 0.3123609796353276,
+        "delta": 1.0261918648168944e-08
+      },
+      {
+        "halfWavelengthMm": 1026.1599999999999,
+        "originalCufsmEigenvalue": 0.33158468872539204,
+        "pyCufsmEigenvalue": 0.331584698992609,
+        "delta": 1.0267216965509363e-08
+      },
+      {
+        "halfWavelengthMm": 1099.82,
+        "originalCufsmEigenvalue": 0.35345701892625353,
+        "pyCufsmEigenvalue": 0.35345703042293564,
+        "delta": 1.1496682106315603e-08
+      },
+      {
+        "halfWavelengthMm": 1178.56,
+        "originalCufsmEigenvalue": 0.3781627240925084,
+        "pyCufsmEigenvalue": 0.37816273338706125,
+        "delta": 9.294552849592463e-09
+      },
+      {
+        "halfWavelengthMm": 1264.9199999999998,
+        "originalCufsmEigenvalue": 0.405624223511754,
+        "pyCufsmEigenvalue": 0.4056242329037632,
+        "delta": 9.392009225894782e-09
+      },
+      {
+        "halfWavelengthMm": 1356.36,
+        "originalCufsmEigenvalue": 0.43353050271262383,
+        "pyCufsmEigenvalue": 0.4335305102770193,
+        "delta": 7.564395443360183e-09
+      },
+      {
+        "halfWavelengthMm": 1452.8799999999999,
+        "originalCufsmEigenvalue": 0.4597172428089883,
+        "pyCufsmEigenvalue": 0.45971725015315706,
+        "delta": 7.344168773126825e-09
+      },
+      {
+        "halfWavelengthMm": 1559.56,
+        "originalCufsmEigenvalue": 0.4823602260636805,
+        "pyCufsmEigenvalue": 0.4823602317378425,
+        "delta": 5.674161973612257e-09
+      },
+      {
+        "halfWavelengthMm": 1671.32,
+        "originalCufsmEigenvalue": 0.49675603174578015,
+        "pyCufsmEigenvalue": 0.4967560367469874,
+        "delta": 5.0012072261296225e-09
+      },
+      {
+        "halfWavelengthMm": 1790.6999999999998,
+        "originalCufsmEigenvalue": 0.5004219573508549,
+        "pyCufsmEigenvalue": 0.5004219608823866,
+        "delta": 3.531531622691375e-09
+      },
+      {
+        "halfWavelengthMm": 1920.2399999999998,
+        "originalCufsmEigenvalue": 0.4916771024526162,
+        "pyCufsmEigenvalue": 0.4916771063793374,
+        "delta": 3.926721225955276e-09
+      },
+      {
+        "halfWavelengthMm": 2059.9399999999996,
+        "originalCufsmEigenvalue": 0.47097877775881447,
+        "pyCufsmEigenvalue": 0.4709787805541873,
+        "delta": 2.795372822106401e-09
+      },
+      {
+        "halfWavelengthMm": 2209.7999999999997,
+        "originalCufsmEigenvalue": 0.4410771224059896,
+        "pyCufsmEigenvalue": 0.4410771298111367,
+        "delta": 7.4051471066205465e-09
+      },
+      {
+        "halfWavelengthMm": 2369.8199999999997,
+        "originalCufsmEigenvalue": 0.40567458594124434,
+        "pyCufsmEigenvalue": 0.4056745878074751,
+        "delta": 1.8662307810224377e-09
+      },
+      {
+        "halfWavelengthMm": 2540.0,
+        "originalCufsmEigenvalue": 0.3681582677781074,
+        "pyCufsmEigenvalue": 0.36815827190470646,
+        "delta": 4.126599062459491e-09
+      },
+      {
+        "halfWavelengthMm": 2722.88,
+        "originalCufsmEigenvalue": 0.33051633778712547,
+        "pyCufsmEigenvalue": 0.33051634247199074,
+        "delta": 4.684865273496541e-09
+      },
+      {
+        "halfWavelengthMm": 2921.0,
+        "originalCufsmEigenvalue": 0.29403993241339804,
+        "pyCufsmEigenvalue": 0.29403993009334795,
+        "delta": -2.3200500964826176e-09
+      },
+      {
+        "halfWavelengthMm": 3131.8199999999997,
+        "originalCufsmEigenvalue": 0.2602967394833573,
+        "pyCufsmEigenvalue": 0.2602967417995822,
+        "delta": 2.316224878562423e-09
+      },
+      {
+        "halfWavelengthMm": 3357.8799999999997,
+        "originalCufsmEigenvalue": 0.22942818071726495,
+        "pyCufsmEigenvalue": 0.2294281828917948,
+        "delta": 2.1745298617315e-09
+      },
+      {
+        "halfWavelengthMm": 3599.1799999999994,
+        "originalCufsmEigenvalue": 0.20168374959386173,
+        "pyCufsmEigenvalue": 0.20168375045244735,
+        "delta": 8.58585619267771e-10
+      },
+      {
+        "halfWavelengthMm": 3860.7999999999997,
+        "originalCufsmEigenvalue": 0.1766115827891838,
+        "pyCufsmEigenvalue": 0.17661158320069376,
+        "delta": 4.1150996499261794e-10
+      },
+      {
+        "halfWavelengthMm": 4140.2,
+        "originalCufsmEigenvalue": 0.15446268521049608,
+        "pyCufsmEigenvalue": 0.15446269298860676,
+        "delta": 7.778110683309691e-09
+      },
+      {
+        "halfWavelengthMm": 4439.92,
+        "originalCufsmEigenvalue": 0.13490133916055064,
+        "pyCufsmEigenvalue": 0.1349013386150403,
+        "delta": -5.455103313511955e-10
+      },
+      {
+        "halfWavelengthMm": 4759.96,
+        "originalCufsmEigenvalue": 0.11776247601051759,
+        "pyCufsmEigenvalue": 0.11776247853229735,
+        "delta": 2.521779757236331e-09
+      },
+      {
+        "halfWavelengthMm": 5102.86,
+        "originalCufsmEigenvalue": 0.10272957958277698,
+        "pyCufsmEigenvalue": 0.10272957880395604,
+        "delta": -7.788209382963984e-10
+      },
+      {
+        "halfWavelengthMm": 5471.16,
+        "originalCufsmEigenvalue": 0.0895402978061559,
+        "pyCufsmEigenvalue": 0.0895403047972115,
+        "delta": 6.991055609417707e-09
+      },
+      {
+        "halfWavelengthMm": 5867.4,
+        "originalCufsmEigenvalue": 0.07797341999502527,
+        "pyCufsmEigenvalue": 0.07797341990757299,
+        "delta": -8.745228152751139e-11
+      },
+      {
+        "halfWavelengthMm": 6291.579999999999,
+        "originalCufsmEigenvalue": 0.06789342720947271,
+        "pyCufsmEigenvalue": 0.06789344931562778,
+        "delta": 2.210615507314273e-08
+      },
+      {
+        "halfWavelengthMm": 6746.24,
+        "originalCufsmEigenvalue": 0.05910416041871215,
+        "pyCufsmEigenvalue": 0.05910415570894251,
+        "delta": -4.709769643729267e-09
+      },
+      {
+        "halfWavelengthMm": 7233.92,
+        "originalCufsmEigenvalue": 0.05143996898158191,
+        "pyCufsmEigenvalue": 0.05144000790601218,
+        "delta": 3.89244302692604e-08
+      },
+      {
+        "halfWavelengthMm": 7757.159999999999,
+        "originalCufsmEigenvalue": 0.04475916244567355,
+        "pyCufsmEigenvalue": 0.04475917263975575,
+        "delta": 1.019408219643525e-08
+      },
+      {
+        "halfWavelengthMm": 8318.5,
+        "originalCufsmEigenvalue": 0.0389389487154763,
+        "pyCufsmEigenvalue": 0.038938947942418214,
+        "delta": -7.730580828257949e-10
+      },
+      {
+        "halfWavelengthMm": 8917.94,
+        "originalCufsmEigenvalue": 0.03389152405616221,
+        "pyCufsmEigenvalue": 0.033891569710532955,
+        "delta": 4.5654370742220785e-08
+      },
+      {
+        "halfWavelengthMm": 9563.1,
+        "originalCufsmEigenvalue": 0.0294807525294996,
+        "pyCufsmEigenvalue": 0.0294807783739596,
+        "delta": 2.584445999917473e-08
+      },
+      {
+        "halfWavelengthMm": 10253.98,
+        "originalCufsmEigenvalue": 0.02564736793761654,
+        "pyCufsmEigenvalue": 0.025647353391184947,
+        "delta": -1.4546431593986942e-08
+      },
+      {
+        "halfWavelengthMm": 10995.659999999998,
+        "originalCufsmEigenvalue": 0.022307844734787807,
+        "pyCufsmEigenvalue": 0.02230793246585242,
+        "delta": 8.773106461440472e-08
+      },
+      {
+        "halfWavelengthMm": 11790.679999999998,
+        "originalCufsmEigenvalue": 0.019403560727431178,
+        "pyCufsmEigenvalue": 0.019403583376687683,
+        "delta": 2.264925650502514e-08
+      },
+      {
+        "halfWavelengthMm": 12641.579999999998,
+        "originalCufsmEigenvalue": 0.016881014689728652,
+        "pyCufsmEigenvalue": 0.016881100096622345,
+        "delta": 8.540689369271326e-08
+      },
+      {
+        "halfWavelengthMm": 13555.98,
+        "originalCufsmEigenvalue": 0.01468180793667917,
+        "pyCufsmEigenvalue": 0.014681834087566174,
+        "delta": 2.6150887004472434e-08
+      },
+      {
+        "halfWavelengthMm": 14533.880000000001,
+        "originalCufsmEigenvalue": 0.012773493183048778,
+        "pyCufsmEigenvalue": 0.012773427465258873,
+        "delta": -6.571778990438482e-08
+      },
+      {
+        "halfWavelengthMm": 15585.44,
+        "originalCufsmEigenvalue": 0.01110867445057934,
+        "pyCufsmEigenvalue": 0.011108531019620487,
+        "delta": -1.4343095885299695e-07
+      },
+      {
+        "halfWavelengthMm": 16710.66,
+        "originalCufsmEigenvalue": 0.009663581109443797,
+        "pyCufsmEigenvalue": 0.009663485701910342,
+        "delta": -9.540753345520236e-08
+      },
+      {
+        "halfWavelengthMm": 17919.7,
+        "originalCufsmEigenvalue": 0.00840375567090394,
+        "pyCufsmEigenvalue": 0.008403743039185514,
+        "delta": -1.2631718426456273e-08
+      },
+      {
+        "halfWavelengthMm": 19215.1,
+        "originalCufsmEigenvalue": 0.007309087700593106,
+        "pyCufsmEigenvalue": 0.007309144775571599,
+        "delta": 5.707497849338772e-08
+      },
+      {
+        "halfWavelengthMm": 20601.94,
+        "originalCufsmEigenvalue": 0.006358395452737876,
+        "pyCufsmEigenvalue": 0.0063582390431829745,
+        "delta": -1.5640955490156538e-07
+      },
+      {
+        "halfWavelengthMm": 22090.38,
+        "originalCufsmEigenvalue": 0.005530110479008605,
+        "pyCufsmEigenvalue": 0.005530652415803648,
+        "delta": 5.419367950431839e-07
+      },
+      {
+        "halfWavelengthMm": 23688.04,
+        "originalCufsmEigenvalue": 0.004809887964140231,
+        "pyCufsmEigenvalue": 0.004809562861599211,
+        "delta": -3.2510254101975056e-07
+      },
+      {
+        "halfWavelengthMm": 25400.0,
+        "originalCufsmEigenvalue": 0.00418332853529003,
+        "pyCufsmEigenvalue": 0.004183515909474621,
+        "delta": 1.8737418459088134e-07
+      }
+    ],
+    "maxAbsoluteDifference": 5.419367950431839e-07,
+    "absoluteLoadFactorRegressionBound": 0.0001,
+    "resistanceVerified": false,
+    "normalizations": {
+      "indices": "zero-based, same connectivity",
+      "originalEKsi": 29500.0,
+      "originalNu": 0.3,
+      "originalRoundedGKsi": 11346.15,
+      "isotropicDerivedGKsi": 11346.153846153846,
+      "note": "The contract declares isotropic E/nu; the rounded source G is not copied or calibrated. No exact constitutive equivalence claimed."
+    }
+  },
+  {
+    "case": "cwlip_Mx",
+    "source": {
+      "repository": "thinwalled/cufsm-git",
+      "commit": "ab449cef8d05bb489df591d2e5b4e74571a793f5",
+      "path": "examples/2006_dsm_design_guide/files_and_scripts/cwlip_Mx.mat",
+      "sha256": "d74c90936112b4a0dd2ee4ee3ef17659bf6d30551d1a0d149395e16e5c58e08f",
+      "license": "MIT",
+      "units": "inch-kip",
+      "scope": "elastic finite-strip reference; NOT an ABNT resistance or roof model"
+    },
+    "input": {
+      "schema_version": "jpn.elastic-strip/1",
+      "units": "mm-MPa",
+      "nodes": [
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 18.796,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -316.43396841500294
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 15.493999999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -327.46249814528454
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 12.191999999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -338.49102787556615
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 8.889999999999999,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -349.51955760584775
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 5.588,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -360.54808733612936
+        },
+        {
+          "yMm": 61.467999999999996,
+          "zMm": 3.302,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -368.1832233032473
+        },
+        {
+          "yMm": 60.45199999999999,
+          "zMm": 1.5239999999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -374.12166238878365
+        },
+        {
+          "yMm": 58.674,
+          "zMm": 0.508,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -377.5150561519472
+        },
+        {
+          "yMm": 56.388000000000005,
+          "zMm": 0.0,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -379.21175303352896
+        },
+        {
+          "yMm": 43.687999999999995,
+          "zMm": 0.0,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -379.21175303352896
+        },
+        {
+          "yMm": 30.987999999999996,
+          "zMm": 0.0,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -379.21175303352896
+        },
+        {
+          "yMm": 18.287999999999997,
+          "zMm": 0.0,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -379.21175303352896
+        },
+        {
+          "yMm": 5.588,
+          "zMm": 0.0,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -379.21175303352896
+        },
+        {
+          "yMm": 3.302,
+          "zMm": 0.508,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -377.5150561519472
+        },
+        {
+          "yMm": 1.5239999999999998,
+          "zMm": 1.5239999999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -374.12166238878365
+        },
+        {
+          "yMm": 0.508,
+          "zMm": 3.302,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -368.1832233032473
+        },
+        {
+          "yMm": 0.0,
+          "zMm": 5.588,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -360.54808733612936
+        },
+        {
+          "yMm": 0.0,
+          "zMm": 59.43599999999999,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -180.69821788846016
+        },
+        {
+          "yMm": 0.0,
+          "zMm": 113.53799999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": -1.5069695549934398e-13
+        },
+        {
+          "yMm": 0.0,
+          "zMm": 167.64,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 180.69821788845988
+        },
+        {
+          "yMm": 0.0,
+          "zMm": 221.488,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 360.54808733612913
+        },
+        {
+          "yMm": 0.508,
+          "zMm": 223.774,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 368.18322330324713
+        },
+        {
+          "yMm": 1.5239999999999998,
+          "zMm": 225.55200000000002,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 374.1216623887834
+        },
+        {
+          "yMm": 3.302,
+          "zMm": 226.56799999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 377.5150561519469
+        },
+        {
+          "yMm": 5.588,
+          "zMm": 227.07599999999996,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.2117530335286
+        },
+        {
+          "yMm": 18.287999999999997,
+          "zMm": 227.07599999999996,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.2117530335286
+        },
+        {
+          "yMm": 30.987999999999996,
+          "zMm": 227.07599999999996,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.2117530335286
+        },
+        {
+          "yMm": 43.687999999999995,
+          "zMm": 227.07599999999996,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.2117530335286
+        },
+        {
+          "yMm": 56.388000000000005,
+          "zMm": 227.07599999999996,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 379.2117530335286
+        },
+        {
+          "yMm": 58.674,
+          "zMm": 226.56799999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 377.5150561519469
+        },
+        {
+          "yMm": 60.45199999999999,
+          "zMm": 225.55200000000002,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 374.1216623887834
+        },
+        {
+          "yMm": 61.467999999999996,
+          "zMm": 223.774,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 368.18322330324713
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 221.488,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 360.54808733612913
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 218.18599999999998,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 349.5195576058474
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 214.88400000000001,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 338.4910278755659
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 211.582,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 327.46249814528426
+        },
+        {
+          "yMm": 61.97599999999999,
+          "zMm": 208.27999999999997,
+          "dofs": [
+            true,
+            true,
+            true,
+            true
+          ],
+          "stressMpa": 316.4339684150026
+        }
+      ],
+      "strips": [
+        {
+          "start": 0,
+          "end": 1,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 1,
+          "end": 2,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 2,
+          "end": 3,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 3,
+          "end": 4,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 4,
+          "end": 5,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 5,
+          "end": 6,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 6,
+          "end": 7,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 7,
+          "end": 8,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 8,
+          "end": 9,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 9,
+          "end": 10,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 10,
+          "end": 11,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 11,
+          "end": 12,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 12,
+          "end": 13,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 13,
+          "end": 14,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 14,
+          "end": 15,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 15,
+          "end": 16,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 16,
+          "end": 17,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 17,
+          "end": 18,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 18,
+          "end": 19,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 19,
+          "end": 20,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 20,
+          "end": 21,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 21,
+          "end": 22,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 22,
+          "end": 23,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 23,
+          "end": 24,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 24,
+          "end": 25,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 25,
+          "end": 26,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 26,
+          "end": 27,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 27,
+          "end": 28,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 28,
+          "end": 29,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 29,
+          "end": 30,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 30,
+          "end": 31,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 31,
+          "end": 32,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 32,
+          "end": 33,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 33,
+          "end": 34,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 34,
+          "end": 35,
+          "thicknessMm": 1.4986
+        },
+        {
+          "start": 35,
+          "end": 36,
+          "thicknessMm": 1.4986
+        }
+      ],
+      "material": {
+        "eMpa": 203395.34014846664,
+        "nu": 0.3,
+        "source": "Original CUFSM MATLAB reference",
+        "revision": "ab449cef8d05bb489df591d2e5b4e74571a793f5"
+      },
+      "halfWavelengthsMm": [
+        25.4,
+        27.94,
+        30.479999999999997,
+        33.019999999999996,
+        35.559999999999995,
+        38.099999999999994,
+        40.64,
+        43.18,
+        48.26,
+        50.8,
+        55.88,
+        58.419999999999995,
+        63.5,
+        68.58,
+        71.11999999999999,
+        78.74,
+        83.82,
+        88.89999999999999,
+        96.52,
+        101.6,
+        109.21999999999998,
+        116.83999999999999,
+        127.0,
+        134.61999999999998,
+        144.78,
+        154.93999999999997,
+        167.64,
+        180.33999999999997,
+        193.04,
+        205.73999999999998,
+        220.97999999999996,
+        236.22,
+        254.0,
+        271.78,
+        292.09999999999997,
+        312.42,
+        335.28,
+        360.67999999999995,
+        386.08,
+        414.02,
+        444.5,
+        474.97999999999996,
+        510.54,
+        546.1,
+        586.74,
+        629.92,
+        675.64,
+        723.9,
+        774.6999999999999,
+        830.58,
+        891.54,
+        955.04,
+        1026.1599999999999,
+        1099.82,
+        1178.56,
+        1264.9199999999998,
+        1356.36,
+        1452.8799999999999,
+        1559.56,
+        1671.32,
+        1790.6999999999998,
+        1920.2399999999998,
+        2059.9399999999996,
+        2209.7999999999997,
+        2369.8199999999997,
+        2540.0,
+        2722.88,
+        2921.0,
+        3131.8199999999997,
+        3357.8799999999997,
+        3599.1799999999994,
+        3860.7999999999997,
+        4140.2,
+        4439.92,
+        4759.96,
+        5102.86,
+        5471.16,
+        5867.4,
+        6291.579999999999,
+        6746.24,
+        7233.92,
+        7757.159999999999,
+        8318.5,
+        8917.94,
+        9563.1,
+        10253.98,
+        10995.659999999998,
+        11790.679999999998,
+        12641.579999999998,
+        13555.98,
+        14533.880000000001,
+        15585.44,
+        16710.66,
+        17919.7,
+        19215.1,
+        20601.94,
+        22090.38,
+        23688.04,
+        25400.0
+      ],
+      "boundary": "S-S",
+      "source": "Original elastic DSM2006 example; not ABNT or a roof",
+      "revision": "1",
+      "responsible": "Independent comparison"
+    },
+    "result": {
+      "schema_version": "jpn.elastic-strip-result/1",
+      "input_sha256": "8b93d24796d727520c83b6a06b9bfddc6b4e6382c589c21ed1470350604bc50f",
+      "library": {
+        "name": "pyCUFSM",
+        "version": "0.2.0",
+        "installedArtifactLicense": "AFL-3.0",
+        "repositoryHeadLicense": "LGPL-3.0"
+      },
+      "units": "mm-MPa",
+      "results": [
+        {
+          "halfWavelengthMm": 25.4,
+          "loadFactor": 2.5541987388740672
+        },
+        {
+          "halfWavelengthMm": 27.94,
+          "loadFactor": 2.277396309548253
+        },
+        {
+          "halfWavelengthMm": 30.479999999999997,
+          "loadFactor": 2.0676626862585907
+        },
+        {
+          "halfWavelengthMm": 33.019999999999996,
+          "loadFactor": 1.902469049692012
+        },
+        {
+          "halfWavelengthMm": 35.559999999999995,
+          "loadFactor": 1.765644624127044
+        },
+        {
+          "halfWavelengthMm": 38.099999999999994,
+          "loadFactor": 1.645661414520116
+        },
+        {
+          "halfWavelengthMm": 40.64,
+          "loadFactor": 1.5363980315309327
+        },
+        {
+          "halfWavelengthMm": 43.18,
+          "loadFactor": 1.4366460906683962
+        },
+        {
+          "halfWavelengthMm": 48.26,
+          "loadFactor": 1.2671115505063555
+        },
+        {
+          "halfWavelengthMm": 50.8,
+          "loadFactor": 1.1966594020592962
+        },
+        {
+          "halfWavelengthMm": 55.88,
+          "loadFactor": 1.0797972414916424
+        },
+        {
+          "halfWavelengthMm": 58.419999999999995,
+          "loadFactor": 1.031430206369428
+        },
+        {
+          "halfWavelengthMm": 63.5,
+          "loadFactor": 0.9506636022594823
+        },
+        {
+          "halfWavelengthMm": 68.58,
+          "loadFactor": 0.8869045602169539
+        },
+        {
+          "halfWavelengthMm": 71.11999999999999,
+          "loadFactor": 0.8601395252053153
+        },
+        {
+          "halfWavelengthMm": 78.74,
+          "loadFactor": 0.7958858153103521
+        },
+        {
+          "halfWavelengthMm": 83.82,
+          "loadFactor": 0.7637085143792431
+        },
+        {
+          "halfWavelengthMm": 88.89999999999999,
+          "loadFactor": 0.7381700811273231
+        },
+        {
+          "halfWavelengthMm": 96.52,
+          "loadFactor": 0.7098124283998181
+        },
+        {
+          "halfWavelengthMm": 101.6,
+          "loadFactor": 0.6962984328997279
+        },
+        {
+          "halfWavelengthMm": 109.21999999999998,
+          "loadFactor": 0.6825445734845677
+        },
+        {
+          "halfWavelengthMm": 116.83999999999999,
+          "loadFactor": 0.6752365372175307
+        },
+        {
+          "halfWavelengthMm": 127.0,
+          "loadFactor": 0.6735652435688904
+        },
+        {
+          "halfWavelengthMm": 134.61999999999998,
+          "loadFactor": 0.6772988713066289
+        },
+        {
+          "halfWavelengthMm": 144.78,
+          "loadFactor": 0.6877757809718535
+        },
+        {
+          "halfWavelengthMm": 154.93999999999997,
+          "loadFactor": 0.7035550388680258
+        },
+        {
+          "halfWavelengthMm": 167.64,
+          "loadFactor": 0.7294778184966088
+        },
+        {
+          "halfWavelengthMm": 180.33999999999997,
+          "loadFactor": 0.7610935289959829
+        },
+        {
+          "halfWavelengthMm": 193.04,
+          "loadFactor": 0.7973161385539144
+        },
+        {
+          "halfWavelengthMm": 205.73999999999998,
+          "loadFactor": 0.837145730339065
+        },
+        {
+          "halfWavelengthMm": 220.97999999999996,
+          "loadFactor": 0.8882835990843444
+        },
+        {
+          "halfWavelengthMm": 236.22,
+          "loadFactor": 0.9412720677467872
+        },
+        {
+          "halfWavelengthMm": 254.0,
+          "loadFactor": 1.0024813304559979
+        },
+        {
+          "halfWavelengthMm": 271.78,
+          "loadFactor": 1.0590526536567177
+        },
+        {
+          "halfWavelengthMm": 292.09999999999997,
+          "loadFactor": 1.111951118362156
+        },
+        {
+          "halfWavelengthMm": 312.42,
+          "loadFactor": 1.1459612039622742
+        },
+        {
+          "halfWavelengthMm": 335.28,
+          "loadFactor": 1.1573635008720589
+        },
+        {
+          "halfWavelengthMm": 360.67999999999995,
+          "loadFactor": 1.1402115731947315
+        },
+        {
+          "halfWavelengthMm": 386.08,
+          "loadFactor": 1.1031510090614214
+        },
+        {
+          "halfWavelengthMm": 414.02,
+          "loadFactor": 1.0535683360411998
+        },
+        {
+          "halfWavelengthMm": 444.5,
+          "loadFactor": 1.0003271793839423
+        },
+        {
+          "halfWavelengthMm": 474.97999999999996,
+          "loadFactor": 0.9538669136037963
+        },
+        {
+          "halfWavelengthMm": 510.54,
+          "loadFactor": 0.9108164762365788
+        },
+        {
+          "halfWavelengthMm": 546.1,
+          "loadFactor": 0.8798294376709982
+        },
+        {
+          "halfWavelengthMm": 586.74,
+          "loadFactor": 0.8578148871317378
+        },
+        {
+          "halfWavelengthMm": 629.92,
+          "loadFactor": 0.8479714792615171
+        },
+        {
+          "halfWavelengthMm": 675.64,
+          "loadFactor": 0.8504021053684838
+        },
+        {
+          "halfWavelengthMm": 723.9,
+          "loadFactor": 0.8650250783150345
+        },
+        {
+          "halfWavelengthMm": 774.6999999999999,
+          "loadFactor": 0.8917115474851783
+        },
+        {
+          "halfWavelengthMm": 830.58,
+          "loadFactor": 0.9324374502909357
+        },
+        {
+          "halfWavelengthMm": 891.54,
+          "loadFactor": 0.9884939531907346
+        },
+        {
+          "halfWavelengthMm": 955.04,
+          "loadFactor": 1.0580085982482224
+        },
+        {
+          "halfWavelengthMm": 1026.1599999999999,
+          "loadFactor": 1.1475038128402415
+        },
+        {
+          "halfWavelengthMm": 1099.82,
+          "loadFactor": 1.2513144586724496
+        },
+        {
+          "halfWavelengthMm": 1178.56,
+          "loadFactor": 1.3725551673613414
+        },
+        {
+          "halfWavelengthMm": 1264.9199999999998,
+          "loadFactor": 1.5136241516555284
+        },
+        {
+          "halfWavelengthMm": 1356.36,
+          "loadFactor": 1.658685819148078
+        },
+        {
+          "halfWavelengthMm": 1452.8799999999999,
+          "loadFactor": 1.7275106314470496
+        },
+        {
+          "halfWavelengthMm": 1559.56,
+          "loadFactor": 1.5955504451649682
+        },
+        {
+          "halfWavelengthMm": 1671.32,
+          "loadFactor": 1.4170501124548374
+        },
+        {
+          "halfWavelengthMm": 1790.6999999999998,
+          "loadFactor": 1.2488502226897993
+        },
+        {
+          "halfWavelengthMm": 1920.2399999999998,
+          "loadFactor": 1.0956539677645443
+        },
+        {
+          "halfWavelengthMm": 2059.9399999999996,
+          "loadFactor": 0.9590777728089929
+        },
+        {
+          "halfWavelengthMm": 2209.7999999999997,
+          "loadFactor": 0.8387303736683851
+        },
+        {
+          "halfWavelengthMm": 2369.8199999999997,
+          "loadFactor": 0.7334676565907592
+        },
+        {
+          "halfWavelengthMm": 2540.0,
+          "loadFactor": 0.641853701325212
+        },
+        {
+          "halfWavelengthMm": 2722.88,
+          "loadFactor": 0.5613664982737241
+        },
+        {
+          "halfWavelengthMm": 2921.0,
+          "loadFactor": 0.4902621335027449
+        },
+        {
+          "halfWavelengthMm": 3131.8199999999997,
+          "loadFactor": 0.42863987365035844
+        },
+        {
+          "halfWavelengthMm": 3357.8799999999997,
+          "loadFactor": 0.37482475124371595
+        },
+        {
+          "halfWavelengthMm": 3599.1799999999994,
+          "loadFactor": 0.3280514531860222
+        },
+        {
+          "halfWavelengthMm": 3860.7999999999997,
+          "loadFactor": 0.2868081294816624
+        },
+        {
+          "halfWavelengthMm": 4140.2,
+          "loadFactor": 0.25102608001112636
+        },
+        {
+          "halfWavelengthMm": 4439.92,
+          "loadFactor": 0.21983994972586368
+        },
+        {
+          "halfWavelengthMm": 4759.96,
+          "loadFactor": 0.19277962292061748
+        },
+        {
+          "halfWavelengthMm": 5102.86,
+          "loadFactor": 0.16921078600983228
+        },
+        {
+          "halfWavelengthMm": 5471.16,
+          "loadFactor": 0.14863621986860184
+        },
+        {
+          "halfWavelengthMm": 5867.4,
+          "loadFactor": 0.13065497163444084
+        },
+        {
+          "halfWavelengthMm": 6291.579999999999,
+          "loadFactor": 0.11501969775813235
+        },
+        {
+          "halfWavelengthMm": 6746.24,
+          "loadFactor": 0.10140206671021407
+        },
+        {
+          "halfWavelengthMm": 7233.92,
+          "loadFactor": 0.08953017118035182
+        },
+        {
+          "halfWavelengthMm": 7757.159999999999,
+          "loadFactor": 0.07917483885431219
+        },
+        {
+          "halfWavelengthMm": 8318.5,
+          "loadFactor": 0.07014001243912872
+        },
+        {
+          "halfWavelengthMm": 8917.94,
+          "loadFactor": 0.062286333317836805
+        },
+        {
+          "halfWavelengthMm": 9563.1,
+          "loadFactor": 0.05540050520181313
+        },
+        {
+          "halfWavelengthMm": 10253.98,
+          "loadFactor": 0.04939026129804168
+        },
+        {
+          "halfWavelengthMm": 10995.659999999998,
+          "loadFactor": 0.044125642039020835
+        },
+        {
+          "halfWavelengthMm": 11790.679999999998,
+          "loadFactor": 0.03951550523349997
+        },
+        {
+          "halfWavelengthMm": 12641.579999999998,
+          "loadFactor": 0.03547864915564016
+        },
+        {
+          "halfWavelengthMm": 13555.98,
+          "loadFactor": 0.03192349102881029
+        },
+        {
+          "halfWavelengthMm": 14533.880000000001,
+          "loadFactor": 0.028802072808995605
+        },
+        {
+          "halfWavelengthMm": 15585.44,
+          "loadFactor": 0.026041009793233604
+        },
+        {
+          "halfWavelengthMm": 16710.66,
+          "loadFactor": 0.023605266038410327
+        },
+        {
+          "halfWavelengthMm": 17919.7,
+          "loadFactor": 0.021442983206459452
+        },
+        {
+          "halfWavelengthMm": 19215.1,
+          "loadFactor": 0.019524399719248128
+        },
+        {
+          "halfWavelengthMm": 20601.94,
+          "loadFactor": 0.01781758176656643
+        },
+        {
+          "halfWavelengthMm": 22090.38,
+          "loadFactor": 0.016292109046762045
+        },
+        {
+          "halfWavelengthMm": 23688.04,
+          "loadFactor": 0.014924225931124533
+        },
+        {
+          "halfWavelengthMm": 25400.0,
+          "loadFactor": 0.013695888155798546
+        }
+      ],
+      "thinWallAreaMm2": 568.018287451728,
+      "modeClassification": "not-validated",
+      "wavelengthCoverage": "sampled-explicit-grid",
+      "compatibilityWarnings": [
+        "Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)"
+      ],
+      "normativeResistanceVerified": false,
+      "approvedForFabrication": false
+    },
+    "comparisons": [
+      {
+        "halfWavelengthMm": 25.4,
+        "originalCufsmEigenvalue": 2.554198575110401,
+        "pyCufsmEigenvalue": 2.5541987388740672,
+        "delta": 1.6376366618331417e-07
+      },
+      {
+        "halfWavelengthMm": 27.94,
+        "originalCufsmEigenvalue": 2.2773961467669657,
+        "pyCufsmEigenvalue": 2.277396309548253,
+        "delta": 1.6278128711633144e-07
+      },
+      {
+        "halfWavelengthMm": 30.479999999999997,
+        "originalCufsmEigenvalue": 2.0676625253876404,
+        "pyCufsmEigenvalue": 2.0676626862585907,
+        "delta": 1.6087095033867627e-07
+      },
+      {
+        "halfWavelengthMm": 33.019999999999996,
+        "originalCufsmEigenvalue": 1.9024688929072,
+        "pyCufsmEigenvalue": 1.902469049692012,
+        "delta": 1.567848120220816e-07
+      },
+      {
+        "halfWavelengthMm": 35.559999999999995,
+        "originalCufsmEigenvalue": 1.7656444753049934,
+        "pyCufsmEigenvalue": 1.765644624127044,
+        "delta": 1.4882205068289522e-07
+      },
+      {
+        "halfWavelengthMm": 38.099999999999994,
+        "originalCufsmEigenvalue": 1.6456612780349815,
+        "pyCufsmEigenvalue": 1.645661414520116,
+        "delta": 1.3648513452757527e-07
+      },
+      {
+        "halfWavelengthMm": 40.64,
+        "originalCufsmEigenvalue": 1.5363979090255242,
+        "pyCufsmEigenvalue": 1.5363980315309327,
+        "delta": 1.2250540848413038e-07
+      },
+      {
+        "halfWavelengthMm": 43.18,
+        "originalCufsmEigenvalue": 1.4366459803162073,
+        "pyCufsmEigenvalue": 1.4366460906683962,
+        "delta": 1.1035218894228649e-07
+      },
+      {
+        "halfWavelengthMm": 48.26,
+        "originalCufsmEigenvalue": 1.267111456268544,
+        "pyCufsmEigenvalue": 1.2671115505063555,
+        "delta": 9.423781155426525e-08
+      },
+      {
+        "halfWavelengthMm": 50.8,
+        "originalCufsmEigenvalue": 1.1966593130215435,
+        "pyCufsmEigenvalue": 1.1966594020592962,
+        "delta": 8.903775272628422e-08
+      },
+      {
+        "halfWavelengthMm": 55.88,
+        "originalCufsmEigenvalue": 1.079797159798583,
+        "pyCufsmEigenvalue": 1.0797972414916424,
+        "delta": 8.169305942828942e-08
+      },
+      {
+        "halfWavelengthMm": 58.419999999999995,
+        "originalCufsmEigenvalue": 1.0314301273768558,
+        "pyCufsmEigenvalue": 1.031430206369428,
+        "delta": 7.899257226107181e-08
+      },
+      {
+        "halfWavelengthMm": 63.5,
+        "originalCufsmEigenvalue": 0.9506635274697349,
+        "pyCufsmEigenvalue": 0.9506636022594823,
+        "delta": 7.478974739516531e-08
+      },
+      {
+        "halfWavelengthMm": 68.58,
+        "originalCufsmEigenvalue": 0.8869044885351965,
+        "pyCufsmEigenvalue": 0.8869045602169539,
+        "delta": 7.168175730765114e-08
+      },
+      {
+        "halfWavelengthMm": 71.11999999999999,
+        "originalCufsmEigenvalue": 0.8601394547846541,
+        "pyCufsmEigenvalue": 0.8601395252053153,
+        "delta": 7.042066119122836e-08
+      },
+      {
+        "halfWavelengthMm": 78.74,
+        "originalCufsmEigenvalue": 0.7958857478297211,
+        "pyCufsmEigenvalue": 0.7958858153103521,
+        "delta": 6.748063097195e-08
+      },
+      {
+        "halfWavelengthMm": 83.82,
+        "originalCufsmEigenvalue": 0.7637084483298413,
+        "pyCufsmEigenvalue": 0.7637085143792431,
+        "delta": 6.604940183674302e-08
+      },
+      {
+        "halfWavelengthMm": 88.89999999999999,
+        "originalCufsmEigenvalue": 0.7381700161955866,
+        "pyCufsmEigenvalue": 0.7381700811273231,
+        "delta": 6.493173643207228e-08
+      },
+      {
+        "halfWavelengthMm": 96.52,
+        "originalCufsmEigenvalue": 0.709812364704202,
+        "pyCufsmEigenvalue": 0.7098124283998181,
+        "delta": 6.369561611485608e-08
+      },
+      {
+        "halfWavelengthMm": 101.6,
+        "originalCufsmEigenvalue": 0.6962983697894068,
+        "pyCufsmEigenvalue": 0.6962984328997279,
+        "delta": 6.311032108019532e-08
+      },
+      {
+        "halfWavelengthMm": 109.21999999999998,
+        "originalCufsmEigenvalue": 0.6825445109917505,
+        "pyCufsmEigenvalue": 0.6825445734845677,
+        "delta": 6.249281714332255e-08
+      },
+      {
+        "halfWavelengthMm": 116.83999999999999,
+        "originalCufsmEigenvalue": 0.6752364751051769,
+        "pyCufsmEigenvalue": 0.6752365372175307,
+        "delta": 6.211235381581304e-08
+      },
+      {
+        "halfWavelengthMm": 127.0,
+        "originalCufsmEigenvalue": 0.6735651816923237,
+        "pyCufsmEigenvalue": 0.6735652435688904,
+        "delta": 6.187656664824459e-08
+      },
+      {
+        "halfWavelengthMm": 134.61999999999998,
+        "originalCufsmEigenvalue": 0.6772988094579646,
+        "pyCufsmEigenvalue": 0.6772988713066289,
+        "delta": 6.18486643011451e-08
+      },
+      {
+        "halfWavelengthMm": 144.78,
+        "originalCufsmEigenvalue": 0.6877757190767845,
+        "pyCufsmEigenvalue": 0.6877757809718535,
+        "delta": 6.189506907006148e-08
+      },
+      {
+        "halfWavelengthMm": 154.93999999999997,
+        "originalCufsmEigenvalue": 0.7035549767846048,
+        "pyCufsmEigenvalue": 0.7035550388680258,
+        "delta": 6.20834210707244e-08
+      },
+      {
+        "halfWavelengthMm": 167.64,
+        "originalCufsmEigenvalue": 0.7294777561714181,
+        "pyCufsmEigenvalue": 0.7294778184966088,
+        "delta": 6.232519067506104e-08
+      },
+      {
+        "halfWavelengthMm": 180.33999999999997,
+        "originalCufsmEigenvalue": 0.7610934664327141,
+        "pyCufsmEigenvalue": 0.7610935289959829,
+        "delta": 6.25632687878408e-08
+      },
+      {
+        "halfWavelengthMm": 193.04,
+        "originalCufsmEigenvalue": 0.7973160758273903,
+        "pyCufsmEigenvalue": 0.7973161385539144,
+        "delta": 6.272652408600976e-08
+      },
+      {
+        "halfWavelengthMm": 205.73999999999998,
+        "originalCufsmEigenvalue": 0.8371456675463453,
+        "pyCufsmEigenvalue": 0.837145730339065,
+        "delta": 6.27927196905631e-08
+      },
+      {
+        "halfWavelengthMm": 220.97999999999996,
+        "originalCufsmEigenvalue": 0.888283536414791,
+        "pyCufsmEigenvalue": 0.8882835990843444,
+        "delta": 6.266955343559033e-08
+      },
+      {
+        "halfWavelengthMm": 236.22,
+        "originalCufsmEigenvalue": 0.9412720054372484,
+        "pyCufsmEigenvalue": 0.9412720677467872,
+        "delta": 6.230953875085987e-08
+      },
+      {
+        "halfWavelengthMm": 254.0,
+        "originalCufsmEigenvalue": 1.0024812689851377,
+        "pyCufsmEigenvalue": 1.0024813304559979,
+        "delta": 6.147086017982417e-08
+      },
+      {
+        "halfWavelengthMm": 271.78,
+        "originalCufsmEigenvalue": 1.0590525936283235,
+        "pyCufsmEigenvalue": 1.0590526536567177,
+        "delta": 6.002839425534034e-08
+      },
+      {
+        "halfWavelengthMm": 292.09999999999997,
+        "originalCufsmEigenvalue": 1.1119510603712306,
+        "pyCufsmEigenvalue": 1.111951118362156,
+        "delta": 5.7990925395046133e-08
+      },
+      {
+        "halfWavelengthMm": 312.42,
+        "originalCufsmEigenvalue": 1.1459611486821952,
+        "pyCufsmEigenvalue": 1.1459612039622742,
+        "delta": 5.528007895883036e-08
+      },
+      {
+        "halfWavelengthMm": 335.28,
+        "originalCufsmEigenvalue": 1.1573634489464615,
+        "pyCufsmEigenvalue": 1.1573635008720589,
+        "delta": 5.192559737743352e-08
+      },
+      {
+        "halfWavelengthMm": 360.67999999999995,
+        "originalCufsmEigenvalue": 1.1402115248647313,
+        "pyCufsmEigenvalue": 1.1402115731947315,
+        "delta": 4.8330000224083847e-08
+      },
+      {
+        "halfWavelengthMm": 386.08,
+        "originalCufsmEigenvalue": 1.103150963670106,
+        "pyCufsmEigenvalue": 1.1031510090614214,
+        "delta": 4.539131537306673e-08
+      },
+      {
+        "halfWavelengthMm": 414.02,
+        "originalCufsmEigenvalue": 1.053568293102114,
+        "pyCufsmEigenvalue": 1.0535683360411998,
+        "delta": 4.2939085842519376e-08
+      },
+      {
+        "halfWavelengthMm": 444.5,
+        "originalCufsmEigenvalue": 1.0003271392802964,
+        "pyCufsmEigenvalue": 1.0003271793839423,
+        "delta": 4.010364595963267e-08
+      },
+      {
+        "halfWavelengthMm": 474.97999999999996,
+        "originalCufsmEigenvalue": 0.9538668752235598,
+        "pyCufsmEigenvalue": 0.9538669136037963,
+        "delta": 3.838023643343291e-08
+      },
+      {
+        "halfWavelengthMm": 510.54,
+        "originalCufsmEigenvalue": 0.9108164388576887,
+        "pyCufsmEigenvalue": 0.9108164762365788,
+        "delta": 3.737889009425288e-08
+      },
+      {
+        "halfWavelengthMm": 546.1,
+        "originalCufsmEigenvalue": 0.8798294016326743,
+        "pyCufsmEigenvalue": 0.8798294376709982,
+        "delta": 3.603832388066053e-08
+      },
+      {
+        "halfWavelengthMm": 586.74,
+        "originalCufsmEigenvalue": 0.8578148538070346,
+        "pyCufsmEigenvalue": 0.8578148871317378,
+        "delta": 3.332470321915082e-08
+      },
+      {
+        "halfWavelengthMm": 629.92,
+        "originalCufsmEigenvalue": 0.8479714464605855,
+        "pyCufsmEigenvalue": 0.8479714792615171,
+        "delta": 3.280093152646657e-08
+      },
+      {
+        "halfWavelengthMm": 675.64,
+        "originalCufsmEigenvalue": 0.8504020719041233,
+        "pyCufsmEigenvalue": 0.8504021053684838,
+        "delta": 3.346436050488677e-08
+      },
+      {
+        "halfWavelengthMm": 723.9,
+        "originalCufsmEigenvalue": 0.865025050401786,
+        "pyCufsmEigenvalue": 0.8650250783150345,
+        "delta": 2.7913248490385456e-08
+      },
+      {
+        "halfWavelengthMm": 774.6999999999999,
+        "originalCufsmEigenvalue": 0.8917115170358096,
+        "pyCufsmEigenvalue": 0.8917115474851783,
+        "delta": 3.044936869311954e-08
+      },
+      {
+        "halfWavelengthMm": 830.58,
+        "originalCufsmEigenvalue": 0.932437423283465,
+        "pyCufsmEigenvalue": 0.9324374502909357,
+        "delta": 2.700747070427667e-08
+      },
+      {
+        "halfWavelengthMm": 891.54,
+        "originalCufsmEigenvalue": 0.988493925183422,
+        "pyCufsmEigenvalue": 0.9884939531907346,
+        "delta": 2.8007312580236032e-08
+      },
+      {
+        "halfWavelengthMm": 955.04,
+        "originalCufsmEigenvalue": 1.0580085719154184,
+        "pyCufsmEigenvalue": 1.0580085982482224,
+        "delta": 2.6332803937378912e-08
+      },
+      {
+        "halfWavelengthMm": 1026.1599999999999,
+        "originalCufsmEigenvalue": 1.147503789758861,
+        "pyCufsmEigenvalue": 1.1475038128402415,
+        "delta": 2.3081380584599742e-08
+      },
+      {
+        "halfWavelengthMm": 1099.82,
+        "originalCufsmEigenvalue": 1.2513144408055517,
+        "pyCufsmEigenvalue": 1.2513144586724496,
+        "delta": 1.7866897961127393e-08
+      },
+      {
+        "halfWavelengthMm": 1178.56,
+        "originalCufsmEigenvalue": 1.372555143484652,
+        "pyCufsmEigenvalue": 1.3725551673613414,
+        "delta": 2.3876689514423788e-08
+      },
+      {
+        "halfWavelengthMm": 1264.9199999999998,
+        "originalCufsmEigenvalue": 1.5136241386473224,
+        "pyCufsmEigenvalue": 1.5136241516555284,
+        "delta": 1.3008206067866013e-08
+      },
+      {
+        "halfWavelengthMm": 1356.36,
+        "originalCufsmEigenvalue": 1.6586858175001042,
+        "pyCufsmEigenvalue": 1.658685819148078,
+        "delta": 1.6479737574570663e-09
+      },
+      {
+        "halfWavelengthMm": 1452.8799999999999,
+        "originalCufsmEigenvalue": 1.7275106427116966,
+        "pyCufsmEigenvalue": 1.7275106314470496,
+        "delta": -1.1264646992970029e-08
+      },
+      {
+        "halfWavelengthMm": 1559.56,
+        "originalCufsmEigenvalue": 1.5955504300545122,
+        "pyCufsmEigenvalue": 1.5955504451649682,
+        "delta": 1.5110455997557892e-08
+      },
+      {
+        "halfWavelengthMm": 1671.32,
+        "originalCufsmEigenvalue": 1.4170500869049598,
+        "pyCufsmEigenvalue": 1.4170501124548374,
+        "delta": 2.5549877546993116e-08
+      },
+      {
+        "halfWavelengthMm": 1790.6999999999998,
+        "originalCufsmEigenvalue": 1.248850199671347,
+        "pyCufsmEigenvalue": 1.2488502226897993,
+        "delta": 2.301845225538557e-08
+      },
+      {
+        "halfWavelengthMm": 1920.2399999999998,
+        "originalCufsmEigenvalue": 1.0956539550015323,
+        "pyCufsmEigenvalue": 1.0956539677645443,
+        "delta": 1.2763011980609917e-08
+      },
+      {
+        "halfWavelengthMm": 2059.9399999999996,
+        "originalCufsmEigenvalue": 0.9590777529268285,
+        "pyCufsmEigenvalue": 0.9590777728089929,
+        "delta": 1.9882164359330545e-08
+      },
+      {
+        "halfWavelengthMm": 2209.7999999999997,
+        "originalCufsmEigenvalue": 0.8387303469524368,
+        "pyCufsmEigenvalue": 0.8387303736683851,
+        "delta": 2.6715948342470597e-08
+      },
+      {
+        "halfWavelengthMm": 2369.8199999999997,
+        "originalCufsmEigenvalue": 0.7334676327274252,
+        "pyCufsmEigenvalue": 0.7334676565907592,
+        "delta": 2.3863333975526757e-08
+      },
+      {
+        "halfWavelengthMm": 2540.0,
+        "originalCufsmEigenvalue": 0.6418536770609073,
+        "pyCufsmEigenvalue": 0.641853701325212,
+        "delta": 2.4264304676613335e-08
+      },
+      {
+        "halfWavelengthMm": 2722.88,
+        "originalCufsmEigenvalue": 0.5613664916194677,
+        "pyCufsmEigenvalue": 0.5613664982737241,
+        "delta": 6.654256368143763e-09
+      },
+      {
+        "halfWavelengthMm": 2921.0,
+        "originalCufsmEigenvalue": 0.49026210495507794,
+        "pyCufsmEigenvalue": 0.4902621335027449,
+        "delta": 2.8547666952594142e-08
+      },
+      {
+        "halfWavelengthMm": 3131.8199999999997,
+        "originalCufsmEigenvalue": 0.4286398372429415,
+        "pyCufsmEigenvalue": 0.42863987365035844,
+        "delta": 3.64074169145745e-08
+      },
+      {
+        "halfWavelengthMm": 3357.8799999999997,
+        "originalCufsmEigenvalue": 0.37482473653286513,
+        "pyCufsmEigenvalue": 0.37482475124371595,
+        "delta": 1.4710850815280452e-08
+      },
+      {
+        "halfWavelengthMm": 3599.1799999999994,
+        "originalCufsmEigenvalue": 0.32805143057003755,
+        "pyCufsmEigenvalue": 0.3280514531860222,
+        "delta": 2.2615984640594888e-08
+      },
+      {
+        "halfWavelengthMm": 3860.7999999999997,
+        "originalCufsmEigenvalue": 0.28680811500751163,
+        "pyCufsmEigenvalue": 0.2868081294816624,
+        "delta": 1.4474150766830007e-08
+      },
+      {
+        "halfWavelengthMm": 4140.2,
+        "originalCufsmEigenvalue": 0.25102602557587184,
+        "pyCufsmEigenvalue": 0.25102608001112636,
+        "delta": 5.443525452619724e-08
+      },
+      {
+        "halfWavelengthMm": 4439.92,
+        "originalCufsmEigenvalue": 0.21983996618014737,
+        "pyCufsmEigenvalue": 0.21983994972586368,
+        "delta": -1.645428368557411e-08
+      },
+      {
+        "halfWavelengthMm": 4759.96,
+        "originalCufsmEigenvalue": 0.19277963039200482,
+        "pyCufsmEigenvalue": 0.19277962292061748,
+        "delta": -7.47138734213948e-09
+      },
+      {
+        "halfWavelengthMm": 5102.86,
+        "originalCufsmEigenvalue": 0.16921081770819324,
+        "pyCufsmEigenvalue": 0.16921078600983228,
+        "delta": -3.169836096383882e-08
+      },
+      {
+        "halfWavelengthMm": 5471.16,
+        "originalCufsmEigenvalue": 0.14863625061892816,
+        "pyCufsmEigenvalue": 0.14863621986860184,
+        "delta": -3.0750326313055965e-08
+      },
+      {
+        "halfWavelengthMm": 5867.4,
+        "originalCufsmEigenvalue": 0.13065493681385199,
+        "pyCufsmEigenvalue": 0.13065497163444084,
+        "delta": 3.4820588856732115e-08
+      },
+      {
+        "halfWavelengthMm": 6291.579999999999,
+        "originalCufsmEigenvalue": 0.11501975129753661,
+        "pyCufsmEigenvalue": 0.11501969775813235,
+        "delta": -5.353940425723014e-08
+      },
+      {
+        "halfWavelengthMm": 6746.24,
+        "originalCufsmEigenvalue": 0.10140207669325611,
+        "pyCufsmEigenvalue": 0.10140206671021407,
+        "delta": -9.98304204580247e-09
+      },
+      {
+        "halfWavelengthMm": 7233.92,
+        "originalCufsmEigenvalue": 0.08953019937803991,
+        "pyCufsmEigenvalue": 0.08953017118035182,
+        "delta": -2.819768808726142e-08
+      },
+      {
+        "halfWavelengthMm": 7757.159999999999,
+        "originalCufsmEigenvalue": 0.07917476959824568,
+        "pyCufsmEigenvalue": 0.07917483885431219,
+        "delta": 6.925606650665106e-08
+      },
+      {
+        "halfWavelengthMm": 8318.5,
+        "originalCufsmEigenvalue": 0.07013991109647712,
+        "pyCufsmEigenvalue": 0.07014001243912872,
+        "delta": 1.0134265160388622e-07
+      },
+      {
+        "halfWavelengthMm": 8917.94,
+        "originalCufsmEigenvalue": 0.06228635864408234,
+        "pyCufsmEigenvalue": 0.062286333317836805,
+        "delta": -2.5326245538248582e-08
+      },
+      {
+        "halfWavelengthMm": 9563.1,
+        "originalCufsmEigenvalue": 0.05540061744438126,
+        "pyCufsmEigenvalue": 0.05540050520181313,
+        "delta": -1.122425681288064e-07
+      },
+      {
+        "halfWavelengthMm": 10253.98,
+        "originalCufsmEigenvalue": 0.049390272529352956,
+        "pyCufsmEigenvalue": 0.04939026129804168,
+        "delta": -1.1231311276838074e-08
+      },
+      {
+        "halfWavelengthMm": 10995.659999999998,
+        "originalCufsmEigenvalue": 0.04412534255471105,
+        "pyCufsmEigenvalue": 0.044125642039020835,
+        "delta": 2.9948430978199436e-07
+      },
+      {
+        "halfWavelengthMm": 11790.679999999998,
+        "originalCufsmEigenvalue": 0.03951549766791962,
+        "pyCufsmEigenvalue": 0.03951550523349997,
+        "delta": 7.565580349699896e-09
+      },
+      {
+        "halfWavelengthMm": 12641.579999999998,
+        "originalCufsmEigenvalue": 0.03547834311273645,
+        "pyCufsmEigenvalue": 0.03547864915564016,
+        "delta": 3.0604290371383236e-07
+      },
+      {
+        "halfWavelengthMm": 13555.98,
+        "originalCufsmEigenvalue": 0.031923345446565575,
+        "pyCufsmEigenvalue": 0.03192349102881029,
+        "delta": 1.4558224471772352e-07
+      },
+      {
+        "halfWavelengthMm": 14533.880000000001,
+        "originalCufsmEigenvalue": 0.02880240211633177,
+        "pyCufsmEigenvalue": 0.028802072808995605,
+        "delta": -3.293073361637644e-07
+      },
+      {
+        "halfWavelengthMm": 15585.44,
+        "originalCufsmEigenvalue": 0.026041018438460684,
+        "pyCufsmEigenvalue": 0.026041009793233604,
+        "delta": -8.645227079356888e-09
+      },
+      {
+        "halfWavelengthMm": 16710.66,
+        "originalCufsmEigenvalue": 0.023605722208026685,
+        "pyCufsmEigenvalue": 0.023605266038410327,
+        "delta": -4.5616961635852604e-07
+      },
+      {
+        "halfWavelengthMm": 17919.7,
+        "originalCufsmEigenvalue": 0.021443157543768583,
+        "pyCufsmEigenvalue": 0.021442983206459452,
+        "delta": -1.743373091306344e-07
+      },
+      {
+        "halfWavelengthMm": 19215.1,
+        "originalCufsmEigenvalue": 0.019524145545116802,
+        "pyCufsmEigenvalue": 0.019524399719248128,
+        "delta": 2.5417413132555744e-07
+      },
+      {
+        "halfWavelengthMm": 20601.94,
+        "originalCufsmEigenvalue": 0.017816863704978432,
+        "pyCufsmEigenvalue": 0.01781758176656643,
+        "delta": 7.180615879988361e-07
+      },
+      {
+        "halfWavelengthMm": 22090.38,
+        "originalCufsmEigenvalue": 0.016291475612678834,
+        "pyCufsmEigenvalue": 0.016292109046762045,
+        "delta": 6.334340832102325e-07
+      },
+      {
+        "halfWavelengthMm": 23688.04,
+        "originalCufsmEigenvalue": 0.014923432015426485,
+        "pyCufsmEigenvalue": 0.014924225931124533,
+        "delta": 7.939156980475703e-07
+      },
+      {
+        "halfWavelengthMm": 25400.0,
+        "originalCufsmEigenvalue": 0.013696103707970851,
+        "pyCufsmEigenvalue": 0.013695888155798546,
+        "delta": -2.1555217230573298e-07
+      }
+    ],
+    "maxAbsoluteDifference": 7.939156980475703e-07,
+    "absoluteLoadFactorRegressionBound": 0.0001,
+    "resistanceVerified": false,
+    "normalizations": {
+      "indices": "zero-based, same connectivity",
+      "originalEKsi": 29500.0,
+      "originalNu": 0.3,
+      "originalRoundedGKsi": 11346.15,
+      "isotropicDerivedGKsi": 11346.153846153846,
+      "note": "The contract declares isotropic E/nu; the rounded source G is not copied or calibrated. No exact constitutive equivalence claimed."
+    }
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "status": "FALHOU",
+  "stages": {
+    "health": {
+      "status": "FALHOU",
+      "reason": "HEALTH_HTTP_401"
+    },
+    "unauthorized": {
+      "status": "NÃO EXECUTADO"
+    },
+    "small_v1": {
+      "status": "NÃO EXECUTADO"
+    },
+    "small_v2": {
+      "status": "NÃO EXECUTADO"
+    },
+    "roof_v2": {
+      "status": "NÃO EXECUTADO"
+    }
+  },
+  "endpoint": "https://jpn-structural-engine-git-fix-v-00724f-brunos-projects-45ed18ac.vercel.app",
+  "attempts": 1,
+  "note": "Authenticated health returned JSON HTTP 401; execution stopped without retries. Credential effective in deployment unconfirmed."
+}

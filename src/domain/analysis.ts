@@ -22,6 +22,7 @@ export const trussResultSchema = z.object({
 export type TrussResult = z.infer<typeof trussResultSchema>;
 
 export function trussGeometry(project: Project) {
+  if(project.workspace.physicalStructure||project.workspace.spatialPreparation?.physicalCatalog)throw Error("PHYSICAL_MODEL_MIXED_REQUIRED: geometria declarada ou propriedades por barra exigem mixed3d; sem fallback à tesoura gerada.");
   const result = generateStructure(project);
   if (!result.model) throw new Error("Gere uma geometria válida antes de configurar a tesoura.");
   const pieces = result.model.pieces.filter(p => p.id.startsWith("T1-"));

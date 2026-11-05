@@ -1,0 +1,103 @@
+
+ RUN  v5.0.5 C:/Users/Usuario/Desktop/jpn-missao31
+
+ ✓ src/domain/connection-report.test.ts (9 tests) 40126ms
+   ✓ recusa bases presumidas, ações alteradas e dupla contagem de UDL como carga nodal 405ms
+   ✓ declaração e mudanças físicas tornam a análise/relatório anterior obsoletos 2676ms
+   ✓ peso próprio axial entra como carga nodal; pórtico permanece distribuído 10763ms
+   ✓ nó exclusivamente axial não recebe resíduos rotacionais ou vínculos artificiais 8532ms
+   ✓ M26 integra cobertura, solicitações contínuas, ações de juntas e M25 sem promover aprovação 8786ms
+ ✓ src/domain/member-demands.test.ts (10 tests) 28023ms
+   ✓ mudanças de norma, material, cargas, apoios, giro, perfil e discretização invalidam relatório 5658ms
+   ✓ propriedades inválidas, inconsistências e perfis não identificados permanecem pendentes 8700ms
+ ✓ src/domain/roof-load-path.test.ts (17 tests) 22134ms
+   ✓ propriedades, apoios e ligações ausentes continuam bloqueados; U não vira U enrijecido 308ms
+   ✓ cobertura gerada → adaptação → Python real: ações, reações, IDs, superposição e hashes 7120ms
+   ✓ Python real aceita pressão zero declarada e recusa cobertura sem vínculos suficientes 12859ms
+   ✓ carga derivada numa terça: balanço+mola axial real contra flecha/rotação/V/M/reação analíticos 1409ms
+ ✓ src/infrastructure/analysis/local-mixed-process.test.ts (2 tests) 20305ms
+   ✓ o deadline efetivamente encerra processo Python do SO antes de liberar a vaga 20114ms
+ ✓ src/infrastructure/analysis/local-buckling-real.test.ts (2 tests) 18959ms
+   ✓ executes automatic modes and MRD through the real isolated HTTP handler 18956ms
+ ✓ src/infrastructure/analysis/local-design-real.test.ts (2 tests) 17361ms
+   ✓ real HTTP resistance path recalculates geometry and executes NBR14762 tension under the OS cap 16658ms
+   ✓ rejects bypassing geometry, production/remote requests, unknown fields and duplicate JSON keys 701ms
+ ✓ src/domain/wind-load-path.test.ts (18 tests) 17019ms
+   ✓ cobertura real gerada → vento zonal → PyNite real: reações, momentos, sinais e superposição 7914ms
+   ✓ vento em estrutura sem vínculos suficientes continua recusado pelo Python real 6735ms
+   ✓ q de zona inclinada → balanço misto real contra solução fechada biaxial independente 1528ms
+ ✓ src/domain/loaded-mixed.test.ts (6 tests) 15676ms
+   ✓ executa versão 2 com Python real: massa, equilíbrio, forças invertidas, estações e identidade 8115ms
+   ✓ cobertura criada pelo gerador comum admite peso/carga após declarações reais explícitas, sem abrir fixture 6987ms
+ ✓ src/domain/coldformed-design.test.ts (8 tests) 14843ms
+   ✓ load, material, combination and restraint changes invalidate the critical study 481ms
+   ✓ the assessment distinguishes availability from execution and authenticates its base 3175ms
+ ✓ src/domain/continuous-demands.test.ts (8 tests) 14302ms
+   ✓ viga propped: máximo entre amostras e flecha quartica independente; segmentada=false 1504ms
+   ✓ viga propped: máximo entre amostras e flecha quartica independente; segmentada=true 1422ms
+   ✓ referência simple, seção girada e cargas globais/locais, sinais e concomitância 2943ms
+   ✓ referência cantilever, seção girada e cargas globais/locais, sinais e concomitância 2834ms
+   ✓ legacy v1 mantém esforços contínuos nodais e deslocamentos unsupported; corrupção bloqueada 2802ms
+   ✓ balanço espacial inclinado, seção girada 37° e vetor concomitante em posições não amostradas 1412ms
+   ✓ liberações flexionais nativas preservam a curva contínua e momentos liberados nulos 1378ms
+ ✓ src/infrastructure/analysis/remote-mixed-runner.test.ts (20 tests) 7841ms
+   ✓ Next → HTTP WSGI → worker Python real: v1/v2, referências independentes, health e autenticação 4612ms
+ ✓ src/infrastructure/analysis/local-mixed-real.test.ts (3 tests) 5502ms
+   ✓ executa adaptador → processo Python 3.12/PyNite 3.2.1 real → resultado estrito, equilíbrio e cargas invertidas 4407ms
+   ✓ health da API importa dependências reais e rejeita corpos excessivos antes do processo 1060ms
+ ✓ src/domain/spatial-analysis.test.ts (12 tests) 5432ms
+   ✓ API protege origem, corpo e contrato e executa a análise real 1441ms
+   ✓ serviço Python HTTP real analisa 3D com token privado, preservando contrato de transporte 2214ms
+ ✓ src/infrastructure/analysis/runner.test.ts (7 tests) 4334ms
+   ✓ chama o processo Python real e confere a referência analítica 683ms
+   ✓ propaga mecanismo instável sem gerar resultado falso 683ms
+   ✓ adaptador HTTP chama serviço Python real separado 1484ms
+   ✓ API real protege origem e valida corpo antes de chamar Python 1411ms
+ ✓ src/domain/whole-piece-deflection.test.ts (2 tests) 3041ms
+   ✓ peça segmentada: corda original difere da corda de cada segmento; vetor global crítico independente 1563ms
+   ✓ raízes de grau sete, translação rígida e invariância da flecha vetorial em barra inclinada 1476ms
+ ✓ src/infrastructure/analysis/local-section-real.test.ts (2 tests) 2867ms
+   ✓ executes the real isolated section worker over the local route with OS cap and input hash 2198ms
+   ✓ blocks remote/production requests, oversize, duplicate JSON keys and invalid geometry 668ms
+ ✓ src/domain/mixed-adapter.test.ts (5 tests) 640ms
+ ✓ src/domain/spatial-connectivity.test.ts (13 tests) 583ms
+   ✓ geometric connectivity without inferred physical joints (13)
+     ✓ blocks incomplete 10 × 20 m quick roof and compiles a separate fully declared frame fixture 301ms
+ ✓ src/lib/exports/preproduction.test.ts (2 tests) 401ms
+ ✓ src/lib/exports/takeoff.test.ts (1 test) 396ms
+   ✓ exporta quantitativos sem preços, inclui pendências e reabre valores exatos no XLSX 394ms
+ ✓ src/domain/roof-load-path-independent.test.ts (64 tests) 377ms
+ ✓ src/lib/exports/cad.test.ts (2 tests) 368ms
+   ✓ reabre PDF da simulação sem confundir comprimentos geométricos com ordem de corte 316ms
+ ✓ src/lib/exports/exports.test.ts (4 tests) 293ms
+ ✓ src/domain/calculations/platform.test.ts (17 tests) 275ms
+ ✓ src/domain/spatial-preparation.test.ts (6 tests) 211ms
+ ✓ src/components/planning/profile-geometry.test.ts (25 tests) 202ms
+ ✓ src/domain/spatial-coordination.test.ts (3 tests) 179ms
+ ✓ src/domain/m26-integration.test.ts (5 tests) 149ms
+ ✓ src/domain/wind-speed.test.ts (4 tests) 146ms
+ ✓ src/infrastructure/persistence/local.test.ts (22 tests) 168ms
+ ✓ src/domain/calculations/preproduction.test.ts (5 tests) 157ms
+ ✓ src/domain/calculations/structure.test.ts (8 tests) 92ms
+ ✓ src/domain/showcase-projects.test.ts (3 tests) 86ms
+ ✓ src/domain/engine-release-gate.test.ts (1 test) 85ms
+ ✓ src/domain/quick-project.test.ts (4 tests) 73ms
+ ✓ src/domain/published-profile-catalog.test.ts (4 tests) 65ms
+ ✓ src/domain/calculations/calculations.test.ts (16 tests) 61ms
+ ✓ src/components/planning/presentation-scene.test.ts (3 tests) 61ms
+ ✓ src/infrastructure/analysis/spatial-transport.test.ts (3 tests) 29ms
+ ✓ src/domain/resistance-integrity.test.ts (8 tests) 35ms
+ ✓ src/domain/connection-geometry-audit.test.ts (8 tests) 20ms
+ ✓ src/infrastructure/analysis/local-mixed-lifecycle.test.ts (6 tests) 21ms
+ ✓ src/domain/resistance-elastic-reference.test.ts (4 tests) 14ms
+ ✓ src/domain/readiness-audit.test.ts (3 tests) 12ms
+ ✓ src/components/planning/camera-fit.test.ts (5 tests) 8ms
+ ✓ src/domain/wind-external-references.test.ts (3 tests) 6ms
+ ✓ src/domain/axial-connection-minimum.test.ts (3 tests) 6ms
+
+ Test Files  47 passed (47)
+      Tests  388 passed (388)
+   Start at  16:15:45
+   Duration  267.23s (tests 94%, import 6%)
+
+JSON report written to C:/Users/Usuario/Desktop/jpn-missao31/docs/validation/mission31/vitest.json
