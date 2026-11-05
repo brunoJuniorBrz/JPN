@@ -16,6 +16,7 @@
       {"report": "mixed-python.xml", "passed": 28}
     ],
     "realBrowserFlows": {
+      "completeCiDiagnostic5f7f286": "75 of 86 passed; 11 legacy navigation failures in planning/platform/profile tests were corrected by following result tabs, opening 2D/cutting explicitly, and searching P9 before bounded selection; all 11 then passed locally, assertions and timeouts preserved",
       "declaredDesktopMobile": "2 passed; saved owner project, API/Python, manual displacement, export, restore, stale rejection and recalculation",
       "generatedBackup": "1 passed; actual imported copy sent to Python; legacy golden coordinates/members/displacements preserved; DXF exported",
       "coldformedDesktopMobile": "2 passed; real sectionproperties and resistance workers, 20-second cap unchanged",

@@ -133,6 +133,7 @@ for (const width of [375, 1440]) test(`exemplo antigo abre demonstração sólid
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole("button", { name: "Voltar ao meu projeto" }).click();
   await expect(canvas).toHaveAttribute("data-solid-count", "0");
+  await page.getByRole("searchbox", { name: "Buscar peça por ID ou categoria" }).fill("P9");
   await page.getByLabel("Selecionar peça no desenho").selectOption("P9");
   await page.getByRole("button", { name: "Cadastrar dimensões", exact: true }).click();
   const fields = page.locator("details.technical-details").filter({ has: page.getByLabel("Família geométrica 3D") }).first();

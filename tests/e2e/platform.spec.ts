@@ -3,6 +3,13 @@ import { planningExample } from "../../src/domain/planning-example";
 import { emptySnapshot } from "../../src/domain/models";
 import { sectionDataSchema } from "../../src/domain/structure";
 import { trussGeometry } from "../../src/domain/analysis";
+import { openEngineeringTool, openResultTab } from "./result-tabs";
+
+async function openCutting(page: Page) {
+  await openResultTab(page,"Materiais");
+  const panel=page.locator(".result-cutting-details");
+  if(await panel.getAttribute("open")===null)await panel.locator(":scope > summary").click();
+}
 
 function fixture() {
   const p = planningExample(); p.isExample = false;
@@ -38,21 +45,23 @@ for (const width of [320, 375, 768, 1440]) test(`pré-projeto, corte, revisão, 
   await page.getByLabel("Selecionar peça no desenho").selectOption("T1-BS1");
   await expect(page.getByRole("status").filter({ hasText: "T1-BS1" })).toBeVisible();
   await page.getByRole("button", { name: "Voltar às vistas 2D" }).click();
+  await openCutting(page);
   await page.getByLabel("Espessura do corte (mm)").fill("3");
   await page.getByLabel("Perda em cada extremidade (mm)").fill("10");
   await page.getByLabel("Sobra mínima aproveitável (mm)").fill("500");
   await expect(page.getByTestId("cutting-results")).toContainText("barras comerciais estimadas");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   const cut = page.waitForEvent("download"); await page.getByRole("button", { name: "Baixar simulação de corte em PDF" }).click(); expect((await cut).suggestedFilename()).toMatch(/simulacao-corte.*\.pdf$/);
-  await page.getByRole("button", { name: "Revisões e desenhos", exact: true }).click();
+  await openResultTab(page,"Arquivos");
   await page.getByLabel("Identificação da revisão").fill("R01 de levantamento"); await page.getByLabel("Responsável pelo registro").fill("Engenheiro do teste");
   await page.getByRole("button", { name: "Registrar revisão preliminar" }).click();
   await expect(page.getByText("R01 de levantamento", { exact: false }).first()).toBeVisible();
   const dxf = page.waitForEvent("download"); await page.getByRole("button", { name: "Baixar desenho em DXF" }).click(); await (await dxf).saveAs(`test-results/cad/e2e-${width}.dxf`);
   const svg = page.waitForEvent("download"); await page.getByRole("button", { name: "Baixar desenho em SVG" }).click(); expect((await svg).suggestedFilename()).toMatch(/\.svg$/);
+  await openResultTab(page,"Materiais");
   await page.getByRole("button", { name: "Atualizar quantitativos no orçamento" }).click();
   await page.getByRole("button", { name: "Salvar levantamento", exact: true }).click(); await page.reload();
-  await page.getByRole("button", { name: "Revisões e desenhos", exact: true }).click();
+  await openResultTab(page,"Arquivos");
   await expect(page.getByRole("button", { name: "Copiar revisão para rascunho" })).toHaveCount(1);
   await page.getByRole("button", { name: "Orçamento de venda", exact: true }).click();
   const steps = page.getByRole("navigation", { name: "Etapas do projeto" }); await steps.getByRole("button", { name: "Resumo" }).click();
@@ -66,7 +75,7 @@ test("análise real de tesoura e invalidação ao alterar a carga", async ({ pag
   const p = await seed(page), nodes = trussGeometry(p).nodes;
   const left = nodes.find(n => n.xMm === 0 && n.yMm === 3200)!.id, right = nodes.find(n => n.xMm === 10000 && n.yMm === 3200)!.id;
   const load = nodes.filter(n => n.xMm === 5000).sort((a, b) => b.yMm - a.yMm)[0].id;
-  await page.getByRole("button", { name: "Análise disponível", exact: true }).click();
+  await openEngineeringTool(page,"Análise disponível");
   await page.getByRole("button", { name: "Configurar tesoura isolada", exact: true }).click();
   await page.getByLabel("Hipótese declarada:", { exact: false }).check();
   await page.getByRole("button", { name: "Adicionar apoio da tesoura" }).click();
@@ -94,9 +103,10 @@ test("exemplo completo nasce apenas ao clicar e preserva a configuração na rec
   await page.goto("/");
   await page.getByRole("button", { name: "Abrir exemplo completo de pré-projeto", exact: true }).click();
   await expect(page.getByTestId("takeoff-totals")).toContainText("130");
+  await openCutting(page);
   await expect(page.getByTestId("cutting-results")).toContainText("barras comerciais estimadas");
-  await page.reload(); await expect(page.getByTestId("cutting-results")).toBeVisible();
-  await page.getByRole("button", { name: "Análise disponível", exact: true }).click();
+  await page.reload(); await openCutting(page); await expect(page.getByTestId("cutting-results")).toBeVisible();
+  await openEngineeringTool(page,"Análise disponível");
   await page.getByRole("button", { name: "Executar análise experimental" }).click();
   await expect(page.getByTestId("analysis-results")).toContainText("SHA-256");
 });

@@ -9,6 +9,7 @@ for (const width of [390, 1440]) test(`levantamento sem preços, revisão ao fin
   await expect(page.getByTestId("takeoff-totals")).toContainText("123");
   await expect(page.getByTestId("takeoff-totals")).toContainText("201");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole("button", { name: "Voltar às vistas 2D", exact: true }).click();
   await page.getByRole("button", { name: "Uma tesoura", exact: true }).click();
   await page.getByLabel("Selecionar peça no desenho").selectOption("T1-BS1");
   await expect(page.getByRole("status").filter({ hasText: "T1-BS1" })).toContainText("2,512");
@@ -53,7 +54,7 @@ test("cria levantamento com perfis pendentes e preserva os dados no backup", asy
   await openResultTab(page, "Arquivos");
   await expect(page.getByRole("button", { name: "Baixar lista em PDF" })).toBeEnabled();
   await openResultTab(page, "Engenharia");
-  await expect(page.getByText("Pilares: perfil não definido.", { exact: true })).toBeVisible();
+  await expect(page.locator("#result-panel-engineering").getByRole("listitem").filter({hasText:/^Pilares: perfil não definido\./})).toBeVisible();
   await page.getByRole("button", { name: "Salvar levantamento" }).click();
   const snapshot = await page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!));
   expect(snapshot.version).toBe(4); const project = snapshot.projects.find((p: { name: string }) => p.name === "Levantamento sem preços");
