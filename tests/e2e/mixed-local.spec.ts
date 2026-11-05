@@ -20,7 +20,7 @@ test("health BUSY transitório espera o executor e recupera sem intervenção", 
   await page.getByLabel("Altura (m)").fill("4");
   await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
   await page.getByRole("button", { name: "Salvar levantamento" }).click();
-  await page.getByRole("button", { name: "Análise Estrutural Experimental", exact: true }).click();
+  await openEngineeringTool(page, "Análise Estrutural Experimental");
   const panel = page.getByTestId("mixed-workspace");
   await expect(panel.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1", { timeout: 40000 });
   expect(busyChecks).toBe(3);

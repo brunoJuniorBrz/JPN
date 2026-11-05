@@ -2,6 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "git": {
     "deploymentEnabled": {
+      "main": false,
+      "integration/jpn-functional-main": false,
       "feat/roof-area-load-path": false,
       "audit/mission21-independent": false,
       "feat/resistance-elastic-reference": false,

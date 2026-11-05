@@ -9,6 +9,7 @@ import { useData } from "@/components/data-provider";
 import { downloadBlob, exportFilename } from "@/lib/exports/proposal";
 import { groupMaterialsForDisplay, summarizePending, locatePending, locatePendingGroup, type PendingTarget } from "./result-presentation";
 import { StructurePreview } from "./structure-preview";
+import { DeclaredModelSummary } from "./declared-model-summary";
 
 export type ResultSection = "model" | "materials" | "engineering" | "files";
 const sections: {id: ResultSection; label: string}[] = [
@@ -18,7 +19,12 @@ const sections: {id: ResultSection; label: string}[] = [
   {id:"files",label:"Arquivos"},
 ];
 
-export function TakeoffSummary({ project, onConfigureProfile, onEditStructure, startIn3D = false,
+type SummaryProps={project:Project;onConfigureProfile?:(role:PieceRole)=>void;onEditStructure?:()=>void;startIn3D?:boolean;open3DRequest?:number;activeSection?:ResultSection;onSectionChange?:(section:ResultSection)=>void;onResolvePending?:(target:PendingTarget)=>void};
+export function TakeoffSummary(props:SummaryProps){
+  if(props.project.workspace.physicalStructure)return <DeclaredModelSummary project={props.project} activeSection={props.activeSection??"model"} onSectionChange={props.onSectionChange??(()=>{})}/>;
+  return <GeneratedTakeoffSummary {...props}/>;
+}
+function GeneratedTakeoffSummary({ project, onConfigureProfile, onEditStructure, startIn3D = false,
   open3DRequest = 0, activeSection = "model", onSectionChange = () => {}, onResolvePending }: {
   project: Project; onConfigureProfile?: (role: PieceRole) => void; onEditStructure?: () => void;
   startIn3D?: boolean; open3DRequest?: number;

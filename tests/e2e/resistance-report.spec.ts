@@ -1,9 +1,10 @@
+import { openEngineeringTool } from "./result-tabs";
 import { expect,test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
 for(const width of [375,1440])test(`M23 solicitações reais, relatório e seleção 3D em ${width}px`,async({page})=>{
   test.setTimeout(120000);await page.setViewportSize({width,height:950});const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
-  await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");await page.getByRole("button",{name:"Gerar modelo 3D"}).click();await page.getByRole("button",{name:"Análise Estrutural Experimental",exact:true}).click();
+  await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");await page.getByRole("button",{name:"Gerar modelo 3D"}).click();await openEngineeringTool(page, "Análise Estrutural Experimental");
   const p=page.getByTestId("mixed-workspace");await p.getByRole("button",{name:"Abrir exemplo de vento zonal",exact:true}).click();await expect(p.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:60000});
   await p.getByRole("button",{name:"Executar análise mista local",exact:true}).click();const report=p.getByTestId("resistance-report");await expect(report).toContainText("M23 parcial",{timeout:30000});
   await expect(report).toContainText("NÃO APROVADA PARA FABRICAÇÃO");
@@ -24,7 +25,7 @@ for(const width of [375,1440])test(`M23 solicitações reais, relatório e sele�
 
 for(const width of [375,1440])test(`cadastro resistente, seção Python e limite de flecha em ${width}px`,async({page})=>{
   test.setTimeout(120000);await page.setViewportSize({width,height:950});
-  await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");await page.getByRole("button",{name:"Gerar modelo 3D"}).click();await page.getByRole("button",{name:"Análise Estrutural Experimental",exact:true}).click();
+  await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");await page.getByRole("button",{name:"Gerar modelo 3D"}).click();await openEngineeringTool(page, "Análise Estrutural Experimental");
   const p=page.getByTestId("mixed-workspace");await p.getByRole("button",{name:"Abrir exemplo de vento zonal",exact:true}).click();await expect(p.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:60000});
   async function setBase(fy:string){
     await p.getByTestId("structural-loads").locator(":scope > summary").click();await p.getByLabel("Peça da carga uniforme").selectOption("TE1-V1");await p.getByLabel("Família real do perfil").selectOption("cold-formed");

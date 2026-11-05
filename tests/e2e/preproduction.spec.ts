@@ -1,3 +1,4 @@
+import { openResultTab } from "./result-tabs";
 import { expect,test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
@@ -13,7 +14,7 @@ for(const width of [375,1440]){
     await page.getByLabel("Altura (m)").fill("4");
     await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
     await expect(page.getByTestId("takeoff-totals")).toBeVisible();
-    await page.getByRole("button",{name:"Pré-fabricação",exact:true}).click();
+    await openResultTab(page,"Materiais");
     const panel=page.getByTestId("preproduction-dossier");
     await expect(panel).toContainText("NÃO LIBERADO PARA COMPRA OU CORTE");
     await expect(panel).toContainText("pendentes ou obsoletos");

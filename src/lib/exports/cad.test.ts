@@ -6,6 +6,20 @@ import { createStructureDxf, createStructureSvg } from "./cad";
 import { createCuttingSimulationPdf } from "./cutting";
 import { planningExample } from "@/domain/planning-example";
 import { generateStructure } from "@/domain/calculations/structure";
+import { m34abProject } from "@/domain/test-support/m34ab-fixtures";
+
+it("exports declared bars in millimeters without deriving a roof or replacing their coordinates", () => {
+  const project=m34abProject(),structure=project.workspace.physicalStructure!;
+  const parsed=new DxfParser().parseSync(createStructureDxf(project))!;
+  const lines=parsed.entities.filter(e=>e.type==="LINE") as unknown as {vertices:{x:number;y:number;z:number}[]}[];
+  expect(parsed.header.$INSUNITS).toBe(4);
+  expect(lines).toHaveLength(structure.pieces.length);
+  structure.pieces.forEach((piece,i)=>{
+    const start=structure.nodes.find(n=>n.id===piece.start)!,end=structure.nodes.find(n=>n.id===piece.end)!;
+    expect(lines[i].vertices).toEqual([{x:start.x,y:start.y,z:start.z},{x:end.x,y:end.y,z:end.z}]);
+  });
+  expect(()=>createStructureSvg(project)).toThrow(/SVG/);
+});
 
 it("reabre DXF com leitor independente, conserva coordenadas 3D/mm e não injeta texto em SVG", () => {
   const p = planningExample(); p.name = '<script>alert("X")</script>'; p.planning!.typology = "gable"; p.planning!.overhangStartM = .5;

@@ -8,7 +8,9 @@ import { buildResistanceReport, assertResistanceReportCurrent, type ResistanceRe
 import { buildResistanceAssessment,type MemberExecution } from "@/domain/resistance-assessment";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/domain/models";
-import { generateStructure } from "@/domain/calculations/structure";
+import { resolvePhysicalStructure } from "@/domain/physical-structure";
+import { restoreMixedAnalysis } from "@/domain/restore-mixed-analysis";
+import type { StructureModel } from "@/domain/structure";
 import { structureSignature } from "@/domain/calculations/project-basis";
 import { windReferenceProject } from "@/domain/examples/wind-project";
 import { roofAreaReferenceProject } from "@/domain/examples/roof-area-project";
@@ -25,6 +27,7 @@ import { Field, Input, Select } from "@/components/ui";
 import { downloadText } from "@/lib/format";
 import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { Structure3D } from "./structure-3d";
+import { PhysicalLineView } from "./physical-line-view";
 
 type Prepared = Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>>;
 type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; jointActions: JointActionTrace | null;designExecutions?:MemberExecution[] };
@@ -33,7 +36,8 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
   const [example, setExample] = useState<Project | null>(null), [pane, setPane] = useState("prepare");
   const active = example ?? project, draft = active.workspace.spatialPreparation ?? newSpatialPreparation(active);
   const signature = structureSignature(active), identity = JSON.stringify([example ? "example" : "work", active.id, signature, draft]);
-  const model = useMemo(() => generateStructure(active).model, [active]);
+  const model = useMemo(() => resolvePhysicalStructure(active).model, [active]);
+  const [restored,setRestored]=useState(false);
   const connectivity = useMemo(() => { try { return model ? { inspected: inspectConnectivity(model), error: "" } : { error: "Geometria incompleta." }; } catch (e) { return { error: (e as Error).message }; } }, [model]);
   const [connectionNodeId,setConnectionNodeId]=useState(""),[inspectNodes,setInspectNodes]=useState(false);
   const [source, setSource] = useState(""), [confirm, setConfirm] = useState(false);
@@ -65,8 +69,8 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
     })().catch(e => { if (!controller.signal.aborted) setHealth(`${(e as Error).message} No modo local, inicie com pnpm dev:structural; no modo remoto, confira o acesso de operador e a configuração do servidor.`); });
     return () => controller.abort();
   }, [healthRevision]);
-  function invalidate() { ticket.current.value++; request.current?.abort(); setSession(null); setBusyIdentity(null); setError(""); }
-  function edit(patch: Partial<Project>) { invalidate(); if (example) setExample({ ...example, ...patch }); else onChange(patch); }
+  function invalidate(clear=true) { ticket.current.value++; request.current?.abort(); if(clear)setSession(null); setBusyIdentity(null); setError(""); }
+  function edit(patch: Partial<Project>) { invalidate(false); if (example) setExample({ ...example, ...patch }); else onChange(patch); }
   function switchScope(next: Project | null) { invalidate(); setExample(next); setPane("prepare"); setPieceId(""); setSegmentId(""); setConfirm(false); setSource(""); }
   const current = session?.identity === identity ? session : null;
   const selectedCombo = current && (current.result.combinations[combo] ? combo : Object.keys(current.result.combinations)[0]);
@@ -88,7 +92,7 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
   }, [current, result]);
   async function execute(includeConnections=false) {
     const controller = new AbortController(), mine = ++ticket.current.value; request.current?.abort(); request.current = controller;
-    setBusyIdentity(identity); setError(""); setSession(null);
+    setBusyIdentity(identity); setError(""); setSession(null);setRestored(false);
     const timeout = setTimeout(() => controller.abort(), 33000);
     try {
       const prepared = await (draft.loading ? adaptLoadedMixedProject(active) : adaptMixedProject(active)); if (controller.signal.aborted || ticket.current.value !== mine) return;
@@ -110,6 +114,16 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
     finally { clearTimeout(timeout); if (ticket.current.value === mine) setBusyIdentity(null); }
   }
   function exportJSON(value: unknown, name: string) { downloadText(JSON.stringify(value, null, 2), name); }
+  async function restore(file:File){
+    const mine=++ticket.current.value;request.current?.abort();setError("");
+    try{
+      if(file.size>5*1024*1024)throw Error("Resultado excede 5 MB.");
+      const loaded=await restoreMixedAnalysis(active,await file.text());
+      const resistance=await buildResistanceReport(active,loaded.prepared,loaded.result);
+      if(ticket.current.value!==mine)return;
+      setSession({identity,prepared:loaded.prepared,result:loaded.result,execution:loaded.execution,resistance,resistanceError:"",connections:null,connectionError:"",jointActions:null});setRestored(true);setPane("results");setCombo(Object.keys(loaded.result.combinations)[0]);
+    }catch(e){if(ticket.current.value===mine)setError(`Resultado não restaurado: ${e instanceof Error?e.message:"arquivo inválido"}`);}
+  }
   async function exportResistance(){
     if(!current?.resistance)return;const mine=ticket.current.value;
     try{
@@ -124,6 +138,9 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
     <div className="actions"><button className="button secondary" onClick={() => switchScope(mixedReferenceProject())}>Abrir exemplo misto independente</button><button className="button secondary" onClick={()=>switchScope(loadedMixedReferenceProject())}>Abrir exemplo de peso e cargas</button><button className="button secondary" onClick={()=>switchScope(roofAreaReferenceProject())}>Abrir exemplo de ações por área</button><button className="button secondary" onClick={()=>switchScope(windReferenceProject())}>Abrir exemplo de vento zonal</button>{example && <button className="button secondary" onClick={() => switchScope(null)}>Voltar à obra</button>}</div>
     <p className="notice" data-testid="mixed-scope">{example ? "EXEMPLO SINTÉTICO INDEPENDENTE — 10 × 20 × 4 m. Pilares, banzos, terças e montantes são pórticos rígidos; 36 diagonais são axiais. 12 bases engastadas, propriedades e forças sintéticas explícitas. Não altera nem salva sua obra." : "OBRA ATUAL — somente suas declarações físicas. Dados ausentes ou modelos instáveis bloqueiam o cálculo."}</p>
     <p role="status" data-testid="mixed-health">{health}</p>
+    {session&&!current&&<p role="status" className="notice" data-testid="mixed-stale">Resultado obsoleto: os dados físicos mudaram. Execute novamente; nenhum resultado anterior será usado.</p>}
+    {current&&<p role="status" data-testid="mixed-result-state">{restored?"Resultado restaurado de arquivo; origem numérica não comprovada nesta sessão. Execute novamente para recalcular.":"Resultado calculado pelo executor para esta revisão."} Fabricação bloqueada.</p>}
+    <details className="technical-details"><summary>Recuperar resultado exportado</summary><p>O arquivo deve corresponder exatamente ao projeto atual, suas propriedades e revisão. Restaurar um arquivo não comprova sua origem numérica nem aprova a estrutura.</p><label>Resultado misto JSON<input type="file" accept=".json,application/json" aria-label="Restaurar resultado misto JSON" disabled={busy} onChange={e=>{const file=e.target.files?.[0];e.target.value="";if(file)void restore(file);}}/></label></details>
     <button className="button secondary" disabled={busy} onClick={() => { setReady(false); setHealth("Verificando Python…"); setHealthRevision(v => v + 1); }}>Verificar executor {ready ? (executionMode==="remote"?"remoto":"local") : ""}</button>
     <nav className="physical-prep-tabs" aria-label="Fluxo misto"><button className="button secondary" aria-pressed={pane === "prepare"} onClick={() => setPane("prepare")}>Preparação mista</button><button className="button secondary" aria-pressed={pane === "results"} onClick={() => setPane("results")}>Resultados 3D</button></nav>
     {pane === "prepare" && <>
@@ -139,14 +156,14 @@ export function MixedAnalysisWorkspace({ project, onChange }: { project: Project
         <button className="button secondary" disabled={!confirm || !source.trim() || !connectivity.inspected} onClick={() => edit({ workspace: { ...active.workspace, spatialPreparation: { ...draft, connectivity: { version: 1, geometrySignature: signature, reviewSource: source, junctions: connectivity.inspected!.junctions.map(j => ({ nodeId: j.nodeId, pieceIds: j.pieceIds, decision: "connect" })) } } } })}>Registrar conectividade revisada</button>
       </details>
     </>}
-    <div className="actions"><button className="button secondary" disabled={!ready||busy} onClick={()=>void execute(true)}>Calcular ações de ligações</button><button className="button" disabled={!ready || busy} onClick={() => void execute()}>{busy ? "Executando Python…" : `Executar análise mista ${executionMode==="remote"?"online":"local"}`}</button>{busy && <button className="button secondary" onClick={invalidate}>Cancelar execução</button>}</div>
+    <div className="actions"><button className="button secondary" disabled={!ready||busy} onClick={()=>void execute(true)}>Calcular ações de ligações</button><button className="button" disabled={!ready || busy} onClick={() => void execute()}>{busy ? "Executando Python…" : `Executar análise mista ${executionMode==="remote"?"online":"local"}`}</button>{busy && <button className="button secondary" onClick={()=>invalidate()}>Cancelar execução</button>}</div>
     {error && <p className="field-error" role="alert">{error}</p>}
     {error&&stabilityFailureExplanation(error.split(":")[0])&&<p data-testid="connection-stability-failure">{stabilityFailureExplanation(error.split(":")[0])}</p>}
     {pane === "results" && <>
       {!current && <p className="notice" data-testid="mixed-no-results">Sem resultado atual. Execute após revisar os dados; alterações invalidam resultados anteriores.</p>}
       <Field label="Peça na análise mista"><Select value={selectedPiece} onChange={e => { setPieceId(e.target.value); setSegmentId(""); setNodeId(""); }}>{model?.pieces.map(p => <option key={p.id} value={p.id}>{p.id} · {p.role}</option>)}</Select></Field>
       <label className="checkbox-label"><input type="checkbox" checked={inspectNodes} onChange={e=>setInspectNodes(e.target.checked)}/>Selecionar nós físicos no 3D</label>
-      {model && <div data-testid="mixed-viewer"><Structure3D inspectNodes={inspectNodes} selectedNodeId={connectionNodeId} onSelectNode={id=>{setConnectionNodeId(id);setNodeId(id);}} model={model} roof={active.roof} planning={active.planning} projectName={active.name} selected={selectedPiece} onSelect={id => { setPieceId(id); setSegmentId(""); setNodeId(""); }} analysisColors={colors ?? {}} /></div>}
+      {model && <div data-testid="mixed-viewer">{active.workspace.physicalStructure?<PhysicalLineView model={model} selected={selectedPiece} onSelect={id=>{setPieceId(id);setSegmentId("");}} selectedNodeId={connectionNodeId} onSelectNode={id=>{setConnectionNodeId(id);setNodeId(id);}}/>:<Structure3D inspectNodes={inspectNodes} selectedNodeId={connectionNodeId} onSelectNode={id=>{setConnectionNodeId(id);setNodeId(id);}} model={model as StructureModel} roof={active.roof} planning={active.planning} projectName={active.name} selected={selectedPiece} onSelect={id => { setPieceId(id); setSegmentId(""); setNodeId(""); }} analysisColors={colors ?? {}} />}</div>}
       <p>Legenda: pórtico azul; axial em tração turquesa; compressão violeta; nulo cinza; sinais diferentes entre segmentos ocre. Seleção laranja. Cores não verificam resistência.</p>
       {current && result && <div data-testid="mixed-results">
         <p>{current.prepared.request.nodes.length} nós · {new Set(current.prepared.mapping.members.map(m => m.originalId)).size} peças · {current.prepared.request.members.length} segmentos · {current.prepared.request.members.filter(m => m.kind === "axial").length} axiais.</p>

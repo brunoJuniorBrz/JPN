@@ -14,6 +14,7 @@ import {
 import type { Material } from "@/domain/models";
 import { SpatialAdapterPanel } from "./spatial-adapter-panel";
 import { mixedPreparationReview } from "@/domain/mixed-adapter";
+import { MemberPhysicalCatalogPanel } from "./member-physical-catalog-panel";
 
 const numberFields = [
   ["eGpa", "Elasticidade E (GPa)"], ["gGpa", "Cisalhamento G (GPa)"],
@@ -130,6 +131,7 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
         <button type="button" key={key} className={section === key ? "button" : "button secondary"} aria-pressed={section === key} onClick={() => setSection(key)}>{label}</button>)}
     </nav>
     {section === "profiles" && <>
+      {mixed&&<MemberPhysicalCatalogPanel project={project} draft={draft} onChange={change}/>}
       <h4>Especificar propriedades por grupo</h4><p className="field-hint">Esses campos são físicos, separados das seções de visualização. Um valor sem fonte não é considerado especificado.</p>
       <Field label="Grupo de peças"><Select value={role} onChange={e => setRole(e.target.value as typeof role)}>
         {pieceRoles.map(key => <option key={key} value={key}>{roleLabels[key]}</option>)}

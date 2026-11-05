@@ -1,10 +1,11 @@
+import { openEngineeringTool } from "./result-tabs";
 import { expect,test,type Locator,type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 async function download(page:Page,scope:Locator,name:string){const wait=page.waitForEvent("download");await scope.getByRole("button",{name,exact:true}).click();const file=await wait;return JSON.parse(await readFile((await file.path())!,"utf8"));}
 for(const width of [375,1440])test(`seção física → PyNite real → resistência de tração NBR14762 em ${width}px`,async({page})=>{
   test.setTimeout(180000);page.setDefaultTimeout(10000);await page.setViewportSize({width,height:950});const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
   await page.goto("/projetos/novo");for(const [label,value]of [["Largura (m)","10"],["Comprimento (m)","20"],["Altura (m)","4"]])await page.getByLabel(label,{exact:true}).fill(value);
-  await page.getByRole("button",{name:"Gerar modelo 3D",exact:true}).click();await page.getByRole("button",{name:"Análise Estrutural Experimental",exact:true}).click();
+  await page.getByRole("button",{name:"Gerar modelo 3D",exact:true}).click();await openEngineeringTool(page, "Análise Estrutural Experimental");
   const p=page.getByTestId("mixed-workspace");await p.getByRole("button",{name:"Abrir exemplo de vento zonal",exact:true}).click();await expect(p.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:60000});
   await p.getByRole("button",{name:"Preparação mista",exact:true}).click();await p.getByTestId("structural-loads").locator(":scope > summary").click();
   async function preparation(){await p.getByRole("button",{name:"Preparação mista",exact:true}).click();if(!await p.getByLabel("Peça da carga uniforme",{exact:true}).isVisible())await p.getByTestId("structural-loads").locator(":scope > summary").click();}

@@ -1,0 +1,24 @@
+Applied patch to 'src/app/globals.css' cleanly.
+Falling back to direct application...
+Falling back to direct application...
+Applied patch to 'src/components/planning/planning-editor.tsx' cleanly.
+Applied patch to 'src/components/planning/project-workbench.tsx' with conflicts.
+Falling back to direct application...
+Falling back to direct application...
+Applied patch to 'src/components/planning/structure-3d.tsx' cleanly.
+Applied patch to 'src/components/planning/structure-form.tsx' with conflicts.
+Applied patch to 'src/components/planning/structure-preview.tsx' cleanly.
+Applied patch to 'src/components/planning/takeoff-summary.tsx' cleanly.
+Applied patch to 'tests/e2e/mixed-local.spec.ts' cleanly.
+Applied patch to 'tests/e2e/planning.spec.ts' cleanly.
+Applied patch to 'tests/e2e/profiles-3d.spec.ts' cleanly.
+Applied patch to 'tests/e2e/quick-project.spec.ts' cleanly.
+Falling back to direct application...
+Falling back to direct application...
+Applied patch to 'tests/e2e/spatial-adapter.spec.ts' cleanly.
+Applied patch to 'tests/e2e/spatial-analysis.spec.ts' cleanly.
+Applied patch to 'tests/e2e/spatial-coordination.spec.ts' cleanly.
+Applied patch to 'tests/e2e/spatial-preparation.spec.ts' cleanly.
+Falling back to direct application...
+U src/components/planning/project-workbench.tsx
+U src/components/planning/structure-form.tsx
