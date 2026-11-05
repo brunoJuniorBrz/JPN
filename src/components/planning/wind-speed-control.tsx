@@ -2,7 +2,7 @@
 import { useMemo,useState } from "react";
 import type { Project } from "@/domain/models";
 import type { WindDeclaration } from "@/domain/wind-contracts";
-import { generateStructure } from "@/domain/calculations/structure";
+import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { calculateWindSpeed } from "@/domain/wind-speed";
 import { applyWindSpeed } from "@/domain/apply-wind-speed";
 import { Field,Input,Select } from "@/components/ui";
@@ -22,7 +22,7 @@ function SpeedForm({project,onChange,wind,caseId}:Props&{wind:WindDeclaration;ca
   const existing=wind.cases.find(c=>c.id===caseId)!.speedCalculation;
   const [category,setCategory]=useState(existing?.category??""),[size,setSize]=useState(existing?.sizeClass??""),[s3,setS3]=useState(existing?String(existing.s3):"");
   const [source,setSource]=useState(existing?.reference.source??""),[revision,setRevision]=useState(existing?.reference.revision??""),[responsible,setResponsible]=useState(existing?.reference.responsible??""),[confirmed,setConfirmed]=useState(false),[message,setMessage]=useState("");
-  const height=useMemo(()=>Math.max(...(generateStructure(project).model?.nodes.map(n=>n.z)??[]))/1000,[project]);
+  const height=useMemo(()=>Math.max(...(resolvePhysicalStructure(project).model?.nodes.map(n=>n.z)??[]))/1000,[project]);
   const recorded=existing?calculateWindSpeed(existing):null;
   return <div><p>V0 declarado: {wind.building.basicVelocityMS} m/s; fonte: {wind.building.velocityReference.source}. Altura calculada do topo em relação à base z=0: {Number.isFinite(height)?height:"pendente"} m.</p>
     <Field label="Categoria de rugosidade para S2"><Select value={category} onChange={e=>setCategory(e.target.value as typeof category)}><option value="">Declare</option>{["I","II","III","IV","V"].map(c=><option key={c}>{c}</option>)}</Select></Field>

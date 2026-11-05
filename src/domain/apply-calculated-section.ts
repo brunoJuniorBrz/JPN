@@ -1,5 +1,5 @@
 import type { Project } from "./models";
-import { generateStructure } from "./calculations/structure";
+import { resolvePhysicalStructure } from "./physical-structure";
 import { sectionAnalysisRequestSchema,sectionAnalysisResultSchema } from "./section-analysis";
 import { mixedInputHash } from "./mixed-analysis";
 
@@ -7,7 +7,8 @@ import { mixedInputHash } from "./mixed-analysis";
  * dependent result. Does not edit commercial/visual profile specifications. */
 export async function applyCalculatedSection(project:Project,pieceId:string,input:unknown,value:unknown){
   const request=sectionAnalysisRequestSchema.parse(input),result=sectionAnalysisResultSchema.parse(value),draft=project.workspace.spatialPreparation;
-  const piece=generateStructure(project).model?.pieces.find(p=>p.id===pieceId),d=draft?.resistance?.find(d=>d.pieceId===pieceId);
+  const piece=resolvePhysicalStructure(project).model?.pieces.find(p=>p.id===pieceId),d=draft?.resistance?.find(d=>d.pieceId===pieceId);
+  if(draft?.physicalCatalog?.assignments.some(a=>a.pieceId===pieceId))throw Error("A peça usa seção por referência. Confira e registre os valores no catálogo físico; a aplicação ao grupo não altera sua atribuição individual.");
   if(!draft||!piece||!d?.geometry)throw Error("Geometria física atual da peça necessária.");
   const g=d.geometry,keys=request.geometry.shape==="i"?["height","width","webThickness","flangeThickness","insideRadius"]:["height","width","wallThickness","lip","insideRadius"];
   const computedDimensions=request.geometry as Record<string,unknown>;

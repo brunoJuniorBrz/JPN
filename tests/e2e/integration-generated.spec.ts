@@ -12,6 +12,7 @@ test("backup de projeto gerado -> cópia salva -> solver real sem substituir por
   await expect(page.getByText("Backup válido para importação",{exact:true})).toBeVisible();
   await page.getByRole("button",{name:"Adicionar cópias",exact:true}).click();
   await page.goto("/projetos");await page.getByRole("link",{name:source.name,exact:true}).click();
+  await expect(page).toHaveURL(/\/projetos\/[a-f0-9-]+$/);
   const ownerId=new URL(page.url()).pathname.split("/").at(-1)!;expect(ownerId).not.toBe(source.id);
   await page.getByRole("button",{name:/^4\s*Resultado$/}).click();
   await openEngineeringTool(page,"Análise Estrutural Experimental");const panel=page.getByTestId("mixed-workspace");
