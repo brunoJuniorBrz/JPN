@@ -1,1 +1,16 @@
-﻿{"status":"CHECKPOINT_USER_REQUESTED_CREDITS_4_PERCENT","phase1_ci_sha":"08e9f71cb7b33adc834382ecdc5bc7bf997674cd","phase1_ci_all_nine_passed":true,"private_validation_passed_before_final_oracle_selector_reorganization":10,"targeted_tests_passed_before_additional_precision_test":47,"public_full_suite_final_status":"IN_PROGRESS_AT_CHECKPOINT","new_sha_ci":"TO_CHECK_AFTER_PUSH","initial_misconfigured_private_run":"ABORTED: configuration accidentally merged public include patterns under private development environment; fixed config; not counted as full-suite success","m33a_complete":false,"protected_pdfs_or_extract_in_git":false,"computedStructuralApproval":false,"fabricationRelease":false}
+{
+  "status": "CHECKPOINT_USER_REQUESTED_CREDITS_4_PERCENT",
+  "phase1_ci_sha": "08e9f71cb7b33adc834382ecdc5bc7bf997674cd",
+  "phase1_ci_all_nine_passed": true,
+  "private_validation_passed_before_final_oracle_selector_reorganization": 10,
+  "targeted_tests_passed_before_additional_precision_test": 47,
+  "public_full_suite_final_status": "IN_PROGRESS_AT_CHECKPOINT",
+  "new_sha_ci": "TO_CHECK_AFTER_PUSH",
+  "initial_misconfigured_private_run": "ABORTED: configuration accidentally merged public include patterns under private development environment; fixed config; not counted as full-suite success",
+  "m33a_complete": false,
+  "protected_pdfs_or_extract_in_git": false,
+  "computedStructuralApproval": false,
+  "fabricationRelease": false,
+  "historicalSnapshot": true,
+  "supersededBy": "validation/m33a/completion.json"
+}
