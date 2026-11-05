@@ -1,0 +1,141 @@
+{
+  "schema_version": "jpn.ufsc2023.audit/1",
+  "case_id": "benvenuti-ufsc-2023",
+  "source_pdf": "https://repositorio.ufsc.br/bitstream/handle/123456789/248184/TCC_Davi%20Benvenuti.pdf?sequence=1",
+  "policy": {
+    "observations_are_source_issues_not_silently_fixed": true,
+    "oracle_values_are_independently_derived": true,
+    "FE_equivalence_claim_allowed": false,
+    "fabrication_release": false
+  },
+  "source_discrepancies": [
+    {
+      "id": "SRC-01",
+      "page": 55,
+      "description": "8m altura de beiral declarada; coluna considerada 7m com treliça 1m no deslocamento."
+    },
+    {
+      "id": "SRC-02",
+      "page": 131,
+      "description": "Fórmula de flecha mostra denominador 389; solução clássica biapoiada sob carga uniforme usa 384."
+    },
+    {
+      "id": "SRC-03",
+      "page": 73,
+      "description": "Produto impresso 0.25*8=1kN/m, mas aritmeticamente 2kN/m; pode existir fator omitido."
+    },
+    {
+      "id": "SRC-04",
+      "page": 69,
+      "description": "Texto diz que não considera sobrecarga nas longarinas, mas equação usa FG,k=FQ,k."
+    },
+    {
+      "id": "SRC-05",
+      "page": 59,
+      "description": "Pressão do vento inicialmente 0.903kN/m2 e mais tarde 0.904."
+    },
+    {
+      "id": "SRC-06",
+      "page": 68,
+      "description": "Tabela9 mostra unidade kN para momentos; não assumir kNm sem conferir."
+    },
+    {
+      "id": "SRC-07",
+      "page": 66,
+      "description": "Tabela8 dos banzos usa células mescladas; não atribuir demandas por barra superior/inferior."
+    },
+    {
+      "id": "SRC-08",
+      "page": 74,
+      "description": "Carga .28kN/m dos tirantes contrasta com fórmula publicada anterior."
+    },
+    {
+      "id": "SRC-09",
+      "page": 59,
+      "description": "Esquemas de vento não definem vetores globais e distribuição por nó."
+    },
+    {
+      "id": "SRC-10",
+      "page": 67,
+      "description": "0.904*(-1.4)*2.154=-2.7268kN/m, tabela usa -2.725kN/m."
+    }
+  ],
+  "missing_for_exact_model": [
+    {
+      "id": "nodes",
+      "needed": "Coordenadas de todos os nós exatos do arquivo SAP2000",
+      "status": "not_source_verified_for_exact_FE"
+    },
+    {
+      "id": "members",
+      "needed": "Conectividade e IDs completos das barras",
+      "status": "not_source_verified_for_exact_FE"
+    },
+    {
+      "id": "groups",
+      "needed": "Mapeamento barra→grupo dos esforços tabelados",
+      "status": "not_source_verified_for_exact_FE"
+    },
+    {
+      "id": "sections",
+      "needed": "A,Iy,Iz,J e rotação de cada seção por membro",
+      "status": "not_source_verified_for_exact_FE"
+    },
+    {
+      "id": "supports",
+      "needed": "DOFs, liberações, excentricidades e continuidade por nó",
+      "status": "not_source_verified_for_exact_FE"
+    },
+    {
+      "id": "loads",
+      "needed": "Forças por nó, direções e zonas de vento completas",
+      "status": "not_source_verified_for_exact_FE"
+    },
+    {
+      "id": "Cpi",
+      "needed": "Cpi governante explícito para F1 a F4",
+      "status": "not_source_verified_for_exact_FE"
+    },
+    {
+      "id": "3d",
+      "needed": "Geometria de tirantes e contraventamento, tensões e comportamento somente-tração",
+      "status": "not_source_verified_for_exact_FE"
+    },
+    {
+      "id": "sap2000",
+      "needed": "Arquivo de entrada do modelo acadêmico original",
+      "status": "not_source_verified_for_exact_FE"
+    },
+    {
+      "id": "appendix_H",
+      "needed": "Deslocamentos completos de cada ponto nas tabelas 25–36, não transcritos",
+      "status": "not_source_verified_for_exact_FE"
+    },
+    {
+      "id": "envelopes",
+      "needed": "Identidade do membro e combinação governante em cada máximo de grupo",
+      "status": "not_source_verified_for_exact_FE"
+    }
+  ],
+  "independent_arithmetic": {
+    "roof_footprint_m2": 3200,
+    "roof_sloped_area_m2": 3249.365158034384,
+    "ridge_from_eave_m": 11.5265396141693,
+    "frame_G_kN_m": 3.6,
+    "frame_Q_kN_m": 2,
+    "purlin_G_kN_m": 0.5385,
+    "purlin_wind_computed_kN_m": -2.7261024,
+    "purlin_wind_source_kN_m": -2.725,
+    "purlin_SLS_computed_kN_m": -0.5331606761749601,
+    "purlin_SLS_source_rounded_kN_m": -0.533,
+    "purlin_classical_flecha_384_mm": 4.321464447213456,
+    "purlin_source_flecha_rounded_mm": 4.3
+  },
+  "test_readiness": {
+    "data_tables": "reference_ready",
+    "purlin": "benchmark_ready_with_declared_beam_end_conditions",
+    "truss_columns": "blocked_until_exact_FE_reconstruction",
+    "full_3D_nonlinear": "blocked_until_bracing_tension_only_source_model",
+    "approval": "NOT_READY_BLOCKED"
+  }
+}
