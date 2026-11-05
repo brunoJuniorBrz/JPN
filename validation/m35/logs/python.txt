@@ -1,0 +1,99 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 12%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+........FFF............................................................. [ 98%]
+...........................                                              [100%]
+================================== FAILURES ===================================
+____________ test_cli_real_pass_with_machine_readable_no_approval _____________
+
+tmp_path = WindowsPath('C:/Users/Bruno/AppData/Local/Temp/pytest-of-Bruno/pytest-14/test_cli_real_pass_with_machin0')
+
+    def test_cli_real_pass_with_machine_readable_no_approval(tmp_path):
+        r=launch(tmp_path,sample())
+>       assert r.returncode==0, r.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "C:\Users\Bruno\Downloads\JPN-main\.tools\mission35-worktree\engine\check_single_bolt.py", line 11, in <module>
+E             from jpn_structural.single_bolt_14762 import BoltCheckError, check_single_bolt
+E         ModuleNotFoundError: No module named 'jpn_structural.single_bolt_14762'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\python\\python.exe', 'C:\\Users\\Bruno\\Downloa...import BoltCheckError, check_single_bolt\nModuleNotFoundError: No module named \'jpn_structural.single_bolt_14762\'\n').returncode
+
+tests\test_single_bolt_cli.py:23: AssertionError
+_________________ test_cli_real_fail_does_not_return_success __________________
+
+tmp_path = WindowsPath('C:/Users/Bruno/AppData/Local/Temp/pytest-of-Bruno/pytest-14/test_cli_real_fail_does_not_re0')
+
+    def test_cli_real_fail_does_not_return_success(tmp_path):
+        model=sample();model['demand']['shear_n']=40000
+        r=launch(tmp_path,model)
+>       assert r.returncode==2
+E       AssertionError: assert 1 == 2
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\python\\python.exe', 'C:\\Users\\Bruno\\Downloa...import BoltCheckError, check_single_bolt\nModuleNotFoundError: No module named \'jpn_structural.single_bolt_14762\'\n').returncode
+
+tests\test_single_bolt_cli.py:33: AssertionError
+__________________________ test_cli_rejects_bad_json __________________________
+
+tmp_path = WindowsPath('C:/Users/Bruno/AppData/Local/Temp/pytest-of-Bruno/pytest-14/test_cli_rejects_bad_json0')
+
+    def test_cli_rejects_bad_json(tmp_path):
+        root=Path(__file__).resolve().parents[1]
+        inp=tmp_path/'invalid.json';inp.write_text('{"a":1,"a":2}',encoding='utf8')
+        r=subprocess.run([sys.executable,str(root/'check_single_bolt.py'),str(inp)],capture_output=True,text=True,timeout=5)
+>       assert r.returncode==3
+E       AssertionError: assert 1 == 3
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\Bruno\\Downloads\\JPN-main\\.tools\\python\\python.exe', 'C:\\Users\\Bruno\\Downloa...import BoltCheckError, check_single_bolt\nModuleNotFoundError: No module named \'jpn_structural.single_bolt_14762\'\n').returncode
+
+tests\test_single_bolt_cli.py:41: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_single_bolt_cli.py::test_cli_real_pass_with_machine_readable_no_approval
+FAILED tests/test_single_bolt_cli.py::test_cli_real_fail_does_not_return_success
+FAILED tests/test_single_bolt_cli.py::test_cli_rejects_bad_json - AssertionEr...
+3 failed, 1680 passed in 58.05s
+Reference comparisons: 250/1000
+Reference comparisons: 500/1000
+Reference comparisons: 750/1000
+Reference comparisons: 1000/1000
+{
+  "status": "failed",
+  "pytest": {
+    "tests": 1683,
+    "failures": 3,
+    "errors": 0,
+    "skipped": 0,
+    "exit_code": 1
+  },
+  "max_absolute_deviation": {
+    "displacement_m": {
+      "absolute": 2.0459328675670463e-14,
+      "seed": 471
+    },
+    "reaction_n": {
+      "absolute": 1.6542617231607437e-07,
+      "seed": 471
+    },
+    "axial_n": {
+      "absolute": 1.680455170571804e-07,
+      "seed": 471
+    }
+  }
+}

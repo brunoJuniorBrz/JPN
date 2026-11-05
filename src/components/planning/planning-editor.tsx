@@ -7,6 +7,9 @@ import { newProject, projectSchema, type Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
 import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { PhysicalModelImport } from "./physical-model-import";
+import { DeclaredStructureEditor } from "./declared-structure-editor";
+import { RoofOutlinePanel } from "./roof-outline-panel";
+import { applyTomCommercial } from "@/domain/tom-commercial";
 import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { transferTakeoff } from "@/domain/calculations/project-basis";
 import { useData } from "@/components/data-provider";
@@ -82,6 +85,9 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
     {project.isExample && <p className="example-banner">EXEMPLO FICTÍCIO · Medidas, distribuição e perfis apenas para demonstrar o cálculo geométrico.</p>}
     {step !== 3 && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
     <PhysicalModelImport project={project} onImport={importModel}/>
+    <details className="technical-details"><summary>Referência comercial auditada — Tom</summary><p>Reproduz R$ 9.651,29 com 31 telhas e 107,65 m lineares, seis peças U e vinte peças Ue. Não cria tesouras, pilares, contorno ou propriedades. Reprodução de custo com margem zero; use orçamento vazio.</p><button type="button" className="button secondary" onClick={()=>{try{const next=applyTomCommercial(project);update({estimate:next.estimate});setMessage("Orçamento comercial do Tom carregado; nenhuma estrutura real foi presumida.");}catch(e){setMessage((e as Error).message);}}}>Carregar orçamento auditado do Tom</button></details>
+    <DeclaredStructureEditor key={project.id+JSON.stringify(project.workspace.physicalStructure)} project={project} onCommit={importModel}/>
+    {declared&&<RoofOutlinePanel key={project.id+JSON.stringify(project.workspace.roofOutline)} project={project} onChange={update}/>}
     <section className="panel workflow-panel"><nav className="workflow-steps planning-steps" aria-label="Etapas do levantamento">{workflowSteps.map((label, i) => <button key={label} type="button" className={step === i ? "current" : ""} aria-current={step === i ? "step" : undefined} onClick={() => go(i)}><span>{i + 1}</span>{label}</button>)}</nav><p className="workflow-progress">Passo {step + 1} de 4 — {workflowSteps[step]}</p>
       <div className="viewer-shortcut"><button type="button" className="button secondary" onClick={() => {
         if (preview.model) { go(3, true); return; }
