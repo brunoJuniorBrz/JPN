@@ -2,7 +2,8 @@
 
 Global Z up. Local axes are returned explicitly (PyNite T rows). Section forces
 are actions of the END portion on the START portion, expressed in local XYZ.
-Only nodal loading is supported: exact constant force/linear moment recovery.
+/1 supports nodal loads; /2 adds uniform local Fy/Fz member loads with exact
+quadratic moment recovery. No automatic gravity, wind or load generation.
 """
 import contextlib
 from importlib.metadata import version
@@ -86,6 +87,9 @@ def analyze_frame3d(raw):
     for load in data['nodal_loads']:
         for direction, key in zip(('FX', 'FY', 'FZ', 'MX', 'MY', 'MZ'), ('fx_n', 'fy_n', 'fz_n', 'mx_nm', 'my_nm', 'mz_nm')):
             model.add_node_load(load['node'], direction, load[key], load['case'])
+    v2 = data['schema_version'] == 'jpn.frame3d/2'
+    for load in data.get('member_uniform_loads', []):
+        model.add_member_dist_load(load['member'], load['direction'], load['w_n_m'], load['w_n_m'], case=load['case'])
     for combo in data['combinations']:
         model.add_load_combo(combo['id'], combo['factors'])
     try:
@@ -131,6 +135,9 @@ def analyze_frame3d(raw):
     combinations = {}
     length_scale = max(np.ptp(np.array(list(points.values())), axis=0).max(), 1e-5)
     reference = next(iter(points.values()))
+    member_uniform_loads = {}
+    for load in data.get('member_uniform_loads', []):
+        member_uniform_loads.setdefault(load['member'], []).append(load)
     for combo in data['combinations']:
         name = combo['id']; nodes = {}; members = {}
         force_sum = np.zeros(3); moment_sum = np.zeros(3); force_scale = moment_scale = 0.
@@ -140,11 +147,28 @@ def analyze_frame3d(raw):
             actions = element.f(name).ravel()
             axes = element.T()[:3, :3]
             start_force, start_moment = actions[:3], actions[3:6]
+            # Cut sign convention is preserved from /1: action of the END
+            # part on the START part. Uniform load resultants and their
+            # first moments are integrated exactly, not lumped at nodes.
+            local_w = np.zeros(3)
+            if v2:
+                for load in member_uniform_loads.get(mid, []):
+                    factor = combo['factors'].get(load['case'], 0)
+                    local_w[1 if load['direction'] == 'Fy' else 2] += factor * load['w_n_m']
             stations = []
             for x in np.linspace(0, m.L(), 5):
-                cut_force = -start_force
-                cut_moment = -start_moment + np.cross([x, 0, 0], start_force)
-                stations.append(dict(x_m=float(x), n_n=float(cut_force[0]), vy_n=float(cut_force[1]), vz_n=float(cut_force[2]), t_nm=float(cut_moment[0]), my_nm=float(cut_moment[1]), mz_nm=float(cut_moment[2])))
+                cut_force = -start_force - local_w * x
+                cut_moment = -start_moment + np.cross([x, 0, 0], start_force) + np.cross([x * x / 2, 0, 0], local_w)
+                station = dict(x_m=float(x), n_n=float(cut_force[0]), vy_n=float(cut_force[1]), vz_n=float(cut_force[2]),
+                               t_nm=float(cut_moment[0]), my_nm=float(cut_moment[1]), mz_nm=float(cut_moment[2]))
+                if v2:
+                    # Native beam interpolation includes the fixed-end
+                    # curvature due to uniform member loading, unlike
+                    # assigning the same load only to the end nodes.
+                    station['displacement_local_m'] = [
+                        float(m.deflection(axis, float(x), name)) for axis in ('dx', 'dy', 'dz')
+                    ]
+                stations.append(station)
             global_actions = element.T().T @ actions
             assembled[m.i_node.name] += global_actions[:6]; assembled[m.j_node.name] += global_actions[6:]
             members[mid] = dict(length_m=m.L(), local_axes=axes.tolist(), end_actions_local=actions.tolist(), stations=stations)
@@ -168,13 +192,30 @@ def analyze_frame3d(raw):
             force_scale += np.linalg.norm(nodal_loads[nid][:3]) + np.linalg.norm(reaction[:3])
             moment_scale += np.linalg.norm(nodal_loads[nid][3:]) + np.linalg.norm(reaction[3:])
             nodes[nid] = dict(translation_m=translation.tolist(), rotation_rad=rotation.tolist(), force_n=reaction[:3].tolist(), moment_nm=reaction[3:].tolist())
+        if v2:
+            for mid, member in model.members.items():
+                w_local = np.zeros(3)
+                for load in member_uniform_loads.get(mid, []):
+                    w_local[1 if load['direction'] == 'Fy' else 2] += combo['factors'].get(load['case'], 0) * load['w_n_m']
+                if not np.any(w_local):
+                    continue
+                element = next(iter(member.sub_members.values()))
+                # T maps global translations into local coordinates.
+                resultant = element.T()[:3, :3].T @ w_local * member.L()
+                midpoint = (points[member.i_node.name] + points[member.j_node.name]) / 2
+                force_sum += resultant
+                moment_sum += np.cross(midpoint - reference, resultant)
+                force_scale += np.linalg.norm(resultant)
         residual = max(np.linalg.norm(force_sum) / max(force_scale, 1e-30), np.linalg.norm(moment_sum) / max(moment_scale + force_scale * length_scale, 1e-30), nodal_residual / max(nodal_scale, 1e-30))
         if residual > 1e-8:
             fail('EQUILIBRIUM_FAILURE', 'Resíduo de equilíbrio acima de 1e-8; resultado recusado.')
         combinations[name] = dict(nodes=nodes, members=members, equilibrium=dict(force_n=force_sum.tolist(), moment_nm=moment_sum.tolist(), relative_residual=float(residual)))
-    result = dict(schema_version='jpn.frame3d-result/1', status='analysis_completed_experimental', units='SI', project=data['project'], input_sha256=input_hash(data),
-                  solver=dict(name='PyNiteFEA', version=version('PyNiteFEA'), adapter='jpn-frame3d/1'),
-                  assumptions=['Primeira ordem, material isotrópico linear, Euler–Bernoulli; sem deformação por cisalhamento.', 'Somente cargas nodais e apoios cartesianos em zero, com seis graus declarados.', 'Sem peso próprio, vento, P-Delta, flambagem, resistência normativa ou liberação de fabricação.', 'Eixos locais do PyNite devolvidos explicitamente; não são os eixos do desenho 3D.'],
+    result = dict(schema_version='jpn.frame3d-result/2' if v2 else 'jpn.frame3d-result/1', status='analysis_completed_experimental', units='SI', project=data['project'], input_sha256=input_hash(data),
+                  solver=dict(name='PyNiteFEA', version=version('PyNiteFEA'), adapter='jpn-frame3d/2' if v2 else 'jpn-frame3d/1'),
+                  assumptions=['Primeira ordem, material isotrópico linear, Euler–Bernoulli; sem deformação por cisalhamento.',
+                               'Cargas nodais e uniformes locais Fy/Fz explicitadas; sem peso próprio automático.' if v2 else 'Somente cargas nodais e apoios cartesianos em zero, com seis graus declarados.',
+                               'Sem peso próprio, vento automático, P-Delta, flambagem, resistência normativa ou liberação de fabricação.',
+                               'Eixos locais do PyNite devolvidos explicitamente; não são os eixos do desenho 3D.'],
                   diagnostics=dict(free_dofs=len(free), scaled_condition=condition, elapsed_seconds=time.perf_counter() - started), combinations=combinations)
     try:
         encoded = json.dumps(result, allow_nan=False)
