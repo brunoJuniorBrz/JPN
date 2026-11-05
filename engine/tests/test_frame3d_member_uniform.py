@@ -127,3 +127,24 @@ def test_local_uniform_load_remains_equilibrated_when_beam_axis_is_global_y():
     assert r["nodes"]["B"]["force_n"][2] == pytest.approx(-Q*L/2, rel=1e-10)
     assert r["members"]["TERCA-1"]["stations"][2]["my_nm"] == pytest.approx(Q*L**2/8, rel=1e-10)
     assert r["equilibrium"]["relative_residual"] < 1e-10
+
+
+@pytest.mark.parametrize("direction,component,root_moment", [
+    ("Fy", 1, "mz_nm"), ("Fz", 2, "my_nm")
+])
+@pytest.mark.parametrize("sign",[-1,1])
+def test_inclined_10_degree_cantilever_uniform_local_load_closed_form(direction, component, root_moment, sign):
+    # Synthetic pitched cantilever, complementary to the published UFSC purlin.
+    # Compare native local displacement and root moment against beam theory.
+    from math import cos, sin, radians
+    p=ufsc()
+    p["nodes"][1].update(x_m=L*cos(radians(10)),z_m=L*sin(radians(10)))
+    p["supports"]=[{"node":"A","restrained":[True]*6}]
+    q=sign*200
+    p["member_uniform_loads"][0].update(direction=direction,w_n_m=q)
+    r=analyze_frame3d(p)["combinations"]["ELU-PUBLICADO"]
+    stations=r["members"]["TERCA-1"]["stations"]
+    assert abs(stations[0][root_moment]) == pytest.approx(abs(q*L**2/2),rel=1e-10)
+    assert stations[-1][root_moment] == pytest.approx(0,abs=1e-7)
+    assert stations[-1]["displacement_local_m"][component] == pytest.approx(q*L**4/(8*E*I),rel=1e-10)
+    assert r["equilibrium"]["relative_residual"] < 1e-10
