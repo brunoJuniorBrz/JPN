@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { Project } from "./models";
 import { generateGeometry } from "./calculations/geometry";
+import { assertGeneratedPhysicalStructure } from "./physical-structure";
 import { reviewedRoofScopeSchema, normativeWindDataSchema, normativeFactorsDataSchema,
   type NormativeWindData, type NormativeFactorsData } from "./normative-origin-contracts";
 import type { NormativeOriginInput } from "./normative-origin";
@@ -23,6 +24,7 @@ export const reviewedExtractSchema=z.object({schema_version:z.literal("jpn.owner
 export type ReviewedExtract=z.infer<typeof reviewedExtractSchema>;
 
 export function assertReviewedRoofScope(project:Project,input:NormativeOriginInput){
+  assertGeneratedPhysicalStructure(project,"origem normativa de vento para cobertura");
   reviewedRoofScopeSchema.parse(input.reviewedRoof);
   const p=project.planning,r=project.roof,m=generateGeometry(r,p?.typology).model?.metrics;
   const stop=(reason:string):never=>{throw Error(`REVIEWED_ROOF_DOMAIN: ${reason}`);};

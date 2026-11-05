@@ -28,10 +28,11 @@ export function needsSelfWeightOverlapReview(
   return draft.combinations.some(c=>[...automatic].some(a=>(c.factors[a]??0)!==0&&[...otherCases].some(b=>a!==b&&(c.factors[b]??0)!==0)));
 }
 export function selfWeightOverlapReviewBasis(
-  draft:{geometrySignature:unknown;groups:unknown;loads:unknown;cases:unknown;combinations:unknown},
+  draft:{geometrySignature:unknown;groups:unknown;loads:unknown;cases:unknown;combinations:unknown;physicalCatalog?:unknown},
   loading:LoadingDraft
 ):string {
   return canonicalSpatialInput({geometry:draft.geometrySignature,physicalGroups:draft.groups,
+    ...(draft.physicalCatalog?{physicalCatalog:draft.physicalCatalog}:{}),
     nodalLoads:draft.loads,cases:draft.cases,combinations:draft.combinations,
     uniformLoads:loading.uniform,selfWeight:loading.selfWeight,
     ...(loading.roofArea.length?{roofArea:loading.roofArea}:{}),

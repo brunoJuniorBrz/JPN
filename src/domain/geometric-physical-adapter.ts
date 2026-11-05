@@ -5,6 +5,7 @@ import { canonicalSpatialInput, spatialRequestSchema, spatialInputHash, spatialS
 import { ConnectivityError, discretizeGeometry } from "./spatial-connectivity";
 
 export async function adaptSpatialProject(project: Project) {
+  if(project.workspace.physicalStructure||project.workspace.spatialPreparation?.physicalCatalog)throw Error("PHYSICAL_MODEL_MIXED_REQUIRED: geometria declarada e propriedades individuais exigem o adaptador mixed3d; sem fallback ao grupo ou gerador.");
   const draft = spatialPreparationSchema.parse(project.workspace.spatialPreparation);
   if (new Set(draft.supports.map(s => s.nodeId)).size !== draft.supports.length) throw new ConnectivityError("DUPLICATE_SUPPORT", "Há declarações de apoio repetidas para o mesmo nó; revise, sem consolidar restrições automaticamente.");
   const review = spatialPreparationReview(project, draft);

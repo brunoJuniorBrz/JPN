@@ -1,6 +1,7 @@
 import type { Project } from "./models";
-import type { StructureModel } from "./structure";
+import type { StructureModel,PhysicalGeometry } from "./structure";
 import { generateStructure } from "./calculations/structure";
+import { assertGeneratedPhysicalStructure } from "./physical-structure";
 import { structureSignature } from "./calculations/project-basis";
 import { spatialRequestSchema, spatialSI, type SpatialRequest } from "./spatial-analysis";
 
@@ -9,7 +10,7 @@ export interface SpatialIssue { code: string; message: string; pieces: string[];
 const sub = (a: Point, b: Point): Point => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const dot = (a: Point, b: Point) => a.reduce((s, v, i) => s + v * b[i], 0);
 const length = (a: Point) => Math.sqrt(dot(a, a));
-export function spatialContacts(model: StructureModel): SpatialIssue[] {
+export function spatialContacts(model: PhysicalGeometry): SpatialIssue[] {
   const issues: SpatialIssue[] = [], nodes = new Map(model.nodes.map(n => [n.id, [n.x, n.y, n.z] as Point]));
   const add = (code: string, message: string, pieces: string[], nodes: string[] = []) => { if (issues.length < 150) issues.push({ code, message, pieces, nodes }); };
   const segments = model.pieces.map(p => ({ p, a: nodes.get(p.start)!, b: nodes.get(p.end)! }));
@@ -51,6 +52,8 @@ function checkMapping(model: StructureModel, parsed: SpatialRequest) {
   if (!parsed.supports.length) throw new Error("Apoios não declarados.");
 }
 export function spatialReadiness(project: Project, declared?: SpatialRequest, review?: { connections: string; lateralSystem: string }) {
+  if(project.workspace.spatialPreparation?.physicalCatalog)throw Error("PHYSICAL_MODEL_MIXED_REQUIRED: propriedades por barra exigem mixed3d; sem fallback à seção por grupo.");
+  assertGeneratedPhysicalStructure(project,"análise frame3d legada; use mixed3d para geometria declarada");
   const model = generateStructure(project).model;
   const issues: SpatialIssue[] = [];
   const add = (code: string, message: string, pieces: string[] = []) => issues.push({ code, message, pieces, nodes: [] });
@@ -75,6 +78,8 @@ export function spatialReadiness(project: Project, declared?: SpatialRequest, re
 // Deliberate physical model: preserves piece IDs and requires EXACT endpoint
 // connectivity. Any contact requiring a different discretization blocks mapping.
 export async function buildSpatialRequest(project: Project, declared: SpatialRequest, review: { connections: string; lateralSystem: string }): Promise<SpatialRequest> {
+  if(project.workspace.spatialPreparation?.physicalCatalog)throw Error("PHYSICAL_MODEL_MIXED_REQUIRED: propriedades por barra exigem mixed3d; sem fallback à seção por grupo.");
+  assertGeneratedPhysicalStructure(project,"análise frame3d legada; use mixed3d para geometria declarada");
   const model = generateStructure(project).model;
   if (!model) throw new Error("Geometria indisponível.");
   if (!review.connections.trim() || !review.lateralSystem.trim()) throw new Error("Revisões de ligações e sistema lateral obrigatórias.");

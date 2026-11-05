@@ -1,6 +1,6 @@
 import type { PhysicalGroup } from "./physical-declaration";
 import { resistancePreparationSchema } from "./resistance-preparation";
-import type { StructurePiece } from "./structure";
+import type { PhysicalPiece } from "./structure";
 
 /**
  * Explicit, idealized mechanics references, NOT a resistance check or a
@@ -11,7 +11,7 @@ import type { StructurePiece } from "./structure";
  *
  * These numbers are never written into the FE input, project or quotation.
  */
-export function elasticMemberReference(piece: StructurePiece, group: PhysicalGroup, declaration: unknown) {
+export function elasticMemberReference(piece: PhysicalPiece, group: PhysicalGroup, declaration: unknown) {
   const issues: string[] = [];
   const parsed = resistancePreparationSchema.safeParse(declaration);
   if (!parsed.success) {

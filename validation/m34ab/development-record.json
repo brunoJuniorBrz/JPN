@@ -1,0 +1,14 @@
+{
+  "base_sha": "91bf8215a79d81292cb016d12c4f4c58cab41f20",
+  "golden_captured_before_adapter_changes": true,
+  "real_errors_preserved": [
+    {"stage": "golden capture harness", "error": "The new capture test initially inherited Vitest's default 5-second test budget and expired. Its harness was set to the existing 20-second numerical-test budget; the production worker limit was never changed. The recapture at the untouched base passed.", "evidence": "golden-capture.json"},
+    {"stage": "initial typecheck", "error": "PhysicalGroup was re-exported but not locally imported in spatial-preparation.ts. Fixed the type import."},
+    {"stage": "first declared tests", "error": "beforeEach implicitly returned the spy function, invoked by Vitest as cleanup, producing 33 FORBIDDEN_GENERATOR_CALL failures. Returning void fixed the test harness. An inherited-group fixture also exposed unwanted catalog ID metadata in effective physical properties; the resolver now strips catalog IDs from PhysicalGroup, retaining reference IDs separately.", "evidence": "declared-development.json"},
+    {"stage": "backup repository test", "error": "The test attempted import before the repository's mandatory load(). Corrected the fixture initialization; production persistence checks were preserved.", "evidence": "targeted.json"}
+  ],
+  "targeted_final": {"passed": 43, "failed": 0, "pending": 0, "evidence": "targeted-final.json"},
+  "preserved": {"worker_seconds": 20, "worker_memory_bytes": 805306368, "mixed_nodes": 150, "mixed_segments": 320, "connectivity_nodes": 250, "connectivity_pieces": 600, "materials": 50, "sections": 50, "cases": 10, "combinations": 10, "snapshot_version": 4},
+  "computedStructuralApproval": false,
+  "fabricationRelease": false
+}

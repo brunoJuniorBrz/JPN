@@ -1,5 +1,5 @@
 import type { Project } from "./models";
-import { generateStructure } from "./calculations/structure";
+import { resolvePhysicalStructure } from "./physical-structure";
 import { structureSignature } from "./calculations/project-basis";
 import { adaptMixedProject } from "./mixed-adapter";
 import { adaptLoadedMixedProject } from "./loaded-mixed-adapter";
@@ -28,7 +28,7 @@ export async function buildConnectionReport(project:Project,prepared:DemandInput
   const current=await (project.workspace.spatialPreparation?.loading?adaptLoadedMixedProject(project):adaptMixedProject(project));
   if(current.input_sha256!==prepared.input_sha256||current.preparation_sha256!==prepared.preparation_sha256||canonicalSpatialInput(current.mapping)!==canonicalSpatialInput(prepared.mapping))throw new Error("STALE_CONNECTION_ANALYSIS: projeto ou ligações mudaram; execute novamente.");
   const request=anyMixedRequestSchema.parse(prepared.request),result=anyMixedResultSchema.parse(value),demands=await extractMemberDemands(prepared,result);
-  const trace=verifyJointActionTrace(request,result,sidecar),model=generateStructure(project).model!,draft=project.workspace.spatialPreparation!;
+  const trace=verifyJointActionTrace(request,result,sidecar),model=resolvePhysicalStructure(project).model!,draft=project.workspace.spatialPreparation!;
   const declaration=draft.connections?connectionsSchema.parse(draft.connections):null;
   if(declaration&&declaration.geometrySignature!==structureSignature(project))throw new Error("STALE_CONNECTION_GEOMETRY: revise as declarações nesta geometria.");
   const nodes=new Map(request.nodes.map(n=>[n.id,n])),pieces=new Map(model.pieces.map(p=>[p.id,p]));
