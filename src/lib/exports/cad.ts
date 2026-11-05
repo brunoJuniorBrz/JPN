@@ -1,10 +1,11 @@
 import { DxfWriter, Units, point3d } from "@tarikjabiri/dxf";
 import type { Project } from "@/domain/models";
+import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { generateStructure, structureViews } from "@/domain/calculations/structure";
 import { PRELIMINARY_NOTICE, type ViewName } from "@/domain/calculations/geometry";
 
 export function createStructureDxf(project: Project): string {
-  const result = generateStructure(project);
+  const result = resolvePhysicalStructure(project);
   if (!result.model) throw new Error("Geometria indisponível para exportação.");
   const dxf = new DxfWriter(); dxf.setUnits(Units.Millimeters);
   const colors = { column: 30, topChord: 3, bottomChord: 3, web: 8, purlin: 4 };
@@ -17,11 +18,13 @@ export function createStructureDxf(project: Project): string {
     dxf.addText(point3d((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2), 60, p.id, { layerName: "IDENTIFICACAO" });
   }
   dxf.addText(point3d(0, -1000, 0), 150, "PRELIMINAR - NAO UTILIZAR PARA EXECUCAO OU CORTE", { layerName: "PRELIMINAR" });
-  dxf.addText(point3d(0, -1300, 0), 100, `Projeto ${project.id} / revisao geometrica ${project.roof.revision} / unidades mm`, { layerName: "PRELIMINAR" });
+  const revision = project.workspace.physicalStructure?.revision ?? project.roof.revision;
+  dxf.addText(point3d(0, -1300, 0), 100, `Projeto ${project.id} / revisao geometrica ${revision} / unidades mm`, { layerName: "PRELIMINAR" });
   return dxf.stringify();
 }
 const escape = (value: string) => value.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]!);
 export function createStructureSvg(project: Project, view: ViewName = "front") {
+  if (project.workspace.physicalStructure) throw new Error("SVG cotado disponível somente para coberturas geradas. Exporte as barras declaradas em DXF ou JSON.");
   const result = generateStructure(project), geometry = structureViews(project, result);
   if (!geometry) throw new Error("Geometria indisponível para exportação.");
   const { bounds: b, entities } = geometry.views[view], height = b.maxY - b.minY, width = b.maxX - b.minX;

@@ -1,0 +1,30 @@
+{
+  "schema_version": "jpn.external-roof-partial-comparisons/1",
+  "cases": [
+    {
+      "id": "REF-01-CONSELVAN",
+      "url": "https://www.aripuana.mt.gov.br/public/files/publicacoes/memorial-de-calculo_2c34.pdf",
+      "pages": "PDF 9-10; memorial rev.3, 19/11/2020",
+      "source_edition": "NBR 6123:1988; numerical exposure comparison only, not current-code validation",
+      "heightM": 4.65, "category": "II", "sizeClass": "B",
+      "reportedS2": 0.92, "reportedDecimalPlaces": 2,
+      "conflictingBasicSpeedsMps": [45, 33],
+      "reportedCharacteristicSpeedMps": 30.38,
+      "reportedPressureKNM2": 0.57, "arbitrarilyAdoptedPressureKNM2": 0.9,
+      "completeRoofModelReproduced": false,
+      "blockers": ["Conflicting basic wind speeds and explicitly arbitrary adopted pressure.", "Referenced geometry, supports and load/member mapping not fully recoverable from this calculation report.", "Historical normative editions do not establish compliance with current editions."]
+    },
+    {
+      "id": "REF-04-UFMG-SANTANA-2025",
+      "url": "https://repositorio.ufmg.br/server/api/core/bitstreams/25007f75-9ff4-4487-b3ff-eea680120a42/content",
+      "pages": "PDF/printed 24-25, figures 9-11; visually inspected",
+      "source_edition": "NBR 6123:2023 as cited by the author",
+      "heightM": 7.5, "category": "III", "sizeClass": "A",
+      "reportedS2": 0.913, "reportedDecimalPlaces": 3,
+      "completeRoofModelReproduced": false,
+      "blockers": ["Topographic elevations and exact physical restraints are not transcribed into a solver model.", "Full combination/coefficient/member-result mapping not recovered.", "S2 comparison alone verifies neither global actions nor member or connection resistance."]
+    }
+  ],
+  "approvedForFabrication": false,
+  "twoCompleteIndependentRoofBenchmarksSatisfied": false
+}

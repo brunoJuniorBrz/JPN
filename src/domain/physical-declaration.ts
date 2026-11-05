@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { densitySchema } from "./structural-loading";
 
 // Traceable physical properties are independent of synthetic 3D display geometry.
 const positive = z.number().finite().positive().max(1e12).nullable();
@@ -11,6 +12,7 @@ export const physicalGroupSchema = z.object({
   sectionSource: meaningful, sectionRevision: meaningful, rotationDeg: z.number().finite().min(-360).max(360).nullable(),
   connection: z.enum(connectionChoices),
   elementKind: z.enum(["frame", "axial"]).optional(),
+  density: densitySchema.optional(),
 }).strict();
 export type PhysicalGroup = z.infer<typeof physicalGroupSchema>;
 

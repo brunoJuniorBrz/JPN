@@ -1,0 +1,23 @@
+{
+  "executables": {
+    "stabileo": {
+      "sha256": "3a0a053d3eca8d738af98196cedc4e5522f479e57724e5381f259f1f0488a5dc",
+      "path": "solve_json.exe"
+    },
+    "frame3dd": {
+      "sha256": "ae43db303dd5c8f76b6edb45e2d379d095ab2d3ae7fb08edb62fa049c8b8d02d",
+      "path": "frame3dd.exe"
+    }
+  },
+  "jpn_native_tip_m": 0.002644496838676522,
+  "stabileo_tip_m": 0.0026444968386772415,
+  "frame3dd_tip_m": 0.001067,
+  "continuum_tip_m": 0.002644497144467381,
+  "relative_errors_to_continuum": {
+    "jpn": 1.1563289446302889e-07,
+    "stabileo": 1.1563262239748209e-07,
+    "frame3dd": 0.5965206458126463
+  },
+  "normative_approval": false,
+  "approved_for_fabrication": false
+}

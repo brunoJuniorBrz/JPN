@@ -158,3 +158,48 @@ describe("cena compartilhada e contrato original", () => {
     expect(migrateSnapshot({ ...emptySnapshot(), projects: [p] }).projects[0]).toEqual(p); expect(JSON.parse(old).planning.profiles.column.visualSection).toBeUndefined();
   });
 });
+
+
+describe("Studio 3D: filtros e isolamento não alteram a estrutura", () => {
+  it("restaura matrizes das instâncias, filtra eixos e conserva seleção/IDs", () => {
+    const p = planningExample();
+    for (const role of roles) p.planning!.profiles[role] = profile(0);
+    const m = generateStructure(p).model!, original = JSON.stringify(m);
+    const scene = buildProfileScene(m);
+    scene.setMode("mixed");
+    const column = m.pieces.find(p => p.role === "column")!;
+    const firstPurlin = m.pieces.find(p => p.role === "purlin")!;
+    const secondPurlin = m.pieces.find(p => p.role === "purlin" && p.id !== firstPurlin.id)!;
+    const item = scene.instances.get(column.id)!;
+    const saved = new THREE.Matrix4(), current = new THREE.Matrix4();
+    item.mesh.getMatrixAt(item.index, saved);
+    scene.setVisibility(new Set(["purlin"]));
+    item.mesh.getMatrixAt(item.index, current);
+    expect(current.elements).toEqual(new THREE.Matrix4().makeScale(0, 0, 0).elements);
+    const purlinInstance = scene.instances.get(firstPurlin.id)!;
+    purlinInstance.mesh.getMatrixAt(purlinInstance.index, current);
+    expect(current.determinant()).not.toBe(0);
+    expect(scene.targets().filter(obj => obj instanceof THREE.LineSegments).every(obj =>
+      (obj.userData.ids as string[]).every(id => m.pieces.find(p => p.id === id)!.role === "purlin"))).toBe(true);
+
+    scene.setVisibility(new Set(roles), firstPurlin.id);
+    const other = scene.instances.get(secondPurlin.id)!;
+    other.mesh.getMatrixAt(other.index, current);
+    expect(current.determinant()).toBe(0);
+    const selectedLine = scene.targets().find(obj => obj instanceof THREE.LineSegments &&
+      (obj.userData.ids as string[]).includes(firstPurlin.id)) as THREE.LineSegments;
+    expect(selectedLine.geometry.drawRange.count).toBe(2);
+    scene.highlight(firstPurlin.id);
+    expect(scene.root.children[2].visible).toBe(true);
+
+    scene.setVisibility(new Set());
+    expect(scene.root.children[2].visible).toBe(false);
+    scene.setVisibility(new Set(roles));
+    item.mesh.getMatrixAt(item.index, current);
+    expect(current.elements).toEqual(saved.elements);
+    expect(scene.root.children[2].visible).toBe(true);
+    expect(pieceIdFromHit({ object: item.mesh, instanceId: item.index })).toBe(column.id);
+    expect(JSON.stringify(m)).toBe(original);
+    scene.dispose();
+  });
+});

@@ -1,0 +1,33 @@
+import { openEngineeringTool } from "./result-tabs";
+import { expect,test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
+
+for(const width of [375,1440])test(`área para terças, solver e seleção física em ${width}px`,async({page})=>{
+  test.setTimeout(120000);await page.setViewportSize({width,height:950});const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
+  await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");
+  await page.getByRole("button",{name:"Gerar modelo 3D"}).click();await openEngineeringTool(page, "Análise Estrutural Experimental");
+  const p=page.getByTestId("mixed-workspace");await p.getByRole("button",{name:"Abrir exemplo de ações por área",exact:true}).click();
+  await expect(p.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:60000});
+  await p.getByTestId("structural-loads").locator(":scope > summary").click();
+  await expect(p.getByTestId("roof-load-path")).toContainText("2 superfícies associadas");
+  await p.getByTestId("roof-load-path").locator("summary").first().click();
+  await p.getByRole("button",{name:"Ver TE1-V1",exact:true}).click();
+  await expect(p.getByLabel("Peça na análise mista")).toHaveValue("TE1-V1");await expect(p.getByTestId("mixed-viewer")).toBeVisible();
+  await p.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
+  await expect(p.getByTestId("roof-result-trace")).toContainText("área distribuída",{timeout:30000});
+  const wait=page.waitForEvent("download");await p.getByRole("button",{name:"Exportar resultados mistos",exact:true}).click();const file=await wait;
+  const out=JSON.parse(await readFile((await file.path())!,"utf8"));expect(out.prepared.roof_load_path.actions[0].areaM2).toBe(200);expect(out.prepared.request.nodal_loads).toEqual([]);
+  expect(out.result.input_sha256).toBe(out.prepared.input_sha256);expect(out.prepared.request.members).toHaveLength(243);
+  const piece=out.prepared.roof_load_path.actions[0].loads[0].pieceId;
+  await p.getByLabel("Peça na análise mista").selectOption(piece);await expect(p.getByTestId("mixed-selection")).toContainText(piece);await expect(p.getByTestId("mixed-selection")).toContainText("deslocamento local XYZ");
+  await p.getByRole("button",{name:"Preparação mista",exact:true}).click();await p.getByTestId("structural-loads").locator(":scope > summary").click();
+  await p.getByLabel("Ação permanente de cobertura (kN/m²)").fill("0");await p.getByLabel("Projeção da área").selectOption("horizontal");
+  for(const axis of ["X","Y","Z"])await p.getByLabel("Direção da ação por área "+axis).fill(axis==="Z"?"-1":"0");
+  await p.getByLabel("Caminho de transmissão da cobertura").fill("Ensaio explícito: superfície → terças → estrutura conectada → apoios");await p.getByLabel("Fonte da ação por área").fill("Ensaio de interface, ação adicional zero");await p.getByLabel("Revisão da ação por área").fill("R2");
+  await p.getByLabel("Novo caso exclusivo de área").fill("ZERO");await p.getByRole("button",{name:"Criar caso de área e combinação isolada (fator 1)",exact:true}).click();
+  await p.getByRole("button",{name:"Registrar ação por área pendente",exact:true}).click();
+  await p.getByRole("button",{name:"Vincular áreas às terças desta geometria",exact:true}).click();
+  await p.getByRole("button",{name:"Resultados 3D",exact:true}).click();await expect(p.getByTestId("mixed-no-results")).toBeVisible();
+  await p.getByRole("button",{name:"Executar análise mista local",exact:true}).click();await expect(p.getByTestId("roof-result-trace")).toContainText("2 ação por área",{timeout:30000});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
+});

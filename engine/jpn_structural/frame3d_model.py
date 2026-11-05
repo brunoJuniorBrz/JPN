@@ -1,9 +1,10 @@
-"""jpn.frame3d/1: strict SI contracts, no visual or implicit physical data."""
+"""jpn.frame3d/1 and additive /2: strict SI, explicit load provenance."""
 import hashlib
 import json
 import math
 import re
 import struct
+from numbers import Real
 from .model import AnalysisError
 
 DOFS = ('UX', 'UY', 'UZ', 'RX', 'RY', 'RZ')
@@ -17,7 +18,7 @@ def fail(code, message):
 
 def canonical(value):
     """Sorted keys + IEEE754 tags: identical across Python and ECMAScript."""
-    if type(value) in (int, float):
+    if isinstance(value,Real) and not isinstance(value,bool):
         return {'$f64': struct.pack('>d', float(value) if value != 0 else 0.).hex()}
     if isinstance(value, dict):
         return {k: canonical(value[k]) for k in sorted(value)}
@@ -54,8 +55,14 @@ def flags(value):
 
 
 def validate(data):
-    obj(data, 'schema_version units project theory nodes members materials sections supports cases nodal_loads combinations', 'modelo')
-    if data['schema_version'] != 'jpn.frame3d/1' or data['units'] != 'SI' or data['theory'] != 'linear-elastic-euler-bernoulli':
+    if type(data) is not dict or data.get('schema_version') not in ('jpn.frame3d/1', 'jpn.frame3d/2'):
+        fail('UNSUPPORTED_MODEL', 'Contrato frame3d/1 ou frame3d/2 obrigatório.')
+    v2 = data['schema_version'] == 'jpn.frame3d/2'
+    keys = 'schema_version units project theory nodes members materials sections supports cases nodal_loads combinations'
+    if v2:
+        keys += ' member_uniform_loads'
+    obj(data, keys, 'modelo')
+    if data['units'] != 'SI' or data['theory'] != 'linear-elastic-euler-bernoulli':
         fail('UNSUPPORTED_MODEL', 'Somente pórticos 3D elásticos de primeira ordem, em SI.')
     obj(data['project'], 'id revision source', 'projeto')
     for key, value in data['project'].items():
@@ -131,7 +138,27 @@ def validate(data):
             fail('INVALID_REFERENCE', 'Carga referencia nó/caso inexistente.')
         for key in ('fx_n', 'fy_n', 'fz_n', 'mx_nm', 'my_nm', 'mz_nm'):
             number(load[key], -1e9, 1e9, key)
-    if any(not any(l['case'] == case for l in data['nodal_loads']) for case in ids['cases']):
+    # The /1 contract remains untouched: member loads require an explicit /2.
+    if v2:
+        distributed = data['member_uniform_loads']
+        if type(distributed) is not list or len(distributed) > 600:
+            fail('INPUT_LIMIT', 'member_uniform_loads: máximo 600 registros.')
+        for load in distributed:
+            obj(load, 'member case direction w_n_m source', 'carga uniforme')
+            text(load['member'], 'carga.member', True)
+            text(load['case'], 'carga.case', True)
+            text(load['source'], 'fonte da carga uniforme')
+            if load['member'] not in ids['members'] or load['case'] not in ids['cases']:
+                fail('INVALID_REFERENCE', 'Carga uniforme referencia barra/caso inexistente.')
+            if type(load['direction']) is not str or load['direction'] not in ('Fy', 'Fz'):
+                fail('UNSUPPORTED_LOAD', 'Somente Fy/Fz nos eixos LOCAIS da barra, sem conversão presumida.')
+            number(load['w_n_m'], -1e8, 1e8, 'w_n_m')
+            if load['w_n_m'] == 0:
+                fail('INVALID_INPUT', 'Carga uniforme nula: não representa ação declarada.')
+    else:
+        distributed = []
+    if any(not any(l['case'] == case for l in data['nodal_loads']) and
+           not any(l['case'] == case for l in distributed) for case in ids['cases']):
         fail('INCOMPLETE_MODEL', 'Declare as cargas de cada caso; peso próprio não é presumido.')
     for combo in data['combinations']:
         obj(combo, 'id factors', 'combinação')

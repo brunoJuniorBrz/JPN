@@ -1,0 +1,179 @@
+{
+  "schema_version": "jpn.coldformed-validation/1",
+  "generated_at_utc": "2026-11-02T22:28:46.825167+00:00",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "PyNiteFEA": "3.2.1",
+    "pytest": "9.2.0"
+  },
+  "commands": [
+    {
+      "command": "python engine/validate.py --output-dir docs/validation/coldformed-design/core",
+      "exit_code": 0,
+      "passed": 1503,
+      "failures": 0,
+      "skipped": 0,
+      "notes": "Includes 1000 independent random-reference comparisons and spatial benchmarks"
+    },
+    {
+      "command": "python -m pytest engine/section_tests/test_section_properties.py engine/section_tests/test_verified_design.py -q",
+      "exit_code": 0,
+      "passed": 8,
+      "failures": 0,
+      "skipped": 0,
+      "notes": "Real sectionproperties + real protected worker + mixed FE tension PASS/FAIL"
+    },
+    {
+      "command": "FSM Python -m pytest engine/section_tests/test_elastic_strip.py -q",
+      "exit_code": 0,
+      "passed": 4,
+      "failures": 0,
+      "skipped": 0,
+      "notes": "Separate pinned compatible runtime; no changes to main NumPy/SciPy"
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0,
+      "passed": null,
+      "failures": 0,
+      "notes": "Actual exit status recorded by shell; native stderr redirection is not a test failure"
+    },
+    {
+      "command": "pnpm lint",
+      "exit_code": 0,
+      "passed": null,
+      "failures": 0
+    },
+    {
+      "command": "pnpm test / vitest run --reporter=json",
+      "exit_code": 0,
+      "passed": 365,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "command": "pnpm test:e2e --reporter=line,json",
+      "exit_code": 0,
+      "passed": 73,
+      "failures": 0,
+      "skipped": 0,
+      "flaky": 0
+    },
+    {
+      "command": "pnpm exec vitest run src/lib/exports/cad.test.ts; python tests/verify_dxf.py",
+      "exit_code": 0,
+      "passed": 2,
+      "failures": 0,
+      "notes": "Run after Playwright, which clears test-results; independent ezdxf checks 3D lines/coordinates/units"
+    },
+    {
+      "command": "pnpm build",
+      "exit_code": 0,
+      "passed": null,
+      "failures": 0
+    },
+    {
+      "command": "python engine/verify_coldformed_chain.py --output docs/validation/coldformed-design/integrated-tension.json",
+      "exit_code": 0,
+      "passed": 2,
+      "failures": 0,
+      "notes": "1000 N -> check PASS; 200000 N -> intentional engineering check FAIL; program verifies both expected outcomes"
+    }
+  ],
+  "initial_failures": [
+    {
+      "log": "design-first.txt",
+      "result": "22 passed, 1 failed",
+      "cause": "Test expected inelastic web buckling for h=0.30 m, actually in elastic branch.",
+      "correction": "Independent fixture h=0.16 m; production shear formula unchanged."
+    },
+    {
+      "log": "design-verified.txt",
+      "result": "2 failed",
+      "cause": "Ue 100x50x15x2 ri3 did not reach requested 0.001 refinement with three meshes.",
+      "correction": "Adaptive up to five meshes within original resource caps; never relaxed target."
+    },
+    {
+      "log": "design-verified-adaptive.txt",
+      "result": "1 failed, 1 passed",
+      "cause": "Last sparse-solve binary digits of J differ between processes; exact property equality gave false mismatch.",
+      "correction": "Explicit six-significant-figure reporting quantization and half-resolution admission; unrounded geometric strengths retained."
+    },
+    {
+      "log": "design-verified-precision.txt",
+      "result": "1 failed, 1 passed",
+      "cause": "Generic test net-area fixture 0.001 m2 exceeded the actual smaller Ue gross area.",
+      "correction": "Explicit hole-free/full-weld basis for this fixture; retained net-area physical rejection."
+    },
+    {
+      "log": "vitest-design.txt",
+      "result": "5 skipped due to setup error",
+      "cause": "New fixture omitted geometry version and declaration basis.",
+      "correction": "Supplied explicit physical schema fields."
+    },
+    {
+      "log": "vitest-design-2.txt",
+      "result": "1 failed, 4 passed",
+      "cause": "First web in fixture was a frame, not an axial diagonal.",
+      "correction": "Select member by its explicitly declared kind; no weakening of component assertions."
+    },
+    {
+      "log": "e2e-design.txt",
+      "result": "2 failed",
+      "cause": "Synthetic wind example had no ULS combination; resistance correctly blocked.",
+      "correction": "Declare WP/WS synthetic ULS purposes explicitly through the normal factor/revision form; did not change the example or relax ULS gate."
+    },
+    {
+      "log": "e2e-design-2.txt",
+      "result": "2 failed",
+      "cause": "Changing combinations invalidated duplicate-action review, as required.",
+      "correction": "Exercise explicit current-revision independence review in browser."
+    },
+    {
+      "log": "e2e-design-3.txt",
+      "result": "1 failed",
+      "cause": "Test looked for preparation fields while results tab active.",
+      "correction": "Navigate to preparation using actual UI before editing."
+    },
+    {
+      "log": "e2e-design-4.txt",
+      "result": "1 failed",
+      "cause": "Editing a watched domain source during execution triggered Next Fast Refresh reload.",
+      "correction": "Freeze runtime sources during subsequent browser runs."
+    },
+    {
+      "log": "e2e-design-5.txt",
+      "result": "1 failed",
+      "cause": "Changing the group section inverted a diagonal force in hyperstatic model; test reused previous sign.",
+      "correction": "Re-read actual post-change solver responses in explicitly declared opposite WP/WS combinations."
+    },
+    {
+      "log": "dxf-full.txt",
+      "result": "exit 1",
+      "cause": "Concurrent Playwright startup removed test-results/cad generated by Vitest.",
+      "correction": "Regenerate only CAD artifacts and run independent DXF verification after Playwright completes."
+    }
+  ],
+  "structural_verdict": "NOT_READY_COMPLETE_M27_M30",
+  "computed_structural_approval": false,
+  "approved_for_fabrication": false,
+  "publication": {
+    "branch": "feat/m27-m30-structural-engine-complete",
+    "pr": 37,
+    "parent_commit": "549fa607dc292c638be812830e686c6b24b32beb",
+    "merge": false,
+    "deploy": false,
+    "ci_new_commit": "pending-publication"
+  },
+  "limitations": [
+    "Normative partial procedures are executed separately; complete Ue/IW families not certified",
+    "Connection/base resistance, normative action/combination selection and mixed second-order stability remain incomplete",
+    "Two independent complete external roofs remain unverified",
+    "Windows local verification is not a Linux CI result",
+    "FSM pip check unavailable in embedded runtime without pip; four real FSM tests passed"
+  ]
+}

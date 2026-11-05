@@ -1,0 +1,260 @@
+{
+  "initial_sha": "00e61f68d1013f2d34dfa74554c84edc27efad72",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "python": "3.12.16",
+  "started_utc": "2026-11-03T19:08:30.669323+00:00",
+  "steps": [
+    {
+      "name": "pip-main",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.578,
+      "log": "pip-main.log"
+    },
+    {
+      "name": "pip-combined",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.768,
+      "log": "pip-combined.log"
+    },
+    {
+      "name": "pip-fsm",
+      "command": [
+        "${ROOT}\\.tools\\fsm\\Scripts\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.725,
+      "log": "pip-fsm.log"
+    },
+    {
+      "name": "python-core",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "engine/validate.py",
+        "--output-dir",
+        "${ROOT}\\docs\\validation\\mission31\\core"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 119.013,
+      "log": "python-core.log"
+    },
+    {
+      "name": "loading-audit",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "engine/audit_loading.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 9.53,
+      "log": "loading-audit.log"
+    },
+    {
+      "name": "sections",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "engine/section_tests/test_section_properties.py",
+        "engine/section_tests/test_verified_design.py",
+        "-q",
+        "--junitxml=${ROOT}\\docs\\validation\\mission31/sections.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 160.075,
+      "log": "sections.log"
+    },
+    {
+      "name": "fsm",
+      "command": [
+        "${ROOT}\\.tools\\fsm\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "engine/section_tests/test_elastic_strip.py",
+        "-q",
+        "--junitxml=${ROOT}\\docs\\validation\\mission31/fsm.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 15.888,
+      "log": "fsm.log"
+    },
+    {
+      "name": "member-buckling",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "engine/section_tests/test_member_buckling.py",
+        "engine/section_tests/test_modal_numerics.py",
+        "-q",
+        "--junitxml=${ROOT}\\docs\\validation\\mission31/member-buckling.xml"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 51.134,
+      "log": "member-buckling.log"
+    },
+    {
+      "name": "modal-reproduction",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "engine/audit_modal_numerics.py",
+        "engine/examples/coldformed-auto-compression.json",
+        "--output",
+        "${ROOT}\\docs\\validation\\mission31\\modal-numerics.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.53,
+      "log": "modal-reproduction.log"
+    },
+    {
+      "name": "modal-wavelengths",
+      "command": [
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "engine/audit_member_modes.py",
+        "engine/examples/coldformed-auto-compression.json",
+        "--output",
+        "${ROOT}\\docs\\validation\\mission31\\mode-search.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 5.701,
+      "log": "modal-wavelengths.log"
+    },
+    {
+      "name": "auto-compression",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "engine/verify_auto_compression.py",
+        "--member-python",
+        "${ROOT}\\.tools\\sections-fsm\\Scripts\\python.exe",
+        "--output",
+        "${ROOT}\\docs\\validation\\mission31\\automatic-compression.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 45.951,
+      "log": "auto-compression.log"
+    },
+    {
+      "name": "pdelta-example",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "engine/check_frame_pdelta.py",
+        "engine/examples/frame-pdelta-cantilever.json",
+        "--output",
+        "${ROOT}\\docs\\validation\\mission31\\pdelta-example.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.692,
+      "log": "pdelta-example.log"
+    },
+    {
+      "name": "typecheck",
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 3.986,
+      "log": "typecheck.log"
+    },
+    {
+      "name": "lint",
+      "command": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "."
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 16.305,
+      "log": "lint.log"
+    },
+    {
+      "name": "vitest",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=${ROOT}\\docs\\validation\\mission31/vitest.json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 267.958,
+      "log": "vitest.log"
+    },
+    {
+      "name": "browser-install",
+      "command": [
+        "node",
+        "node_modules/@playwright/test/cli.js",
+        "install",
+        "chromium"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.97,
+      "log": "browser-install.log"
+    },
+    {
+      "name": "playwright",
+      "command": [
+        "node",
+        "node_modules/@playwright/test/cli.js",
+        "test",
+        "--reporter=line,json"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1174.622,
+      "log": "playwright.log"
+    },
+    {
+      "name": "cad-regenerate",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "src/lib/exports/cad.test.ts"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.96,
+      "log": "cad-regenerate.log"
+    },
+    {
+      "name": "dxf",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "tests/verify_dxf.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 7.828,
+      "log": "dxf.log"
+    },
+    {
+      "name": "build",
+      "command": [
+        "node",
+        "node_modules/next/dist/bin/next",
+        "build"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 35.483,
+      "log": "build.log"
+    }
+  ],
+  "finished_utc": "2026-11-03T19:40:36.383405+00:00",
+  "all_steps_passed": true,
+  "validated_code_sha": "b32fb29bfc6a6f163e9a708c65282b21d3e8af87",
+  "commit_recorded_after_validation": true
+}

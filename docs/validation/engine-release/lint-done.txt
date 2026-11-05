@@ -1,0 +1,7 @@
+corepack : $ eslint .
+No linha:2 caractere:200
++ ... STEXITCODE; corepack pnpm lint *> 'C:\Users\Bruno\Downloads\JPN-main\ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ eslint .:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

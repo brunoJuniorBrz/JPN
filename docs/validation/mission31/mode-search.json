@@ -1,0 +1,511 @@
+{
+  "schema_version": "jpn.member-mode-search-audit/1",
+  "input_sha256": "1a36203f82a3de10caa1c73b449e6e619ec6675474f331c565f36b464eb2649b",
+  "units": "mm-MPa",
+  "fine_mesh_nodes": 93,
+  "families": {
+    "local": {
+      "schema_version": "jpn.wavelength-refinement/1",
+      "status": "refined-sampled-valleys",
+      "best": {
+        "half_wavelength_mm": 130.88301264633895,
+        "value": 32.124497823233646
+      },
+      "initial_grid_mm": [
+        31.25,
+        37.16272234383503,
+        44.194173824159215,
+        52.55602595335716,
+        62.5,
+        74.32544468767007,
+        88.3883476483184,
+        105.11205190671427,
+        124.99999999999994,
+        148.65088937534009,
+        176.77669529663683,
+        210.22410381342857,
+        249.99999999999994,
+        297.30177875068017,
+        353.5533905932737,
+        420.4482076268572,
+        499.99999999999994,
+        594.6035575013605,
+        707.1067811865474,
+        840.8964152537145,
+        1000.0,
+        1189.2071150027211,
+        1414.213562373095,
+        1681.7928305074292,
+        2000.0
+      ],
+      "initial_values": [
+        195.936210684102,
+        142.09160966513215,
+        104.2348105600731,
+        77.75268238724333,
+        59.41085113479818,
+        46.962458155085066,
+        38.87698071295921,
+        34.15589270955758,
+        32.212400591036214,
+        32.800435506944446,
+        35.98436874515838,
+        42.14606644287125,
+        52.03043253783822,
+        66.83513698157506,
+        88.3554621947225,
+        119.20181627084395,
+        163.11625523524776,
+        225.42637241243688,
+        313.6915902647404,
+        438.62024357902607,
+        615.3687033998792,
+        865.3801454727616,
+        1218.986039754111,
+        1719.0859727690897,
+        2426.3522391745078
+      ],
+      "refined_valleys": [
+        {
+          "half_wavelength_mm": 130.88301264633895,
+          "value": 32.124497823233646,
+          "initial_bracket_mm": [
+            105.11205190671427,
+            148.65088937534009
+          ]
+        }
+      ],
+      "evaluations": [
+        {
+          "half_wavelength_mm": 31.250000000000007,
+          "value": 195.936210684102
+        },
+        {
+          "half_wavelength_mm": 37.16272234383503,
+          "value": 142.09160966513215
+        },
+        {
+          "half_wavelength_mm": 44.194173824159215,
+          "value": 104.2348105600731
+        },
+        {
+          "half_wavelength_mm": 52.55602595335715,
+          "value": 77.75268238724333
+        },
+        {
+          "half_wavelength_mm": 62.50000000000002,
+          "value": 59.41085113479818
+        },
+        {
+          "half_wavelength_mm": 74.32544468767006,
+          "value": 46.962458155085066
+        },
+        {
+          "half_wavelength_mm": 88.38834764831839,
+          "value": 38.87698071295921
+        },
+        {
+          "half_wavelength_mm": 105.11205190671431,
+          "value": 34.15589270955758
+        },
+        {
+          "half_wavelength_mm": 119.98974418997834,
+          "value": 32.43896733200564
+        },
+        {
+          "half_wavelength_mm": 124.99999999999994,
+          "value": 32.212400591036214
+        },
+        {
+          "half_wavelength_mm": 130.21946255057523,
+          "value": 32.12557079375126
+        },
+        {
+          "half_wavelength_mm": 130.88154900900565,
+          "value": 32.12449782925258
+        },
+        {
+          "half_wavelength_mm": 130.88301264633895,
+          "value": 32.124497823233646
+        },
+        {
+          "half_wavelength_mm": 130.88447630003998,
+          "value": 32.12449782759319
+        },
+        {
+          "half_wavelength_mm": 130.88793857052949,
+          "value": 32.124497879238895
+        },
+        {
+          "half_wavelength_mm": 136.97324378705957,
+          "value": 32.21041406389899
+        },
+        {
+          "half_wavelength_mm": 148.6508893753401,
+          "value": 32.800435506944446
+        },
+        {
+          "half_wavelength_mm": 176.7766952966368,
+          "value": 35.98436874515838
+        },
+        {
+          "half_wavelength_mm": 210.22410381342863,
+          "value": 42.14606644287125
+        },
+        {
+          "half_wavelength_mm": 249.9999999999999,
+          "value": 52.03043253783822
+        },
+        {
+          "half_wavelength_mm": 297.3017787506803,
+          "value": 66.83513698157506
+        },
+        {
+          "half_wavelength_mm": 353.5533905932736,
+          "value": 88.3554621947225
+        },
+        {
+          "half_wavelength_mm": 420.4482076268573,
+          "value": 119.20181627084395
+        },
+        {
+          "half_wavelength_mm": 499.99999999999983,
+          "value": 163.11625523524776
+        },
+        {
+          "half_wavelength_mm": 594.6035575013606,
+          "value": 225.42637241243688
+        },
+        {
+          "half_wavelength_mm": 707.1067811865473,
+          "value": 313.6915902647404
+        },
+        {
+          "half_wavelength_mm": 840.8964152537147,
+          "value": 438.62024357902607
+        },
+        {
+          "half_wavelength_mm": 999.9999999999998,
+          "value": 615.3687033998792
+        },
+        {
+          "half_wavelength_mm": 1189.2071150027214,
+          "value": 865.3801454727616
+        },
+        {
+          "half_wavelength_mm": 1414.2135623730949,
+          "value": 1218.986039754111
+        },
+        {
+          "half_wavelength_mm": 1681.7928305074295,
+          "value": 1719.0859727690897
+        },
+        {
+          "half_wavelength_mm": 1999.9999999999998,
+          "value": 2426.3522391745078
+        }
+      ],
+      "evaluation_count": 32,
+      "relative_coordinate_target": 0.0001,
+      "optimizer": "scipy.optimize.minimize_scalar/bounded/log-wavelength",
+      "boundary_is_initial_best": false,
+      "global_minimum_certified": false,
+      "physical_integer_wave_spectrum_verified": false,
+      "normative_resistance_verified": false,
+      "approved_for_fabrication": false
+    },
+    "distortional": {
+      "schema_version": "jpn.wavelength-refinement/1",
+      "status": "refined-sampled-valleys",
+      "best": {
+        "half_wavelength_mm": 127.314601431567,
+        "value": 34.746195998616095
+      },
+      "initial_grid_mm": [
+        31.25,
+        37.16272234383503,
+        44.194173824159215,
+        52.55602595335716,
+        62.5,
+        74.32544468767007,
+        88.3883476483184,
+        105.11205190671427,
+        124.99999999999994,
+        148.65088937534009,
+        176.77669529663683,
+        210.22410381342857,
+        249.99999999999994,
+        297.30177875068017,
+        353.5533905932737,
+        420.4482076268572,
+        499.99999999999994,
+        594.6035575013605,
+        707.1067811865474,
+        840.8964152537145,
+        1000.0,
+        1189.2071150027211,
+        1414.213562373095,
+        1681.7928305074292,
+        2000.0
+      ],
+      "initial_values": [
+        197.24001702679283,
+        143.4377382846477,
+        105.63147565336381,
+        79.22147028992298,
+        60.98599167269038,
+        48.689152202251215,
+        40.80975870225828,
+        36.358528714472676,
+        34.76067105737851,
+        35.7874063344425,
+        39.524403114779126,
+        46.3659747331131,
+        57.014919694403275,
+        72.4289331105547,
+        93.51745181814672,
+        119.93263954993789,
+        146.30872150436122,
+        158.91215160518348,
+        154.25394934324189,
+        148.08918201120983,
+        151.82727588197372,
+        170.45579413383234,
+        207.74658818763587,
+        268.73503736887693,
+        360.9987099143639
+      ],
+      "refined_valleys": [
+        {
+          "half_wavelength_mm": 127.314601431567,
+          "value": 34.746195998616095,
+          "initial_bracket_mm": [
+            105.11205190671427,
+            148.65088937534009
+          ]
+        },
+        {
+          "half_wavelength_mm": 872.5346905344138,
+          "value": 147.8330279546066,
+          "initial_bracket_mm": [
+            707.1067811865474,
+            1000.0
+          ]
+        }
+      ],
+      "evaluations": [
+        {
+          "half_wavelength_mm": 31.250000000000007,
+          "value": 197.24001702679283
+        },
+        {
+          "half_wavelength_mm": 37.16272234383503,
+          "value": 143.4377382846477
+        },
+        {
+          "half_wavelength_mm": 44.194173824159215,
+          "value": 105.63147565336381
+        },
+        {
+          "half_wavelength_mm": 52.55602595335715,
+          "value": 79.22147028992298
+        },
+        {
+          "half_wavelength_mm": 62.50000000000002,
+          "value": 60.98599167269038
+        },
+        {
+          "half_wavelength_mm": 74.32544468767006,
+          "value": 48.689152202251215
+        },
+        {
+          "half_wavelength_mm": 88.38834764831839,
+          "value": 40.80975870225828
+        },
+        {
+          "half_wavelength_mm": 105.11205190671431,
+          "value": 36.358528714472676
+        },
+        {
+          "half_wavelength_mm": 119.98974418997834,
+          "value": 34.89799187521125
+        },
+        {
+          "half_wavelength_mm": 124.99999999999994,
+          "value": 34.76067105737851
+        },
+        {
+          "half_wavelength_mm": 127.31220379673415,
+          "value": 34.74619654436958
+        },
+        {
+          "half_wavelength_mm": 127.314601431567,
+          "value": 34.746195998616095
+        },
+        {
+          "half_wavelength_mm": 127.31613693055786,
+          "value": 34.74619634229379
+        },
+        {
+          "half_wavelength_mm": 127.31964921003657,
+          "value": 34.74619641391665
+        },
+        {
+          "half_wavelength_mm": 127.32995052450379,
+          "value": 34.74619746751012
+        },
+        {
+          "half_wavelength_mm": 127.35478979807428,
+          "value": 34.746201762379414
+        },
+        {
+          "half_wavelength_mm": 130.21946255057523,
+          "value": 34.768250126440456
+        },
+        {
+          "half_wavelength_mm": 136.97324378705957,
+          "value": 34.97733724008769
+        },
+        {
+          "half_wavelength_mm": 148.6508893753401,
+          "value": 35.7874063344425
+        },
+        {
+          "half_wavelength_mm": 176.7766952966368,
+          "value": 39.524403114779126
+        },
+        {
+          "half_wavelength_mm": 210.22410381342863,
+          "value": 46.3659747331131
+        },
+        {
+          "half_wavelength_mm": 249.9999999999999,
+          "value": 57.014919694403275
+        },
+        {
+          "half_wavelength_mm": 297.3017787506803,
+          "value": 72.4289331105547
+        },
+        {
+          "half_wavelength_mm": 353.5533905932736,
+          "value": 93.51745181814672
+        },
+        {
+          "half_wavelength_mm": 420.4482076268573,
+          "value": 119.93263954993789
+        },
+        {
+          "half_wavelength_mm": 499.99999999999983,
+          "value": 146.30872150436122
+        },
+        {
+          "half_wavelength_mm": 594.6035575013606,
+          "value": 158.91215160518348
+        },
+        {
+          "half_wavelength_mm": 707.1067811865473,
+          "value": 154.25394934324189
+        },
+        {
+          "half_wavelength_mm": 807.1915660525038,
+          "value": 148.92148198879727
+        },
+        {
+          "half_wavelength_mm": 840.8964152537147,
+          "value": 148.08918201120983
+        },
+        {
+          "half_wavelength_mm": 870.7516182603134,
+          "value": 147.8341501371994
+        },
+        {
+          "half_wavelength_mm": 871.7873398605958,
+          "value": 147.83346561717408
+        },
+        {
+          "half_wavelength_mm": 872.2491523868614,
+          "value": 147.83303349288684
+        },
+        {
+          "half_wavelength_mm": 872.393021749905,
+          "value": 147.83305498668784
+        },
+        {
+          "half_wavelength_mm": 872.4805751586206,
+          "value": 147.83344571432207
+        },
+        {
+          "half_wavelength_mm": 872.5140199040055,
+          "value": 147.83328879446583
+        },
+        {
+          "half_wavelength_mm": 872.524908610054,
+          "value": 147.8333026700199
+        },
+        {
+          "half_wavelength_mm": 872.5346905344138,
+          "value": 147.8330279546066
+        },
+        {
+          "half_wavelength_mm": 872.5519904023099,
+          "value": 147.83332666908623
+        },
+        {
+          "half_wavelength_mm": 872.579982903069,
+          "value": 147.83332060704168
+        },
+        {
+          "half_wavelength_mm": 872.6532724747047,
+          "value": 147.83344347232062
+        },
+        {
+          "half_wavelength_mm": 876.008634040352,
+          "value": 147.83650979004196
+        },
+        {
+          "half_wavelength_mm": 921.4424774896921,
+          "value": 148.4381195539849
+        },
+        {
+          "half_wavelength_mm": 999.9999999999998,
+          "value": 151.82727588197372
+        },
+        {
+          "half_wavelength_mm": 1189.2071150027214,
+          "value": 170.45579413383234
+        },
+        {
+          "half_wavelength_mm": 1414.2135623730949,
+          "value": 207.74658818763587
+        },
+        {
+          "half_wavelength_mm": 1681.7928305074295,
+          "value": 268.73503736887693
+        },
+        {
+          "half_wavelength_mm": 1999.9999999999998,
+          "value": 360.9987099143639
+        }
+      ],
+      "evaluation_count": 48,
+      "relative_coordinate_target": 0.0001,
+      "optimizer": "scipy.optimize.minimize_scalar/bounded/log-wavelength",
+      "boundary_is_initial_best": false,
+      "global_minimum_certified": false,
+      "physical_integer_wave_spectrum_verified": false,
+      "normative_resistance_verified": false,
+      "approved_for_fabrication": false
+    }
+  },
+  "modal_method": "constrained-subspace-Rayleigh-Ritz",
+  "scope": "continuous wavelength diagnostic on [L/64,L]; does not alter the discrete physical-member calculation",
+  "numerical_audit": {
+    "projected_relative_residual": 2.3495679481397535e-09,
+    "energy_relative_residual": 6.469952815231949e-07,
+    "energy_accumulation_bound": 0.0261340050676916,
+    "scaled_elastic_condition": 45486380.05539193,
+    "basis_condition": 873279.5354621224
+  },
+  "global_minimum_certified": false,
+  "approved_for_fabrication": false
+}

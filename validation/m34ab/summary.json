@@ -1,0 +1,105 @@
+{
+  "schema_version": "jpn.m34ab-validation/1",
+  "base_sha": "91bf8215a79d81292cb016d12c4f4c58cab41f20",
+  "source_sha": "2dd366c3cce5852b04834b875baaaefe1e90cd49",
+  "date": "2026-11-05",
+  "full_suite_invocations": 1,
+  "full_vitest": {
+    "passed": 481,
+    "failed": 0,
+    "pending": 0
+  },
+  "new_targeted_tests": 43,
+  "typecheck": "passed",
+  "lint": "passed",
+  "dxf": "passed",
+  "production_build": "passed",
+  "declared_model": {
+    "generator_calls": 0,
+    "same_role_distinct_sections": true,
+    "real_solver": true,
+    "physical_variants": 2,
+    "old_result_rejected": true,
+    "max_nonzero_relative_error": 3.637978807091713e-15,
+    "max_absolute_force_or_displacement_error": 5.9117155615240335e-12
+  },
+  "golden": {
+    "captured_at_base": true,
+    "signature_equal": true,
+    "input_hash_equal": true,
+    "full_request_equal": true,
+    "numeric_reference_passed": true,
+    "backup_restoration_passed": true
+  },
+  "normative_and_solver_preservation": [
+    {
+      "path": "engine/jpn_structural/mixed3d.py",
+      "sha256": "057ba3c2f74c5f397ff7a2744053e4daa4c35397dd8d44f9dc767764d57f8f85",
+      "unchanged": true
+    },
+    {
+      "path": "engine/local_mixed_worker.py",
+      "sha256": "6281fa0bb15ac56c3749994580d33c637db926fd4da2b2c718a317ab03aec456",
+      "unchanged": true
+    },
+    {
+      "path": "engine/section_worker.py",
+      "sha256": "6bab0ecb07cff0ad5dc0fc803cb742d44115ea76fd75a581d41c1711b2f648c8",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/mixed-analysis.ts",
+      "sha256": "608c30ced519b50d5d4f2d2f71fb636de296a17b415e83cf80919c5e3c36f430",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/calculations/structure.ts",
+      "sha256": "e336c2b01a40e0ea85c55189e37d032d0393f18f38b41a163478d5d20ae7f988",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/wind-speed.ts",
+      "sha256": "1617120035d06f9384fb8bf8e9aa8c32f2bfc1337c83146ceb2eb133eddfd163",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/normative-origin.ts",
+      "sha256": "4cb85307d1ba1ebf1e42d64188314eca099821526c72354ab7a060542bd194ac",
+      "unchanged": true
+    },
+    {
+      "path": "data/normas/nbr6123-2023-speed.json",
+      "sha256": "651ee763f858cd5268ebd0c7dbabc79de3915afd2a7a19d47e4adcfa4dcf06e3",
+      "unchanged": true
+    },
+    {
+      "path": "engine/requirements-validation.lock",
+      "sha256": "d4cb6e02262250767cf1c01e5f13de123b92d97f1ab2c8951688aa740f9bed47",
+      "unchanged": true
+    },
+    {
+      "path": "engine/requirements-sections-fsm.lock",
+      "sha256": "3368e370047552395cbb73b4da5e53a71e5cf465e58f1b92ff7221f4827206d4",
+      "unchanged": true
+    },
+    {
+      "path": "package.json",
+      "sha256": "8546e9598ca375151aea5a9743a8bbf0dd26d7b66bb5803dbac0d90a20a54219",
+      "unchanged": true
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "adf01b25451d4e17b18652d621ba059e671f1e8d684851e9c5be05fa294dad3b",
+      "unchanged": true
+    }
+  ],
+  "ci": "Official workflow on final commit; exact run linked in draft PR",
+  "next_missions": {
+    "M34C": "Measure scaling time/memory/conditioning/connectivity before increasing any limit",
+    "M34D": "Validate further declared-model load paths and unsupported domains; no implied normative approval"
+  },
+  "status": "IMPLEMENTED_RESTRICTED_MIXED3D_DOMAIN",
+  "release_gate": "NOT_READY_BLOCKED",
+  "computedStructuralApproval": false,
+  "fabricationRelease": false
+}

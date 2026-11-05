@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites>
+  <testsuite name="mission24-directed-cases" tests="29" failures="0" errors="0">
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[0.0-direction0]" time="0.009" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[0.0-direction1]" time="0.008" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[0.0-direction2]" time="0.008" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[0.0-direction3]" time="0.016" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[0.0-direction4]" time="0.009" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[37.0-direction0]" time="0.013" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[37.0-direction1]" time="0.015" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[37.0-direction2]" time="0.015" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[37.0-direction3]" time="0.014" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[37.0-direction4]" time="0.014" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[-23.0-direction0]" time="0.012" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[-23.0-direction1]" time="0.011" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[-23.0-direction2]" time="0.011" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[-23.0-direction3]" time="0.013" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[-23.0-direction4]" time="0.016" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[90.0-direction0]" time="0.019" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[90.0-direction1]" time="0.012" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[90.0-direction2]" time="0.013" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[90.0-direction3]" time="0.015" />
+    <testcase classname="tests.test_joint_actions" name="test_rotated_spatial_cantilever_end_actions_closed_form[90.0-direction4]" time="0.014" />
+    <testcase classname="tests.test_joint_actions" name="test_released_end_and_udl_no_double_count" time="0.009" />
+    <testcase classname="tests.test_joint_actions" name="test_noncoplanar_axial_joint_independent_force_balance_and_combinations" time="0.013" />
+    <testcase classname="tests.test_joint_actions" name="test_legacy_contract_unchanged_when_trace_not_requested" time="0.015" />
+    <testcase classname="tests.test_joint_actions" name="test_invalid_models_stay_blocked[unrestrained]" time="0.002" />
+    <testcase classname="tests.test_joint_actions" name="test_invalid_models_stay_blocked[release]" time="0.001" />
+    <testcase classname="tests.test_joint_actions" name="test_invalid_models_stay_blocked[disconnected]" time="0.001" />
+    <testcase classname="tests.test_joint_http" name="test_joint_option_is_authenticated_and_not_an_auth_bypass" time="0.001" />
+    <testcase classname="tests.test_joint_http" name="test_real_http_joint_basis_and_legacy_response_are_distinct_opt_in[1]" time="1.965" />
+    <testcase classname="tests.test_joint_http" name="test_real_http_joint_basis_and_legacy_response_are_distinct_opt_in[2]" time="1.997" />
+  </testsuite>
+</testsuites>

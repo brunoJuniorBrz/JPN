@@ -1,17 +1,20 @@
 import { expect, test } from "@playwright/test";
 import { PLANNING_EXAMPLE_ID } from "../../src/domain/planning-example";
+import { openResultTab } from "./result-tabs";
 
 for (const width of [390, 1440]) test(`levantamento sem preços, revisão ao final e downloads em ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));
   await page.goto("/"); await page.getByRole("button", { name: "Abrir exemplo de levantamento" }).click();
   await expect(page.getByTestId("takeoff-totals")).toContainText("123");
-  await expect(page.getByTestId("takeoff-totals")).toContainText("200,998");
+  await expect(page.getByTestId("takeoff-totals")).toContainText("201");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole("button", { name: "Voltar às vistas 2D", exact: true }).click();
   await page.getByRole("button", { name: "Uma tesoura", exact: true }).click();
   await page.getByLabel("Selecionar peça no desenho").selectOption("T1-BS1");
   await expect(page.getByRole("status").filter({ hasText: "T1-BS1" })).toContainText("2,512");
   await page.getByRole("button", { name: "Ampliar desenho" }).click();
+  await openResultTab(page, "Arquivos");
   const pdfWait = page.waitForEvent("download"); await page.getByRole("button", { name: "Baixar lista em PDF" }).click();
   const pdf = await pdfWait; expect(pdf.suggestedFilename()).toMatch(/levantamento-.*\.pdf/);
   await pdf.saveAs(`test-results/levantamento-${width}.pdf`);
@@ -48,8 +51,10 @@ test("cria levantamento com perfis pendentes e preserva os dados no backup", asy
   await page.getByLabel("Número de painéis por tesoura").fill("4");
   await page.getByRole("button", { name: "Ir para resultado" }).click();
   await expect(page.getByTestId("takeoff-totals")).toContainText("123");
+  await openResultTab(page, "Arquivos");
   await expect(page.getByRole("button", { name: "Baixar lista em PDF" })).toBeEnabled();
-  await expect(page.getByText("Pilares: perfil não definido.", { exact: true })).toBeVisible();
+  await openResultTab(page, "Engenharia");
+  await expect(page.locator("#result-panel-engineering").getByRole("listitem").filter({hasText:/^Pilares: perfil não definido\./})).toBeVisible();
   await page.getByRole("button", { name: "Salvar levantamento" }).click();
   const snapshot = await page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!));
   expect(snapshot.version).toBe(4); const project = snapshot.projects.find((p: { name: string }) => p.name === "Levantamento sem preços");

@@ -1,0 +1,80 @@
+{
+  "source_commit": "ab449cef8d05bb489df591d2e5b4e74571a793f5",
+  "runtime": "GNU Octave 11.3.0",
+  "generated_by": "validation/mission32/cufsm_reference.m",
+  "units": "mm/MPa",
+  "node_numbering": "Original CUFSM one-based",
+  "output_contains": [
+    "K",
+    "Kg",
+    "Blocal",
+    "Bdist",
+    "modes",
+    "eigenvalues",
+    "natural basis",
+    "kinematic constraints"
+  ],
+  "normative_approval": false,
+  "approved_for_fabrication": false,
+  "physical_integer_member_mode": false,
+  "artifacts": [
+    {
+      "name": "coarse",
+      "campaign_index": 64,
+      "geometry": {
+        "shape": "u-stiffened",
+        "height": 200,
+        "width": 75,
+        "lip": 20,
+        "wallThickness": 1,
+        "insideRadius": 0
+      },
+      "arc": 2,
+      "flat": 6,
+      "wavelength_mm": 870.2079655673336,
+      "native_stresses_mpa": {
+        "local": 467.560030354978,
+        "distortional": 104.38095825822755
+      },
+      "files": {
+        "input": {
+          "path": "original-cufsm/coarse-input.mat",
+          "sha256": "3d236ca122b0f5afb83948e92c7006186cb4431f7721aab9e9b682eb8e838eb6"
+        },
+        "output": {
+          "path": "original-cufsm/coarse-output.mat",
+          "sha256": "845de649d7330584fee1368fdbcef49a35bf011057415093d56d9982d27f9220"
+        }
+      }
+    },
+    {
+      "name": "fine",
+      "campaign_index": 196,
+      "geometry": {
+        "shape": "u-stiffened",
+        "height": 200,
+        "width": 75,
+        "lip": 20,
+        "wallThickness": 1,
+        "insideRadius": 0
+      },
+      "arc": 8,
+      "flat": 12,
+      "wavelength_mm": 870.2079655673336,
+      "native_stresses_mpa": {
+        "local": 468.8827143100017,
+        "distortional": 104.34887512853588
+      },
+      "files": {
+        "input": {
+          "path": "original-cufsm/fine-input.mat",
+          "sha256": "131ada9624396166b6fb1ebd098a5166b6b6ea286937e70b4a864ed03ab8ba2f"
+        },
+        "output": {
+          "path": "original-cufsm/fine-output.mat",
+          "sha256": "ced92e495cc643a8f11f3d093d5d7c923580ed2ba1272ffe97c67662456a44d1"
+        }
+      }
+    }
+  ]
+}

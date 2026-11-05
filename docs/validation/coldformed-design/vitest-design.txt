@@ -1,0 +1,54 @@
+
+ RUN  v5.0.5 C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree
+
+ ❯ src/domain/coldformed-design.test.ts (5 tests | 5 skipped) 57ms
+corepack : 
+No linha:2 caractere:256
++ ... ython.exe'; corepack pnpm exec vitest run src/domain/coldformed-desig ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/domain/coldformed-design.test.ts [ src/domain/coldformed-design.test.ts ]
+ZodError: [
+  {
+    "code": "invalid_value",
+    "values": [
+      1
+    ],
+    "path": [
+      "geometry",
+      "version"
+    ],
+    "message": "Invalid input: expected 1"
+  },
+  {
+    "code": "invalid_value",
+    "values": [
+      "physical-engineer-declaration"
+    ],
+    "path": [
+      "geometry",
+      "basis"
+    ],
+    "message": "Invalid input: expected \"physical-engineer-declaration\""
+  }
+]
+ ❯ src/domain/coldformed-design.test.ts:19:45
+     17|   // This fixture tests contract conversion, not numerical section agr…
+     18|   // the separate real worker tests reject incompatible physical prope…
+     19|   d.resistance=[resistancePreparationSchema.parse({pieceId,family:"col…
+       |                                             ^
+     20|     source:"Explicit contract test",revision:"1",restraintDescription:…
+     21|     sectionProperties:{wyCm3:12,wzCm3:3},geometry:{shape:"u-stiffened"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 skipped (5)
+   Start at  19:05:27
+   Duration  520ms (import 50%, transform 34%, tests 15%, worker 1%)
+

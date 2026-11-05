@@ -1,0 +1,98 @@
+corepack : $ playwright test tests/e2e/coldformed-design.spec.ts
+No linha:2 caractere:260
++ ... HREADS='1'; corepack pnpm test:e2e tests/e2e/coldformed-design.spec.t ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ playwright te...-design.spec.ts:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (node:14488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:11460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:1604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:1748) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px (34.0s)
+(node:17272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:29576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 1440px (34.2s)
+
+
+  1) [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('mixed-workspace').getByTestId('resistance-report')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByTestId('mixed-workspace').getByTestId('resistance-report') with timeout 30000ms
+      - waiting for getByTestId('mixed-workspace').getByTestId('resistance-report')
+
+
+      10 |   const combinations=p.getByTestId("engineering-combinations-control");await combinations.locator(":scope > summary").click();await combinations.getByLabel("Combinação para revisar",{exact:true}).selectOption("WP");await combinations.getByLabel("Finalidade declarada da combinação",{exact:true}).selectOption("ULS");
+      11 |   await combinations.getByLabel("Hipótese da combinação revisada",{exact:true}).fill("ULS sintética de teste: fatores unitários explícitos, sem aprovação normativa das ações");await combinations.getByLabel("Revisão da combinação revisada",{exact:true}).fill("Ensaio 2");await combinations.getByRole("button",{name:"Registrar revisão da combinação e invalidar análise",exact:true}).click();
+    > 12 |   async function solve(){await p.getByRole("button",{name:"Calcular ações de ligações",exact:true}).click();await expect(p.getByTestId("resistance-report")).toBeVisible({timeout:30000});}
+         |                                                                                                                                                              ^
+      13 |   await solve();let report=await download(page,p,"Exportar relatório resistente preliminar");
+      14 |   const uls=report.engineeringCombinations.combinations.filter((c:{purpose:string})=>c.purpose==="ULS").map((c:{id:string})=>c.id);
+      15 |   const candidate=report.demands.pieces.find((v:{kind:string;samples:{combinationId:string;forces:{nN:number}}[]})=>v.kind==="axial"&&v.samples.some(s=>uls.includes(s.combinationId)&&s.forces.nN>10));expect(candidate).toBeTruthy();const pieceId=candidate.pieceId;
+        at solve (C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\coldformed-design.spec.ts:12:158)
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\coldformed-design.spec.ts:13:3
+
+    Error Context: test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\coldformed-design-seção-fí-64353-de-tração-NBR14762-em-375px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 1440px 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByTestId('mixed-workspace').getByTestId('resistance-report')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByTestId('mixed-workspace').getByTestId('resistance-report') with timeout 30000ms
+      - waiting for getByTestId('mixed-workspace').getByTestId('resistance-report')
+
+
+      10 |   const combinations=p.getByTestId("engineering-combinations-control");await combinations.locator(":scope > summary").click();await combinations.getByLabel("Combinação para revisar",{exact:true}).selectOption("WP");await combinations.getByLabel("Finalidade declarada da combinação",{exact:true}).selectOption("ULS");
+      11 |   await combinations.getByLabel("Hipótese da combinação revisada",{exact:true}).fill("ULS sintética de teste: fatores unitários explícitos, sem aprovação normativa das ações");await combinations.getByLabel("Revisão da combinação revisada",{exact:true}).fill("Ensaio 2");await combinations.getByRole("button",{name:"Registrar revisão da combinação e invalidar análise",exact:true}).click();
+    > 12 |   async function solve(){
+         |                          ^
+      13 |     if(await p.getByTestId("self-weight-overlap-review").isVisible()){
+      14 |       await p.getByLabel("Fonte da conferência de duplicidade",{exact:true}).fill("Controle sintético: AREA e vento são ações independentes, conforme declarações do ensaio");await p.getByLabel("Revisão da conferência de duplicidade",{exact:true}).fill("Revisão da configuração atual");await p.getByRole("button",{name:"Confirmar revisão das ações independentes",exact:true}).click();
+      15 |     }
+        at solve (C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\coldformed-design.spec.ts:12:158)
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\coldformed-design.spec.ts:13:3
+
+    Error Context: test-results\coldformed-design-seção-fí-a3392-e-tração-NBR14762-em-1440px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\coldformed-design-seção-fí-a3392-e-tração-NBR14762-em-1440px-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\coldformed-design-seção-fí-a3392-e-tração-NBR14762-em-1440px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 375px 
+    [chromium] › tests\e2e\coldformed-design.spec.ts:4:31 › seção física → PyNite real → resistência de tração NBR14762 em 1440px 
+[ELIFECYCLE] Command failed with exit code 1.

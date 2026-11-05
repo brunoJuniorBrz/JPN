@@ -1,0 +1,38 @@
+import { openEngineeringTool } from "./result-tabs";
+import {expect,test} from "@playwright/test";
+import {readFile} from "node:fs/promises";
+for(const width of [375,1440])test(`peso explícito e carga distribuída executam Python real em ${width}px`,async({page})=>{
+ test.setTimeout(120000);await page.setViewportSize({width,height:930});const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
+ await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
+ await openEngineeringTool(page, "Análise Estrutural Experimental");const p=page.getByTestId("mixed-workspace");await p.getByRole("button",{name:"Abrir exemplo de peso e cargas"}).click();await expect(p.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:20000});
+ await p.getByTestId("structural-loads").locator(":scope > summary").click();await expect(p.getByTestId("structural-loads")).toContainText("1000 kg/m³");await expect(p.getByTestId("structural-loads")).toContainText("PP-DEMO");
+ await p.getByRole("button",{name:"Executar análise mista local"}).click();await expect(p.getByTestId("loaded-result-trace")).toContainText("Peso próprio declarado",{timeout:30000});
+ const wait=page.waitForEvent("download");await p.getByRole("button",{name:"Exportar resultados mistos"}).click();const download=await wait,out=JSON.parse(await readFile((await download.path())!,"utf8"));expect(out.result.schema_version).toBe("jpn.mixed3d-result/2");expect(out.result.input_sha256).toBe(out.prepared.input_sha256);expect(out.result.loading.self_weight.total_mass_kg).toBeGreaterThan(0);
+ const loaded=out.prepared.request.member_loads[0];const mapping=out.prepared.mapping.members.find((m:{id:string})=>m.id===loaded.member);await p.getByLabel("Peça na análise mista").selectOption(mapping.originalId);await expect(p.getByTestId("mixed-selection")).toContainText("deslocamento local XYZ");
+ const force=await p.getByTestId("mixed-axial").textContent();await p.getByLabel("Combinação mista").selectOption("INVERSO-TOTAL");expect(await p.getByTestId("mixed-axial").textContent()).not.toBe(force);
+ await p.getByRole("button",{name:"Preparação mista",exact:true}).click();await p.getByTestId("structural-loads").locator(":scope > summary").click();await p.getByLabel("Densidade (kg/m³)").fill("1100");await p.getByLabel("Fonte da densidade").fill("Revisão sintética");await p.getByLabel("Revisão da densidade").fill("R2");await p.getByRole("button",{name:"Aplicar densidade declarada a todos os grupos"}).click();await p.getByRole("button",{name:"Resultados 3D",exact:true}).click();await expect(p.getByTestId("mixed-no-results")).toBeVisible();
+ await p.getByRole("button",{name:"Executar análise mista local"}).click();
+ await expect(p.getByRole("alert")).toContainText("POSSIBLE_DOUBLE_COUNT");
+ await p.getByRole("button",{name:"Preparação mista",exact:true}).click();
+ await p.getByTestId("structural-loads").locator(":scope > summary").click();
+ await p.getByLabel("Fonte da conferência de duplicidade").fill("Revisão independente de cargas sintéticas");
+ await p.getByLabel("Revisão da conferência de duplicidade").fill("R2");
+ await p.getByRole("button",{name:/Confirmo que as ações manuais combinadas/}).click();
+ await expect(p.getByTestId("self-weight-overlap-review")).toContainText("Revisão de possíveis duplicidades registrada");
+ await p.getByRole("button",{name:"Executar análise mista local"}).click();
+ await expect(p.getByTestId("loaded-result-trace")).toContainText("Peso próprio declarado",{timeout:30000});
+ await p.getByRole("button",{name:"Preparação mista",exact:true}).click();
+ await p.getByTestId("structural-loads").locator(":scope > summary").click();
+ await p.getByLabel("Ação permanente de cobertura (kN/m²)").fill("0.1");
+ await p.getByLabel("Projeção da área").selectOption("horizontal");
+ for(const axis of ["X","Y","Z"])await p.getByLabel("Direção da ação por área "+axis).fill(axis==="Z"?"-1":"0");
+ await p.getByLabel("Caminho de transmissão da cobertura").fill("Partição tributária ainda não validada");
+ await p.getByLabel("Fonte da ação por área").fill("Documento de teste somente da ação de cobertura");
+ await p.getByLabel("Revisão da ação por área").fill("R1");
+ await p.getByRole("button",{name:"Registrar ação por área pendente"}).click();
+ await expect(p.getByTestId("structural-loads")).toContainText("PENDENTE: 0.1 kN/m²");
+ await p.getByRole("button",{name:"Executar análise mista local"}).click();
+ await expect(p.getByRole("alert")).toContainText("ROOF_LOAD_PATH_PENDING");
+
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
+});

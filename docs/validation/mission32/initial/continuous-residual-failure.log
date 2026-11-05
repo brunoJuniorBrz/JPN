@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "C:\Users\Usuario\Desktop\jpn-missao31\engine\audit_member_modes.py", line 65, in <module>
+    result = audit(json.loads(args.input.read_text(encoding='utf8')))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Usuario\Desktop\jpn-missao31\engine\audit_member_modes.py", line 46, in audit
+    results[family] = refine_wavelength_valleys(stress, grid)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Usuario\Desktop\jpn-missao31\engine\jpn_structural\buckling_search.py", line 38, in refine_wavelength_valleys
+    initial = [objective(x) for x in grid]
+               ^^^^^^^^^^^^
+  File "C:\Users\Usuario\Desktop\jpn-missao31\engine\jpn_structural\buckling_search.py", line 31, in objective
+    value = float(evaluate(length))
+                  ^^^^^^^^^^^^^^^^
+  File "C:\Users\Usuario\Desktop\jpn-missao31\engine\audit_member_modes.py", line 41, in stress
+    return problem.evaluate(wavelength, (family,))[family]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Usuario\Desktop\jpn-missao31\engine\jpn_structural\constrained_modes.py", line 137, in evaluate
+    critical, _, diagnostic = constrained_eigenpair(elastic, geometric, spaces[family],
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Usuario\Desktop\jpn-missao31\engine\jpn_structural\constrained_modes.py", line 56, in constrained_eigenpair
+    fail('NUMERICAL_FAILURE', 'Projected eigenpair residual exceeds 1e-8.')
+  File "C:\Users\Usuario\Desktop\jpn-missao31\engine\jpn_structural\frame3d_model.py", line 16, in fail
+    raise AnalysisError(code, message)
+jpn_structural.model.AnalysisError: Projected eigenpair residual exceeds 1e-8.

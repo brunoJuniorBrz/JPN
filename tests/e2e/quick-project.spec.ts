@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openResultTab } from "./result-tabs";
 
 for (const width of [375, 1440]) {
   test(`criação rápida abre perfis sólidos 3D e permite refinar o projeto em ${width}px`, async ({ page }) => {
@@ -20,7 +21,7 @@ for (const width of [375, 1440]) {
     await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
     expect(Number(await canvas.getAttribute("data-solid-count"))).toBeGreaterThan(100);
     const original = await page.getByTestId("takeoff-totals").innerText();
-    expect(original).toContain("Peças geradas");
+    expect(original).toContain("Peças");
     const snapshot = await page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!));
     const project = snapshot.projects.at(-1);
     expect(project.isExample).toBe(false);
@@ -63,6 +64,7 @@ test("sincroniza linhas vinculadas ao levantamento ao editar geometria, sem alte
   await page.getByLabel("Altura (m)").fill("3");
   await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
   await expect(page.getByTestId("takeoff-totals")).toBeVisible();
+  await openResultTab(page, "Materiais");
   await page.getByRole("button", { name: "Atualizar quantitativos no orçamento" }).click();
   await expect.poll(async () => page.evaluate(() => { const data = JSON.parse(localStorage.getItem("jpn-projetos:v1")!); return data.projects.at(-1).estimate.materials.filter((line: { source: string }) => line.source === "takeoff").length; })).toBe(5);
   const before = await page.evaluate(() => {
@@ -70,6 +72,7 @@ test("sincroniza linhas vinculadas ao levantamento ao editar geometria, sem alte
     const project = data.projects.at(-1);
     return project.estimate.materials.filter((line: { source: string }) => line.source === "takeoff").find((line: { quantityOrigin: { role: string } }) => line.quantityOrigin.role === "column").manualQuantity;
   });
+  await openResultTab(page, "Modelo 3D");
   await page.getByRole("button", { name: "Editar distribuição e espaçamentos" }).click();
   await page.getByLabel("Espaçamento máximo entre tesouras (m)").fill("2");
   await page.getByRole("button", { name: "Abrir modelo 3D" }).click();

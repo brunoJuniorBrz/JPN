@@ -1,3 +1,4 @@
+import { openEngineeringTool, openResultTab } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { createQuickProject } from "../../src/domain/quick-project";
@@ -16,7 +17,7 @@ for (const mobile of [true, false]) test.describe(mobile ? "iPhone 375" : "deskt
     await page.getByRole("button", { name: "Gerar modelo 3D", exact: true }).click();
     await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Perfis 3D", exact: true })).toHaveAttribute("aria-pressed", "true");
-    await page.getByRole("button", { name: "Análise 3D experimental", exact: true }).click();
+    await openEngineeringTool(page, "Análise 3D experimental");
     await expect(page.getByTestId("spatial-readiness")).toContainText("Faltam dados para análise");
     const saved = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
     await page.getByRole("button", { name: "Carregar exemplo espacial validado", exact: true }).click();
@@ -37,19 +38,19 @@ for (const mobile of [true, false]) test.describe(mobile ? "iPhone 375" : "deskt
     payload.nodal_loads[0].fx_n += 1; await input.fill(JSON.stringify(payload));
     await expect(page.getByRole("alert").filter({ hasText: "resultado descartado" })).toBeVisible(); await expect(results).toHaveCount(0);
     await page.reload(); await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
-    await page.getByRole("button", { name: "Análise 3D experimental", exact: true }).click(); await expect(results).toHaveCount(0);
+    await openEngineeringTool(page, "Análise 3D experimental"); await expect(results).toHaveCount(0);
     expect(errors).toEqual([]);
   });
 });
 
 test("falha do serviço 3D não interrompe a visualização, o levantamento ou a edição", async ({ page }) => {
   await page.goto("/"); await page.getByRole("button", { name: "Abrir exemplo de levantamento", exact: true }).click();
-  await page.getByRole("button", { name: "Análise 3D experimental", exact: true }).click();
+  await openEngineeringTool(page, "Análise 3D experimental");
   await page.getByRole("button", { name: "Carregar exemplo espacial validado", exact: true }).click();
   await page.route("**/api/analysis3d", route => route.fulfill({ status: 503, json: { error: { code: "UNAVAILABLE", message: "Serviço não configurado" } } }));
   await page.getByRole("button", { name: "Executar análise 3D experimental", exact: true }).click();
   await expect(page.getByRole("alert").filter({ hasText: "Serviço de análise indisponível" })).toBeVisible();
-  await expect(page.getByTestId("takeoff-totals")).toBeVisible(); await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
+  await expect(page.getByTestId("takeoff-totals")).toBeVisible(); await openResultTab(page, "Modelo 3D"); await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
 });
 
 test("modelo explicitamente vinculado exige nova revisão ao mudar hipótese de ligação", async ({ page }) => {
@@ -62,7 +63,7 @@ test("modelo explicitamente vinculado exige nova revisão ao mudar hipótese de 
   input.nodal_loads[0].node = model.nodes.find(n => n.z > 0)!.id;
   await page.addInitScript(value => localStorage.setItem("jpn-projetos:v1", JSON.stringify(value)), { ...emptySnapshot(), exampleInstalled: true, projects: [project] });
   await page.goto(`/projetos/${project.id}?fluxo=levantamento&etapa=3`);
-  await page.getByRole("button", { name: "Análise 3D experimental", exact: true }).click();
+  await openEngineeringTool(page, "Análise 3D experimental");
   await page.getByRole("button", { name: "Carregar exemplo espacial validado", exact: true }).click();
   await page.getByLabel("Entrada do modelo físico 3D (JSON SI)").fill(JSON.stringify(input));
   await page.getByText("Vincular modelo explícito à obra · revisão técnica", { exact: true }).click();

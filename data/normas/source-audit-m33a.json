@@ -1,0 +1,74 @@
+{
+  "schema_version": "jpn.normative-source-audit/1",
+  "baseCommit": "566e068010446c3af8cb4889391ac177dcf752e3",
+  "inventory": "docs/validation/coldformed-design/supplied-standards.json",
+  "method": "HISTORICAL snapshot through 83420da: Git history, supplied-document hashes, implementation, adjacent tests and frozen pre-M33 solver output. Superseded for the newly read wind/combination subset by supplied-source-review-m33a.json; PDFs remain private.",
+  "supersededBy": "data/normas/supplied-source-review-m33a.json",
+  "historicalNotice": "ENGINE-NORMATIVE-TRACEABILITY.md explicitly marks its initial no-full-text/no-implementation table as historical. Later user-supplied sources and implementations supersede that initial snapshot.",
+  "procedures": [
+    {
+      "id": "NBR6123-original-S1-S2-Vk-q",
+      "standard": "ABNT NBR 6123", "edition": "2023-original", "errata": "2025-not-verified",
+      "documentSha256": "338214bb4a840030d24e0685a9e9e73db6241437758f54696965c4805288b966",
+      "item": "4.2; 5.2(a); 5.3.3; Tables 1-3",
+      "state": "SUPPORTED_VERIFIED",
+      "scope": "Existing partial original-edition formulas, flat terrain and uniform roughness only; V0, classification and S3 remain declared dependencies; this is not complete wind assessment",
+      "available": "S1=1 in its restricted domain; b,p,zg,zmin for I-V/A-C; Fr=[1,.98,.95] from II; S2=b*Fr*(max(z,zmin)/10)^p; Vk=V0*S1*S2*S3; q=.613*Vk^2; reference density 1.226 kg/m3",
+      "recoveredCatalog": "data/normas/nbr6123-2023-speed.json",
+      "originCommits": ["00e61f68d1013f2d34dfa74554c84edc27efad72", "b32fb29bfc6a6f163e9a708c65282b21d3e8af87"],
+      "tests": ["src/domain/wind-speed.test.ts", "src/domain/wind-external-references.test.ts"],
+      "independentComparison": "REF-04 S2=0.913 at 7.5m, III/A (3 printed decimals); REF-01 exposure only, II/B at 4.65m, S2=0.92 (2 decimals); conflicting V0 retained"
+    },
+    {
+      "id": "NBR6123-Cpe-Cpi-zones",
+      "standard": "ABNT NBR 6123", "edition": "2023-original", "errata": "2025-not-verified",
+      "documentSha256": "338214bb4a840030d24e0685a9e9e73db6241437758f54696965c4805288b966",
+      "state": "BLOCKED_UNSUPPORTED",
+      "available": "User-supplied original document and existing q*(Cpe-Cpi) distributor; existing zone examples are synthetic declarations",
+      "missing": "Recoverable numeric rows identifying item/table/figure, roof geometry, incidence, exact slope, openings and every Cpi alternative; absence is of a usable transcription, not of a historically supplied document",
+      "contract": "src/domain/normative-origin-contracts.ts: normativeWindDataSchema"
+    },
+    {
+      "id": "NBR8681-factors-2025",
+      "standard": "ABNT NBR 8681", "edition": "2025", "errata": "not established in recorded capture",
+      "documentSha256": "8557394384d26b826094abb19ed206c4216780d576563a701a9bfe726cba4324",
+      "state": "BLOCKED_UNSUPPORTED",
+      "available": "User-supplied capture, 18 PDF pages; earlier visual review through printed page 23, tables/formulae recorded as examined; existing compiler multiplies declared gamma*psi and enforces exclusivity",
+      "missing": "Versioned numerical gamma/psi rows and purpose/class/leading/accompanying/favorable/adverse domains with per-value citations; no safe reconstruction from review metadata alone",
+      "compatibility": "NBR14762:2010 cites NBR8681:2003 and contains its own 6.7. No 2003 factors or resistance gammas are substituted for 2025 action factors.",
+      "contract": "src/domain/normative-origin-contracts.ts: normativeFactorsDataSchema"
+    },
+    {
+      "id": "NBR14762-partial-resistance",
+      "standard": "ABNT NBR 14762", "edition": "2010", "errata": "integral errata confirmation remains separate",
+      "documentSha256": "bfb918e14a274580439ed01795b21ed25a436c626189a49dbd63446f49279075",
+      "state": "SUPPORTED_VERIFIED",
+      "scope": "Existing tested formulas only, subject to current Ue geometry, mode, energy, load and release gates; automatic results require evaluator /4; no full-member or fabrication approval",
+      "item": "C.1-C.5; 9.6.2; 9.7.2.2; 9.7.4; 9.8.3; 9.9; 10.1(a)",
+      "available": "Compression MRD gamma 1.20; bending MRD 1.10; tension gross 1.10, net-outside 1.35, net-connection 1.65; C.5 effective inertia; unstiffened single-web shear kv=5; concomitant N/M interactions; axial-joint demand minimum max(|Nsd|,.5*valid axial resistance)",
+      "readPagesRecorded": "Printed 34-36, 50-53, 74-77 in earlier delivery",
+      "originCommit": "aa80040ed47e5379f54b1e79b5aa3fdf25dc3834",
+      "validation": "Existing independent Decimal resistance controls and M31/M32 section/eigenmode campaigns; conditional dependencies and unsupported torsion/connections retained",
+      "reuseInM33A": "Preserve existing procedures; never use their resistance gammas as NBR8681 action factors"
+    },
+    {
+      "id": "NBR8800-supplied-text",
+      "standard": "ABNT NBR 8800", "edition": "2024", "errata": "Errata 1:2025 recorded in first five PDF pages",
+      "documentSha256": "f2feef740b52821d2774e65e4e6778ea192272ca6feb2d475f7d1ca493cad118",
+      "state": "BLOCKED_UNSUPPORTED",
+      "available": "User-supplied 298-page file with separate errata; source inventory available; no complete NBR8800 resistance implementation is established by the reviewed code",
+      "reuseInM33A": "Keep provenance; new resistance implementation is outside scope"
+    },
+    {
+      "id": "NBR6120-gravity",
+      "standard": "ABNT NBR 6120", "edition": "2019-original", "errata": "November 2019 corrections not demonstrated",
+      "documentSha256": "7567f4412d050e5949b692005210c161ee24724b73c042be4ad303887c60c68d",
+      "state": "DECLARED_UNVERIFIED",
+      "available": "User-supplied 66-page file; existing explicit density/self-weight and roof-area physical load paths",
+      "missing": "Reviewed normative occupancy/category/action tables and corrected-edition applicability; no new gravity code in M33A"
+    }
+  ],
+  "pdfsRedistributed": false,
+  "computedStructuralApproval": false,
+  "fabricationRelease": false
+}

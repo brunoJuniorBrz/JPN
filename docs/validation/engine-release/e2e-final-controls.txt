@@ -1,0 +1,163 @@
+corepack : $ playwright test tests/e2e/connections.spec.ts tests/e2e/resistance-report.spec.ts
+No linha:2 caractere:260
++ ... HREADS='1'; corepack pnpm test:e2e tests/e2e/connections.spec.ts test ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ playwright te...-report.spec.ts:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (node:9860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 6 tests using 1 worker
+
+(node:19992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:29996) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:8052) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\e2e\connections.spec.ts:4:31 › M24 ações, nó no 3D, declaração física e invalidação em 375px (2.5m)
+(node:21484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:11056) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 [chromium] › tests\e2e\connections.spec.ts:4:31 › M24 ações, nó no 3D, declaração física e invalidação em 1440px (2.5m)
+(node:21784) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:2732) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [chromium] › tests\e2e\resistance-report.spec.ts:4:31 › M23 solicitações reais, relatório e seleção 3D em 375px (11.8s)
+[WebServer] (node:5764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 [chromium] › tests\e2e\resistance-report.spec.ts:4:31 › M23 solicitações reais, relatório e seleção 3D em 1440px (10.8s)
+[WebServer] (node:10960) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 5 [chromium] › tests\e2e\resistance-report.spec.ts:25:31 › cadastro resistente, seção Python e limite de flecha em 375px (41.8s)
+[WebServer] (node:25936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  ok 6 [chromium] › tests\e2e\resistance-report.spec.ts:25:31 › cadastro resistente, seção Python e limite de flecha em 1440px (41.8s)
+
+
+  1) [chromium] › tests\e2e\connections.spec.ts:4:31 › M24 ações, nó no 3D, declaração física e invalidação em 375px 
+
+    Test timeout of 150000ms exceeded.
+
+    Error: locator.click: Test timeout of 150000ms exceeded.
+    Browser logs:
+
+    <launching> C:\Users\Bruno\AppData\Local\ms-playwright\chromium_headless_shell-1248\chrome-headless-shell-win64\chrome-headless-shell.exe --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,AvoidCorsURLLoaderRestartOnRedirect,Translate,AutoDeElevate,OptimizationHints,NetworkTimeServiceQuerying,AimEnabled,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=C:\Users\Bruno\AppData\Local\Temp\playwright_chromiumdev_profile-c5FDAt --remote-debugging-pipe --no-startup-window
+    <launched> pid=16640
+    [pid=16640][err] [1102/162043.844:INFO:CONSOLE:720] "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold", source: http://127.0.0.1:3000/_next/static/chunks/0rrh_next_dist_1v2srksabr5m4._.js (720)
+    [pid=16640][err] [1102/162044.008:INFO:CONSOLE:720] "[HMR] connected", source: http://127.0.0.1:3000/_next/static/chunks/0rrh_next_dist_1v2srksabr5m4._.js (720)
+    [pid=16640][err] [1102/162045.253:ERROR:gpu\command_buffer\service\gl_utils.cc:431] [.WebGL-0x7a9400d0f000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+    [pid=16640][err] [1102/162045.309:INFO:CONSOLE:0] "[.WebGL-0x7a9400d0f000]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels", source: http://127.0.0.1:3000/projetos/b103eb1d-03b8-4a60-b1d9-045120dc2f55?fluxo=levantamento&etapa=3&vista=3d (0)
+    [pid=16640][err] [1102/162053.342:ERROR:gpu\command_buffer\service\gl_utils.cc:431] [.WebGL-0x7a9400d17a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+    [pid=16640][err] [1102/162053.421:INFO:CONSOLE:0] "[.WebGL-0x7a9400d17a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels", source: http://127.0.0.1:3000/projetos/b103eb1d-03b8-4a60-b1d9-045120dc2f55?fluxo=levantamento&etapa=3&vista=3d (0)
+    [pid=16640][err] [1102/162057.072:ERROR:gpu\command_buffer\service\gl_utils.cc:431] [.WebGL-0x7a9400d17a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+    [pid=16640][err] [1102/162057.093:INFO:CONSOLE:0] "[.WebGL-0x7a9400d17a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels", source: http://127.0.0.1:3000/projetos/b103eb1d-03b8-4a60-b1d9-045120dc2f55?fluxo=levantamento&etapa=3&vista=3d (0)
+    [pid=16640][err] [1102/162057.240:ERROR:gpu\command_buffer\service\gl_utils.cc:431] [.WebGL-0x7a9400d17a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+    [pid=16640][err] [1102/162057.280:INFO:CONSOLE:0] "[.WebGL-0x7a9400d17a00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)", source: http://127.0.0.1:3000/projetos/b103eb1d-03b8-4a60-b1d9-045120dc2f55?fluxo=levantamento&etapa=3&vista=3d (0)
+    [pid=16640][err] [1102/162203.101:INFO:CONSOLE:720] "[Fast Refresh] rebuilding", source: http://127.0.0.1:3000/_next/static/chunks/0rrh_next_dist_1v2srksabr5m4._.js (720)
+    [pid=16640][err] [1102/162203.287:INFO:CONSOLE:720] "[Fast Refresh] done in 294ms", source: http://127.0.0.1:3000/_next/static/chunks/0rrh_next_dist_1v2srksabr5m4._.js (720)
+    [pid=16640] <gracefully close start>
+    Call log:
+      - waiting for getByTestId('mixed-workspace').getByTestId('connections-panel').getByTestId('connection-form').locator('details > summary').filter({ hasText: /^plate ·/ })
+        - locator resolved to <summary>plate · plate-05a414ad</summary>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+          - waiting 100ms
+        245 × waiting for element to be visible, enabled and stable
+            - element is not visible
+          - retrying click action
+            - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      31 |   expect(declared.state.hypothesisConsistent).toBe(true);expect(declared.state.resistanceVerified).toBe(false);expect(declared.declaration.components[0].thicknessMm).toBeNull();expect(declared.componentData[0].missingFields).toContain("thicknessMm");
+      32 |   const plateFields=form.getByLabel("plate 1 — widthMm",{exact:true});if(!await plateFields.isVisible())await form.locator(":scope > summary").click();
+    > 33 |   if(!await plateFields.isVisible())await form.locator("details > summary").filter({hasText:/^plate ·/}).click();
+         |                                                                                                          ^
+      34 |   for(const [name,value]of [["widthMm","100"],["heightMm","200"],["thicknessMm","5"],["material","Explicit synthetic plate"]])await form.getByLabel(`plate 1 — ${name}`,{exact:true}).fill(value);
+      35 |   await form.getByRole("button",{name:"Registrar ligação e invalidar análise",exact:true}).click();await p.getByRole("button",{name:"Calcular ações de ligações",exact:true}).click();await expect(panel.getByTestId("connection-actions")).toBeVisible({timeout:30000});
+      36 |   const geometry=panel.getByTestId("connection-geometry");await geometry.locator(":scope > summary").click();await geometry.getByLabel("Componente chapa da furação").selectOption(declared.declaration.components[0].id);
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\connections.spec.ts:33:106
+
+    Error Context: test-results\connections-M24-ações-nó-n-55009-sica-e-invalidação-em-375px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\connections-M24-ações-nó-n-55009-sica-e-invalidação-em-375px-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\connections-M24-ações-nó-n-55009-sica-e-invalidação-em-375px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\e2e\connections.spec.ts:4:31 › M24 ações, nó no 3D, declaração física e invalidação em 1440px 
+
+    Test timeout of 150000ms exceeded.
+
+    Error: locator.click: Test timeout of 150000ms exceeded.
+    Browser logs:
+
+    <launching> C:\Users\Bruno\AppData\Local\ms-playwright\chromium_headless_shell-1248\chrome-headless-shell-win64\chrome-headless-shell.exe --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,AvoidCorsURLLoaderRestartOnRedirect,Translate,AutoDeElevate,OptimizationHints,NetworkTimeServiceQuerying,AimEnabled,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=C:\Users\Bruno\AppData\Local\Temp\playwright_chromiumdev_profile-U9Ui2g --remote-debugging-pipe --no-startup-window
+    <launched> pid=12832
+    [pid=12832][err] [1102/162314.841:INFO:CONSOLE:720] "%cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold", source: http://127.0.0.1:3000/_next/static/chunks/0rrh_next_dist_1v2srksabr5m4._.js (720)
+    [pid=12832][err] [1102/162315.041:INFO:CONSOLE:720] "[HMR] connected", source: http://127.0.0.1:3000/_next/static/chunks/0rrh_next_dist_1v2srksabr5m4._.js (720)
+    [pid=12832][err] [1102/162315.928:ERROR:gpu\command_buffer\service\gl_utils.cc:431] [.WebGL-0x582c00424400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+    [pid=12832][err] [1102/162316.008:INFO:CONSOLE:0] "[.WebGL-0x582c00424400]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels", source: http://127.0.0.1:3000/projetos/0aa067fe-7f5d-413f-8ac4-94f08b8aeffe?fluxo=levantamento&etapa=3&vista=3d (0)
+    [pid=12832][err] [1102/162324.392:ERROR:gpu\command_buffer\service\gl_utils.cc:431] [.WebGL-0x582c0041ea00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+    [pid=12832][err] [1102/162324.488:INFO:CONSOLE:0] "[.WebGL-0x582c0041ea00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels", source: http://127.0.0.1:3000/projetos/0aa067fe-7f5d-413f-8ac4-94f08b8aeffe?fluxo=levantamento&etapa=3&vista=3d (0)
+    [pid=12832][err] [1102/162327.978:ERROR:gpu\command_buffer\service\gl_utils.cc:431] [.WebGL-0x582c0041ea00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+    [pid=12832][err] [1102/162328.001:INFO:CONSOLE:0] "[.WebGL-0x582c0041ea00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels", source: http://127.0.0.1:3000/projetos/0aa067fe-7f5d-413f-8ac4-94f08b8aeffe?fluxo=levantamento&etapa=3&vista=3d (0)
+    [pid=12832][err] [1102/162328.144:ERROR:gpu\command_buffer\service\gl_utils.cc:431] [.WebGL-0x582c0041ea00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+    [pid=12832][err] [1102/162328.166:INFO:CONSOLE:0] "[.WebGL-0x582c0041ea00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)", source: http://127.0.0.1:3000/projetos/0aa067fe-7f5d-413f-8ac4-94f08b8aeffe?fluxo=levantamento&etapa=3&vista=3d (0)
+    [pid=12832] <gracefully close start>
+    Call log:
+      - waiting for getByTestId('mixed-workspace').getByTestId('connections-panel').getByTestId('connection-form').locator('details > summary').filter({ hasText: /^plate ·/ })
+        - locator resolved to <summary>plate · plate-c0000add</summary>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+          - waiting 100ms
+        246 × waiting for element to be visible, enabled and stable
+            - element is not visible
+          - retrying click action
+            - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      31 |   expect(declared.state.hypothesisConsistent).toBe(true);expect(declared.state.resistanceVerified).toBe(false);expect(declared.declaration.components[0].thicknessMm).toBeNull();expect(declared.componentData[0].missingFields).toContain("thicknessMm");
+      32 |   const plateFields=form.getByLabel("plate 1 — widthMm",{exact:true});if(!await form.evaluate(el=>(el as HTMLDetailsElement).open))await form.locator(":scope > summary").click();
+    > 33 |   if(!await plateFields.isVisible())await form.locator("details > summary").filter({hasText:/^plate ·/}).click();
+         |                                                                                                          ^
+      34 |   for(const [name,value]of [["widthMm","100"],["heightMm","200"],["thicknessMm","5"],["material","Explicit synthetic plate"]])await form.getByLabel(`plate 1 — ${name}`,{exact:true}).fill(value);
+      35 |   await form.getByRole("button",{name:"Registrar ligação e invalidar análise",exact:true}).click();await p.getByRole("button",{name:"Calcular ações de ligações",exact:true}).click();await expect(panel.getByTestId("connection-actions")).toBeVisible({timeout:30000});
+      36 |   const geometry=panel.getByTestId("connection-geometry");await geometry.locator(":scope > summary").click();await geometry.getByLabel("Componente chapa da furação").selectOption(declared.declaration.components[0].id);
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission27-worktree\tests\e2e\connections.spec.ts:33:106
+
+    Error Context: test-results\connections-M24-ações-nó-n-a52f7-ica-e-invalidação-em-1440px-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\connections-M24-ações-nó-n-a52f7-ica-e-invalidação-em-1440px-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\connections-M24-ações-nó-n-a52f7-ica-e-invalidação-em-1440px-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\e2e\connections.spec.ts:4:31 › M24 ações, nó no 3D, declaração física e invalidação em 375px 
+    [chromium] › tests\e2e\connections.spec.ts:4:31 › M24 ações, nó no 3D, declaração física e invalidação em 1440px 
+  4 passed (6.9m)
+[ELIFECYCLE] Command failed with exit code 1.

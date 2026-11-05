@@ -1,0 +1,157 @@
+{
+  "schema_version": "jpn.m34ab-results/1",
+  "tolerance": {
+    "relative": 1e-8,
+    "absolute_displacement_m": 1e-12,
+    "absolute_force_n": 0.000001,
+    "justification": "Closed-form linear prismatic subspans, direct FE solve; absolute floor for exact zero components, relative guard far below any design tolerance"
+  },
+  "records": [
+    {
+      "changedFirstSection": false,
+      "inputSha256": "d684c44a33005d8e824edf7f42f95d38fd0905ad7a3499972d94c66a7ea6793f",
+      "comparison": {
+        "tipX": {
+          "expected": 0.0000075,
+          "calculated": 0.000007499999999999999,
+          "absoluteDifference": 8.470329472543003e-22,
+          "relativeDifference": 1.1293772630057339e-16
+        },
+        "tipZ": {
+          "expected": -0.0125,
+          "calculated": -0.01249999999999997,
+          "absoluteDifference": 3.122502256758253e-17,
+          "relativeDifference": 2.4980018054066022e-15
+        },
+        "tipRY": {
+          "expected": 0.00875,
+          "calculated": 0.008749999999999982,
+          "absoluteDifference": 1.9081958235744878e-17,
+          "relativeDifference": 2.1807952269422717e-15
+        },
+        "axialY": {
+          "expected": 0.00000625,
+          "calculated": 0.00000625,
+          "absoluteDifference": 0,
+          "relativeDifference": 0
+        },
+        "reactions": [
+          {
+            "expected": -1000,
+            "calculated": -999.9999999999999,
+            "absoluteDifference": 1.1368683772161603e-13,
+            "relativeDifference": 1.1368683772161603e-16
+          },
+          {
+            "expected": -500,
+            "calculated": -500,
+            "absoluteDifference": 0,
+            "relativeDifference": 0
+          },
+          {
+            "expected": 1000,
+            "calculated": 999.9999999999964,
+            "absoluteDifference": 3.637978807091713e-12,
+            "relativeDifference": 3.637978807091713e-15
+          }
+        ],
+        "moments": [
+          {
+            "expected": 0,
+            "calculated": 0,
+            "absoluteDifference": 0,
+            "relativeDifference": null
+          },
+          {
+            "expected": -2000,
+            "calculated": -1999.999999999994,
+            "absoluteDifference": 5.9117155615240335e-12,
+            "relativeDifference": 2.9558577807620166e-15
+          },
+          {
+            "expected": 0,
+            "calculated": 0,
+            "absoluteDifference": 0,
+            "relativeDifference": null
+          }
+        ]
+      },
+      "equilibriumResidual": 1.0660594786964688e-15,
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    },
+    {
+      "changedFirstSection": true,
+      "inputSha256": "09dfa979dfa1cd7d443c2346673abb2f71b1013ecd1b53b52a86e51f34ff1ffb",
+      "comparison": {
+        "tipX": {
+          "expected": 0.000005,
+          "calculated": 0.000005,
+          "absoluteDifference": 0,
+          "relativeDifference": 0
+        },
+        "tipZ": {
+          "expected": -0.006666666666666668,
+          "calculated": -0.006666666666666666,
+          "absoluteDifference": 1.734723475976807e-18,
+          "relativeDifference": 2.60208521396521e-16
+        },
+        "tipRY": {
+          "expected": 0.005,
+          "calculated": 0.004999999999999999,
+          "absoluteDifference": 8.673617379884035e-19,
+          "relativeDifference": 1.734723475976807e-16
+        },
+        "axialY": {
+          "expected": 0.00000625,
+          "calculated": 0.00000625,
+          "absoluteDifference": 0,
+          "relativeDifference": 0
+        },
+        "reactions": [
+          {
+            "expected": -1000,
+            "calculated": -1000.0000000000001,
+            "absoluteDifference": 1.1368683772161603e-13,
+            "relativeDifference": 1.1368683772161603e-16
+          },
+          {
+            "expected": -500,
+            "calculated": -500,
+            "absoluteDifference": 0,
+            "relativeDifference": 0
+          },
+          {
+            "expected": 1000,
+            "calculated": 1000,
+            "absoluteDifference": 0,
+            "relativeDifference": 0
+          }
+        ],
+        "moments": [
+          {
+            "expected": 0,
+            "calculated": 0,
+            "absoluteDifference": 0,
+            "relativeDifference": null
+          },
+          {
+            "expected": -2000,
+            "calculated": -1999.9999999999995,
+            "absoluteDifference": 4.547473508864641e-13,
+            "relativeDifference": 2.2737367544323206e-16
+          },
+          {
+            "expected": 0,
+            "calculated": 0,
+            "absoluteDifference": 0,
+            "relativeDifference": null
+          }
+        ]
+      },
+      "equilibriumResidual": 1.835143955517575e-16,
+      "computedStructuralApproval": false,
+      "fabricationRelease": false
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+corepack : $ tsc --noEmit
+No linha:2 caractere:88
++ ... +$env:PATH; corepack pnpm typecheck *> 'C:\Users\Bruno\Downloads\JPN- ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ tsc --noEmit:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

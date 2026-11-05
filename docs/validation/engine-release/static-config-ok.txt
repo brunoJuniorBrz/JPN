@@ -1,0 +1,1 @@
+YAML parsed; numerical profiles sections/fsm and Windows/Linux configured; both Vercel branch flags false

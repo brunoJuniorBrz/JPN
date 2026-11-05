@@ -1,0 +1,151 @@
+{
+  "base": "243ab80638593a61bf2e61f81f1049f1036382c3",
+  "branch": "feat/roof-area-load-path",
+  "environment": {
+    "python": "3.12.10",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "PyNiteFEA": "3.2.1",
+    "pytest": "9.2.0"
+  },
+  "python": {
+    "status": "passed",
+    "pytest": {
+      "tests": 1444,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0
+    },
+    "comparisons": 1000,
+    "elapsed_seconds": 65.5438805000158
+  },
+  "baseline": {
+    "passed": 23,
+    "failed": 0
+  },
+  "targeted": {
+    "passed": 23,
+    "failed": 0
+  },
+  "vitest": {
+    "passed": 216,
+    "failed": 0,
+    "pending": 0
+  },
+  "playwright": {
+    "startTime": "2026-11-01T22:10:35.969Z",
+    "duration": 257939.69499999998,
+    "expected": 59,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "typecheck_exit": 0,
+  "lint": {
+    "exit_code": 0,
+    "errors": 0,
+    "inherited_warnings": 1,
+    "file": "src/components/planning/structure-3d.tsx:156"
+  },
+  "dxf": {
+    "exit_code": 0,
+    "lines_3d": 130,
+    "units": "mm",
+    "audit_errors": 0
+  },
+  "new_cases": [
+    {
+      "name": "retângulo: faixas extremas 1 m, internas 2 m, resultante e momentos independentes",
+      "status": "passed",
+      "duration_ms": 70.42100000000005
+    },
+    {
+      "name": "área inclinada é medida física e balanços longitudinais integram faixas e braços",
+      "status": "passed",
+      "duration_ms": 25.22840000000008
+    },
+    {
+      "name": "conserva força e braços globais no sentido width-positive",
+      "status": "passed",
+      "duration_ms": 16.559799999999996
+    },
+    {
+      "name": "conserva força e braços globais no sentido width-negative",
+      "status": "passed",
+      "duration_ms": 7.066100000000006
+    },
+    {
+      "name": "conserva força e braços globais no sentido length-positive",
+      "status": "passed",
+      "duration_ms": 6.216599999999971
+    },
+    {
+      "name": "conserva força e braços globais no sentido length-negative",
+      "status": "passed",
+      "duration_ms": 6.515600000000063
+    },
+    {
+      "name": "cumeeira recebe duas meias faixas disjuntas em uma única carga por peça",
+      "status": "passed",
+      "duration_ms": 92.57100000000003
+    },
+    {
+      "name": "inversão e zero explícito; não presume direção ou dados ausentes",
+      "status": "passed",
+      "duration_ms": 18.41980000000001
+    },
+    {
+      "name": "regiões adjacentes e composição em L preservam o vazio, planos e backup",
+      "status": "passed",
+      "duration_ms": 157.78970000000004
+    },
+    {
+      "name": "recusa sobreposição, lacunas, planos incompatíveis e a planta real sem elevações",
+      "status": "passed",
+      "duration_ms": 3.4898000000000593
+    },
+    {
+      "name": "valida a geometria associada sem substituir uma borda ausente por carga fictícia",
+      "status": "passed",
+      "duration_ms": 4.162199999999984
+    },
+    {
+      "name": "mantém o caso de área exclusivo e revoga revisão de duplicidade após editar a ação",
+      "status": "passed",
+      "duration_ms": 202.7582
+    },
+    {
+      "name": "propriedades, apoios e ligações ausentes continuam bloqueados; U não vira U enrijecido",
+      "status": "passed",
+      "duration_ms": 480.73
+    },
+    {
+      "name": "cobertura gerada → adaptação → Python real: ações, reações, IDs, superposição e hashes",
+      "status": "passed",
+      "duration_ms": 5327.6491000000005
+    },
+    {
+      "name": "UDL de cobertura não é aplicada a terças axiais",
+      "status": "passed",
+      "duration_ms": 45.30369999999948
+    },
+    {
+      "name": "Python real aceita pressão zero declarada e recusa cobertura sem vínculos suficientes",
+      "status": "passed",
+      "duration_ms": 7217.2934
+    },
+    {
+      "name": "carga derivada numa terça: balanço+mola axial real contra flecha/rotação/V/M/reação analíticos",
+      "status": "passed",
+      "duration_ms": 889.4735000000001
+    }
+  ],
+  "build": {
+    "exit_code": 0,
+    "status": "passed"
+  },
+  "deployment": "not_requested; branch disabled in both Vercel configs",
+  "protected_sources": "All Python modules, geometry generator, CAD, budget and catalog identical to base; optional preparation fields added"
+}

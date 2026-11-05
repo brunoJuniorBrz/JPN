@@ -1,0 +1,55 @@
+{
+  "overlap_cases": [
+    {
+      "ratio": 0.0,
+      "jpn_uy_m": 0.0001333333333333333,
+      "stabileo_uy_m": 0.0001333333333333334,
+      "analytical_uy_m": 0.0001333333333333333,
+      "relative_difference": 6.098637220230959e-16,
+      "stabileo_converged": true
+    },
+    {
+      "ratio": 0.2,
+      "jpn_uy_m": 0.0001666666666666668,
+      "stabileo_uy_m": 0.0001666666666666666,
+      "analytical_uy_m": 0.00016666666666666663,
+      "relative_difference": 1.13841228110978e-15,
+      "stabileo_converged": true
+    },
+    {
+      "ratio": 0.8,
+      "jpn_uy_m": 0.0006666666666666714,
+      "stabileo_uy_m": 0.0006666666666666691,
+      "analytical_uy_m": 0.0006666666666666666,
+      "relative_difference": 3.4152368433293263e-15,
+      "stabileo_converged": true
+    },
+    {
+      "ratio": 0.95,
+      "jpn_uy_m": 0.002666666666666755,
+      "stabileo_uy_m": 0.0026666666666667026,
+      "analytical_uy_m": 0.002666666666666664,
+      "relative_difference": 1.967826943061164e-14,
+      "stabileo_converged": true
+    },
+    {
+      "ratio": -0.6,
+      "jpn_uy_m": 8.333333333333334e-05,
+      "stabileo_uy_m": 8.333333333333334e-05,
+      "analytical_uy_m": 8.333333333333332e-05,
+      "relative_difference": 0.0,
+      "stabileo_converged": true
+    }
+  ],
+  "portal_diagnostic": {
+    "exit_code": 0,
+    "physically_identical": false,
+    "acceptance_claimed": false,
+    "reason": "Stabileo iterative axial forces and torsional geometric energy differ from the frozen bending prototype",
+    "max_translation_difference_m": 1.0056051861394371e-09,
+    "stabileo_converged": true
+  },
+  "release_gate": "BLOCKED",
+  "normative_second_order_verified": false,
+  "approved_for_fabrication": false
+}

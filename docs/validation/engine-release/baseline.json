@@ -1,0 +1,454 @@
+{
+  "numTotalTestSuites": 6,
+  "numPassedTestSuites": 6,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 34,
+  "numPassedTests": 34,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1793644061061,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "JPN → PyNite real → Rᵀ → todas as juntas, combinações e reações globais",
+          "status": "passed",
+          "title": "JPN → PyNite real → Rᵀ → todas as juntas, combinações e reações globais",
+          "duration": 6.764699999999721,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "ações de junta têm sinal oposto ao nativo e cortes contínuos não ganham rótulas/emendas",
+          "status": "passed",
+          "title": "ações de junta têm sinal oposto ao nativo e cortes contínuos não ganham rótulas/emendas",
+          "duration": 6.8827000000001135,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "recusa bases presumidas, ações alteradas e dupla contagem de UDL como carga nodal",
+          "status": "passed",
+          "title": "recusa bases presumidas, ações alteradas e dupla contagem de UDL como carga nodal",
+          "duration": 245.38649999999961,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "declarações físicas são manuais, únicas, persistidas e não alteram apoios/liberações",
+          "status": "passed",
+          "title": "declarações físicas são manuais, únicas, persistidas e não alteram apoios/liberações",
+          "duration": 36.07430000000022,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "declaração e mudanças físicas tornam a análise/relatório anterior obsoletos",
+          "status": "passed",
+          "title": "declaração e mudanças físicas tornam a análise/relatório anterior obsoletos",
+          "duration": 1659.6743999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "peso próprio axial entra como carga nodal; pórtico permanece distribuído",
+          "status": "passed",
+          "title": "peso próprio axial entra como carga nodal; pórtico permanece distribuído",
+          "duration": 5612.2903,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "nó exclusivamente axial não recebe resíduos rotacionais ou vínculos artificiais",
+          "status": "passed",
+          "title": "nó exclusivamente axial não recebe resíduos rotacionais ou vínculos artificiais",
+          "duration": 4845.503699999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "erros físicos e numéricos produzem diagnósticos explícitos, sem aprovação de estabilidade",
+          "status": "passed",
+          "title": "erros físicos e numéricos produzem diagnósticos explícitos, sem aprovação de estabilidade",
+          "duration": 0.37449999999807915,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "M26 integra cobertura, solicitações contínuas, ações de juntas e M25 sem promover aprovação",
+          "status": "passed",
+          "title": "M26 integra cobertura, solicitações contínuas, ações de juntas e M25 sem promover aprovação",
+          "duration": 3440.0162999999993,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793644067259,
+      "endTime": 1793644083112.0164,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree/src/domain/connection-report.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "isola raízes repetidas, limites, escalas e polinômio nulo sem falsos extremos",
+          "status": "passed",
+          "title": "isola raízes repetidas, limites, escalas e polinômio nulo sem falsos extremos",
+          "duration": 2.9972000000000207,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "viga propped: máximo entre amostras e flecha quartica independente; segmentada=false",
+          "status": "passed",
+          "title": "viga propped: máximo entre amostras e flecha quartica independente; segmentada=false",
+          "duration": 1171.8957,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "viga propped: máximo entre amostras e flecha quartica independente; segmentada=true",
+          "status": "passed",
+          "title": "viga propped: máximo entre amostras e flecha quartica independente; segmentada=true",
+          "duration": 912.7441999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "referência simple, seção girada e cargas globais/locais, sinais e concomitância",
+          "status": "passed",
+          "title": "referência simple, seção girada e cargas globais/locais, sinais e concomitância",
+          "duration": 1811.5294,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "referência cantilever, seção girada e cargas globais/locais, sinais e concomitância",
+          "status": "passed",
+          "title": "referência cantilever, seção girada e cargas globais/locais, sinais e concomitância",
+          "duration": 1818.6603999999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "legacy v1 mantém esforços contínuos nodais e deslocamentos unsupported; corrupção bloqueada",
+          "status": "passed",
+          "title": "legacy v1 mantém esforços contínuos nodais e deslocamentos unsupported; corrupção bloqueada",
+          "duration": 1855.5132999999996,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "balanço espacial inclinado, seção girada 37° e vetor concomitante em posições não amostradas",
+          "status": "passed",
+          "title": "balanço espacial inclinado, seção girada 37° e vetor concomitante em posições não amostradas",
+          "duration": 933.5911999999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "liberações flexionais nativas preservam a curva contínua e momentos liberados nulos",
+          "status": "passed",
+          "title": "liberações flexionais nativas preservam a curva contínua e momentos liberados nulos",
+          "duration": 881.780999999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793644061569,
+      "endTime": 1793644070958.781,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree/src/domain/continuous-demands.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "Ue: resolução dimensional, r²=I/A e conversão cm→mm; preenchimento não aprova norma",
+          "status": "passed",
+          "title": "Ue: resolução dimensional, r²=I/A e conversão cm→mm; preenchimento não aprova norma",
+          "duration": 10.294399999999996,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "Ue incompleto, família incompatível, contenção órfã, espessura/dobras e material incoerentes bloqueados",
+          "status": "passed",
+          "title": "Ue incompleto, família incompatível, contenção órfã, espessura/dobras e material incoerentes bloqueados",
+          "duration": 3.8361999999999625,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "M22/M24 + propriedades novas preservam M25, backup e estados preliminares",
+          "status": "passed",
+          "title": "M22/M24 + propriedades novas preservam M25, backup e estados preliminares",
+          "duration": 93.69119999999998,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "furação estruturada não deriva áreas de texto; duplicados, referências e área líquida inválida bloqueados",
+          "status": "passed",
+          "title": "furação estruturada não deriva áreas de texto; duplicados, referências e área líquida inválida bloqueados",
+          "duration": 1.351099999999974,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "cinco candidatos não são goldens; unidade suspeita continua em quarentena, sem resistência gabarito",
+          "status": "passed",
+          "title": "cinco candidatos não são goldens; unidade suspeita continua em quarentena, sem resistência gabarito",
+          "duration": 0.42170000000010077,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793644061961,
+      "endTime": 1793644062071.4216,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree/src/domain/m26-integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "pórtico segmentado real: N/V/M, flecha e rotação contra balanço analítico independente",
+          "status": "passed",
+          "title": "pórtico segmentado real: N/V/M, flecha e rotação contra balanço analítico independente",
+          "duration": 8.259000000000015,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "máximos de combinações diferentes conservam vetores concomitantes e não fabricam interação",
+          "status": "passed",
+          "title": "máximos de combinações diferentes conservam vetores concomitantes e não fabricam interação",
+          "duration": 2.8315999999995256,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "axial real: sinal, extensão, rotações inativas e componentes não aplicáveis",
+          "status": "passed",
+          "title": "axial real: sinal, extensão, rotações inativas e componentes não aplicáveis",
+          "duration": 1.5851000000002387,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "v1 nodal continua extraindo cinco estações sem usar recuperação de UDL",
+          "status": "passed",
+          "title": "v1 nodal continua extraindo cinco estações sem usar recuperação de UDL",
+          "duration": 1.4612000000015541,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "recusa hash, versões, mapeamentos e amostras corrompidos; NaN e infinito",
+          "status": "passed",
+          "title": "recusa hash, versões, mapeamentos e amostras corrompidos; NaN e infinito",
+          "duration": 9.838799999999537,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "JPN → M22 → Python real → solicitações → relatório: 207 peças, dados físicos e bloqueios normativos",
+          "status": "passed",
+          "title": "JPN → M22 → Python real → solicitações → relatório: 207 peças, dados físicos e bloqueios normativos",
+          "duration": 0.9856999999992695,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "mudanças de norma, material, cargas, apoios, giro, perfil e discretização invalidam relatório",
+          "status": "passed",
+          "title": "mudanças de norma, material, cargas, apoios, giro, perfil e discretização invalidam relatório",
+          "duration": 3218.651899999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "propriedades inválidas, inconsistências e perfis não identificados permanecem pendentes",
+          "status": "passed",
+          "title": "propriedades inválidas, inconsistências e perfis não identificados permanecem pendentes",
+          "duration": 4808.479799999999,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "cadastro físico e relatório preservam unidades, backups, hashes e referências não normativas",
+          "status": "passed",
+          "title": "cadastro físico e relatório preservam unidades, backups, hashes e referências não normativas",
+          "duration": 119.84290000000328,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "controle N/A: conversões conhecidas N/kN/cm²/m²/Pa/MPa e limites numéricos",
+          "status": "passed",
+          "title": "controle N/A: conversões conhecidas N/kN/cm²/m²/Pa/MPa e limites numéricos",
+          "duration": 0.42589999999836436,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793644069891,
+      "endTime": 1793644078063.4258,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree/src/domain/member-demands.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "M25 - conferir conteúdo real dos documentos exportados"
+          ],
+          "fullName": "M25 - conferir conteúdo real dos documentos exportados abre o Excel e confronta IDs, quantidade, comprimento e avisos com o modelo físico",
+          "status": "passed",
+          "title": "abre o Excel e confronta IDs, quantidade, comprimento e avisos com o modelo físico",
+          "duration": 131.58709999999996,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        },
+        {
+          "ancestorTitles": [
+            "M25 - conferir conteúdo real dos documentos exportados"
+          ],
+          "fullName": "M25 - conferir conteúdo real dos documentos exportados reabre o PDF e confere avisos, pendências e IDs das peças presentes no documento",
+          "status": "passed",
+          "title": "reabre o PDF e confere avisos, pendências e IDs das peças presentes no documento",
+          "duration": 175.55939999999987,
+          "failureMessages": [],
+          "meta": {},
+          "tags": [],
+          "benchmarks": []
+        }
+      ],
+      "startTime": 1793644062225,
+      "endTime": 1793644062531.5593,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree/src/lib/exports/preproduction.test.ts"
+    }
+  ]
+}

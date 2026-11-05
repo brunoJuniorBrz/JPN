@@ -1,0 +1,17 @@
+{
+  "sha": "95a5e55b2140b47fac10ac2f908b422a7ac3ea11",
+  "additive_files": 8,
+  "tests": {
+    "tests": 29,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "integrated": false,
+  "normative_source_reinspection_complete": false,
+  "blockers": [
+    "Physical solver-to-joint mapping not independently validated",
+    "No justified distribution to groups, eccentric transfer or all joint failure modes",
+    "Full normative reference used on the other computer unavailable in this environment"
+  ]
+}

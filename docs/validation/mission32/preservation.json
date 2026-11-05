@@ -1,0 +1,481 @@
+{
+  "initial_sha": "0d7ebc2729fb4f370a7d99fa7f6f4751d6f12696",
+  "comparison": "Exact source bytes after checkout CRLF-to-LF normalization only",
+  "all_preserved": true,
+  "files": [
+    {
+      "path": "engine/jpn_structural/frame3d.py",
+      "base_sha256": "3a9bc1d13509e6bd21dcb087642f80998a6cf03569a0b369ab2f91d5a029e4d1",
+      "current_sha256": "3a9bc1d13509e6bd21dcb087642f80998a6cf03569a0b369ab2f91d5a029e4d1",
+      "unchanged": true
+    },
+    {
+      "path": "engine/jpn_structural/frame3d_model.py",
+      "base_sha256": "de0a153bdf16719d103ca0d15463552b72cb7ec7cf63397ed81a2789cacfc1da",
+      "current_sha256": "de0a153bdf16719d103ca0d15463552b72cb7ec7cf63397ed81a2789cacfc1da",
+      "unchanged": true
+    },
+    {
+      "path": "engine/jpn_structural/mixed3d.py",
+      "base_sha256": "057ba3c2f74c5f397ff7a2744053e4daa4c35397dd8d44f9dc767764d57f8f85",
+      "current_sha256": "057ba3c2f74c5f397ff7a2744053e4daa4c35397dd8d44f9dc767764d57f8f85",
+      "unchanged": true
+    },
+    {
+      "path": "engine/jpn_structural/mixed3d_loads.py",
+      "base_sha256": "ee456aa5d493e510322181a8b0ceb3a9f6a5364c10c79a3e4dda159d58f5c244",
+      "current_sha256": "ee456aa5d493e510322181a8b0ceb3a9f6a5364c10c79a3e4dda159d58f5c244",
+      "unchanged": true
+    },
+    {
+      "path": "engine/jpn_structural/model.py",
+      "base_sha256": "bee228ec7034c41252428ed2eab3ed97170ef0b5766ef6a5ef7d8d23683f749c",
+      "current_sha256": "bee228ec7034c41252428ed2eab3ed97170ef0b5766ef6a5ef7d8d23683f749c",
+      "unchanged": true
+    },
+    {
+      "path": "engine/jpn_structural/section_analysis.py",
+      "base_sha256": "175d8658bdc0fca6516ee3e1aa66efa11e48d5c44e299a8f47b5156f8887218c",
+      "current_sha256": "175d8658bdc0fca6516ee3e1aa66efa11e48d5c44e299a8f47b5156f8887218c",
+      "unchanged": true
+    },
+    {
+      "path": "engine/jpn_structural/solver.py",
+      "base_sha256": "d8ab47f90f7e01567966e0d5695a7da18b6c7d82c860e97d1d11dc7d2cb3ec2e",
+      "current_sha256": "d8ab47f90f7e01567966e0d5695a7da18b6c7d82c860e97d1d11dc7d2cb3ec2e",
+      "unchanged": true
+    },
+    {
+      "path": "engine/jpn_structural/truss3d.py",
+      "base_sha256": "3d7a2c629c4013f7a770ba139459e88fc210f7e1d25616fd1cd5122c0cbbbc92",
+      "current_sha256": "3d7a2c629c4013f7a770ba139459e88fc210f7e1d25616fd1cd5122c0cbbbc92",
+      "unchanged": true
+    },
+    {
+      "path": "engine/requirements-fsm.lock",
+      "base_sha256": "1a33b6d500a77f008275ab093f0b9b21712d503075c585c438791c2d2c9b2af3",
+      "current_sha256": "1a33b6d500a77f008275ab093f0b9b21712d503075c585c438791c2d2c9b2af3",
+      "unchanged": true
+    },
+    {
+      "path": "engine/requirements-sections-fsm.lock",
+      "base_sha256": "1c8324eb65ae6f09674e554c962eb931bacab107694fdb662070a75284d369f4",
+      "current_sha256": "1c8324eb65ae6f09674e554c962eb931bacab107694fdb662070a75284d369f4",
+      "unchanged": true
+    },
+    {
+      "path": "engine/requirements-sections.lock",
+      "base_sha256": "a4296f33a323a73ad798124c60a82294e612ecbb7e237b28104665863a785584",
+      "current_sha256": "a4296f33a323a73ad798124c60a82294e612ecbb7e237b28104665863a785584",
+      "unchanged": true
+    },
+    {
+      "path": "engine/requirements-validation.lock",
+      "base_sha256": "d4cb6e02262250767cf1c01e5f13de123b92d97f1ab2c8951688aa740f9bed47",
+      "current_sha256": "d4cb6e02262250767cf1c01e5f13de123b92d97f1ab2c8951688aa740f9bed47",
+      "unchanged": true
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "base_sha256": "adf01b25451d4e17b18652d621ba059e671f1e8d684851e9c5be05fa294dad3b",
+      "current_sha256": "adf01b25451d4e17b18652d621ba059e671f1e8d684851e9c5be05fa294dad3b",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/app-shell.tsx",
+      "base_sha256": "8c660c17c8d88a7027b469356f306bd1dc80fd4e95cb946e0bf916504380b988",
+      "current_sha256": "8c660c17c8d88a7027b469356f306bd1dc80fd4e95cb946e0bf916504380b988",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/backup-panel.tsx",
+      "base_sha256": "b9ee007587d3c5d1fb4988dd3f54ebeff6f1a52c6b2ae86e53fd90759a2c6d83",
+      "current_sha256": "b9ee007587d3c5d1fb4988dd3f54ebeff6f1a52c6b2ae86e53fd90759a2c6d83",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/data-provider.tsx",
+      "base_sha256": "faa9969b38e09536a5179445f43ffe6ed8897162882e206c843832169cd1eb8b",
+      "current_sha256": "faa9969b38e09536a5179445f43ffe6ed8897162882e206c843832169cd1eb8b",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/estimates/costs-form.tsx",
+      "base_sha256": "c333a89db6994403683b5e1127f3f59b0741e7ed05a4cadb8ff199c82cd2093a",
+      "current_sha256": "c333a89db6994403683b5e1127f3f59b0741e7ed05a4cadb8ff199c82cd2093a",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/estimates/estimate-summary.tsx",
+      "base_sha256": "97b08e038d9062257a29b6ff1aa6bc793f54b4a288487c50e56cd6fda407d9e2",
+      "current_sha256": "97b08e038d9062257a29b6ff1aa6bc793f54b4a288487c50e56cd6fda407d9e2",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/estimates/material-items.tsx",
+      "base_sha256": "f67d607f6e6dc6a4d7859e919d5ce47bcc0fcf54a4fa686bd3aff82b5376b7e7",
+      "current_sha256": "f67d607f6e6dc6a4d7859e919d5ce47bcc0fcf54a4fa686bd3aff82b5376b7e7",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/estimates/proposal-delivery.tsx",
+      "base_sha256": "43df0bdeb15e4cad9121c7f5f27d2509e431a611e11afd64f7d0677e5c2a77d2",
+      "current_sha256": "43df0bdeb15e4cad9121c7f5f27d2509e431a611e11afd64f7d0677e5c2a77d2",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/geometry/roof-form.tsx",
+      "base_sha256": "6a8f73f2aad85d25f5f0e1086e4bb4255d3768755b3ec1a3bb6787a910905751",
+      "current_sha256": "6a8f73f2aad85d25f5f0e1086e4bb4255d3768755b3ec1a3bb6787a910905751",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/geometry/roof-preview.tsx",
+      "base_sha256": "7319ea971db15f52526f7a624a31790d23eb65e1bcde564cb9594d476e3fc3c8",
+      "current_sha256": "7319ea971db15f52526f7a624a31790d23eb65e1bcde564cb9594d476e3fc3c8",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/materials/material-form.tsx",
+      "base_sha256": "377537c7caf076bc5f1760f2b10416403700a58708ab3ff7f05a0671b3c98edd",
+      "current_sha256": "377537c7caf076bc5f1760f2b10416403700a58708ab3ff7f05a0671b3c98edd",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/number-field.tsx",
+      "base_sha256": "938c91ce9c9d051159e9a4aeca3d4b743c456a9cc092d69245ff52d86af31cb8",
+      "current_sha256": "938c91ce9c9d051159e9a4aeca3d4b743c456a9cc092d69245ff52d86af31cb8",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/analysis-panel.tsx",
+      "base_sha256": "791ca8f162d0c0934d98ecf82bc719171f9ac47f4641b460c1505ef338b1038f",
+      "current_sha256": "791ca8f162d0c0934d98ecf82bc719171f9ac47f4641b460c1505ef338b1038f",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/camera-fit.ts",
+      "base_sha256": "d7ed43d28ce752c8aa1c9c745c343cf7c8b54454fb34b8945a0b75f46d5e0d03",
+      "current_sha256": "d7ed43d28ce752c8aa1c9c745c343cf7c8b54454fb34b8945a0b75f46d5e0d03",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/cold-formed-properties-form.tsx",
+      "base_sha256": "b88b651ddd5381bc9dda691475a71a5ba299bb150403fb6703560a6cc6a849dc",
+      "current_sha256": "b88b651ddd5381bc9dda691475a71a5ba299bb150403fb6703560a6cc6a849dc",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/coldformed-design-control.tsx",
+      "base_sha256": "c97429b1fd947afb29e36dbe72987212b569e46fca0d7b9b6e1ac0e79506aeb3",
+      "current_sha256": "c97429b1fd947afb29e36dbe72987212b569e46fca0d7b9b6e1ac0e79506aeb3",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/connection-geometry-control.tsx",
+      "base_sha256": "93066b5d30f55ae18740c56c18a54d6dfee5abea843b47491c1dd79b511ed8d9",
+      "current_sha256": "93066b5d30f55ae18740c56c18a54d6dfee5abea843b47491c1dd79b511ed8d9",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/connections-panel.tsx",
+      "base_sha256": "1fe2b0bcf68e751fde50eea3806d43a34320970fec3321fd3e628aecd00840ac",
+      "current_sha256": "1fe2b0bcf68e751fde50eea3806d43a34320970fec3321fd3e628aecd00840ac",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/continuous-demands-panel.tsx",
+      "base_sha256": "a4c66b1a8c24d0462c07245cd8c1e72e84b37bb4881f33addc14f124f402caf0",
+      "current_sha256": "a4c66b1a8c24d0462c07245cd8c1e72e84b37bb4881f33addc14f124f402caf0",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/declared-service-control.tsx",
+      "base_sha256": "4dfcdd4c11bb7307b238abfd1d21da53ac9704269d4b174016af0d0d63899b7b",
+      "current_sha256": "4dfcdd4c11bb7307b238abfd1d21da53ac9704269d4b174016af0d0d63899b7b",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/engineering-combinations-control.tsx",
+      "base_sha256": "e31344ebaaa73c99a2775c54d165fb66b356758fdc148582a18ce0460cffe5e3",
+      "current_sha256": "e31344ebaaa73c99a2775c54d165fb66b356758fdc148582a18ce0460cffe5e3",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/mixed-analysis-workspace.tsx",
+      "base_sha256": "ca771c046b1fa5ad07dd4021db43a66a1bb73ecc76faf00583ffc98567f86964",
+      "current_sha256": "ca771c046b1fa5ad07dd4021db43a66a1bb73ecc76faf00583ffc98567f86964",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/planning-editor.tsx",
+      "base_sha256": "82ba8d6e89a884842756ca45d773b5f1c1f7ba6679b7293d6669905b21a3aebc",
+      "current_sha256": "82ba8d6e89a884842756ca45d773b5f1c1f7ba6679b7293d6669905b21a3aebc",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/presentation-capture.ts",
+      "base_sha256": "b2e6106b61ef2cd0cf7f1b0e1a3ba061e3bd18e1db3ad3de546b04c59aaeadb4",
+      "current_sha256": "b2e6106b61ef2cd0cf7f1b0e1a3ba061e3bd18e1db3ad3de546b04c59aaeadb4",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/presentation-scene.ts",
+      "base_sha256": "3630f1f6a60727b67e496eb2719b18f47e325d5306493e40221046e15df2f0e9",
+      "current_sha256": "3630f1f6a60727b67e496eb2719b18f47e325d5306493e40221046e15df2f0e9",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/profile-fields.tsx",
+      "base_sha256": "abc8eacd16f076a5f1cc1995dff84668066f31aac859ead7247294d9c638e5df",
+      "current_sha256": "abc8eacd16f076a5f1cc1995dff84668066f31aac859ead7247294d9c638e5df",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/profile-geometry.ts",
+      "base_sha256": "5fe0eccf0809e71c45e5f4dbcb9d3e10519b858a868ea457e138827eaa766dfd",
+      "current_sha256": "5fe0eccf0809e71c45e5f4dbcb9d3e10519b858a868ea457e138827eaa766dfd",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/profile-scene.ts",
+      "base_sha256": "05783c9035876c131310356fea809a2ed38a1e2b953a948c23a401b131a404e6",
+      "current_sha256": "05783c9035876c131310356fea809a2ed38a1e2b953a948c23a401b131a404e6",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/profile-section-fields.tsx",
+      "base_sha256": "219898f71346592ffc955bf7f62e698f9e619e1421a2ce575b413ee66748a221",
+      "current_sha256": "219898f71346592ffc955bf7f62e698f9e619e1421a2ce575b413ee66748a221",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/project-workbench.tsx",
+      "base_sha256": "e2f567b573e67688eaebef59fecb37afe5ad4eb043f02d29035b9bea3172a423",
+      "current_sha256": "e2f567b573e67688eaebef59fecb37afe5ad4eb043f02d29035b9bea3172a423",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/quick-project-form.tsx",
+      "base_sha256": "f45e8d818b2ec685bdc32c9f84dd8b5a647e0078ba9436e5c3dbe685a353f3e1",
+      "current_sha256": "f45e8d818b2ec685bdc32c9f84dd8b5a647e0078ba9436e5c3dbe685a353f3e1",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/resistance-report-panel.tsx",
+      "base_sha256": "a8c3b2c8005a4782ab0138b4fcacb09a25020eafca9acc0ef66417b766eec3b3",
+      "current_sha256": "a8c3b2c8005a4782ab0138b4fcacb09a25020eafca9acc0ef66417b766eec3b3",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/roof-load-path-panel.tsx",
+      "base_sha256": "6af3421924ebf3a778a7e2ac4432f5534ae92e787e56745970fdca15f9e6356e",
+      "current_sha256": "6af3421924ebf3a778a7e2ac4432f5534ae92e787e56745970fdca15f9e6356e",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/section-analysis-control.tsx",
+      "base_sha256": "ba27c17eacd61be24c63e366b99f293d83a2a1c668d50fb6059a842eaf9d1809",
+      "current_sha256": "ba27c17eacd61be24c63e366b99f293d83a2a1c668d50fb6059a842eaf9d1809",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/spatial-adapter-panel.tsx",
+      "base_sha256": "be99bdb765ff03ce044b1fd93ad75735ad969d62812c874545e9edc46855ce86",
+      "current_sha256": "be99bdb765ff03ce044b1fd93ad75735ad969d62812c874545e9edc46855ce86",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/spatial-analysis-panel.tsx",
+      "base_sha256": "0239557c778ea879ae73488e934fa5201f444b29bad41fa936d858bdc64a7272",
+      "current_sha256": "0239557c778ea879ae73488e934fa5201f444b29bad41fa936d858bdc64a7272",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/spatial-coordination-panel.tsx",
+      "base_sha256": "d00eb215943e64722078203bb8d82bd0483bfb140647ab1ec79083f5b598bf1b",
+      "current_sha256": "d00eb215943e64722078203bb8d82bd0483bfb140647ab1ec79083f5b598bf1b",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/spatial-preparation-panel.tsx",
+      "base_sha256": "b581b02af0d0b1a1190eb0b48973983fb4c335908547d57e0dd1058d655dc765",
+      "current_sha256": "b581b02af0d0b1a1190eb0b48973983fb4c335908547d57e0dd1058d655dc765",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/structural-loads-panel.tsx",
+      "base_sha256": "e0e1347002330094988a3e9225f0b86a4700aa8b8e3bfd6e542e3802b458e2d6",
+      "current_sha256": "e0e1347002330094988a3e9225f0b86a4700aa8b8e3bfd6e542e3802b458e2d6",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/structure-3d.tsx",
+      "base_sha256": "2c6ee985095b0a665f642f4eacddb612e557cce9e0cdb00d8b42ad25a31b0353",
+      "current_sha256": "2c6ee985095b0a665f642f4eacddb612e557cce9e0cdb00d8b42ad25a31b0353",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/structure-form.tsx",
+      "base_sha256": "fb2749bfda5314a2f793985de9890c60b6485e524dcf713876f9516ee4a82bb7",
+      "current_sha256": "fb2749bfda5314a2f793985de9890c60b6485e524dcf713876f9516ee4a82bb7",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/structure-preview.tsx",
+      "base_sha256": "e7bf0dfb08819cb2c8c190cf147e5af9a7642e45b869df29fddb3b6bc089315e",
+      "current_sha256": "e7bf0dfb08819cb2c8c190cf147e5af9a7642e45b869df29fddb3b6bc089315e",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/takeoff-summary.tsx",
+      "base_sha256": "f7792e1f34b17af431c3b7b13d0db93504b1706685eb89a2927c0fb6dd02fb01",
+      "current_sha256": "f7792e1f34b17af431c3b7b13d0db93504b1706685eb89a2927c0fb6dd02fb01",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/wind-engineering-panel.tsx",
+      "base_sha256": "56a38ddcd06b5631a3f53c6ae642aa46bb08e2d616b4e44c4f197d289ebdb321",
+      "current_sha256": "56a38ddcd06b5631a3f53c6ae642aa46bb08e2d616b4e44c4f197d289ebdb321",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/planning/wind-speed-control.tsx",
+      "base_sha256": "d5a5e70f5ff84fa3923e2e7e711552792fb4d105d0caac2cfedc18cf810c3b8e",
+      "current_sha256": "d5a5e70f5ff84fa3923e2e7e711552792fb4d105d0caac2cfedc18cf810c3b8e",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/projects/commercial-project-editor.tsx",
+      "base_sha256": "8442c2130f0bd06445578026f501f14e80c0c42bd2efab24aee1d1e0d226d8df",
+      "current_sha256": "8442c2130f0bd06445578026f501f14e80c0c42bd2efab24aee1d1e0d226d8df",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/projects/general-form.tsx",
+      "base_sha256": "d39f83f4e142b36b39a8d931b4542d9b209519d066fa16ac6bfc8a5a73e97a21",
+      "current_sha256": "d39f83f4e142b36b39a8d931b4542d9b209519d066fa16ac6bfc8a5a73e97a21",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/projects/project-card.tsx",
+      "base_sha256": "04578e4f781bf8cbe1b6399f9dd919cf0c5081f4fc1855d03f4b89a591eac664",
+      "current_sha256": "04578e4f781bf8cbe1b6399f9dd919cf0c5081f4fc1855d03f4b89a591eac664",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/projects/project-editor.tsx",
+      "base_sha256": "5f4c346a0b1b3f1f6d14a6d6058117f0149a711b1d66e844b34759fca40ed70f",
+      "current_sha256": "5f4c346a0b1b3f1f6d14a6d6058117f0149a711b1d66e844b34759fca40ed70f",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/settings-form.tsx",
+      "base_sha256": "38cf8344b394fcf1eef74a674ffe799d066acf1e33e1d3cac578306ea0b88c7b",
+      "current_sha256": "38cf8344b394fcf1eef74a674ffe799d066acf1e33e1d3cac578306ea0b88c7b",
+      "unchanged": true
+    },
+    {
+      "path": "src/components/ui.tsx",
+      "base_sha256": "f8f9152db656cd6d685c394ccd9657e9526206a8571a47bc557f8228aef460ab",
+      "current_sha256": "f8f9152db656cd6d685c394ccd9657e9526206a8571a47bc557f8228aef460ab",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/calculations/cutting.ts",
+      "base_sha256": "9e68320073bef50a3108f8e0fec05b2b3c161099e957cbea594af3027586f41b",
+      "current_sha256": "9e68320073bef50a3108f8e0fec05b2b3c161099e957cbea594af3027586f41b",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/calculations/estimate.ts",
+      "base_sha256": "33364ade182d5a8a0e41eb90913f4a614a2f68f7d4e8dcb045d09990b1c6d4ff",
+      "current_sha256": "33364ade182d5a8a0e41eb90913f4a614a2f68f7d4e8dcb045d09990b1c6d4ff",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/calculations/geometry.ts",
+      "base_sha256": "d4fa1f2dc593edaf2ab286d1bbac1d99b8a857e43aacaea5aa724573de30e6df",
+      "current_sha256": "d4fa1f2dc593edaf2ab286d1bbac1d99b8a857e43aacaea5aa724573de30e6df",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/calculations/preproduction.ts",
+      "base_sha256": "06b90d9cbba7b4b1f7e255985d984849e33f918aa4a865eb4d80ef8181378022",
+      "current_sha256": "06b90d9cbba7b4b1f7e255985d984849e33f918aa4a865eb4d80ef8181378022",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/calculations/project-basis.ts",
+      "base_sha256": "b64c869eb78248dedb7bf9bd6efe4808188224779796c5f7c1b1fc64aee116f6",
+      "current_sha256": "b64c869eb78248dedb7bf9bd6efe4808188224779796c5f7c1b1fc64aee116f6",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/calculations/structure.ts",
+      "base_sha256": "e336c2b01a40e0ea85c55189e37d032d0393f18f38b41a163478d5d20ae7f988",
+      "current_sha256": "e336c2b01a40e0ea85c55189e37d032d0393f18f38b41a163478d5d20ae7f988",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/calculations/units.ts",
+      "base_sha256": "03be8f479a0de27f790fc1129cf41c32aac8f83fbd23db25553e550c4d047bc9",
+      "current_sha256": "03be8f479a0de27f790fc1129cf41c32aac8f83fbd23db25553e550c4d047bc9",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/models.ts",
+      "base_sha256": "e529fc8286cd010a030850a3cb6cc6b3fc7798f7f709a42e4b88dc48ac1c4929",
+      "current_sha256": "e529fc8286cd010a030850a3cb6cc6b3fc7798f7f709a42e4b88dc48ac1c4929",
+      "unchanged": true
+    },
+    {
+      "path": "src/domain/wind-speed.ts",
+      "base_sha256": "be14c1a549c894bd867937275298f7b563a5f3e5f4513cb17d5890349d4ec18c",
+      "current_sha256": "be14c1a549c894bd867937275298f7b563a5f3e5f4513cb17d5890349d4ec18c",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/exports/cad.ts",
+      "base_sha256": "c194a37c47209bc1b73d78865e78d82db7fad327fa6ac56c1f636b496ead277a",
+      "current_sha256": "c194a37c47209bc1b73d78865e78d82db7fad327fa6ac56c1f636b496ead277a",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/exports/cutting.ts",
+      "base_sha256": "43f9b449cda25f404bba8aa80d564717bad0f1ebd288abefca3c3d89d1536c41",
+      "current_sha256": "43f9b449cda25f404bba8aa80d564717bad0f1ebd288abefca3c3d89d1536c41",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/exports/pdf.ts",
+      "base_sha256": "9a4680567869453d5f23d4eefc7342557fe273bb5dc4db29ac15d2f2e772f9ba",
+      "current_sha256": "9a4680567869453d5f23d4eefc7342557fe273bb5dc4db29ac15d2f2e772f9ba",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/exports/preproduction.ts",
+      "base_sha256": "2ac935879958c1fd01d9fddafbee3d703b417abf0b55f75bd49e68196b80bea8",
+      "current_sha256": "2ac935879958c1fd01d9fddafbee3d703b417abf0b55f75bd49e68196b80bea8",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/exports/proposal.ts",
+      "base_sha256": "02c05d95b854ffd38cbe994e69e092e87d6877d7e7ccafcee0a8dfd43f316b5a",
+      "current_sha256": "02c05d95b854ffd38cbe994e69e092e87d6877d7e7ccafcee0a8dfd43f316b5a",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/exports/takeoff.ts",
+      "base_sha256": "2f4a0bee1da347618b86f0236372dfd064892ff057f9e011021a5517bd8f197f",
+      "current_sha256": "2f4a0bee1da347618b86f0236372dfd064892ff057f9e011021a5517bd8f197f",
+      "unchanged": true
+    },
+    {
+      "path": "src/lib/exports/workbook.ts",
+      "base_sha256": "8d34a7d5ac2d16c7742a3ad6a5fd8997312ebc419df207259ea14e0006e99fe1",
+      "current_sha256": "8d34a7d5ac2d16c7742a3ad6a5fd8997312ebc419df207259ea14e0006e99fe1",
+      "unchanged": true
+    }
+  ]
+}

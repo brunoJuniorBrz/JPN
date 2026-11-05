@@ -1,0 +1,72 @@
+{
+  "schema_version": "jpn.m33a-ci-evidence/1",
+  "source_sha": "08b3ee38fe8bbc046d87a21767e393c00163e1f5",
+  "run_id": 41906539622,
+  "url": "https://github.com/brunoJuniorBrz/JPN/actions/runs/41906539622",
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 126842585656,
+      "name": "application",
+      "conclusion": "success",
+      "completed_at": "2026-11-04T20:37:27Z"
+    },
+    {
+      "id": 126842586016,
+      "name": "optional-numerical-profiles (ubuntu-latest, sections)",
+      "conclusion": "success",
+      "completed_at": "2026-11-04T20:28:10Z"
+    },
+    {
+      "id": 126842586052,
+      "name": "structural (ubuntu-latest)",
+      "conclusion": "success",
+      "completed_at": "2026-11-04T20:27:49Z"
+    },
+    {
+      "id": 126842586170,
+      "name": "structural (windows-latest)",
+      "conclusion": "success",
+      "completed_at": "2026-11-04T20:28:30Z"
+    },
+    {
+      "id": 126842586263,
+      "name": "optional-numerical-profiles (windows-latest, sections-fsm)",
+      "conclusion": "success",
+      "completed_at": "2026-11-04T20:27:54Z"
+    },
+    {
+      "id": 126842586300,
+      "name": "optional-numerical-profiles (windows-latest, fsm)",
+      "conclusion": "success",
+      "completed_at": "2026-11-04T20:26:51Z"
+    },
+    {
+      "id": 126842586452,
+      "name": "optional-numerical-profiles (ubuntu-latest, fsm)",
+      "conclusion": "success",
+      "completed_at": "2026-11-04T20:26:21Z"
+    },
+    {
+      "id": 126842586473,
+      "name": "optional-numerical-profiles (windows-latest, sections)",
+      "conclusion": "success",
+      "completed_at": "2026-11-04T20:28:56Z"
+    },
+    {
+      "id": 126842586501,
+      "name": "optional-numerical-profiles (ubuntu-latest, sections-fsm)",
+      "conclusion": "success",
+      "completed_at": "2026-11-04T20:26:42Z"
+    }
+  ],
+  "application": {
+    "vitest_passed": 438,
+    "test_files_passed": 50,
+    "playwright_passed": 73,
+    "typecheck": "passed",
+    "lint": "passed",
+    "production_build": "passed"
+  },
+  "note": "Captured from the GitHub run/job API and application job log. Code SHA is the normative checkpoint; completion commits publish validation/documentation only."
+}

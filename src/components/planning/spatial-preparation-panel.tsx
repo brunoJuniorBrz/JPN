@@ -14,6 +14,7 @@ import {
 import type { Material } from "@/domain/models";
 import { SpatialAdapterPanel } from "./spatial-adapter-panel";
 import { mixedPreparationReview } from "@/domain/mixed-adapter";
+import { MemberPhysicalCatalogPanel } from "./member-physical-catalog-panel";
 
 const numberFields = [
   ["eGpa", "Elasticidade E (GPa)"], ["gGpa", "Cisalhamento G (GPa)"],
@@ -69,7 +70,7 @@ function catalogueGroup(material: Material): PhysicalGroup | null {
 export function SpatialPreparationPanel({ project, onChange, initialSection = "profiles", onOpenSpatial, mixed = false }: { project: Project; onChange: (patch: Partial<Project>) => void; initialSection?: "profiles" | "supports" | "loads" | "review"; onOpenSpatial?: () => void; mixed?: boolean }) {
   const { data, saveMaterial } = useData();
   const draft = project.workspace.spatialPreparation ?? newSpatialPreparation(project);
-  const review = useMemo(() => mixed ? mixedPreparationReview(project, draft) : spatialPreparationReview(project, draft), [project, draft, mixed]);
+  const review = useMemo(() => mixed ? mixedPreparationReview(project, draft, !!draft.loading) : spatialPreparationReview(project, draft), [project, draft, mixed]);
   const [role, setRole] = useState<(typeof pieceRoles)[number]>("column");
   const [support, setSupport] = useState("");
   const [node, setNode] = useState("");
@@ -130,6 +131,7 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
         <button type="button" key={key} className={section === key ? "button" : "button secondary"} aria-pressed={section === key} onClick={() => setSection(key)}>{label}</button>)}
     </nav>
     {section === "profiles" && <>
+      {mixed&&<MemberPhysicalCatalogPanel project={project} draft={draft} onChange={change}/>}
       <h4>Especificar propriedades por grupo</h4><p className="field-hint">Esses campos são físicos, separados das seções de visualização. Um valor sem fonte não é considerado especificado.</p>
       <Field label="Grupo de peças"><Select value={role} onChange={e => setRole(e.target.value as typeof role)}>
         {pieceRoles.map(key => <option key={key} value={key}>{roleLabels[key]}</option>)}

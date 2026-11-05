@@ -1,0 +1,73 @@
+{
+  "source_sha": "2dd366c3cce5852b04834b875baaaefe1e90cd49",
+  "base_sha": "91bf8215a79d81292cb016d12c4f4c58cab41f20",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "started_utc": "2026-11-05T14:44:32.059144+00:00",
+  "worker_seconds": 20,
+  "worker_memory_bytes": 805306368,
+  "full_vitest_local_invocations": 1,
+  "core_and_linux_windows_profiles": "Official GitHub matrix; not redundantly repeated locally",
+  "steps": [
+    {
+      "name": "typecheck",
+      "exit_code": 0,
+      "elapsed_seconds": 13.086,
+      "log": "typecheck.log",
+      "command": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ]
+    },
+    {
+      "name": "lint",
+      "exit_code": 0,
+      "elapsed_seconds": 22.278,
+      "log": "lint.log",
+      "command": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "."
+      ]
+    },
+    {
+      "name": "vitest",
+      "exit_code": 0,
+      "elapsed_seconds": 325.076,
+      "log": "vitest.log",
+      "command": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--reporter=dot",
+        "--reporter=json",
+        "--outputFile.json=validation/m34ab/full-vitest.json"
+      ]
+    },
+    {
+      "name": "dxf",
+      "exit_code": 0,
+      "elapsed_seconds": 1.604,
+      "log": "dxf.log",
+      "command": [
+        "${ROOT}\\.venv\\Scripts\\python.exe",
+        "tests/verify_dxf.py"
+      ]
+    },
+    {
+      "name": "build",
+      "exit_code": 0,
+      "elapsed_seconds": 63.39,
+      "log": "build.log",
+      "command": [
+        "node",
+        "node_modules/next/dist/bin/next",
+        "build"
+      ]
+    }
+  ],
+  "computedStructuralApproval": false,
+  "fabricationRelease": false,
+  "all_passed": true,
+  "finished_utc": "2026-11-05T14:51:37.499390+00:00"
+}

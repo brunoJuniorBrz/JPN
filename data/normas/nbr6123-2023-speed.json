@@ -1,0 +1,28 @@
+{
+  "schema_version": "jpn.recovered-wind-speed-data/1",
+  "revision": "M33A-recovered-1",
+  "standard": "ABNT NBR 6123",
+  "edition": "2023-original",
+  "errata": "2025-not-verified",
+  "documentSha256": "338214bb4a840030d24e0685a9e9e73db6241437758f54696965c4805288b966",
+  "transcriber": "Historical JPN transcription recorded in commit 00e61f6; recovered without changing values in M33A",
+  "sourceInventory": "docs/validation/coldformed-design/supplied-standards.json",
+  "domain": "Partial original-edition static exposure only; declared category I-V and class A-C; flat/gently undulating terrain; no roughness transition; no automatic V0/S3, Cpe/Cpi or zones",
+  "classes": ["A", "B", "C"],
+  "exposure": {
+    "item": "5.3.3; Tables 1-3",
+    "selectionRule": "S2=b*Fr*(max(z,zmin)/10)^p; Fr always from category II; reject z>zg; no interpolation between categories/classes",
+    "categories": {
+      "I": {"zg": 250, "minimumHeightM": 5, "b": [1.10,1.11,1.12], "p": [0.06,0.065,0.07]},
+      "II": {"zg": 300, "minimumHeightM": 5, "b": [1,1,1], "p": [0.085,0.09,0.10]},
+      "III": {"zg": 350, "minimumHeightM": 5, "b": [0.94,0.94,0.93], "p": [0.10,0.105,0.115]},
+      "IV": {"zg": 420, "minimumHeightM": 5, "b": [0.86,0.85,0.84], "p": [0.12,0.125,0.135]},
+      "V": {"zg": 500, "minimumHeightM": 10, "b": [0.74,0.73,0.71], "p": [0.15,0.16,0.175]}
+    },
+    "frCategoryII": [1,0.98,0.95]
+  },
+  "flatTopography": {"value": 1, "item": "5.2(a)", "domain": "flat-or-gently-undulating"},
+  "pressure": {"value": 0.613, "item": "4.2", "unit": "Pa/(m/s)^2", "formula": "q=0.613*Vk^2; Vk=V0*S1*S2*S3"},
+  "referenceDensity": {"value": 1.226, "unit": "kg/m3", "item": "4.2", "domain": "existing reference air density; not a user-adjustable density model"},
+  "validation": {"originalCodeCommit": "00e61f6", "exposureExtractionCommit": "b32fb29", "tests": ["src/domain/wind-speed.test.ts", "src/domain/wind-external-references.test.ts"], "independentComparison": "REF-04 S2 only; REF-01 exposure only, V0 conflict retained", "completeWindAssessment": false}
+}

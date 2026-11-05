@@ -1,0 +1,59 @@
+corepack : $ vitest run
+No linha:12 caractere:1
++ corepack pnpm test *> ..\cont-final-vitest.txt
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ vitest run:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ RUN  v5.0.5 C:/Users/Bruno/Downloads/JPN-main/.tools/mission27-worktree
+
+ ❯ src/infrastructure/analysis/local-buckling-real.test.ts (2 tests | 1 failed) 20105ms
+   × executes automatic modes and MRD through the real isolated HTTP handler 20101ms
+ ❯ src/infrastructure/analysis/local-design-real.test.ts (2 tests | 1 failed) 20789ms
+   × real HTTP resistance path recalculates geometry and executes NBR14762 tension under the OS cap 20111ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/infrastructure/analysis/local-buckling-real.test.ts > executes automatic modes and MRD through the real 
+isolated HTTP handler
+AssertionError: expected 503 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 503
+
+ ❯ src/infrastructure/analysis/local-buckling-real.test.ts:11:166
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/infrastructure/analysis/local-design-real.test.ts > real HTTP resistance path recalculates geometry and 
+executes NBR14762 tension under the OS cap
+AssertionError: expected 503 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 503
+
+ ❯ src/infrastructure/analysis/local-design-real.test.ts:13:100
+     11| afterEach(()=>vi.unstubAllEnvs());
+     12| it("real HTTP resistance path recalculates geometry and executes NBR14…
+     13|   enabled();const response=await POST(request()),out=await response.js…
+       |                                                                                                    ^
+     14|   const result=coldformedDesignResultSchema.required({geometry_audit:t…
+     15|   expect(out.execution.memory_limit_bytes).toBe(805306368);expect(resu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 43 passed (45)
+      Tests  2 failed | 375 passed (377)
+   Start at  14:30:54
+   Duration  37.57s (tests 77%, import 21%, transform 2%)
+
+[ELIFECYCLE] Test failed. See above for more details.

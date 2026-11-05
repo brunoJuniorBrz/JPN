@@ -1,0 +1,32 @@
+{
+  "phase": "1-stabilization",
+  "base_sha": "83420daafdb346083945e8657dfdaf8381593eb7",
+  "failed_run": 41891925170,
+  "original_failures": [
+    "2026-11-04T18:59:25.9046561Z TypeError: Module \"file:///home/runner/work/JPN/JPN/data/normas/nbr6123-2023-speed.json\" needs an import attribute of \"type: json\"",
+    "2026-11-04T18:58:09.0624346Z FAILED engine\\section_tests\\test_member_buckling.py::test_real_capped_worker_mixed_inputs_computed_modes_and_independent_decimal_mrd[0] - subprocess.TimeoutExpired: Command '['C:\\\\hostedtoolcache\\\\windows\\\\Python\\\\3.12.10\\\\x64\\\\python.exe', '-I', '-X', 'utf8', 'D:\\\\a\\\\JPN\\\\JPN\\\\engine\\\\section_worker.py']' timed out after 20 seconds\r",
+    "2026-11-04T18:58:09.0625635Z 1 failed, 55 passed, 357 warnings in 40.74s\r"
+  ],
+  "normative_changes_started": false,
+  "json_data_modified": false,
+  "playwright_collection": 73,
+  "vitest_targeted_passed": 9,
+  "cfsm_profile_passed": 59,
+  "sections_profile_passed": 11,
+  "cache_tests_shared_between_profiles": 3,
+  "worker_cases_seconds": [
+    12.808,
+    12.757
+  ],
+  "http_resistance_ms": 15650.9871,
+  "production_timeout_seconds": 20,
+  "timeouts_increased": false,
+  "tolerances_relaxed": false,
+  "modes_removed": false,
+  "half_waves": 64,
+  "dependencies_updated": false,
+  "ci_before_normative_changes": "pending new SHA",
+  "build": "passed",
+  "typecheck": "passed",
+  "lint": "passed"
+}

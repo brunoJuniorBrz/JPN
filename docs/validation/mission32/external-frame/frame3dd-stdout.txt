@@ -1,0 +1,36 @@
+
+ FRAME3DD version: 20140514+
+ Analysis of 2D and 3D structural frames with elastic and geometric stiffness.
+ http://frame3dd.sf.net
+ GPL Copyright (C) 1992-2014, Henri P. Gavin
+ This is free software with absolutely no warranty.
+ For details, see the GPL license file, LICENSE.txt
+
+
+ ** M32 equivalent Euler-Bernoulli beam-column  units N mm tonne  ** 
+
+ number of nodes .................................... nN =  17  ... complete
+ number of nodes with reactions ..................... nR =   1  ... complete
+ number of frame elements............................ nE =  16  ... complete
+ number of load cases ............................... nL =   1 
+ load case 1 of 1:                                             
+  number of loaded nodes ............................ nF =   1
+  number of uniformly distributed loads ............. nU =   0
+  number of trapezoidally distributed loads ......... nW =   0
+  number of concentrated frame element point loads .. nP =   0
+  number of temperature changes ..................... nT =   0
+  number of prescribed displacements ................ nD =   0
+                                                      load data ... complete
+ number of dynamic modes ............................ nM =   0
+                                                      mass data ... complete
+ missing matrix condensation data 
+
+ Load Case 1 of 1 ...                                           
+ Linear Elastic Analysis ... Mechanical Loads
+
+ Non-Linear Elastic Analysis ...
+   NR iteration   1 --- RMS relative equilibrium error = 4.62e-04 
+   NR iteration   2 --- RMS relative equilibrium error = 8.71e-13 
+  RMS relative equilibrium error  = 8.707e-13  < tol = 1.0e-09  ** converged ** 
+  RMS residual incremental displ. = 1.377e-24 .................     bully!      
+
