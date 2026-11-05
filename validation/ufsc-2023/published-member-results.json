@@ -1,0 +1,547 @@
+{
+  "schema_version": "jpn.ufsc2023.member-results/1",
+  "case_id": "benvenuti-ufsc-2023",
+  "source": "Davi Werner Benvenuti, UFSC 2023, original PDF; table and source printed page in each section",
+  "units": "kN, kN.m, m, mm unless indicated",
+  "columns": {
+    "source_page": 64,
+    "table": 5,
+    "rows": [
+      {
+        "combination": "F5",
+        "section": "W 610 x 155,0",
+        "axial_Nsd_kN": -150.111,
+        "axial_Nrd_kN": -3829.16,
+        "moment_Msd_kNm": 539.238,
+        "moment_Mrd_kNm": 1079.34,
+        "interaction_reported": 0.519
+      },
+      {
+        "combination": "F8",
+        "section": "W 610 x 155,0",
+        "axial_Nsd_kN": 148.85,
+        "axial_Nrd_kN": 4502.272,
+        "moment_Msd_kNm": 510.33,
+        "moment_Mrd_kNm": 1079.34,
+        "interaction_reported": 0.489
+      },
+      {
+        "combination": "F9",
+        "section": "W 610 x 155,0",
+        "axial_Nsd_kN": 74.418,
+        "axial_Nrd_kN": 4502.272,
+        "moment_Msd_kNm": 429.973,
+        "moment_Mrd_kNm": 1079.34,
+        "interaction_reported": 0.407
+      }
+    ],
+    "notes": "Source combination results, not per-node SAP2000 file."
+  },
+  "diagonals": {
+    "source_page": 65,
+    "table": 6,
+    "rows": [
+      {
+        "group": 1,
+        "section": "L 101,6 x 14,57",
+        "compression": {
+          "demand_kN": 190.975,
+          "resistance_kN": 259.507,
+          "utilization_percent": 73.59
+        },
+        "tension": {
+          "demand_kN": 194.856,
+          "resistance_kN": 381.578,
+          "utilization_percent": 51.07
+        },
+        "value_type": "group_envelope_not_single_member"
+      },
+      {
+        "group": 2,
+        "section": "L 101,6 x 9,8",
+        "compression": {
+          "demand_kN": 114.781,
+          "resistance_kN": 155.754,
+          "utilization_percent": 73.69
+        },
+        "tension": {
+          "demand_kN": 127.281,
+          "resistance_kN": 254.908,
+          "utilization_percent": 49.93
+        },
+        "value_type": "group_envelope_not_single_member"
+      },
+      {
+        "group": 3,
+        "section": "L 76,2 x 7,3",
+        "compression": {
+          "demand_kN": 66.524,
+          "resistance_kN": 105.217,
+          "utilization_percent": 63.23
+        },
+        "tension": {
+          "demand_kN": 90.404,
+          "resistance_kN": 191.139,
+          "utilization_percent": 47.3
+        },
+        "value_type": "group_envelope_not_single_member"
+      },
+      {
+        "group": 4,
+        "section": "L 63,5 x 6,1",
+        "compression": {
+          "demand_kN": 52.94,
+          "resistance_kN": 79.248,
+          "utilization_percent": 66.8
+        },
+        "tension": {
+          "demand_kN": 53.256,
+          "resistance_kN": 122.683,
+          "utilization_percent": 43.41
+        },
+        "value_type": "group_envelope_not_single_member"
+      },
+      {
+        "group": 5,
+        "section": "L 63,5 x 6,1",
+        "compression": {
+          "demand_kN": 41.482,
+          "resistance_kN": 79.248,
+          "utilization_percent": 52.34
+        },
+        "tension": {
+          "demand_kN": 54.118,
+          "resistance_kN": 122.683,
+          "utilization_percent": 44.11
+        },
+        "value_type": "group_envelope_not_single_member"
+      }
+    ],
+    "notes": "Demands are maxima by group, not a member/combination mapping."
+  },
+  "verticals": {
+    "source_page": 65,
+    "table": 7,
+    "rows": [
+      {
+        "group": 1,
+        "section": "L 101,6 x 12,2",
+        "compression": {
+          "demand_kN": 136.428,
+          "resistance_kN": 216.112,
+          "utilization_percent": 63.13
+        },
+        "tension": {
+          "demand_kN": 139.115,
+          "resistance_kN": 312.592,
+          "utilization_percent": 44.5
+        },
+        "value_type": "group_envelope_not_single_member"
+      },
+      {
+        "group": 2,
+        "section": "L 101,6 x 9,8",
+        "compression": {
+          "demand_kN": 111.98,
+          "resistance_kN": 165.985,
+          "utilization_percent": 67.46
+        },
+        "tension": {
+          "demand_kN": 108.052,
+          "resistance_kN": 198.186,
+          "utilization_percent": 54.52
+        },
+        "value_type": "group_envelope_not_single_member"
+      },
+      {
+        "group": 3,
+        "section": "L 101,6 x 9,8",
+        "compression": {
+          "demand_kN": 82.436,
+          "resistance_kN": 165.985,
+          "utilization_percent": 49.66
+        },
+        "tension": {
+          "demand_kN": 70.515,
+          "resistance_kN": 243.24,
+          "utilization_percent": 28.99
+        },
+        "value_type": "group_envelope_not_single_member"
+      },
+      {
+        "group": 4,
+        "section": "L 63,5 x 6,1",
+        "compression": {
+          "demand_kN": 52.892,
+          "resistance_kN": 90.561,
+          "utilization_percent": 58.4
+        },
+        "tension": {
+          "demand_kN": 41.202,
+          "resistance_kN": 122.683,
+          "utilization_percent": 33.58
+        },
+        "value_type": "group_envelope_not_single_member"
+      },
+      {
+        "group": 5,
+        "section": "L 63,5 x 6,1",
+        "compression": {
+          "demand_kN": 42.096,
+          "resistance_kN": 90.561,
+          "utilization_percent": 46.48
+        },
+        "tension": {
+          "demand_kN": 32.334,
+          "resistance_kN": 122.683,
+          "utilization_percent": 26.36
+        },
+        "value_type": "group_envelope_not_single_member"
+      },
+      {
+        "group": "central",
+        "section": "L 152,4 x 29,20",
+        "compression": {
+          "demand_kN": 301.224,
+          "resistance_kN": 560.186,
+          "utilization_percent": 53.77
+        },
+        "tension": {
+          "demand_kN": 418.414,
+          "resistance_kN": 782.48,
+          "utilization_percent": 53.47
+        },
+        "value_type": "group_envelope_not_single_member"
+      }
+    ],
+    "notes": "Montante central is separate from numbered groups."
+  },
+  "chords": {
+    "source_page": 66,
+    "table": 8,
+    "rows": [
+      {
+        "designation": "2L 203,20 x 57,9",
+        "compression_Nsd_kN": 1263.339,
+        "compression_Nrd_kN": 2918.397,
+        "compression_percent": 43.29,
+        "tension_Nsd_kN": 1184.491,
+        "tension_Nrd_kN": 3355,
+        "tension_percent": 35.31
+      }
+    ],
+    "notes": "Source table visually merges rows; avoid assigning an identical demand to each upper and lower chord."
+  },
+  "purlin": {
+    "source_pages": [
+      66,
+      67,
+      68,
+      82,
+      130,
+      131
+    ],
+    "section": "U 254 x 29,76",
+    "span_m": 8,
+    "local_x_supports": 3,
+    "local_y_supports": 2,
+    "tributary_width_m": 2.154,
+    "dead_line_appendix_kN_m": 0.5385,
+    "live_line_appendix_kN_m": 0.5385,
+    "wind_line_kN_m": -2.725,
+    "service_combination_expression": "G+Q+0.6*cos(10deg)*W",
+    "service_result_printed_kN_m": -0.533,
+    "displacement_printed_mm": 4.3,
+    "allowable_displacement_mm": 66.7,
+    "E_MPa": 200000,
+    "used_inertia_cm4": 3290,
+    "denominator_printed_in_deflection_formula": 389,
+    "service_validation_issues": [
+      "denominator 389 in source; classical 384",
+      "source rounded loads cause a separate .002 kN/m discrepancy"
+    ],
+    "shear_and_moments": {
+      "source_page": 68,
+      "table": 9,
+      "rows": [
+        {
+          "type": "Vx",
+          "printed_unit": "kN",
+          "demands": [
+            null,
+            1.7,
+            null
+          ],
+          "resistance": 210.61
+        },
+        {
+          "type": "Vy",
+          "printed_unit": "kN",
+          "demands": [
+            5.9,
+            12.9,
+            3.2
+          ],
+          "resistance": 333.55
+        },
+        {
+          "type": "Mx",
+          "printed_unit": "kN",
+          "demands": [
+            null,
+            1.3,
+            null
+          ],
+          "resistance": 14.89
+        },
+        {
+          "type": "My",
+          "printed_unit": "kN",
+          "demands": [
+            11.8,
+            25.8,
+            7.4
+          ],
+          "resistance": 37.95
+        }
+      ],
+      "notes": "Moment columns show kN not kN.m in source; do not silently rewrite."
+    },
+    "interaction_table10": {
+      "source_page": 68,
+      "value": 0.767,
+      "limit": 1
+    },
+    "local_ultimate_load_cases": [
+      {
+        "id": "U1",
+        "G": 1.25,
+        "Q": 1.5
+      },
+      {
+        "id": "U2",
+        "G": 1,
+        "W": 1.4
+      },
+      {
+        "id": "U3",
+        "G": 1.25,
+        "point_load_midspan_kN": 1
+      }
+    ]
+  },
+  "girt": {
+    "source_pages": [
+      69,
+      70
+    ],
+    "section": "U 254 x 29,76",
+    "tributary_width_m": 2.333,
+    "dead_line_kN_m": 0.28,
+    "wind_line_kN_m": -2.105,
+    "local_x_supports": 2,
+    "local_y_supports": 3,
+    "table11": {
+      "source_page": 70,
+      "table": 11,
+      "rows": [
+        {
+          "type": "Vx",
+          "printed_unit": "kN",
+          "demands": [
+            null,
+            11.8
+          ],
+          "resistance": 210.61
+        },
+        {
+          "type": "Vy",
+          "printed_unit": "kN",
+          "demands": [
+            0.9,
+            0.7
+          ],
+          "resistance": 333.55
+        },
+        {
+          "type": "Mx",
+          "printed_unit": "kN",
+          "demands": [
+            null,
+            23.6
+          ],
+          "resistance": 37.95
+        },
+        {
+          "type": "My",
+          "printed_unit": "kN",
+          "demands": [
+            0.7,
+            0.6
+          ],
+          "resistance": 14.89
+        }
+      ]
+    },
+    "interaction_table12": {
+      "source_page": 70,
+      "value": 0.662,
+      "limit": 1
+    }
+  },
+  "bracing": {
+    "source_page": 72,
+    "table": 13,
+    "rows": [
+      {
+        "kind": "roof_horizontal",
+        "diameter_mm": 12.5,
+        "force_Nsd_kN": 18.68,
+        "force_Nrd_kN": 28.15,
+        "utilization_percent": 66.36
+      },
+      {
+        "kind": "wall_vertical",
+        "diameter_mm": 40,
+        "force_Nsd_kN": 172.56,
+        "force_Nrd_kN": 274.94,
+        "utilization_percent": 62.76
+      }
+    ]
+  },
+  "ties": {
+    "source_pages": [
+      73,
+      74,
+      75
+    ],
+    "roof": [
+      {
+        "id": "T1",
+        "length_m": 18.31,
+        "line_load_kN_m": 0.28,
+        "tension_Nsd_kN": 5.16
+      },
+      {
+        "id": "T2",
+        "length_m": 4.72,
+        "line_load_kN_m": 0.28,
+        "tension_Nsd_kN": 1.33
+      }
+    ],
+    "wall": [
+      {
+        "id": "T1",
+        "length_m": 4.67,
+        "line_load_kN_m": 1.25,
+        "tension_Nsd_kN": 5.84
+      },
+      {
+        "id": "T2",
+        "length_m": 4.63,
+        "line_load_kN_m": 1.25,
+        "tension_Nsd_kN": 5.79
+      }
+    ],
+    "design": {
+      "source_page": 75,
+      "table": 16,
+      "rows": [
+        {
+          "kind": "roof",
+          "force_Nsd_kN": 5.17,
+          "force_Nrd_kN": 28.15,
+          "percent": 18.35
+        },
+        {
+          "kind": "wall",
+          "force_Nsd_kN": 5.83,
+          "force_Nrd_kN": 28.15,
+          "percent": 20.72
+        }
+      ]
+    }
+  },
+  "connections": {
+    "source_pages": [
+      77,
+      78
+    ],
+    "bolts_by_group": [
+      {
+        "group": 1,
+        "diagonal_diameter_mm": 20,
+        "vertical_diameter_mm": 16,
+        "chord_diameter_mm": 20,
+        "vertical_bolt_count": 3,
+        "diagonal_bolt_count": 3,
+        "chord_bolt_count": 4
+      },
+      {
+        "group": 2,
+        "diagonal_diameter_mm": 16,
+        "vertical_diameter_mm": 16,
+        "chord_diameter_mm": 20,
+        "vertical_bolt_count": 3,
+        "diagonal_bolt_count": 3,
+        "chord_bolt_count": 6
+      },
+      {
+        "group": 3,
+        "diagonal_diameter_mm": 12.7,
+        "vertical_diameter_mm": 12.7,
+        "chord_diameter_mm": 20,
+        "vertical_bolt_count": 3,
+        "diagonal_bolt_count": 3,
+        "chord_bolt_count": 8
+      },
+      {
+        "group": 4,
+        "diagonal_diameter_mm": 12.7,
+        "vertical_diameter_mm": 12.7,
+        "chord_diameter_mm": 20,
+        "vertical_bolt_count": 2,
+        "diagonal_bolt_count": 2,
+        "chord_bolt_count": 10
+      },
+      {
+        "group": 5,
+        "diagonal_diameter_mm": 12.7,
+        "vertical_diameter_mm": 12.7,
+        "chord_diameter_mm": 20,
+        "vertical_bolt_count": 2,
+        "diagonal_bolt_count": 2,
+        "chord_bolt_count": 10
+      }
+    ],
+    "central_vertical": {
+      "diameter_mm": 20,
+      "count": 6
+    },
+    "knee_brace": {
+      "diameter_mm": 12.7,
+      "count": 2
+    },
+    "gusset": {
+      "thickness_mm": 20,
+      "edge_distance_mm": 27,
+      "contact_Nsd_kN": 192,
+      "contact_Nrd_kN": 284.444
+    }
+  },
+  "knee_brace": {
+    "source_page": 79,
+    "table": 20,
+    "rows": [
+      {
+        "section": "L 38,1 x 3,48",
+        "length_m": 1.41,
+        "slenderness": 190.54,
+        "compression_Nsd_kN": 31.583,
+        "compression_Nrd_kN": 50.331,
+        "tension_Nsd_kN": 29.612,
+        "tension_Nrd_kN": 89.69
+      }
+    ]
+  }
+}
