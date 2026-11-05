@@ -1,0 +1,120 @@
+{
+  "schema_version": "jpn.frame3d/2",
+  "units": "SI",
+  "theory": "linear-elastic-euler-bernoulli",
+  "project": {
+    "id": "UFSC-PRATTI-2015-TERCA",
+    "revision": "BENCHMARK-1",
+    "source": "Pratti Jr., UFSC 2015, seção da terça biapoiada e combinação de sucção; não é o galpão completo"
+  },
+  "nodes": [
+    {
+      "id": "A",
+      "x_m": 0,
+      "y_m": 0,
+      "z_m": 0
+    },
+    {
+      "id": "B",
+      "x_m": 6.25,
+      "y_m": 0,
+      "z_m": 0
+    }
+  ],
+  "members": [
+    {
+      "id": "TERCA-1",
+      "start": "A",
+      "end": "B",
+      "kind": "frame",
+      "material": "ACO-UFSC",
+      "section": "INERCIA-PUBLICADA",
+      "rotation_deg": 0,
+      "release_start": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "release_end": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "id": "ACO-UFSC",
+      "e_pa": 205000000000.0,
+      "g_pa": 78846153846.15384,
+      "nu": 0.3,
+      "source": "E = 205 GPa adotado no estudo",
+      "revision": "2015"
+    }
+  ],
+  "sections": [
+    {
+      "id": "INERCIA-PUBLICADA",
+      "area_m2": 0.001,
+      "iy_m4": 6.05e-06,
+      "iz_m4": 6.05e-06,
+      "j_m4": 1e-07,
+      "source": "Inércia de flexão reportada Ix=605 cm4; demais propriedades hipotéticas apenas para estabilizar o modelo biapoiado sem torção",
+      "revision": "bench"
+    }
+  ],
+  "supports": [
+    {
+      "node": "A",
+      "restrained": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "node": "B",
+      "restrained": [
+        false,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "id": "UFSC-SUCCAO",
+      "source": "Carga linear publicada no TCC, combinação CP+1.4 CV1; reproduzida, não norma 2025"
+    }
+  ],
+  "nodal_loads": [],
+  "member_uniform_loads": [
+    {
+      "member": "TERCA-1",
+      "case": "UFSC-SUCCAO",
+      "direction": "Fz",
+      "w_n_m": -1778.8,
+      "source": "UFSC 2015 Pratti Jr., 6.25 m, vento de sucção, q resultante publicado (arredondado)"
+    }
+  ],
+  "combinations": [
+    {
+      "id": "ELU-PUBLICADO",
+      "factors": {
+        "UFSC-SUCCAO": 1
+      }
+    }
+  ]
+}
