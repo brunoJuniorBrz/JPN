@@ -8,7 +8,7 @@ function request(){return new Request("http://127.0.0.1:3000/api/experimental/de
 function enable(){vi.stubEnv("NODE_ENV","development");vi.stubEnv("JPN_LOCAL_MIXED_ENABLED","1");vi.stubEnv("JPN_LOCAL_MIXED_ORIGIN","http://127.0.0.1:3000");}
 afterEach(()=>vi.unstubAllEnvs());
 it("executes automatic modes and MRD through the real isolated HTTP handler",async()=>{
-  enable();expect(process.env.JPN_SECTION_FSM_PYTHON_EXECUTABLE).toBeTruthy();const response=await POST(request()),out=await response.json();expect(response.status).toBe(200);
+  enable();expect(process.env.JPN_SECTION_FSM_PYTHON_EXECUTABLE).toBeTruthy();const response=await POST(request()),out=await response.json();expect(response.status,JSON.stringify(out)).toBe(200);
   const r=coldformedDesignResultSchema.parse(out.result);expect(r.input_sha256).toBe(await mixedInputHash(evidence.cases[0].design_input));expect(r.status).toBe("CONDITIONAL-MODEL-LIMITS");expect(r.buckling_audit!.library.pycufsm).toBe("0.2.0");expect(r.buckling_audit!.refinements).toHaveLength(3);expect(out.execution.memory_limit_bytes).toBe(805306368);expect(r.computed_structural_approval).toBe(false);
   expect(r.evaluator_version).toBe("jpn.nbr14762-mrd/4");expect(r.buckling_audit!.numerical_audit!.kinematics_version).toBe("jpn.cfsm-kinematics/2");expect(r.buckling_audit!.numerical_audit!.refinements.every(q=>q.projected_relative_residual<=1e-8)).toBe(true);
 },25000);

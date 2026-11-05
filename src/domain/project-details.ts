@@ -11,7 +11,9 @@ export const money = z.number().int().min(0).max(10000000000).nullable();
 export const quantity = z.number().finite().min(0).max(1000000).nullable();
 export const roofSchema = z.object({
   widthM: measure, lengthM: measure, lowHeightM: measure,
-  slopePercent: percent.nullable(),
+  // Preserve geometric precision (e.g. tan(30 degrees)); display rounding must
+  // not turn an exact tabulated roof angle into a different physical roof.
+  slopePercent: z.number().finite().min(0).max(100).nullable(),
   fall: z.enum(["width-positive", "width-negative", "length-positive", "length-negative"]),
   profileDescription: z.string().max(2000),
   supports: z.array(z.object({ id: z.uuid(), xM: z.number().finite().min(0).max(1000).nullable(), yM: z.number().finite().min(0).max(1000).nullable() }).strict()).max(200),
