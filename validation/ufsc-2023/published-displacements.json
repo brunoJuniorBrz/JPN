@@ -1,0 +1,433 @@
+{
+  "schema_version": "jpn.ufsc2023.published-displacements/1",
+  "case_id": "benvenuti-ufsc-2023",
+  "unit": "m",
+  "reference_context": {
+    "source": "UFSC Benvenuti 2023, PDF original",
+    "point_markers": "Figure 34, source page 80",
+    "source_model": "SAP2000 2D/3D historical first/second-order",
+    "warning": "signed displacements; source horizontal/vertical/longitudinal axes require explicit mapping to JPN xyz; extrema from different points must not be merged into one vector"
+  },
+  "ULS_2D": {
+    "source_page": 81,
+    "source_table": 21,
+    "entries": [
+      {
+        "combination": "F1",
+        "source_point_id": 6,
+        "axis": "source_horizontal",
+        "linear_m": 0.0099,
+        "nonlinear_m": 0.01
+      },
+      {
+        "combination": "F1",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": -0.0474,
+        "nonlinear_m": -0.0474
+      },
+      {
+        "combination": "F2",
+        "source_point_id": 6,
+        "axis": "source_horizontal",
+        "linear_m": 0.0099,
+        "nonlinear_m": 0.01
+      },
+      {
+        "combination": "F2",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": -0.0474,
+        "nonlinear_m": -0.0474
+      },
+      {
+        "combination": "F3",
+        "source_point_id": 1,
+        "axis": "source_horizontal",
+        "linear_m": 0.0187,
+        "nonlinear_m": 0.0185
+      },
+      {
+        "combination": "F3",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": 0.0905,
+        "nonlinear_m": 0.0898
+      },
+      {
+        "combination": "F4",
+        "source_point_id": 4,
+        "axis": "source_horizontal",
+        "linear_m": 0.0165,
+        "nonlinear_m": 0.0163
+      },
+      {
+        "combination": "F4",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": 0.0797,
+        "nonlinear_m": 0.0789
+      },
+      {
+        "combination": "F5",
+        "source_point_id": 6,
+        "axis": "source_horizontal",
+        "linear_m": 0.0434,
+        "nonlinear_m": 0.0441
+      },
+      {
+        "combination": "F5",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": -0.2069,
+        "nonlinear_m": -0.2104
+      },
+      {
+        "combination": "F6",
+        "source_point_id": 4,
+        "axis": "source_horizontal",
+        "linear_m": 0.0286,
+        "nonlinear_m": 0.0282
+      },
+      {
+        "combination": "F6",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": 0.1377,
+        "nonlinear_m": 0.1356
+      },
+      {
+        "combination": "F7",
+        "source_point_id": 4,
+        "axis": "source_horizontal",
+        "linear_m": 0.0013,
+        "nonlinear_m": 0.0013
+      },
+      {
+        "combination": "F7",
+        "source_point_id": 2,
+        "axis": "source_vertical",
+        "linear_m": 0.0065,
+        "nonlinear_m": 0.0065
+      },
+      {
+        "combination": "F8",
+        "source_point_id": 1,
+        "axis": "source_horizontal",
+        "linear_m": 0.0266,
+        "nonlinear_m": 0.0262
+      },
+      {
+        "combination": "F8",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": 0.149,
+        "nonlinear_m": 0.1471
+      },
+      {
+        "combination": "F9",
+        "source_point_id": 4,
+        "axis": "source_horizontal",
+        "linear_m": 0.0297,
+        "nonlinear_m": 0.0295
+      },
+      {
+        "combination": "F9",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": 0.0837,
+        "nonlinear_m": 0.0831
+      }
+    ]
+  },
+  "SLS_2D": {
+    "source_page": 82,
+    "source_table": 22,
+    "entries": [
+      {
+        "combination": "S1",
+        "source_point_id": 6,
+        "axis": "source_horizontal",
+        "linear_m": 0.0229,
+        "nonlinear_m": 0.0231
+      },
+      {
+        "combination": "S1",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": -0.1323,
+        "nonlinear_m": -0.1338
+      },
+      {
+        "combination": "S2",
+        "source_point_id": 6,
+        "axis": "source_horizontal",
+        "linear_m": 0.0171,
+        "nonlinear_m": 0.0172
+      },
+      {
+        "combination": "S2",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": -0.074,
+        "nonlinear_m": -0.0744
+      },
+      {
+        "combination": "S3",
+        "source_point_id": 6,
+        "axis": "source_horizontal",
+        "linear_m": 0.016,
+        "nonlinear_m": 0.016
+      },
+      {
+        "combination": "S3",
+        "source_point_id": 5,
+        "axis": "source_vertical",
+        "linear_m": -0.0764,
+        "nonlinear_m": -0.0768
+      }
+    ]
+  },
+  "SLS_3D": {
+    "source_page": 86,
+    "source_table": 23,
+    "entries": [
+      {
+        "combination": "S1",
+        "portal": "frontal",
+        "source_point_id": 6,
+        "axis": "horizontal",
+        "linear_m": 0.0142,
+        "nonlinear_m": 0.0134
+      },
+      {
+        "combination": "S1",
+        "portal": "frontal",
+        "source_point_id": 5,
+        "axis": "vertical",
+        "linear_m": -0.0682,
+        "nonlinear_m": -0.0646
+      },
+      {
+        "combination": "S1",
+        "portal": "frontal",
+        "source_point_id": 2,
+        "axis": "longitudinal",
+        "linear_m": 0.01,
+        "nonlinear_m": 0.01
+      },
+      {
+        "combination": "S1",
+        "portal": "central",
+        "source_point_id": 6,
+        "axis": "horizontal",
+        "linear_m": 0.0225,
+        "nonlinear_m": 0.0225
+      },
+      {
+        "combination": "S1",
+        "portal": "central",
+        "source_point_id": 5,
+        "axis": "vertical",
+        "linear_m": -0.1243,
+        "nonlinear_m": -0.1241
+      },
+      {
+        "combination": "S1",
+        "portal": "central",
+        "source_point_id": 5,
+        "axis": "longitudinal",
+        "linear_m": 0.0002,
+        "nonlinear_m": 0.0004
+      },
+      {
+        "combination": "S1",
+        "portal": "traseiro",
+        "source_point_id": 6,
+        "axis": "horizontal",
+        "linear_m": 0.0142,
+        "nonlinear_m": 0.0134
+      },
+      {
+        "combination": "S1",
+        "portal": "traseiro",
+        "source_point_id": 5,
+        "axis": "vertical",
+        "linear_m": -0.0682,
+        "nonlinear_m": -0.0646
+      },
+      {
+        "combination": "S1",
+        "portal": "traseiro",
+        "source_point_id": 2,
+        "axis": "longitudinal",
+        "linear_m": -0.0099,
+        "nonlinear_m": -0.01
+      },
+      {
+        "combination": "S2",
+        "portal": "frontal",
+        "source_point_id": 6,
+        "axis": "horizontal",
+        "linear_m": 0.0088,
+        "nonlinear_m": 0.0083
+      },
+      {
+        "combination": "S2",
+        "portal": "frontal",
+        "source_point_id": 5,
+        "axis": "vertical",
+        "linear_m": -0.037,
+        "nonlinear_m": -0.035
+      },
+      {
+        "combination": "S2",
+        "portal": "frontal",
+        "source_point_id": 5,
+        "axis": "longitudinal",
+        "linear_m": -0.0054,
+        "nonlinear_m": -0.006
+      },
+      {
+        "combination": "S2",
+        "portal": "central",
+        "source_point_id": 6,
+        "axis": "horizontal",
+        "linear_m": 0.0156,
+        "nonlinear_m": 0.0156
+      },
+      {
+        "combination": "S2",
+        "portal": "central",
+        "source_point_id": 5,
+        "axis": "vertical",
+        "linear_m": -0.0674,
+        "nonlinear_m": -0.0674
+      },
+      {
+        "combination": "S2",
+        "portal": "central",
+        "source_point_id": 3,
+        "axis": "longitudinal",
+        "linear_m": -0.0005,
+        "nonlinear_m": -0.0006
+      },
+      {
+        "combination": "S2",
+        "portal": "traseiro",
+        "source_point_id": 6,
+        "axis": "horizontal",
+        "linear_m": 0.0087,
+        "nonlinear_m": 0.0082
+      },
+      {
+        "combination": "S2",
+        "portal": "traseiro",
+        "source_point_id": 5,
+        "axis": "vertical",
+        "linear_m": -0.037,
+        "nonlinear_m": -0.035
+      },
+      {
+        "combination": "S2",
+        "portal": "traseiro",
+        "source_point_id": 5,
+        "axis": "longitudinal",
+        "linear_m": 0.0041,
+        "nonlinear_m": 0.0045
+      },
+      {
+        "combination": "S3",
+        "portal": "frontal",
+        "source_point_id": 4,
+        "axis": "horizontal",
+        "linear_m": -0.008,
+        "nonlinear_m": -0.0076
+      },
+      {
+        "combination": "S3",
+        "portal": "frontal",
+        "source_point_id": 5,
+        "axis": "vertical",
+        "linear_m": -0.0384,
+        "nonlinear_m": -0.0364
+      },
+      {
+        "combination": "S3",
+        "portal": "frontal",
+        "source_point_id": 5,
+        "axis": "longitudinal",
+        "linear_m": -0.0054,
+        "nonlinear_m": -0.006
+      },
+      {
+        "combination": "S3",
+        "portal": "central",
+        "source_point_id": 6,
+        "axis": "horizontal",
+        "linear_m": 0.0166,
+        "nonlinear_m": 0.0165
+      },
+      {
+        "combination": "S3",
+        "portal": "central",
+        "source_point_id": 5,
+        "axis": "vertical",
+        "linear_m": 0.0795,
+        "nonlinear_m": 0.0794
+      },
+      {
+        "combination": "S3",
+        "portal": "central",
+        "source_point_id": 3,
+        "axis": "longitudinal",
+        "linear_m": 0.0004,
+        "nonlinear_m": 0.0012
+      },
+      {
+        "combination": "S3",
+        "portal": "traseiro",
+        "source_point_id": 4,
+        "axis": "horizontal",
+        "linear_m": -0.0118,
+        "nonlinear_m": -0.0111
+      },
+      {
+        "combination": "S3",
+        "portal": "traseiro",
+        "source_point_id": 5,
+        "axis": "vertical",
+        "linear_m": -0.0562,
+        "nonlinear_m": -0.0531
+      },
+      {
+        "combination": "S3",
+        "portal": "traseiro",
+        "source_point_id": 5,
+        "axis": "longitudinal",
+        "linear_m": 0.0065,
+        "nonlinear_m": 0.0079
+      }
+    ]
+  },
+  "service_limits": {
+    "source_page": 82,
+    "allowable_horizontal_m": 0.02333,
+    "allowable_vertical_m": 0.16,
+    "source_comparison_max_horizontal_m": 0.0229,
+    "source_comparison_max_vertical_m": 0.1323
+  },
+  "appendix_H": {
+    "source_pages": [
+      126,
+      127,
+      128,
+      129,
+      130,
+      131
+    ],
+    "status": "NOT_FULLY_TRANSCRIBED",
+    "tables": "25 through 36",
+    "note": "Tables 21-23 provide aggregate extrema, not all per-node results of Appendices H.1/H.2/H.3"
+  }
+}
