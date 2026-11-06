@@ -28,6 +28,11 @@ export function DemoPresentationJourney({
   const atEnd = position === steps.length - 1;
   const shown = position >= 0 ? position : 0;
   const next = position < 0 ? "Visão geral" : atEnd ? "Visão geral" : steps[position + 1];
+  const mathematicalTips: Partial<Record<DemoTab,string>> = {
+    "Visão geral": "Esta estrutura é sintética. Explique por que ela não representa a obra do Tom.",
+    "Modelo": "Mostre as três barras, os apoios e a carga uniforme informados no exemplo.",
+    "Engenharia": "Execute o Python real, se disponível, ou consulte a evidência histórica claramente identificada.",
+  };
   return <section className="demo-journey" aria-label="Roteiro de apresentação" data-testid="demo-presentation-journey">
     <div className="demo-journey-heading">
       <div><span className="demo-mini-eyebrow">ROTEIRO DA DEMONSTRAÇÃO</span>
@@ -40,7 +45,7 @@ export function DemoPresentationJourney({
       <span style={{width:`${position < 0 ? 0 : ((position + 1) / steps.length) * 100}%`}}/>
     </div>
     <div className="demo-journey-bottom">
-      <p>{tips[currentTab]}</p>
+      <p>{mathematical ? mathematicalTips[currentTab] ?? tips[currentTab] : tips[currentTab]}</p>
       <button type="button" className="button secondary demo-journey-next" onClick={()=>onNavigate(next)}>
         {atEnd ? "Voltar ao início" : position < 0 ? "Retomar roteiro" : `Próxima: ${next}`}
         <ArrowRight size={16} aria-hidden="true"/>
