@@ -9,6 +9,7 @@ const arrangements=(Object.keys(guidedArrangements) as GuidedArrangement[]);
 const edges: {value:GuidedSupport["left"];label:string}[]=[
  {value:"new-column",label:"Pilar metálico novo"},
  {value:"existing-masonry",label:"Parede / alvenaria existente"},
+ {value:"existing-concrete",label:"Viga ou pilar de concreto existente"},
  {value:"unknown",label:"Ainda não sei"}
 ];
 function RoofIcon({gable}:{gable:boolean}){
@@ -20,6 +21,7 @@ function RoofIcon({gable}:{gable:boolean}){
 function SupportIcon({left,right,coverage,gable,large=false}:{left:GuidedSupport["left"];right:GuidedSupport["right"];coverage:GuidedSupport["coverage"];gable:boolean;large?:boolean}){
  const element=(x:number,kind:GuidedSupport["left"])=>kind==="new-column"
  ?<><path d={"M"+x+" 57V117"} stroke="#496c72" strokeWidth="5" strokeLinecap="round"/><rect x={x-9} y="116" width="18" height="6" rx="1.5" fill="#87978e"/></>
+ :kind==="existing-concrete"?<><rect x={x-11} y="49" width="22" height="72" rx="1" fill="#c9d0d0" stroke="#899696" strokeWidth="1"/><path d={"M"+(x-11)+" 56H"+(x+11)} stroke="#899696" strokeWidth="3"/></>
  :kind==="existing-masonry"?<><rect x={x-10} y="51" width="20" height="70" rx="1" fill="#d5c7b0" stroke="#9e8a70" strokeWidth="1"/>{[67,83,99,115].map(y=><path key={y} d={"M"+(x-10)+" "+y+"H"+(x+10)} stroke="#aa987c" strokeWidth="1"/>)}</>
  :<><path d={"M"+x+" 58V113"} stroke="#a2a7a4" strokeWidth="3" strokeDasharray="5 4"/><text x={x} y="100" textAnchor="middle" fontSize="20" fill="#a26c38">?</text></>;
  return <svg viewBox="0 0 250 145" className={large?css.largeArt:css.art} role="img" aria-label={"Apoio esquerdo: "+left+"; direito: "+right}>
