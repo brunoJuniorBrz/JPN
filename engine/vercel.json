@@ -4,6 +4,7 @@
   "git": {
     "deploymentEnabled": {
       "main": false,
+      "feat/m351-client-demonstration": false,
       "integration/jpn-functional-main": false,
       "feat/roof-area-load-path": false,
       "audit/mission21-independent": false,
