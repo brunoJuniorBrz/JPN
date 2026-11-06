@@ -26,7 +26,6 @@ export function DemoPresentationJourney({
   const steps = mathematical ? mathematicalSteps : commercialSteps;
   const position = steps.indexOf(currentTab);
   const atEnd = position === steps.length - 1;
-  const shown = position >= 0 ? position : 0;
   const next = position < 0 ? "Visão geral" : atEnd ? "Visão geral" : steps[position + 1];
   const mathematicalTips: Partial<Record<DemoTab,string>> = {
     "Visão geral": "Esta estrutura é sintética. Explique por que ela não representa a obra do Tom.",
