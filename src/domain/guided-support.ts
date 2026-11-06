@@ -6,8 +6,8 @@ import { emptyPlanning } from "./structure";
 export const guidedSupportSchema=z.object({
  version:z.literal(1),
  arrangement:z.enum(["steel","masonry","mixed","attached"]),
- left:z.enum(["new-column","existing-masonry","unknown"]),
- right:z.enum(["new-column","existing-masonry","unknown"]),
+ left:z.enum(["new-column","existing-masonry","existing-concrete","unknown"]),
+ right:z.enum(["new-column","existing-masonry","existing-concrete","unknown"]),
  coverage:z.enum(["whole","partial"]),
  source:z.string().trim().min(1).max(500),
  note:z.string().max(1200),
