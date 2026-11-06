@@ -16,7 +16,7 @@ import {downloadBlob} from "@/lib/exports/proposal";
 import {createCommercialDemoPdf,createTechnicalDemoPdf,demoMoney} from "@/lib/exports/demonstration";
 import {PhysicalLineView} from "@/components/planning/physical-line-view";
 import {MixedAnalysisWorkspace} from "@/components/planning/mixed-analysis-workspace";
-import {DemonstrationNotice,TomDemonstrationButton} from "./demo-entry";
+import {DemonstrationNotice} from "./demo-entry";
 import {HistoricalDemonstration} from "./mathematical-comparison";
 import {DemoLanding, DemoPresentationJourney} from "./demo-presentation";
 import "./demo-presentation.css";
