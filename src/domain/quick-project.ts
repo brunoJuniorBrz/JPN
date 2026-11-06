@@ -72,7 +72,7 @@ export function createQuickProject(input: QuickProjectInput, settings?: Settings
       `Apoio pretendido: ${supportNames[support]}.`,
       `Perfil de interesse: ${profileNames[profileInterest]}.`,
       "Essas preferências NÃO criam vínculos, perfis resistentes, vento ou carregamentos. Confirmar em projeto técnico."
-    ].join("\\n");
+    ].join("\n");
   }
 
   // Reuse only the existing 3D shape library, never sample prices, certified
