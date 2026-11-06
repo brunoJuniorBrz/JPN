@@ -1,0 +1,118 @@
+
+corepack : [WebServer] (node:23804) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+No linha:8 caractere:1
++ corepack pnpm exec playwright test tests/e2e/m35-irregular.spec.ts -- ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:15248) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 4 tests using 1 worker
+
+(node:19752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/4] [chromium] › tests\e2e\m35-irregular.spec.ts:8:3 › M35 375px › declared geometry -> native UDL Python -> traced takeoff -> budget -> stale results
+[WebServer] (node:20324) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+  1) [chromium] › tests\e2e\m35-irregular.spec.ts:8:3 › M35 375px › declared geometry -> native UDL Python -> traced takeoff -> budget -> stale results 
+
+    Test timeout of 150000ms exceeded.
+
+    Error: locator.click: Test timeout of 150000ms exceeded.
+    Call log:
+      - waiting for getByRole('tab', { name: /^Engenharia/ })
+
+
+       at result-tabs.ts:8
+
+       6 |  * details and without opening a second viewer or modifying project data. */
+       7 | export async function openResultTab(page: Page, label: ResultTabName) {
+    >  8 |   await page.getByRole("tab", {name: new RegExp("^" + label)}).click();
+         |                                                                ^
+       9 | }
+      10 |
+      11 | export async function openEngineeringTool(page: Page, label: string) {
+        at openResultTab (C:\Users\Bruno\Downloads\JPN-main\.tools\mission35-worktree\tests\e2e\result-tabs.ts:8:64)
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission35-worktree\tests\e2e\m35-irregular.spec.ts:13:11
+
+    Error Context: test-results\m35-irregular-M35-375px-de-26733-ff---budget---stale-results-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\m35-irregular-M35-375px-de-26733-ff---budget---stale-results-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\m35-irregular-M35-375px-de-26733-ff---budget---stale-results-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:26444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/4] [chromium] › tests\e2e\m35-irregular.spec.ts:45:3 › M35 375px › manual node/element editor, negative coordinates, cutout polygon and Tom commercial data stay independent
+[WebServer] (node:23720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[WebServer] ⚠ Fast Refresh had to perform a full reload when ./.tools/mission35-worktree/src/domain/roof-outline.ts 
+changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[WebServer] (node:26820) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[WebServer] (node:27516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[3/4] [chromium] › tests\e2e\m35-irregular.spec.ts:8:3 › M35 1440px › declared geometry -> native UDL Python -> traced takeoff -> budget -> stale results
+[WebServer] (node:10388) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+  2) [chromium] › tests\e2e\m35-irregular.spec.ts:8:3 › M35 1440px › declared geometry -> native UDL Python -> traced takeoff -> budget -> stale results 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 6000
+    Received: 0
+
+      31 |     const event=page.waitForEvent("download");await panel.getByRole("button",{name:"Exportar resultados mistos",exact:true}).click();const exported=await readFile((await(await event).path())!,"utf8");
+      32 |     await openResultTab(page,"Materiais");await expect(page.getByTestId("declared-takeoff")).toContainText("3 peças");await page.getByRole("button",{name:"Atualizar quantitativos no orçamento",exact:true}).click();
+    > 33 |     const stored=await page.evaluate(id=>JSON.parse(localStorage.getItem("jpn-projetos:v1")!).projects.find((p:{id:string})=>p.id===id),id);expect(calculateEstimate(stored).directCostCents).toBe(6000);expect(calculateEstimate(stored).pending).toEqual([]);
+         |                                                                                                                                                                                               ^
+      34 |     expect(stored.estimate.materials.flatMap((l:{quantityOrigin:{pieceIds:string[]}})=>l.quantityOrigin.pieceIds).sort()).toEqual(["AX1","F1","F2"]);
+      35 |     const takeoff=page.waitForEvent("download");await page.getByRole("button",{name:"Exportar quantitativo declarado JSON",exact:true}).click();const quantity=JSON.parse(await readFile((await(await takeoff).path())!,"utf8"));expect(quantity.totals.lengthM).toBe(3);expect(quantity.totals.massKg).toBeNull();expect(quantity.fabricationRelease).toBe(false);
+      36 |     await openResultTab(page,"Arquivos");const geometry=page.waitForEvent("download");await page.getByRole("button",{name:"Exportar modelo estrutural JSON",exact:true}).click();const saved=JSON.parse(await readFile((await(await geometry).path())!,"utf8"));expect(saved.workspace.physicalStructure).toEqual(stored.workspace.physicalStructure);expect(saved.workspace.spatialPreparation.physicalCatalog).toEqual(stored.workspace.spatialPreparation.physicalCatalog);
+        at C:\Users\Bruno\Downloads\JPN-main\.tools\mission35-worktree\tests\e2e\m35-irregular.spec.ts:33:191
+
+    Error Context: test-results\m35-irregular-M35-1440px-d-1e07e-ff---budget---stale-results-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\m35-irregular-M35-1440px-d-1e07e-ff---budget---stale-results-chromium\trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results\m35-irregular-M35-1440px-d-1e07e-ff---budget---stale-results-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:17816) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[4/4] [chromium] › tests\e2e\m35-irregular.spec.ts:45:3 › M35 1440px › manual node/element editor, negative coordinates, cutout polygon and Tom commercial data stay independent
+[WebServer] (node:27464) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+[WebServer] (node:27644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+  2 failed
+    [chromium] › tests\e2e\m35-irregular.spec.ts:8:3 › M35 375px › declared geometry -> native UDL Python -> traced takeoff -> budget -> stale results 
+    [chromium] › tests\e2e\m35-irregular.spec.ts:8:3 › M35 1440px › declared geometry -> native UDL Python -> traced takeoff -> budget -> stale results 
+  2 passed (4.6m)

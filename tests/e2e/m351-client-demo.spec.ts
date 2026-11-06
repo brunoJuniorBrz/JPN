@@ -1,0 +1,64 @@
+import {expect,test,type Page} from "@playwright/test";
+import {readFile,mkdir,writeFile} from "node:fs/promises";
+import {newProject,emptySnapshot} from "../../src/domain/models";
+
+const tab=(page:Page,name:string)=>page.getByRole("tab",{name,exact:true}).click();
+async function openTom(page:Page){
+  await page.goto("/projetos");await page.getByRole("button",{name:"Abrir demonstração — Cobertura Tom",exact:true}).click();
+  await expect(page).toHaveURL(/\/demonstracao\?projeto=[a-f0-9-]+$/);return new URL(page.url()).searchParams.get("projeto")!;
+}
+for(const width of [375,1440])test(`M35.1 caso Tom, persistência, PDF e cálculo real em ${width}px`,async({page})=>{
+  test.setTimeout(120000);await page.setViewportSize({width,height:980});const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
+  const existing=newProject();existing.name="Obra existente preservada";existing.client="Cliente cadastrado";
+  await page.addInitScript(value=>{if(!localStorage.getItem("jpn-projetos:v1"))localStorage.setItem("jpn-projetos:v1",JSON.stringify(value));},{...emptySnapshot(),projects:[existing]});
+  await mkdir("validation/m351",{recursive:true});const tomId=await openTom(page);
+  await expect(page.getByTestId("demo-budget-total")).toContainText("9.651,29");await expect(page.getByTestId("demo-permanent-warning")).toContainText("COMERCIAL TOM");
+  await page.screenshot({path:`validation/m351/tom-${width}.png`,fullPage:true});
+  await tab(page,"Modelo");await expect(page.getByTestId("tom-geometry-pending")).toBeVisible();await expect(page.getByTestId("declared-line-view")).toHaveCount(0);
+  await tab(page,"Materiais");await expect(page.getByRole("table")).toContainText("TR25");
+  await tab(page,"Orçamento");await expect(page.getByTestId("demo-commercial-total")).toContainText("9.651,29");
+  const pdfEvent=page.waitForEvent("download");await page.getByRole("button",{name:"Exportar resumo comercial PDF",exact:true}).click();const pdf=await pdfEvent;
+  expect((await readFile((await pdf.path())!)).subarray(0,4).toString()).toBe("%PDF");await pdf.saveAs(`test-results/m351/tom-commercial-${width}.pdf`);
+  await tab(page,"Engenharia");await expect(page.getByRole("heading",{name:"Dados necessários para calcular a cobertura real",exact:true})).toBeVisible();
+  await page.getByText("Apoios e restrições · Pendente",{exact:true}).click();
+  await page.getByLabel("Apoios e restrições · informação disponível",{exact:true}).fill("Conferir posições e restrições em levantamento");
+  await page.getByLabel("Apoios e restrições · fonte ou confirmação necessária",{exact:true}).fill("Confirmar com o responsável técnico");
+  await page.getByRole("button",{name:"Salvar demonstração",exact:true}).click();
+  const technicalEvent=page.waitForEvent("download");await page.getByRole("button",{name:"Exportar pendências técnicas PDF",exact:true}).click();const technical=await technicalEvent;
+  expect((await readFile((await technical.path())!)).subarray(0,4).toString()).toBe("%PDF");await technical.saveAs(`test-results/m351/tom-technical-${width}.pdf`);
+  await page.reload();await tab(page,"Engenharia");await page.getByText(/Apoios e restrições · Informado/).click();
+  await expect(page.getByLabel("Apoios e restrições · informação disponível",{exact:true})).toHaveValue("Conferir posições e restrições em levantamento");
+  const backupEvent=page.waitForEvent("download");await page.getByRole("button",{name:"Exportar backup desta cópia",exact:true}).click();const backup=await readFile((await(await backupEvent).path())!,"utf8");
+  expect(JSON.parse(backup).data.projects).toHaveLength(1);expect(JSON.parse(backup).data.projects[0].workspace.physicalStructure).toBeUndefined();
+  await page.getByRole("link",{name:"Restaurar backup",exact:true}).click();
+  await page.getByLabel("Selecionar backup JSON").setInputFiles({name:"demonstracao.json",mimeType:"application/json",buffer:Buffer.from(backup)});
+  await page.getByRole("button",{name:"Adicionar cópias",exact:true}).click();
+  const snapshot=await page.evaluate(()=>JSON.parse(localStorage.getItem("jpn-projetos:v1")!));expect(snapshot.projects.find((p:{id:string})=>p.id===existing.id)).toEqual(existing);
+  const restoredId=snapshot.projects.find((p:{id:string;workspace:{demonstration?:unknown}})=>p.id!==tomId&&p.workspace.demonstration).id;
+  expect(restoredId).not.toBe(tomId);await page.goto("/projetos");await page.locator(`a[href="/demonstracao?projeto=${restoredId}"]`).click();await expect(page.getByTestId("demo-budget-total")).toContainText("9.651,29");
+  await page.getByRole("button",{name:"Abrir demonstração estrutural separada",exact:true}).click();await expect(page).not.toHaveURL(new RegExp(restoredId));
+  await expect(page.getByTestId("demo-permanent-warning")).toContainText("NÃO REPRESENTA A ESTRUTURA DO TOM");
+  const mathId=new URL(page.url()).searchParams.get("projeto")!;await tab(page,"Modelo");await expect(page.locator('[data-testid="declared-line-view"] [data-piece-id]')).toHaveCount(3);
+  await page.getByText("Apoios, carregamentos e propriedades declaradas da fixture",{exact:true}).click();await expect(page.getByRole("heading",{name:"Apoios e restrições",exact:true})).toBeVisible();
+  await page.screenshot({path:`validation/m351/model-${width}.png`,fullPage:true});
+  await tab(page,"Engenharia");const engine=page.getByTestId("mixed-workspace");await expect(engine.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:25000});
+  const response=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");await engine.getByRole("button",{name:/Executar análise mista (local|online)/}).click();
+  const r=await response;expect(r.status()).toBe(200);const input=r.request().postDataJSON(),out=await r.json();expect(input.project.id).toBe(mathId);expect(input.schema_version).toBe("jpn.mixed3d/2");
+  expect(input.member_loads).toHaveLength(2);expect(out.result.combinations.Q1.nodes.B2.translation_m[2]).toBeCloseTo(-.00096875,10);expect(out.result.combinations.Q1.nodes.B0.reaction_force_n[2]).toBeCloseTo(200,8);
+  await expect(engine.getByTestId("live-comparison")).toBeVisible();await expect(engine.getByTestId("mixed-result-state")).toContainText("Resultado calculado");
+  await engine.getByText("Ver deslocamentos, reações e esforços completos",{exact:true}).click();await expect(engine.getByRole("cell",{name:"B2 · nó livre",exact:true})).toBeVisible();await expect(engine.getByRole("heading",{name:/Esforços da peça selecionada: F1/})).toBeVisible();await engine.getByText("Ver deslocamentos, reações e esforços completos",{exact:true}).click();
+  const resultPDF=page.waitForEvent("download");await engine.getByRole("button",{name:"Exportar resumo do cálculo PDF",exact:true}).click();expect((await readFile((await(await resultPDF).path())!)).subarray(0,4).toString()).toBe("%PDF");
+  await writeFile(`validation/m351/execution-${width}.json`,JSON.stringify({projectId:mathId,input,result:out.result,referenceTipM:-.00096875,computedStructuralApproval:false,fabricationRelease:false},null,2));
+  await page.screenshot({path:`validation/m351/validation-${width}.png`,fullPage:true});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.getByRole("link",{name:"Voltar ao caso comercial Tom",exact:true}).click();await expect(page.getByTestId("demo-budget-total")).toContainText("9.651,29");
+  expect(errors).toEqual([]);
+});
+test("M35.1 indisponibilidade não publica resultado falso: consulta histórica possui origem e SHA explícitos",async({page})=>{
+  await page.route("**/api/experimental/mixed3d",route=>route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({error:{code:"UNAVAILABLE",message:"Python indisponível neste cenário de teste"}})}));
+  await openTom(page);await page.getByRole("button",{name:"Abrir demonstração estrutural separada",exact:true}).click();await expect(page.getByTestId("demo-permanent-warning")).toContainText("VALIDAÇÃO MATEMÁTICA");
+  await tab(page,"Engenharia");const engine=page.getByTestId("mixed-workspace");await expect(engine.getByTestId("mixed-health")).toContainText("Executor indisponível");
+  await expect(engine.getByRole("button",{name:/Executar análise mista/})).toBeDisabled();await expect(engine.getByTestId("mixed-result-state")).toHaveCount(0);await expect(engine.getByTestId("live-comparison")).toHaveCount(0);
+  await page.getByText("Execução anterior verificada — evidência histórica",{exact:true}).click();await page.getByRole("button",{name:"Consultar evidência histórica verificada",exact:true}).click();
+  await expect(page.getByTestId("historical-comparison")).toBeVisible();await expect(page.locator(".demo-history")).toContainText("6a64398d1e4d12577d816efb07d8483767ff4459");
+  await expect(page.locator(".demo-history")).toContainText("não foi recalculado");await expect(engine.getByTestId("mixed-result-state")).toHaveCount(0);
+});

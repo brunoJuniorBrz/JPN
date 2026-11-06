@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 C:/Users/Bruno/Downloads/JPN-main/.tools/mission35-worktree
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  18:26:18
+   Duration  655ms (tests 46%, import 41%, transform 12%, worker 1%)
+

@@ -4,6 +4,7 @@
   "git": {
     "deploymentEnabled": {
       "main": false,
+      "feat/m351-client-demonstration": false,
       "integration/jpn-functional-main": false,
       "feat/roof-area-load-path": false,
       "audit/mission21-independent": false,
@@ -18,7 +19,8 @@
       "feat/m31-structural-audit": false,
       "feat/m32-numerics-mixed-second-order": false,
       "feat/m33a-normative-wind-combinations": false,
-      "feat/m34ab-flexible-physical-model": false
+      "feat/m34ab-flexible-physical-model": false,
+      "feat/m35-irregular-structures-loads-takeoff": false
     }
   },
   "functions": {
