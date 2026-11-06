@@ -46,6 +46,14 @@ describe("Coberturas guiadas — apoios metálicos, alvenaria e obra parcial",()
   expect(r.pending.join(" ")).toMatch(/Área|Informe a quantidade/);
   expect(r.saleCents).toBeNull();
  });
+ it("a practical project categorized Galpão or Barracão may use the same preliminary metal roof geometry without structural approval",()=>{
+  for(const category of ["Galpão","Barracão"] as const){
+    const p=planningExample();p.category=category;p.workspace.guidedSupport=guidedPreset("steel");
+    expect(generateStructure(p).model?.pieces.some(b=>b.role==="column")).toBe(true);
+    p.workspace.guidedSupport=guidedPreset("masonry");
+    expect(generateStructure(p).model).toBeNull();
+  }
+ });
  it("explicit all-metal option preserves historic generator counts; existing projects are unchanged",()=>{
   const p=planningExample(),old=generateStructure(p);
   expect(old.model).not.toBeNull();
