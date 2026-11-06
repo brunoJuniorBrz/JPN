@@ -79,3 +79,18 @@
 }
 @media (max-width:380px) { .demo-journey-heading { flex-direction:column; } }
 @media (prefers-reduced-motion:reduce){ .demo-journey-meter span {transition:none;} }
+
+/* Keep commercial facts and guided navigation ahead of file-management actions. */
+.demo-footer-controls { border-top:1px solid var(--line); padding-top:16px; margin-top:19px; }
+.demo-footer-controls .demo-actions { margin:0; }
+@media(max-width:640px){
+  .demo-workspace .demo-permanent-warning { font-size:12px; padding:10px 12px; line-height:1.4; }
+  .demo-workspace .demo-journey { padding:11px 12px; margin:10px 0 7px; }
+  .demo-workspace .demo-journey-meter { margin:8px 0; }
+  .demo-workspace .demo-journey-bottom { gap:7px; }
+  .demo-workspace .demo-journey-bottom p { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; font-size:11px; }
+  .demo-workspace .demo-journey-next { min-height:36px; padding:7px 12px; }
+  .demo-workspace .demo-footer-controls .demo-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .demo-workspace .demo-footer-controls .demo-actions > * { flex:auto; min-width:0; font-size:12px; padding:9px 10px; }
+  .demo-workspace .demo-footer-controls .demo-actions > :last-child { grid-column:1 / -1; }
+}
