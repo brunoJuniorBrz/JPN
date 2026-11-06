@@ -1,5 +1,6 @@
 "use client";
 import {useMemo,useState} from "react";
+import { HardDrive, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {useData} from "@/components/data-provider";
@@ -17,14 +18,14 @@ import {PhysicalLineView} from "@/components/planning/physical-line-view";
 import {MixedAnalysisWorkspace} from "@/components/planning/mixed-analysis-workspace";
 import {DemonstrationNotice,TomDemonstrationButton} from "./demo-entry";
 import {HistoricalDemonstration} from "./mathematical-comparison";
+import {DemoLanding, DemoPresentationJourney} from "./demo-presentation";
+import "./demo-presentation.css";
 
 const tabs=["Visão geral","Modelo","Materiais","Orçamento","Engenharia"] as const;
 type Tab=typeof tabs[number];
 export function DemoWorkspace({projectId}:{projectId?:string}){
   const {data}=useData(),project=data.projects.find(p=>p.id===projectId&&p.workspace.demonstration);
-  if(!project)return <><PageHeading eyebrow="APRESENTAÇÃO JPN" title="Demonstração para o cliente" description="Abra uma cópia editável do caso comercial e uma validação matemática separada."/>
-    {projectId&&<p role="alert">A cópia não foi encontrada neste navegador. Restaure seu backup ou abra uma nova demonstração.</p>}
-    <TomDemonstrationButton/><h2>Demonstrações salvas neste navegador</h2><ul>{data.projects.filter(p=>p.workspace.demonstration).map(p=><li key={p.id}><Link href={`/demonstracao?projeto=${p.id}`}>{p.name}</Link></li>)}</ul><Link href="/projetos">Todos os projetos</Link></>;
+  if(!project)return <DemoLanding projectId={projectId} saved={data.projects.filter(p=>!!p.workspace.demonstration)}/>;
   return <DemoProject key={project.id} project={project}/>;
 }
 function DemoProject({project}:{project:Project}){
@@ -56,15 +57,23 @@ function DemoProject({project}:{project:Project}){
   function selectTab(next:Tab){setTab(next);if(next==="Engenharia"&&mathematical)setEngineOpened(true);}
   return <div className="demo-workspace" data-testid="client-demonstration">
     <Link href="/projetos" className="back-link">← Projetos e demonstrações salvas</Link>
+    {mathematical&&project.workspace.demonstration?.parentProjectId&&data.projects.some(p=>p.id===project.workspace.demonstration?.parentProjectId)&&
+      <Link className="demo-back-to-case" href={`/demonstracao?projeto=${project.workspace.demonstration.parentProjectId}`}><ArrowLeft size={16} aria-hidden="true"/>Voltar ao caso comercial Tom</Link>}
     <PageHeading eyebrow={mathematical?"VALIDAÇÃO DO MOTOR NUMÉRICO":"CASO COMERCIAL AUDITADO"} title={project.name} description={mathematical?"Dados sintéticos explícitos, execução Python e comparação analítica.":"Dados comerciais reais auditados; geometria e cálculo da cobertura real pendentes."}/>
     <DemonstrationNotice project={project}/>
+    <DemoPresentationJourney mathematical={mathematical} currentTab={tab} onNavigate={selectTab}/>
     <div className="actions demo-actions"><button type="button" className="button" onClick={save}>Salvar demonstração</button><button type="button" className="button secondary" onClick={exportBackup}>Exportar backup desta cópia</button><Link className="button secondary" href="/configuracoes">Restaurar backup</Link></div>
+    <p className="demo-toolbar-note"><HardDrive size={15} aria-hidden="true"/> As alterações ficam somente neste navegador. Exporte um backup para usar em outro computador.</p>
     {message&&<p role="status" className="success-message">{message}</p>}{error&&<p role="alert" className="field-error">{error}</p>}
     <nav className="demo-tabs" role="tablist" aria-label="Áreas da demonstração">{tabs.map((label,i)=><button key={label} type="button" role="tab" id={`demo-tab-${i}`} aria-controls={`demo-panel-${i}`} aria-selected={tab===label} tabIndex={tab===label?0:-1} onClick={()=>selectTab(label)} onKeyDown={e=>{const index=e.key==="ArrowRight"?(i+1)%tabs.length:e.key==="ArrowLeft"?(i+tabs.length-1)%tabs.length:e.key==="Home"?0:e.key==="End"?tabs.length-1:-1;if(index<0)return;e.preventDefault();selectTab(tabs[index]);document.getElementById(`demo-tab-${index}`)?.focus();}}>{label}</button>)}</nav>
     <section className="panel demo-panel" role="tabpanel" id={`demo-panel-${tabs.indexOf(tab)}`} aria-labelledby={`demo-tab-${tabs.indexOf(tab)}`}>
       {tab==="Visão geral"&&<>
         <div className="demo-stats"><div><span>{mathematical?"Finalidade":"Orçamento comercial atual"}</span><strong data-testid="demo-budget-total">{mathematical?"Validação matemática":demoMoney(estimate.saleCents)}</strong></div><div><span>Geometria da cobertura real</span><strong>Pendente</strong></div><div><span>Liberação estrutural / fabricação</span><strong>Bloqueada</strong></div></div>
-        {!mathematical?<><h2>Cobertura Tom: o que está confirmado</h2><p>31 telhas, 107,65 m lineares de telha, seis peças comerciais U e vinte peças U enrijecido. Essas quantidades comerciais não determinam a quantidade ou posição real de tesouras e pilares.</p>
+        {!mathematical?<><div className="demo-fact-strip" aria-label="Quantidades comerciais confirmadas">
+          <div><strong>{tomSource.roofing_sheet.total_pieces}</strong><span>telhas</span></div>
+          <div><strong>{tomSource.roofing_sheet.total_linear_m.toLocaleString("pt-BR")} m</strong><span>lineares de telha</span></div>
+          <div><strong>6 + 20</strong><span>perfis U + U enrijecido</span></div>
+        </div><h2>Cobertura Tom: o que está confirmado</h2><p>31 telhas, 107,65 m lineares de telha, seis peças comerciais U e vinte peças U enrijecido. Essas quantidades comerciais não determinam a quantidade ou posição real de tesouras e pilares.</p>
           <p>Dimensões de referência no desenho: limites de {tomSource.geometric_reference.upper_bound_length_m.toLocaleString("pt-BR")} m e {tomSource.geometric_reference.upper_bound_width_m.toLocaleString("pt-BR")} m. Área líquida e coordenadas reais não verificadas.</p>
           <p>Fonte: transcrição auditada do PR #52, preservada na M35. Referência comercial: <strong>R$ 9.651,29</strong>. Nenhum PDF privado é publicado.</p>
           <button type="button" className="button secondary" onClick={openMath}>Abrir demonstração estrutural separada</button>
@@ -76,13 +85,14 @@ function DemoProject({project}:{project:Project}){
       {tab==="Orçamento"&&<>{mathematical?<><h2>Modelo de validação sem orçamento da obra</h2><p>Esta demonstração matemática não substitui nem altera o orçamento do Tom.</p></>:<><h2>Resumo comercial</h2><MaterialTable project={project}/><div className="takeoff-table-scroll"><table className="takeoff-table"><thead><tr><th>Despesas da planilha</th><th>Quantidade</th><th>Subtotal</th></tr></thead><tbody>{project.estimate.expenses.map(l=><tr key={l.id}><td>{l.description}</td><td>{l.quantity}</td><td>{demoMoney(l.quantity!==null&&l.unitPriceCents!==null?Math.round(l.quantity*l.unitPriceCents):null)}</td></tr>)}</tbody></table></div><p className="demo-total" data-testid="demo-commercial-total">Total do orçamento: <strong>{demoMoney(estimate.saleCents)}</strong></p>
         {estimate.pending.length>0&&<ul role="alert">{estimate.pending.map(p=><li key={p}>{p}</li>)}</ul>}{estimate.saleCents!==965129&&<p className="notice">Valores desta cópia foram alterados. A referência auditada original é R$ 9.651,29.</p>}
         <div className="actions"><button type="button" className="button" onClick={()=>void pdf("commercial")}>Exportar resumo comercial PDF</button><Link className="button secondary" href={`/projetos/${project.id}?etapa=2`}>Editar orçamento desta cópia</Link></div></>}</>}
-      {tab==="Engenharia"&&!mathematical&&<><h2>Dados necessários para calcular a cobertura real</h2><p>{filled} de {rows.length} grupos com informações anotadas. Informação preenchida continua sujeita à confirmação do responsável técnico e não preenche o modelo de cálculo automaticamente.</p>
+      {tab==="Engenharia"&&!mathematical&&<><h2>Dados necessários para calcular a cobertura real</h2>
+        <div className="demo-technical-progress"><p><strong>{filled} de {rows.length} assuntos anotados.</strong> Essas anotações ajudam na conversa, mas não alimentam o motor estrutural nem substituem a conferência técnica.</p><progress max={rows.length} value={filled} aria-label="Assuntos com informações registradas"/></div>
         {rows.map(row=><details key={row.key} className="technical-details"><summary>{technicalDataLabels[row.key]} · {row.status}</summary><Field label={`${row.label} · informação disponível`}><Textarea maxLength={2000} value={row.information} onChange={e=>editTechnical(row.key,{information:e.target.value})}/></Field><Field label={`${row.label} · fonte ou confirmação necessária`}><Input maxLength={1000} value={row.source} onChange={e=>editTechnical(row.key,{source:e.target.value})}/></Field><p>Confirmar com o responsável técnico antes de usar em análise.</p></details>)}
         <div className="actions"><button type="button" className="button secondary" onClick={()=>void pdf("technical")}>Exportar pendências técnicas PDF</button><button type="button" className="button" onClick={openMath}>Abrir demonstração estrutural separada</button></div></>}
       {tab==="Engenharia"&&mathematical&&<><h2>Execução real e referências independentes</h2><p>Dados físicos desta fixture estão declarados. A análise usa o serviço Python existente, quando disponível. Aprovação normativa e fabricação permanecem bloqueadas.</p><ReadOnlyPhysicalData project={project}/><p><Link href={`/projetos/${project.id}?fluxo=levantamento&etapa=2`}>Conferir ou editar os dados físicos no cadastro completo</Link></p></>}
       {mathematical&&engineOpened&&<div className="demo-engine" hidden={tab!=="Engenharia"}><MixedAnalysisWorkspace project={project} onChange={update} demoPresentation/><HistoricalDemonstration/></div>}
     </section>
-    {mathematical&&project.workspace.demonstration?.parentProjectId&&data.projects.some(p=>p.id===project.workspace.demonstration?.parentProjectId)&&<Link className="button secondary" href={`/demonstracao?projeto=${project.workspace.demonstration.parentProjectId}`}>Voltar ao caso comercial Tom</Link>}
+    
     <p className="field-hint">Salvo apenas neste navegador. Use o backup para trocar de computador. Demonstração experimental; liberação estrutural e fabricação bloqueadas.</p>
   </div>;
 }
