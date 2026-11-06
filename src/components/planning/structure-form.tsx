@@ -1,6 +1,7 @@
 "use client";
 import type { Project } from "@/domain/models";
 import { emptyPlanning, roles, roleLabels, type Planning, type PieceRole } from "@/domain/structure";
+import { guidedSupportIssue } from "@/domain/guided-support";
 import { useData } from "@/components/data-provider";
 import { Field, Select, Textarea } from "@/components/ui";
 import { NumberField } from "@/components/number-field";
@@ -13,7 +14,7 @@ export function StructureForm({ project, onChange, profileToEdit }: { project: P
   return <section><h2>Como distribuir a estrutura?</h2><p className="muted">O sistema gera as linhas, os nós e as peças a partir destas medidas. Os espaçamentos são limites geométricos informados, ainda sem verificação de resistência.</p>
     <Field label="Tipologia da cobertura"><Select value={config.typology} onChange={e => update({ typology: e.target.value as Planning["typology"] })}><option value="mono">Uma água</option><option value="gable">Duas águas simétricas · cumeeira central</option></Select></Field>
     <div className="form-grid"><NumberField label="Balanço longitudinal na frente (m)" value={config.overhangStartM} min={0} max={20} onChange={v => update({ overhangStartM: v })} hint="Prolongamento geométrico das terças além da primeira tesoura." /><NumberField label="Balanço longitudinal no fundo (m)" value={config.overhangEndM} min={0} max={20} onChange={v => update({ overhangEndM: v })} hint="Não implica verificação estrutural do balanço." /></div>
-    <div className="notice"><strong>{config.typology === "gable" ? "Duas águas simétricas" : "Modelo de uma água"}</strong><p>Banzo inferior horizontal, montantes e uma diagonal por painel. Dois pilares em cada linha de tesoura. Terças divididas nos vãos entre tesouras.</p></div>
+    {guidedSupportIssue(project)?<div className="notice"><strong>Apoio existente ou cobertura parcial</strong><p>{guidedSupportIssue(project)} Os perfis abaixo são registros de referência; não serão interpretados como pilares metálicos obrigatórios. Use o editor de estrutura declarada para registrar as barras e os apoios realmente existentes.</p></div>:<div className="notice"><strong>{config.typology === "gable" ? "Duas águas simétricas" : "Modelo de uma água"}</strong><p>Banzo inferior horizontal, montantes e uma diagonal por painel. O esboço metálico padrão usa dois pilares por linha de tesoura. Terças divididas nos vãos entre tesouras.</p></div>}
     <div className="form-grid">
       <NumberField label="Espaçamento máximo entre tesouras (m)" value={config.frameSpacingM} min={.001} max={1000} onChange={frameSpacingM => update({ frameSpacingM })} hint="Inclui linhas nas duas extremidades e distribui os vãos igualmente." />
       <NumberField label="Espaçamento máximo entre terças (m)" value={config.purlinSpacingM} min={.001} max={1000} onChange={purlinSpacingM => update({ purlinSpacingM })} hint="Medido na superfície inclinada, incluindo as duas bordas." />
