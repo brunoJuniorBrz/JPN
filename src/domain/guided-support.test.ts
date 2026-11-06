@@ -6,6 +6,9 @@ import { generateStructure } from "./calculations/structure";
 import { resolvePhysicalStructure } from "./physical-structure";
 import { structureSignature } from "./calculations/project-basis";
 import { calculateEstimate } from "./calculations/estimate";
+import { m34abProject } from "./test-support/m34ab-fixtures";
+import { roofOutlineSchema } from "./roof-outline";
+import { editDeclaredStructure,removeDeletedReferences } from "./edit-declared-structure";
 
 describe("Coberturas guiadas — apoios metálicos, alvenaria e obra parcial",()=>{
  it("presets express four scenarios and DO NOT create physical boundary restraints",()=>{
@@ -64,6 +67,18 @@ describe("Coberturas guiadas — apoios metálicos, alvenaria e obra parcial",()
   expect(generateStructure(q).model).toBeNull();
   const json=JSON.stringify({...emptySnapshot(),projects:[q]});
   expect(backupSchema.parse({format:"jpn-projetos-backup",exportedAt:new Date().toISOString(),data:JSON.parse(json)}).data.projects[0].workspace.guidedSupport).toEqual(q.workspace.guidedSupport);
+ });
+ it("explicit cleanup also removes an orphan association between a demolished bar and existing roof outline",()=>{
+  const p=m34abProject();
+  p.workspace.roofOutline=roofOutlineSchema.parse({schema_version:"jpn.roof-outline/1",units:"mm",projection:"horizontal-XY",source:"Audit scenario",revision:"1",
+    outer:[[0,0],[3000,0],[3000,2000],[0,2000],[0,0]],holes:[],supportPieceIds:["F2"]});
+  const g=p.workspace.physicalStructure!;
+  const edited=editDeclaredStructure(p,{...g,revision:"explicit removal",nodes:g.nodes.filter(n=>n.id!=="B2"),pieces:g.pieces.filter(b=>b.id!=="F2")});
+  const clean=removeDeletedReferences(edited);
+  expect(clean.workspace.physicalStructure!.pieces.some(b=>b.id==="F2")).toBe(false);
+  expect(clean.workspace.roofOutline?.supportPieceIds).toEqual([]);
+  expect(clean.estimate).toEqual(p.estimate);
+  expect(projectSchema.safeParse(clean).success).toBe(true);
  });
  it("support option invalidates signature of generated geometry, even without changing dimensions",()=>{
   const p=planningExample(),before=structureSignature(p);
