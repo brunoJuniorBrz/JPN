@@ -62,9 +62,6 @@ function DemoProject({project}:{project:Project}){
     <PageHeading eyebrow={mathematical?"VALIDAÇÃO DO MOTOR NUMÉRICO":"CASO COMERCIAL AUDITADO"} title={project.name} description={mathematical?"Dados sintéticos explícitos, execução Python e comparação analítica.":"Dados comerciais reais auditados; geometria e cálculo da cobertura real pendentes."}/>
     <DemonstrationNotice project={project}/>
     <DemoPresentationJourney mathematical={mathematical} currentTab={tab} onNavigate={selectTab}/>
-    <div className="actions demo-actions"><button type="button" className="button" onClick={save}>Salvar demonstração</button><button type="button" className="button secondary" onClick={exportBackup}>Exportar backup desta cópia</button><Link className="button secondary" href="/configuracoes">Restaurar backup</Link></div>
-    <p className="demo-toolbar-note"><HardDrive size={15} aria-hidden="true"/> As alterações ficam somente neste navegador. Exporte um backup para usar em outro computador.</p>
-    {message&&<p role="status" className="success-message">{message}</p>}{error&&<p role="alert" className="field-error">{error}</p>}
     <nav className="demo-tabs" role="tablist" aria-label="Áreas da demonstração">{tabs.map((label,i)=><button key={label} type="button" role="tab" id={`demo-tab-${i}`} aria-controls={`demo-panel-${i}`} aria-selected={tab===label} tabIndex={tab===label?0:-1} onClick={()=>selectTab(label)} onKeyDown={e=>{const index=e.key==="ArrowRight"?(i+1)%tabs.length:e.key==="ArrowLeft"?(i+tabs.length-1)%tabs.length:e.key==="Home"?0:e.key==="End"?tabs.length-1:-1;if(index<0)return;e.preventDefault();selectTab(tabs[index]);document.getElementById(`demo-tab-${index}`)?.focus();}}>{label}</button>)}</nav>
     <section className="panel demo-panel" role="tabpanel" id={`demo-panel-${tabs.indexOf(tab)}`} aria-labelledby={`demo-tab-${tabs.indexOf(tab)}`}>
       {tab==="Visão geral"&&<>
@@ -92,7 +89,11 @@ function DemoProject({project}:{project:Project}){
       {tab==="Engenharia"&&mathematical&&<><h2>Execução real e referências independentes</h2><p>Dados físicos desta fixture estão declarados. A análise usa o serviço Python existente, quando disponível. Aprovação normativa e fabricação permanecem bloqueadas.</p><ReadOnlyPhysicalData project={project}/><p><Link href={`/projetos/${project.id}?fluxo=levantamento&etapa=2`}>Conferir ou editar os dados físicos no cadastro completo</Link></p></>}
       {mathematical&&engineOpened&&<div className="demo-engine" hidden={tab!=="Engenharia"}><MixedAnalysisWorkspace project={project} onChange={update} demoPresentation/><HistoricalDemonstration/></div>}
     </section>
-    
+    <div className="demo-footer-controls">
+    <div className="actions demo-actions"><button type="button" className="button" onClick={save}>Salvar demonstração</button><button type="button" className="button secondary" onClick={exportBackup}>Exportar backup desta cópia</button><Link className="button secondary" href="/configuracoes">Restaurar backup</Link></div>
+    <p className="demo-toolbar-note"><HardDrive size={15} aria-hidden="true"/> As alterações ficam somente neste navegador. Exporte um backup para usar em outro computador.</p>
+    {message&&<p role="status" className="success-message">{message}</p>}{error&&<p role="alert" className="field-error">{error}</p>}
+    </div>
     <p className="field-hint">Salvo apenas neste navegador. Use o backup para trocar de computador. Demonstração experimental; liberação estrutural e fabricação bloqueadas.</p>
   </div>;
 }
