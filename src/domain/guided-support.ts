@@ -32,7 +32,7 @@ export function guidedSupportIssue(project:Pick<Project,"workspace">):string|nul
  const c=project.workspace.guidedSupport;
  if(!c||isParametricSupportAllowed(project))return null;
  if(c.coverage==="partial")return "Cobertura parcial: o gerador retangular não conhece os recortes e a extensão da área construída. Declare os nós, barras e o contorno reais.";
- return "Apoios em alvenaria existentes ou mistos: o gerador automático de dois pilares por tesoura não corresponde à obra. Declare os nós e apoios reais antes de analisar.";
+ return "Apoios existentes em alvenaria ou concreto, ou configuração mista: o gerador automático de dois pilares por tesoura não corresponde à obra. Declare os nós e apoios reais antes de analisar.";
 }
 /** Sugestão SOMENTE de malha de desenho, não de espaçamentos ou perfis dimensionados. */
 export function applyGuidedSketch(project:Project,options:{
