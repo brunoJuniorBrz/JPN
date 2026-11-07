@@ -18,7 +18,9 @@ function authorized(req:Request){
   // Some browsers omit Origin for same-origin JSON POST. In that case require
   // a same-origin Referer, custom header (CORS preflight) and same-site metadata.
   const site=req.headers.get("sec-fetch-site");
-  return Boolean(expected&&url.origin===expected
+  const host=new URL(expected??"http://127.0.0.1:3000");
+  return Boolean(expected&&url.protocol==="http:"&&["127.0.0.1","localhost"].includes(url.hostname)
+    &&url.port===host.port&&req.headers.get("host")===host.host
     &&(origin===expected||(origin===null&&refererOrigin===expected))
     &&req.headers.get("x-jpn-purlin")==="1"
     &&(site===null||site==="same-origin"));
