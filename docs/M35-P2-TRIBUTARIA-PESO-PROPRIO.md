@@ -32,6 +32,7 @@ Sandbox Linux com Node 24 / Python 3.12 / PyNiteFEA 3.2.1, usando as dependênci
 - `pytest engine/tests/test_local_mixed_worker.py engine/tests/test_purlin.py`: **34 testes PASS**.
 - `pnpm typecheck`, `pnpm lint`, `pnpm build`: **PASS**.
 - `vitest run src/domain/quick-project-guided.test.ts src/domain/loaded-mixed.test.ts`: **11 PASS**.
+- `vitest run src/domain/purlin-traceability.test.ts`: **11 PASS** (10 respostas intencionalmente adulteradas recusadas; 1 contrato válido aceito). Conferência adicional de massa, custo, critério de flecha e identidade completa do modelo retornado.
 - `playwright test tests/e2e/purlin-calculator.spec.ts`: **4 PASS** no navegador Chromium real com executor Python, incluindo viewport 375 px e 1440 px; pressão superficial, recusa por falta de origem, peso próprio por candidato, alteração de entradas, persistência de rascunho e exportação JSON.
 
 ## O que NÃO foi implementado
