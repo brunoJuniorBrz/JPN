@@ -11,9 +11,17 @@ function authorized(req:Request){
   if(!localMixedEnabled())return false;
   const expected=process.env.JPN_LOCAL_MIXED_ORIGIN;
   const url=new URL(req.url);
-  return Boolean(expected&&url.origin===expected&&req.headers.get("origin")===expected
+  const origin=req.headers.get("origin");
+  const referer=req.headers.get("referer");
+  let refererOrigin="";
+  try{if(referer)refererOrigin=new URL(referer).origin;}catch{}
+  // Some browsers omit Origin for same-origin JSON POST. In that case require
+  // a same-origin Referer, custom header (CORS preflight) and same-site metadata.
+  const site=req.headers.get("sec-fetch-site");
+  return Boolean(expected&&url.origin===expected
+    &&(origin===expected||(origin===null&&refererOrigin===expected))
     &&req.headers.get("x-jpn-purlin")==="1"
-    &&["same-origin","none",null].includes(req.headers.get("sec-fetch-site")));
+    &&(site===null||site==="same-origin"));
 }
 export async function POST(req:Request){
   if(!authorized(req))return err("LOCAL_ONLY","Use o servidor local pnpm dev:structural, sem conexão remota.",403);
