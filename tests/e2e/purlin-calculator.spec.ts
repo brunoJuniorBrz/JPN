@@ -40,6 +40,6 @@ test("recusa espessura impossível antes de enviar ao motor",async({page})=>{
   await page.goto("/tercas");
   await page.getByLabel("Espessura (mm) · candidato 1").fill("30");
   await page.getByRole("button",{name:/Calcular e comparar no Python/}).click();
-  await expect(page.getByRole("alert")).toBeVisible();
+  await expect(page.locator("p[role=alert]")).toContainText("Espessura incompatível");
   await expect(page.getByTestId("purlin-result")).toHaveCount(0);
 });
