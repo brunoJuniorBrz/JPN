@@ -90,3 +90,73 @@ def test_sharp_corner_u_section_independent_rectangle_inertia():
     expected_I=2*100**3/12 + 2*((50-2)*2**3/12+(50-2)*2*(49)**2)
     assert area==pytest.approx(expected_area)
     assert I==pytest.approx(expected_I,rel=1e-12)
+
+def test_surface_pressure_horizontal_tributary_equivalent_to_declared_line_load():
+    line=request()
+    a=result(line)
+    surface=request()
+    surface.update(load_mode="surface",uniform_load_n_m=0,
+                   surface_pressure_n_m2=-800,tributary_width_m=1.25,
+                   load_source="Memorial externo de carga vertical por projecao horizontal")
+    b=result(surface)
+    assert b["declared_line_load_n_m"]==pytest.approx(-1000)
+    assert b["self_weight_line_load_n_m"]==0
+    assert b["total_line_load_n_m"]==pytest.approx(-1000)
+    assert b["deflection_mm"]==pytest.approx(a["deflection_mm"],rel=1e-12)
+    assert b["peak_moment_nm"]==pytest.approx(a["peak_moment_nm"],rel=1e-12)
+    assert [r["vertical_n"] for r in b["reactions"]]==pytest.approx([2000,2000])
+    response=analyze_purlin(surface)
+    assert response["input"]["load_mode"]=="surface"
+    assert response["input"]["surface_pressure_n_m2"]==-800
+    assert response["input"]["tributary_width_m"]==1.25
+    assert response["input"]["load_source"]==surface["load_source"]
+
+def test_self_weight_is_always_downward_per_section_and_changes_comparison():
+    p=request()
+    p.update(load_mode="surface",uniform_load_n_m=0,
+             surface_pressure_n_m2=200,tributary_width_m=1.25,
+             include_self_weight=True,load_source="Acao vertical ascendente informada")
+    p["candidates"].append({
+        "id":"TUBO-80","family":"tube","height_mm":80,"width_mm":40,
+        "thickness_mm":2.65,"lip_mm":0,"price_brl_per_m":None,
+        "source":"Geometria nominal informada por usuario"
+    })
+    results=analyze_purlin(p)["results"]
+    assert len(results)==2
+    assert results[0]["area_mm2"]!=results[1]["area_mm2"]
+    for r in results:
+        expected_w=-r["area_mm2"]*1e-6*7850*9.80665
+        assert r["self_weight_line_load_n_m"]==pytest.approx(expected_w)
+        assert r["declared_line_load_n_m"]==pytest.approx(250)
+        assert r["total_line_load_n_m"]==pytest.approx(250+expected_w)
+        assert sum(v["vertical_n"] for v in r["reactions"])==pytest.approx(-4*(250+expected_w))
+        assert r["total_line_load_n_m"]>0
+    assert results[0]["self_weight_line_load_n_m"]!=results[1]["self_weight_line_load_n_m"]
+
+def test_steel_weight_only_has_physical_sign_and_analytical_beam_limit():
+    p=request()
+    p["uniform_load_n_m"]=0
+    p["include_self_weight"]=True
+    r=result(p)
+    assert r["self_weight_line_load_n_m"]<0
+    assert r["total_line_load_n_m"]==pytest.approx(r["self_weight_line_load_n_m"])
+    assert r["peak_moment_nm"]==pytest.approx(-r["total_line_load_n_m"]*4**2/8)
+    assert all(v["vertical_n"]>0 for v in r["reactions"])
+    assert analyze_purlin(p)["fabricationRelease"] is False
+
+@pytest.mark.parametrize("change",[
+    {"load_mode":"surface","uniform_load_n_m":-500,"surface_pressure_n_m2":-400,"tributary_width_m":1.5,"load_source":"Memorial"},
+    {"load_mode":"surface","uniform_load_n_m":0,"surface_pressure_n_m2":-400,"load_source":"Memorial"},
+    {"load_mode":"surface","uniform_load_n_m":0,"surface_pressure_n_m2":-400,"tributary_width_m":1.5},
+    {"load_mode":"surface","uniform_load_n_m":0,"surface_pressure_n_m2":float("nan"),"tributary_width_m":1.5,"load_source":"Memorial"},
+    {"load_mode":"surface","uniform_load_n_m":0,"surface_pressure_n_m2":-400,"tributary_width_m":0,"load_source":"Memorial"},
+    {"load_mode":"surface","uniform_load_n_m":0,"surface_pressure_n_m2":-400,"tributary_width_m":1.5,"load_source":" "},
+    {"load_mode":"line","surface_pressure_n_m2":-100,"tributary_width_m":2},
+    {"include_self_weight":"yes"},
+    {"gravity_m_s2":0},
+])
+def test_surface_load_provenance_and_invalid_inputs_are_blocked(change):
+    p=request()
+    p.update(change)
+    with pytest.raises(ValueError):
+        analyze_purlin(p)
