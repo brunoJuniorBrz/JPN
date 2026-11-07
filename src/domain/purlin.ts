@@ -29,11 +29,23 @@ export const purlinRequestSchema=z.object({
   span_length_m:finite.min(.5).max(12),
   end_condition:z.enum(["simple","fixed","cantilever"]),
   uniform_load_n_m:finite.min(-200000).max(200000),
+  load_mode:z.enum(["line","surface"]).optional(),
+  surface_pressure_n_m2:finite.min(-30000).max(30000).optional(),
+  tributary_width_m:finite.min(.05).max(5).optional(),
+  load_source:z.string().trim().min(3).max(200).optional(),
+  include_self_weight:z.boolean().optional(),
+  gravity_m_s2:finite.min(9).max(10).optional(),
   e_gpa:finite.min(50).max(250),
   density_kg_m3:finite.min(100).max(20000),
   deflection_limit_ratio:finite.min(100).max(1000),
   candidates:z.array(purlinCandidateSchema).min(1).max(8),
 }).strict().superRefine((r,ctx)=>{
+  if(r.load_mode==="surface"){
+    if(r.uniform_load_n_m!==0||r.surface_pressure_n_m2===undefined||r.tributary_width_m===undefined||!r.load_source)
+      ctx.addIssue({code:"custom",message:"Carga superficial requer pressão, faixa tributária, origem e carga linear zero."});
+  }else if(r.surface_pressure_n_m2!==undefined||r.tributary_width_m!==undefined){
+    ctx.addIssue({code:"custom",message:"No modo linear, não preencha carga superficial."});
+  }
   if(r.end_condition==="cantilever"&&r.span_count!==1)
     ctx.addIssue({code:"custom",message:"Balanço aceita apenas um vão."});
   if(new Set(r.candidates.map(c=>c.id)).size!==r.candidates.length)
@@ -47,6 +59,7 @@ const result=z.object({
   section_model:z.literal("sharp-corner-linear-elastic-approximation"),
   area_mm2:positive,inertia_mm4:positive,mass_kg:finite.nonnegative(),
   estimated_material_cost_brl:finite.nonnegative().nullable(),
+  declared_line_load_n_m:finite,self_weight_line_load_n_m:finite,total_line_load_n_m:finite,
   deflection_mm:finite,deflection_at_m:finite,deflection_limit_mm:positive,
   within_user_deflection_limit:z.boolean(),
   peak_moment_nm:finite,moment_at_m:finite,peak_shear_n:finite,shear_at_m:finite,
@@ -59,6 +72,9 @@ export const purlinResultSchema=z.object({
   input:z.object({
     span_count:z.number().int().min(1).max(5),span_length_m:positive,
     end_condition:z.enum(["simple","fixed","cantilever"]),uniform_load_n_m:finite,
+    load_mode:z.enum(["line","surface"]),
+    surface_pressure_n_m2:finite.nullable(),tributary_width_m:finite.nullable(),
+    load_source:z.string().nullable(),include_self_weight:z.boolean(),gravity_m_s2:positive,
     e_gpa:positive,density_kg_m3:positive,deflection_limit_ratio:positive,
   }).strict(),
   results:z.array(result).min(1).max(8),
@@ -78,8 +94,22 @@ export function verifyPurlinResult(req:PurlinRequest,res:PurlinResult){
       throw new Error("Localização de deslocamento inválida.");
     if(c.reactions.some(r=>r.at_m<0||r.at_m>req.span_count*req.span_length_m+1e-8))
       throw new Error("Localização de apoio inválida.");
-    if(Math.abs(c.reactions.reduce((s,r)=>s+r.vertical_n,0)+req.uniform_load_n_m*req.span_length_m*req.span_count)>Math.max(1e-6,Math.abs(req.uniform_load_n_m*req.span_length_m*req.span_count)*1e-8))
+    const base=req.load_mode==="surface"?(req.surface_pressure_n_m2??0)*(req.tributary_width_m??0):req.uniform_load_n_m;
+    const weight=req.include_self_weight?c.area_mm2*1e-6*req.density_kg_m3*(req.gravity_m_s2??9.80665):0;
+    const net=base-weight;
+    const close=(a:number,b:number)=>Math.abs(a-b)<=Math.max(1e-6,Math.abs(b)*1e-9);
+    if(!close(c.declared_line_load_n_m,base)||!close(c.self_weight_line_load_n_m,-weight)||!close(c.total_line_load_n_m,net))
+      throw new Error("A composição da carga foi alterada ou não corresponde à seção.");
+    if(!close(c.reactions.reduce((sum,r)=>sum+r.vertical_n,0),-net*req.span_length_m*req.span_count))
       throw new Error("Equilíbrio global de cargas não atendido.");
+    if(!close(res.input.uniform_load_n_m,req.uniform_load_n_m)||res.input.load_mode!==(req.load_mode??"line")
+      ||res.input.include_self_weight!==(req.include_self_weight??false)
+      ||!close(res.input.gravity_m_s2,req.gravity_m_s2??9.80665)
+      ||res.input.load_source!==(req.load_source??null)
+      ||res.input.surface_pressure_n_m2!==(req.surface_pressure_n_m2??null)
+      ||res.input.tributary_width_m!==(req.tributary_width_m??null)){
+      throw new Error("Origem da carga retornada não corresponde à entrada.");
+    }
   }
 }
 
