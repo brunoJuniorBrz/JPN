@@ -102,7 +102,20 @@ export function verifyPurlinResult(req:PurlinRequest,res:PurlinResult){
       throw new Error("A composição da carga foi alterada ou não corresponde à seção.");
     if(!close(c.reactions.reduce((sum,r)=>sum+r.vertical_n,0),-net*req.span_length_m*req.span_count))
       throw new Error("Equilíbrio global de cargas não atendido.");
-    if(!close(res.input.uniform_load_n_m,req.uniform_load_n_m)||res.input.load_mode!==(req.load_mode??"line")
+    const expectedMass=c.area_mm2*1e-6*req.density_kg_m3*req.span_count*req.span_length_m;
+    const expectedCost=req.candidates[i].price_brl_per_m===null?null:
+      req.candidates[i].price_brl_per_m!*req.span_count*req.span_length_m;
+    const deflectionLimit=1000*req.span_length_m/req.deflection_limit_ratio;
+    if(!close(c.mass_kg,expectedMass)||!close(c.deflection_limit_mm,deflectionLimit)
+      ||c.source!==req.candidates[i].source
+      ||(expectedCost===null?c.estimated_material_cost_brl!==null:
+        c.estimated_material_cost_brl===null||!close(c.estimated_material_cost_brl,expectedCost))
+      ||c.within_user_deflection_limit!==(Math.abs(c.deflection_mm)<=c.deflection_limit_mm*(1+1e-10)))
+      throw new Error("Massa, custo, limite de flecha ou proveniência não correspondem às entradas.");
+    if(res.input.span_count!==req.span_count||!close(res.input.span_length_m,req.span_length_m)
+      ||res.input.end_condition!==req.end_condition||!close(res.input.e_gpa,req.e_gpa)
+      ||!close(res.input.density_kg_m3,req.density_kg_m3)||!close(res.input.deflection_limit_ratio,req.deflection_limit_ratio)
+      ||!close(res.input.uniform_load_n_m,req.uniform_load_n_m)||res.input.load_mode!==(req.load_mode??"line")
       ||res.input.include_self_weight!==(req.include_self_weight??false)
       ||!close(res.input.gravity_m_s2,req.gravity_m_s2??9.80665)
       ||res.input.load_source!==(req.load_source??null)
