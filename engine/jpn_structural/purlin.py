@@ -71,8 +71,13 @@ def _extrema(polynomial,length):
             places.append(min(length,max(0.,float(root.real))))
     return max(((float(polynomial(x)),float(x)) for x in places),key=lambda p:abs(p[0]))
 
-def analyze_candidate(candidate,span,length,q,e_gpa,limit_ratio,density,end_condition):
+def analyze_candidate(candidate,span,length,q,e_gpa,limit_ratio,density,end_condition,include_self_weight=False,gravity=9.80665):
     area_mm2,iy_mm4=section_properties(candidate)
+    # Idealised straight-plate area, per candidate, yields an approximate
+    # downward dead line load. Not a substitute for verified catalogue mass.
+    self_weight=area_mm2*1e-6*density*gravity if include_self_weight else 0.0
+    declared_q=q
+    q=declared_q-self_weight
     ei=e_gpa*1e9*iy_mm4*1e-12
     n=span+1
     ndof=2*n
@@ -132,6 +137,9 @@ def analyze_candidate(candidate,span,length,q,e_gpa,limit_ratio,density,end_cond
         "section_model":"sharp-corner-linear-elastic-approximation",
         "area_mm2":area_mm2,"inertia_mm4":iy_mm4,
         "mass_kg":mass,"estimated_material_cost_brl":None if candidate["price_brl_per_m"] is None else float(candidate["price_brl_per_m"])*span*length,
+        "declared_line_load_n_m":declared_q,
+        "self_weight_line_load_n_m":-self_weight,
+        "total_line_load_n_m":q,
         "deflection_mm":maxdef[0]*1000,"deflection_at_m":maxdef[1],"deflection_limit_mm":limit_mm,
         "within_user_deflection_limit":abs(maxdef[0])*1000<=limit_mm*(1+1e-10),
         "peak_moment_nm":maxmom[0],"moment_at_m":maxmom[1],
@@ -140,13 +148,32 @@ def analyze_candidate(candidate,span,length,q,e_gpa,limit_ratio,density,end_cond
     }
 
 def analyze_purlin(payload):
-    obj(payload,("schema_version","request_id","span_count","span_length_m","end_condition","uniform_load_n_m","e_gpa","density_kg_m3","deflection_limit_ratio","candidates"))
+    obj(payload,("schema_version","request_id","span_count","span_length_m","end_condition","uniform_load_n_m","e_gpa","density_kg_m3","deflection_limit_ratio","candidates"),
+        ("load_mode","surface_pressure_n_m2","tributary_width_m","include_self_weight","gravity_m_s2","load_source"))
     if payload["schema_version"]!=SCHEMA:raise ValueError("Contrato purlin inválido.")
     if type(payload["request_id"]) is not str or not 8<=len(payload["request_id"])<=80:raise ValueError("Identificador de requisição inválido.")
     spans=payload["span_count"]
     if type(spans) is not int or not 1<=spans<=5:raise ValueError("Aceitos de 1 a 5 vãos iguais.")
     L=finite(payload["span_length_m"],.5,12,"Vão")
     q=finite(payload["uniform_load_n_m"],-200000,200000,"Carga linear")
+    mode=payload.get("load_mode","line")
+    if type(mode) is not str or mode not in ("line","surface"):raise ValueError("Modo de carga inválido.")
+    source=payload.get("load_source")
+    if source is not None and (type(source) is not str or not 3<=len(source.strip())<=200):
+        raise ValueError("Referência de carga inválida.")
+    if mode=="surface":
+        if q!=0:raise ValueError("No modo superficial, carga linear deve ser zero para evitar soma duplicada.")
+        pressure=finite(payload.get("surface_pressure_n_m2"),-30000,30000,"Pressão vertical declarada N/m²")
+        width=finite(payload.get("tributary_width_m"),0.05,5,"Largura tributária horizontal")
+        if not source:raise ValueError("Informe a fonte ou responsável pela carga superficial.")
+        q=pressure*width
+    else:
+        if "surface_pressure_n_m2" in payload or "tributary_width_m" in payload:
+            raise ValueError("Não misture pressão superficial com carga linear declarada.")
+        pressure=width=None
+    include_self_weight=payload.get("include_self_weight",False)
+    if type(include_self_weight) is not bool:raise ValueError("Peso próprio deve ser verdadeiro ou falso.")
+    gravity=finite(payload.get("gravity_m_s2",9.80665),9,10,"Aceleração da gravidade")
     e=finite(payload["e_gpa"],50,250,"Módulo de elasticidade")
     density=finite(payload["density_kg_m3"],100,20000,"Densidade")
     ratio=finite(payload["deflection_limit_ratio"],100,1000,"Limite de flecha")
@@ -159,8 +186,17 @@ def analyze_purlin(payload):
     return {
         "schema_version":OUT_SCHEMA,"request_id":payload["request_id"],
         "analysis_scope":"elastic-strong-axis-bending-only-not-design-approval",
-        "input":{"span_count":spans,"span_length_m":L,"end_condition":cond,"uniform_load_n_m":q,"e_gpa":e,"density_kg_m3":density,"deflection_limit_ratio":ratio},
-        "results":[analyze_candidate(c,spans,L,q,e,ratio,density,cond) for c in candidates],
+        "input":{"span_count":spans,"span_length_m":L,"end_condition":cond,
+            "uniform_load_n_m":finite(payload["uniform_load_n_m"],-200000,200000,"Carga linear"),
+            "load_mode":mode,"surface_pressure_n_m2":pressure,"tributary_width_m":width,
+            "load_source":source,"include_self_weight":include_self_weight,"gravity_m_s2":gravity,
+            "e_gpa":e,"density_kg_m3":density,"deflection_limit_ratio":ratio},
+        "results":[analyze_candidate(c,spans,L,q,e,ratio,density,cond,include_self_weight,gravity) for c in candidates],
         "computedStructuralApproval":False,"fabricationRelease":False,
-        "limitations":["Sem cargas de vento ou telhas automáticas","Sem torção, flexão lateral e flambagem","Sem resistência, ligações ou dimensionamento conforme NBR","Seções aproximadas com cantos vivos; conferir dados do fabricante","Cargas e apoios precisam de validação técnica"],
+        "limitations":["Sem cargas de vento normativas ou telhas automáticas",
+            "Pressão superficial é exclusivamente VERTICAL e declarada por m² de projeção horizontal; largura tributária horizontal deve ser informada",
+            "Peso próprio opcional aproximado por área com cantos vivos, sem catálogo do fabricante; evitar dupla contagem",
+            "Sem torção, flexão lateral e flambagem",
+            "Sem resistência, ligações ou dimensionamento conforme NBR",
+            "Cargas e apoios precisam de validação técnica"],
     }
