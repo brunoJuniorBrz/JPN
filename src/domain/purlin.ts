@@ -8,7 +8,7 @@ export const purlinCandidateSchema=z.object({
   family:z.enum(["U","Ue","tube"]),
   height_mm:finite.min(25).max(500),
   width_mm:finite.min(20).max(300),
-  thickness_mm:finite.min(0.6).max(12),
+  thickness_mm:finite.min(0.6,{error:"Espessura incompatível: mínimo de 0,6 mm."}).max(12,{error:"Espessura incompatível: máximo de 12 mm."}),
   lip_mm:finite.min(0).max(100),
   price_brl_per_m:finite.min(0).max(10000).nullable(),
   source:z.string().trim().min(2).max(200),
