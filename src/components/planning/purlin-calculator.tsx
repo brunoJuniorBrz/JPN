@@ -3,7 +3,7 @@ import {useEffect,useMemo,useState} from "react";
 import Link from "next/link";
 import {ArrowLeft,ArrowRight,FileDown,Plus,RotateCcw,Calculator,TriangleAlert} from "lucide-react";
 import {NumberField} from "@/components/number-field";
-import {Field,PageHeading,Select} from "@/components/ui";
+import {Field,Input,PageHeading,Select} from "@/components/ui";
 import {downloadText} from "@/lib/format";
 import {purlinInitialCandidates,purlinRequestSchema,purlinResultSchema,verifyPurlinResult,type PurlinCandidate,type PurlinRequest,type PurlinResult} from "@/domain/purlin";
 import styles from "./purlin-calculator.module.css";
@@ -28,7 +28,12 @@ export function PurlinCalculator(){
   const [spanCount,setSpanCount]=useState(1);
   const [spanLength,setSpanLength]=useState<number|null>(4);
   const [condition,setCondition]=useState<"simple"|"fixed"|"cantilever">("simple");
-  const [linearLoad,setLinearLoad]=useState<number|null>(-1000);
+  const [linearLoad,setLinearLoad]=useState<number|null>(null);
+  const [loadMode,setLoadMode]=useState<"line"|"surface">("line");
+  const [surfacePressure,setSurfacePressure]=useState<number|null>(null);
+  const [tributaryWidth,setTributaryWidth]=useState<number|null>(null);
+  const [includeSelfWeight,setIncludeSelfWeight]=useState(false);
+  const [loadSource,setLoadSource]=useState("");
   const [elasticity,setElasticity]=useState<number|null>(200);
   const [density,setDensity]=useState<number|null>(7850);
   const [deflectionRatio,setDeflectionRatio]=useState<number|null>(250);
@@ -53,6 +58,11 @@ export function PurlinCalculator(){
             if(typeof obj.spanLength==="number")setSpanLength(obj.spanLength);
             if(["simple","fixed","cantilever"].includes(obj.condition))setCondition(obj.condition);
             if(typeof obj.linearLoad==="number")setLinearLoad(obj.linearLoad);
+            if(obj.loadMode==="line"||obj.loadMode==="surface")setLoadMode(obj.loadMode);
+            if(typeof obj.surfacePressure==="number")setSurfacePressure(obj.surfacePressure);
+            if(typeof obj.tributaryWidth==="number")setTributaryWidth(obj.tributaryWidth);
+            if(typeof obj.includeSelfWeight==="boolean")setIncludeSelfWeight(obj.includeSelfWeight);
+            if(typeof obj.loadSource==="string")setLoadSource(obj.loadSource.slice(0,200));
             if(typeof obj.elasticity==="number")setElasticity(obj.elasticity);
             if(typeof obj.density==="number")setDensity(obj.density);
             if(typeof obj.deflectionRatio==="number")setDeflectionRatio(obj.deflectionRatio);
@@ -66,8 +76,8 @@ export function PurlinCalculator(){
   },[]);
   useEffect(()=>{
     if(!loaded)return;
-    try{localStorage.setItem("jpn-tercas-draft:v1",JSON.stringify({spanCount,spanLength,condition,linearLoad,elasticity,density,deflectionRatio,profiles}));}catch{}
-  },[loaded,spanCount,spanLength,condition,linearLoad,elasticity,density,deflectionRatio,profiles]);
+    try{localStorage.setItem("jpn-tercas-draft:v1",JSON.stringify({spanCount,spanLength,condition,linearLoad,loadMode,surfacePressure,tributaryWidth,includeSelfWeight,loadSource,elasticity,density,deflectionRatio,profiles}));}catch{}
+  },[loaded,spanCount,spanLength,condition,linearLoad,loadMode,surfacePressure,tributaryWidth,includeSelfWeight,loadSource,elasticity,density,deflectionRatio,profiles]);
 
   function alter(i:number,patch:Partial<CandidateDraft>){
     setProfiles(list=>list.map((entry,index)=>index===i?{...entry,...patch}:entry));
@@ -77,9 +87,14 @@ export function PurlinCalculator(){
       lip_mm:c.family==="Ue"?num(c.lip):0,price_brl_per_m:c.price.trim()?num(c.price):null,source:c.source};
   }
   const draft=useMemo(()=>({
-    span_count:spanCount,span_length_m:spanLength,end_condition:condition,uniform_load_n_m:linearLoad,
+    span_count:spanCount,span_length_m:spanLength,end_condition:condition,
+    load_mode:loadMode,
+    uniform_load_n_m:loadMode==="line"?linearLoad:0,
+    ...(loadMode==="surface"?{surface_pressure_n_m2:surfacePressure,tributary_width_m:tributaryWidth}:{}),
+    include_self_weight:includeSelfWeight,gravity_m_s2:9.80665,
+    ...(loadSource.trim()?{load_source:loadSource.trim()}:{}),
     e_gpa:elasticity,density_kg_m3:density,deflection_limit_ratio:deflectionRatio,candidates:profiles.map(candidate),
-  }),[spanCount,spanLength,condition,linearLoad,elasticity,density,deflectionRatio,profiles]);
+  }),[spanCount,spanLength,condition,linearLoad,loadMode,surfacePressure,tributaryWidth,includeSelfWeight,loadSource,elasticity,density,deflectionRatio,profiles]);
   const currentKey=JSON.stringify(draft);
   const currentResult=result?.key===currentKey?result:null;
   const changed=Boolean(result&&!currentResult);
@@ -88,6 +103,9 @@ export function PurlinCalculator(){
     if(busy)return;
     setError("");setBusy(true);setResult(null);
     try{
+      if(loadMode==="line"&&linearLoad===null)throw new Error("Informe uma carga linear declarada em N/m antes de calcular.");
+      if(loadMode==="surface"&&(surfacePressure===null||tributaryWidth===null||!loadSource.trim()))
+        throw new Error("Informe pressão vertical por m², largura tributária horizontal e origem do valor.");
       const parsed=purlinRequestSchema.safeParse({schema_version:"jpn.purlin/1",request_id:crypto.randomUUID(),...draft});
       if(!parsed.success)throw new Error(parsed.error.issues[0]?.message??"Confira as entradas da terça.");
       const request=parsed.data;
@@ -113,13 +131,14 @@ export function PurlinCalculator(){
     },null,2),"jpn-tercas-avaliacao-preliminar.json");
   }
   function reset(){
-    setSpanCount(1);setSpanLength(4);setCondition("simple");setLinearLoad(-1000);
+    setSpanCount(1);setSpanLength(4);setCondition("simple");setLinearLoad(null);
+    setLoadMode("line");setSurfacePressure(null);setTributaryWidth(null);setIncludeSelfWeight(false);setLoadSource("");
     setElasticity(200);setDensity(7850);setDeflectionRatio(250);setProfiles(starter());setResult(null);setError("");
   }
   return <main className={styles.container}>
     <Link href="/projetos" className="back-link"><ArrowLeft size={18}/> Voltar aos projetos</Link>
-    <PageHeading eyebrow="MOTOR EXPERIMENTAL · TERÇAS" title="Comparar terças metálicas" description="Informe a geometria, os apoios e uma carga linear já conhecida. O JPN executa uma análise elástica em Python e compara as respostas das seções."/>
-    <div className={styles.warning} role="note"><TriangleAlert size={21}/><p><strong>Não é dimensionamento estrutural.</strong> Este cálculo considera apenas flexão linear no eixo forte, vãos iguais, apoios idealizados e carga vertical uniforme declarada. Não gera vento, não verifica torção/flambagem, ligações ou resistência conforme NBR. Não usar os resultados para comprar, cortar ou fabricar.</p></div>
+    <PageHeading eyebrow="MOTOR EXPERIMENTAL · TERÇAS" title="Comparar terças metálicas" description="Informe a geometria, os apoios e as ações verticais declaradas. O JPN compõe a carga por perfil, resolve no Python e compara os deslocamentos e esforços."/>
+    <div className={styles.warning} role="note"><TriangleAlert size={21}/><p><strong>Não é dimensionamento estrutural.</strong> Este cálculo considera apenas flexão linear no eixo forte, vãos iguais, apoios idealizados e carga vertical uniforme declarada. Não gera vento ou combinações normativas, não verifica torção/flambagem, ligações ou resistência conforme NBR. Não usar os resultados para comprar, cortar ou fabricar.</p></div>
     <div className={styles.layout}>
       <div className={styles.form}>
         <section className="panel" aria-labelledby="purlin-line-heading">
@@ -145,14 +164,38 @@ export function PurlinCalculator(){
                 </g>;
               })}
               <g fill="#b66f43" stroke="#b66f43" strokeWidth="1.5">
-                {Array.from({length:11},(_,i)=>{const x=38+i*51;return <g key={i}><path d={linearLoad!==null&&linearLoad>0?`M${x} 68V52`:`M${x} 16V32`}/><path d={linearLoad!==null&&linearLoad>0?`M${x-4} 57L${x} 51L${x+4} 57`:`M${x-4} 26L${x} 33L${x+4} 26`}/></g>})}
+                {Array.from({length:11},(_,i)=>{const x=38+i*51;return <g key={i}><path d={(loadMode==="line"?linearLoad:surfacePressure)!==null&&(loadMode==="line"?linearLoad:surfacePressure)!>0?`M${x} 68V52`:`M${x} 16V32`}/><path d={(loadMode==="line"?linearLoad:surfacePressure)!==null&&(loadMode==="line"?linearLoad:surfacePressure)!>0?`M${x-4} 57L${x} 51L${x+4} 57`:`M${x-4} 26L${x} 33L${x+4} 26`}/></g>})}
               </g>
-              <text x="300" y="100" textAnchor="middle" fill="currentColor" fontSize="13">{spanCount} vão(s) de {spanLength??"?"} m · q={linearLoad??"?"} N/m</text>
+              <text x="300" y="100" textAnchor="middle" fill="currentColor" fontSize="13">{spanCount} vão(s) de {spanLength??"?"} m · {loadMode==="line"?"carga linear declarada":"pressão superficial declarada"}: {loadMode==="line"?(linearLoad??"?"):(surfacePressure??"?")} {loadMode==="line"?"N/m":"N/m²"}</text>
             </svg>
           </div>
+          <div className={styles.heading}><span>02</span><div><h2>Como a carga chega à terça?</h2><p>Valores fornecidos pelo usuário; o sistema não escolhe cargas normativas.</p></div></div>
           <div className={styles.grid3}>
-            <NumberField label="Carga linear declarada (N/m)" value={linearLoad} min={-200000} max={200000} decimals={2} onChange={setLinearLoad} hint="Negativa para baixo, positiva para sucção. Inclua o peso próprio na carga declarada; o sistema não o acrescenta."/>
-            <NumberField label="Módulo E do material (GPa)" value={elasticity} min={50} max={250} decimals={2} onChange={setElasticity} hint="200 GPa é um valor inicial editável; confirmar aço."/>
+            <Field label="Entrada de carga">
+              <Select value={loadMode} onChange={e=>setLoadMode(e.target.value as "line"|"surface")}>
+                <option value="line">Carga linear declarada (N/m)</option>
+                <option value="surface">Carga superficial declarada (N/m²)</option>
+              </Select>
+            </Field>
+            {loadMode==="line"?
+              <NumberField label="Carga linear declarada (N/m)" value={linearLoad} min={-200000} max={200000} decimals={2} onChange={setLinearLoad} hint="Carga vertical total EXCETO peso próprio, caso adicionado separadamente. Negativa para baixo."/>:
+              <>
+                <NumberField label="Pressão vertical declarada (N/m²)" value={surfacePressure} min={-30000} max={30000} decimals={2} onChange={setSurfacePressure} hint="Por m² da projeção HORIZONTAL da cobertura. Não é pressão normal de vento."/>
+                <NumberField label="Largura tributária horizontal (m)" value={tributaryWidth} min={.05} max={5} decimals={3} onChange={setTributaryWidth} hint="Faixa de projeção em planta efetivamente transferida à terça; não presumir que seja igual ao espaçamento na água."/>
+              </>
+            }
+          </div>
+          <div className={styles.grid3}>
+            <Field label="Origem da carga declarada">
+              <Input value={loadSource} maxLength={200} placeholder={loadMode==="surface"?"Obrigatória: memorial ou responsável":"Opcional: memorial, valor informado"} onChange={e=>setLoadSource(e.target.value)}/>
+            </Field>
+            <label className={styles.selfWeightControl}>
+              <input type="checkbox" checked={includeSelfWeight} onChange={e=>setIncludeSelfWeight(e.target.checked)}/>
+              <span><strong>Somar peso próprio estimado do perfil</strong><small>Calculado separadamente para cada seção. Não marque se a carga informada já inclui esse peso.</small></span>
+            </label>
+          </div>
+          <div className={styles.grid3}>
+            <NumberField label="Módulo E do material (GPa)" value={elasticity} min={50} max={250} decimals={2} onChange={setElasticity} hint="200 GPa é inicial editável; confirmar aço."/>
             <NumberField label="Densidade (kg/m³)" value={density} min={100} max={20000} decimals={0} onChange={setDensity}/>
           </div>
           <div className={styles.grid3}>
@@ -160,7 +203,7 @@ export function PurlinCalculator(){
           </div>
         </section>
         <section className="panel" aria-labelledby="purlin-sections-heading">
-          <div className={styles.heading}><span>02</span><div><h2 id="purlin-sections-heading">Perfis para comparar</h2><p>Dimensões externas nominais, em mm. Sem raios de dobra, torção ou resistência verificada.</p></div></div>
+          <div className={styles.heading}><span>03</span><div><h2 id="purlin-sections-heading">Perfis para comparar</h2><p>Dimensões externas nominais, em mm. Sem raios de dobra, torção ou resistência verificada.</p></div></div>
           <div className={styles.profiles}>
             {profiles.map((p,i)=><fieldset key={p.id} className={styles.profile} data-testid="purlin-candidate">
               <legend>{i+1}. Candidato {p.id}</legend>
@@ -198,6 +241,8 @@ export function PurlinCalculator(){
               {currentResult.data.results.map(r=><article key={r.id} data-testid="purlin-result">
                 <div className={styles.resultTitle}><strong>{r.id} · {r.family}</strong><small>{r.section_model==="sharp-corner-linear-elastic-approximation"?"Seção geométrica aproximada":""}</small></div>
                 <div className={styles.numbers}>
+                  <div><span>Carga total desta seção</span><b>{fmt(r.total_line_load_n_m,3)} N/m</b></div>
+                  <div><span>Peso próprio adicional</span><b>{fmt(r.self_weight_line_load_n_m,3)} N/m</b></div>
                   <div><span>Flecha máxima (módulo)</span><b>{fmt(Math.abs(r.deflection_mm),3)} mm</b></div>
                   <div><span>Limite informado</span><b>{fmt(r.deflection_limit_mm,3)} mm</b></div>
                   <div><span>Momento máximo (módulo)</span><b>{fmt(Math.abs(r.peak_moment_nm)/1000,3)} kN·m</b></div>
@@ -207,6 +252,7 @@ export function PurlinCalculator(){
                 </div>
                 <p className={styles.limitStatus}>{r.within_user_deflection_limit?"Dentro do limite de flecha informado.":"Acima do limite de flecha informado."} <strong>Não significa perfil aprovado.</strong></p>
                 <details><summary>Reações e propriedades</summary>
+                  <p>Carga vertical declarada: {fmt(r.declared_line_load_n_m,3)} N/m; peso próprio calculado: {fmt(r.self_weight_line_load_n_m,3)} N/m; carga combinada: {fmt(r.total_line_load_n_m,3)} N/m.</p>
                   <p>Área: {fmt(r.area_mm2,2)} mm² · Inércia geométrica: {fmt(r.inertia_mm4,1)} mm⁴.</p>
                   <p>Flecha extrema em {fmt(r.deflection_at_m,3)} m; momento extremo em {fmt(r.moment_at_m,3)} m.</p>
                   <table><thead><tr><th>Suporte</th><th>Reação vertical</th><th>Momento de apoio</th></tr></thead><tbody>
@@ -220,7 +266,7 @@ export function PurlinCalculator(){
         </section>
         <div className={styles.smallNote}>
           <strong>O que falta para dimensionar?</strong>
-          <p>Ações de vento e telha conforme o caso, propriedades verificadas da seção, torção, flambagem, resistência, contraventamento, ligações e revisão do responsável técnico. Não há seleção automática de perfil seguro nesta versão.</p>
+          <p>Ações de vento e telha e suas combinações conforme o caso, propriedades verificadas da seção, torção, flambagem, resistência, contraventamento, ligações e revisão do responsável técnico. Não há seleção automática de perfil seguro nesta versão.</p>
           <p>Esta é uma calculadora independente; conectar os resultados a uma obra cadastrada é uma etapa posterior.</p>
         </div>
       </aside>
