@@ -88,7 +88,9 @@ export function PurlinCalculator(){
     if(busy)return;
     setError("");setBusy(true);setResult(null);
     try{
-      const request=purlinRequestSchema.parse({schema_version:"jpn.purlin/1",request_id:crypto.randomUUID(),...draft});
+      const parsed=purlinRequestSchema.safeParse({schema_version:"jpn.purlin/1",request_id:crypto.randomUUID(),...draft});
+      if(!parsed.success)throw new Error(parsed.error.issues[0]?.message??"Confira as entradas da terça.");
+      const request=parsed.data;
       const response=await fetch("/api/experimental/purlin",{
         method:"POST",headers:{"Content-Type":"application/json","X-JPN-Purlin":"1"},
         body:JSON.stringify(request),cache:"no-store",
@@ -149,7 +151,7 @@ export function PurlinCalculator(){
             </svg>
           </div>
           <div className={styles.grid3}>
-            <NumberField label="Carga linear declarada (N/m)" value={linearLoad} min={-200000} max={200000} decimals={2} onChange={setLinearLoad} hint="Negativa para baixo, positiva para sucção. Não é gerada automaticamente."/>
+            <NumberField label="Carga linear declarada (N/m)" value={linearLoad} min={-200000} max={200000} decimals={2} onChange={setLinearLoad} hint="Negativa para baixo, positiva para sucção. Inclua o peso próprio na carga declarada; o sistema não o acrescenta."/>
             <NumberField label="Módulo E do material (GPa)" value={elasticity} min={50} max={250} decimals={2} onChange={setElasticity} hint="200 GPa é um valor inicial editável; confirmar aço."/>
             <NumberField label="Densidade (kg/m³)" value={density} min={100} max={20000} decimals={0} onChange={setDensity}/>
           </div>
