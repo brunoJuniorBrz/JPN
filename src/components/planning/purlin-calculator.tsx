@@ -3,7 +3,7 @@ import {useEffect,useMemo,useState} from "react";
 import Link from "next/link";
 import {ArrowLeft,ArrowRight,FileDown,Plus,RotateCcw,Calculator,TriangleAlert} from "lucide-react";
 import {NumberField} from "@/components/number-field";
-import {Field,Input,PageHeading,Select} from "@/components/ui";
+import {Field,PageHeading,Select} from "@/components/ui";
 import {downloadText} from "@/lib/format";
 import {purlinInitialCandidates,purlinRequestSchema,purlinResultSchema,verifyPurlinResult,type PurlinCandidate,type PurlinRequest,type PurlinResult} from "@/domain/purlin";
 import styles from "./purlin-calculator.module.css";
@@ -39,6 +39,7 @@ export function PurlinCalculator(){
   const [loaded,setLoaded]=useState(false);
 
   useEffect(()=>{
+    const task=window.setTimeout(()=>{
     try{
       const saved=localStorage.getItem("jpn-tercas-draft:v1");
       if(saved){
@@ -60,6 +61,8 @@ export function PurlinCalculator(){
       }
     }catch{ /* Local draft may be absent or old. */ }
     setLoaded(true);
+    },0);
+    return ()=>window.clearTimeout(task);
   },[]);
   useEffect(()=>{
     if(!loaded)return;
