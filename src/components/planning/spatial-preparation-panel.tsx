@@ -162,23 +162,23 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
       </div>
     </>}
     {section === "supports" && <>
-      <h4>Apoios nas bases</h4><p className="field-hint">Escolha os vínculos de cada base real, inclusive quando o grau de liberdade estiver livre. Nenhum pilar é considerado engastado automaticamente.</p>
-      {base.length ? <>
+      <h4>{mixed ? "Apoios nos nós físicos" : "Apoios nas bases"}</h4><p className="field-hint">Declare os vínculos dos nós reais; nenhum pilar, parede ou viga de concreto é considerado engastado automaticamente. Valores pendentes bloqueiam a análise.</p>
+      {supportNodes.length ? <>
         <div className="form-grid">
           <Field label={mixed ? "Nó do apoio misto" : "Base do pilar"}><Select value={selectedBase} onChange={e => setSupport(e.target.value)}>{supportNodes.map(id => <option key={id} value={id}>{id}</option>)}</Select></Field>
-          <Field label="Modelo de apoio para todas as bases"><Select value={bulk} onChange={e => setBulk(e.target.value)}><option value="">Selecione para aplicar explicitamente</option><option value="fixed">Seis graus restritos (hipótese de engaste)</option><option value="pinned">Translações restritas; rotações livres (hipótese de articulação)</option></Select></Field>
+          {base.length > 0 && <Field label="Modelo de apoio para todas as bases"><Select value={bulk} onChange={e => setBulk(e.target.value)}><option value="">Selecione para aplicar explicitamente</option><option value="fixed">Seis graus restritos (hipótese de engaste)</option><option value="pinned">Translações restritas; rotações livres (hipótese de articulação)</option></Select></Field>}
         </div>
-        <div className="actions"><button type="button" className="button secondary" disabled={!bulk} onClick={() => {
+        {base.length > 0 && <div className="actions"><button type="button" className="button secondary" disabled={!bulk} onClick={() => {
           const preset = presets[bulk as keyof typeof presets];
           if (!preset) return;
           change({ ...draft, supports: [...draft.supports.filter(s => !base.includes(s.nodeId)), ...base.map(nodeId => ({ nodeId, dofs: [...preset] as SpatialPreparation["supports"][number]["dofs"] }))] });
-        }}>Aplicar hipótese escolhida às {base.length} bases</button></div>
+        }}>Aplicar hipótese escolhida às {base.length} bases</button></div>}
         <div className="physical-dofs">
           {dofNames.map((d, i) => <Field key={selectedBase + d} label={`${selectedBase} · ${d}`}><Select value={supportDofs[i]} onChange={e => {
             const updated = [...supportDofs] as SupportState[]; updated[i] = e.target.value as SupportState; writeSupport(selectedBase, updated);
           }}>{supportChoices.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</Select></Field>)}
         </div>
-      </> : <p className="notice">Não há bases identificadas. Revise a geometria.</p>}
+      </> : <p className="notice">Não há nós disponíveis para declarar apoios. Revise a geometria.</p>}
       <h4>Comportamento das ligações</h4><p className="field-hint">{mixed ? "O tipo físico é declarado separadamente. Uma extremidade articulada não transforma pórtico em axial. Axiais exigem ambas as extremidades axiais; contradições bloqueiam a execução." : "Hipóteses por grupo, editáveis. Ligações axiais/mistas ainda não são interpretadas pelo solver 3D; a missão de conectividade continua necessária."}</p>
       <div className="form-grid">
         {pieceRoles.map(key => <Field label={roleLabels[key]} key={key}><Select value={draft.groups[key].connection}
