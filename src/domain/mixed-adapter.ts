@@ -48,7 +48,9 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
 
 export async function prepareMixedInput(project: Project, loaded = false) {
   const draft = spatialPreparationSchema.parse(project.workspace.spatialPreparation ?? newSpatialPreparation(project));
-  if(project.workspace.physicalStructure&&draft.loading&&(draft.loading.roofArea.length||draft.loading.wind||draft.loading.roofDistribution))throw Error("DECLARED_STRUCTURE_UNSUPPORTED: vento/área em estrutura declarada exigem caminho de transmissão validado; não se utiliza a cobertura retangular como substituta.");
+  if(project.workspace.physicalStructure&&draft.loading?.wind)throw Error("DECLARED_WIND_UNSUPPORTED: vento da edificação declarada exige zonas e fachadas validadas.");
+  if(project.workspace.physicalStructure&&draft.loading?.roofArea.length&&!draft.physicalRoofFaces)throw Error("DECLARED_ROOF_PENDING: declare e revise superfícies de cobertura físicas para distribuir cargas.");
+  if(!loaded&&draft.loading?.roofArea.length)throw Error("DISTRIBUTED_LOADED_REQUIRED: carga de superfície só pode ser analisada pelo adaptador com distribuição explícita.");
   if(!loaded&&draft.loading&&(draft.loading.selfWeight||draft.loading.uniform.length))throw Error("DISTRIBUTED_LOADED_REQUIRED: cargas distribuídas e peso próprio exigem o adaptador mixed3d/2; não podem ser ignorados na versão nodal.");
   if (!loaded && draft.loading?.wind) throw new Error("WIND_LOADED_REQUIRED: vento exige o adaptador com cargas distribuídas.");
   if (draft.engineeringCombinations) verifyEngineeringCombinations(draft.engineeringCombinations,draft.cases,draft.combinations);
