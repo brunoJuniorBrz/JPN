@@ -12,6 +12,7 @@ import { structureSignature } from "./calculations/project-basis";
 import { spatialContacts } from "./spatial-readiness";
 import { connectivityDeclarationSchema } from "./spatial-connectivity";
 import { roofRegionsSchema } from "./roof-regions";
+import { roofSurfacesSchema } from "./roof-surface-geometry";
 import { engineeringCombinationsSchema } from "./engineering-combinations";
 import { connectionsSchema } from "./connections";
 import { declaredServiceCriterionSchema } from "./declared-service";
@@ -46,6 +47,7 @@ export const spatialPreparationSchema = z.object({
   memberKinds: z.array(z.object({ pieceId: z.string().min(1).max(100), kind: z.enum(["frame", "axial"]) }).strict()).max(5000).optional(),
   loading: loadingDraftSchema.optional(),
   roofRegions:roofRegionsSchema.optional(),
+  roofSurfaces:roofSurfacesSchema.optional(),
   resistance: z.array(resistancePreparationSchema).max(5000).optional(),
   engineeringCombinations: engineeringCombinationsSchema.optional(),
   connections: connectionsSchema.optional(),

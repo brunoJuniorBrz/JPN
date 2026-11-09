@@ -1,4 +1,5 @@
 import type {Project} from "./models";
+import type {SpatialPreparation} from "./spatial-preparation";
 import {resolvePhysicalStructure} from "./physical-structure";
 import {structureSignature} from "./calculations/project-basis";
 import {roofOutlineAreaM2,roofOutlineSchema} from "./roof-outline";
@@ -56,10 +57,10 @@ function overlap(a:Pick<RoofFace,"outer"|"holes">,b:Pick<RoofFace,"outer"|"holes
  * supporting bars, fictitious height or auto-generated restraints.
  * Physical models may be analyzed with independently entered nodal loads;
  * registering surfaces alone does not create tributary forces. */
-export function reviewPhysicalRoofSurfaces(project:Project):{
+export function reviewPhysicalRoofSurfaces(project:Project,draft:Pick<SpatialPreparation,"roofSurfaces">=project.workspace.spatialPreparation??{}):{
  issues:RoofSurfaceIssue[];projectedAreaM2:number|null;physicalAreaM2:number|null;
 }{
- const raw=project.workspace.spatialPreparation?.roofSurfaces;
+ const raw=draft.roofSurfaces;
  if(!raw)return {issues:[],projectedAreaM2:null,physicalAreaM2:null};
  const issues:RoofSurfaceIssue[]=[];
  const add=(code:string,message:string)=>issues.push({code,message});
