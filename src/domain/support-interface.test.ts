@@ -69,6 +69,27 @@ describe("Interfaces físicas de apoio: parede, concreto, pilar e fundação",()
   expect(checks.find(x=>x.nodeId==="A1")?.status).toBe("capacity-pending");
   expect(checks.every(x=>x.normativeApproval===false)).toBe(true);
  });
+ it("nunca aceita apoio sem interface física nem declara capacidade se momento estiver pendente",()=>{
+  const {p,draft,interfaces}=fixture();
+  draft.supportInterfaces=interfaces.slice(0,1);
+  expect(reviewSupportInterfaces(p,draft,resolvePhysicalStructure(p).model)
+    .some(x=>x.code==="SUPPORT_INTERFACE_UNMAPPED_NODE")).toBe(true);
+  const face={...interfaces[0],capacity:{compressionKn:10,upliftKn:10,horizontalShearKn:10,
+    source:"Memorial estrutural específico",revision:"R2"}};
+  const moment={combinations:{LC:{nodes:{B0:{
+    reaction_force_n:[0,0,4000] as [number,number,number],
+    reaction_moment_nm:[0,1000,0] as [number,number,number]}}}}};
+  const response=assessSupportReactions([face],moment)[0];
+  expect(response.momentCapacityPending).toBe(true);
+  expect(response.rotationalMomentKnM).toBe(1);
+  expect(response.status).toBe("capacity-pending");
+  expect(response.normativeApproval).toBe(false);
+  const none={combinations:{LC:{nodes:{B0:{
+    reaction_force_n:[0,0,4000] as [number,number,number],
+    reaction_moment_nm:[0,0,0] as [number,number,number]}}}}};
+  expect(assessSupportReactions([face],none)[0].status).toBe("within-declared-capacity");
+  expect(assessSupportReactions([{...face,reviewStatus:"hypothesis"}],none)[0].status).toBe("capacity-pending");
+ });
  it("não aceita capacidade negativa, nós duplicados nem fonte vazia",()=>{
   const {interfaces}=fixture();
   expect(supportInterfacesSchema.safeParse([...interfaces,interfaces[0]]).success).toBe(false);

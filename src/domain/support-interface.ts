@@ -57,6 +57,14 @@ export function reviewSupportInterfaces(project:Pick<Project,"workspace">,
     }
   }
   const guided=project.workspace.guidedSupport;
+  // Once a nonstandard site support is declared, every restrained solver node
+  // must map to a physical interface; an untracked reaction cannot be checked.
+  const exceptional=!!guided&&(
+    guided.coverage==="partial"||guided.left!=="new-column"||guided.right!=="new-column");
+  if(interfaces.length||exceptional)for(const support of draft.supports){
+    if(support.dofs.some(v=>v==="fixed")&&!interfaces.some(face=>face.nodeId===support.nodeId))
+      add("SUPPORT_INTERFACE_UNMAPPED_NODE",support.nodeId+": apoio do solver não associado a um elemento físico.");
+  }
   if(!guided)return issues;
   if(guided.coverage==="partial"&&!project.workspace.roofOutline)
     add("PARTIAL_ROOF_OUTLINE_PENDING","Cobertura parcial exige contorno real declarado, não o retângulo visual.");
@@ -95,14 +103,17 @@ export function assessSupportReactions(interfaces:readonly SupportInterface[],
       const status=limitKn===null?"capacity-pending":demandKn>limitKn+1e-9?"exceeds-declared-capacity":"within-declared-capacity";
       return {action:key,demandKn,declaredCapacityKn:limitKn,status};
     });
-    const status:SupportReactionStatus=checks.some(c=>c.status==="exceeds-declared-capacity")?
-      "exceeds-declared-capacity":checks.some(c=>c.status==="capacity-pending")?
-      "capacity-pending":"within-declared-capacity";
     const rotationalMomentKnM=Math.hypot(...node.reaction_moment_nm)/1000;
+    const momentCapacityPending=rotationalMomentKnM>1e-9;
+    const status:SupportReactionStatus=checks.some(c=>c.status==="exceeds-declared-capacity")?
+      "exceeds-declared-capacity":checks.some(c=>c.status==="capacity-pending")||
+      momentCapacityPending||face.reviewStatus!=="site-reviewed"?
+      "capacity-pending":"within-declared-capacity";
     return {nodeId:face.nodeId,side:face.side,kind:face.kind,combinationId,
-      reviewStatus:face.reviewStatus,status,checks,rotationalMomentKnM,
+      reviewStatus:face.reviewStatus,status,checks,rotationalMomentKnM,momentCapacityPending,
       normativeApproval:false as const,
       limitations:["Capacidades foram declaradas, não calculadas pelo JPN; não verifica punção, ancoragem, alvenaria, concreto, fundação ou interação de esforços.",
+        "Momento de reação não possui capacidade resistente verificada neste contrato; se presente, a capacidade do apoio permanece pendente.",
         "Comparação preliminar de reações combinadas: não é dimensionamento nem liberação de fabricação."]};
   }));
 }
