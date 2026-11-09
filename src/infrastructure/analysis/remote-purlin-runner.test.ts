@@ -109,6 +109,6 @@ it("GET confirma operador e POST responde com cálculo real validado",async()=>{
   expect((await login.json()).status).toBe("authenticated");
   expect(f).not.toHaveBeenCalled();
   const out=await POST(route("POST"));
-  expect(out.status).toBe(200);
+  expect(out.status,JSON.stringify(await out.clone().json())).toBe(200);
   expect(await out.json()).toEqual(pythonResult);
 });
