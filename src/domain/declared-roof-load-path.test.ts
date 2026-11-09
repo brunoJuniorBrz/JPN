@@ -4,6 +4,8 @@ import {declaredStructureSchema} from "./declared-structure";
 import {physicalRoofFacesSchema} from "./physical-roof-faces";
 import {structureSignature} from "./calculations/project-basis";
 import {distributeDeclaredRoofActions} from "./declared-roof-load-path";
+import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
+import {adaptMixedProject} from "./mixed-adapter";
 import type {Project} from "./models";
 import type {RoofAreaAction} from "./roof-load-path";
 
@@ -81,6 +83,17 @@ describe("M39-P1: entrada de área de obra declarada para cargas de terças",()=
     expect(output.areaM2).toBeCloseTo(40,10);
     output.distributedForceN.forEach((actual,i)=>expect(actual).toBeCloseTo(output.expectedForceN[i],8));
     output.distributedMomentNm.forEach((actual,i)=>expect(actual).toBeCloseTo(output.expectedMomentNm[i],8));
+  });
+  it("não mistura geometria declarada de panos com carga do gerador, nem descarta carga no adaptador nodal",async()=>{
+    const physical=reference(),d=physical.workspace.spatialPreparation!;
+    d.loading={version:1,selfWeight:null,uniform:[],roofArea:[action("horizontal")]};
+    await expect(adaptMixedProject(physical)).rejects.toThrow("DISTRIBUTED_LOADED_REQUIRED");
+    const generated=reference();
+    delete generated.workspace.physicalStructure;
+    generated.workspace.spatialPreparation!.loading={
+      version:1,selfWeight:null,uniform:[],roofArea:[action("horizontal")]
+    };
+    await expect(adaptLoadedMixedProject(generated)).rejects.toThrow("DUAL_ROOF_SOURCE_PENDING");
   });
   it("recusa furo físico, sem preencher abertura pelo retângulo envolvente",()=>{
     const p=reference(),faces=p.workspace.spatialPreparation!.physicalRoofFaces!;
