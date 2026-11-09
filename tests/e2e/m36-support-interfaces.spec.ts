@@ -43,8 +43,8 @@ for(const width of [375,1440]){
       await panel.getByLabel("Justificativa dos seis vínculos físicos").fill("Condições de contorno registradas em memorial de revisão");
       await panel.getByRole("button",{name:"Salvar interface física",exact:true}).click();
     };
-    await add("B0","A","existing-masonry","R1-A");
-    await add("A1","B","new-steel-column","R1-B");
+    await add("B0","A","existing-masonry","REV-R1-A");
+    await add("A1","B","new-steel-column","REV-R1-B");
     await expect(panel.getByText("B0 · Alvenaria existente · lado A")).toBeVisible();
     await expect(panel.getByText("A1 · Pilar metálico novo · lado B")).toBeVisible();
     await page.getByRole("button",{name:"Salvar levantamento",exact:true}).click();
