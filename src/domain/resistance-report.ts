@@ -5,6 +5,8 @@ import { adaptMixedProject } from "./mixed-adapter";
 import { adaptLoadedMixedProject } from "./loaded-mixed-adapter";
 import { canonicalSpatialInput } from "./spatial-analysis";
 import { mixedInputHash } from "./mixed-analysis";
+import { anyMixedResultSchema } from "./structural-loading";
+import { assessSupportReactions } from "./support-interface";
 import { extractMemberDemands, type DemandInput } from "./member-demands";
 import { resistancePreparationSchema } from "./resistance-preparation";
 import { elasticMemberReference } from "./resistance-elastic-reference";
@@ -101,6 +103,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
     approvedForFabrication:false as const,structureStatus:"NOT_APPROVED_FOR_FABRICATION" as const,
     normativeProceduresImplemented:[...availableNormativeProcedures],procedureRegistry:normativeProcedureRegistry,binding,physicalInput:current.request,
     engineeringCombinations:draft.engineeringCombinations??null,demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
+    supportAudits:assessSupportReactions(draft.supportInterfaces??[],anyMixedResultSchema.parse(value)),
     loadProcedureExecutions:(draft.loading?.wind?.cases??[]).filter(c=>c.speedCalculation).map(c=>({caseId:c.id,procedures:["NBR6123:2023-4.2","NBR6123:2023-5.3.3"],status:"calculated-partial" as const,result:calculateWindSpeed(c.speedCalculation)})),
     remaining:["Seleção e validação normativa das ações/combinações ainda pendentes na M22.","Procedimentos parciais Ue/MRD disponíveis separadamente; todos os estados-limites da família e da obra ainda não estão concluídos.","Missão 24: ligações, apoios, contenções, estabilidade global/efeitos adicionais e revisão do engenheiro."]};
   const full={...report,releaseGate:buildEngineReleaseGate(project,report)};
