@@ -15,6 +15,7 @@ import type { Material } from "@/domain/models";
 import { SpatialAdapterPanel } from "./spatial-adapter-panel";
 import { mixedPreparationReview } from "@/domain/mixed-adapter";
 import { MemberPhysicalCatalogPanel } from "./member-physical-catalog-panel";
+import { SupportInterfaceEditor } from "./support-interface-editor";
 
 const numberFields = [
   ["eGpa", "Elasticidade E (GPa)"], ["gGpa", "Cisalhamento G (GPa)"],
@@ -179,6 +180,7 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
           }}>{supportChoices.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</Select></Field>)}
         </div>
       </> : <p className="notice">Não há nós disponíveis para declarar apoios. Revise a geometria.</p>}
+      {mixed && <SupportInterfaceEditor draft={draft} onChange={change}/>}
       <h4>Comportamento das ligações</h4><p className="field-hint">{mixed ? "O tipo físico é declarado separadamente. Uma extremidade articulada não transforma pórtico em axial. Axiais exigem ambas as extremidades axiais; contradições bloqueiam a execução." : "Hipóteses por grupo, editáveis. Ligações axiais/mistas ainda não são interpretadas pelo solver 3D; a missão de conectividade continua necessária."}</p>
       <div className="form-grid">
         {pieceRoles.map(key => <Field label={roleLabels[key]} key={key}><Select value={draft.groups[key].connection}
