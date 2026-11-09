@@ -71,7 +71,7 @@ export async function prepareMixedInput(project: Project, loaded = false) {
   const sections=[...new Map(framePhysical.map(p=>[p.sectionId,p])).values()].map(({sectionId:id,properties:p})=>({id,area_m2:spatialSI.area(p.areaCm2!),iy_m4:spatialSI.inertia(p.iyCm4!),iz_m4:spatialSI.inertia(p.izCm4!),j_m4:spatialSI.inertia(p.jCm4!),source:p.sectionSource,revision:p.sectionRevision}));
   const revision = await mixedInputHash({ geometry: mapping.geometrySignature, preparation: draft });
   const request = { schema_version: "jpn.mixed3d/1", units: "SI", theory: "linear-elastic-frame-axial",
-    project: { id: project.id, revision, source: `JPN adaptador frame/axial/1; ${project.workspace.physicalStructure?"origem jpn.declared-structure/1; ":""}declarações ${revision}; experimental, sem aprovação normativa` },
+    project: { id: project.id, revision, source: `JPN adaptador misto/1; ${project.workspace.physicalStructure?"origem jpn.declared-structure/1; ":""}declarações ${revision}; experimental, sem aprovação normativa` },
     nodes: mapping.nodes.map(n => ({ id: n.id, x_m: spatialSI.metres(n.x), y_m: spatialSI.metres(n.y), z_m: spatialSI.metres(n.z) })), members,
     materials,sections,
     supports: draft.supports.filter(s => s.dofs.some(d => d === "fixed")).map(s => ({ node: s.nodeId, restrained: s.dofs.map(d => d === "fixed") })),
