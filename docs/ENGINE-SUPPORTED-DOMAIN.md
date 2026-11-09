@@ -67,3 +67,7 @@ continuous-demands/2 e resistance-report/2; backups antigos continuam legíveis.
 Edições, revisões físicas, critérios, resultados e hashes permanecem separados.
 Um sucesso numérico, geométrico ou de limite declarado nunca remove bloqueios
 normativos, revisão profissional, responsabilidade legal ou fabricação.
+
+
+## M36 — modelagens físicas homogêneas e mistas (em revisão)
+O contrato `jpn.mixed3d/1` e o carregado `/2` passam a aceitar `frame-only`, `axial-only` e `frame + axial` sem incluir elementos fictícios para forçar um solver. Propriedades, vínculos, conectividade e cargas são sempre declarados; o mesmo preflight numérico bloqueia mecanismos e DOFs rotacionais inexistentes. Isso **não** implementa materiais não lineares, interação aço-alvenaria/concreto ou fundações. A alvenaria e o concreto são suportes físicos existentes a serem verificados, não barras estruturais geradas pelo JPN. Continuam sem aprovação de resistência global ou fabricação.
