@@ -62,11 +62,11 @@ export async function runRemotePurlin(input:unknown,signal?:AbortSignal):Promise
   const {endpoint,token,bypass}=config();
   if(gate.active)throw new SolverFailure("BUSY","Já existe análise de terças neste executor.");
   gate.active++;
-  const controller=new AbortController();let timeout:ReturnType<typeof setTimeout>|undefined,timedOut=false,received=false;
+  const controller=new AbortController();let timedOut=false,received=false;
   const cancel=()=>controller.abort();
   signal?.addEventListener("abort",cancel,{once:true});
   if(signal?.aborted)cancel();
-  timeout=setTimeout(()=>{timedOut=true;controller.abort();},remotePurlinLimits.milliseconds);
+  const timeout=setTimeout(()=>{timedOut=true;controller.abort();},remotePurlinLimits.milliseconds);
   try{
     if(controller.signal.aborted)throw new SolverFailure("CANCELLED","Cálculo cancelado.");
     const response=await fetch(endpoint,{method:"POST",body:payload,
