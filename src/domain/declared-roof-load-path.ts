@@ -28,7 +28,7 @@ function supportedSurfaces(model:PhysicalGeometry,project:Project):Surface[]{
   const audit=auditPhysicalRoofCoverage(declared,model);
   const points=new Map(model.nodes.map(p=>[p.id,[p.x/1000,p.y/1000,p.z/1000] as V]));
   const pieces=new Map(model.pieces.map(p=>[p.id,p]));
-  return declared.faces.map((face,i)=>{
+  return audit.geometry.faces.map((face,i)=>{
     if(face.holes.length||face.outer.length!==5)
       fail("IRREGULAR_DISTRIBUTION_PENDING: faces com aberturas/contornos não retangulares exigem integração tributária própria");
     const pointsXY=face.outer.slice(0,-1).map(p=>[p[0]/1000,p[1]/1000] as [number,number]);
