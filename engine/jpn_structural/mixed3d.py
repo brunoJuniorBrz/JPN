@@ -1,4 +1,4 @@
-"""Experimental mixed spatial frame/axial model; NOT wired to JPN UI/HTTP.
+"""Experimental linear spatial frame and/or axial model, consumed via JPN adapter.
 
 Frame elements are PyNiteFEA 3.2.1 beam-columns; axial elements are
 bilateral Spring3D elements with k=EA/L. Only pure axial nodes have their
@@ -100,8 +100,9 @@ def validate_mixed3d(data, *, distributed_cases=()):
         length=float(np.linalg.norm(points[b]-points[a]))
         if not 1e-5 <= length <= 1000:
             fail('INVALID_GEOMETRY','Comprimento fora de 1e-5–1000 m.')
-    if not frames or not any(m['kind']=='axial' for m in data['members']):
-        fail('UNSUPPORTED_MODEL','Modelo misto deve conter pórtico e barra axial.')
+    # A real structure may consist solely of frames or solely of axial bars.
+    # Never create a fictitious element merely to satisfy a mixed-model contract.
+    # Stability and inactive rotations remain checked by the protected solver.
     supported={}
     for s in data['supports']:
         obj(s,'node restrained','apoio');text(s['node'],'apoio.node',True)
