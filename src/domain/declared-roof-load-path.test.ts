@@ -71,6 +71,17 @@ describe("M39-P1: entrada de área de obra declarada para cargas de terças",()=
     a.distributedForceN.forEach((f,i)=>expect(f).toBeCloseTo(a.expectedForceN[i],8));
     a.distributedMomentNm.forEach((m,i)=>expect(m).toBeCloseTo(a.expectedMomentNm[i],8));
   });
+  it("gira a cobertura 90 graus, muda a direção das terças e preserva os seis resultantes globais",()=>{
+    const p=reference(),declared=p.workspace.physicalStructure!,faces=p.workspace.spatialPreparation!.physicalRoofFaces!;
+    for(const node of declared.nodes){const x=node.x,y=node.y;node.x=-y;node.y=x;}
+    for(const face of faces.faces){
+      face.outer=face.outer.map(([x,y,z])=>[-y,x,z] as [number,number,number]);
+    }
+    const output=distribute(p,"horizontal",[.6,0,-.8]).actions[0];
+    expect(output.areaM2).toBeCloseTo(40,10);
+    output.distributedForceN.forEach((actual,i)=>expect(actual).toBeCloseTo(output.expectedForceN[i],8));
+    output.distributedMomentNm.forEach((actual,i)=>expect(actual).toBeCloseTo(output.expectedMomentNm[i],8));
+  });
   it("recusa furo físico, sem preencher abertura pelo retângulo envolvente",()=>{
     const p=reference(),faces=p.workspace.spatialPreparation!.physicalRoofFaces!;
     faces.faces[0].holes.push(ring([[1000,1000],[1000,2000],[3000,2000],[3000,1000]],x=>3000+.1*x));
