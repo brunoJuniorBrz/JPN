@@ -17,6 +17,8 @@ import { connectionsSchema } from "./connections";
 import { declaredServiceCriterionSchema } from "./declared-service";
 import { memberDesignDeclarationSchema } from "./coldformed-design";
 import { supportInterfacesSchema } from "./support-interface";
+import { physicalRoofFacesSchema } from "./physical-roof-faces";
+import { auditPhysicalRoofCoverage } from "./physical-roof-coverage";
 
 // Human declarations, NOT finite-element input. A pending field is never
 // translated to zero, a free support or a material property by default.
@@ -46,6 +48,7 @@ export const spatialPreparationSchema = z.object({
   memberKinds: z.array(z.object({ pieceId: z.string().min(1).max(100), kind: z.enum(["frame", "axial"]) }).strict()).max(5000).optional(),
   loading: loadingDraftSchema.optional(),
   roofRegions:roofRegionsSchema.optional(),
+  physicalRoofFaces:physicalRoofFacesSchema.optional(),
   resistance: z.array(resistancePreparationSchema).max(5000).optional(),
   engineeringCombinations: engineeringCombinationsSchema.optional(),
   connections: connectionsSchema.optional(),
@@ -75,6 +78,10 @@ export function spatialPreparationReview(project: Project, draft: SpatialPrepara
   let geometry:PhysicalGeometry|null=null;
   try{geometry=resolvePhysicalStructure(project).model;}catch(e){add("GEOMETRY",e instanceof Error?e.message:String(e));}
   const declared=project.workspace.physicalStructure!==undefined;
+  if(draft.physicalRoofFaces&&geometry){
+    try{auditPhysicalRoofCoverage(draft.physicalRoofFaces,geometry);}
+    catch(e){add("PHYSICAL_ROOF_COVERAGE",e instanceof Error?e.message:String(e));}
+  }
   if(draft.roofRegions)add("COMPOSED_ROOF_PRELIMINARY","Regiões compostas são preliminares e ainda não analisáveis. O modelo retangular não as substitui.");
   const stale = draft.geometrySignature !== structureSignature(project);
   if (stale) add("STALE_GEOMETRY", "Medidas, distribuição ou perfis mudaram. Revise o cadastro e atualize o vínculo geométrico.");
