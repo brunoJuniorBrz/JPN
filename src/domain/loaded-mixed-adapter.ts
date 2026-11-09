@@ -12,6 +12,8 @@ export async function adaptLoadedMixedProject(project:Project){
   const loading=project.workspace.spatialPreparation?.loading;
   if(!loading)throw new Error("Declare carregamentos físicos.");
   if(loading.wind)assertGeneratedPhysicalStructure(project,"vento em fachadas/estrutura declarada exige caminho de transmissão normativo validado");
+  if(!project.workspace.physicalStructure&&project.workspace.spatialPreparation?.physicalRoofFaces&&(loading.roofArea.length||loading.wind))
+    throw new Error("DUAL_ROOF_SOURCE_PENDING: face física declarada e gerador coexistem. Escolha uma única geometria de referência antes de aplicar ações.");
   const roof_load_path=loading.roofArea.length?(project.workspace.physicalStructure?distributeDeclaredRoofActions(project,loading.roofArea,loading.roofDistribution):distributeRoofActions(project,loading.roofArea,loading.roofDistribution)):null;
   const draft=project.workspace.spatialPreparation!;
   const wind_load_path=loading.wind?distributeWindActions(project,loading.wind):null;
