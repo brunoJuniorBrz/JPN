@@ -1,0 +1,14 @@
+{
+  "schema_version":"jpn.m351-client-demonstration/1",
+  "base":"6a64398d1e4d12577d816efb07d8483767ff4459",
+  "sourceOfTruth":"validation/tom-2026/tom-commercial-source.json",
+  "tomReferenceCents":965129,
+  "structuralReference":{"source":"validation/m35/browser-375.json","registeredAtCommit":"6a64398d1e4d12577d816efb07d8483767ff4459","tipM":-0.00096875,"reactionN":200},
+  "windowsLauncher":{"tested":true,"url":"http://127.0.0.1:3011/demonstracao","start":"Iniciar-Demonstracao-JPN.cmd","stop":"Encerrar-Demonstracao-JPN.cmd","binding":"127.0.0.1","realPythonTested":true},
+  "targetedTests":{"orphanContourRegressions":2,"domainAndIndependentPdfTests":8,"declaredTakeoffRegression":9,"browserStories":3,"widths":[375,1440],"realSolverMocked":false,"unavailableServiceScenario":"HTTP 503 only; no fabricated numerical response"},
+  "issuesCorrected":["orphan contour support references after bar deletion","cold-start readiness now waits for the presentation route","commercial PDF includes audited sheet count and linear metres","mobile engineering grid preserves viewport width"],
+  "fullCi":"Recorded in the M35.1 pull request for the exact pushed SHA",
+  "computedStructuralApproval":false,
+  "fabricationRelease":false,
+  "automaticProductionDeployment":false
+}
