@@ -9,6 +9,7 @@ import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { PhysicalModelImport } from "./physical-model-import";
 import { DeclaredStructureEditor } from "./declared-structure-editor";
 import { RoofOutlinePanel } from "./roof-outline-panel";
+import { GuidedRoofSetup } from "./guided-roof-setup";
 import { applyTomCommercial } from "@/domain/tom-commercial";
 import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { transferTakeoff } from "@/domain/calculations/project-basis";
@@ -97,7 +98,8 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
       }}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button><span className="field-hint">{preview.model ? "Visualização 3D da estrutura disponível também no celular." : `Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span></div>
       <div className="workflow-content">
         {step === 0 && <GeneralForm project={project} onChange={update} errors={submitted || initial ? errors : {}} />}
-        {step === 1 && (declared?<p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no Resultado ou importe uma nova revisão JSON. Nenhuma cobertura foi gerada.</p>:project.category === "Cobertura metálica" ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>)}
+        {step === 1 && !declared && <GuidedRoofSetup project={project} onChange={update}/>}
+        {step === 1 && (declared?<p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no Resultado ou importe uma nova revisão JSON. Nenhuma cobertura foi gerada.</p>:["Cobertura metálica","Galpão","Barracão"].includes(project.category) ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning partialOutline={project.workspace.guidedSupport?.coverage==="partial"} /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>)}
         {step === 2 && (declared?<SpatialPreparationPanel project={project} onChange={update} mixed/>:<StructureForm project={project} onChange={update} profileToEdit={profileToEdit} />)}
         {step === 3 && <><TakeoffSummary project={project} activeSection={resultSection} onSectionChange={setResultSection} onResolvePending={target => { setProfileToEdit(target.role); go(target.step); }} startIn3D={open3D} open3DRequest={open3DRequest} onEditStructure={() => { setProfileToEdit(undefined); go(2); }} onConfigureProfile={role => { setProfileToEdit(role); go(2); }} /><ProjectWorkbench project={project} activeSection={resultSection} onChange={update} onEditStructure={() => { setProfileToEdit(undefined); go(2); }} /></>}
       </div>

@@ -21,7 +21,7 @@ export function structureSignature(project: Pick<Project, "roof" | "planning"> &
     });
     return JSON.stringify(canonical({physicalStructure:{...project.workspace.physicalStructure,pieces},assignments}));
   }
-  return JSON.stringify(canonical({ roof: project.roof, planning: project.planning }));
+  return JSON.stringify(canonical({ roof: project.roof, planning: project.planning, ...(project.workspace?.guidedSupport?{guidedSupport:project.workspace.guidedSupport}:{}) }));
 }
 
 export function transferTakeoff(project: Project, wastePercent: number): Project {
