@@ -2,6 +2,8 @@ import { z } from "zod";
 import { spatialPreparationSchema } from "./spatial-preparation";
 import { declaredStructureSchema } from "./declared-structure";
 import { roofOutlineSchema } from "./roof-outline";
+import { guidedSupportSchema } from "./guided-support";
+import { demonstrationSchema } from "./demonstration-schema";
 
 const measure = z.number().finite().min(0).max(1000000).nullable();
 export const workspaceSchema = z.object({
@@ -10,6 +12,8 @@ export const workspaceSchema = z.object({
   spatialPreparation: spatialPreparationSchema.optional(),
   physicalStructure: declaredStructureSchema.optional(),
   roofOutline: roofOutlineSchema.optional(),
+  guidedSupport: guidedSupportSchema.optional(),
+  demonstration: demonstrationSchema.optional(),
   analysis: z.object({
     signature: z.string().max(100000),
     supports: z.array(z.object({ node: z.string(), uxMm: z.number().finite().nullable(), uyMm: z.number().finite().nullable() }).strict()).max(200),
