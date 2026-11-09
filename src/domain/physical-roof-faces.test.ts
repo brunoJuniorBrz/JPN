@@ -3,7 +3,7 @@ import {inspectPhysicalRoofFaces,physicalRoofFacesSchema} from "./physical-roof-
 
 const ring=(vertices:[number,number][],plane:(x:number,y:number)=>number)=>
  [...vertices,vertices[0]].map(([x,y])=>[x,y,plane(x,y)] as [number,number,number]);
-const flat=(x:number,y:number)=>0;
+const flat=(_x:number,_y:number)=>0;
 const source="Levantamento geométrico conferido",revision="Rev. geométrica 1";
 const face=(outer:[number,number,number][],holes:[number,number,number][][]=[])=>({
  id:"S1",outer,holes,supportPieceIds:["F1"],source,revision
