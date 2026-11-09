@@ -22,9 +22,15 @@ const execution={memory_limit_bytes:805306368,memory_kind:"linux-address-space",
   timeout_seconds:20,concurrency_per_instance:1,isolation:"subprocess"};
 const envelope=()=>({schema_version:"jpn.http-purlin/1",
   request_sha256:createHash("sha256").update(payload()).digest("hex"),
-  result:structuredClone(pythonResult),execution});
+  result:structuredClone(pythonResult),execution:{...execution}});
 const respond=(data:unknown,status=200)=>new Response(JSON.stringify(data),{
   status,headers:{"Content-Type":"application/json"}});
+it("cada envelope possui metadados de execução independentes",()=>{
+  const first=envelope(),second=envelope();
+  first.execution.memory_limit_bytes=1;
+  expect(second.execution.memory_limit_bytes).toBe(805306368);
+  expect(execution.memory_limit_bytes).toBe(805306368);
+});
 beforeAll(()=>{
   const python=process.env.JPN_PYTHON_EXECUTABLE||
     path.resolve(process.platform==="win32"?".venv/Scripts/python.exe":".venv/bin/python");
