@@ -25,6 +25,7 @@ MEMORY_BYTES = 768 * 1024 * 1024
 WORKER = Path(__file__).resolve().with_name('local_mixed_worker.py')
 VERCEL_VENV = Path('/tmp/_vc_deps')
 CONTRACTS = ('jpn.mixed3d/1', 'jpn.mixed3d/2')
+PURLIN_CONTRACT = 'jpn.purlin/1'
 _slot = threading.BoundedSemaphore(1)  # Per instance, not a distributed quota.
 _disabled = False
 
@@ -90,7 +91,7 @@ def _worker_python():
     return str(python)
 
 
-def _worker(payload, health=False, joint_actions=False):
+def _worker(payload, health=False, joint_actions=False, purlin=False):
     """Bound both pipes while running; wait for exit before releasing capacity."""
     global _disabled
     if _disabled:
@@ -114,7 +115,7 @@ def _worker(payload, health=False, joint_actions=False):
             logging.info('jpn_worker_visibility parent_packages=%s pythonpath_present=%s runtime_venv=%s',
                 all(importlib.util.find_spec(name) is not None for name in ('Pynite', 'scipy', 'numpy')),
                 bool(os.environ.get('PYTHONPATH')), python != sys.executable)
-        process = subprocess.Popen([python, '-I', '-X', 'utf8', str(WORKER), *(['--health'] if health else []), *(['--joint-actions'] if joint_actions else [])],
+        process = subprocess.Popen([python, '-I', '-X', 'utf8', str(WORKER), *(['--health'] if health else []), *(['--joint-actions'] if joint_actions else []), *(['--purlin'] if purlin else [])],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             cwd=str(WORKER.parent), env={**os.environ, 'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'})
         def abort(code):
@@ -193,7 +194,7 @@ def _worker(payload, health=False, joint_actions=False):
             status = 503 if code in ('MEMORY_LIMIT', 'MEMORY_LIMIT_UNAVAILABLE', 'DEPENDENCY_VERSION', 'UNAVAILABLE') else 422
             raise TransportError(code, 'Structural worker refused the request; no result published.', status)
         execution = output.get('execution', {})
-        if output.get('schema_version') != 'jpn.local-mixed/1' or execution.get('memory_limit_bytes') != MEMORY_BYTES or execution.get('memory_kind') not in ('windows-job-process-commit', 'linux-address-space'):
+        if output.get('schema_version') != ('jpn.local-purlin/1' if purlin else 'jpn.local-mixed/1') or execution.get('memory_limit_bytes') != MEMORY_BYTES or execution.get('memory_kind') not in ('windows-job-process-commit', 'linux-address-space'):
             raise TransportError('INVALID_RESPONSE', 'Protected execution was not confirmed.', 503)
         return output
     except OSError:
@@ -234,10 +235,13 @@ def _handle(environ):
             raise TransportError('DEPENDENCY_VERSION', 'Required runtime was not confirmed.', 503)
         return dict(schema_version='jpn.http-mixed/1', status='ready', contracts=list(CONTRACTS),
                     dependencies=output['dependencies'], execution=_execution(output))
-    if path not in ('/health', '/api/analyze-mixed'):
+    if path not in ('/health', '/api/analyze-mixed', '/api/analyze-purlin'):
         raise TransportError('NOT_FOUND', 'Unknown endpoint.', 404)
-    if path != '/api/analyze-mixed' or method != 'POST':
+    if path == '/health' or method != 'POST':
         raise TransportError('METHOD_NOT_ALLOWED', 'Method not supported.', 405)
+    # Remote purlin screening is opt-in and never reuses the mixed3d gate.
+    if path == '/api/analyze-purlin' and os.environ.get('JPN_PURLIN_REMOTE_ENABLED') != '1':
+        raise TransportError('NOT_FOUND', 'Unknown endpoint.', 404)
     if environ.get('CONTENT_TYPE', '').split(';', 1)[0].strip().lower() != 'application/json':
         raise TransportError('CONTENT_TYPE', 'Send application/json.', 415)
     length = environ.get('CONTENT_LENGTH', '')
@@ -245,8 +249,9 @@ def _handle(environ):
         raise TransportError('LENGTH_REQUIRED', 'Content-Length required.', 411)
     if not length.isascii() or not length.isdecimal():
         raise TransportError('INVALID_INPUT', 'Invalid Content-Length.', 400)
-    if len(length) > 7 or not 0 < int(length) <= INPUT_BYTES:
-        raise TransportError('INPUT_LIMIT', 'Request must be 1..500000 bytes.', 413)
+    limit = 25000 if path == '/api/analyze-purlin' else INPUT_BYTES
+    if len(length) > 7 or not 0 < int(length) <= limit:
+        raise TransportError('INPUT_LIMIT', 'Request exceeds this endpoint limit.', 413)
     payload = environ['wsgi.input'].read(int(length))
     if len(payload) != int(length):
         raise TransportError('INVALID_INPUT', 'Incomplete request body.', 400)
@@ -254,6 +259,33 @@ def _handle(environ):
         request = _decode(payload)
     except (ValueError, UnicodeError, RecursionError):
         raise TransportError('INVALID_INPUT', 'Send finite JSON without duplicate keys.')
+    if path == '/api/analyze-purlin':
+        if not isinstance(request, dict) or request.get('schema_version') != PURLIN_CONTRACT:
+            raise TransportError('UNSUPPORTED_MODEL', 'Only jpn.purlin/1 is accepted.')
+        request_id = request.get('request_id')
+        candidates = request.get('candidates')
+        if (not isinstance(request_id, str) or not 8 <= len(request_id) <= 80 or
+                not isinstance(candidates, list) or not 1 <= len(candidates) <= 8):
+            raise TransportError('INVALID_INPUT', 'Purlin request identity or candidate count is invalid.')
+        if environ.get('HTTP_X_JPN_JOINT_ACTIONS'):
+            raise TransportError('INVALID_INPUT', 'Connection traces are not supported for purlins.')
+        output = _worker(payload, purlin=True)
+        result = output.get('result')
+        if (output.get('status') != 'completed' or not isinstance(result, dict) or
+                result.get('schema_version') != 'jpn.purlin-result/1' or
+                result.get('request_id') != request_id or
+                result.get('computedStructuralApproval') is not False or
+                result.get('fabricationRelease') is not False or
+                not isinstance(result.get('results'), list) or
+                len(result['results']) != len(candidates) or
+                any(not isinstance(item, dict) or item.get('id') != candidate.get('id')
+                    or item.get('family') != candidate.get('family')
+                    for item, candidate in zip(result['results'], candidates) if isinstance(candidate, dict)) or
+                any(not isinstance(candidate, dict) for candidate in candidates)):
+            raise TransportError('INVALID_RESPONSE', 'Unverified purlin response.', 503)
+        return dict(schema_version='jpn.http-purlin/1',
+                    request_sha256=hashlib.sha256(payload).hexdigest(),
+                    result=result, execution=_execution(output))
     if not isinstance(request, dict) or request.get('schema_version') not in CONTRACTS:
         raise TransportError('UNSUPPORTED_MODEL', 'Only jpn.mixed3d/1 and jpn.mixed3d/2 are accepted.')
     trace_header = environ.get('HTTP_X_JPN_JOINT_ACTIONS', '')
