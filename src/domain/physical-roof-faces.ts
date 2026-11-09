@@ -73,7 +73,7 @@ export function inspectPhysicalRoofFaces(raw:unknown){
     const projectedAreaMm2=signedRingAreaMm2(xyOuter)+
       xyHoles.reduce((sum,h)=>sum+signedRingAreaMm2(h),0);
     const a=f.outer[0],b=f.outer[1];
-    let c=f.outer.find((p,i)=>i>1&&Math.abs((b[0]-a[0])*(p[1]-a[1])-
+    const c=f.outer.find((p,i)=>i>1&&Math.abs((b[0]-a[0])*(p[1]-a[1])-
       (b[1]-a[1])*(p[0]-a[0]))>1e-4);
     if(!c)throw new Error("PHYSICAL_ROOF_DEGENERATE_PLANE");
     const cross=(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
