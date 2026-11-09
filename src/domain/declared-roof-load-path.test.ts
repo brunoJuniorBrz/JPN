@@ -82,7 +82,7 @@ describe("M39-P1: entrada de área de obra declarada para cargas de terças",()=
       version:1,method:"parallel-purlin-strips",geometrySignature:"obsoleta",
     })).toThrow("STALE_DISTRIBUTION");
     const draft=p.workspace.spatialPreparation!;
-    draft.physicalRoofFaces!.faces[0].supportPieceIds=["P1"];
+    draft.physicalRoofFaces!.faces[0].supportPieceIds=["P2"];
     expect(()=>distribute(p)).toThrow("M37_UNLINKED_PURLIN");
   });
 });
