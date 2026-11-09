@@ -57,3 +57,7 @@ def test_invalid_worker_results_are_fail_closed(monkeypatch):
         monkeypatch.setattr(http,'_worker', lambda *a, **kw: {'status':'completed','result':result,'execution':{'memory_limit_bytes':805306368,'memory_kind':'linux-address-space'}})
         status,body=_post(data)
         assert status==503 and body['error']['code']=='INVALID_RESPONSE'
+
+def test_health_post_is_not_a_calculation_endpoint(monkeypatch):
+    monkeypatch.setenv('JPN_ANALYSIS_TOKEN', 'local-integration-token')
+    assert call(b'{}', PATH_INFO='/health', REQUEST_METHOD='POST')[0] == 405

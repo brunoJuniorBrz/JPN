@@ -237,7 +237,7 @@ def _handle(environ):
                     dependencies=output['dependencies'], execution=_execution(output))
     if path not in ('/health', '/api/analyze-mixed', '/api/analyze-purlin'):
         raise TransportError('NOT_FOUND', 'Unknown endpoint.', 404)
-    if method != 'POST':
+    if path == '/health' or method != 'POST':
         raise TransportError('METHOD_NOT_ALLOWED', 'Method not supported.', 405)
     # Remote purlin screening is opt-in and never reuses the mixed3d gate.
     if path == '/api/analyze-purlin' and os.environ.get('JPN_PURLIN_REMOTE_ENABLED') != '1':
