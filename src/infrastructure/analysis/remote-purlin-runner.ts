@@ -89,6 +89,12 @@ export async function runRemotePurlin(input:unknown,signal?:AbortSignal):Promise
     if(controller.signal.aborted)throw new SolverFailure("CANCELLED","Resposta cancelada.");
     return parsed.result;
   }catch(e){
+    // CI-only diagnostic: report the stage/type, never inputs, credentials or output.
+    if(process.env.NODE_ENV==="test"&&!(e instanceof SolverFailure)){
+      const issue=(e instanceof z.ZodError)?e.issues.map(x=>({path:x.path.join("."),code:x.code})):undefined;
+      console.error("REMOTE_PURLIN_VERIFICATION_DIAGNOSTIC",
+        e instanceof Error?e.constructor.name:typeof e,issue??(e instanceof Error?e.message:"unknown"));
+    }
     if(e instanceof SolverFailure)throw e;
     throw new SolverFailure(timedOut?"TIMEOUT":controller.signal.aborted?"CANCELLED":received?"INVALID_RESPONSE":"UNAVAILABLE",
       "Análise remota indisponível ou resultado inconsistente. Nenhum cálculo foi publicado.");
