@@ -48,13 +48,11 @@ it("M39-P2: L real -> caminhos de carga nos segmentos -> solver PyNite -> 3 rea�
     nodeId,dofs:["fixed","fixed","fixed","fixed","fixed","fixed"] as
       ["fixed","fixed","fixed","fixed","fixed","fixed"],
   }));
-  d.cases=[
-    {id:"AREA",source:"Pressão de referência não normativa declarada na cobertura L"},
-    {id:"ZERO",source:"Caso com força nodal nula explícita para validar contrato"},
-  ];
-  d.combinations=[{id:"ELASTIC-L",factors:{AREA:1,ZERO:0}}];
-  d.loads=[{id:"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",caseId:"ZERO",nodeId:"A0",
-    fxKn:0,fyKn:0,fzKn:0,mxKnm:0,myKnm:0,mzKnm:0}];
+  // The loaded mixed3d/2 contract must handle genuine area-only projects.
+  // No phantom zero-valued nodal case is inserted to unlock the solver.
+  d.cases=[{id:"AREA",source:"Pressão de referência não normativa declarada na cobertura L"}];
+  d.combinations=[{id:"ELASTIC-L",factors:{AREA:1}}];
+  d.loads=[];
   d.connectionsReview="Ligações rígidas sintéticas explicitamente declaradas; verificar na obra";
   d.lateralSystem="Três nós em raízes identificadas com seis graus de liberdade bloqueados por hipótese de teste";
   d.loadPathReview="Painéis ortogonais L em terças divididas e peças de travamento reais entre os nós";
@@ -80,6 +78,7 @@ it("M39-P2: L real -> caminhos de carga nos segmentos -> solver PyNite -> 3 rea�
   };
   const prepared=await adaptLoadedMixedProject(p);
   expect(prepared.request.schema_version).toBe("jpn.mixed3d/2");
+  expect(prepared.request.nodal_loads).toHaveLength(0);
   expect(prepared.request.members).toHaveLength(10);
   expect(prepared.request.member_loads).toHaveLength(5);
   expect(prepared.roof_load_path!.actions[0].areaM2).toBeCloseTo(18,9);
