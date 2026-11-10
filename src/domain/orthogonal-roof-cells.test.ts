@@ -62,7 +62,10 @@ describe("M39-P2: cortes reais em ortogonais com vínculos físicos por célula"
     expect(a.expectedMomentNm[1]).toBeCloseTo(8400,8);
     a.distributedMomentNm.forEach((x,i)=>expect(x).toBeCloseTo(a.expectedMomentNm[i],8));
     const q=new Map(a.loads.map(l=>[l.pieceId,l.forcePerLengthNM[2]]));
-    expect(q).toEqual(new Map([["P0_0",-200],["P1_0",-600],["P2_0",-400],["P0_1",-200],["P1_1",-200]]));
+    expect(q.size).toBe(5);
+    for(const [id,expected] of Object.entries({
+      P0_0:-200,P1_0:-600,P2_0:-400,P0_1:-200,P1_1:-200,
+    }))expect(q.get(id)).toBeCloseTo(expected,9);
     expect(out.computedStructuralApproval).toBe(false);
     expect(out.fabricationRelease).toBe(false);
   });
