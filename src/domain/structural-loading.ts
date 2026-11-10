@@ -25,7 +25,7 @@ export function needsSelfWeightOverlapReview(
   loading:LoadingDraft
 ):boolean {
   const weightCase=loading.selfWeight?.caseId;
-  const automatic=new Set([...(weightCase?[weightCase]:[]),...loading.roofArea.map(l=>l.caseId),...(loading.wind?.cases.map(c=>c.id)??[],...(loading.facadeTraction?.cases.map(c=>c.id)??[])]);
+  const automatic=new Set([...(weightCase?[weightCase]:[]),...loading.roofArea.map(l=>l.caseId),...(loading.wind?.cases.map(c=>c.id)??[]),...(loading.facadeTraction?.cases.map(c=>c.id)??[])]);
   const otherCases=new Set([...draft.loads.map(l=>l.caseId),...loading.uniform.map(l=>l.caseId),...automatic]);
   return draft.combinations.some(c=>[...automatic].some(a=>(c.factors[a]??0)!==0&&[...otherCases].some(b=>a!==b&&(c.factors[b]??0)!==0)));
 }
