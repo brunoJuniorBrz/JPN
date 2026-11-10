@@ -56,6 +56,11 @@ export async function auditPhysicalRoofReactionPath(
   if(canonicalSpatialInput(draft.loading.roofArea)!==
     canonicalSpatialInput(roofTrace.actions.map(a=>a.action)))
     fail("M40_STALE_ACTIONS","as ações declaradas diferem do caminho de cargas analisado");
+  // Recompute the physical distribution, not merely trust its supplied flags:
+  // every patch/cell/resultant is tied to the CURRENT measured face geometry.
+  const recomputed=distributeDeclaredRoofActions(project,draft.loading.roofArea,roofTrace.method);
+  if(canonicalSpatialInput(recomputed)!==canonicalSpatialInput(roofTrace))
+    fail("M40_TAMPERED_DISTRIBUTION","células/forças/momentos transmitidos não conferem com os panos físicos atuais");
   if(request.member_loads.some(l=>l.coordinate_system!=="global"))
     fail("M40_LOCAL_LOAD_PENDING","sistemas locais de barras exigem transformação auditada antes de conferir os momentos globais");
   const nodes=new Map(request.nodes.map(n=>[n.id,[n.x_m,n.y_m,n.z_m] as V])),
