@@ -5,6 +5,7 @@ import {physicalRoofFacesSchema} from "./physical-roof-faces";
 import {declaredRoofDistributionSignature} from "./declared-roof-load-path";
 import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
 import {runLocalMixed} from "@/infrastructure/analysis/local-mixed-runner";
+import {auditPhysicalRoofReactionPath,isDeclaredRoofTrace} from "./physical-reaction-path";
 
 afterEach(()=>vi.unstubAllEnvs());
 it("M39-P2: L real -> caminhos de carga nos segmentos -> solver PyNite -> 3 reações e momento global conservados",async()=>{
@@ -72,6 +73,19 @@ it("M39-P2: L real -> caminhos de carga nos segmentos -> solver PyNite -> 3 rea�
     faces:[{id:"L",outer:[...outer,outer[0]].map(([x,y])=>[x,y,3000+.1*x]),
       holes:[],supportPieceIds:["P0LOW","P0HIGH","P2LOW","P2HIGH","P6LOW"],source,revision}],
   });
+  // Each restrained node must identify its real physical receiving element,
+  // including existing masonry/concrete. The capacities remain UNKNOWN.
+  d.supportInterfaces=d.supports.map((support,index)=>({
+    nodeId:support.nodeId,side:index===0?"A" as const:index===1?"B" as const:"internal" as const,
+    kind:index===0?"existing-concrete" as const:index===1?"existing-masonry" as const:"new-steel-column" as const,
+    dofs:support.dofs.map(x=>x==="fixed"?"fixed" as const:"free" as const) as
+      ["fixed"|"free","fixed"|"free","fixed"|"free","fixed"|"free","fixed"|"free","fixed"|"free"],
+    source:"Vinculação sintética explícita dos apoios reais",
+    revision:"Revisão física dos nós de apoio M40",
+    loadPath:"Transferência da terça pela barra até o nó físico de apoio",
+    restraintBasis:"Graus de liberdade físicos explicitamente revisados na hipótese analítica",
+    reviewStatus:"site-reviewed" as const,
+  }));
   reviewM34Fixture(p);
   d.loading={
     version:1,selfWeight:null,uniform:[],roofArea:[{
@@ -98,5 +112,36 @@ it("M39-P2: L real -> caminhos de carga nos segmentos -> solver PyNite -> 3 rea�
   expect(rz).toBeCloseTo(3600,5);
   expect(combination.equilibrium.relative_residual).toBeLessThan(1e-8);
   expect(result.result.input_sha256).toBe(prepared.input_sha256);
+  const trace=prepared.roof_load_path;
+  if(!isDeclaredRoofTrace(trace))throw Error("Esperada carga física em cobertura declarada.");
+  const audited=await auditPhysicalRoofReactionPath(p,prepared.request,result.result,trace,prepared.mapping);
+  expect(audited.status).toBe("reaction-path-verified");
+  expect(audited.combinations).toHaveLength(1);
+  const checked=audited.combinations[0];
+  expect(checked.appliedForceN[2]).toBeCloseTo(-3600,5);
+  expect(checked.supportForceN[2]).toBeCloseTo(3600,5);
+  expect(Math.hypot(...checked.forceResidualN)).toBeLessThan(1e-4);
+  expect(Math.hypot(...checked.momentResidualNm)).toBeLessThan(1e-3);
+  expect(checked.reactions).toHaveLength(d.supports.length);
+  expect(checked.reactions.some(r=>r.kind==="existing-concrete")).toBe(true);
+  expect(checked.reactions.some(r=>r.kind==="existing-masonry")).toBe(true);
+  expect(audited.supportAudits.every(a=>a.normativeApproval===false)).toBe(true);
+  expect(audited.fabricationRelease).toBe(false);
+
+  const forgedTrace=structuredClone(trace);
+  forgedTrace.actions[0].expectedForceN[2]-=100;
+  await expect(auditPhysicalRoofReactionPath(p,prepared.request,result.result,forgedTrace,prepared.mapping))
+    .rejects.toThrow("M40_TAMPERED_DISTRIBUTION");
+  const tampered=structuredClone(result.result);
+  tampered.combinations["ELASTIC-L"].nodes["A0"].reaction_force_n[2]+=500;
+  await expect(auditPhysicalRoofReactionPath(p,prepared.request,tampered,trace,prepared.mapping))
+    .rejects.toThrow("M40_FORCE_IMBALANCE");
+  d.supportInterfaces!.pop();
+  const missing=await auditPhysicalRoofReactionPath(p,prepared.request,result.result,trace,prepared.mapping);
+  expect(missing.status).toBe("support-review-pending");
+  expect(missing.issues.some(i=>i.includes("UNMAPPED"))).toBe(true);
+  d.physicalRoofFaces!.faces[0].revision="Revisão posterior à execução";
+  await expect(auditPhysicalRoofReactionPath(p,prepared.request,result.result,trace,prepared.mapping))
+    .rejects.toThrow("M40_STALE_ROOF");
   expect(prepared.approved_for_fabrication).toBe(false);
 },30000);
