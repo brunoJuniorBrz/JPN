@@ -11,7 +11,10 @@ import { verifyEngineeringCombinations } from "./engineering-combinations";
 export async function adaptLoadedMixedProject(project:Project){
   const loading=project.workspace.spatialPreparation?.loading;
   if(!loading)throw new Error("Declare carregamentos físicos.");
-  if(loading.wind)assertGeneratedPhysicalStructure(project,"vento em fachadas/estrutura declarada exige caminho de transmissão normativo validado");
+  if(project.workspace.spatialPreparation?.roofRegions)throw Error("COMPOSED_ROOF_PRELIMINARY: regiões compostas ainda não analisáveis.");
+  if(project.workspace.physicalStructure&&loading.wind)assertGeneratedPhysicalStructure(project,"vento em fachadas/estrutura declarada exige caminho de transmissão normativo validado");
+  if(project.workspace.physicalStructure&&loading.roofDistribution&&!loading.roofArea.length)assertGeneratedPhysicalStructure(project,"distribuição de área declarada sem ação real");
+  if(project.workspace.physicalStructure&&loading.roofArea.length&&!project.workspace.spatialPreparation?.physicalRoofFaces)assertGeneratedPhysicalStructure(project,"área declarada sem superfícies físicas revisadas");
   if(!project.workspace.physicalStructure&&project.workspace.spatialPreparation?.physicalRoofFaces&&(loading.roofArea.length||loading.wind))
     throw new Error("DUAL_ROOF_SOURCE_PENDING: face física declarada e gerador coexistem. Escolha uma única geometria de referência antes de aplicar ações.");
   const roof_load_path=loading.roofArea.length?(project.workspace.physicalStructure?distributeDeclaredRoofActions(project,loading.roofArea,loading.roofDistribution):distributeRoofActions(project,loading.roofArea,loading.roofDistribution)):null;
