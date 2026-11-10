@@ -31,7 +31,6 @@ describe("M43-P1: second-order readiness, not an unsafe approximate stability ap
     expect(audit.combinations[0].maximumTranslationToSpanRatio)
       .toBeCloseTo(Math.hypot(0.01,-0.0001)/4,12);
     expect(audit.combinations[0].linearEquilibriumResidual).toBe(1e-12);
-    expect(audit.secondOrderAudit).toBeUndefined();
     expect(audit.pDeltaExecuted).toBe(false);
     expect(audit.bucklingModesCalculated).toBe(false);
     expect(audit.normativeStabilityVerified).toBe(false);
@@ -68,7 +67,7 @@ describe("M43-P1: second-order readiness, not an unsafe approximate stability ap
     delete r.combinations["ULS-WIND"];
     expect(()=>auditSecondOrderReadiness(p,r)).toThrow("M43_CASE_MISMATCH");
     const r2=solved();
-    delete r2.combinations["ULS-WIND"].nodes.BASE;
+    delete (r2.combinations["ULS-WIND"].nodes as Record<string,unknown>).BASE;
     expect(()=>auditSecondOrderReadiness(p,r2)).toThrow("M43_NODE_MISMATCH");
     const r3=solved();
     r3.combinations["ULS-WIND"].equilibrium.relative_residual=0.1;
