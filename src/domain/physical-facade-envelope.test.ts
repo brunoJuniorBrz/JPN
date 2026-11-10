@@ -43,7 +43,7 @@ describe("M41-P2: sobreposição das fachadas e lacunas de fechamento",()=>{
     expect(result.faces).toHaveLength(2);
     expect(result.totalVerticalAreaM2).toBeCloseTo(42,10);
   });
-  it("recusa medição muito grande e não substitui revisão por coeficiente fictício",()=>{
+  it("não infere fechamento global nem para muitos panos separados de fachada",()=>{
     const facade=east("EAST",0,6000);
     const tooMany=Array.from({length:16},(_,i)=>({...facade,id:"F"+i,
       outer:ring([[8000,i*10000,0],[8000,i*10000+6000,0],[8000,i*10000+6000,4000],[8000,i*10000,4000]])}));
