@@ -10,6 +10,7 @@ import { distributeWindActions } from "./wind-load-path";
 import {distributeDeclaredFacadeTractions} from "./declared-facade-traction";
 import {auditFacadeSolverLoads} from "./facade-solver-load-audit";
 import { verifyEngineeringCombinations } from "./engineering-combinations";
+import {auditEngineeringCombinationCoverage} from "./engineering-combination-coverage";
 export async function adaptLoadedMixedProject(project:Project){
   const loading=project.workspace.spatialPreparation?.loading;
   if(!loading)throw new Error("Declare carregamentos físicos.");
@@ -31,6 +32,7 @@ export async function adaptLoadedMixedProject(project:Project){
   const facade_traction_path=loading.facadeTraction?
     distributeDeclaredFacadeTractions(project,loading.facadeTraction):null;
   const engineering_combinations=draft.engineeringCombinations?verifyEngineeringCombinations(draft.engineeringCombinations,draft.cases,draft.combinations):null;
+  const engineering_combination_coverage=draft.engineeringCombinations?auditEngineeringCombinationCoverage(draft.engineeringCombinations,draft.cases,draft.combinations):null;
   if(wind_load_path){
     if(!engineering_combinations)throw new Error("WIND_COMBINATIONS_PENDING: declare categorias, exclusões, fatores e referências das combinações.");
     const windActions=engineering_combinations.declaration.actions.filter(a=>wind_load_path.cases.some(c=>c.caseId===a.caseId));
@@ -87,5 +89,5 @@ export async function adaptLoadedMixedProject(project:Project){
     return {member:m.id,kg_m3:d.kgM3,source:d.source,revision:d.revision};})}:null;
   const request=loadedMixedRequestSchema.parse({...prepared.request,schema_version:"jpn.mixed3d/2",member_loads,self_weight});
   const facade_solver_audit=facade_traction_path?auditFacadeSolverLoads(project,facade_traction_path,request,prepared.mapping):null;
-  return {...prepared,schema_version:"jpn.mixed-adapter/2" as const,request,roof_load_path,wind_load_path,facade_traction_path,facade_solver_audit,engineering_combinations,input_sha256:await mixedInputHash(request)};
+  return {...prepared,schema_version:"jpn.mixed-adapter/2" as const,request,roof_load_path,wind_load_path,facade_traction_path,facade_solver_audit,engineering_combinations,engineering_combination_coverage,input_sha256:await mixedInputHash(request)};
 }
