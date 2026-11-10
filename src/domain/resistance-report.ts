@@ -7,7 +7,7 @@ import { canonicalSpatialInput } from "./spatial-analysis";
 import { mixedInputHash } from "./mixed-analysis";
 import { anyMixedResultSchema } from "./structural-loading";
 import { assessSupportReactions } from "./support-interface";
-import { auditPhysicalRoofReactionPath } from "./physical-reaction-path";
+import { auditPhysicalRoofReactionPath,isDeclaredRoofTrace } from "./physical-reaction-path";
 import { extractMemberDemands, type DemandInput } from "./member-demands";
 import { resistancePreparationSchema } from "./resistance-preparation";
 import { elasticMemberReference } from "./resistance-elastic-reference";
@@ -42,8 +42,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
   if(current.input_sha256!==prepared.input_sha256||current.preparation_sha256!==prepared.preparation_sha256||canonicalSpatialInput(current.mapping)!==canonicalSpatialInput(prepared.mapping))
     throw new Error("STALE_RESISTANCE_ANALYSIS: projeto/discretização/declarações diferem da análise; execute novamente.");
   const demands=await extractMemberDemands(prepared,value),draft=project.workspace.spatialPreparation!,model=resolvePhysicalStructure(project).model!;
-  const roofReactionAudit="roof_load_path" in current&&current.roof_load_path&&
-    "declaredGeometry" in current.roof_load_path?
+  const roofReactionAudit="roof_load_path" in current&&isDeclaredRoofTrace(current.roof_load_path)?
     await auditPhysicalRoofReactionPath(project,current.request,value,current.roof_load_path,current.mapping):null;
   const continuousDemands=jointTrace?await extractContinuousDemands(prepared,value,jointTrace):null;
   const wholePieceDeflections=continuousDemands?await extractWholePieceDeflections(continuousDemands):null;
