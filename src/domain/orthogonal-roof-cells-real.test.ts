@@ -44,9 +44,16 @@ it("M39-P2: L real -> caminhos de carga nos segmentos -> solver PyNite -> 3 rea�
   d.memberConnections=pieces.map(piece=>({
     pieceId:piece.id,start:"rigid" as const,end:"rigid" as const,
   }));
-  d.supports=["A0","B0","C0"].map(nodeId=>({
-    nodeId,dofs:["fixed","fixed","fixed","fixed","fixed","fixed"] as
-      ["fixed","fixed","fixed","fixed","fixed","fixed"],
+  // Both ends of each physical roof beam line are supported in the
+  // reference problem. The earlier cantilever-only fixture exceeded the
+  // linear-elastic displacement limit; we DO NOT relax that solver safety gate.
+  const rootSupports=new Set(["A0","B0","C0"]);
+  const edgeSupports=["A0","B0","C0","A5","B5","C2"];
+  d.supports=edgeSupports.map(nodeId=>({
+    nodeId,dofs:(rootSupports.has(nodeId)
+      ? ["fixed","fixed","fixed","fixed","fixed","fixed"]
+      : ["fixed","fixed","fixed","free","free","free"]) as
+      ["fixed"|"free","fixed"|"free","fixed"|"free","fixed"|"free","fixed"|"free","fixed"|"free"],
   }));
   // The loaded mixed3d/2 contract must handle genuine area-only projects.
   // No phantom zero-valued nodal case is inserted to unlock the solver.
@@ -54,7 +61,7 @@ it("M39-P2: L real -> caminhos de carga nos segmentos -> solver PyNite -> 3 rea�
   d.combinations=[{id:"ELASTIC-L",factors:{AREA:1}}];
   d.loads=[];
   d.connectionsReview="Ligações rígidas sintéticas explicitamente declaradas; verificar na obra";
-  d.lateralSystem="Três nós em raízes identificadas com seis graus de liberdade bloqueados por hipótese de teste";
+  d.lateralSystem="Raízes engastadas e apoios físicos de borda articulados em nós explícitos no ensaio; revisar vínculos para cada obra";
   d.loadPathReview="Painéis ortogonais L em terças divididas e peças de travamento reais entre os nós";
   const outer:[[number,number],[number,number],[number,number],[number,number],[number,number],[number,number]]=[
     [0,0],[6000,0],[6000,2000],[2000,2000],[2000,5000],[0,5000],
