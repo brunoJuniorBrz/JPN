@@ -94,6 +94,9 @@ it("M41-P3: pressão explícita em fachada -> pilares físicos -> PyNite real e 
   expect(prepared.facade_traction_path?.cases[0].forceN).toEqual([-12000,0,0]);
   expect(prepared.request.member_loads).toHaveLength(3);
   expect(prepared.request.member_loads.map(l=>l.force_per_length_n_m[0])).toEqual([-750,-1500,-750]);
+  // One SLS-only wind scenario is NOT a complete ELU/ELS analysis matrix.
+  expect(prepared.engineering_combination_coverage?.coverageStatus).toBe("review-required");
+  expect(prepared.engineering_combination_coverage?.missingULS).toEqual(["WIND-X"]);
   expect(prepared.facade_solver_audit?.verified).toBe(true);
   expect(prepared.facade_solver_audit?.cases[0].facades[0].mappedMembers).toEqual(["C0","C3","C6"]);
   const sourceTrace=prepared.facade_traction_path;
@@ -125,6 +128,30 @@ it("M41-P3: pressão explícita em fachada -> pilares físicos -> PyNite real e 
   const analysis=result.result.combinations["ELASTIC-WIND"];
   const fx=Object.values(analysis.nodes).reduce((s,n)=>s+n.reaction_force_n[0],0);
   expect(fx).toBeCloseTo(12000,5);
+  // Independently reconstruct the 3 global support moments, including
+  // rigid-support couple reactions. Solver force equilibrium alone is not
+  // evidence of a correct physical wind moment path.
+  const netReactionForce:[number,number,number]=[0,0,0],
+    netReactionMoment:[number,number,number]=[0,0,0];
+  for(const support of prepared.request.supports){
+    const node=prepared.request.nodes.find(n=>n.id===support.node);
+    const answer=analysis.nodes[support.node];
+    if(!node||!answer)throw Error("O solver omitiu um apoio físico");
+    const r:[number,number,number]=[node.x_m,node.y_m,node.z_m],
+      f=answer.reaction_force_n,m=answer.reaction_moment_nm;
+    for(let i=0;i<3;i++)netReactionForce[i]+=f[i];
+    netReactionMoment[0]+=m[0]+r[1]*f[2]-r[2]*f[1];
+    netReactionMoment[1]+=m[1]+r[2]*f[0]-r[0]*f[2];
+    netReactionMoment[2]+=m[2]+r[0]*f[1]-r[1]*f[0];
+  }
+  const applied=prepared.facade_traction_path!.cases[0];
+  for(let i=0;i<3;i++){
+    expect(Math.abs(netReactionForce[i]+applied.forceN[i]))
+      .toBeLessThan(1e-7*Math.max(1,...applied.forceN.map(Math.abs)));
+    expect(Math.abs(netReactionMoment[i]+applied.momentNm[i]))
+      .toBeLessThan(1e-6*Math.max(1,...applied.momentNm.map(Math.abs)));
+  }
+
   expect(analysis.equilibrium.relative_residual).toBeLessThan(1e-8);
   expect(result.result.input_sha256).toBe(prepared.input_sha256);
   expect(prepared.facade_traction_path?.windNormativeReady).toBe(false);
