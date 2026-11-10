@@ -8,6 +8,7 @@ import { distributeRoofActions } from "./roof-load-path";
 import { distributeDeclaredRoofActions } from "./declared-roof-load-path";
 import { distributeWindActions } from "./wind-load-path";
 import {distributeDeclaredFacadeTractions} from "./declared-facade-traction";
+import {auditFacadeSolverLoads} from "./facade-solver-load-audit";
 import { verifyEngineeringCombinations } from "./engineering-combinations";
 export async function adaptLoadedMixedProject(project:Project){
   const loading=project.workspace.spatialPreparation?.loading;
@@ -85,5 +86,6 @@ export async function adaptLoadedMixedProject(project:Project){
     const d=resolveMemberPhysical(pieces.get(m.originalId)!,draft).properties.density;if(!d)throw new Error(`${m.originalId}: densidade, fonte e revisão pendentes.`);
     return {member:m.id,kg_m3:d.kgM3,source:d.source,revision:d.revision};})}:null;
   const request=loadedMixedRequestSchema.parse({...prepared.request,schema_version:"jpn.mixed3d/2",member_loads,self_weight});
-  return {...prepared,schema_version:"jpn.mixed-adapter/2" as const,request,roof_load_path,wind_load_path,facade_traction_path,engineering_combinations,input_sha256:await mixedInputHash(request)};
+  const facade_solver_audit=facade_traction_path?auditFacadeSolverLoads(project,facade_traction_path,request,prepared.mapping):null;
+  return {...prepared,schema_version:"jpn.mixed-adapter/2" as const,request,roof_load_path,wind_load_path,facade_traction_path,facade_solver_audit,engineering_combinations,input_sha256:await mixedInputHash(request)};
 }
