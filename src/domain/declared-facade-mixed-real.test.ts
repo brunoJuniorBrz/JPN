@@ -105,6 +105,16 @@ it("M41-P3: pressão explícita em fachada -> pilares físicos -> PyNite real e 
   const missingMapping={...prepared.mapping,members:prepared.mapping.members.filter(m=>m.originalId!=="C0")};
   expect(()=>auditFacadeSolverLoads(p,sourceTrace,prepared.request,missingMapping))
     .toThrow("FACADE_AUDIT_UNMAPPED_COLUMN");
+  const shortened=structuredClone(prepared.request);
+  const firstColumn=shortened.members.find(m=>m.id===prepared.mapping.members.find(x=>x.originalId==="C0")?.id);
+  if(!firstColumn)throw Error("Pilar C0 não foi mapeado");
+  shortened.nodes.find(n=>n.id===firstColumn.start)!.z_m+=0.15;
+  expect(()=>auditFacadeSolverLoads(p,sourceTrace,shortened,prepared.mapping))
+    .toThrow("FACADE_AUDIT_SEGMENTATION");
+  const offAxis=structuredClone(prepared.request);
+  offAxis.nodes.find(n=>n.id===firstColumn.start)!.x_m+=0.05;
+  expect(()=>auditFacadeSolverLoads(p,sourceTrace,offAxis,prepared.mapping))
+    .toThrow("FACADE_AUDIT_OFF_AXIS");
   const extra=structuredClone(prepared.request);
   extra.member_loads.push({...extra.member_loads[0],id:"FACADE:WIND-X:FAKE:Z"});
   expect(()=>auditFacadeSolverLoads(p,sourceTrace,extra,prepared.mapping))
