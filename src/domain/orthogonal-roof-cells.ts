@@ -5,7 +5,7 @@ type Vec2=[number,number];
 type Bounds=[number,number,number,number];
 type RoofFace=PhysicalRoofFaces["faces"][number];
 const eps=1e-7;
-const fail=(why:string):never=>{throw Error("M39_ORTHOGONAL_ROOF: "+why);};
+function fail(why:string):never {throw Error("M39_ORTHOGONAL_ROOF: "+why);}
 const almost=(x:number,y:number)=>Math.abs(x-y)<=eps;
 const unique=(a:number[])=>[...new Set(a)].sort((x,y)=>x-y);
 const xy=(p:[number,number,number]):Vec2=>[p[0]/1000,p[1]/1000];
