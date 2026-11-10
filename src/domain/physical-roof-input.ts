@@ -9,7 +9,7 @@ export function parseRoofVertices(value:string):RoofVertex[]{
     throw new Error("ROOF_VERTICES: informe 3 a 100 vértices XYZ em linhas separadas.");
   const points=lines.map((line,index)=>{
     const parts=line.split(";").map(s=>s.trim());
-    if(parts.length!==3||parts.some(s=>!/^[+-]?\d+(?:[.,]\d+)?$/.test(s)))
+    if(parts.length!==3||parts.some(s=>!/^[+-]?\d+(?:[.,]\d+)?$/.test(s)||/^[+-]?[1-9]\d{0,2}\.\d{3}$/.test(s)))
       throw new Error("ROOF_VERTEX_FORMAT: linha "+(index+1)+" deve ter X; Y; Z em mm, separados por ponto e vírgula.");
     const numbers=parts.map(s=>Number(s.replace(",",".")));
     if(numbers.some(n=>!Number.isFinite(n)||Math.abs(n)>maxCoordinateMm))
