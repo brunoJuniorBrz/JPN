@@ -1,7 +1,7 @@
 # JPN — Plano executivo de implementação até 100%
 
-**Data da revisão:** 09/11/2026
-**Escopo do produto:** sistema web integrado para modelagem, análise, dimensionamento e documentação de coberturas e galpões metálicos com sistemas resistentes em aço e apoios em pilares metálicos, alvenaria existente, concreto existente e soluções híbridas. Inclui uma/two águas (uma/duas águas), irregularidades, extensões, recortes e obras encostadas. Não promete cálculo universal de qualquer edifício de concreto ou alvenaria.
+**Data da revisão:** 10/11/2026
+**Escopo do produto:** sistema web integrado para modelagem, análise, dimensionamento e documentação de coberturas e galpões metálicos com sistemas resistentes em aço e apoios em pilares metálicos, alvenaria existente, concreto existente e soluções híbridas. Inclui uma e duas águas, irregularidades, extensões, recortes e obras encostadas. Não promete cálculo universal de qualquer edifício de concreto ou alvenaria.
 
 ## 1. Definição rigorosa de 100%
 
@@ -179,6 +179,19 @@ Fontes de pesquisa: https://www.abntcatalogo.com.br/ ; https://site.abece.com.br
 6. Só liberar mercado/fabricação depois da homologação externa e revisão profissional de cada domínio de engenharia.
 
 ## 7. Painel de acompanhamento
+
+### Execução da sequência atual — atualização 10/11/2026
+
+| Entrega | Branch / PR | Estado técnico | Integração na main |
+| --- | --- | --- | --- |
+| Consolidação M36-F | #66 | CI completa aprovada | Não mesclado |
+| Geometria M37-P1 | #67 | CI completa aprovada | Não mesclado |
+| Cobertura física M37-P2 | #68 | CI completa aprovada | Não mesclado |
+| Caminho de cargas M39-P1 | #69 | Typecheck, lint, testes unitários e PyNite real passaram; CI do HEAD segue com Playwright/build | Não mesclado |
+| Contornos ortogonais L e furos M39-P2 | #70 | Código, teste analítico e integração PyNite criados; CI do HEAD ainda pendente | Não mesclado |
+
+**Gates ainda abertos:** consolidar os PRs sem conflicts; testar jornada da interface de lançamento das faces; conferir equilíbrio L/recortes no Python real e regressões; comprovar cobertura/fachadas/vento normativos; dimensionamento resistente, estabilidade e ligações. Nenhum ponto é contabilizado como concluído antes de integrar à main e aprovar seus critérios completos.
+
 
 Para cada marco manter: `status` (not-started/in-progress/blocked/validated/merged), PRs, SHA integrado, condições de entrada, casos de teste, oráculos, regressões, pendências por norma, responsável técnico, riscos e data de aceite.
 
