@@ -5,13 +5,19 @@ import { mixedInputHash } from "./mixed-analysis";
 import { resolvePhysicalStructure,assertGeneratedPhysicalStructure } from "./physical-structure";
 import { resolveMemberPhysical } from "./member-physical";
 import { distributeRoofActions } from "./roof-load-path";
+import { distributeDeclaredRoofActions } from "./declared-roof-load-path";
 import { distributeWindActions } from "./wind-load-path";
 import { verifyEngineeringCombinations } from "./engineering-combinations";
 export async function adaptLoadedMixedProject(project:Project){
   const loading=project.workspace.spatialPreparation?.loading;
   if(!loading)throw new Error("Declare carregamentos físicos.");
-  if(loading.roofArea.length||loading.wind||loading.roofDistribution)assertGeneratedPhysicalStructure(project,"ações por área/vento sem caminho de transmissão validado");
-  const roof_load_path=loading.roofArea.length?distributeRoofActions(project,loading.roofArea,loading.roofDistribution):null;
+  if(project.workspace.spatialPreparation?.roofRegions)throw Error("COMPOSED_ROOF_PRELIMINARY: regiões compostas ainda não analisáveis.");
+  if(project.workspace.physicalStructure&&loading.wind)assertGeneratedPhysicalStructure(project,"vento em fachadas/estrutura declarada exige caminho de transmissão normativo validado");
+  if(project.workspace.physicalStructure&&loading.roofDistribution&&!loading.roofArea.length)assertGeneratedPhysicalStructure(project,"distribuição de área declarada sem ação real");
+  if(project.workspace.physicalStructure&&loading.roofArea.length&&!project.workspace.spatialPreparation?.physicalRoofFaces)assertGeneratedPhysicalStructure(project,"área declarada sem superfícies físicas revisadas");
+  if(!project.workspace.physicalStructure&&project.workspace.spatialPreparation?.physicalRoofFaces&&(loading.roofArea.length||loading.wind))
+    throw new Error("DUAL_ROOF_SOURCE_PENDING: face física declarada e gerador coexistem. Escolha uma única geometria de referência antes de aplicar ações.");
+  const roof_load_path=loading.roofArea.length?(project.workspace.physicalStructure?distributeDeclaredRoofActions(project,loading.roofArea,loading.roofDistribution):distributeRoofActions(project,loading.roofArea,loading.roofDistribution)):null;
   const draft=project.workspace.spatialPreparation!;
   const wind_load_path=loading.wind?distributeWindActions(project,loading.wind):null;
   const engineering_combinations=draft.engineeringCombinations?verifyEngineeringCombinations(draft.engineeringCombinations,draft.cases,draft.combinations):null;
