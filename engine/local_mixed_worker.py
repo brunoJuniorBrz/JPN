@@ -84,6 +84,10 @@ def main():
         def nonfinite(_):
             raise ValueError('Nonfinite JSON constant')
         data = json.loads(body.decode('utf-8'), object_pairs_hook=_unique_object, parse_constant=nonfinite)
+        if '--second-order-frame' in sys.argv:
+            from jpn_structural.second_order_frame import analyze_second_order_frame
+            return dict(schema_version='jpn.local-second-order-frame/1',status='diagnostic',
+                        execution=limits,diagnostic=analyze_second_order_frame(data))
         if '--purlin' in sys.argv:
             from jpn_structural.purlin import analyze_purlin
             return dict(schema_version='jpn.local-purlin/1',status='completed',execution=limits,result=analyze_purlin(data))

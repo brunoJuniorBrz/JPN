@@ -101,6 +101,8 @@ Não usar *percentual de linhas programadas* ou número de PRs como medida. As p
 **Aceite:** bater tabela de combinações com exemplos independentes da edição adotada; bloquear caso sem base normativa ou sem ação considerada.
 
 ### Marco 7 — M43 (11 pontos): estabilidade e segundo-ordem
+
+**M43-P2:** [protótipo diagnóstico integrado](M43-P2-DIAGNOSTICO-PDELTA.md), com comparações OpenSees executadas e candidatos recusados. Recuperação de esforços e equilíbrio físico ainda impedem habilitação produtiva; o marco continua parcial, sem homologação ou liberação.
 - Generalizar solução linear já validada para frame-only, axial-only e mista, incluindo fôrmas de apoio/ligação realmente declaradas.
 - Calcular modos de flambagem/estabilidade global; ações de segunda ordem P-Δ/P-δ, imperfeições e efeitos geométricos quando aplicáveis.
 - Resolver limitação atual de Spring3D sem contribuição a Kg; ou selecionar formulação física equivalente validada com matriz geométrica, sem artifício de rigidez.
