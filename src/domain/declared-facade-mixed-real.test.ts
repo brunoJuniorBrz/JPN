@@ -6,6 +6,7 @@ import {declaredFacadeTractionSignature} from "./declared-facade-traction";
 import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
 import {adaptMixedProject} from "./mixed-adapter";
 import {runLocalMixed} from "@/infrastructure/analysis/local-mixed-runner";
+import {auditFacadeSolverLoads} from "./facade-solver-load-audit";
 afterEach(()=>vi.unstubAllEnvs());
 
 it("M41-P3: pressão explícita em fachada -> pilares físicos -> PyNite real e reações",async()=>{
@@ -93,6 +94,31 @@ it("M41-P3: pressão explícita em fachada -> pilares físicos -> PyNite real e 
   expect(prepared.facade_traction_path?.cases[0].forceN).toEqual([-12000,0,0]);
   expect(prepared.request.member_loads).toHaveLength(3);
   expect(prepared.request.member_loads.map(l=>l.force_per_length_n_m[0])).toEqual([-750,-1500,-750]);
+  expect(prepared.facade_solver_audit?.verified).toBe(true);
+  expect(prepared.facade_solver_audit?.cases[0].facades[0].mappedMembers).toEqual(["C0","C3","C6"]);
+  const sourceTrace=prepared.facade_traction_path;
+  if(!sourceTrace)throw Error("Caminho de fachadas física ausente");
+  const tampered=structuredClone(prepared.request);
+  tampered.member_loads[0].force_per_length_n_m[0]-=50;
+  expect(()=>auditFacadeSolverLoads(p,sourceTrace,tampered,prepared.mapping))
+    .toThrow("FACADE_AUDIT_LOAD_MISMATCH");
+  const missingMapping={...prepared.mapping,members:prepared.mapping.members.filter(m=>m.originalId!=="C0")};
+  expect(()=>auditFacadeSolverLoads(p,sourceTrace,prepared.request,missingMapping))
+    .toThrow("FACADE_AUDIT_UNMAPPED_COLUMN");
+  const shortened=structuredClone(prepared.request);
+  const firstColumn=shortened.members.find(m=>m.id===prepared.mapping.members.find(x=>x.originalId==="C0")?.id);
+  if(!firstColumn)throw Error("Pilar C0 não foi mapeado");
+  shortened.nodes.find(n=>n.id===firstColumn.start)!.z_m+=0.15;
+  expect(()=>auditFacadeSolverLoads(p,sourceTrace,shortened,prepared.mapping))
+    .toThrow("FACADE_AUDIT_SEGMENTATION");
+  const offAxis=structuredClone(prepared.request);
+  offAxis.nodes.find(n=>n.id===firstColumn.start)!.x_m+=0.05;
+  expect(()=>auditFacadeSolverLoads(p,sourceTrace,offAxis,prepared.mapping))
+    .toThrow("FACADE_AUDIT_OFF_AXIS");
+  const extra=structuredClone(prepared.request);
+  extra.member_loads.push({...extra.member_loads[0],id:"FACADE:WIND-X:FAKE:Z"});
+  expect(()=>auditFacadeSolverLoads(p,sourceTrace,extra,prepared.mapping))
+    .toThrow("FACADE_AUDIT_UNTRACED_LOAD");
   const result=await runLocalMixed(JSON.stringify(prepared.request));
   if(result.status!=="completed"||result.result.schema_version!=="jpn.mixed3d-result/2")
     throw Error("PyNite não analisou os pilares reais carregados pelas faces medidas");
