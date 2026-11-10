@@ -5,6 +5,7 @@ import {physicalRoofFacesSchema} from "./physical-roof-faces";
 import {declaredRoofDistributionSignature} from "./declared-roof-load-path";
 import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
 import {runLocalMixed} from "@/infrastructure/analysis/local-mixed-runner";
+import {buildResistanceReport} from "./resistance-report";
 
 afterEach(()=>vi.unstubAllEnvs());
 it("M39: cobertura declarada -> terças físicas -> loaded mixed3d/2 -> PyNite real -> equilíbrio",async()=>{
@@ -86,4 +87,11 @@ it("M39: cobertura declarada -> terças físicas -> loaded mixed3d/2 -> PyNite r
   expect(reaction).toBeCloseTo(8000,5);
   expect(combination.equilibrium.relative_residual).toBeLessThan(1e-8);
   expect(executed.result.input_sha256).toBe(prepared.input_sha256);
+  const report=await buildResistanceReport(p,prepared,executed.result);
+  expect(report.secondOrderAudit.topology).toBe("frame-only");
+  expect(report.secondOrderAudit.combinations.map(c=>c.combinationId)).toEqual(["ELASTIC-CASE"]);
+  expect(report.secondOrderAudit.baselineIsLinear).toBe(true);
+  expect(report.secondOrderAudit.pDeltaExecuted).toBe(false);
+  expect(report.secondOrderAudit.fabricationRelease).toBe(false);
+  expect(report.secondOrderAudit.releaseGate).toBe("NOT_READY_BLOCKED");
 },30000);

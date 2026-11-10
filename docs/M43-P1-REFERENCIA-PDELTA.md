@@ -1,6 +1,6 @@
 # M43-P1 — Benchmark independente de segunda ordem e escopo real do solver
 
-**Estado:** PR draft; CI completa e revisão de engenharia pendentes. **NÃO ativa segunda ordem em projetos JPN.**
+**Estado:** PR draft; exigir CI completa do SHA correspondente e revisão de engenharia. **NÃO ativa segunda ordem em projetos JPN.**
 
 ## Base integrada existente
 O motor misto `jpn.mixed3d/1` e `jpn.mixed3d/2` usa `PyNiteFEA==3.2.1` com `analyze_linear`. A solução resultante inclui deslocamentos e reações de primeira ordem, não uma matriz de rigidez geométrica global validada. A existência de um resultado convergido ou de pequenas deformações **não substitui** a verificação de estabilidade da estrutura ou das ligações.
@@ -16,7 +16,7 @@ O relatório de resistência passa a conter `secondOrderAudit`; qualquer revisã
 
 ## Referência analítica independente: cantilever prismaticamente comprimido
 
-O ensaio isolado em `engine/tests/test_m43_pdelta_reference.py` constrói no próprio PyNite um pilar em balanço com base engastada, topo livre, comprimento **L=4 m**, área **A=0,02 m²**, módulo **E=200 GPa**, inércia **I=2×10⁻⁵ m⁴**, carga horizontal **H=2000 N** e força de compressão de topo **P**.
+O ensaio isolado em `engine/tests/test_m43_pdelta_reference.py` constrói no próprio PyNite um pilar em balanço com base engastada, topo livre, comprimento **L=4 m**, área **A=0,02 m²**, módulo **E=200 GPa**, inércia **I=2×10⁻⁵ m⁴**, carga horizontal **H=2000 N** e força de compressão de topo **P**. As duas forças mantêm direção global fixa (cargas mortas, não seguidoras). A referência é de pequenas deformações específicas: inclui o momento `Pδ`, mas não representa equilíbrio completo de geometria finitamente deformada, incluindo `H·uz`.
 
 Para esse **único** subdomínio idealizado, a carga crítica elástica exata de Euler é
 
@@ -28,7 +28,9 @@ Com `k=√(P/(EI))`, a flecha no topo, sob H, é:
 
 `δ_segunda_ordem = (H/P) × [tan(kL)/k − L]` para `0<P<0,8Pcr`.
 
-O teste compara `FEModel3D.analyze_PDelta()` (modelo com quatro membros explícitos, sem barras fantasmas) à equação independente em `P/Pcr = 0,05; 0,20; 0,40` com tolerância **1,5%**, e à primeira ordem `analyze_linear()` com 0,005%. Também testa `P=0` e recusa analiticamente o domínio próximo à carga crítica ou entrada inválida.
+O teste compara `FEModel3D.analyze_PDelta()` à equação independente em `P/Pcr = 0,05; 0,20; 0,40`, com **64 membros explicitamente declarados somente no ensaio**, tolerância de flecha **0,0001%** (`1e-6`) e comparação linear `analyze_linear()` com 0,005%. A revisão demonstrou que quatro elementos não atendem à tolerância original `1e-6` da reação horizontal em 20% e 40% de Pcr. Essa tolerância foi preservada; há estudo de convergência 1/2/4/8/16/32/64 e conferência das três forças e três momentos da referência de viga-coluna. Nenhuma discretização de obra é alterada por esse teste.
+
+Também testa `P=0`, compressão positiva próxima de zero, inversão de H, entrada transversal inválida e recusa do domínio próximo à carga crítica. Perto de zero, a avaliação usa a série analítica de `(tan(q)−q)/q³` para não perder o limite linear por cancelamento numérico. [Revisão, resultados e comandos reproduzíveis](M43-P1-REVISAO-TECNICA.md).
 
 Um teste separado usa a **rota atual de produção** `analyze_mixed3d` para o mesmo pilar e comprova que ela ainda entrega a solução linear, e **não** se apropria silenciosamente do resultado P-Δ do benchmark.
 

@@ -18,6 +18,10 @@ AREA = 0.02  # m²
 LENGTH = 4.0
 HORIZONTAL = 2000.0
 P_EULER = math.pi**2 * E * I / (4.0 * LENGTH**2)
+# Four elements match displacement but FAIL the existing 1e-6 shear-reaction
+# gate in PyNite 3.2.1. Explicit mesh refinement, not a relaxed force tolerance,
+# is required for this isolated reference. Never refine a client model here.
+REFERENCE_SEGMENTS = 64
 
 
 def exact_cantilever_tip_displacement(P, H=HORIZONTAL):
@@ -29,15 +33,26 @@ def exact_cantilever_tip_displacement(P, H=HORIZONTAL):
     """
     if type(P) not in (float, int) or not math.isfinite(P) or P < 0:
         raise ValueError("M43_REFERENCE_INVALID_COMPRESSION")
+    if type(H) not in (float, int) or not math.isfinite(H):
+        raise ValueError("M43_REFERENCE_INVALID_TRANSVERSE_LOAD")
     if P >= 0.8 * P_EULER:
         raise ValueError("M43_REFERENCE_NEAR_CRITICAL: benchmark outside domain")
     if P == 0:
         return H * LENGTH**3 / (3 * E * I)
     k = math.sqrt(P / (E * I))
+    q2 = P * LENGTH**2 / (E * I)
+    if q2 < 1e-4:
+        # (tan(q)-q)/q**3 = 1/3 + 2*q**2/15 + 17*q**4/315
+        #                         + 62*q**6/2835 + O(q**8).
+        # The omitted term is < 9e-19 here. Direct subtraction loses the
+        # linear limit (and can return zero) for tiny POSITIVE compression.
+        return H * LENGTH**3 / (E * I) * (
+            1/3 + q2 * (2/15 + q2 * (17/315 + q2 * 62/2835))
+        )
     return (H / P) * (math.tan(k * LENGTH) / k - LENGTH)
 
 
-def _pynite_column(P, segments=4, nonlinear=False, H=HORIZONTAL):
+def _pynite_column(P, segments=REFERENCE_SEGMENTS, nonlinear=False, H=HORIZONTAL):
     model = FEModel3D()
     for i in range(segments + 1):
         model.add_node(f"N{i}", 0.0, 0.0, LENGTH * i / segments)
@@ -59,7 +74,22 @@ def _pynite_column(P, segments=4, nonlinear=False, H=HORIZONTAL):
         tip_z_m=tip.DZ["BENCHMARK"],
         horizontal_reaction_n=model.nodes["N0"].RxnFX["BENCHMARK"],
         vertical_reaction_n=model.nodes["N0"].RxnFZ["BENCHMARK"],
+        reaction_force_n=[getattr(model.nodes["N0"], k)["BENCHMARK"]
+                          for k in ("RxnFX", "RxnFY", "RxnFZ")],
+        reaction_moment_nm=[getattr(model.nodes["N0"], k)["BENCHMARK"]
+                            for k in ("RxnMX", "RxnMY", "RxnMZ")],
     )
+
+
+def _assert_beam_column_reactions(result, P, H=HORIZONTAL):
+    # Dead forces keep global directions. The small-strain beam-column
+    # reference includes P*DX; it is NOT full equilibrium in a finite-strain
+    # deformed geometry (in particular H*DZ is outside this idealization).
+    delta = exact_cantilever_tip_displacement(P, H)
+    assert result["reaction_force_n"] == pytest.approx(
+        [-H, 0, P], rel=1e-6, abs=1e-8)
+    assert result["reaction_moment_nm"] == pytest.approx(
+        [0, -H * LENGTH - P * delta, 0], rel=1e-6, abs=1e-8)
 
 
 @pytest.mark.parametrize("compression_ratio", [0.05, 0.2, 0.4])
@@ -71,13 +101,14 @@ def test_pynite_pdelta_matches_independent_exact_cantilever(compression_ratio):
     linear_reference = exact_cantilever_tip_displacement(0.0)
 
     assert first["tip_x_m"] == pytest.approx(linear_reference, rel=5e-5)
-    # The 4-element benchmark must agree with the independent exact solution.
+    # The explicitly refined benchmark must agree with the exact solution.
     # This acceptance is restricted to a prismatic frame-only cantilever.
-    assert second["tip_x_m"] == pytest.approx(reference, rel=0.015)
+    assert second["tip_x_m"] == pytest.approx(reference, rel=1e-6)
     assert second["tip_x_m"] > first["tip_x_m"]
     assert second["horizontal_reaction_n"] == pytest.approx(-HORIZONTAL, rel=1e-6)
     assert second["vertical_reaction_n"] == pytest.approx(P, rel=1e-6)
     assert second["tip_x_m"] / LENGTH < 0.01  # small-displacement pilot only
+    _assert_beam_column_reactions(second, P)
 
 
 def test_zero_compression_does_not_create_spurious_second_order_amplification():
@@ -85,6 +116,44 @@ def test_zero_compression_does_not_create_spurious_second_order_amplification():
     second = _pynite_column(0.0, nonlinear=True)
     assert second["tip_x_m"] == pytest.approx(first["tip_x_m"], rel=5e-5)
     assert second["tip_x_m"] == pytest.approx(exact_cantilever_tip_displacement(0.0), rel=5e-5)
+    _assert_beam_column_reactions(second, 0.0)
+
+
+def test_explicit_mesh_convergence_preserves_original_force_gate():
+    P = 0.4 * P_EULER
+    reference = exact_cantilever_tip_displacement(P)
+    force_errors, displacement_errors = [], []
+    for n in (1, 2, 4, 8, 16, 32, REFERENCE_SEGMENTS):
+        result = _pynite_column(P, segments=n, nonlinear=True)
+        force_errors.append(abs(result["horizontal_reaction_n"] + HORIZONTAL))
+        displacement_errors.append(abs(result["tip_x_m"] - reference))
+    assert all(b < a for a, b in zip(force_errors, force_errors[1:]))
+    assert all(b < a for a, b in zip(displacement_errors, displacement_errors[1:]))
+    assert force_errors[-1] <= 1e-6 * HORIZONTAL
+    assert displacement_errors[-1] <= 1e-6 * reference
+
+
+def test_reversed_dead_transverse_force_reverses_displacement_and_moment():
+    P, H = 0.4 * P_EULER, -HORIZONTAL
+    result = _pynite_column(P, nonlinear=True, H=H)
+    assert result["tip_x_m"] == pytest.approx(
+        exact_cantilever_tip_displacement(P, H), rel=1e-6)
+    assert result["tip_x_m"] < 0
+    assert abs(result["tip_x_m"]) / LENGTH < 0.01
+    _assert_beam_column_reactions(result, P, H)
+
+
+@pytest.mark.parametrize("ratio", [1e-20, 1e-16, 1e-12])
+def test_positive_near_zero_compression_preserves_nonzero_linear_limit(ratio):
+    value = exact_cantilever_tip_displacement(ratio * P_EULER)
+    assert value > 0
+    assert value == pytest.approx(HORIZONTAL * LENGTH**3 / (3 * E * I), rel=1e-10)
+
+
+@pytest.mark.parametrize("H", [float("nan"), float("inf"), True])
+def test_reference_rejects_nonphysical_transverse_force(H):
+    with pytest.raises(ValueError, match="M43_REFERENCE_INVALID_TRANSVERSE_LOAD"):
+        exact_cantilever_tip_displacement(0.2 * P_EULER, H)
 
 
 def test_reference_explicitly_rejects_critical_and_nonphysical_inputs():
@@ -103,7 +172,7 @@ def test_production_mixed_worker_remains_explicitly_linear_on_same_column():
     from jpn_structural.mixed3d import analyze_mixed3d
 
     P = 0.2 * P_EULER
-    n = 4
+    n = REFERENCE_SEGMENTS
     data = dict(
         schema_version="jpn.mixed3d/1", units="SI",
         theory="linear-elastic-frame-axial",

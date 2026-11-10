@@ -7,6 +7,7 @@ import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
 import {adaptMixedProject} from "./mixed-adapter";
 import {runLocalMixed} from "@/infrastructure/analysis/local-mixed-runner";
 import {auditFacadeSolverLoads} from "./facade-solver-load-audit";
+import {buildResistanceReport} from "./resistance-report";
 afterEach(()=>vi.unstubAllEnvs());
 
 it("M41-P3: pressão explícita em fachada -> pilares físicos -> PyNite real e reações",async()=>{
@@ -155,4 +156,11 @@ it("M41-P3: pressão explícita em fachada -> pilares físicos -> PyNite real e 
   expect(analysis.equilibrium.relative_residual).toBeLessThan(1e-8);
   expect(result.result.input_sha256).toBe(prepared.input_sha256);
   expect(prepared.facade_traction_path?.windNormativeReady).toBe(false);
+  const report=await buildResistanceReport(p,prepared,result.result);
+  expect(report.secondOrderAudit.topology).toBe("frame-only");
+  expect(report.secondOrderAudit.combinations.map(c=>c.combinationId)).toEqual(["ELASTIC-WIND"]);
+  expect(report.secondOrderAudit.pDeltaExecuted).toBe(false);
+  expect(report.secondOrderAudit.normativeStabilityVerified).toBe(false);
+  expect(report.secondOrderAudit.fabricationRelease).toBe(false);
+  expect(report.secondOrderAudit.releaseGate).toBe("NOT_READY_BLOCKED");
 },30000);
