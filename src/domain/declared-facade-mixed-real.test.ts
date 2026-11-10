@@ -1,0 +1,105 @@
+import {afterEach,expect,it,vi} from "vitest";
+import {m34abProject,reviewM34Fixture} from "./test-support/m34ab-fixtures";
+import {declaredStructureSchema} from "./declared-structure";
+import {physicalFacadesSchema} from "./physical-facades";
+import {declaredFacadeTractionSignature} from "./declared-facade-traction";
+import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
+import {adaptMixedProject} from "./mixed-adapter";
+import {runLocalMixed} from "@/infrastructure/analysis/local-mixed-runner";
+afterEach(()=>vi.unstubAllEnvs());
+
+it("M41-P3: pressão explícita em fachada -> pilares físicos -> PyNite real e reações",async()=>{
+  vi.stubEnv("NODE_ENV","development");
+  vi.stubEnv("JPN_LOCAL_MIXED_ENABLED","1");
+  vi.stubEnv("JPN_LOCAL_MIXED_ORIGIN","http://127.0.0.1:3000");
+  const p=m34abProject(),source="Modelo sintético de fachada com estrutura fisicamente apoiada",
+    revision="Revisão física do ensaio M41-P3";
+  const nodes=[0,3000,6000].flatMap((y,i)=>[
+    {id:"B"+i,x:8000,y,z:0},{id:"T"+i,x:8000,y,z:4000}
+  ]);
+  const pieces=[
+    {id:"C0",role:"column",start:"B0",end:"T0"},
+    {id:"C3",role:"column",start:"B1",end:"T1"},
+    {id:"C6",role:"column",start:"B2",end:"T2"},
+    {id:"TOP0",role:"topChord",start:"T0",end:"T1"},
+    {id:"TOP1",role:"topChord",start:"T1",end:"T2"},
+  ] as const;
+  p.workspace.physicalStructure=declaredStructureSchema.parse({
+    schema_version:"jpn.declared-structure/1",source:"declared",units:"mm",
+    provenance:source,revision,nodes,pieces,
+  });
+  const d=p.workspace.spatialPreparation!;
+  d.physicalCatalog!.assignments=pieces.map(piece=>({
+    pieceId:piece.id,materialId:"STEEL",sectionId:"S1",rotationDeg:0,
+  }));
+  d.memberKinds=pieces.map(piece=>({pieceId:piece.id,kind:"frame" as const}));
+  d.memberConnections=pieces.map(piece=>({
+    pieceId:piece.id,start:"rigid" as const,end:"rigid" as const,
+  }));
+  d.supports=nodes.map(n=>({
+    nodeId:n.id,dofs:(n.id.startsWith("B")?
+      ["fixed","fixed","fixed","fixed","fixed","fixed"]:
+      ["fixed","fixed","fixed","free","free","free"]) as
+      ["fixed"|"free","fixed"|"free","fixed"|"free","fixed"|"free","fixed"|"free","fixed"|"free"],
+  }));
+  d.cases=[{id:"WIND-X",source:"Pressão líquida fornecida externamente para ensaio elástico"}];
+  d.combinations=[{id:"ELASTIC-WIND",factors:{"WIND-X":1}}];
+  d.loads=[];d.connectionsReview="Conexões físicas rígidas somente na referência sintética";
+  d.lateralSystem="Três bases engastadas e extremidades superiores apoiadas lateralmente em nós explícitos";
+  d.loadPathReview="Fechamento simplesmente apoiado horizontalmente transfere tração aos três pilares reais";
+  const outer:[[number,number,number],[number,number,number],[number,number,number],[number,number,number]]=[
+    [8000,0,0],[8000,6000,0],[8000,6000,4000],[8000,0,4000],
+  ];
+  d.physicalFacades=physicalFacadesSchema.parse({
+    schema_version:"jpn.physical-facades/1",units:"mm",source,revision,
+    facades:[{
+      id:"EAST",kind:"wall",outward:"+X",enclosure:"cladded",
+      outer:[...outer,outer[0]],openings:[],supportPieceIds:["C0","C3","C6"],
+      source,revision,enclosureSource:"Inspeção física sintética do revestimento",
+    }]
+  });
+  const ref={
+    standard:"Hipótese externa do ensaio; ainda sem norma aplicada",
+    edition:"Revisão de referência M41-P3",
+    clause:"Não há cláusula normativa invocada neste teste",
+    source:"Levantamento sintético de situação física",
+    revision:"Revisão v1 de carga em fachada",
+    responsible:"Responsável técnico de referência não substituído pelo JPN",
+  };
+  d.engineeringCombinations={
+    schema_version:"jpn.engineering-combinations/1",normativeValidation:"pending-engineer-review",
+    actions:[{caseId:"WIND-X",category:"wind",exclusiveGroup:"FACADES-ALTERNATIVAS",reference:ref}],
+    combinations:[{
+      id:"ELASTIC-WIND",purpose:"SLS-characteristic",
+      hypothesis:"Caso sintético de serviço, sem fatores de norma presumidos",reference:ref,
+      terms:[{caseId:"WIND-X",gamma:1,psi:1,reference:ref}],
+    }],
+  };
+  reviewM34Fixture(p);
+  d.loading={version:1,selfWeight:null,uniform:[],roofArea:[],facadeTraction:{
+    schema_version:"jpn.declared-facade-traction/1",
+    normativeValidation:"pending-engineer-review",
+    physicalSignature:declaredFacadeTractionSignature(p),cases:[{
+      id:"WIND-X",incidenceDeg:0,reference:"Cenário sintético externo fornecido, sem conferência normativa",
+      zones:[{facadeId:"EAST",netPressurePa:500,
+        source:"Pressão líquida sintética de 500 pascais",
+        revision:"Revisão de carregamento de referência",
+        calculationBasis:"Dado independente declarado; NÃO é Cp/Cpi calculado pelo JPN"}],
+    }],
+  }};
+  await expect(adaptMixedProject(p)).rejects.toThrow("FACADE_LOADED_REQUIRED");
+  const prepared=await adaptLoadedMixedProject(p);
+  expect(prepared.request.schema_version).toBe("jpn.mixed3d/2");
+  expect(prepared.facade_traction_path?.cases[0].forceN).toEqual([-12000,0,0]);
+  expect(prepared.request.member_loads).toHaveLength(3);
+  expect(prepared.request.member_loads.map(l=>l.force_per_length_n_m[0])).toEqual([-750,-1500,-750]);
+  const result=await runLocalMixed(JSON.stringify(prepared.request));
+  if(result.status!=="completed"||result.result.schema_version!=="jpn.mixed3d-result/2")
+    throw Error("PyNite não analisou os pilares reais carregados pelas faces medidas");
+  const analysis=result.result.combinations["ELASTIC-WIND"];
+  const fx=Object.values(analysis.nodes).reduce((s,n)=>s+n.reaction_force_n[0],0);
+  expect(fx).toBeCloseTo(12000,5);
+  expect(analysis.equilibrium.relative_residual).toBeLessThan(1e-8);
+  expect(result.result.input_sha256).toBe(prepared.input_sha256);
+  expect(prepared.facade_traction_path?.windNormativeReady).toBe(false);
+},30000);
