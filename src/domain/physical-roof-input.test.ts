@@ -10,13 +10,14 @@ describe("M39-P3: entrada de levantamento XYZ sem unidades presumidas",()=>{
     expect(formatRoofVertices(vertices)).toBe(poly);
   });
   it("aceita decimal brasileiro e preserva a orientação de contornos",()=>{
-    const vertices=parseRoofVertices("0;0;3000,5\n4.000;0;3000,5\n4.000;2.000;3000,5");
-    expect(vertices[1][0]).toBe(4);
+    const vertices=parseRoofVertices("0;0;3000,5\n4,5;0;3000,5\n4,5;2,5;3000,5");
+    expect(vertices[1][0]).toBe(4.5);
     expect(vertices[1][1]).toBe(0);
     expect(vertices[1][2]).toBe(3000.5);
   });
   it("rejeita separador ambíguo, inf/nan e fechamento quase coincidente",()=>{
     expect(()=>parseRoofVertices("0,0,0\n2,0,0\n2,3,0")).toThrow("ROOF_VERTEX_FORMAT");
+    expect(()=>parseRoofVertices("0;0;0\n4.000;0;0\n4;4;0")).toThrow("ROOF_VERTEX_FORMAT");
     expect(()=>parseRoofVertices("0;0;0\nNaN;0;0\n2;2;0")).toThrow("ROOF_VERTEX_FORMAT");
     expect(()=>parseRoofVertices("0;0;0\n4;0;0\n4;4;0\n0;0;0,0005")).toThrow("ROOF_VERTEX_CLOSURE");
   });
