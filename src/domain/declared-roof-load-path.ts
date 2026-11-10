@@ -4,11 +4,12 @@ import type {PhysicalGeometry} from "./structure";
 import {structureSignature} from "./calculations/project-basis";
 import {resolvePhysicalStructure} from "./physical-structure";
 import {auditPhysicalRoofCoverage} from "./physical-roof-coverage";
+import {orthogonalRoofCells} from "./orthogonal-roof-cells";
 import {roofDistributionSchema,roofRegionsSchema,type RoofRegion} from "./roof-regions";
 
-/** Restricted but REAL load path for declared physical roof faces. Only planar,
- * axis-aligned rectangles with two or more fully supported parallel purlin rows
- * and no longitudinal purlin slope. Other geometry fails closed until M39/M40.
+/** Restricted but REAL load path for declared physical roof faces. Supports
+ * orthogonal planar polygons and holes ONLY where every rectangular cell has
+ * two existing segmented purlin edges; no guessing a tributary load path.
  * The independently audited physical model supplies every node/member. */
 type V=[number,number,number];
 const eps=1e-7;
@@ -36,14 +37,7 @@ function supportedSurfaces(model:PhysicalGeometry,project:Project):Surface[]{
   const audit=auditPhysicalRoofCoverage(declared,model);
   const points=new Map(model.nodes.map(p=>[p.id,[p.x/1000,p.y/1000,p.z/1000] as V]));
   const pieces=new Map(model.pieces.map(p=>[p.id,p]));
-  return audit.geometry.faces.map((face,i)=>{
-    if(face.holes.length||face.outer.length!==5)
-      fail("IRREGULAR_DISTRIBUTION_PENDING: faces com aberturas/contornos não retangulares exigem integração tributária própria");
-    const pointsXY=face.outer.slice(0,-1).map(p=>[p[0]/1000,p[1]/1000] as [number,number]);
-    const xs=[...new Set(pointsXY.map(p=>p[0]))].sort((a,b)=>a-b),ys=[...new Set(pointsXY.map(p=>p[1]))].sort((a,b)=>a-b);
-    if(xs.length!==2||ys.length!==2||pointsXY.some(p=>!xs.includes(p[0])||!ys.includes(p[1]))||
-      new Set(pointsXY.map(p=>JSON.stringify(p))).size!==4)
-      fail("IRREGULAR_DISTRIBUTION_PENDING: apenas retângulos explícitos sem recortes nesta fase");
+  return audit.geometry.faces.flatMap((face,i)=>{
     const plane=audit.faces[i].plane;
     const first=pieces.get(face.supportPieceIds[0])!;
     const a=points.get(first.start)!,b=points.get(first.end)!;
@@ -54,40 +48,39 @@ function supportedSurfaces(model:PhysicalGeometry,project:Project):Surface[]{
     const dzLong=u===0?plane.dzDy:plane.dzDx;
     if(Math.abs(dzLong)>1e-9)
       fail("LONGITUDINAL_SLOPE_PENDING: terças inclinadas longitudinalmente exigem integração por comprimento real");
-    const bounds:[number,number,number,number]=[xs[0],ys[0],xs[1],ys[1]];
-    const z0=(plane.originMm[2]+(xs[0]*1000-plane.originMm[0])*plane.dzDx+
-      (ys[0]*1000-plane.originMm[1])*plane.dzDy)/1000;
-    const region:RoofRegion={id:face.id,boundsM:bounds,
-      plane:{z0M:z0,dzDx:plane.dzDx,dzDy:plane.dzDy},
-      purlinPieceIds:face.supportPieceIds,source:face.source,revision:face.revision};
-    const rows:{at:number;pieces:RowPiece[]}[]=[];
-    for(const id of face.supportPieceIds){
-      const member=pieces.get(id)!,start=points.get(member.start)!,end=points.get(member.end)!;
-      if(Math.abs(start[u]-end[u])>eps||Math.abs(start[2]-end[2])>eps)
-        fail("NONPARALLEL_PURLIN: membro declarado não tem trecho longitudinal horizontal constante");
-      const at=start[u],lo=Math.min(start[v],end[v]),hi=Math.max(start[v],end[v]);
-      if(at<bounds[u]-eps||at>bounds[u+2]+eps||lo<bounds[v]-eps||hi>bounds[v+2]+eps)
-        fail("PURLIN_BOUNDARY: terça fora dos limites da face física");
-      const lengthM=Math.hypot(...end.map((x,j)=>x-start[j]));
-      if(Math.abs(lengthM-(hi-lo))>eps||lengthM<=eps)
-        fail("PURLIN_LENGTH: comprimento físico incompatível com faixa longitudinal suportada");
-      let row=rows.find(r=>near(r.at,at));
-      if(!row){row={at,pieces:[]};rows.push(row);}
-      row.pieces.push({id,at,lo,hi,start,end,lengthM});
-    }
-    rows.sort((a,b)=>a.at-b.at);
-    if(rows.length<2||!near(rows[0].at,bounds[u])||!near(rows.at(-1)!.at,bounds[u+2]))
-      fail("PURLIN_BOUNDARY_ROWS: duas bordas exigem terças reais, sem balanço transversal presumido");
-    for(const row of rows){
-      row.pieces.sort((a,b)=>a.lo-b.lo);
-      let position=bounds[v];
-      for(const p of row.pieces){
-        if(!near(p.lo,position)||p.hi<=p.lo)fail("PURLIN_GAP: lacuna ou sobreposição em uma linha de terças");
-        position=p.hi;
+    const cells=orthogonalRoofCells(face,model,u,i,audit.faces[i].horizontalAreaM2);
+    return cells.map(cell=>{
+      const bounds=cell.boundsM;
+      const z0=(plane.originMm[2]+(bounds[0]*1000-plane.originMm[0])*plane.dzDx+
+        (bounds[1]*1000-plane.originMm[1])*plane.dzDy)/1000;
+      const region:RoofRegion={id:cell.id,boundsM:bounds,
+        plane:{z0M:z0,dzDx:plane.dzDx,dzDy:plane.dzDy},
+        purlinPieceIds:cell.purlinPieceIds,source:face.source,revision:face.revision};
+      const rows:{at:number;pieces:RowPiece[]}[]=[];
+      for(const id of cell.purlinPieceIds){
+        const member=pieces.get(id)!,start=points.get(member.start)!,end=points.get(member.end)!;
+        if(Math.abs(start[u]-end[u])>eps||Math.abs(start[2]-end[2])>eps)
+          fail("NONPARALLEL_PURLIN: membro declarado não tem trecho longitudinal horizontal constante");
+        const at=start[u],lo=Math.min(start[v],end[v]),hi=Math.max(start[v],end[v]);
+        if(at<bounds[u]-eps||at>bounds[u+2]+eps||lo<bounds[v]-eps||hi>bounds[v+2]+eps)
+          fail("PURLIN_BOUNDARY: terça fora dos limites da célula física");
+        const lengthM=Math.hypot(...end.map((x,j)=>x-start[j]));
+        if(Math.abs(lengthM-(hi-lo))>eps||lengthM<=eps)
+          fail("PURLIN_LENGTH: comprimento físico incompatível com faixa longitudinal suportada");
+        let row=rows.find(r=>near(r.at,at));
+        if(!row){row={at,pieces:[]};rows.push(row);}
+        row.pieces.push({id,at,lo,hi,start,end,lengthM});
       }
-      if(!near(position,bounds[v+2]))fail("PURLIN_GAP: linha de terças não cobre o comprimento da face");
-    }
-    return {region,u,v,rows};
+      rows.sort((a,b)=>a.at-b.at);
+      if(rows.length!==2||!near(rows[0].at,bounds[u])||!near(rows[1].at,bounds[u+2]))
+        fail("PURLIN_BOUNDARY_ROWS: duas bordas exigem terças físicas explícitas");
+      for(const row of rows){
+        if(row.pieces.length!==1||!near(row.pieces[0].lo,bounds[v])||
+          !near(row.pieces[0].hi,bounds[v+2]))
+          fail("PURLIN_GAP: toda a célula precisa da terça real correspondente");
+      }
+      return {region,u,v,rows};
+    });
   });
 }
 export function distributeDeclaredRoofActions(project:Project,actions:RoofAreaAction[],declaration:unknown){
