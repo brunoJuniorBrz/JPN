@@ -79,7 +79,7 @@ export async function auditPhysicalRoofReactionPath(
     fail("M40_MEMBER_MAPPING","segmentação incompleta ou não vinculada à requisição");
   const fromRoof=new Map<string,true>();
   for(const action of roofTrace.actions){
-    let computedForce=zero(),computedMoment=zero();
+    const computedForce=zero(),computedMoment=zero();
     for(const load of action.loads){
       const original=physicalMembers.get(load.pieceId);
       if(!original||original.role!=="purlin")
