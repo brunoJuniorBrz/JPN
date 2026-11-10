@@ -1,0 +1,366 @@
+{
+  "schemaVersion": "jpn.m43-p1-review-evidence/1",
+  "reviewedCommit": "c1d8622aed312f0c7500ef7bccb355d0570742c4",
+  "generatedAtUtc": "2026-11-10T18:54:41.028152+00:00",
+  "scope": "Synthetic small-strain frame-only dead-load cantilever; no normative approval",
+  "environment": {
+    "python": "3.12.16",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "PyNiteFEA": "3.2.1",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "pytest": "9.2.0"
+  },
+  "source": {
+    "path": "engine/tests/test_m43_pdelta_reference.py",
+    "lineEndingNormalization": "LF",
+    "sha256": "bf17fe0ed154d9cf5227332432b5c3875e237e52c82e49506c81928f11734d0a"
+  },
+  "originalFourElementMesh": [
+    {
+      "compressionRatio": 0,
+      "segments": 4,
+      "compressionN": 0.0,
+      "tipXM": 0.010666666666666684,
+      "analyticalTipXM": 0.010666666666666665,
+      "displacementRelativeError": 1.7763568394002505e-15,
+      "reactionForceN": [
+        -1999.9999999999782,
+        0.0,
+        0.0
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -7999.999999999998,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 2.1827872842550278e-11,
+      "originalHorizontalReactionGatePassed": true,
+      "tipToLengthRatio": 0.002666666666666671
+    },
+    {
+      "compressionRatio": 0.05,
+      "segments": 4,
+      "compressionN": 30842.513753404248,
+      "tipXM": 0.01122071282824901,
+      "analyticalTipXM": 0.011220713789424661,
+      "displacementRelativeError": 8.566082954075682e-08,
+      "reactionForceN": [
+        -1999.9997698536608,
+        0.0,
+        30842.513751570496
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -8346.074952376268,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.00023014633916318417,
+      "originalHorizontalReactionGatePassed": true,
+      "tipToLengthRatio": 0.0028051782070622525
+    },
+    {
+      "compressionRatio": 0.2,
+      "segments": 4,
+      "compressionN": 123370.05501361699,
+      "tipXM": 0.01329784564612732,
+      "analyticalTipXM": 0.013297867281219322,
+      "displacementRelativeError": 1.6269595375373314e-06,
+      "reactionForceN": [
+        -1999.9957089893942,
+        0.0,
+        123370.05489625277
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -9640.555250714806,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.004291010605811607,
+      "originalHorizontalReactionGatePassed": false,
+      "tipToLengthRatio": 0.00332446141153183
+    },
+    {
+      "compressionRatio": 0.4,
+      "segments": 4,
+      "compressionN": 246740.11002723398,
+      "tipXM": 0.017681114982300437,
+      "analyticalTipXM": 0.017681268436300124,
+      "displacementRelativeError": 8.678902208902883e-06,
+      "reactionForceN": [
+        -1999.9777139031066,
+        0.0,
+        246740.10908826167
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -12362.636616664997,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.022286096893367358,
+      "originalHorizontalReactionGatePassed": false,
+      "tipToLengthRatio": 0.004420278745575109
+    }
+  ],
+  "refinedReferenceMesh": [
+    {
+      "compressionRatio": 0,
+      "segments": 64,
+      "compressionN": 0.0,
+      "tipXM": 0.010666666665137143,
+      "analyticalTipXM": 0.010666666666666665,
+      "displacementRelativeError": 1.433926311023015e-10,
+      "reactionForceN": [
+        -1999.9999994313112,
+        0.0,
+        0.0
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -7999.999998571891,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 5.686888471245766e-07,
+      "originalHorizontalReactionGatePassed": true,
+      "tipToLengthRatio": 0.002666666666284286
+    },
+    {
+      "compressionRatio": 0.05,
+      "segments": 64,
+      "compressionN": 30842.513753404248,
+      "tipXM": 0.011220713788965948,
+      "analyticalTipXM": 0.011220713789424661,
+      "displacementRelativeError": 4.088085425735244e-11,
+      "reactionForceN": [
+        -1999.9999844869599,
+        0.0,
+        30842.513751571074
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -8346.07501890056,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 1.5513040125370026e-05,
+      "originalHorizontalReactionGatePassed": true,
+      "tipToLengthRatio": 0.002805178447241487
+    },
+    {
+      "compressionRatio": 0.2,
+      "segments": 64,
+      "compressionN": 123370.05501361699,
+      "tipXM": 0.013297867281992249,
+      "analyticalTipXM": 0.013297867281219322,
+      "displacementRelativeError": 5.8124172142015595e-11,
+      "reactionForceN": [
+        -1999.9997149243718,
+        0.0,
+        123370.054896259
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -9640.558616106737,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.00028507562819868326,
+      "originalHorizontalReactionGatePassed": true,
+      "tipToLengthRatio": 0.003324466820498062
+    },
+    {
+      "compressionRatio": 0.4,
+      "segments": 64,
+      "compressionN": 246740.11002723398,
+      "tipXM": 0.017681268423743304,
+      "analyticalTipXM": 0.017681268436300124,
+      "displacementRelativeError": 7.101764731842763e-10,
+      "reactionForceN": [
+        -1999.9985333341174,
+        0.0,
+        246740.10908825722
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -12362.678096549014,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.0014666658826172352,
+      "originalHorizontalReactionGatePassed": true,
+      "tipToLengthRatio": 0.004420317105935826
+    }
+  ],
+  "meshSensitivityAtFortyPercent": [
+    {
+      "compressionRatio": 0.4,
+      "segments": 1,
+      "compressionN": 246740.11002723398,
+      "tipXM": 0.017649043658370476,
+      "analyticalTipXM": 0.017681268436300124,
+      "displacementRelativeError": 0.0018225376785463432,
+      "reactionForceN": [
+        -1999.929653865178,
+        0.0,
+        246740.10908826152
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -12354.686449976149,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.07034613482210261,
+      "originalHorizontalReactionGatePassed": false,
+      "tipToLengthRatio": 0.004412260914592619
+    },
+    {
+      "compressionRatio": 0.4,
+      "segments": 2,
+      "compressionN": 246740.11002723398,
+      "tipXM": 0.017678898235327364,
+      "analyticalTipXM": 0.017681268436300124,
+      "displacementRelativeError": 0.00013405152358270112,
+      "reactionForceN": [
+        -1999.9582537248461,
+        0.0,
+        246740.1090882614
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -12362.080059364918,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.041746275153855095,
+      "originalHorizontalReactionGatePassed": false,
+      "tipToLengthRatio": 0.004419724558831841
+    },
+    {
+      "compressionRatio": 0.4,
+      "segments": 4,
+      "compressionN": 246740.11002723398,
+      "tipXM": 0.017681114982300437,
+      "analyticalTipXM": 0.017681268436300124,
+      "displacementRelativeError": 8.678902208902883e-06,
+      "reactionForceN": [
+        -1999.9777139031066,
+        0.0,
+        246740.10908826167
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -12362.636616664997,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.022286096893367358,
+      "originalHorizontalReactionGatePassed": false,
+      "tipToLengthRatio": 0.004420278745575109
+    },
+    {
+      "compressionRatio": 0.4,
+      "segments": 8,
+      "compressionN": 246740.11002723398,
+      "tipXM": 0.017681258763278553,
+      "analyticalTipXM": 0.017681268436300124,
+      "displacementRelativeError": 5.470773550841912e-07,
+      "reactionForceN": [
+        -1999.9885364621005,
+        0.0,
+        246740.10908826135
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -12362.674786040225,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.011463537899544463,
+      "originalHorizontalReactionGatePassed": false,
+      "tipToLengthRatio": 0.004420314690819638
+    },
+    {
+      "compressionRatio": 0.4,
+      "segments": 16,
+      "compressionN": 246740.11002723398,
+      "tipXM": 0.017681267830479085,
+      "analyticalTipXM": 0.017681268436300124,
+      "displacementRelativeError": 3.4263437642678696e-08,
+      "reactionForceN": [
+        -1999.9941924277227,
+        0.0,
+        246740.109088262
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -12362.677728981635,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.005807572277262807,
+      "originalHorizontalReactionGatePassed": false,
+      "tipToLengthRatio": 0.004420316957619771
+    },
+    {
+      "compressionRatio": 0.4,
+      "segments": 32,
+      "compressionN": 246740.11002723398,
+      "tipXM": 0.017681268399794503,
+      "analyticalTipXM": 0.017681268436300124,
+      "displacementRelativeError": 2.064649451405387e-09,
+      "reactionForceN": [
+        -1999.9970779886935,
+        0.0,
+        246740.10908825713
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -12362.67805028912,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.0029220113065093756,
+      "originalHorizontalReactionGatePassed": false,
+      "tipToLengthRatio": 0.004420317099948626
+    },
+    {
+      "compressionRatio": 0.4,
+      "segments": 64,
+      "compressionN": 246740.11002723398,
+      "tipXM": 0.017681268423743304,
+      "analyticalTipXM": 0.017681268436300124,
+      "displacementRelativeError": 7.101764731842763e-10,
+      "reactionForceN": [
+        -1999.9985333341174,
+        0.0,
+        246740.10908825722
+      ],
+      "reactionMomentNm": [
+        0.0,
+        -12362.678096549014,
+        0.0
+      ],
+      "horizontalReactionAbsoluteErrorN": 0.0014666658826172352,
+      "originalHorizontalReactionGatePassed": true,
+      "tipToLengthRatio": 0.004420317105935826
+    }
+  ],
+  "positiveNearZeroCompression": [
+    {
+      "ratio": 1e-20,
+      "tipXM": 0.010666666666666665
+    },
+    {
+      "ratio": 1e-16,
+      "tipXM": 0.010666666666666666
+    },
+    {
+      "ratio": 1e-12,
+      "tipXM": 0.010666666666677191
+    }
+  ],
+  "sensitivityControl": {
+    "substitution": "analyze_PDelta replaced by analyze_linear in isolated process only",
+    "expectedRejectedCases": 3,
+    "observedRejectedCases": 3,
+    "pytestExitCode": 1,
+    "controlPassed": true
+  },
+  "productionPDeltaEnabled": false,
+  "normativeStabilityVerified": false,
+  "computedStructuralApproval": false,
+  "fabricationRelease": false,
+  "releaseGate": "NOT_READY_BLOCKED"
+}

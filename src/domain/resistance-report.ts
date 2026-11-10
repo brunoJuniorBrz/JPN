@@ -8,6 +8,7 @@ import { mixedInputHash } from "./mixed-analysis";
 import { anyMixedResultSchema } from "./structural-loading";
 import { assessSupportReactions } from "./support-interface";
 import { auditPhysicalRoofReactionPath,isDeclaredRoofTrace } from "./physical-reaction-path";
+import { auditSecondOrderReadiness } from "./second-order-readiness";
 import { extractMemberDemands, type DemandInput } from "./member-demands";
 import { resistancePreparationSchema } from "./resistance-preparation";
 import { elasticMemberReference } from "./resistance-elastic-reference";
@@ -42,6 +43,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
   if(current.input_sha256!==prepared.input_sha256||current.preparation_sha256!==prepared.preparation_sha256||canonicalSpatialInput(current.mapping)!==canonicalSpatialInput(prepared.mapping))
     throw new Error("STALE_RESISTANCE_ANALYSIS: projeto/discretização/declarações diferem da análise; execute novamente.");
   const demands=await extractMemberDemands(prepared,value),draft=project.workspace.spatialPreparation!,model=resolvePhysicalStructure(project).model!;
+  const secondOrderAudit=auditSecondOrderReadiness(current.request,anyMixedResultSchema.parse(value));
   const roofReactionAudit="roof_load_path" in current&&isDeclaredRoofTrace(current.roof_load_path)?
     await auditPhysicalRoofReactionPath(project,current.request,value,current.roof_load_path,current.mapping):null;
   const continuousDemands=jointTrace?await extractContinuousDemands(prepared,value,jointTrace):null;
@@ -108,6 +110,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
     engineeringCombinations:draft.engineeringCombinations??null,demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
     supportAudits:assessSupportReactions(draft.supportInterfaces??[],anyMixedResultSchema.parse(value)),
     ...(roofReactionAudit?{physicalRoofReactionAudit:roofReactionAudit}:{}),
+    secondOrderAudit,
     loadProcedureExecutions:(draft.loading?.wind?.cases??[]).filter(c=>c.speedCalculation).map(c=>({caseId:c.id,procedures:["NBR6123:2023-4.2","NBR6123:2023-5.3.3"],status:"calculated-partial" as const,result:calculateWindSpeed(c.speedCalculation)})),
     remaining:["Seleção e validação normativa das ações/combinações ainda pendentes na M22.","Procedimentos parciais Ue/MRD disponíveis separadamente; todos os estados-limites da família e da obra ainda não estão concluídos.","Missão 24: ligações, apoios, contenções, estabilidade global/efeitos adicionais e revisão do engenheiro."]};
   const full={...report,releaseGate:buildEngineReleaseGate(project,report)};
