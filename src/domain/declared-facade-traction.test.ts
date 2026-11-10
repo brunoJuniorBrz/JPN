@@ -56,7 +56,8 @@ describe("M41-P3: pressão vertical declarada à estrutura física, sem coeficie
     expect(z.areaM2).toBeCloseTo(24,10);
     expect(c.forceN).toEqual([-12000,0,0]);
     expect(c.momentNm).toEqual([0,-24000,36000]);
-    expect(z.distributedForceN).toEqual(z.expectedForceN);
+    // Zero may be signed after floating-point multiplication.
+    z.distributedForceN.forEach((value,i)=>expect(value).toBeCloseTo(z.expectedForceN[i],10));
     z.distributedMomentNm.forEach((m,i)=>expect(m).toBeCloseTo(z.expectedMomentNm[i],8));
     expect(c.loads.map(x=>x.pieceId)).toEqual(["C0","C3","C6"]);
     expect(c.loads.map(x=>x.forcePerLengthNM[0])).toEqual([-750,-1500,-750]);
