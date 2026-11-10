@@ -1,0 +1,3942 @@
+{
+  "schema_version": "jpn.m43-p2-independent-evidence/1",
+  "generated_at_utc": "2026-11-10T20:50:51.916209+00:00",
+  "environment": {
+    "python": "3.12.16",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "PyNiteFEA": "3.2.1"
+  },
+  "independent_solver": {
+    "name": "OpenSees",
+    "version": "3.8.0",
+    "interpreter_isolated": true
+  },
+  "interpretation": "Executed diagnostics; discrepancies retained, not homologation or an accepted nonlinear engine",
+  "comparisons_attempted": 8,
+  "comparisons_executed": 7,
+  "comparisons_with_all_bounds_met": 2,
+  "source_sha256_lf": {
+    "engine/jpn_structural/second_order_frame.py": "41b1e1afe4ac1e79301c4d660e8ef789330c220ade2289802ec4b227b84fd23d",
+    "engine/jpn_structural/mixed3d.py": "eb00818500a01e0f098c1ce1c27ee39e49c8bc5c9aaeec89883bd38a2aa5d37b",
+    "engine/tests/second_order_cases.py": "57dcc8fd627b6cc4303c330be5c3c60ad49eaf484aafd16f8cd943d3c41ffab3",
+    "engine/tests/test_second_order_frame.py": "769bb795dd1082bbde1cec042463dda54eb63f5dd90fe6a927eb2f7cd53365c1",
+    "validation/m43-p2/opensees_reference.py": "f1d5908c307792ebc90dcbefa102826ba0812f79257bc127fec277951886984d",
+    "validation/m43-p2/reproduce.py": "aba600fc1f6ee3b0b0cdcf5dc44c757fb8296c05e6bd294fdde913fb8c313bbb"
+  },
+  "cases": [
+    {
+      "geometry": "cantilever",
+      "compression_per_column_n": 123370.05501361699,
+      "independent_comparison_executed": true,
+      "lateral_x_n": 2000.0,
+      "units": "SI",
+      "subdivisions": 64,
+      "compared_nodes": 65,
+      "compared_members": 64,
+      "all_independent_bounds_met": true,
+      "exact_input_bytes_sha256": "7b57f3a9fa787932196fdc0401b35029164f337aebf8901c41c30876909c671f",
+      "checks": {
+        "linear": {
+          "translation_m": {
+            "maximum_absolute_error": 9.890005481238973e-14,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 3.517412056064373e-14,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 4.6362947614397854e-07,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 8.606639312347397e-08,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        },
+        "pdelta": {
+          "translation_m": {
+            "maximum_absolute_error": 1.6651083639511455e-07,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 6.340496276797947e-08,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 0.00028562530542330933,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 0.020538236185529968,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        }
+      },
+      "linear_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -2000.0000000343425,
+            0.0,
+            123370.05501361699
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -8000.000000086064,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T0": {
+          "translation_m": [
+            0.010666666666765565,
+            0.0,
+            -0.00012337005501361712
+          ],
+          "rotation_rad": [
+            0.0,
+            0.004000000000035173,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        }
+      },
+      "pynite_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1999.999714374775,
+            0.0,
+            123370.05489625267
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -9640.558613483594,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.013297867278387582,
+            0.0,
+            -0.00012337386017359611
+          ],
+          "rotation_rad": [
+            0.0,
+            0.005028801589821181,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "opensees_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -2000.0000000000805,
+            0.0,
+            123370.05501361696
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -9640.538075247408,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.013297700767551187,
+            0.0,
+            -0.00012337005501361699
+          ],
+          "rotation_rad": [
+            0.0,
+            0.005028738184858413,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1.4675038073619362e-07,
+            0.0,
+            -1.0622898116707802e-09
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            4.5519215063904994e-09,
+            0.0
+          ]
+        }
+      },
+      "opensees_iterations_by_step": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "native_steps": {
+        "elastic_assemblies": 1,
+        "geometric_assemblies": 1,
+        "tc_iterations": 1,
+        "nonlinear_equilibrium_iterations": null,
+        "native_method": "two stiffness solves per TC iteration; not a nonlinear equilibrium iteration",
+        "minimum_tangent_ratio": 0.7999999996956499,
+        "algebraic_relative_residual": 7.730192843806287e-12,
+        "maximum_tangent_ratio": 0.9999979916206436,
+        "scaled_tangent_condition": 107818310.57541424
+      },
+      "maximum_assembly_recovery_axial_difference_n": 3.805159979208838,
+      "support_moment_comparison": {
+        "B0": {
+          "linear_moment_nm": [
+            0.0,
+            -8000.000000086064,
+            0.0
+          ],
+          "candidate_moment_nm": [
+            0.0,
+            -9640.558613483594,
+            0.0
+          ],
+          "norm_amplification_at_same_support": 1.205069826672485
+        }
+      },
+      "full_dead_load_equilibrium": {
+        "force_residual_n": [
+          0.0002856252249330282,
+          0.0,
+          -0.00011736432497855276
+        ],
+        "initial_geometry_moment_residual_nm": [
+          0.0,
+          -1640.558613483594,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          -0.24674350548775692,
+          0.0
+        ],
+        "force_relative_residual": [
+          1.4274124184559132e-07,
+          0.0,
+          9.513116748948831e-10
+        ],
+        "moment_relative_residual": [
+          0.0,
+          2.5592316565973425e-05,
+          0.0
+        ],
+        "reference": "global dead loads at displaced nodes; no omitted H*uz term",
+        "accepted": false
+      },
+      "refinement": {
+        "maximum_linear_translation_m": 0.01066738008839854,
+        "maximum_candidate_translation_m": 0.013298439580002808,
+        "maximum_translation_change_m": 0.0026312006116247684,
+        "refinement_relative_displacement_error": 2.497611902144852e-10,
+        "refinement_relative_rotation_error": 2.416298835990887e-10,
+        "refinement_relative_member_end_action_error": 1.4901161193847656e-07
+      },
+      "prototype_status": "diagnostic-rejected",
+      "blockers": [
+        "PDELTA_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "PDELTA_DEAD_LOAD_EQUILIBRIUM_NOT_VERIFIED:C"
+      ],
+      "member_end_comparison": {
+        "relative_tolerance": 0.002,
+        "absolute_tolerance": 1e-05,
+        "maximum_absolute_difference": 0.020538236185529968,
+        "bounds_met": true,
+        "violating_components": 0,
+        "first_violations": []
+      }
+    },
+    {
+      "geometry": "cantilever",
+      "compression_per_column_n": 123370.05501361699,
+      "independent_comparison_executed": true,
+      "lateral_x_n": -2000.0,
+      "units": "SI",
+      "subdivisions": 64,
+      "compared_nodes": 65,
+      "compared_members": 64,
+      "all_independent_bounds_met": true,
+      "exact_input_bytes_sha256": "bcc8ebd29a3e2b483ad1fc9605f80059c41af636f48e1d3fcbb76079bf04485e",
+      "checks": {
+        "linear": {
+          "translation_m": {
+            "maximum_absolute_error": 9.890005481238973e-14,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 3.517412056064373e-14,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 4.6362947614397854e-07,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 8.606639312347397e-08,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        },
+        "pdelta": {
+          "translation_m": {
+            "maximum_absolute_error": 1.6651083639511455e-07,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 6.340496276797947e-08,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 0.00028562530542330933,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 0.020538236185529968,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 195,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        }
+      },
+      "linear_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            2000.0000000343425,
+            0.0,
+            123370.05501361699
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            8000.000000086064,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T0": {
+          "translation_m": [
+            -0.010666666666765565,
+            0.0,
+            -0.00012337005501361712
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.004000000000035173,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        }
+      },
+      "pynite_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            1999.999714374775,
+            0.0,
+            123370.05489625267
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            9640.558613483594,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            -0.013297867278387582,
+            0.0,
+            -0.00012337386017359611
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.005028801589821181,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "opensees_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            2000.0000000000805,
+            0.0,
+            123370.05501361696
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            9640.538075247408,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            -0.013297700767551187,
+            0.0,
+            -0.00012337005501361699
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.005028738184858413,
+            0.0
+          ],
+          "reaction_force_n": [
+            1.4675038073619362e-07,
+            0.0,
+            -1.0622898116707802e-09
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -4.5519215063904994e-09,
+            0.0
+          ]
+        }
+      },
+      "opensees_iterations_by_step": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "native_steps": {
+        "elastic_assemblies": 1,
+        "geometric_assemblies": 1,
+        "tc_iterations": 1,
+        "nonlinear_equilibrium_iterations": null,
+        "native_method": "two stiffness solves per TC iteration; not a nonlinear equilibrium iteration",
+        "minimum_tangent_ratio": 0.7999999996956499,
+        "algebraic_relative_residual": 7.730192843806287e-12,
+        "maximum_tangent_ratio": 0.9999979916206436,
+        "scaled_tangent_condition": 107818310.57541424
+      },
+      "maximum_assembly_recovery_axial_difference_n": 3.805159979208838,
+      "support_moment_comparison": {
+        "B0": {
+          "linear_moment_nm": [
+            0.0,
+            8000.000000086064,
+            0.0
+          ],
+          "candidate_moment_nm": [
+            0.0,
+            9640.558613483594,
+            0.0
+          ],
+          "norm_amplification_at_same_support": 1.205069826672485
+        }
+      },
+      "full_dead_load_equilibrium": {
+        "force_residual_n": [
+          -0.0002856252249330282,
+          0.0,
+          -0.00011736432497855276
+        ],
+        "initial_geometry_moment_residual_nm": [
+          0.0,
+          1640.558613483594,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          0.24674350548775692,
+          0.0
+        ],
+        "force_relative_residual": [
+          1.4274124184559132e-07,
+          0.0,
+          9.513116748948831e-10
+        ],
+        "moment_relative_residual": [
+          0.0,
+          2.5592316565973425e-05,
+          0.0
+        ],
+        "reference": "global dead loads at displaced nodes; no omitted H*uz term",
+        "accepted": false
+      },
+      "refinement": {
+        "maximum_linear_translation_m": 0.01066738008839854,
+        "maximum_candidate_translation_m": 0.013298439580002808,
+        "maximum_translation_change_m": 0.0026312006116247684,
+        "refinement_relative_displacement_error": 2.497611902144852e-10,
+        "refinement_relative_rotation_error": 2.416298835990887e-10,
+        "refinement_relative_member_end_action_error": 1.4901161193847656e-07
+      },
+      "prototype_status": "diagnostic-rejected",
+      "blockers": [
+        "PDELTA_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "PDELTA_DEAD_LOAD_EQUILIBRIUM_NOT_VERIFIED:C"
+      ],
+      "member_end_comparison": {
+        "relative_tolerance": 0.002,
+        "absolute_tolerance": 1e-05,
+        "maximum_absolute_difference": 0.020538236185529968,
+        "bounds_met": true,
+        "violating_components": 0,
+        "first_violations": []
+      }
+    },
+    {
+      "geometry": "sway",
+      "compression_per_column_n": 0.0,
+      "independent_comparison_executed": true,
+      "lateral_x_n": 2000.0,
+      "units": "SI",
+      "subdivisions": 32,
+      "compared_nodes": 97,
+      "compared_members": 96,
+      "all_independent_bounds_met": false,
+      "exact_input_bytes_sha256": "ca367f57156e6795efead5362b8efc77d51d264552e7729d5de71d182c352231",
+      "checks": {
+        "linear": {
+          "translation_m": {
+            "maximum_absolute_error": 3.3149698264178795e-14,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 1.1388784880439484e-14,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 1.3842509360983968e-08,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 3.6704477679450065e-08,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        },
+        "pdelta": {
+          "translation_m": {
+            "maximum_absolute_error": 8.331067322011991e-11,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 6.72700018519018e-11,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 9.541483746033919e-05,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 0.00032754458698036615,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        }
+      },
+      "linear_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.9999999861757,
+            0.0,
+            -533.2859301302663
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.142209544667,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.9999999882275,
+            0.0,
+            533.2859301306661
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.142209549067,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T0": {
+          "translation_m": [
+            0.002133617752462926,
+            0.0,
+            5.332859301302669e-07
+          ],
+          "rotation_rad": [
+            0.0,
+            0.000400142209575761,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T1": {
+          "translation_m": [
+            0.002133617752462941,
+            0.0,
+            -5.332859301306667e-07
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00040014220957398743,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        }
+      },
+      "pynite_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.3199378512218,
+            0.0,
+            -533.2859308286811
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.2842270002284,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.6800621355796,
+            0.0,
+            533.2859308291195
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.0001882187025,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.002133617514335988,
+            0.0,
+            5.332858597302314e-07
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00040014213787030413,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.0021336179942427497,
+            0.0,
+            -5.332860019276086e-07
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00040014228232718304,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "opensees_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.3198424495481,
+            0.0,
+            -533.2859358715336
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.2838994556414,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.6801575504171,
+            0.0,
+            533.2859358715336
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.0004852298707,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.0021336174838754796,
+            0.0,
+            5.332859358715335e-07
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0004001420706003023,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1.6575161798648708e-09,
+            0.0,
+            3.376499080331996e-11
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            1.4574652595911175e-10,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.002133617963639154,
+            0.0,
+            -5.332859358715335e-07
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0004001423190590937,
+            0.0
+          ],
+          "reaction_force_n": [
+            1.336751154212834e-08,
+            0.0,
+            3.1377567211166024e-11
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -3.00815372611396e-10,
+            0.0
+          ]
+        }
+      },
+      "opensees_iterations_by_step": [
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "native_steps": {
+        "elastic_assemblies": 1,
+        "geometric_assemblies": 1,
+        "tc_iterations": 1,
+        "nonlinear_equilibrium_iterations": null,
+        "native_method": "two stiffness solves per TC iteration; not a nonlinear equilibrium iteration",
+        "minimum_tangent_ratio": 0.9993139058329635,
+        "algebraic_relative_residual": 2.980232238769531e-11,
+        "maximum_tangent_ratio": 1.0006860942515454,
+        "scaled_tangent_condition": 8836279.27737177
+      },
+      "maximum_assembly_recovery_axial_difference_n": 0.31993784473568115,
+      "support_moment_comparison": {
+        "B0": {
+          "linear_moment_nm": [
+            0.0,
+            -2400.142209544667,
+            0.0
+          ],
+          "candidate_moment_nm": [
+            0.0,
+            -2400.2842270002284,
+            0.0
+          ],
+          "norm_amplification_at_same_support": 1.0000591704337338
+        },
+        "B1": {
+          "linear_moment_nm": [
+            0.0,
+            -2400.142209549067,
+            0.0
+          ],
+          "candidate_moment_nm": [
+            0.0,
+            -2400.0001882187025,
+            0.0
+          ],
+          "norm_amplification_at_same_support": 0.9999408279518608
+        }
+      },
+      "full_dead_load_equilibrium": {
+        "force_residual_n": [
+          1.3198587112128735e-08,
+          0.0,
+          4.383764462545514e-10
+        ],
+        "initial_geometry_moment_residual_nm": [
+          0.0,
+          -1.9364779291208833e-07,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          -1.937896740855649e-07,
+          0.0
+        ],
+        "force_relative_residual": [
+          6.595995558285225e-12,
+          0.0,
+          4.383764462545514e-10
+        ],
+        "moment_relative_residual": [
+          0.0,
+          2.4220681675486607e-11,
+          0.0
+        ],
+        "reference": "global dead loads at displaced nodes; no omitted H*uz term",
+        "accepted": true
+      },
+      "refinement": {
+        "maximum_linear_translation_m": 0.002133617819108871,
+        "maximum_candidate_translation_m": 0.0021336180608886902,
+        "maximum_translation_change_m": 2.417798195076007e-10,
+        "refinement_relative_displacement_error": 1.7704014397760712e-13,
+        "refinement_relative_rotation_error": 5.9447343394922224e-12,
+        "refinement_relative_member_end_action_error": 2.1232608587062852e-08
+      },
+      "prototype_status": "diagnostic-rejected",
+      "blockers": [
+        "PDELTA_PRODUCTION_DOMAIN_NOT_VERIFIED"
+      ],
+      "member_end_comparison": {
+        "relative_tolerance": 0.002,
+        "absolute_tolerance": 1e-05,
+        "maximum_absolute_difference": 0.00032754458698036615,
+        "bounds_met": false,
+        "violating_components": 2,
+        "first_violations": [
+          {
+            "member": "P2M-79",
+            "parent": {
+              "id": "P2M-79",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.46875,
+              "end_fraction": 0.5
+            },
+            "component": 10,
+            "pynite": 9.62950743996771e-05,
+            "opensees": 0.0001656391725219919,
+            "absolute_error": 6.934409812231479e-05
+          },
+          {
+            "member": "P2M-80",
+            "parent": {
+              "id": "P2M-80",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.5,
+              "end_fraction": 0.53125
+            },
+            "component": 4,
+            "pynite": -9.631382272345945e-05,
+            "opensees": -0.0001656391713567018,
+            "absolute_error": 6.932534863324236e-05
+          }
+        ]
+      }
+    },
+    {
+      "geometry": "sway",
+      "compression_per_column_n": 61685.027506808496,
+      "independent_comparison_executed": true,
+      "lateral_x_n": 2000.0,
+      "units": "SI",
+      "subdivisions": 32,
+      "compared_nodes": 97,
+      "compared_members": 96,
+      "all_independent_bounds_met": false,
+      "exact_input_bytes_sha256": "7fbd97b0c7786849e5e0eadaf65d5ca4c80eb35bdd58960506623373587f8e5e",
+      "checks": {
+        "linear": {
+          "translation_m": {
+            "maximum_absolute_error": 3.3351793549130093e-14,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 1.1463486410123735e-14,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 1.4031684258952737e-08,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 3.7051904655527323e-08,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        },
+        "pdelta": {
+          "translation_m": {
+            "maximum_absolute_error": 3.237002723852078e-08,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 1.1919756098387885e-08,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 0.011931419456004733,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 0.010844184813777247,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        }
+      },
+      "linear_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.9999999859865,
+            0.0,
+            61151.741576678425
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.1422095443195,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.9999999881838,
+            0.0,
+            62218.313436939185
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.142209548886,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T0": {
+          "translation_m": [
+            0.0021336177524627228,
+            0.0,
+            -6.115174157667852e-05
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00040014220957576736,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T1": {
+          "translation_m": [
+            0.0021336177524627375,
+            0.0,
+            -6.221831343693926e-05
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0004001422095739277,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        }
+      },
+      "pynite_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.3332194735995,
+            0.0,
+            61131.232826756976
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2475.4364070124984,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.6667081428022,
+            0.0,
+            62238.82215183548
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2475.1393936881304,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.0022156563553165443,
+            0.0,
+            -6.113216711222085e-05
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00041553069660599847,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.0022156568540273097,
+            0.0,
+            -6.223979059971906e-05
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00041553098004000054,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "opensees_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.3451508930555,
+            0.0,
+            61131.23502197078
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2475.447251197312,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.6548491069144,
+            0.0,
+            62238.819991646196
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2475.139524571429,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.0022156239852893058,
+            0.0,
+            -6.113123502197078e-05
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00041552873594927355,
+            0.0
+          ],
+          "reaction_force_n": [
+            4.921039020722162e-09,
+            0.0,
+            4.2518877307884395e-11
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -7.366907084360719e-11,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.0022156245030156454,
+            0.0,
+            -6.22388199916462e-05
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00041552914359564973,
+            0.0
+          ],
+          "reaction_force_n": [
+            6.88127005377126e-09,
+            0.0,
+            2.0327206584624946e-10
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -7.958078640513122e-11,
+            0.0
+          ]
+        }
+      },
+      "opensees_iterations_by_step": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        5
+      ],
+      "native_steps": {
+        "elastic_assemblies": 1,
+        "geometric_assemblies": 1,
+        "tc_iterations": 1,
+        "nonlinear_equilibrium_iterations": null,
+        "native_method": "two stiffness solves per TC iteration; not a nonlinear equilibrium iteration",
+        "minimum_tangent_ratio": 0.8999872536222697,
+        "algebraic_relative_residual": 2.4156852636894646e-13,
+        "maximum_tangent_ratio": 1.000000000001575,
+        "scaled_tangent_condition": 9755664.183269765
+      },
+      "maximum_assembly_recovery_axial_difference_n": 21.47716278064763,
+      "support_moment_comparison": {
+        "B0": {
+          "linear_moment_nm": [
+            0.0,
+            -2400.1422095443195,
+            0.0
+          ],
+          "candidate_moment_nm": [
+            0.0,
+            -2475.4364070124984,
+            0.0
+          ],
+          "norm_amplification_at_same_support": 1.0313707234382892
+        },
+        "B1": {
+          "linear_moment_nm": [
+            0.0,
+            -2400.142209548886,
+            0.0
+          ],
+          "candidate_moment_nm": [
+            0.0,
+            -2475.1393936881304,
+            0.0
+          ],
+          "norm_amplification_at_same_support": 1.0312469752170812
+        }
+      },
+      "full_dead_load_equilibrium": {
+        "force_residual_n": [
+          7.238359830807894e-05,
+          0.0,
+          -3.502453910186887e-05
+        ],
+        "initial_geometry_moment_residual_nm": [
+          0.0,
+          -273.34367086249404,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          -0.12136561056831852,
+          0.0
+        ],
+        "force_relative_residual": [
+          3.617371229789053e-08,
+          0.0,
+          2.838959194926481e-10
+        ],
+        "moment_relative_residual": [
+          0.0,
+          3.2074687705681443e-07,
+          0.0
+        ],
+        "reference": "global dead loads at displaced nodes; no omitted H*uz term",
+        "accepted": false
+      },
+      "refinement": {
+        "maximum_linear_translation_m": 0.002134524732147904,
+        "maximum_candidate_translation_m": 0.0022165308674440094,
+        "maximum_translation_change_m": 8.203910437584452e-05,
+        "refinement_relative_displacement_error": 8.856224699463603e-10,
+        "refinement_relative_rotation_error": 2.9782183023349344e-10,
+        "refinement_relative_member_end_action_error": 7.930411961812933e-07
+      },
+      "prototype_status": "diagnostic-rejected",
+      "blockers": [
+        "PDELTA_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "PDELTA_DEAD_LOAD_EQUILIBRIUM_NOT_VERIFIED:C"
+      ],
+      "member_end_comparison": {
+        "relative_tolerance": 0.002,
+        "absolute_tolerance": 1e-05,
+        "maximum_absolute_difference": 0.012677084115158721,
+        "bounds_met": false,
+        "violating_components": 66,
+        "first_violations": [
+          {
+            "member": "P2M-64",
+            "parent": {
+              "id": "P2M-64",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.0,
+              "end_fraction": 0.03125
+            },
+            "component": 0,
+            "pynite": -0.33247383683919907,
+            "opensees": -0.34515088935075744,
+            "absolute_error": 0.012677052511558373
+          },
+          {
+            "member": "P2M-64",
+            "parent": {
+              "id": "P2M-64",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.0,
+              "end_fraction": 0.03125
+            },
+            "component": 6,
+            "pynite": 0.33247383683919907,
+            "opensees": 0.34515088935075744,
+            "absolute_error": 0.012677052511558373
+          },
+          {
+            "member": "P2M-65",
+            "parent": {
+              "id": "P2M-65",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.03125,
+              "end_fraction": 0.0625
+            },
+            "component": 0,
+            "pynite": -0.3324738144874573,
+            "opensees": -0.345150898602616,
+            "absolute_error": 0.012677084115158721
+          },
+          {
+            "member": "P2M-65",
+            "parent": {
+              "id": "P2M-65",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.03125,
+              "end_fraction": 0.0625
+            },
+            "component": 6,
+            "pynite": 0.3324738144874573,
+            "opensees": 0.345150898602616,
+            "absolute_error": 0.012677084115158721
+          },
+          {
+            "member": "P2M-66",
+            "parent": {
+              "id": "P2M-66",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.0625,
+              "end_fraction": 0.09375
+            },
+            "component": 0,
+            "pynite": -0.33247383683919907,
+            "opensees": -0.34515088935075744,
+            "absolute_error": 0.012677052511558373
+          },
+          {
+            "member": "P2M-66",
+            "parent": {
+              "id": "P2M-66",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.0625,
+              "end_fraction": 0.09375
+            },
+            "component": 6,
+            "pynite": 0.33247383683919907,
+            "opensees": 0.34515088935075744,
+            "absolute_error": 0.012677052511558373
+          },
+          {
+            "member": "P2M-67",
+            "parent": {
+              "id": "P2M-67",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.09375,
+              "end_fraction": 0.125
+            },
+            "component": 0,
+            "pynite": -0.33247383683919907,
+            "opensees": -0.345150898602616,
+            "absolute_error": 0.01267706176341693
+          },
+          {
+            "member": "P2M-67",
+            "parent": {
+              "id": "P2M-67",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.09375,
+              "end_fraction": 0.125
+            },
+            "component": 6,
+            "pynite": 0.33247383683919907,
+            "opensees": 0.345150898602616,
+            "absolute_error": 0.01267706176341693
+          },
+          {
+            "member": "P2M-68",
+            "parent": {
+              "id": "P2M-68",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.125,
+              "end_fraction": 0.15625
+            },
+            "component": 0,
+            "pynite": -0.3324738219380379,
+            "opensees": -0.34515088935075744,
+            "absolute_error": 0.012677067412719567
+          },
+          {
+            "member": "P2M-68",
+            "parent": {
+              "id": "P2M-68",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.125,
+              "end_fraction": 0.15625
+            },
+            "component": 6,
+            "pynite": 0.3324738219380379,
+            "opensees": 0.34515088935075744,
+            "absolute_error": 0.012677067412719567
+          }
+        ]
+      }
+    },
+    {
+      "geometry": "sway",
+      "compression_per_column_n": 123370.05501361699,
+      "independent_comparison_executed": true,
+      "lateral_x_n": 2000.0,
+      "units": "SI",
+      "subdivisions": 32,
+      "compared_nodes": 97,
+      "compared_members": 96,
+      "all_independent_bounds_met": false,
+      "exact_input_bytes_sha256": "d24078feff647a93d7c471bff0a43fc115f0b958107a1308d8cbfa3021aac468",
+      "checks": {
+        "linear": {
+          "translation_m": {
+            "maximum_absolute_error": 3.333704839958429e-14,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 1.1461968527082256e-14,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 1.4089891919866204e-08,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 3.710101736942306e-08,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        },
+        "pdelta": {
+          "translation_m": {
+            "maximum_absolute_error": 6.999009790958563e-08,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 2.5775642774686358e-08,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 0.02603549557977658,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 0.02087202784150577,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 291,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        }
+      },
+      "linear_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.9999999859283,
+            0.0,
+            122836.769083487
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.1422095442704,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.999999988213,
+            0.0,
+            123903.34094374772
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.1422095489424,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T0": {
+          "translation_m": [
+            0.002133617752462738,
+            0.0,
+            -0.00012283676908348714
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0004001422095757994,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T1": {
+          "translation_m": [
+            0.0021336177524627535,
+            0.0,
+            -0.0001239033409437479
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00040014220957391007,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        }
+      },
+      "pynite_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.3475563347747,
+            0.0,
+            122794.09099735806
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2556.5429395781803,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.6521443000966,
+            0.0,
+            123946.01878284151
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2556.2318620653887,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.0023043112364532,
+            0.0,
+            -0.00012279786082601362
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0004321656881612744,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.0023043117554906655,
+            0.0,
+            -0.00012394985967476948
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00043216612753888006,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "opensees_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.3735918303545,
+            0.0,
+            122794.09562216824
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2556.5638116060218,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.6264081696681,
+            0.0,
+            123946.01440506568
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2556.2286473840877,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.0023042412463552906,
+            0.0,
+            -0.00012279409562216824
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0004321612068369238,
+            0.0
+          ],
+          "reaction_force_n": [
+            -7.225390619147731e-09,
+            0.0,
+            1.1107204045401886e-10
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            2.708020474528894e-10,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.002304241806743036,
+            0.0,
+            -0.0001239460144050657
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0004321618051935152,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1.551552486489527e-08,
+            0.0,
+            -2.94903657049872e-10
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            5.725269147660583e-10,
+            0.0
+          ]
+        }
+      },
+      "opensees_iterations_by_step": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        5,
+        5,
+        5
+      ],
+      "native_steps": {
+        "elastic_assemblies": 1,
+        "geometric_assemblies": 1,
+        "tc_iterations": 1,
+        "nonlinear_equilibrium_iterations": null,
+        "native_method": "two stiffness solves per TC iteration; not a nonlinear equilibrium iteration",
+        "minimum_tangent_ratio": 0.799993626468245,
+        "algebraic_relative_residual": 2.4156852636894646e-13,
+        "maximum_tangent_ratio": 1.0000000000039926,
+        "scaled_tangent_condition": 10904089.645983119
+      },
+      "maximum_assembly_recovery_axial_difference_n": 46.518731022195425,
+      "support_moment_comparison": {
+        "B0": {
+          "linear_moment_nm": [
+            0.0,
+            -2400.1422095442704,
+            0.0
+          ],
+          "candidate_moment_nm": [
+            0.0,
+            -2556.5429395781803,
+            0.0
+          ],
+          "norm_amplification_at_same_support": 1.065163109674075
+        },
+        "B1": {
+          "linear_moment_nm": [
+            0.0,
+            -2400.1422095489424,
+            0.0
+          ],
+          "candidate_moment_nm": [
+            0.0,
+            -2556.2318620653887,
+            0.0
+          ],
+          "norm_amplification_at_same_support": 1.0650335017214585
+        }
+      },
+      "full_dead_load_equilibrium": {
+        "force_residual_n": [
+          0.000299365128739737,
+          0.0,
+          -0.00024703441886231303
+        ],
+        "initial_geometry_moment_residual_nm": [
+          0.0,
+          -568.5574169906322,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          -0.23809265810996294,
+          0.0
+        ],
+        "force_relative_residual": [
+          1.4960776048962366e-07,
+          0.0,
+          1.0011887311159728e-09
+        ],
+        "moment_relative_residual": [
+          0.0,
+          3.179700177464074e-07,
+          0.0
+        ],
+        "reference": "global dead loads at displaced nodes; no omitted H*uz term",
+        "accepted": false
+      },
+      "refinement": {
+        "maximum_linear_translation_m": 0.0021372123786655445,
+        "maximum_candidate_translation_m": 0.002307643004064075,
+        "maximum_translation_change_m": 0.00017069400936671787,
+        "refinement_relative_displacement_error": 3.6379739087788885e-09,
+        "refinement_relative_rotation_error": 1.2411553026246133e-09,
+        "refinement_relative_member_end_action_error": 1.7764376576219832e-06
+      },
+      "prototype_status": "diagnostic-rejected",
+      "blockers": [
+        "PDELTA_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "PDELTA_DEAD_LOAD_EQUILIBRIUM_NOT_VERIFIED:C"
+      ],
+      "member_end_comparison": {
+        "relative_tolerance": 0.002,
+        "absolute_tolerance": 1e-05,
+        "maximum_absolute_difference": 0.027566873115598356,
+        "bounds_met": false,
+        "violating_components": 66,
+        "first_violations": [
+          {
+            "member": "P2M-64",
+            "parent": {
+              "id": "P2M-64",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.0,
+              "end_fraction": 0.03125
+            },
+            "component": 0,
+            "pynite": -0.3460249602794647,
+            "opensees": -0.3735918333950631,
+            "absolute_error": 0.027566873115598356
+          },
+          {
+            "member": "P2M-64",
+            "parent": {
+              "id": "P2M-64",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.0,
+              "end_fraction": 0.03125
+            },
+            "component": 6,
+            "pynite": 0.3460249602794647,
+            "opensees": 0.3735918333950631,
+            "absolute_error": 0.027566873115598356
+          },
+          {
+            "member": "P2M-65",
+            "parent": {
+              "id": "P2M-65",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.03125,
+              "end_fraction": 0.0625
+            },
+            "component": 0,
+            "pynite": -0.3460249528288841,
+            "opensees": -0.3735918241432046,
+            "absolute_error": 0.02756687131432045
+          },
+          {
+            "member": "P2M-65",
+            "parent": {
+              "id": "P2M-65",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.03125,
+              "end_fraction": 0.0625
+            },
+            "component": 6,
+            "pynite": 0.3460249528288841,
+            "opensees": 0.3735918241432046,
+            "absolute_error": 0.02756687131432045
+          },
+          {
+            "member": "P2M-66",
+            "parent": {
+              "id": "P2M-66",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.0625,
+              "end_fraction": 0.09375
+            },
+            "component": 0,
+            "pynite": -0.3460249677300453,
+            "opensees": -0.3735918333950631,
+            "absolute_error": 0.02756686566501776
+          },
+          {
+            "member": "P2M-66",
+            "parent": {
+              "id": "P2M-66",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.0625,
+              "end_fraction": 0.09375
+            },
+            "component": 6,
+            "pynite": 0.3460249677300453,
+            "opensees": 0.3735918333950631,
+            "absolute_error": 0.02756686566501776
+          },
+          {
+            "member": "P2M-67",
+            "parent": {
+              "id": "P2M-67",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.09375,
+              "end_fraction": 0.125
+            },
+            "component": 0,
+            "pynite": -0.3460249677300453,
+            "opensees": -0.3735918333950631,
+            "absolute_error": 0.02756686566501776
+          },
+          {
+            "member": "P2M-67",
+            "parent": {
+              "id": "P2M-67",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.09375,
+              "end_fraction": 0.125
+            },
+            "component": 6,
+            "pynite": 0.3460249677300453,
+            "opensees": 0.3735918333950631,
+            "absolute_error": 0.02756686566501776
+          },
+          {
+            "member": "P2M-68",
+            "parent": {
+              "id": "P2M-68",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.125,
+              "end_fraction": 0.15625
+            },
+            "component": 0,
+            "pynite": -0.3460249677300453,
+            "opensees": -0.3735918241432046,
+            "absolute_error": 0.027566856413159257
+          },
+          {
+            "member": "P2M-68",
+            "parent": {
+              "id": "P2M-68",
+              "parent_member": "R0-S0",
+              "start_fraction": 0.125,
+              "end_fraction": 0.15625
+            },
+            "component": 6,
+            "pynite": 0.3460249677300453,
+            "opensees": 0.3735918241432046,
+            "absolute_error": 0.027566856413159257
+          }
+        ]
+      }
+    },
+    {
+      "geometry": "sway",
+      "compression_per_column_n": 246740.11002723398,
+      "lateral_x_n": 2000.0,
+      "independent_comparison_executed": false,
+      "native_rejection": "PDELTA_DOMAIN_MARGIN",
+      "all_independent_bounds_met": false,
+      "production_enabled": false
+    },
+    {
+      "geometry": "braced",
+      "compression_per_column_n": 123370.05501361699,
+      "independent_comparison_executed": true,
+      "lateral_x_n": 2000.0,
+      "units": "SI",
+      "subdivisions": 32,
+      "compared_nodes": 128,
+      "compared_members": 128,
+      "all_independent_bounds_met": false,
+      "exact_input_bytes_sha256": "76e5add206160757b751106ad51c1e6ecdde5def25720193e19666a094c4fbd5",
+      "checks": {
+        "linear": {
+          "translation_m": {
+            "maximum_absolute_error": 1.6147836106455982e-16,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 9.266032223193693e-17,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 1.7316779121756554e-09,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 8.998313205665909e-11,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        },
+        "pdelta": {
+          "translation_m": {
+            "maximum_absolute_error": 3.885629626702251e-09,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 9.5488915780628e-10,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 0.0002612409443827346,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 0.00121477877658549,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        }
+      },
+      "linear_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1964.6296119362767,
+            0.0,
+            122076.86579384521
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -149.65490140947782,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -35.37038806207238,
+            0.0,
+            124663.24423338851
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -91.20977995106705,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T0": {
+          "translation_m": [
+            8.953421112460155e-05,
+            0.0,
+            -0.00012334591299809983
+          ],
+          "rotation_rad": [
+            0.0,
+            1.6183129861258944e-05,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T1": {
+          "translation_m": [
+            8.80985250699306e-05,
+            0.0,
+            -0.00012466324423338862
+          ],
+          "rotation_rad": [
+            0.0,
+            2.0469003826895953e-05,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        }
+      },
+      "pynite_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1967.7090953021777,
+            0.0,
+            122072.78473845123
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -148.34048929650135,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -32.29089679098888,
+            0.0,
+            124667.3249294773
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -89.72051700523019,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            8.956015591699632e-05,
+            0.0,
+            -0.00012334970023336354
+          ],
+          "rotation_rad": [
+            0.0,
+            1.6177765018658358e-05,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            8.811983712476854e-05,
+            0.0,
+            -0.0001246712106571685
+          ],
+          "rotation_rad": [
+            0.0,
+            2.050530176097698e-05,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "opensees_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1967.7089253536299,
+            0.0,
+            122072.78499969217
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -148.33927451772476,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -32.291074646369964,
+            0.0,
+            124667.3250275418
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -89.7212370431762,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            8.955756796805243e-05,
+            0.0,
+            -0.00012334589689508657
+          ],
+          "rotation_rad": [
+            0.0,
+            1.61776852424232e-05,
+            0.0
+          ],
+          "reaction_force_n": [
+            1.4017587091075256e-10,
+            0.0,
+            8.79332162639912e-11
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            6.224354365258478e-12,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            8.811724951332544e-05,
+            0.0,
+            -0.0001246673250275418
+          ],
+          "rotation_rad": [
+            0.0,
+            2.0504846248416674e-05,
+            0.0
+          ],
+          "reaction_force_n": [
+            -4.481535142986104e-10,
+            0.0,
+            -2.432898327242583e-10
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            1.5145218412726535e-11,
+            0.0
+          ]
+        }
+      },
+      "opensees_iterations_by_step": [
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "native_steps": {
+        "elastic_assemblies": 1,
+        "geometric_assemblies": 1,
+        "tc_iterations": 1,
+        "nonlinear_equilibrium_iterations": null,
+        "native_method": "two stiffness solves per TC iteration; not a nonlinear equilibrium iteration",
+        "minimum_tangent_ratio": 0.8218185725622669,
+        "algebraic_relative_residual": 7.549016449029577e-15,
+        "maximum_tangent_ratio": 1.0009238697547826,
+        "scaled_tangent_condition": 11665915.899411129
+      },
+      "maximum_assembly_recovery_axial_difference_n": 7.9664237807446625,
+      "support_moment_comparison": {
+        "B0": {
+          "linear_moment_nm": [
+            0.0,
+            -149.65490140947782,
+            0.0
+          ],
+          "candidate_moment_nm": [
+            0.0,
+            -148.34048929650135,
+            0.0
+          ],
+          "norm_amplification_at_same_support": 0.9912170460132138
+        },
+        "B1": {
+          "linear_moment_nm": [
+            0.0,
+            -91.20977995106705,
+            0.0
+          ],
+          "candidate_moment_nm": [
+            0.0,
+            -89.72051700523019,
+            0.0
+          ],
+          "norm_amplification_at_same_support": 0.9836721133782383
+        }
+      },
+      "full_dead_load_equilibrium": {
+        "force_residual_n": [
+          7.906833388915402e-06,
+          0.0,
+          -0.00035930544254370034
+        ],
+        "initial_geometry_moment_residual_nm": [
+          0.0,
+          -21.680501463473774,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          -0.008131857961416245,
+          0.0
+        ],
+        "force_relative_residual": [
+          3.951440973970716e-09,
+          0.0,
+          1.4562042073331115e-09
+        ],
+        "moment_relative_residual": [
+          0.0,
+          1.0867937200582683e-08,
+          0.0
+        ],
+        "reference": "global dead loads at displaced nodes; no omitted H*uz term",
+        "accepted": false
+      },
+      "refinement": {
+        "maximum_linear_translation_m": 0.0001526508256849294,
+        "maximum_candidate_translation_m": 0.00015266963175962606,
+        "maximum_translation_change_m": 2.6219752160348356e-08,
+        "refinement_relative_displacement_error": 8.009251619049896e-12,
+        "refinement_relative_rotation_error": 2.25749476858173e-09,
+        "refinement_relative_member_end_action_error": 9.376045954274413e-07
+      },
+      "prototype_status": "diagnostic-rejected",
+      "blockers": [
+        "PDELTA_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "PDELTA_DEAD_LOAD_EQUILIBRIUM_NOT_VERIFIED:C"
+      ],
+      "member_end_comparison": {
+        "relative_tolerance": 0.002,
+        "absolute_tolerance": 1e-05,
+        "maximum_absolute_difference": 0.001618459568781816,
+        "bounds_met": false,
+        "violating_components": 4,
+        "first_violations": [
+          {
+            "member": "P2M-18",
+            "parent": {
+              "id": "P2M-18",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.5625,
+              "end_fraction": 0.59375
+            },
+            "component": 10,
+            "pynite": 0.20233148643455934,
+            "opensees": 0.2029451820677406,
+            "absolute_error": 0.0006136956331812549
+          },
+          {
+            "member": "P2M-19",
+            "parent": {
+              "id": "P2M-19",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.59375,
+              "end_fraction": 0.625
+            },
+            "component": 4,
+            "pynite": -0.20233149181876797,
+            "opensees": -0.20294518206578926,
+            "absolute_error": 0.0006136902470212924
+          },
+          {
+            "member": "P2M-116",
+            "parent": {
+              "id": "P2M-116",
+              "parent_member": "BRACE-S0",
+              "start_fraction": 0.625,
+              "end_fraction": 0.65625
+            },
+            "component": 10,
+            "pynite": 0.02331732594757341,
+            "opensees": 0.02349161308454928,
+            "absolute_error": 0.00017428713697587028
+          },
+          {
+            "member": "P2M-117",
+            "parent": {
+              "id": "P2M-117",
+              "parent_member": "BRACE-S0",
+              "start_fraction": 0.65625,
+              "end_fraction": 0.6875
+            },
+            "component": 4,
+            "pynite": -0.023317311774007976,
+            "opensees": -0.023491613084067886,
+            "absolute_error": 0.00017430131005991
+          }
+        ]
+      }
+    },
+    {
+      "geometry": "spatial",
+      "compression_per_column_n": 123370.05501361699,
+      "independent_comparison_executed": true,
+      "lateral_x_n": 2000.0,
+      "units": "SI",
+      "subdivisions": 16,
+      "compared_nodes": 128,
+      "compared_members": 128,
+      "all_independent_bounds_met": false,
+      "exact_input_bytes_sha256": "5c2b6123fe11ee7d15ae3059caadb469e0862919414d4a7af21d1e9aa3ec17c9",
+      "checks": {
+        "linear": {
+          "translation_m": {
+            "maximum_absolute_error": 9.746327009341194e-15,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 3.2736942497113564e-15,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 4.612047632690519e-09,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 1.0903704605880193e-08,
+            "relative_tolerance": 1e-07,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          }
+        },
+        "pdelta": {
+          "translation_m": {
+            "maximum_absolute_error": 1.402403154095351e-07,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 384,
+            "bounds_met": false,
+            "violating_components": 2,
+            "first_violations": [
+              {
+                "node": "P2N-42",
+                "component": 2,
+                "pynite": -1.3180958866510785e-08,
+                "opensees": -1.4385135046110005e-08,
+                "absolute_error": 1.20417617959922e-09
+              },
+              {
+                "node": "P2N-87",
+                "component": 2,
+                "pynite": -3.124695731562107e-07,
+                "opensees": -3.1348435720323783e-07,
+                "absolute_error": 1.0147840470271337e-09
+              }
+            ]
+          },
+          "rotation_rad": {
+            "maximum_absolute_error": 5.0790295305462585e-08,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-10,
+            "compared_components": 384,
+            "bounds_met": false,
+            "violating_components": 56,
+            "first_violations": [
+              {
+                "node": "P2N-31",
+                "component": 2,
+                "pynite": -3.4303451179528376e-09,
+                "opensees": -3.3055235242753756e-09,
+                "absolute_error": 1.2482159367746203e-10
+              },
+              {
+                "node": "P2N-32",
+                "component": 2,
+                "pynite": -1.7390317791247739e-09,
+                "opensees": -1.5438586383521338e-09,
+                "absolute_error": 1.9517314077264003e-10
+              },
+              {
+                "node": "P2N-33",
+                "component": 2,
+                "pynite": -3.552299733833059e-10,
+                "opensees": -1.0249648867065742e-10,
+                "absolute_error": 2.527334847126485e-10
+              },
+              {
+                "node": "P2N-34",
+                "component": 2,
+                "pynite": 7.210603000440603e-10,
+                "opensees": 1.0185629263449584e-09,
+                "absolute_error": 2.975026263008981e-10
+              },
+              {
+                "node": "P2N-35",
+                "component": 2,
+                "pynite": 1.4898390412250873e-09,
+                "opensees": 1.819319607920417e-09,
+                "absolute_error": 3.2948056669532974e-10
+              },
+              {
+                "node": "P2N-36",
+                "component": 2,
+                "pynite": 1.951106250020862e-09,
+                "opensees": 2.2997735569312215e-09,
+                "absolute_error": 3.4866730691035965e-10
+              },
+              {
+                "node": "P2N-37",
+                "component": 2,
+                "pynite": 2.10486192700059e-09,
+                "opensees": 2.4599247739026727e-09,
+                "absolute_error": 3.5506284690208276e-10
+              },
+              {
+                "node": "P2N-38",
+                "component": 2,
+                "pynite": 1.951106072252363e-09,
+                "opensees": 2.2997732590098717e-09,
+                "absolute_error": 3.4866718675750855e-10
+              },
+              {
+                "node": "P2N-39",
+                "component": 2,
+                "pynite": 1.4898386862166385e-09,
+                "opensees": 1.8193190120777172e-09,
+                "absolute_error": 3.2948032586107877e-10
+              },
+              {
+                "node": "P2N-40",
+                "component": 2,
+                "pynite": 7.210597689950599e-10,
+                "opensees": 1.0185620325809077e-09,
+                "absolute_error": 2.975022635858478e-10
+              }
+            ]
+          },
+          "reaction_force_n": {
+            "maximum_absolute_error": 0.01483397105766926,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 384,
+            "bounds_met": true,
+            "violating_components": 0,
+            "first_violations": []
+          },
+          "reaction_moment_nm": {
+            "maximum_absolute_error": 0.020709027599195906,
+            "relative_tolerance": 0.002,
+            "absolute_tolerance": 1e-05,
+            "compared_components": 384,
+            "bounds_met": false,
+            "violating_components": 4,
+            "first_violations": [
+              {
+                "node": "B0",
+                "component": 2,
+                "pynite": 0.002974243819120013,
+                "opensees": 0.0029960621203468387,
+                "absolute_error": 2.1818301226825872e-05
+              },
+              {
+                "node": "B1",
+                "component": 2,
+                "pynite": 0.0029742399006341034,
+                "opensees": 0.002996063037027925,
+                "absolute_error": 2.1823136393821826e-05
+              },
+              {
+                "node": "B2",
+                "component": 2,
+                "pynite": 0.00297424148866519,
+                "opensees": 0.0029960620651817383,
+                "absolute_error": 2.182057651654813e-05
+              },
+              {
+                "node": "B3",
+                "component": 2,
+                "pynite": 0.0029742376093405127,
+                "opensees": 0.0029960629818628257,
+                "absolute_error": 2.1825372522312966e-05
+              }
+            ]
+          }
+        }
+      },
+      "linear_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.9999999953834,
+            -299.9999999989167,
+            122955.76335400986
+          ],
+          "reaction_moment_nm": [
+            830.8782636482441,
+            -1200.0711047797809,
+            4.29369876623031e-11
+          ],
+          "active_rotations": true
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.99999999539796,
+            -299.99999999829333,
+            123489.04928414538
+          ],
+          "reaction_moment_nm": [
+            830.8782636467188,
+            -1200.0711047797954,
+            3.702706794351338e-11
+          ],
+          "active_rotations": true
+        },
+        "T0": {
+          "translation_m": [
+            0.0010668088762382914,
+            0.00028725217576646165,
+            -0.00012295576335400992
+          ],
+          "rotation_rad": [
+            -7.695942121680363e-05,
+            0.00020007110478881837,
+            -1.1163616792198805e-16
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T1": {
+          "translation_m": [
+            0.0010668088762382946,
+            0.0002872521757659954,
+            -0.00012348904928414543
+          ],
+          "rotation_rad": [
+            -7.695942121670907e-05,
+            0.0002000711047888141,
+            -9.627037665313476e-17
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "B2": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.999999995729,
+            -299.9999999987986,
+            123251.06074308824
+          ],
+          "reaction_moment_nm": [
+            830.8782636480875,
+            -1200.0711047805735,
+            4.7731283923488195e-11
+          ],
+          "active_rotations": true
+        },
+        "B3": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.9999999957181,
+            -299.99999999840503,
+            123784.34667322539
+          ],
+          "reaction_moment_nm": [
+            830.8782636468695,
+            -1200.0711047805648,
+            3.1676833199467006e-11
+          ],
+          "active_rotations": true
+        },
+        "T2": {
+          "translation_m": [
+            0.0010668088762389697,
+            0.00028725217576646176,
+            -0.0001232510607430883
+          ],
+          "rotation_rad": [
+            -7.695942121683078e-05,
+            0.0002000711047889317,
+            -1.241013382010693e-16
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        },
+        "T3": {
+          "translation_m": [
+            0.0010668088762389736,
+            0.0002872521757659961,
+            -0.0001237843466732254
+          ],
+          "rotation_rad": [
+            -7.695942121668347e-05,
+            0.00020007110478893766,
+            -8.23597663186142e-17
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "active_rotations": true
+        }
+      },
+      "pynite_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -500.1200692802595,
+            -300.0390576075231,
+            122929.10958922828
+          ],
+          "reaction_moment_nm": [
+            854.2763323670484,
+            -1278.2160584094358,
+            0.002974243819120013
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.9454067771803,
+            -299.9862054372625,
+            123505.06066317165
+          ],
+          "reaction_moment_nm": [
+            854.2316835877373,
+            -1278.1382416861743,
+            0.0029742399006341034
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.001152122159085907,
+            0.00029725577753759904,
+            -0.00012293288771294847
+          ],
+          "rotation_rad": [
+            -7.973360528327802e-05,
+            0.0002160770525267069,
+            -7.735506394873549e-09
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.0011521222888412899,
+            0.00029724872597112557,
+            -0.00012350887427367774
+          ],
+          "rotation_rad": [
+            -7.973217117109982e-05,
+            0.0002160771623179683,
+            -7.735507791682819e-09
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "B2": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -500.0543040442062,
+            -300.01372849241534,
+            123235.03630671406
+          ],
+          "reaction_moment_nm": [
+            854.2627027689904,
+            -1278.2491619406742,
+            0.00297424148866519
+          ]
+        },
+        "B3": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.8796298951165,
+            -299.9608766164659,
+            123811.01301892896
+          ],
+          "reaction_moment_nm": [
+            854.2180539049119,
+            -1278.1713382542594,
+            0.0029742376093405127
+          ]
+        },
+        "T2": {
+          "translation_m": [
+            0.0011521892036989471,
+            0.0002972557933106362,
+            -0.00012323883325921948
+          ],
+          "rotation_rad": [
+            -7.973389225644792e-05,
+            0.00021608874572635466,
+            -7.735506488994865e-09
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T3": {
+          "translation_m": [
+            0.0011521893334622835,
+            0.00029724874174384626,
+            -0.0001238148455479237
+          ],
+          "rotation_rad": [
+            -7.973245815906592e-05,
+            0.00021608885563689285,
+            -7.735507988174996e-09
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "opensees_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -500.1272960991596,
+            -300.04039214846813,
+            122929.12442319933
+          ],
+          "reaction_moment_nm": [
+            854.2824536621445,
+            -1278.2362421683706,
+            0.0029960621203468387
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.940698751782,
+            -299.98572813434305,
+            123505.05240599446
+          ],
+          "reaction_moment_nm": [
+            854.2399132009679,
+            -1278.1530060715395,
+            0.002996063037027925
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.0011519819187704975,
+            0.00029724411218662685,
+            -0.00012292912442319934
+          ],
+          "rotation_rad": [
+            -7.973166732989916e-05,
+            0.00021606809377839648,
+            -7.78976151290178e-09
+          ],
+          "reaction_force_n": [
+            -1.8564519227437515e-09,
+            -1.4590554112126064e-10,
+            -2.37008634940139e-10
+          ],
+          "reaction_moment_nm": [
+            -1.5518253349000588e-11,
+            7.158610466559412e-11,
+            6.740749625144815e-11
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.0011519820587185111,
+            0.0002972383723603611,
+            -0.00012350505240599447
+          ],
+          "rotation_rad": [
+            -7.973061203156207e-05,
+            0.00021606833577538648,
+            -7.789763896272605e-09
+          ],
+          "reaction_force_n": [
+            -2.6544314662979573e-09,
+            9.29882230243928e-10,
+            -9.742961992742494e-11
+          ],
+          "reaction_moment_nm": [
+            4.098410499864258e-11,
+            6.223285125075972e-11,
+            9.465081496351502e-11
+          ]
+        },
+        "B2": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -500.0593116159902,
+            -300.0142728518042,
+            123235.04368807505
+          ],
+          "reaction_moment_nm": [
+            854.2684296048433,
+            -1278.2698709682734,
+            0.0029960620651817383
+          ]
+        },
+        "B3": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.8726935330774,
+            -299.9596068653928,
+            123810.99953719907
+          ],
+          "reaction_moment_nm": [
+            854.2258876968858,
+            -1278.1866231992926,
+            0.0029960629818628257
+          ]
+        },
+        "T2": {
+          "translation_m": [
+            0.0011520503792297725,
+            0.0002972441285111874,
+            -0.00012323504368807504
+          ],
+          "rotation_rad": [
+            -7.97319683262239e-05,
+            0.00021608007583999564,
+            -7.789761369472521e-09
+          ],
+          "reaction_force_n": [
+            1.2857224659934552e-09,
+            4.2925552348749285e-10,
+            -2.843307811417617e-10
+          ],
+          "reaction_moment_nm": [
+            4.7919002099661157e-11,
+            -4.90563575004932e-11,
+            3.8546235647807237e-11
+          ]
+        },
+        "T3": {
+          "translation_m": [
+            0.0011520505191933315,
+            0.000297238388686154,
+            -0.00012381099953719907
+          ],
+          "rotation_rad": [
+            -7.973091307248066e-05,
+            0.00021608031799424439,
+            -7.789763752843346e-09
+          ],
+          "reaction_force_n": [
+            -1.3675109239441596e-09,
+            1.748062909701087e-10,
+            1.9127810446661897e-10
+          ],
+          "reaction_moment_nm": [
+            -7.503331289626658e-12,
+            2.862268538503243e-11,
+            -9.408276935296556e-11
+          ]
+        }
+      },
+      "opensees_iterations_by_step": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "native_steps": {
+        "elastic_assemblies": 1,
+        "geometric_assemblies": 1,
+        "tc_iterations": 1,
+        "nonlinear_equilibrium_iterations": null,
+        "native_method": "two stiffness solves per TC iteration; not a nonlinear equilibrium iteration",
+        "minimum_tangent_ratio": 0.9253007892062102,
+        "algebraic_relative_residual": 7.549016449029577e-14,
+        "maximum_tangent_ratio": 1.0000000000004983,
+        "scaled_tangent_condition": 1491913.565730875
+      },
+      "maximum_assembly_recovery_axial_difference_n": 30.498874698751024,
+      "support_moment_comparison": {
+        "B0": {
+          "linear_moment_nm": [
+            830.8782636482441,
+            -1200.0711047797809,
+            4.29369876623031e-11
+          ],
+          "candidate_moment_nm": [
+            854.2763323670484,
+            -1278.2160584094358,
+            0.002974243819120013
+          ],
+          "norm_amplification_at_same_support": 1.0532839511988072
+        },
+        "B1": {
+          "linear_moment_nm": [
+            830.8782636467188,
+            -1200.0711047797954,
+            3.702706794351338e-11
+          ],
+          "candidate_moment_nm": [
+            854.2316835877373,
+            -1278.1382416861743,
+            0.0029742399006341034
+          ],
+          "norm_amplification_at_same_support": 1.053222629563614
+        },
+        "B2": {
+          "linear_moment_nm": [
+            830.8782636480875,
+            -1200.0711047805735,
+            4.7731283923488195e-11
+          ],
+          "candidate_moment_nm": [
+            854.2627027689904,
+            -1278.2491619406742,
+            0.00297424148866519
+          ],
+          "norm_amplification_at_same_support": 1.0532976186441532
+        },
+        "B3": {
+          "linear_moment_nm": [
+            830.8782636468695,
+            -1200.0711047805648,
+            3.1676833199467006e-11
+          ],
+          "candidate_moment_nm": [
+            854.2180539049119,
+            -1278.1713382542594,
+            0.0029742376093405127
+          ],
+          "norm_amplification_at_same_support": 1.0532362929292758
+        }
+      },
+      "full_dead_load_equilibrium": {
+        "force_residual_n": [
+          0.0005900032374483999,
+          0.0001318463332609099,
+          -0.0004764250188600272
+        ],
+        "initial_geometry_moment_residual_nm": [
+          146.68526467401534,
+          -568.5567294902867,
+          -0.0009256629391529714
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.1452028068015352,
+          -0.2374060032889247,
+          0.7871567133049666
+        ],
+        "force_relative_residual": [
+          2.9485419162838577e-07,
+          1.0978046066686918e-07,
+          9.654369801700697e-10
+        ],
+        "moment_relative_residual": [
+          1.1722684429144033e-07,
+          1.5943882617276627e-07,
+          0.0001573998639540436
+        ],
+        "reference": "global dead loads at displaced nodes; no omitted H*uz term",
+        "accepted": false
+      },
+      "refinement": {
+        "maximum_linear_translation_m": 0.0011117182895796387,
+        "maximum_candidate_translation_m": 0.0011963390784349632,
+        "maximum_translation_change_m": 8.596436954142371e-05,
+        "refinement_relative_displacement_error": 5.780880084180105e-08,
+        "refinement_relative_rotation_error": 1.9738421396026234e-08,
+        "refinement_relative_member_end_action_error": 2.220138546597651e-06
+      },
+      "prototype_status": "diagnostic-rejected",
+      "blockers": [
+        "PDELTA_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "PDELTA_DEAD_LOAD_EQUILIBRIUM_NOT_VERIFIED:C"
+      ],
+      "member_end_comparison": {
+        "relative_tolerance": 0.002,
+        "absolute_tolerance": 1e-05,
+        "maximum_absolute_difference": 0.035720851539622345,
+        "bounds_met": false,
+        "violating_components": 640,
+        "first_violations": [
+          {
+            "member": "P2M-0",
+            "parent": {
+              "id": "P2M-0",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.0,
+              "end_fraction": 0.0625
+            },
+            "component": 5,
+            "pynite": 0.002974243819120013,
+            "opensees": 0.0029960621203468387,
+            "absolute_error": 2.1818301226825872e-05
+          },
+          {
+            "member": "P2M-0",
+            "parent": {
+              "id": "P2M-0",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.0,
+              "end_fraction": 0.0625
+            },
+            "component": 11,
+            "pynite": -0.002974243819120013,
+            "opensees": -0.0029960621203468387,
+            "absolute_error": 2.1818301226825872e-05
+          },
+          {
+            "member": "P2M-1",
+            "parent": {
+              "id": "P2M-1",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.0625,
+              "end_fraction": 0.125
+            },
+            "component": 5,
+            "pynite": 0.002974243819120013,
+            "opensees": 0.0029960621203468387,
+            "absolute_error": 2.1818301226825872e-05
+          },
+          {
+            "member": "P2M-1",
+            "parent": {
+              "id": "P2M-1",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.0625,
+              "end_fraction": 0.125
+            },
+            "component": 11,
+            "pynite": -0.002974243819120013,
+            "opensees": -0.0029960621203468387,
+            "absolute_error": 2.1818301226825872e-05
+          },
+          {
+            "member": "P2M-2",
+            "parent": {
+              "id": "P2M-2",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.125,
+              "end_fraction": 0.1875
+            },
+            "component": 5,
+            "pynite": 0.002974243819120013,
+            "opensees": 0.002996062120346838,
+            "absolute_error": 2.1818301226825005e-05
+          },
+          {
+            "member": "P2M-2",
+            "parent": {
+              "id": "P2M-2",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.125,
+              "end_fraction": 0.1875
+            },
+            "component": 11,
+            "pynite": -0.002974243819120013,
+            "opensees": -0.002996062120346838,
+            "absolute_error": 2.1818301226825005e-05
+          },
+          {
+            "member": "P2M-3",
+            "parent": {
+              "id": "P2M-3",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.1875,
+              "end_fraction": 0.25
+            },
+            "component": 5,
+            "pynite": 0.0029742438191200146,
+            "opensees": 0.002996062120346839,
+            "absolute_error": 2.181830122682457e-05
+          },
+          {
+            "member": "P2M-3",
+            "parent": {
+              "id": "P2M-3",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.1875,
+              "end_fraction": 0.25
+            },
+            "component": 11,
+            "pynite": -0.0029742438191200146,
+            "opensees": -0.002996062120346839,
+            "absolute_error": 2.181830122682457e-05
+          },
+          {
+            "member": "P2M-4",
+            "parent": {
+              "id": "P2M-4",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.25,
+              "end_fraction": 0.3125
+            },
+            "component": 5,
+            "pynite": 0.0029742438191200146,
+            "opensees": 0.002996062120346839,
+            "absolute_error": 2.181830122682457e-05
+          },
+          {
+            "member": "P2M-4",
+            "parent": {
+              "id": "P2M-4",
+              "parent_member": "C0-S0",
+              "start_fraction": 0.25,
+              "end_fraction": 0.3125
+            },
+            "component": 11,
+            "pynite": -0.0029742438191200146,
+            "opensees": -0.002996062120346839,
+            "absolute_error": 2.181830122682457e-05
+          }
+        ]
+      }
+    }
+  ],
+  "near_critical_study": [
+    {
+      "compression_ratio_of_cantilever_pcr": 0.4,
+      "raw_native_observation": {
+        "returned_finite": true,
+        "tip_x_m": 0.017681268425760573,
+        "tip_to_length_ratio": 0.004420317106440143
+      },
+      "prototype_decision": "diagnostic-rejected",
+      "productive_use_accepted": false
+    },
+    {
+      "compression_ratio_of_cantilever_pcr": 0.6,
+      "raw_native_observation": {
+        "returned_finite": true,
+        "tip_x_m": 0.026444971444449374,
+        "tip_to_length_ratio": 0.006611242861112344
+      },
+      "prototype_decision": "PDELTA_DOMAIN_MARGIN",
+      "productive_use_accepted": false
+    },
+    {
+      "compression_ratio_of_cantilever_pcr": 0.79,
+      "raw_native_observation": {
+        "returned_finite": true,
+        "tip_x_m": 0.0502263181679386,
+        "tip_to_length_ratio": 0.01255657954198465
+      },
+      "prototype_decision": "PDELTA_DOMAIN_MARGIN",
+      "productive_use_accepted": false
+    },
+    {
+      "compression_ratio_of_cantilever_pcr": 0.95,
+      "raw_native_observation": {
+        "returned_finite": true,
+        "tip_x_m": 0.2104177087811166,
+        "tip_to_length_ratio": 0.05260442719527915
+      },
+      "prototype_decision": "PDELTA_DOMAIN_MARGIN",
+      "productive_use_accepted": false
+    },
+    {
+      "compression_ratio_of_cantilever_pcr": 1.01,
+      "raw_native_observation": {
+        "returned_finite": true,
+        "tip_x_m": -1.0510650999400284,
+        "tip_to_length_ratio": 0.2627662749850071
+      },
+      "prototype_decision": "PDELTA_INSTABILITY",
+      "productive_use_accepted": false
+    }
+  ],
+  "normative_stability_verified": false,
+  "fabrication_release": false,
+  "production_enabled": false,
+  "release_gate": "NOT_READY_BLOCKED"
+}

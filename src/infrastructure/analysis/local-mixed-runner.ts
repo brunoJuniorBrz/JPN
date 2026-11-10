@@ -16,6 +16,8 @@ const healthSchema = z.object({ schema_version: z.literal("jpn.local-mixed/1"), 
 type Gate = { active: number; disabled: boolean };
 const globals = globalThis as typeof globalThis & { __jpnLocalMixedGate?: Gate };
 const gate = globals.__jpnLocalMixedGate ??= { active: 0, disabled: false };
+// The P-Delta diagnostic shares this process slot and cleanup circuit breaker.
+export const localMixedExecutionGate = gate;
 export function localMixedEnabled() { return process.env.NODE_ENV === "development" && process.env.JPN_LOCAL_MIXED_ENABLED === "1" && process.env.JPN_LOCAL_MIXED_ORIGIN?.startsWith("http://127.0.0.1:"); }
 
 export async function runLocalMixed(payload: string, mode: "health" | "analysis" | "connections" = "analysis", signal?: AbortSignal) {
