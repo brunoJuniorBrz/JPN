@@ -39,7 +39,7 @@ function withinFace(p:P,outer:Ring,holes:Ring[]){
 }
 /** Break a straight member at every face/hole boundary intersection. A pair of
  * endpoints on a face is NOT enough to prove it does not cross a roof void. */
-function entirePieceOnFace(a:P,b:P,outer:Ring,holes:Ring[]){
+export function entirePieceOnFace(a:P,b:P,outer:Ring,holes:Ring[]){
   if(!withinFace(a,outer,holes)||!withinFace(b,outer,holes))return false;
   const d=vector(b,a),d2=d[0]*d[0]+d[1]*d[1];
   if(d2<tolerance*tolerance)return false;
