@@ -128,6 +128,10 @@ it("M39-P2: L real -> caminhos de carga nos segmentos -> solver PyNite -> 3 reaÃ
   expect(audited.supportAudits.every(a=>a.normativeApproval===false)).toBe(true);
   expect(audited.fabricationRelease).toBe(false);
 
+  const forgedTrace=structuredClone(trace);
+  forgedTrace.actions[0].expectedForceN[2]-=100;
+  await expect(auditPhysicalRoofReactionPath(p,prepared.request,result.result,forgedTrace,prepared.mapping))
+    .rejects.toThrow("M40_TAMPERED_DISTRIBUTION");
   const tampered=structuredClone(result.result);
   tampered.combinations["ELASTIC-L"].nodes["A0"].reaction_force_n[2]+=500;
   await expect(auditPhysicalRoofReactionPath(p,prepared.request,tampered,trace,prepared.mapping))
