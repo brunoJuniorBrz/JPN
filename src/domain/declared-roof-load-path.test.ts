@@ -2,7 +2,7 @@ import {describe,expect,it} from "vitest";
 import {m34abProject} from "./test-support/m34ab-fixtures";
 import {declaredStructureSchema} from "./declared-structure";
 import {physicalRoofFacesSchema} from "./physical-roof-faces";
-import {structureSignature} from "./calculations/project-basis";
+import {declaredRoofDistributionSignature} from "./declared-roof-load-path";
 import {distributeDeclaredRoofActions} from "./declared-roof-load-path";
 import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
 import {adaptMixedProject} from "./mixed-adapter";
@@ -46,7 +46,7 @@ const action=(projection:"horizontal"|"roof-surface",direction:[number,number,nu
 });
 const distribute=(p:Project,projection:"horizontal"|"roof-surface"="horizontal",direction:[number,number,number]=[0,0,-1])=>
   distributeDeclaredRoofActions(p,[action(projection,direction)],{
-    version:1,method:"parallel-purlin-strips",geometrySignature:structureSignature(p),
+    version:1,method:"parallel-purlin-strips",geometrySignature:declaredRoofDistributionSignature(p),
   });
 describe("M39-P1: entrada de área de obra declarada para cargas de terças",()=>{
   it("duas águas: cargas de linha conservam área, força e momentos com cumeeira compartilhada",()=>{
