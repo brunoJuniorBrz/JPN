@@ -16,6 +16,7 @@ import { SpatialAdapterPanel } from "./spatial-adapter-panel";
 import { mixedPreparationReview } from "@/domain/mixed-adapter";
 import { MemberPhysicalCatalogPanel } from "./member-physical-catalog-panel";
 import { SupportInterfaceEditor } from "./support-interface-editor";
+import { PhysicalRoofWorkflow } from "./physical-roof-workflow";
 
 const numberFields = [
   ["eGpa", "Elasticidade E (GPa)"], ["gGpa", "Cisalhamento G (GPa)"],
@@ -214,6 +215,7 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
         const id = selectCaseName(draft.cases, "CASO"); if (!id) return;
         change({ ...draft, cases: [...draft.cases, { id, source: "" }], combinations: draft.combinations.map(c => ({ ...c, factors: { ...c.factors, [id]: null } })) });
       }}>Adicionar caso</button>
+      {mixed && project.workspace.physicalStructure && <PhysicalRoofWorkflow project={project} draft={draft} onChange={change}/>} 
       <h4>Forças e momentos nos nós</h4>
       {nodes.length > 0 && <div className="physical-row">
         <Field label="Nó do modelo"><Select value={selectedNode} onChange={e => setNode(e.target.value)}>{nodes.map(n => <option value={n.id} key={n.id}>{n.id} · {Math.round(n.x)}/{Math.round(n.y)}/{Math.round(n.z)} mm</option>)}</Select></Field>
