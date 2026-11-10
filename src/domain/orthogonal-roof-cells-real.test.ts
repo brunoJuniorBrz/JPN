@@ -5,7 +5,7 @@ import {physicalRoofFacesSchema} from "./physical-roof-faces";
 import {declaredRoofDistributionSignature} from "./declared-roof-load-path";
 import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
 import {runLocalMixed} from "@/infrastructure/analysis/local-mixed-runner";
-import {auditPhysicalRoofReactionPath} from "./physical-reaction-path";
+import {auditPhysicalRoofReactionPath,isDeclaredRoofTrace} from "./physical-reaction-path";
 
 afterEach(()=>vi.unstubAllEnvs());
 it("M39-P2: L real -> caminhos de carga nos segmentos -> solver PyNite -> 3 reações e momento global conservados",async()=>{
@@ -113,7 +113,7 @@ it("M39-P2: L real -> caminhos de carga nos segmentos -> solver PyNite -> 3 rea�
   expect(combination.equilibrium.relative_residual).toBeLessThan(1e-8);
   expect(result.result.input_sha256).toBe(prepared.input_sha256);
   const trace=prepared.roof_load_path;
-  if(!trace||!("declaredGeometry" in trace))throw Error("Esperada carga física em cobertura declarada.");
+  if(!isDeclaredRoofTrace(trace))throw Error("Esperada carga física em cobertura declarada.");
   const audited=await auditPhysicalRoofReactionPath(p,prepared.request,result.result,trace,prepared.mapping);
   expect(audited.status).toBe("reaction-path-verified");
   expect(audited.combinations).toHaveLength(1);
