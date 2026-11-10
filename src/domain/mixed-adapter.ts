@@ -53,6 +53,7 @@ export async function prepareMixedInput(project: Project, loaded = false) {
   if(project.workspace.physicalStructure&&draft.loading?.roofDistribution&&!draft.loading.roofArea.length)throw Error("DECLARED_STRUCTURE_UNSUPPORTED: distribuição de área sem ação e faces verificadas.");
   if(project.workspace.physicalStructure&&draft.loading?.roofArea.length&&!draft.physicalRoofFaces)throw Error("DECLARED_STRUCTURE_UNSUPPORTED: declare e revise superfícies de cobertura físicas para distribuir cargas.");
   if(!loaded&&draft.loading?.wind)throw Error("WIND_LOADED_REQUIRED: vento exige o adaptador com cargas distribuídas.");
+  if(!loaded&&draft.loading?.facadeTraction)throw Error("FACADE_LOADED_REQUIRED: vento em fachadas exige o adaptador misto com transmissão explícita.");
   if(!loaded&&draft.loading?.roofArea.length)throw Error("DISTRIBUTED_LOADED_REQUIRED: carga de superfície só pode ser analisada pelo adaptador com distribuição explícita.");
   if(!loaded&&draft.loading&&(draft.loading.selfWeight||draft.loading.uniform.length||draft.loading.roofDistribution))throw Error("DISTRIBUTED_LOADED_REQUIRED: carregamento não nodal exige o adaptador mixed3d/2.");
   if (draft.engineeringCombinations) verifyEngineeringCombinations(draft.engineeringCombinations,draft.cases,draft.combinations);
