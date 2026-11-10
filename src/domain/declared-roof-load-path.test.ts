@@ -98,7 +98,7 @@ describe("M39-P1: entrada de área de obra declarada para cargas de terças",()=
   it("recusa furo físico, sem preencher abertura pelo retângulo envolvente",()=>{
     const p=reference(),faces=p.workspace.spatialPreparation!.physicalRoofFaces!;
     faces.faces[0].holes.push(ring([[1000,1000],[1000,2000],[3000,2000],[3000,1000]],x=>3000+.1*x));
-    expect(()=>distribute(p)).toThrow("PURLIN_CELL_SUPPORT_PENDING");
+    expect(()=>distribute(p)).toThrow("PURLIN_SEGMENTATION_REQUIRED");
   });
   it("mudar somente os panos depois da revisão invalida a assinatura e não reaproveita cargas",()=>{
     const p=reference(),basis=declaredRoofDistributionSignature(p);
