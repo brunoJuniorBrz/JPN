@@ -3,7 +3,7 @@ import { mixedRequestObject, mixedResultSchema, validateMixedReferences } from "
 import { canonicalSpatialInput } from "./spatial-analysis";
 import { roofDistributionSchema } from "./roof-regions";
 import { windDeclarationSchema } from "./wind-contracts";
-import {declaredFacadeTractionSchema} from "./declared-facade-traction";
+import {declaredFacadeTractionSchema} from "./declared-facade-traction-contract";
 const n=z.number().finite(), source=z.string().min(1).max(1000).refine(s=>!!s.trim()), id=z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/);
 const vec=z.tuple([n,n,n]);
 export const densitySchema=z.object({ kgM3:n.positive().max(100000),source,revision:source }).strict();
