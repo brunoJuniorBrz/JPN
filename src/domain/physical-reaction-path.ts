@@ -6,6 +6,15 @@ import {resolvePhysicalStructure} from "./physical-structure";
 import {declaredRoofDistributionSignature,distributeDeclaredRoofActions} from "./declared-roof-load-path";
 import {assessSupportReactions,reviewSupportInterfaces} from "./support-interface";
 
+/** Distinguish a verified declared-face trace from generated visual roof loads.
+ * Callers still validate the underlying face signature and solver hash. */
+export function isDeclaredRoofTrace(value:unknown):value is ReturnType<typeof distributeDeclaredRoofActions>{
+  if(!value||typeof value!=="object")return false;
+  const v=value as Record<string,unknown>;
+  return v.schema_version==="jpn.roof-load-path/1"&&v.declaredGeometry===true&&
+    v.computedStructuralApproval===false&&v.fabricationRelease===false&&
+    Array.isArray(v.actions)&&typeof v.method==="object"&&v.method!==null;
+}
 type V=[number,number,number];
 type MemberMapping={members:readonly {id:string;originalId:string}[]};
 const zero=():V=>[0,0,0];
