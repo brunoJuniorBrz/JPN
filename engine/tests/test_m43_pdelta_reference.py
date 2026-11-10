@@ -98,10 +98,42 @@ def test_reference_explicitly_rejects_critical_and_nonphysical_inputs():
         exact_cantilever_tip_displacement(float("nan"))
 
 
-def test_axial_springs_are_outside_the_frame_only_pdelta_pilot():
-    # Deliberate proof of scope. The production engine models axial-only bars
-    # with Spring3D k=EA/L, which has no validated geometric stiffness Kg.
-    # They must never inherit this frame-only benchmark's approval.
-    from jpn_structural.mixed3d import validate_mixed3d
-    assert validate_mixed3d.__module__ == "jpn_structural.mixed3d"
-    assert _pynite_column.__name__ == "_pynite_column"
+def test_production_mixed_worker_remains_explicitly_linear_on_same_column():
+    """Benchmark cannot silently enable nonlinear design in the live worker."""
+    from jpn_structural.mixed3d import analyze_mixed3d
+
+    P = 0.2 * P_EULER
+    n = 4
+    data = dict(
+        schema_version="jpn.mixed3d/1", units="SI",
+        theory="linear-elastic-frame-axial",
+        project=dict(id="M43-LINEAR", revision="R1",
+                     source="Independent linear versus PDelta benchmark"),
+        nodes=[dict(id=f"N{i}", x_m=0.0, y_m=0.0, z_m=i*LENGTH/n)
+               for i in range(n+1)],
+        members=[dict(id=f"C{i}", start=f"N{i}", end=f"N{i+1}",
+                      kind="frame", material="M", section="S",
+                      rotation_deg=0,
+                      release_start=[False]*6, release_end=[False]*6)
+                 for i in range(n)],
+        materials=[dict(id="M", e_pa=E, g_pa=E/(2*(1+0.3)), nu=0.3,
+                        source="Benchmark synthetic material", revision="R1")],
+        sections=[dict(id="S", area_m2=AREA, iy_m4=I, iz_m4=I, j_m4=I,
+                       source="Benchmark synthetic section", revision="R1")],
+        supports=[dict(node="N0", restrained=[True]*6)],
+        cases=[dict(id="H", source="Transverse benchmark lateral point load"),
+               dict(id="P", source="Axial benchmark compressive load")],
+        nodal_loads=[
+            dict(node=f"N{n}", case="H", fx_n=HORIZONTAL, fy_n=0, fz_n=0,
+                 mx_nm=0, my_nm=0, mz_nm=0),
+            dict(node=f"N{n}", case="P", fx_n=0, fy_n=0, fz_n=-P,
+                 mx_nm=0, my_nm=0, mz_nm=0),
+        ],
+        combinations=[dict(id="C", factors={"H":1,"P":1})],
+    )
+    solved = analyze_mixed3d(data)
+    tip = solved["combinations"]["C"]["nodes"][f"N{n}"]["translation_m"][0]
+    assert tip == pytest.approx(exact_cantilever_tip_displacement(0.0), rel=5e-5)
+    assert tip < exact_cantilever_tip_displacement(P)
+    assert solved["combinations"]["C"]["equilibrium"]["relative_residual"] < 1e-8
+    assert solved["status"] == "analysis_completed_experimental"
