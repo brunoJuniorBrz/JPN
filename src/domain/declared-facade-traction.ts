@@ -1,4 +1,6 @@
-import {z} from "zod";
+import {declaredFacadeTractionSchema} from "./declared-facade-traction-contract";
+export {declaredFacadeTractionSchema} from "./declared-facade-traction-contract";
+export type {DeclaredFacadeTraction} from "./declared-facade-traction-contract";
 import type {Project} from "./models";
 import {structureSignature} from "./calculations/project-basis";
 import {resolvePhysicalStructure} from "./physical-structure";
@@ -11,23 +13,6 @@ const mul=(a:V,x:number):V=>[a[0]*x,a[1]*x,a[2]*x];
 const cross=(a:V,b:V):V=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
 const near=(a:number,b:number)=>Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(a),Math.abs(b));
 function fail(code:string,message:string):never{throw Error(code+": "+message);}
-const evidence=z.string().trim().min(5).max(1000);
-const id=z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/);
-export const declaredFacadeTractionSchema=z.object({
-  schema_version:z.literal("jpn.declared-facade-traction/1"),
-  normativeValidation:z.literal("pending-engineer-review"),
-  physicalSignature:z.string().min(1).max(100000),
-  cases:z.array(z.object({
-    id,incidenceDeg:z.number().finite().min(0).lt(360),
-    reference:evidence,
-    zones:z.array(z.object({
-      facadeId:id,netPressurePa:z.number().finite().min(-1e6).max(1e6),
-      source:evidence,revision:evidence,calculationBasis:evidence,
-    }).strict()).min(1).max(32),
-  }).strict()).min(1).max(10),
-}).strict();
-export type DeclaredFacadeTraction=z.infer<typeof declaredFacadeTractionSchema>;
-
 /** Bind an external pressure scenario to exact physical facade geometry.
  * This is only mechanical transmission of a supplied pressure; Cp/Cpi,
  * incident wind factors and compliance with ABNT are NEVER inferred. */
