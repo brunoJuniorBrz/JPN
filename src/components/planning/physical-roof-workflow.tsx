@@ -133,6 +133,7 @@ export function PhysicalRoofWorkflow({project,draft,onChange}:{
       {physicalReview.ready?" Área projetada declarada: "+physicalReview.area.toFixed(3)+" m².":" "+physicalReview.message}
       {stale?" A revisão das cargas está desatualizada.":""}
     </p>
+    {faceNotice&&<p role="status" className="notice">{faceNotice}</p>}
     {faces.map(face=><div className="physical-row" key={face.id}>
       <strong>{face.id} · {face.supportPieceIds.length} terças · {face.revision}</strong>
       <button type="button" className="button secondary" onClick={()=>{
