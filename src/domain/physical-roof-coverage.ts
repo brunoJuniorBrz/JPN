@@ -109,7 +109,7 @@ function triangleOverlap(subject:Triangle,clip:Triangle){
   }
   return polygon.length>2?polygonArea(polygon):0;
 }
-function intersectionArea(a:{outer:Ring;holes:Ring[]},b:{outer:Ring;holes:Ring[]}){
+export function intersectionArea(a:{outer:Ring;holes:Ring[]},b:{outer:Ring;holes:Ring[]}){
   const x=[a.outer,...a.holes].map(triangulate),y=[b.outer,...b.holes].map(triangulate);
   let result=0;
   for(let i=0;i<x.length;i++)for(let j=0;j<y.length;j++)

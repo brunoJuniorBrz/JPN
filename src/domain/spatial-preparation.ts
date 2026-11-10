@@ -18,7 +18,8 @@ import { declaredServiceCriterionSchema } from "./declared-service";
 import { memberDesignDeclarationSchema } from "./coldformed-design";
 import { supportInterfacesSchema } from "./support-interface";
 import { physicalRoofFacesSchema } from "./physical-roof-faces";
-import { physicalFacadesSchema,inspectPhysicalFacades } from "./physical-facades";
+import { physicalFacadesSchema } from "./physical-facades";
+import { auditPhysicalFacadeEnvelope } from "./physical-facade-envelope";
 import { auditPhysicalRoofCoverage } from "./physical-roof-coverage";
 
 // Human declarations, NOT finite-element input. A pending field is never
@@ -82,7 +83,7 @@ export function spatialPreparationReview(project: Project, draft: SpatialPrepara
   const declared=project.workspace.physicalStructure!==undefined;
   if(draft.physicalFacades){
     if(!declared||!geometry)add("PHYSICAL_FACADES_STRUCTURE_PENDING","Fachadas físicas exigem modelo estrutural XYZ declarado.");
-    else try{inspectPhysicalFacades(draft.physicalFacades,geometry);}
+    else try{auditPhysicalFacadeEnvelope(draft.physicalFacades,geometry);}
     catch(e){add("PHYSICAL_FACADES_INVALID",e instanceof Error?e.message:String(e));}
   }
   if(draft.physicalRoofFaces&&geometry){
