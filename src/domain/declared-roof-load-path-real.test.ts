@@ -2,7 +2,7 @@ import {afterEach,expect,it,vi} from "vitest";
 import {m34abProject,reviewM34Fixture} from "./test-support/m34ab-fixtures";
 import {declaredStructureSchema} from "./declared-structure";
 import {physicalRoofFacesSchema} from "./physical-roof-faces";
-import {structureSignature} from "./calculations/project-basis";
+import {declaredRoofDistributionSignature} from "./declared-roof-load-path";
 import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
 import {runLocalMixed} from "@/infrastructure/analysis/local-mixed-runner";
 
@@ -71,7 +71,7 @@ it("M39: cobertura declarada -> terças físicas -> loaded mixed3d/2 -> PyNite r
     caseId:"AREA",knM2:.2,projection:"horizontal",direction:[0,0,-1],
     source:"Carga vertical uniforme com declaração física do ensaio",
     revision:"Revisão da ação real sintética",loadPath:"Telhas simples -> terças reais -> vínculos físicos"
-  }],roofDistribution:{version:1,method:"parallel-purlin-strips",geometrySignature:structureSignature(p)}};
+  }],roofDistribution:{version:1,method:"parallel-purlin-strips",geometrySignature:declaredRoofDistributionSignature(p)}};
   const prepared=await adaptLoadedMixedProject(p);
   expect(prepared.request.schema_version).toBe("jpn.mixed3d/2");
   expect(prepared.request.members).toHaveLength(5);
