@@ -24,14 +24,18 @@ it("M39: cobertura declarada -> terças físicas -> loaded mixed3d/2 -> PyNite r
       {id:"P1",role:"purlin",start:"A",end:"B"},
       {id:"P2",role:"purlin",start:"C",end:"D"},
       {id:"P3",role:"purlin",start:"E",end:"F"},
+      // Real longitudinal roof edge members connect the three purlins into
+      // one physical topology. No phantom joint or solver restraint is added.
+      {id:"TC1",role:"topChord",start:"A",end:"C"},
+      {id:"TC2",role:"topChord",start:"C",end:"E"},
     ],
   });
   const d=p.workspace.spatialPreparation!;
-  d.physicalCatalog!.assignments=["P1","P2","P3"].map(pieceId=>({
+  d.physicalCatalog!.assignments=["P1","P2","P3","TC1","TC2"].map(pieceId=>({
     pieceId,materialId:"STEEL",sectionId:"S1",rotationDeg:0,
   }));
-  d.memberKinds=["P1","P2","P3"].map(pieceId=>({pieceId,kind:"frame" as const}));
-  d.memberConnections=["P1","P2","P3"].map(pieceId=>({
+  d.memberKinds=["P1","P2","P3","TC1","TC2"].map(pieceId=>({pieceId,kind:"frame" as const}));
+  d.memberConnections=["P1","P2","P3","TC1","TC2"].map(pieceId=>({
     pieceId,start:"rigid" as const,end:"rigid" as const,
   }));
   const fixed=["fixed","fixed","fixed","fixed","fixed","fixed"] as const;
@@ -70,6 +74,7 @@ it("M39: cobertura declarada -> terças físicas -> loaded mixed3d/2 -> PyNite r
   }],roofDistribution:{version:1,method:"parallel-purlin-strips",geometrySignature:structureSignature(p)}};
   const prepared=await adaptLoadedMixedProject(p);
   expect(prepared.request.schema_version).toBe("jpn.mixed3d/2");
+  expect(prepared.request.members).toHaveLength(5);
   expect(prepared.request.member_loads).toHaveLength(3);
   expect(prepared.request.member_loads.map(l=>l.force_per_length_n_m[2])).toEqual([-400,-800,-400]);
   expect(prepared.roof_load_path!.actions[0].distributedForceN[2]).toBeCloseTo(-8000,8);
