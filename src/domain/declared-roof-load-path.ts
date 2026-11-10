@@ -19,6 +19,14 @@ const fail=(message:string):never=>{throw new Error("M39_DECLARED_ROOF: "+messag
 type RowPiece={id:string;at:number;lo:number;hi:number;start:V;end:V;lengthM:number};
 type Surface={region:RoofRegion;u:number;v:number;rows:{at:number;pieces:RowPiece[]}[]};
 const near=(a:number,b:number)=>Math.abs(a-b)<=eps;
+/** A reviewed tributary declaration must bind BOTH the steel model and the
+ * roof sheeting contours. Updating a cutout, face or ownership invalidates it. */
+export function declaredRoofDistributionSignature(project:Project){
+  const faces=project.workspace.spatialPreparation?.physicalRoofFaces;
+  if(!project.workspace.physicalStructure||!faces)
+    fail("PHYSICAL_ROOF_PENDING: assinatura exige estrutura e faces declaradas");
+  return JSON.stringify({physicalStructureSignature:structureSignature(project),roofFaces:faces});
+}
 
 /** The 3D members are projected into metres ONLY after geometrical auditing.
  * Every supported surface is an explicit rectangle, not an inferred hull. */
@@ -86,7 +94,7 @@ export function distributeDeclaredRoofActions(project:Project,actions:RoofAreaAc
   if(!project.workspace.physicalStructure)fail("DECLARATION_REQUIRED: exige geometria física declarada");
   if(actions.length>10)fail("ACTION_LIMIT: máximo dez ações de superfície");
   const method=roofDistributionSchema.parse(declaration);
-  if(method.geometrySignature!==structureSignature(project))fail("STALE_DISTRIBUTION: mude ou revise o vínculo geométrico");
+  if(method.geometrySignature!==declaredRoofDistributionSignature(project))fail("STALE_DISTRIBUTION: estrutura, panos ou terças mudaram; revise a transmissão");
   const model=resolvePhysicalStructure(project).model??fail("GEOMETRY_PENDING: geometria declarada inválida");
   if(model.nodes.length>250||model.pieces.length>600)fail("MODEL_LIMIT: topologia excede os limites do adaptador");
   const surfaces=supportedSurfaces(model,project);
