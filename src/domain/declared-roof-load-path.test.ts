@@ -100,6 +100,17 @@ describe("M39-P1: entrada de área de obra declarada para cargas de terças",()=
     faces.faces[0].holes.push(ring([[1000,1000],[1000,2000],[3000,2000],[3000,1000]],x=>3000+.1*x));
     expect(()=>distribute(p)).toThrow("IRREGULAR_DISTRIBUTION_PENDING");
   });
+  it("mudar somente os panos depois da revisão invalida a assinatura e não reaproveita cargas",()=>{
+    const p=reference(),basis=declaredRoofDistributionSignature(p);
+    const original=distributeDeclaredRoofActions(p,[action("horizontal")],{
+      version:1,method:"parallel-purlin-strips",geometrySignature:basis,
+    });
+    expect(original.actions[0].areaM2).toBe(40);
+    p.workspace.spatialPreparation!.physicalRoofFaces!.faces[0].revision="Revisão física posterior";
+    expect(()=>distributeDeclaredRoofActions(p,[action("horizontal")],{
+      version:1,method:"parallel-purlin-strips",geometrySignature:basis,
+    })).toThrow("STALE_DISTRIBUTION");
+  });
   it("recusa assinatura stale e coordenadas de terça fora dos limites sem valor fictício",()=>{
     const p=reference();
     expect(()=>distributeDeclaredRoofActions(p,[action("horizontal")],{
