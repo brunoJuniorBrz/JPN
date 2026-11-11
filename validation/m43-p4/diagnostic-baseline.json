@@ -1,0 +1,94 @@
+{
+  "schema_version": "jpn.m43-p4-diagnostic-baseline/1",
+  "interpretation": "Diagnostic drift only; not physical acceptance",
+  "metrics": {
+    "planar-0.0": {
+      "translation_m": 2.212813265956015e-14,
+      "rotation_rad": 7.643354265479685e-15,
+      "reaction_force_n": 1.7126690181612503e-06,
+      "reaction_moment_nm": 1.8424998415866867e-08,
+      "physical_end_actions": 1.7126690181612503e-06,
+      "strain_energy_j": 1.9397372597040885e-11,
+      "mesh:translation_m": 7.94854152221458e-11,
+      "mesh:rotation_rad": 8.875746245430382e-11,
+      "mesh:member_end_actions": 1.2406154992206098e-09
+    },
+    "planar-0.1": {
+      "translation_m": 1.897342959827908e-12,
+      "rotation_rad": 1.7593294442813656e-13,
+      "reaction_force_n": 4.844696377404034e-07,
+      "reaction_moment_nm": 5.990104909869842e-07,
+      "physical_end_actions": 6.774751000193646e-07,
+      "strain_energy_j": 6.902924454266213e-09,
+      "mesh:translation_m": 3.8818149194126414e-08,
+      "mesh:rotation_rad": 1.3056988470467694e-08,
+      "mesh:member_end_actions": 5.626099146560648e-07
+    },
+    "planar-0.2": {
+      "translation_m": 1.0535905047709404e-11,
+      "rotation_rad": 8.046262224212231e-13,
+      "reaction_force_n": 9.938521543517709e-07,
+      "reaction_moment_nm": 1.9531594261934515e-06,
+      "physical_end_actions": 3.158117124257842e-06,
+      "strain_energy_j": 3.56412463986544e-08,
+      "mesh:translation_m": 1.6128234906517566e-07,
+      "mesh:rotation_rad": 5.6362067863356976e-08,
+      "mesh:member_end_actions": 1.2637254994674052e-06
+    },
+    "planar-0.4": {
+      "translation_m": 5.536327949903774e-11,
+      "rotation_rad": 4.308438046433938e-12,
+      "reaction_force_n": 5.406211130321026e-06,
+      "reaction_moment_nm": 3.658081368485e-06,
+      "physical_end_actions": 1.708191825855465e-05,
+      "strain_energy_j": 1.9093788239388232e-07,
+      "mesh:translation_m": 7.015645856324951e-07,
+      "mesh:rotation_rad": 2.752954811611075e-07,
+      "mesh:member_end_actions": 3.20935496739283e-06
+    },
+    "spatial-cantilever": {
+      "translation_m": 5.249384963041184e-07,
+      "rotation_rad": 1.9841392130638333e-07,
+      "reaction_force_n": 4.826665644941386e-08,
+      "reaction_moment_nm": 0.03237528780573484,
+      "physical_end_actions": 0.03237528780573484,
+      "strain_energy_j": 0.0006262720064569294,
+      "mesh:translation_m": 5.16702891614435e-06,
+      "mesh:rotation_rad": 5.48598342259265e-06,
+      "mesh:member_end_actions": 8.546269566312684e-06
+    },
+    "spatial-sway": {
+      "translation_m": 6.138570103186164e-08,
+      "rotation_rad": 1.640204282300512e-08,
+      "reaction_force_n": 0.004683368177211378,
+      "reaction_moment_nm": 0.01734945777457142,
+      "physical_end_actions": 0.01734945777457142,
+      "strain_energy_j": 8.322234205149215e-05,
+      "mesh:translation_m": 3.842367432313034e-05,
+      "mesh:rotation_rad": 5.321899382746759e-05,
+      "mesh:member_end_actions": 0.03731609961845825
+    },
+    "spatial-spatial": {
+      "translation_m": 1.2598213624528606e-07,
+      "rotation_rad": 7.919231375237657e-09,
+      "reaction_force_n": 0.013500788874807768,
+      "reaction_moment_nm": 0.016702414001429133,
+      "physical_end_actions": 0.031414303442488745,
+      "strain_energy_j": 0.0002682900140023037,
+      "mesh:translation_m": 3.662980246150606e-05,
+      "mesh:rotation_rad": 6.91032532774522e-05,
+      "mesh:member_end_actions": 0.008685943323139586
+    },
+    "spatial-torsion": {
+      "translation_m": 4.591902674549661e-08,
+      "rotation_rad": 1.7267454522555507e-08,
+      "reaction_force_n": 3.3898942319865455e-08,
+      "reaction_moment_nm": 0.001417608990550434,
+      "physical_end_actions": 0.001417608990550434,
+      "strain_energy_j": 9.515597316989144e-06,
+      "mesh:translation_m": 1.3446126448939718e-05,
+      "mesh:rotation_rad": 4.069528067158896e-05,
+      "mesh:member_end_actions": 4.43623706077595e-06
+    }
+  }
+}
