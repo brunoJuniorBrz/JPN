@@ -84,6 +84,10 @@ def main():
         def nonfinite(_):
             raise ValueError('Nonfinite JSON constant')
         data = json.loads(body.decode('utf-8'), object_pairs_hook=_unique_object, parse_constant=nonfinite)
+        if '--p4-frame' in sys.argv:
+            from jpn_structural.p4_frame import analyze_p4_frame
+            return dict(schema_version='jpn.local-p4-frame/1', status='diagnostic',
+                        execution=limits, diagnostic=analyze_p4_frame(data))
         if '--corotational-planar' in sys.argv:
             from jpn_structural.corotational_planar import analyze_corotational_planar
             return dict(schema_version='jpn.local-corotational-frame/1', status='diagnostic',

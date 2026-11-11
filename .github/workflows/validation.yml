@@ -35,6 +35,10 @@ jobs:
       # component of the equivalent P3/OpenSees Corotational comparisons.
       # Safe rejection alone cannot make these comparisons pass.
       - run: python validation/m43-p3/reproduce.py --opensees-python ${{ matrix.reference-python }} --p2-evidence .tools/m43-p2-independent-evidence.json --output .tools/m43-p3-independent-evidence.json
+      # P4 planar reference estimates and verified spatial limits are mandatory.
+      # General spatial discrepancies remain blocked and cannot deteriorate
+      # beyond their committed diagnostic baseline. Never re-record it in CI.
+      - run: python validation/m43-p4/reproduce.py --opensees-python ${{ matrix.reference-python }} --p3-evidence .tools/m43-p3-independent-evidence.json --output .tools/m43-p4-independent-evidence.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -42,6 +46,7 @@ jobs:
           path: |
             .tools/m43-p2-independent-evidence.json
             .tools/m43-p3-independent-evidence.json
+            .tools/m43-p4-independent-evidence.json
 
   structural:
     runs-on: ${{ matrix.os }}

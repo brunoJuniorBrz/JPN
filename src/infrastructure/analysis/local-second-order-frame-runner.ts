@@ -12,7 +12,7 @@ export const secondOrderFrameEnabled=()=>localMixedEnabled()&&process.env.JPN_LO
 
 /** Isolated P-Delta diagnostic, using the SAME Python memory-limited process as mixed3d.
  * No browser-side mechanical result, no remote or production execution. */
-export async function executeSecondOrderWorker(input:string,workerFlag:"--second-order-frame"|"--corotational-planar",signal?:AbortSignal){
+export async function executeSecondOrderWorker(input:string,workerFlag:"--second-order-frame"|"--corotational-planar"|"--p4-frame",signal?:AbortSignal){
   if(!secondOrderFrameEnabled())throw new SolverFailure("LOCAL_ONLY","Execute pnpm dev:structural; cálculo experimental somente no computador local.");
   if(gate.disabled)throw new SolverFailure("CLEANUP_FAILURE","Worker não confirmou encerramento; reinicie o servidor local.");
   const payload=typeof input==="string"?input:JSON.stringify(input);
