@@ -1,6 +1,7 @@
 import {localMixedEnabled} from "@/infrastructure/analysis/local-mixed-runner";
 import {runLocalSecondOrderFrame,secondOrderFrameEnabled} from "@/infrastructure/analysis/local-second-order-frame-runner";
 import {SolverFailure} from "@/infrastructure/analysis/runner";
+import {runLocalCorotationalFrame} from "@/infrastructure/analysis/local-corotational-frame-runner";
 
 export const runtime="nodejs";
 export const maxDuration=35;
@@ -30,7 +31,11 @@ export async function POST(request:Request){
   if(!request.headers.get("content-type")?.startsWith("application/json"))
     return Response.json({error:{code:"INVALID_INPUT",message:"Envie JSON em SI."}},{status:415,headers});
   try{
-    const diagnostic=await runLocalSecondOrderFrame(await readInput(request),request.signal);
+    const raw=await readInput(request),selector=JSON.parse(raw);
+    // Select only an explicit version. Preserve raw JSON so the protected
+    // Python worker still refuses duplicate keys before numerical execution.
+    const diagnostic=selector?.schema_version==="jpn.second-order-frame/2"
+      ?await runLocalCorotationalFrame(raw,request.signal):await runLocalSecondOrderFrame(raw,request.signal);
     return Response.json({status:"diagnostic",diagnostic,
       error:{code:"PDELTA_NOT_VERIFIED",message:"Domínio produtivo de segunda ordem não validado; diagnóstico recusado para uso estrutural."}},
       {status:422,headers});

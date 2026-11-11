@@ -1,0 +1,16 @@
+{
+  "schema_version": "jpn.m43-p3-fixed-criteria/1",
+  "defined_before_algorithm": true,
+  "equivalent_corotational_relative_tolerance": 1e-7,
+  "translation_absolute_tolerance_m": 1e-10,
+  "rotation_absolute_tolerance_rad": 1e-10,
+  "force_absolute_tolerance_n": 1e-5,
+  "moment_absolute_tolerance_nm": 1e-5,
+  "algebraic_and_deformed_equilibrium_relative_tolerance": 1e-8,
+  "refinement_relative_tolerance": 1e-4,
+  "newton_scaled_increment_tolerance": 1e-10,
+  "newton_scaled_force_change_tolerance": 1e-8,
+  "maximum_newton_iterations_per_step": 30,
+  "load_steps": 10,
+  "interpretation": "Equivalent formulations must meet every independent component bound. P2 drift baseline is separate and does not homologate physics."
+}

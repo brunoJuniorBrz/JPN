@@ -65,8 +65,8 @@ const near=(a:number,b:number)=>Math.abs(a-b)<=1e-9*Math.max(1,Math.abs(a),Math.
 function fail(message:string):never{throw Error("PDELTA_DIAGNOSTIC_INVALID: "+message);}
 const cross=(a:number[],b:number[])=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
 
-function verifyMesh(request:SecondOrderRequest,value:z.infer<typeof mesh>,subdivisions:number){
-  const source=request.model,analysis=value.analysis_model;
+export function verifySecondOrderMeshGeometry(source:SecondOrderRequest["model"],value:Pick<z.infer<typeof mesh>,"analysis_model"|"subdivisions"|"node_count"|"member_count"|"numerical_member_mapping">,subdivisions:number){
+  const analysis=value.analysis_model;
   if(value.subdivisions!==subdivisions||value.node_count!==analysis.nodes.length||value.member_count!==analysis.members.length||
      analysis.members.length!==source.members.length*subdivisions||value.numerical_member_mapping.length!==analysis.members.length)
     fail("malha numérica incompleta");
@@ -95,6 +95,11 @@ function verifyMesh(request:SecondOrderRequest,value:z.infer<typeof mesh>,subdiv
       if(i>0&&members.get(children[i-1].id)!.end!==m.start)fail("malha numérica descontínua");
     }
   }
+}
+
+function verifyMesh(request:SecondOrderRequest,value:z.infer<typeof mesh>,subdivisions:number){
+  const source=request.model,analysis=value.analysis_model;
+  verifySecondOrderMeshGeometry(source,value,subdivisions);
   const cases=source.combinations.map(c=>c.id).sort();
   if(!same(Object.keys(value.combinations).sort(),cases))fail("combinações diferentes");
   for(const [caseId,answer]of Object.entries(value.combinations)){
