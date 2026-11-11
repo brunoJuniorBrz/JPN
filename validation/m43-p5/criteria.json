@@ -1,0 +1,32 @@
+{
+  "schema_version": "jpn.m43-p5-criteria/1",
+  "base_commit": "3f7569cea3d8766f2329148026175d68533915aa",
+  "defined_before_corrections": true,
+  "equilibrium_relative": 1e-8,
+  "refinement_relative": 1e-4,
+  "reference_relative": 1e-7,
+  "absolute": {
+    "translation_m": 1e-10,
+    "rotation_rad": 1e-10,
+    "reaction_force_n": 1e-5,
+    "reaction_moment_nm": 1e-5,
+    "physical_end_actions": 1e-5,
+    "strain_energy_j": 1e-8
+  },
+  "reference_acceptance": "abs(candidate-reference)+reference_uncertainty <= atol+rtol*max(abs(candidate),abs(reference)); every physical component must pass",
+  "rotation_comparison": "Physical SO(3) orientations/directors, never additive native rotation DOFs versus total exponential coordinates",
+  "limits": { "nodes": 150, "members": 320, "dofs": 900, "worker_seconds": 20, "worker_memory_mib": 768, "minimum_tangent_elastic_ratio": 0.6, "maximum_scaled_condition": 1e10 },
+  "historical_baseline": "p4-baseline.json retains P4 diagnostic rtol 0.002 and a strict 1e-7 diagnostic. Neither raw rotational DOF comparison is a P5 physical orientation acceptance.",
+  "ancestry": [
+    { "pr": 75, "commit": "2b009d2aeff8b3e0c512cac5e0025fe02e702eea" },
+    { "pr": 80, "commit": "696ae3fbaa2410b70ecba3be0b3ddb2693be48af" },
+    { "pr": 81, "commit": "00ce874beac86a53fb50f9c654f7225c87fa2037" },
+    { "pr": 82, "commit": "3f7569cea3d8766f2329148026175d68533915aa" }
+  ],
+  "ancestry_verified_by_git_merge_base": true,
+  "base_ci": { "push_run": 43062549392, "pull_request_run": 43062843760, "conclusion": "success" },
+  "production_enabled": false,
+  "computed_structural_approval": false,
+  "fabrication_release": false,
+  "release_gate": "NOT_READY_BLOCKED"
+}

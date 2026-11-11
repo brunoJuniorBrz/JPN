@@ -9,6 +9,7 @@
       "feat/m43-p2-second-order-frame-engine": false,
       "feat/m43-p3-consistent-second-order-equilibrium": false,
       "feat/m43-p4-spatial-corotational-stability": false,
+      "feat/m43-p5-spatial-corotational-validation": false,
       "integration/jpn-functional-main": false,
       "feat/roof-area-load-path": false,
       "audit/mission21-independent": false,

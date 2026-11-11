@@ -107,6 +107,8 @@ Não usar *percentual de linhas programadas* ou número de PRs como medida. As p
 **M43-P3:** [alternativa corrotacional XZ e regressões obrigatórias](M43-P3-EQUILIBRIO-CONSISTENTE.md). Equilíbrio e referências equivalentes demonstrados em ensaios planos; refinamento dos portais e formulação/estabilidade 3D continuam pendentes. M43 permanece parcial e bloqueado para uso produtivo.
 
 **M43-P4:** [convergência plana e núcleo espacial experimental](M43-P4-CONVERGENCIA-E-ESPACIAL.md). Quatro portais convergidos sem ampliar limites; núcleo SO(3) implementado com auditorias e referências, mas os quatro ensaios espaciais gerais continuam reprovados em componentes/energia. M43 permanece parcial, sem aprovação normativa ou fabricação.
+
+**M43-P5:** [auditoria física espacial](M43-P5-VALIDACAO-FISICA-ESPACIAL.md). Comparação corrigida para orientações SO(3) físicas e referências refinadas; coluna biaxial aprovada em um benchmark estrito, corroborado por barra contínua independente. Pórtico, quadro espacial e braço excêntrico continuam reprovados/pendentes de refinamento; limites e fórmulas da P4 preservados. M43 permanece parcial e bloqueado para produção, aprovação normativa e fabricação.
 - Generalizar solução linear já validada para frame-only, axial-only e mista, incluindo fôrmas de apoio/ligação realmente declaradas.
 - Calcular modos de flambagem/estabilidade global; ações de segunda ordem P-Δ/P-δ, imperfeições e efeitos geométricos quando aplicáveis.
 - Resolver limitação atual de Spring3D sem contribuição a Kg; ou selecionar formulação física equivalente validada com matriz geométrica, sem artifício de rigidez.
