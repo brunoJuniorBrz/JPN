@@ -4,7 +4,6 @@ Requires complete Git history (CI checkout fetch-depth: 0). No GitHub token,
 network requests, application imports, numerical changes or result approvals.
 """
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -49,11 +48,13 @@ def ancestor(a, b):
     return subprocess.run([GIT, "merge-base", "--is-ancestor", a, b], cwd=ROOT, capture_output=True).returncode == 0
 
 
-def digest(path):
-    data = path.read_bytes()
-    if path.suffix.lower() in {".ts", ".tsx", ".json", ".py", ".md", ".mjs", ".css", ".yml", ".yaml", ".toml", ".txt", ".lock", ".example"}:
-        data = data.replace(b"\r\n", b"\n")
-    return hashlib.sha256(data).hexdigest()
+TREES = {}
+
+
+def tree(ref):
+    if ref not in TREES:
+        TREES[ref] = {line.split("\t", 1)[1]: line.split()[2] for line in git("ls-tree", "-r", ref).splitlines()}
+    return TREES[ref]
 
 
 def verify_guards(snapshot):
@@ -72,13 +73,6 @@ def verify_guards(snapshot):
 
 def record(snapshot):
     rows = []
-    trees = {}
-
-    def tree(ref):
-        if ref not in trees:
-            trees[ref] = {line.split("\t", 1)[1]: line.split()[2] for line in git("ls-tree", "-r", ref).splitlines()}
-        return trees[ref]
-
     candidate_tree = tree("HEAD")
     for original in snapshot["pull_requests"]:
         n, sha = original["number"], original["sha"]
@@ -92,10 +86,9 @@ def record(snapshot):
         evidence = []
         source_tree = tree(sha)
         for f in files:
-            exists = (ROOT/f).is_file()
             source_blob, candidate_blob = source_tree.get(f), candidate_tree.get(f)
             evidence.append(dict(path=f, source_blob=source_blob,
-                                 candidate_sha256_lf=digest(ROOT/f) if exists else None,
+                                 candidate_blob=candidate_blob,
                                  identical_git_blob=bool(source_blob is not None and source_blob == candidate_blob)))
         rows.append(dict(number=n, title=original["title"], source_sha=sha, source_branch=original["head"], base_branch=original["base"],
                          merge_base=mb, in_main_snapshot=in_main, in_pr83=in_core, candidate_ancestor=in_candidate,
@@ -144,12 +137,12 @@ def record(snapshot):
 def verify(snapshot):
     verify_guards(snapshot)
     matrix = json.loads((HERE/"pr-matrix.json").read_text(encoding="utf-8"))
+    candidate_tree = tree("HEAD")
     assert len(matrix["pull_requests"]) == len(snapshot["pull_requests"]) == 64
     for row in matrix["pull_requests"]:
         assert ancestor(row["source_sha"], "HEAD") == row["candidate_ancestor"], "Ancestry drift: PR "+str(row["number"])
         for item in row["files"]:
-            if item["candidate_sha256_lf"] is not None:
-                assert digest(ROOT/item["path"]) == item["candidate_sha256_lf"], "File drift: "+item["path"]
+            assert candidate_tree.get(item["path"]) == item["candidate_blob"], "File drift: "+item["path"]
         assert all((ROOT/p).is_file() for p in row["tests"]), "Mapped test missing"
     print("Integration audit PASS: 64 PRs; main + PR83 ancestry; source/test/golden preservation; deploy and SCI guards")
 

@@ -83,7 +83,7 @@ substituem a solução linear da interface. A P5 mantém uma coluna verificada e
 três casos espaciais pendentes. Resistência completa, capacidades de apoios,
 homologação normativa, SCI e fabricação não foram habilitadas nesta integração.
 
-O auditor verifica ancestralidade e hashes, impede sobrescrever fontes/testes/
+O auditor verifica ancestralidade e blobs Git, impede sobrescrever fontes/testes/
 goldens da #83 e exige deploy desabilitado na main e candidata. Somente dados,
 registros, código SCI inativo e testes de integração foram acrescentados à base
 validada. Limites, tolerâncias e coeficientes permanecem iguais.

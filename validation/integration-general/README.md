@@ -3,7 +3,7 @@
 - `pr-snapshot.json`: os 64 PRs abertos observados antes da candidata, HEADs,
   bases, dependências reais e comparações de patches; nenhuma escrita no GitHub.
 - `pr-matrix.json`: rastreabilidade por funcionalidade/arquivo/PR/SHA, estado,
-  teste correspondente, blob original e SHA-256 da versão da candidata.
+  teste correspondente e blobs Git imutáveis da origem e da candidata.
 - `PRS.md`: índice humano da matriz completa.
 - `ancestry-graph.mmd`: ordem parcial real de ancestralidade dos PRs, com HEADs
   iguais agrupados. Adaptações/cherry-picks são descritos na matriz, não como merges.
@@ -22,8 +22,9 @@ executável. Para HTTP real, usar o ambiente Python 3.12 das dependências trava
 em `engine/`, conforme o lançador local existente. Não é necessário deploy.
 
 `audit.py --record` é uma operação explícita após revisão do inventário; a CI
-apenas verifica e nunca regrava a matriz. Hashes de texto normalizam CRLF/LF;
-arquivos binários conservam seus bytes. Referências antigas permanecem rotuladas
+apenas verifica e nunca regrava a matriz. A comparação usa os blobs Git, incluindo
+logs, XML, scripts sem extensão e binários, sem depender de CRLF/LF do checkout.
+Referências antigas permanecem rotuladas
 como pesquisa, não capacidades automaticamente homologadas.
 
 O [relatório](../../docs/INTEGRACAO-GERAL-CANDIDATA.md) contém conflitos,
