@@ -3,7 +3,15 @@ on: [push, pull_request]
 
 jobs:
   independent-pdelta-diagnostics:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            reference-python: .tools/opensees/bin/python
+          - os: windows-latest
+            reference-python: .tools/opensees/Scripts/python.exe
     permissions:
       contents: read
     env:
@@ -18,16 +26,22 @@ jobs:
       - run: python -m pip install -r engine/requirements-validation.lock
       - run: python -m pip install --no-build-isolation --no-deps -e ./engine
       - run: python -m venv .tools/opensees
-      - run: .tools/opensees/bin/python -m pip install --require-hashes -r validation/m43-p2/requirements-opensees.lock
+      - run: ${{ matrix.reference-python }} -m pip install --require-hashes -r validation/m43-p2/requirements-opensees.lock
       # This job validates diagnostic execution and fail-closed behavior.
       # It DOES NOT declare all PyNite/OpenSees comparisons equivalent:
       # every discrepancy is retained in the artifact without relaxed bounds.
-      - run: python validation/m43-p2/reproduce.py --opensees-python .tools/opensees/bin/python --output .tools/m43-p2-independent-evidence.json
+      - run: python validation/m43-p2/reproduce.py --opensees-python ${{ matrix.reference-python }} --output .tools/m43-p2-independent-evidence.json
+      # Separate mandatory quality layer: frozen P2 drift bounds AND every
+      # component of the equivalent P3/OpenSees Corotational comparisons.
+      # Safe rejection alone cannot make these comparisons pass.
+      - run: python validation/m43-p3/reproduce.py --opensees-python ${{ matrix.reference-python }} --p2-evidence .tools/m43-p2-independent-evidence.json --output .tools/m43-p3-independent-evidence.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: independent-pdelta-diagnostic-evidence
-          path: .tools/m43-p2-independent-evidence.json
+          name: independent-pdelta-diagnostic-evidence-${{ matrix.os }}
+          path: |
+            .tools/m43-p2-independent-evidence.json
+            .tools/m43-p3-independent-evidence.json
 
   structural:
     runs-on: ${{ matrix.os }}

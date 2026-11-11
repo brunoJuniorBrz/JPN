@@ -12,22 +12,19 @@ export const secondOrderFrameEnabled=()=>localMixedEnabled()&&process.env.JPN_LO
 
 /** Isolated P-Delta diagnostic, using the SAME Python memory-limited process as mixed3d.
  * No browser-side mechanical result, no remote or production execution. */
-export async function runLocalSecondOrderFrame(input:unknown,signal?:AbortSignal){
+export async function executeSecondOrderWorker(input:string,workerFlag:"--second-order-frame"|"--corotational-planar",signal?:AbortSignal){
   if(!secondOrderFrameEnabled())throw new SolverFailure("LOCAL_ONLY","Execute pnpm dev:structural; cálculo experimental somente no computador local.");
   if(gate.disabled)throw new SolverFailure("CLEANUP_FAILURE","Worker não confirmou encerramento; reinicie o servidor local.");
   const payload=typeof input==="string"?input:JSON.stringify(input);
   if(typeof payload!=="string")throw new SolverFailure("PDELTA_CONTRACT","Corpo JSON ausente.");
   if(Buffer.byteLength(payload)>localMixedLimits.inputBytes)throw new SolverFailure("INPUT_LIMIT","Entrada excede 500 kB.");
-  let request:z.infer<typeof secondOrderRequestSchema>;
-  try{request=secondOrderRequestSchema.parse(JSON.parse(payload));}
-  catch(e){throw new SolverFailure("PDELTA_CONTRACT",e instanceof Error?e.message.slice(0,2000):"Contrato experimental invalido.");}
   if(gate.active>=1)throw new SolverFailure("BUSY","Já existe uma execução estrutural local.");
   gate.active++;
   try {
     const portable=path.resolve(".tools/python/python.exe");
     const executable=process.env.JPN_PYTHON_EXECUTABLE || (existsSync(portable)?portable:path.resolve(process.platform==="win32"?".venv/Scripts/python.exe":".venv/bin/python"));
     const response=await new Promise<unknown>((resolve,reject)=>{
-      const child=spawn(executable,["-I","-X","utf8",path.resolve("engine/local_mixed_worker.py"),"--second-order-frame"],{
+      const child=spawn(executable,["-I","-X","utf8",path.resolve("engine/local_mixed_worker.py"),workerFlag],{
         windowsHide:true,stdio:["pipe","pipe","pipe"],cwd:process.cwd(),env:{...process.env,OPENBLAS_NUM_THREADS:"1",OMP_NUM_THREADS:"1",MKL_NUM_THREADS:"1"},
       });
       let done=false,bytes=0,stderrBytes=0,stopping:SolverFailure|null=null;
@@ -59,6 +56,22 @@ export async function runLocalSecondOrderFrame(input:unknown,signal?:AbortSignal
       signal?.addEventListener("abort",cancel,{once:true});
       if(signal?.aborted)cancel();else child.stdin.end(payload);
     });
+    return response;
+  }catch(e){
+    if(e instanceof SolverFailure)throw e;
+    throw new SolverFailure("INVALID_RESPONSE","Worker experimental retornou resposta invalida.");
+  }finally{gate.active--;}
+}
+
+export async function runLocalSecondOrderFrame(input:unknown,signal?:AbortSignal){
+  if(!secondOrderFrameEnabled())throw new SolverFailure("LOCAL_ONLY","Diagnostico experimental somente local.");
+  let request:z.infer<typeof secondOrderRequestSchema>;
+  const payload=typeof input==="string"?input:JSON.stringify(input);
+  if(typeof payload!=="string"||Buffer.byteLength(payload)>localMixedLimits.inputBytes)throw new SolverFailure("INPUT_LIMIT","Entrada ausente ou maior que 500 kB.");
+  try{request=secondOrderRequestSchema.parse(JSON.parse(payload));}
+  catch(e){throw new SolverFailure("PDELTA_CONTRACT",e instanceof Error?e.message.slice(0,2000):"Contrato experimental invalido.");}
+  const response=await executeSecondOrderWorker(payload,"--second-order-frame",signal);
+  try{
     const envelope=z.object({schema_version:z.literal("jpn.local-second-order-frame/1"),status:z.literal("diagnostic"),
       execution:z.object({memory_limit_bytes:z.literal(768*1024*1024),memory_kind:z.enum(["windows-job-process-commit","linux-address-space"]),local_only:z.literal(true)}).strict(),
       diagnostic:secondOrderDiagnosticSchema}).strict().parse(response);
@@ -67,5 +80,5 @@ export async function runLocalSecondOrderFrame(input:unknown,signal?:AbortSignal
   }catch(e){
     if(e instanceof SolverFailure)throw e;
     throw new SolverFailure("INVALID_RESPONSE","O executor retornou um resultado incompatível ou fisicamente inconsistente.");
-  }finally{gate.active--;}
+  }
 }

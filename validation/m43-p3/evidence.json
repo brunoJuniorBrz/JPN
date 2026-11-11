@@ -1,0 +1,3163 @@
+{
+  "schema_version": "jpn.m43-p3-independent-evidence/1",
+  "generated_at_utc": "2026-11-11T12:00:24.543168+00:00",
+  "environment": {
+    "python": "3.12.16",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "PyNiteFEA": "3.2.1"
+  },
+  "installed_dependency_source_hashes": {
+    "Analysis.py": "f473f9374595b0cd4cd401d8f3adc2879e6316ea2f388ff6e9a5bb9434dd9313",
+    "Member3D.py": "7f0a4c0a43ef14a2a657ac798ccf5c14a445b06ae213e195f110849fe6b33027"
+  },
+  "criteria": {
+    "schema_version": "jpn.m43-p3-fixed-criteria/1",
+    "defined_before_algorithm": true,
+    "equivalent_corotational_relative_tolerance": 1e-07,
+    "translation_absolute_tolerance_m": 1e-10,
+    "rotation_absolute_tolerance_rad": 1e-10,
+    "force_absolute_tolerance_n": 1e-05,
+    "moment_absolute_tolerance_nm": 1e-05,
+    "algebraic_and_deformed_equilibrium_relative_tolerance": 1e-08,
+    "refinement_relative_tolerance": 0.0001,
+    "newton_scaled_increment_tolerance": 1e-10,
+    "newton_scaled_force_change_tolerance": 1e-08,
+    "maximum_newton_iterations_per_step": 30,
+    "load_steps": 10,
+    "interpretation": "Equivalent formulations must meet every independent component bound. P2 drift baseline is separate and does not homologate physics."
+  },
+  "source_sha256_lf": {
+    "engine/jpn_structural/corotational_planar.py": "2b846c154cc33de74899b36fd5337f0eaed825b5efb4cdf9d41ab22133dbda8e",
+    "engine/tests/test_corotational_planar.py": "5e7ec1a590dc0b7873d7e9f4cc365b316041b0396154fcb6eaf07a2a74f067d0",
+    "validation/m43-p3/reproduce.py": "7af4a008da97b9bd81d2ae66fe7ce6f225b76cab77bc05665a2237fe39dd7b33",
+    "validation/m43-p3/opensees_planar.py": "32294b5bf3db0d95d2ad32df7a9e017117159e0a6acf2ea017ccd30757c455b0",
+    "validation/m43-p3/regression.py": "d43312aa3d26cdbb088a3e1657a7a107057a120dcb819d40883181c82b974fb7",
+    "validation/m43-p3/criteria.json": "9b78e7c46afd69129f87f6bd18c2dff6a67e130d9ab05837d5b8204ca9ecf5db",
+    "validation/m43-p3/p2-baseline.json": "9859ef08fc412b6bb28598cd20282a53da00a4cb9122176ef98cdfa086fba2a1"
+  },
+  "p2_regression": {
+    "cases": 8,
+    "metrics": 106,
+    "bounds_met": true,
+    "physical_acceptance": false
+  },
+  "linear_comparisons": [
+    {
+      "geometry": "cantilever",
+      "compression_ratio_of_reference_column": 0.2,
+      "exact_input_bytes_sha256": "7b57f3a9fa787932196fdc0401b35029164f337aebf8901c41c30876909c671f",
+      "checks": {
+        "translation_m": {
+          "compared_components": 195,
+          "maximum_absolute_error": 9.890352425934168e-14,
+          "maximum_bound_utilization": 8.477444936443138e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 195,
+          "maximum_absolute_error": 3.517412056064373e-14,
+          "maximum_bound_utilization": 7.1101695782563e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 195,
+          "maximum_absolute_error": 6.261652742978185e-07,
+          "maximum_bound_utilization": 0.0626165270376989,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 195,
+          "maximum_absolute_error": 8.606639312347397e-08,
+          "maximum_bound_utilization": 0.0011490556060878845,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 768,
+          "maximum_absolute_error": 7.075941539369524e-07,
+          "maximum_bound_utilization": 0.003369495970745797,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      }
+    },
+    {
+      "geometry": "sway",
+      "compression_ratio_of_reference_column": 0.0,
+      "exact_input_bytes_sha256": "ca367f57156e6795efead5362b8efc77d51d264552e7729d5de71d182c352231",
+      "checks": {
+        "translation_m": {
+          "compared_components": 291,
+          "maximum_absolute_error": 3.3149698264178795e-14,
+          "maximum_bound_utilization": 0.00010578730682060215,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 291,
+          "maximum_absolute_error": 1.1388893300656733e-14,
+          "maximum_bound_utilization": 6.651399525964598e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 291,
+          "maximum_absolute_error": 1.3842509360983968e-08,
+          "maximum_bound_utilization": 0.0008826646079927172,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 291,
+          "maximum_absolute_error": 3.6704477679450065e-08,
+          "maximum_bound_utilization": 0.00014680955962739387,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 1152,
+          "maximum_absolute_error": 3.6704477679450065e-08,
+          "maximum_bound_utilization": 0.0029802322378813524,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      }
+    },
+    {
+      "geometry": "sway",
+      "compression_ratio_of_reference_column": 0.1,
+      "exact_input_bytes_sha256": "7fbd97b0c7786849e5e0eadaf65d5ca4c80eb35bdd58960506623373587f8e5e",
+      "checks": {
+        "translation_m": {
+          "compared_components": 291,
+          "maximum_absolute_error": 3.33513598682611e-14,
+          "maximum_bound_utilization": 0.00010643084926901238,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 291,
+          "maximum_absolute_error": 1.1463486410123735e-14,
+          "maximum_bound_utilization": 6.692111152508962e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 291,
+          "maximum_absolute_error": 1.807347871363163e-08,
+          "maximum_bound_utilization": 0.0018073478710365122,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 291,
+          "maximum_absolute_error": 3.7051904655527323e-08,
+          "maximum_bound_utilization": 0.0001481991884842877,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 1152,
+          "maximum_absolute_error": 3.7051904655527323e-08,
+          "maximum_bound_utilization": 0.0029802322378813524,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      }
+    },
+    {
+      "geometry": "sway",
+      "compression_ratio_of_reference_column": 0.2,
+      "exact_input_bytes_sha256": "d24078feff647a93d7c471bff0a43fc115f0b958107a1308d8cbfa3021aac468",
+      "checks": {
+        "translation_m": {
+          "compared_components": 291,
+          "maximum_absolute_error": 3.333704839958429e-14,
+          "maximum_bound_utilization": 0.00010638517851460907,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 291,
+          "maximum_absolute_error": 1.1461968527082256e-14,
+          "maximum_bound_utilization": 6.691463908843711e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 291,
+          "maximum_absolute_error": 1.4068064047023654e-08,
+          "maximum_bound_utilization": 0.0013909811966980336,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 291,
+          "maximum_absolute_error": 3.70996531273704e-08,
+          "maximum_bound_utilization": 0.0001483901715078138,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 1152,
+          "maximum_absolute_error": 3.70996531273704e-08,
+          "maximum_bound_utilization": 0.0029802322378813524,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      }
+    },
+    {
+      "geometry": "braced",
+      "compression_ratio_of_reference_column": 0.2,
+      "exact_input_bytes_sha256": "76e5add206160757b751106ad51c1e6ecdde5def25720193e19666a094c4fbd5",
+      "checks": {
+        "translation_m": {
+          "compared_components": 384,
+          "maximum_absolute_error": 1.6147158480098178e-16,
+          "maximum_bound_utilization": 1.5282660586656412e-06,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 384,
+          "maximum_absolute_error": 9.265608706720066e-17,
+          "maximum_bound_utilization": 9.197959066905098e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 384,
+          "maximum_absolute_error": 1.7316779121756554e-09,
+          "maximum_bound_utilization": 7.962057679769983e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 384,
+          "maximum_absolute_error": 8.998313205665909e-11,
+          "maximum_bound_utilization": 3.6043006385470867e-06,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 1536,
+          "maximum_absolute_error": 4.23574419983197e-09,
+          "maximum_bound_utilization": 4.920488655922148e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      }
+    },
+    {
+      "geometry": "spatial",
+      "compression_ratio_of_reference_column": 0.2,
+      "exact_input_bytes_sha256": "5c2b6123fe11ee7d15ae3059caadb469e0862919414d4a7af21d1e9aa3ec17c9",
+      "checks": {
+        "translation_m": {
+          "compared_components": 384,
+          "maximum_absolute_error": 9.746327009341194e-15,
+          "maximum_bound_utilization": 4.7156401936080814e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 384,
+          "maximum_absolute_error": 3.2736942497113564e-15,
+          "maximum_bound_utilization": 2.408156123264868e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 384,
+          "maximum_absolute_error": 4.612047632690519e-09,
+          "maximum_bound_utilization": 7.686746054484257e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 384,
+          "maximum_absolute_error": 1.0903704605880193e-08,
+          "maximum_bound_utilization": 8.387006345807311e-05,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 1536,
+          "maximum_absolute_error": 1.0903704605880193e-08,
+          "maximum_bound_utilization": 0.0007450580596368716,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      }
+    }
+  ],
+  "equivalent_corotational_comparisons": [
+    {
+      "geometry": "cantilever",
+      "compression_ratio_of_reference_column": 0.0,
+      "lateral_x_n": 2000.0,
+      "request_sha256": "0d1bc7a7170a9d1e2fe5b84b85219bc8686b74b549c8f31a8779d87c8b8b95b7",
+      "exact_input_bytes_sha256": "3545576107a8132f96f5481779ac547b6889488c8092c6a9049c771f68bfec9b",
+      "independent_transformation": "Corotational",
+      "independent_iterations": [
+        3,
+        3,
+        3,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "compared_nodes": 65,
+      "compared_members": 64,
+      "checks": {
+        "translation_m": {
+          "compared_components": 195,
+          "maximum_absolute_error": 1.4474776629039288e-16,
+          "maximum_bound_utilization": 1.423197546401324e-06,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 195,
+          "maximum_absolute_error": 2.6020852139652106e-18,
+          "maximum_bound_utilization": 6.30810823670082e-09,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 195,
+          "maximum_absolute_error": 1.2664042685628374e-06,
+          "maximum_bound_utilization": 0.126640425252504,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 195,
+          "maximum_absolute_error": 8.326651368406601e-09,
+          "maximum_bound_utilization": 0.0008326651367713269,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 768,
+          "maximum_absolute_error": 8.287449446697792e-07,
+          "maximum_bound_utilization": 0.08287449378025102,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      },
+      "physical_equilibrium": {
+        "force_residual_n": [
+          -1.4551915228366852e-10,
+          0.0,
+          8.881784197001252e-15
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          -8.185452315956354e-12,
+          0.0
+        ],
+        "force_relative_residual": [
+          7.272321453456698e-14,
+          0.0,
+          8.881784197001252e-15
+        ],
+        "moment_relative_residual": [
+          0.0,
+          1.02305802065026e-15,
+          0.0
+        ],
+        "accepted": true
+      },
+      "newton_steps": [
+        {
+          "step": 1,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 5,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 2.3547698901893454e-11,
+          "scaled_displacement_increment": 2.17515879804592e-12,
+          "scaled_internal_force_change": 1.7552760169792237e-09,
+          "minimum_tangent_ratio": 0.971817918611353,
+          "maximum_tangent_ratio": 1.0289994579040187,
+          "scaled_tangent_condition": 87542715.6065391
+        },
+        {
+          "step": 2,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 5,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 6.613552727685601e-11,
+          "scaled_displacement_increment": 2.1733405444610375e-12,
+          "scaled_internal_force_change": 1.7309744464455435e-09,
+          "minimum_tangent_ratio": 0.9444356980179353,
+          "maximum_tangent_ratio": 1.0588338138258915,
+          "scaled_tangent_condition": 87542790.35553278
+        },
+        {
+          "step": 3,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 5,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 6.193931767484173e-11,
+          "scaled_displacement_increment": 2.1715361762153392e-12,
+          "scaled_internal_force_change": 1.7264894154322975e-09,
+          "minimum_tangent_ratio": 0.9178358347281318,
+          "maximum_tangent_ratio": 1.089520565584358,
+          "scaled_tangent_condition": 87542917.47667941
+        },
+        {
+          "step": 4,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 5,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 5.7007412124221445e-11,
+          "scaled_displacement_increment": 2.1696438265400684e-12,
+          "scaled_internal_force_change": 1.7326613601653662e-09,
+          "minimum_tangent_ratio": 0.8920008624068374,
+          "maximum_tangent_ratio": 1.121077176640513,
+          "scaled_tangent_condition": 87543093.5148151
+        },
+        {
+          "step": 5,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 5,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 7.522839950979687e-11,
+          "scaled_displacement_increment": 2.1678211529128065e-12,
+          "scaled_internal_force_change": 1.7807986978368717e-09,
+          "minimum_tangent_ratio": 0.8669133687516317,
+          "maximum_tangent_ratio": 1.1535210577777208,
+          "scaled_tangent_condition": 87543318.79698546
+        },
+        {
+          "step": 6,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 5,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.1655583875835874e-10,
+          "scaled_displacement_increment": 2.1659425791331936e-12,
+          "scaled_internal_force_change": 1.7396731664121036e-09,
+          "minimum_tangent_ratio": 0.842556009491446,
+          "maximum_tangent_ratio": 1.1868695457265603,
+          "scaled_tangent_condition": 87543595.64067286
+        },
+        {
+          "step": 7,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 5,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 8.589995559304953e-11,
+          "scaled_displacement_increment": 2.164097598630374e-12,
+          "scaled_internal_force_change": 1.8197829376731533e-09,
+          "minimum_tangent_ratio": 0.8189115313032402,
+          "maximum_tangent_ratio": 1.2211398926510533,
+          "scaled_tangent_condition": 87543921.53108694
+        },
+        {
+          "step": 8,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 5,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 2.1365121938288212e-10,
+          "scaled_displacement_increment": 2.1622494038682993e-12,
+          "scaled_internal_force_change": 1.875910243143153e-09,
+          "minimum_tangent_ratio": 0.7959627804603538,
+          "maximum_tangent_ratio": 1.2563492397257008,
+          "scaled_tangent_condition": 87544297.57511844
+        },
+        {
+          "step": 9,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 5,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 2.7322278128849577e-10,
+          "scaled_displacement_increment": 2.1604434143292978e-12,
+          "scaled_internal_force_change": 1.8454395558364922e-09,
+          "minimum_tangent_ratio": 0.7736927276897435,
+          "maximum_tangent_ratio": 1.2925146109464554,
+          "scaled_tangent_condition": 87544724.06730892
+        },
+        {
+          "step": 10,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 5,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.547387000755407e-10,
+          "scaled_displacement_increment": 2.1584879487342954e-12,
+          "scaled_internal_force_change": 1.749687271512812e-09,
+          "minimum_tangent_ratio": 0.7520844793158302,
+          "maximum_tangent_ratio": 1.3296528916956336,
+          "scaled_tangent_condition": 87545199.65539598
+        }
+      ],
+      "refinement": {
+        "translation_m": 2.4407581411969254e-07,
+        "rotation_rad": 1.302291005225169e-09,
+        "member_end_actions": 3.885783181960008e-09
+      },
+      "physical_convergence_verified": true,
+      "physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -2000.0000000001455,
+            0.0,
+            8.881784197001252e-15
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -7999.965879485167,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.010666588688372437,
+            0.0,
+            -1.7060257421044014e-05
+          ],
+          "rotation_rad": [
+            0.0,
+            0.003999976542028346,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "maximum_assembly_recovery_axial_difference_n": 0.0,
+      "blockers": [
+        "COROTATIONAL_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "COROTATIONAL_3D_STABILITY_PENDING"
+      ],
+      "production_enabled": false,
+      "fabrication_release": false
+    },
+    {
+      "geometry": "cantilever",
+      "compression_ratio_of_reference_column": 0.05,
+      "lateral_x_n": 2000.0,
+      "request_sha256": "9ebcc3f0f01efcfdedc4c07aa0dfeab2cd606abd034335c7d963bcf4fdb68af2",
+      "exact_input_bytes_sha256": "c7b2f9cddd8ce31eb57095c1005ad60d62a980ce45a5424823a5b8a19a782637",
+      "independent_transformation": "Corotational",
+      "independent_iterations": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "compared_nodes": 65,
+      "compared_members": 64,
+      "checks": {
+        "translation_m": {
+          "compared_components": 195,
+          "maximum_absolute_error": 2.6857720691539355e-17,
+          "maximum_bound_utilization": 2.65451264835543e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 195,
+          "maximum_absolute_error": 8.673617379884035e-19,
+          "maximum_bound_utilization": 1.7643474125452973e-09,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 195,
+          "maximum_absolute_error": 6.013724487274885e-07,
+          "maximum_bound_utilization": 0.06013724451110002,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 195,
+          "maximum_absolute_error": 8.992856237455271e-09,
+          "maximum_bound_utilization": 0.0008992856236646555,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 768,
+          "maximum_absolute_error": 4.008470568805933e-07,
+          "maximum_bound_utilization": 0.0016727599789833143,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      },
+      "physical_equilibrium": {
+        "force_residual_n": [
+          8.731149137020111e-11,
+          0.0,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          7.275957614183426e-12,
+          0.0
+        ],
+        "force_relative_residual": [
+          4.3633928720740184e-14,
+          0.0,
+          0.0
+        ],
+        "moment_relative_residual": [
+          0.0,
+          8.716888694599237e-16,
+          0.0
+        ],
+        "accepted": true
+      },
+      "newton_steps": [
+        {
+          "step": 1,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.005700023414663e-12,
+          "scaled_displacement_increment": 8.706834776683786e-18,
+          "scaled_internal_force_change": 1.4146886313826931e-12,
+          "minimum_tangent_ratio": 0.9691260399143331,
+          "maximum_tangent_ratio": 1.0267482456831447,
+          "scaled_tangent_condition": 87950790.17389959
+        },
+        {
+          "step": 2,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 2.361688417028413e-12,
+          "scaled_displacement_increment": 9.807256827443585e-18,
+          "scaled_internal_force_change": 2.7861178599109863e-12,
+          "minimum_tangent_ratio": 0.9388559580052407,
+          "maximum_tangent_ratio": 1.0545779768819086,
+          "scaled_tangent_condition": 88363034.38579391
+        },
+        {
+          "step": 3,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 2.799328638696788e-12,
+          "scaled_displacement_increment": 1.0483904229206924e-17,
+          "scaled_internal_force_change": 4.060132339066743e-12,
+          "minimum_tangent_ratio": 0.9091932387255345,
+          "maximum_tangent_ratio": 1.083537604963186,
+          "scaled_tangent_condition": 88779489.10536876
+        },
+        {
+          "step": 4,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 4.610502819553806e-12,
+          "scaled_displacement_increment": 1.096885732655338e-17,
+          "scaled_internal_force_change": 5.57229469651298e-12,
+          "minimum_tangent_ratio": 0.8801408718383185,
+          "maximum_tangent_ratio": 1.1136776438643172,
+          "scaled_tangent_condition": 89200221.70162554
+        },
+        {
+          "step": 5,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 5.939726853579468e-12,
+          "scaled_displacement_increment": 1.1267461037048229e-17,
+          "scaled_internal_force_change": 1.114450092798945e-11,
+          "minimum_tangent_ratio": 0.851701327200423,
+          "maximum_tangent_ratio": 1.1450507750439551,
+          "scaled_tangent_condition": 89625295.74353759
+        },
+        {
+          "step": 6,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 7.368547774544964e-12,
+          "scaled_displacement_increment": 1.3406379822012174e-17,
+          "scaled_internal_force_change": 1.1144707346407978e-11,
+          "minimum_tangent_ratio": 0.8238765412302331,
+          "maximum_tangent_ratio": 1.177711922048866,
+          "scaled_tangent_condition": 90054784.70799097
+        },
+        {
+          "step": 7,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 7.259322942798067e-12,
+          "scaled_displacement_increment": 1.7190572111733158e-17,
+          "scaled_internal_force_change": 1.1144471439643945e-11,
+          "minimum_tangent_ratio": 0.7966679031443513,
+          "maximum_tangent_ratio": 1.2117183245510292,
+          "scaled_tangent_condition": 90488753.66238233
+        },
+        {
+          "step": 8,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.8548906530667303e-11,
+          "scaled_displacement_increment": 1.3267320608560838e-17,
+          "scaled_internal_force_change": 3.317441080828363e-11,
+          "minimum_tangent_ratio": 0.7700762417533727,
+          "maximum_tangent_ratio": 1.2471296121458761,
+          "scaled_tangent_condition": 90927277.44410254
+        },
+        {
+          "step": 9,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.3918263171134251e-11,
+          "scaled_displacement_increment": 1.5140797337847948e-17,
+          "scaled_internal_force_change": 1.1230931268661737e-11,
+          "minimum_tangent_ratio": 0.7441018174233587,
+          "maximum_tangent_ratio": 1.2840078822943377,
+          "scaled_tangent_condition": 91370428.0000508
+        },
+        {
+          "step": 10,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.5022542733568858e-11,
+          "scaled_displacement_increment": 1.6788357050753628e-17,
+          "scaled_internal_force_change": 1.105842444746321e-11,
+          "minimum_tangent_ratio": 0.7187443036445391,
+          "maximum_tangent_ratio": 1.3224177657779688,
+          "scaled_tangent_condition": 91818281.23522972
+        }
+      ],
+      "refinement": {
+        "translation_m": 7.917328963963507e-06,
+        "rotation_rad": 7.935117652231523e-06,
+        "member_end_actions": 3.275301644319045e-07
+      },
+      "physical_convergence_verified": true,
+      "physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1999.9999999999127,
+            0.0,
+            30842.513753404248
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -8345.966296232988,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.011220414297028528,
+            0.0,
+            -4.974302100062398e-05
+          ],
+          "rotation_rad": [
+            0.0,
+            0.004216402484041307,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "maximum_assembly_recovery_axial_difference_n": 0.0,
+      "blockers": [
+        "COROTATIONAL_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "COROTATIONAL_3D_STABILITY_PENDING"
+      ],
+      "production_enabled": false,
+      "fabrication_release": false
+    },
+    {
+      "geometry": "cantilever",
+      "compression_ratio_of_reference_column": 0.2,
+      "lateral_x_n": 2000.0,
+      "request_sha256": "d4586164a4db894bcbdde73edac1564580d002ab53fcddb8ba26b1faa4c960b0",
+      "exact_input_bytes_sha256": "7b57f3a9fa787932196fdc0401b35029164f337aebf8901c41c30876909c671f",
+      "independent_transformation": "Corotational",
+      "independent_iterations": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "compared_nodes": 65,
+      "compared_members": 64,
+      "checks": {
+        "translation_m": {
+          "compared_components": 195,
+          "maximum_absolute_error": 1.6642503347652493e-17,
+          "maximum_bound_utilization": 1.4679370726919944e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 195,
+          "maximum_absolute_error": 2.6020852139652106e-18,
+          "maximum_bound_utilization": 4.668696645624552e-09,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 195,
+          "maximum_absolute_error": 8.15314706414938e-07,
+          "maximum_bound_utilization": 0.08153146997675571,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 195,
+          "maximum_absolute_error": 7.43875716580078e-09,
+          "maximum_bound_utilization": 0.0007438757165247428,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 768,
+          "maximum_absolute_error": 5.454494385048747e-07,
+          "maximum_bound_utilization": 0.0017290100607785129,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      },
+      "physical_equilibrium": {
+        "force_residual_n": [
+          8.731149137020111e-11,
+          0.0,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          -3.637978807091713e-12,
+          0.0
+        ],
+        "force_relative_residual": [
+          4.3633928720740184e-14,
+          0.0,
+          0.0
+        ],
+        "moment_relative_residual": [
+          0.0,
+          3.7734047168020564e-16,
+          0.0
+        ],
+        "accepted": true
+      },
+      "newton_steps": [
+        {
+          "step": 1,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 5.138636783753844e-13,
+          "scaled_displacement_increment": 6.432602178034889e-16,
+          "scaled_internal_force_change": 5.912427096218323e-13,
+          "minimum_tangent_ratio": 0.9597828135161969,
+          "maximum_tangent_ratio": 1.0212589563504042,
+          "scaled_tangent_condition": 89199823.45750496
+        },
+        {
+          "step": 2,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 8.697421634467765e-13,
+          "scaled_displacement_increment": 8.656456810899662e-16,
+          "scaled_internal_force_change": 1.1122948633469197e-12,
+          "minimum_tangent_ratio": 0.9195956066065113,
+          "maximum_tangent_ratio": 1.04433817325999,
+          "scaled_tangent_condition": 90925590.26690319
+        },
+        {
+          "step": 3,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 9.845421355155273e-13,
+          "scaled_displacement_increment": 1.1866916444007446e-15,
+          "scaled_internal_force_change": 1.6306391575950206e-12,
+          "minimum_tangent_ratio": 0.8794772546368259,
+          "maximum_tangent_ratio": 1.0694374350755222,
+          "scaled_tangent_condition": 92724376.30351612
+        },
+        {
+          "step": 4,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 9.84194725945058e-13,
+          "scaled_displacement_increment": 1.6201365973699393e-15,
+          "scaled_internal_force_change": 1.6306529802569756e-12,
+          "minimum_tangent_ratio": 0.8394707122948145,
+          "maximum_tangent_ratio": 1.096783947696454,
+          "scaled_tangent_condition": 94600946.98312084
+        },
+        {
+          "step": 5,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.7747855625050552e-12,
+          "scaled_displacement_increment": 2.26227626766323e-15,
+          "scaled_internal_force_change": 2.5483975626303146e-12,
+          "minimum_tangent_ratio": 0.7996232650644645,
+          "maximum_tangent_ratio": 1.1266368058877387,
+          "scaled_tangent_condition": 96560495.42008176
+        },
+        {
+          "step": 6,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.71103175952536e-12,
+          "scaled_displacement_increment": 3.1144255086764117e-15,
+          "scaled_internal_force_change": 2.3759054856045394e-12,
+          "minimum_tangent_ratio": 0.759986764372018,
+          "maximum_tangent_ratio": 1.1592922924861215,
+          "scaled_tangent_condition": 98608681.85566415
+        },
+        {
+          "step": 7,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.4555742224240193e-12,
+          "scaled_displacement_increment": 4.410145514474559e-15,
+          "scaled_internal_force_change": 3.390934884328037e-12,
+          "minimum_tangent_ratio": 0.720617837741719,
+          "maximum_tangent_ratio": 1.1950901831436256,
+          "scaled_tangent_condition": 100751701.88480772
+        },
+        {
+          "step": 8,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 4.7762420654591605e-12,
+          "scaled_displacement_increment": 6.23971160159594e-15,
+          "scaled_internal_force_change": 6.501266044926179e-12,
+          "minimum_tangent_ratio": 0.6815780386991869,
+          "maximum_tangent_ratio": 1.2344212532652454,
+          "scaled_tangent_condition": 102996335.97891285
+        },
+        {
+          "step": 9,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 2.876632336435581e-12,
+          "scaled_displacement_increment": 8.901520210490922e-15,
+          "scaled_internal_force_change": 4.039313567140904e-12,
+          "minimum_tangent_ratio": 0.6429339665551225,
+          "maximum_tangent_ratio": 1.2777362748540964,
+          "scaled_tangent_condition": 105350028.97741948
+        },
+        {
+          "step": 10,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 2.3035115973921656e-12,
+          "scaled_displacement_increment": 1.2760213968634622e-14,
+          "scaled_internal_force_change": 5.071759519927715e-12,
+          "minimum_tangent_ratio": 0.6047572858969831,
+          "maximum_tangent_ratio": 1.3255567910051953,
+          "scaled_tangent_condition": 107820978.43347776
+        }
+      ],
+      "refinement": {
+        "translation_m": 3.755239487398684e-05,
+        "rotation_rad": 3.7818881316973775e-05,
+        "member_end_actions": 6.388831553949008e-06
+      },
+      "physical_convergence_verified": true,
+      "physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1999.9999999999127,
+            0.0,
+            123370.05501361699
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -9640.104201976206,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.01329661581043323,
+            0.0,
+            -0.00015001102593716891
+          ],
+          "rotation_rad": [
+            0.0,
+            0.005028493291215922,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "maximum_assembly_recovery_axial_difference_n": 0.0,
+      "blockers": [
+        "COROTATIONAL_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "COROTATIONAL_3D_STABILITY_PENDING"
+      ],
+      "production_enabled": false,
+      "fabrication_release": false
+    },
+    {
+      "geometry": "cantilever",
+      "compression_ratio_of_reference_column": 0.2,
+      "lateral_x_n": -2000.0,
+      "request_sha256": "fe86b4328c904dc7dbea4fde8cc71e01361c42a333c8645923d7e1cee58a28e2",
+      "exact_input_bytes_sha256": "bcc8ebd29a3e2b483ad1fc9605f80059c41af636f48e1d3fcbb76079bf04485e",
+      "independent_transformation": "Corotational",
+      "independent_iterations": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "compared_nodes": 65,
+      "compared_members": 64,
+      "checks": {
+        "translation_m": {
+          "compared_components": 195,
+          "maximum_absolute_error": 1.6642503347652493e-17,
+          "maximum_bound_utilization": 1.4679370726919944e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 195,
+          "maximum_absolute_error": 2.6020852139652106e-18,
+          "maximum_bound_utilization": 4.668696645624552e-09,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 195,
+          "maximum_absolute_error": 8.15314706414938e-07,
+          "maximum_bound_utilization": 0.08153146997675571,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 195,
+          "maximum_absolute_error": 7.43875716580078e-09,
+          "maximum_bound_utilization": 0.0007438757165247428,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 768,
+          "maximum_absolute_error": 5.454494385048747e-07,
+          "maximum_bound_utilization": 0.0017290100607785129,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      },
+      "physical_equilibrium": {
+        "force_residual_n": [
+          -8.731149137020111e-11,
+          0.0,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          3.637978807091713e-12,
+          0.0
+        ],
+        "force_relative_residual": [
+          4.3633928720740184e-14,
+          0.0,
+          0.0
+        ],
+        "moment_relative_residual": [
+          0.0,
+          3.7734047168020564e-16,
+          0.0
+        ],
+        "accepted": true
+      },
+      "newton_steps": [
+        {
+          "step": 1,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 5.138636783753844e-13,
+          "scaled_displacement_increment": 6.432602178034889e-16,
+          "scaled_internal_force_change": 5.912427096218323e-13,
+          "minimum_tangent_ratio": 0.9597828135161969,
+          "maximum_tangent_ratio": 1.0212589563504042,
+          "scaled_tangent_condition": 89199822.50725432
+        },
+        {
+          "step": 2,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 8.697421634467765e-13,
+          "scaled_displacement_increment": 8.656456810899662e-16,
+          "scaled_internal_force_change": 1.1122948633469197e-12,
+          "minimum_tangent_ratio": 0.9195956066065113,
+          "maximum_tangent_ratio": 1.04433817325999,
+          "scaled_tangent_condition": 90925589.38559471
+        },
+        {
+          "step": 3,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 9.845421355155273e-13,
+          "scaled_displacement_increment": 1.1866916444007446e-15,
+          "scaled_internal_force_change": 1.6306391575950206e-12,
+          "minimum_tangent_ratio": 0.8794772546368259,
+          "maximum_tangent_ratio": 1.0694374350755222,
+          "scaled_tangent_condition": 92724376.68307108
+        },
+        {
+          "step": 4,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 9.84194725945058e-13,
+          "scaled_displacement_increment": 1.6201365973699393e-15,
+          "scaled_internal_force_change": 1.6306529802569756e-12,
+          "minimum_tangent_ratio": 0.8394707122948145,
+          "maximum_tangent_ratio": 1.096783947696454,
+          "scaled_tangent_condition": 94600947.00851338
+        },
+        {
+          "step": 5,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.7747855625050552e-12,
+          "scaled_displacement_increment": 2.26227626766323e-15,
+          "scaled_internal_force_change": 2.5483975626303146e-12,
+          "minimum_tangent_ratio": 0.7996232650644645,
+          "maximum_tangent_ratio": 1.1266368058877387,
+          "scaled_tangent_condition": 96560494.98094559
+        },
+        {
+          "step": 6,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.71103175952536e-12,
+          "scaled_displacement_increment": 3.1144255086764117e-15,
+          "scaled_internal_force_change": 2.3759054856045394e-12,
+          "minimum_tangent_ratio": 0.759986764372018,
+          "maximum_tangent_ratio": 1.1592922924861215,
+          "scaled_tangent_condition": 98608682.00147681
+        },
+        {
+          "step": 7,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 1.4555742224240193e-12,
+          "scaled_displacement_increment": 4.410145514474559e-15,
+          "scaled_internal_force_change": 3.390934884328037e-12,
+          "minimum_tangent_ratio": 0.720617837741719,
+          "maximum_tangent_ratio": 1.1950901831436256,
+          "scaled_tangent_condition": 100751701.5164385
+        },
+        {
+          "step": 8,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 4.7762420654591605e-12,
+          "scaled_displacement_increment": 6.23971160159594e-15,
+          "scaled_internal_force_change": 6.501266044926179e-12,
+          "minimum_tangent_ratio": 0.6815780386991869,
+          "maximum_tangent_ratio": 1.2344212532652454,
+          "scaled_tangent_condition": 102996335.88519832
+        },
+        {
+          "step": 9,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 2.876632336435581e-12,
+          "scaled_displacement_increment": 8.901520210490922e-15,
+          "scaled_internal_force_change": 4.039313567140904e-12,
+          "minimum_tangent_ratio": 0.6429339665551225,
+          "maximum_tangent_ratio": 1.2777362748540964,
+          "scaled_tangent_condition": 105350030.50769581
+        },
+        {
+          "step": 10,
+          "iterations": 4,
+          "newton_residual_evaluations": 5,
+          "line_search_force_evaluations": 4,
+          "linear_system_solves": 8,
+          "algebraic_relative_residual": 2.3035115973921656e-12,
+          "scaled_displacement_increment": 1.2760213968634622e-14,
+          "scaled_internal_force_change": 5.071759519927715e-12,
+          "minimum_tangent_ratio": 0.6047572858969831,
+          "maximum_tangent_ratio": 1.3255567910051953,
+          "scaled_tangent_condition": 107820977.55452996
+        }
+      ],
+      "refinement": {
+        "translation_m": 3.755239487398684e-05,
+        "rotation_rad": 3.7818881316973775e-05,
+        "member_end_actions": 6.388831553949008e-06
+      },
+      "physical_convergence_verified": true,
+      "physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            1999.9999999999127,
+            0.0,
+            123370.05501361699
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            9640.104201976206,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            -0.01329661581043323,
+            0.0,
+            -0.00015001102593716891
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.005028493291215922,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "maximum_assembly_recovery_axial_difference_n": 0.0,
+      "blockers": [
+        "COROTATIONAL_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "COROTATIONAL_3D_STABILITY_PENDING"
+      ],
+      "production_enabled": false,
+      "fabrication_release": false
+    },
+    {
+      "geometry": "sway",
+      "compression_ratio_of_reference_column": 0.0,
+      "lateral_x_n": 2000.0,
+      "request_sha256": "79a487bf036fee1c10d27fafb3ad3bf83010c06b3b08b1a09923b25f05499b2b",
+      "exact_input_bytes_sha256": "49b499d21be02dd619059fe0003a639d800ef76d18dd7a0dd7a3c540da6fe041",
+      "independent_transformation": "Corotational",
+      "independent_iterations": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "compared_nodes": 145,
+      "compared_members": 144,
+      "checks": {
+        "translation_m": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.6436504934880247e-16,
+          "maximum_bound_utilization": 8.247002237390518e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 435,
+          "maximum_absolute_error": 5.5294310796760726e-17,
+          "maximum_bound_utilization": 3.4343322774807213e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.844765847636154e-06,
+          "maximum_bound_utilization": 0.18447658136045442,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.1402789823478088e-09,
+          "maximum_bound_utilization": 0.00011402789823348063,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 1728,
+          "maximum_absolute_error": 1.2020525446132524e-06,
+          "maximum_bound_utilization": 0.0823133874505352,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      },
+      "physical_equilibrium": {
+        "force_residual_n": [
+          4.001776687800884e-11,
+          0.0,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "force_relative_residual": [
+          1.9998883997005918e-14,
+          0.0,
+          0.0
+        ],
+        "moment_relative_residual": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "accepted": true
+      },
+      "newton_steps": [
+        {
+          "step": 1,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 3.906279744114727e-12,
+          "scaled_displacement_increment": 2.9993516593887164e-17,
+          "scaled_internal_force_change": 4.777234607900027e-12,
+          "minimum_tangent_ratio": 0.9968167406243557,
+          "maximum_tangent_ratio": 1.0031934284647874,
+          "scaled_tangent_condition": 20887087.797070514
+        },
+        {
+          "step": 2,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 7.110656952136196e-12,
+          "scaled_displacement_increment": 3.0824676702807476e-17,
+          "scaled_internal_force_change": 1.0491703505977057e-11,
+          "minimum_tangent_ratio": 0.9936436275066486,
+          "maximum_tangent_ratio": 1.006397051772569,
+          "scaled_tangent_condition": 20887272.452468146
+        },
+        {
+          "step": 3,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.3960743672214448e-11,
+          "scaled_displacement_increment": 3.16589993995073e-17,
+          "scaled_internal_force_change": 2.3418579075951128e-11,
+          "minimum_tangent_ratio": 0.9904806358950696,
+          "maximum_tangent_ratio": 1.0096108937540869,
+          "scaled_tangent_condition": 20887456.940009464
+        },
+        {
+          "step": 4,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.1788870324380696e-11,
+          "scaled_displacement_increment": 3.248255243949507e-17,
+          "scaled_internal_force_change": 1.6298940863634924e-11,
+          "minimum_tangent_ratio": 0.987327741493916,
+          "maximum_tangent_ratio": 1.0128349786982975,
+          "scaled_tangent_condition": 20887641.180461545
+        },
+        {
+          "step": 5,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 2.310116542503238e-11,
+          "scaled_displacement_increment": 3.324443302408479e-17,
+          "scaled_internal_force_change": 3.503646439639852e-11,
+          "minimum_tangent_ratio": 0.9841849200175598,
+          "maximum_tangent_ratio": 1.0160693308992268,
+          "scaled_tangent_condition": 20887825.18458131
+        },
+        {
+          "step": 6,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 2.859269443433732e-11,
+          "scaled_displacement_increment": 3.399013255991045e-17,
+          "scaled_internal_force_change": 3.877812559949234e-11,
+          "minimum_tangent_ratio": 0.981052147205836,
+          "maximum_tangent_ratio": 1.0193139746773536,
+          "scaled_tangent_condition": 20888008.948496796
+        },
+        {
+          "step": 7,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 2.8010163077851757e-11,
+          "scaled_displacement_increment": 3.4802457147820735e-17,
+          "scaled_internal_force_change": 3.259856384829618e-11,
+          "minimum_tangent_ratio": 0.9779293985863765,
+          "maximum_tangent_ratio": 1.0225689341296857,
+          "scaled_tangent_condition": 20888192.51111646
+        },
+        {
+          "step": 8,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 2.6971974875777962e-11,
+          "scaled_displacement_increment": 3.5822503731425094e-17,
+          "scaled_internal_force_change": 3.8596226659137753e-11,
+          "minimum_tangent_ratio": 0.9748166499371324,
+          "maximum_tangent_ratio": 1.025834233608283,
+          "scaled_tangent_condition": 20888375.811891563
+        },
+        {
+          "step": 9,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 3.0775481718592347e-11,
+          "scaled_displacement_increment": 3.6789855819817666e-17,
+          "scaled_internal_force_change": 5.021138349547982e-11,
+          "minimum_tangent_ratio": 0.971713877274034,
+          "maximum_tangent_ratio": 1.0291098977036341,
+          "scaled_tangent_condition": 20888558.855285488
+        },
+        {
+          "step": 10,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 4.997309588361531e-11,
+          "scaled_displacement_increment": 3.769686187347793e-17,
+          "scaled_internal_force_change": 5.77074388274923e-11,
+          "minimum_tangent_ratio": 0.9686210558002302,
+          "maximum_tangent_ratio": 1.0323959501676863,
+          "scaled_tangent_condition": 20888741.703158394
+        }
+      ],
+      "refinement": {
+        "translation_m": 1.5175483128978045e-07,
+        "rotation_rad": 3.9265087854698907e-07,
+        "member_end_actions": 0.000229430508520867
+      },
+      "physical_convergence_verified": false,
+      "physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.3353779671088,
+            0.0,
+            -533.2858426808123
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2400.32832987839,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.6646220328512,
+            0.0,
+            533.2858426808123
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2399.9553349788107,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.0021336647975705686,
+            0.0,
+            -1.0626825936023608e-07
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0004001554013539892,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.002133569525736571,
+            0.0,
+            -1.1727896663402654e-06
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00040012882190061346,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "maximum_assembly_recovery_axial_difference_n": 0.0,
+      "blockers": [
+        "COROTATIONAL_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "COROTATIONAL_3D_STABILITY_PENDING",
+        "COROTATIONAL_REFINEMENT_NOT_CONVERGED:C"
+      ],
+      "production_enabled": false,
+      "fabrication_release": false
+    },
+    {
+      "geometry": "sway",
+      "compression_ratio_of_reference_column": 0.1,
+      "lateral_x_n": 2000.0,
+      "request_sha256": "efbb456403af7818ca331343968d75344be455925be3d94b120019fa52e03ec8",
+      "exact_input_bytes_sha256": "64f97328fe0b15aff4efcec08a2744bfe0c403d5fe5deb72e1fd623ed0ca66b0",
+      "independent_transformation": "Corotational",
+      "independent_iterations": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "compared_nodes": 145,
+      "compared_members": 144,
+      "checks": {
+        "translation_m": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.7954387976359953e-16,
+          "maximum_bound_utilization": 8.739809889010532e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 435,
+          "maximum_absolute_error": 6.049848122469115e-17,
+          "maximum_bound_utilization": 3.7567297074970103e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 435,
+          "maximum_absolute_error": 2.0245352061465383e-06,
+          "maximum_bound_utilization": 0.2024535165159111,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.0861640475923195e-09,
+          "maximum_bound_utilization": 0.0001086164047580522,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 1728,
+          "maximum_absolute_error": 1.2033924576826394e-06,
+          "maximum_bound_utilization": 0.07436523248788864,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      },
+      "physical_equilibrium": {
+        "force_residual_n": [
+          5.820766091346741e-11,
+          0.0,
+          -1.4551915228366852e-11
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          -5.820766091346741e-11,
+          0.0
+        ],
+        "force_relative_residual": [
+          2.908928581382679e-14,
+          0.0,
+          1.1795242592973446e-16
+        ],
+        "moment_relative_residual": [
+          0.0,
+          1.5383209423935667e-16,
+          0.0
+        ],
+        "accepted": true
+      },
+      "newton_steps": [
+        {
+          "step": 1,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 5.136869786800595e-14,
+          "scaled_displacement_increment": 1.4322940388832803e-12,
+          "scaled_internal_force_change": 7.760900679838627e-10,
+          "minimum_tangent_ratio": 0.994441779096633,
+          "maximum_tangent_ratio": 1.0018569823130208,
+          "scaled_tangent_condition": 20962920.91060598
+        },
+        {
+          "step": 2,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.1446638516023656e-13,
+          "scaled_displacement_increment": 1.4759129110976185e-12,
+          "scaled_internal_force_change": 7.937435756474731e-10,
+          "minimum_tangent_ratio": 0.9888782057261909,
+          "maximum_tangent_ratio": 1.0037401915931532,
+          "scaled_tangent_condition": 21039508.730825584
+        },
+        {
+          "step": 3,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.701624977309577e-13,
+          "scaled_displacement_increment": 1.5210111531122542e-12,
+          "scaled_internal_force_change": 8.118669358641719e-10,
+          "minimum_tangent_ratio": 0.9833093050056271,
+          "maximum_tangent_ratio": 1.0056500760403417,
+          "scaled_tangent_condition": 21116672.818808354
+        },
+        {
+          "step": 4,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 2.05762302840688e-13,
+          "scaled_displacement_increment": 1.567648581486444e-12,
+          "scaled_internal_force_change": 8.304758511779399e-10,
+          "minimum_tangent_ratio": 0.9777351046232292,
+          "maximum_tangent_ratio": 1.007587093749684,
+          "scaled_tangent_condition": 21194419.667287372
+        },
+        {
+          "step": 5,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 2.908730400516709e-13,
+          "scaled_displacement_increment": 1.6158552707037922e-12,
+          "scaled_internal_force_change": 8.496329548346277e-10,
+          "minimum_tangent_ratio": 0.9721556335487008,
+          "maximum_tangent_ratio": 1.0095517125637807,
+          "scaled_tangent_condition": 21272755.92670006
+        },
+        {
+          "step": 6,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 4.567744718572974e-13,
+          "scaled_displacement_increment": 1.665865343875221e-12,
+          "scaled_internal_force_change": 8.693360057199769e-10,
+          "minimum_tangent_ratio": 0.9665709222745115,
+          "maximum_tangent_ratio": 1.0115444103707236,
+          "scaled_tangent_condition": 21351688.410650082
+        },
+        {
+          "step": 7,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 4.110675363260637e-13,
+          "scaled_displacement_increment": 1.7176507092263118e-12,
+          "scaled_internal_force_change": 8.895755085867352e-10,
+          "minimum_tangent_ratio": 0.960981003125014,
+          "maximum_tangent_ratio": 1.0135656754654458,
+          "scaled_tangent_condition": 21431223.899796393
+        },
+        {
+          "step": 8,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 4.20975620415415e-13,
+          "scaled_displacement_increment": 1.7711354904983713e-12,
+          "scaled_internal_force_change": 9.103572431506216e-10,
+          "minimum_tangent_ratio": 0.9553859082385782,
+          "maximum_tangent_ratio": 1.015616006136119,
+          "scaled_tangent_condition": 21511369.37857723
+        },
+        {
+          "step": 9,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 5.04844161072041e-13,
+          "scaled_displacement_increment": 1.826544915560252e-12,
+          "scaled_internal_force_change": 9.31697958791882e-10,
+          "minimum_tangent_ratio": 0.9497856734567085,
+          "maximum_tangent_ratio": 1.017695912199876,
+          "scaled_tangent_condition": 21592131.938649077
+        },
+        {
+          "step": 10,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 6.085436140801216e-13,
+          "scaled_displacement_increment": 1.883885068570933e-12,
+          "scaled_internal_force_change": 9.536455445836155e-10,
+          "minimum_tangent_ratio": 0.9441803345474054,
+          "maximum_tangent_ratio": 1.0198059140364757,
+          "scaled_tangent_condition": 21673518.787467808
+        }
+      ],
+      "refinement": {
+        "translation_m": 1.958117746819093e-05,
+        "rotation_rad": 6.430185226980792e-06,
+        "member_end_actions": 0.00024976579762947537
+      },
+      "physical_convergence_verified": false,
+      "physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.3609912724205,
+            0.0,
+            61131.24260773022
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2475.4522003383413,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.6390087275213,
+            0.0,
+            62238.81240588676
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2475.0488828761704,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.002215623273946839,
+            0.0,
+            -6.182130304071133e-05
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00041553752514159194,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.002215520536007917,
+            0.0,
+            -6.29288165922266e-05
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00041550894110075275,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "maximum_assembly_recovery_axial_difference_n": 0.0,
+      "blockers": [
+        "COROTATIONAL_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "COROTATIONAL_3D_STABILITY_PENDING",
+        "COROTATIONAL_REFINEMENT_NOT_CONVERGED:C"
+      ],
+      "production_enabled": false,
+      "fabrication_release": false
+    },
+    {
+      "geometry": "sway",
+      "compression_ratio_of_reference_column": 0.2,
+      "lateral_x_n": 2000.0,
+      "request_sha256": "22721d16b562bb3d45132f87907990b3779bf9040fbeecacc99b7c65b68de998",
+      "exact_input_bytes_sha256": "def5155a154452e023365c3948aeb874350048ae7949a016f25372dc204fcad3",
+      "independent_transformation": "Corotational",
+      "independent_iterations": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "compared_nodes": 145,
+      "compared_members": 144,
+      "checks": {
+        "translation_m": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.717376241217039e-16,
+          "maximum_bound_utilization": 6.339963409734078e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 435,
+          "maximum_absolute_error": 5.724587470723463e-17,
+          "maximum_bound_utilization": 3.6149391131444535e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.5450059436261654e-06,
+          "maximum_bound_utilization": 0.1545005919755732,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.2905729818157852e-09,
+          "maximum_bound_utilization": 0.00012905729817991294,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 1728,
+          "maximum_absolute_error": 1.201435225084424e-06,
+          "maximum_bound_utilization": 0.07617470285447653,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      },
+      "physical_equilibrium": {
+        "force_residual_n": [
+          -7.275957614183426e-12,
+          0.0,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          -2.3283064365386963e-10,
+          0.0
+        ],
+        "force_relative_residual": [
+          3.636160726728349e-15,
+          0.0,
+          0.0
+        ],
+        "moment_relative_residual": [
+          0.0,
+          3.1094267674132085e-16,
+          0.0
+        ],
+        "accepted": true
+      },
+      "newton_steps": [
+        {
+          "step": 1,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 2.205359639382029e-14,
+          "scaled_displacement_increment": 2.8880302635823613e-12,
+          "scaled_internal_force_change": 1.563771252632546e-09,
+          "minimum_tangent_ratio": 0.9913555445727641,
+          "maximum_tangent_ratio": 1.001225027516119,
+          "scaled_tangent_condition": 21039321.279026553
+        },
+        {
+          "step": 2,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 5.145992743690902e-14,
+          "scaled_displacement_increment": 3.067136925681481e-12,
+          "scaled_internal_force_change": 1.6360332837079983e-09,
+          "minimum_tangent_ratio": 0.9826977601336349,
+          "maximum_tangent_ratio": 1.0024850362783624,
+          "scaled_tangent_condition": 21194039.938981157
+        },
+        {
+          "step": 3,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.1030115635779348e-13,
+          "scaled_displacement_increment": 3.2586354705059646e-12,
+          "scaled_internal_force_change": 1.7123498295926988e-09,
+          "minimum_tangent_ratio": 0.9740264702092778,
+          "maximum_tangent_ratio": 1.0037811869222735,
+          "scaled_tangent_condition": 21351111.399257764
+        },
+        {
+          "step": 4,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.1568646545546548e-13,
+          "scaled_displacement_increment": 3.4638338422894242e-12,
+          "scaled_internal_force_change": 1.7928609156952734e-09,
+          "minimum_tangent_ratio": 0.9653414973569694,
+          "maximum_tangent_ratio": 1.0051146870419447,
+          "scaled_tangent_condition": 21510590.049674343
+        },
+        {
+          "step": 5,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.430848244718897e-13,
+          "scaled_displacement_increment": 3.683665360987639e-12,
+          "scaled_internal_force_change": 1.8778191391833096e-09,
+          "minimum_tangent_ratio": 0.9566426624900245,
+          "maximum_tangent_ratio": 1.0064867933777668,
+          "scaled_tangent_condition": 21672531.834458187
+        },
+        {
+          "step": 6,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.8068983707589348e-13,
+          "scaled_displacement_increment": 3.919454671012335e-12,
+          "scaled_internal_force_change": 1.967494613301624e-09,
+          "minimum_tangent_ratio": 0.9479297869245276,
+          "maximum_tangent_ratio": 1.0078988144606182,
+          "scaled_tangent_condition": 21836994.52703342
+        },
+        {
+          "step": 7,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.8711829639577022e-13,
+          "scaled_displacement_increment": 4.172024094421992e-12,
+          "scaled_internal_force_change": 2.0622220307716872e-09,
+          "minimum_tangent_ratio": 0.9392026893641262,
+          "maximum_tangent_ratio": 1.0093521127621738,
+          "scaled_tangent_condition": 22004037.72535498
+        },
+        {
+          "step": 8,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.531182340296331e-13,
+          "scaled_displacement_increment": 4.443269433575749e-12,
+          "scaled_internal_force_change": 2.162289197845619e-09,
+          "minimum_tangent_ratio": 0.9304611881215874,
+          "maximum_tangent_ratio": 1.0108481076449236,
+          "scaled_tangent_condition": 22173722.808336563
+        },
+        {
+          "step": 9,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 3.672773432525913e-13,
+          "scaled_displacement_increment": 4.7342996024278235e-12,
+          "scaled_internal_force_change": 2.268060354567085e-09,
+          "minimum_tangent_ratio": 0.9217051016072844,
+          "maximum_tangent_ratio": 1.0123882782657607,
+          "scaled_tangent_condition": 22346113.31132861
+        },
+        {
+          "step": 10,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 4.457458306387933e-13,
+          "scaled_displacement_increment": 5.046988281503507e-12,
+          "scaled_internal_force_change": 2.3799091772503114e-09,
+          "minimum_tangent_ratio": 0.9129342464933008,
+          "maximum_tangent_ratio": 1.013974166316615,
+          "scaled_tangent_condition": 22521274.648970354
+        }
+      ],
+      "refinement": {
+        "translation_m": 4.0571867462285626e-05,
+        "rotation_rad": 1.391555032660667e-05,
+        "member_end_actions": 0.0002738560903270404
+      },
+      "physical_convergence_verified": false,
+      "physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.3897366358287,
+            0.0,
+            122794.11169405932
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2556.5255188942583,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.6102633641785,
+            0.0,
+            123945.99833317466
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2556.088064090234,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.002304187363096204,
+            0.0,
+            -0.00012354091228549953
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0004321648442488583,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.0023040762379508855,
+            0.0,
+            -0.00012469273571738893
+          ],
+          "rotation_rad": [
+            0.0,
+            0.00043213401607580327,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "maximum_assembly_recovery_axial_difference_n": 0.0,
+      "blockers": [
+        "COROTATIONAL_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "COROTATIONAL_3D_STABILITY_PENDING",
+        "COROTATIONAL_REFINEMENT_NOT_CONVERGED:C"
+      ],
+      "production_enabled": false,
+      "fabrication_release": false
+    },
+    {
+      "geometry": "sway",
+      "compression_ratio_of_reference_column": 0.4,
+      "lateral_x_n": 2000.0,
+      "request_sha256": "c9e82ac446239a67aacd3151ac51d712aa49a896a73275335830f59a3aea2231",
+      "exact_input_bytes_sha256": "d3ee0abf4e51eaa23f9ff2998d547d07a6066d2520b83e7e7ac2f04cc712ee08",
+      "independent_transformation": "Corotational",
+      "independent_iterations": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "compared_nodes": 145,
+      "compared_members": 144,
+      "checks": {
+        "translation_m": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.5178830414797062e-16,
+          "maximum_bound_utilization": 8.725360029028594e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 435,
+          "maximum_absolute_error": 5.149960319306146e-17,
+          "maximum_bound_utilization": 3.164418172192297e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.388543751090765e-06,
+          "maximum_bound_utilization": 0.13885437318102276,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 435,
+          "maximum_absolute_error": 1.2246346159372479e-09,
+          "maximum_bound_utilization": 0.00012246346159222504,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 1728,
+          "maximum_absolute_error": 9.286159183830023e-07,
+          "maximum_bound_utilization": 0.07210892974225956,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      },
+      "physical_equilibrium": {
+        "force_residual_n": [
+          -1.4551915228366852e-11,
+          0.0,
+          -5.820766091346741e-11
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          4.656612873077393e-10,
+          0.0
+        ],
+        "force_relative_residual": [
+          7.272321453456697e-15,
+          0.0,
+          1.179531429930459e-16
+        ],
+        "moment_relative_residual": [
+          0.0,
+          3.12592094475719e-16,
+          0.0
+        ],
+        "accepted": true
+      },
+      "newton_steps": [
+        {
+          "step": 1,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.4495364836820707e-14,
+          "scaled_displacement_increment": 5.871457104160016e-12,
+          "scaled_internal_force_change": 3.175132669749422e-09,
+          "minimum_tangent_ratio": 0.9844071860481846,
+          "maximum_tangent_ratio": 1.000718097740827,
+          "scaled_tangent_condition": 21193849.696380947
+        },
+        {
+          "step": 2,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 2.988689892372458e-14,
+          "scaled_displacement_increment": 6.626668116984167e-12,
+          "scaled_internal_force_change": 3.4777931598702793e-09,
+          "minimum_tangent_ratio": 0.9687957527581531,
+          "maximum_tangent_ratio": 1.0014787727910293,
+          "scaled_tangent_condition": 21510198.773225844
+        },
+        {
+          "step": 3,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 5.50989735742647e-14,
+          "scaled_displacement_increment": 7.492144638409665e-12,
+          "scaled_internal_force_change": 3.814622400437729e-09,
+          "minimum_tangent_ratio": 0.9531649358906465,
+          "maximum_tangent_ratio": 1.0022849372304834,
+          "scaled_tangent_condition": 21836390.82660959
+        },
+        {
+          "step": 4,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 6.203242081089782e-14,
+          "scaled_displacement_increment": 8.487020154817283e-12,
+          "scaled_internal_force_change": 4.190075977248221e-09,
+          "minimum_tangent_ratio": 0.9375139320770046,
+          "maximum_tangent_ratio": 1.0031397457379,
+          "scaled_tangent_condition": 22172894.48618915
+        },
+        {
+          "step": 5,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 7.663283787857662e-14,
+          "scaled_displacement_increment": 9.633200831072558e-12,
+          "scaled_internal_force_change": 4.609296451339236e-09,
+          "minimum_tangent_ratio": 0.9218418966464299,
+          "maximum_tangent_ratio": 1.004046619867515,
+          "scaled_tangent_condition": 22520208.73358752
+        },
+        {
+          "step": 6,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 7.083100590066033e-14,
+          "scaled_displacement_increment": 1.0955250847725824e-11,
+          "scaled_internal_force_change": 5.0782299706515894e-09,
+          "minimum_tangent_ratio": 0.9061479403918145,
+          "maximum_tangent_ratio": 1.005009275155682,
+          "scaled_tangent_condition": 22878865.250931013
+        },
+        {
+          "step": 7,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.1518884962508509e-13,
+          "scaled_displacement_increment": 1.2485785054369861e-11,
+          "scaled_internal_force_change": 5.603688814810236e-09,
+          "minimum_tangent_ratio": 0.8904311287477871,
+          "maximum_tangent_ratio": 1.0060317515525932,
+          "scaled_tangent_condition": 23249431.220184464
+        },
+        {
+          "step": 8,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 9.136963854421149e-14,
+          "scaled_displacement_increment": 1.4261103632923577e-11,
+          "scaled_internal_force_change": 6.193614608096247e-09,
+          "minimum_tangent_ratio": 0.8746904768130199,
+          "maximum_tangent_ratio": 1.0071184474113726,
+          "scaled_tangent_condition": 23632512.361039978
+        },
+        {
+          "step": 9,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.44839381029379e-13,
+          "scaled_displacement_increment": 1.6325085276364745e-11,
+          "scaled_internal_force_change": 6.857185892931205e-09,
+          "minimum_tangent_ratio": 0.8589249472549988,
+          "maximum_tangent_ratio": 1.0082741577979049,
+          "scaled_tangent_condition": 24028756.10730671
+        },
+        {
+          "step": 10,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 2.451955928659411e-13,
+          "scaled_displacement_increment": 1.8730881928171896e-11,
+          "scaled_internal_force_change": 7.605112128681878e-09,
+          "minimum_tangent_ratio": 0.8431334490241403,
+          "maximum_tangent_ratio": 1.0095041176793556,
+          "scaled_tangent_condition": 24438855.335852303
+        }
+      ],
+      "refinement": {
+        "translation_m": 8.80422670191776e-05,
+        "rotation_rad": 3.405007485320195e-05,
+        "member_end_actions": 0.000337220504692759
+      },
+      "physical_convergence_verified": false,
+      "physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.4588840493852,
+            0.0,
+            246113.99699570856
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2739.6448509078477,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -999.5411159506293,
+            0.0,
+            247366.22305875938
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -2739.124878071121,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.0025046101538363065,
+            0.0,
+            -0.0002469974987571923
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0004698115283866222,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.002504478822973155,
+            0.0,
+            -0.00024824964379178727
+          ],
+          "rotation_rad": [
+            0.0,
+            0.000469775323533804,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "maximum_assembly_recovery_axial_difference_n": 0.0,
+      "blockers": [
+        "COROTATIONAL_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "COROTATIONAL_3D_STABILITY_PENDING",
+        "COROTATIONAL_REFINEMENT_NOT_CONVERGED:C"
+      ],
+      "production_enabled": false,
+      "fabrication_release": false
+    },
+    {
+      "geometry": "braced",
+      "compression_ratio_of_reference_column": 0.2,
+      "lateral_x_n": 2000.0,
+      "request_sha256": "676f5b51d784247903bcb87383346a12de4aa022bf2f96f47cf42b4e512d5fb3",
+      "exact_input_bytes_sha256": "187e1f4b0c62932a537dba2590a3c3a4ea85012e271075f5b643a5ad39466527",
+      "independent_transformation": "Corotational",
+      "independent_iterations": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "compared_nodes": 144,
+      "compared_members": 144,
+      "checks": {
+        "translation_m": {
+          "compared_components": 432,
+          "maximum_absolute_error": 2.3810434960497284e-16,
+          "maximum_bound_utilization": 2.1866179932967676e-06,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "rotation_rad": {
+          "compared_components": 432,
+          "maximum_absolute_error": 4.8514659086937306e-17,
+          "maximum_bound_utilization": 4.7160781176003353e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_force_n": {
+          "compared_components": 432,
+          "maximum_absolute_error": 1.387350494042039e-06,
+          "maximum_bound_utilization": 0.13873504747946253,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "reaction_moment_nm": {
+          "compared_components": 432,
+          "maximum_absolute_error": 2.694463319130591e-09,
+          "maximum_bound_utilization": 0.00010849891731328336,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        },
+        "member_end_actions_global": {
+          "compared_components": 1728,
+          "maximum_absolute_error": 8.621718734502792e-07,
+          "maximum_bound_utilization": 0.007057189447323887,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "violating_components": 0,
+          "bounds_met": true
+        }
+      },
+      "physical_equilibrium": {
+        "force_residual_n": [
+          1.5740397429908626e-08,
+          0.0,
+          -2.3632310330867767e-08
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0.0,
+          2.6775524020195007e-09,
+          0.0
+        ],
+        "force_relative_residual": [
+          7.866265582163232e-12,
+          0.0,
+          9.577775802443038e-14
+        ],
+        "moment_relative_residual": [
+          0.0,
+          3.578452984826841e-15,
+          0.0
+        ],
+        "accepted": true
+      },
+      "newton_steps": [
+        {
+          "step": 1,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 9.398223684255805e-13,
+          "scaled_displacement_increment": 8.934933392935966e-18,
+          "scaled_internal_force_change": 2.094725011304571e-12,
+          "minimum_tangent_ratio": 0.9980428441776151,
+          "maximum_tangent_ratio": 1.000133891261099,
+          "scaled_tangent_condition": 796144.2734684233
+        },
+        {
+          "step": 2,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.6922617364789525e-12,
+          "scaled_displacement_increment": 6.574414003053534e-18,
+          "scaled_internal_force_change": 2.790399890206949e-12,
+          "minimum_tangent_ratio": 0.9960856906239046,
+          "maximum_tangent_ratio": 1.000267831023808,
+          "scaled_tangent_condition": 796827.5158603417
+        },
+        {
+          "step": 3,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.3107597221861594e-12,
+          "scaled_displacement_increment": 9.841435908564809e-18,
+          "scaled_internal_force_change": 2.096487285514985e-12,
+          "minimum_tangent_ratio": 0.9941285393477859,
+          "maximum_tangent_ratio": 1.0004018193419772,
+          "scaled_tangent_condition": 797514.5373402622
+        },
+        {
+          "step": 4,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.3476141642460061e-12,
+          "scaled_displacement_increment": 1.9851398067473215e-17,
+          "scaled_internal_force_change": 2.0960011885695674e-12,
+          "minimum_tangent_ratio": 0.9921713903430996,
+          "maximum_tangent_ratio": 1.0005358562347864,
+          "scaled_tangent_condition": 798205.3637975281
+        },
+        {
+          "step": 5,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 8.892109220550099e-13,
+          "scaled_displacement_increment": 1.1606572763903335e-17,
+          "scaled_internal_force_change": 2.791165896056956e-12,
+          "minimum_tangent_ratio": 0.9902142436361584,
+          "maximum_tangent_ratio": 1.0006699417400515,
+          "scaled_tangent_condition": 798900.0215874691
+        },
+        {
+          "step": 6,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.4033807723926977e-12,
+          "scaled_displacement_increment": 1.3397933354849597e-17,
+          "scaled_internal_force_change": 2.7961070369504736e-12,
+          "minimum_tangent_ratio": 0.9882570991808244,
+          "maximum_tangent_ratio": 1.0008040758404186,
+          "scaled_tangent_condition": 799598.5370375883
+        },
+        {
+          "step": 7,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 8.3525646489062e-13,
+          "scaled_displacement_increment": 2.638250168061736e-17,
+          "scaled_internal_force_change": 2.0771212753606175e-12,
+          "minimum_tangent_ratio": 0.9862999570265387,
+          "maximum_tangent_ratio": 1.0009382586110054,
+          "scaled_tangent_condition": 800300.9364650865
+        },
+        {
+          "step": 8,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.4089384040094088e-12,
+          "scaled_displacement_increment": 6.083983540087734e-18,
+          "scaled_internal_force_change": 2.094253082587657e-12,
+          "minimum_tangent_ratio": 0.9843428171345237,
+          "maximum_tangent_ratio": 1.0010724900460028,
+          "scaled_tangent_condition": 801007.2468350986
+        },
+        {
+          "step": 9,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 1.4868908453492905e-12,
+          "scaled_displacement_increment": 1.2774762266694876e-17,
+          "scaled_internal_force_change": 2.7887589098551903e-12,
+          "minimum_tangent_ratio": 0.9823856795078526,
+          "maximum_tangent_ratio": 1.0012067701661447,
+          "scaled_tangent_condition": 801717.4952032873
+        },
+        {
+          "step": 10,
+          "iterations": 3,
+          "newton_residual_evaluations": 4,
+          "line_search_force_evaluations": 3,
+          "linear_system_solves": 6,
+          "algebraic_relative_residual": 8.260994121008243e-13,
+          "scaled_displacement_increment": 7.313133445399576e-18,
+          "scaled_internal_force_change": 2.796862675804014e-12,
+          "minimum_tangent_ratio": 0.9804285441733102,
+          "maximum_tangent_ratio": 1.001341099019685,
+          "scaled_tangent_condition": 802431.708698635
+        }
+      ],
+      "refinement": {
+        "translation_m": 1.6918923133203497e-07,
+        "rotation_rad": 4.399508047935944e-05,
+        "member_end_actions": 8.885891074505317e-05
+      },
+      "physical_convergence_verified": true,
+      "physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1967.7074150038225,
+            0.0,
+            122072.78682129762
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -148.34011120325505,
+            0.0
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -32.29258498043714,
+            0.0,
+            124667.32320591273
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            -89.72213264700913,
+            0.0
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            8.955629360393586e-05,
+            0.0,
+            -0.00012334702468261142
+          ],
+          "rotation_rad": [
+            0.0,
+            1.617790328522064e-05,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            8.81157765727532e-05,
+            0.0,
+            -0.0001246684199078291
+          ],
+          "rotation_rad": [
+            0.0,
+            2.0504979285907494e-05,
+            0.0
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "maximum_assembly_recovery_axial_difference_n": 0.0,
+      "blockers": [
+        "COROTATIONAL_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "COROTATIONAL_3D_STABILITY_PENDING"
+      ],
+      "production_enabled": false,
+      "fabrication_release": false
+    }
+  ],
+  "refusals": [
+    {
+      "geometry": "spatial",
+      "load_scale": 0.2,
+      "rejection": "COROTATIONAL_SPATIAL_PENDING",
+      "independent_comparison_executed": false
+    },
+    {
+      "geometry": "cantilever",
+      "load_scale": 0.4,
+      "rejection": "COROTATIONAL_DOMAIN_MARGIN",
+      "independent_comparison_executed": false
+    },
+    {
+      "geometry": "cantilever",
+      "load_scale": 0.95,
+      "rejection": "COROTATIONAL_DOMAIN_MARGIN",
+      "independent_comparison_executed": false
+    },
+    {
+      "geometry": "cantilever",
+      "load_scale": 1.01,
+      "rejection": "COROTATIONAL_DOMAIN_MARGIN",
+      "independent_comparison_executed": false
+    }
+  ],
+  "spatial_correction_verified": false,
+  "production_enabled": false,
+  "normative_stability_verified": false,
+  "computed_structural_approval": false,
+  "fabrication_release": false,
+  "release_gate": "NOT_READY_BLOCKED"
+}
