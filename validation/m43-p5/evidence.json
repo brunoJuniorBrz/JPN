@@ -15,12 +15,12 @@
   "source_sha256_lf": {
     "validation/m43-p5/kirchhoff_chain.py": "f7bea1463f698d3ef31bc97c4319781c8b185af46a496cf3ce948fc35b384270",
     "validation/m43-p5/opensees_orientations.py": "5312ac7e628e9e1f3dc264b53abe01ce52d150a723070a590170eea763186488",
-    "validation/m43-p5/physical_comparison.py": "922fc63cde5f20b750393021ff56ba92800d48d17e168cd503c30f5d174c2eed",
-    "validation/m43-p5/reproduce.py": "19b6f34133ef6fd7925789b4a2b54adfb462c8ad1b31e89c18c731e6e2d1d398",
+    "validation/m43-p5/physical_comparison.py": "d39f37ad30c58bc72c6cadd747df923013f19754bdf8e826bd818f7e5c809f96",
+    "validation/m43-p5/reproduce.py": "9a83f0a7bd9c6b1834fe023466ae5e92139a003d5853deb4a79d111ff876f210",
     "validation/m43-p5/criteria.json": "19ad167819c9a9c15139b15c489aae40e6c37bfbd128201249760629adbfa381",
     "validation/m43-p5/p4-baseline.json": "fcce2ba2549ac3850336fd92bf9600e174d324cb25df46fa58d56648d6ec7710",
-    "src/domain/spatial-orientation.ts": "197f8f70f953f7eb18a3a1a43ae5889878175e473461dd4ff01eba82f9a5e9a6",
-    "engine/tests/test_p5_validation.py": "8f22152399f4dd5e48732ed4ea8c3c212d538febd445ab57f4e59e94752eb7b4"
+    "src/domain/spatial-orientation.ts": "dbe40086c91c380121f4fbce7b69c9153510ada392ac6408aca3ddc96f2fa0ba",
+    "engine/tests/test_p5_validation.py": "55792c5655c3b45e1d35950ab84dc02929d8c5335500d5e33a2cf499fe24b106"
   },
   "criteria": {
     "schema_version": "jpn.m43-p5-criteria/1",
@@ -83,8 +83,8 @@
       "case": "cantilever",
       "physical_comparison_verified": true,
       "requested_numerics": {
-        "coarse_subdivisions": 6,
-        "fine_subdivisions": 12,
+        "coarse_subdivisions": 7,
+        "fine_subdivisions": 14,
         "equilibrium_relative_tolerance": 1e-08,
         "refinement_relative_tolerance": 0.0001,
         "load_steps": 10,
@@ -92,29 +92,29 @@
         "displacement_increment_tolerance": 1e-10,
         "force_change_tolerance": 1e-08
       },
-      "evaluated_input_sha256": "9e316edc612dee95e05e528b464eefb253ce4c2403ec518dede6d1852efa2aec",
-      "attempted_input_sha256": "9e316edc612dee95e05e528b464eefb253ce4c2403ec518dede6d1852efa2aec",
+      "evaluated_input_sha256": "86d3a5b265724ba9b69b26ab996460ea8539475a68aaa8a67cadba49f267425e",
+      "attempted_input_sha256": "86d3a5b265724ba9b69b26ab996460ea8539475a68aaa8a67cadba49f267425e",
       "before_execution": {
         "status": "diagnostic",
-        "elapsed_seconds": 5.1614129999652505,
+        "elapsed_seconds": 4.883652799995616,
         "memory_limit_bytes": 805306368,
         "memory_kind": "windows-job-process-commit",
         "local_only": true
       },
       "execution": {
         "status": "diagnostic",
-        "elapsed_seconds": 11.442843899945728,
+        "elapsed_seconds": 12.441325100022368,
         "memory_limit_bytes": 805306368,
         "memory_kind": "windows-job-process-commit",
         "local_only": true
       },
       "evaluated_subdivisions": [
-        6,
-        12
+        7,
+        14
       ],
       "evaluated_counts": {
-        "nodes": 13,
-        "members": 12
+        "nodes": 15,
+        "members": 14
       },
       "before": {
         "method": "native-order-two-estimate",
@@ -210,6 +210,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -221,7 +238,24 @@
             "geodesic_error_rad": 1.3054316416268177e-09,
             "reference_uncertainty_rad": 4.295296530135812e-13,
             "allowed_error_rad": 3.3165099110365953e-10,
-            "bound_utilization": 3.9374559591521816,
+            "bound_utilization": 10.215157791266765,
+            "geodesic_bound_utilization": 3.9374559591521816,
+            "component_error_rad": [
+              7.333540990184934e-11,
+              8.084531065433165e-10,
+              1.0223393474288867e-09
+            ],
+            "component_allowed_rad": [
+              1.6324598752511886e-10,
+              3.228499757532852e-10,
+              1.0012267045471728e-10
+            ],
+            "component_uncertainty_rad": 4.2952974905317233e-13,
+            "component_bound_utilization": [
+              0.45186372277329145,
+              2.5054443148247283,
+              10.215157791266765
+            ],
             "director_error": [
               1.3033055539313417e-09,
               1.0252209343243957e-09,
@@ -479,14 +513,14 @@
             "bounds_met": true,
             "compared_components": 6,
             "violating_components": 0,
-            "maximum_absolute_error": 1.503020798099275e-11,
+            "maximum_absolute_error": 1.0331908939509304e-11,
             "maximum_reference_uncertainty": 6.837733215285062e-12,
-            "maximum_bound_utilization": 0.05867028415195377,
+            "maximum_bound_utilization": 0.041832599533865346,
             "worst_component": [
               1,
               1
             ],
-            "candidate_at_worst": 0.001683052813964913,
+            "candidate_at_worst": 0.0016830528184825528,
             "reference_at_worst": 0.0016830528288144617,
             "uncertainty_at_worst": 8.919985120906897e-13,
             "relative_tolerance": 1e-07,
@@ -513,7 +547,7 @@
             "bounds_met": true,
             "compared_components": 6,
             "violating_components": 0,
-            "maximum_absolute_error": 9.525592759018764e-07,
+            "maximum_absolute_error": 6.373211363097653e-07,
             "maximum_reference_uncertainty": 4.220315531711094e-07,
             "maximum_bound_utilization": 0.0038311378385747848,
             "worst_component": [
@@ -530,14 +564,14 @@
             "bounds_met": true,
             "compared_components": 12,
             "violating_components": 0,
-            "maximum_absolute_error": 1.3896667496737791e-06,
+            "maximum_absolute_error": 1.4460375723501784e-06,
             "maximum_reference_uncertainty": 4.220315531711094e-07,
-            "maximum_bound_utilization": 0.013538257114694792,
+            "maximum_bound_utilization": 0.0140507191383738,
             "worst_component": [
               0,
               6
             ],
-            "candidate_at_worst": 1000.0000000096245,
+            "candidate_at_worst": 999.9999999532537,
             "reference_at_worst": 1000.0000013992912,
             "uncertainty_at_worst": 9.954153483704431e-08,
             "relative_tolerance": 1e-07,
@@ -547,11 +581,11 @@
             "bounds_met": true,
             "compared_components": 1,
             "violating_components": 0,
-            "maximum_absolute_error": 2.7191406459792233e-08,
+            "maximum_absolute_error": 9.036945414209185e-09,
             "maximum_reference_uncertainty": 8.403638081707262e-09,
-            "maximum_bound_utilization": 0.06118775767347588,
+            "maximum_bound_utilization": 0.029980302325173132,
             "worst_component": [],
-            "candidate_at_worst": 5.717347412054516,
+            "candidate_at_worst": 5.717347430208977,
             "reference_at_worst": 5.7173474392459225,
             "uncertainty_at_worst": 8.403638081707262e-09,
             "relative_tolerance": 1e-07,
@@ -565,6 +599,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -573,14 +624,31 @@
           },
           "T0": {
             "bounds_met": true,
-            "geodesic_error_rad": 1.149700058900567e-10,
+            "geodesic_error_rad": 8.43592598473986e-11,
             "reference_uncertainty_rad": 4.295296530135812e-13,
             "allowed_error_rad": 3.3165099110365953e-10,
-            "bound_utilization": 0.34795474350625855,
+            "bound_utilization": 0.84559656136797,
+            "geodesic_bound_utilization": 0.25565667456097224,
+            "component_error_rad": [
+              1.8975970968171385e-12,
+              4.188616033878878e-12,
+              8.42338561024342e-11
+            ],
+            "component_allowed_rad": [
+              1.6324598752511886e-10,
+              3.228499757532852e-10,
+              1.0012267045471728e-10
+            ],
+            "component_uncertainty_rad": 4.2952974905317233e-13,
+            "component_bound_utilization": [
+              0.014255338713989726,
+              0.014304308904334984,
+              0.84559656136797
+            ],
             "director_error": [
-              1.1493347109566417e-10,
-              1.1465490878148588e-10,
-              8.986301710911867e-12
+              8.433575066617964e-11,
+              8.425652877735293e-11,
+              4.613887453854133e-12
             ]
           }
         },
@@ -592,16 +660,16 @@
               0.0
             ],
             [
-              0.005917915743309572,
-              0.001683052813964913,
-              -6.737451332259955e-05
+              0.005917915754321681,
+              0.0016830528184825528,
+              -6.737451348515157e-05
             ]
           ],
           "reaction_force_n": [
             [
-              -999.9999999232987,
-              -600.0000000000043,
-              61685.027506808474
+              -1000.0000000320142,
+              -600.0000000000073,
+              61685.02750680851
             ],
             [
               0.0,
@@ -611,9 +679,9 @@
           ],
           "reaction_moment_nm": [
             [
-              2503.778734416843,
-              -4364.979420881702,
-              -1.867696632020923
+              2503.778734695416,
+              -4364.979421578645,
+              -1.8676966341107293
             ],
             [
               0.0,
@@ -623,21 +691,21 @@
           ],
           "physical_end_actions": [
             [
-              -999.9999999232987,
-              -600.0000000000043,
-              61685.027506808474,
-              2503.778734416843,
-              -4364.979420881702,
-              -1.867696632020923,
-              1000.0000000096245,
-              599.9999999997632,
-              -61685.02750680858,
-              -3.78077968955633e-11,
-              -2.4011224900512225e-09,
-              1.2832373624693266e-12
+              -1000.0000000320142,
+              -600.0000000000073,
+              61685.02750680851,
+              2503.778734695416,
+              -4364.979421578645,
+              -1.8676966341107293,
+              999.9999999532537,
+              600.0000000002138,
+              -61685.02750680827,
+              2.861588911481023e-11,
+              9.415391828885335e-09,
+              -6.593836937597662e-12
             ]
           ],
-          "strain_energy_j": 5.717347412054516
+          "strain_energy_j": 5.717347430208977
         },
         "reference": {
           "translation_m": [
@@ -790,19 +858,19 @@
           "T0": {
             "candidate_orientation": [
               [
-                0.9999975168947925,
-                -1.931306849782002e-06,
-                0.0022284973680041123
+                0.9999975168947828,
+                -1.931337237009828e-06,
+                0.0022284973723482437
               ],
               [
-                5.218708129907846e-07,
-                0.999999799996592,
-                0.0006324606735549881
+                5.219011955198305e-07,
+                0.9999997999965915,
+                0.0006324606744617233
               ],
               [
-                -0.0022284981437726754,
-                -0.0006324579401008629,
-                0.9999973168928891
+                -0.002228498148136025,
+                -0.00063245794093988,
+                0.9999973168928789
               ]
             ],
             "reference_orientation": [
@@ -920,6 +988,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -931,7 +1016,24 @@
             "geodesic_error_rad": 1.3057028947007907e-09,
             "reference_uncertainty_rad": 7.836768468053249e-16,
             "allowed_error_rad": 3.3165099114590096e-10,
-            "bound_utilization": 3.936981083235262,
+            "bound_utilization": 10.210908768370158,
+            "geodesic_bound_utilization": 3.936981083235262,
+            "component_error_rad": [
+              7.33632027740197e-11,
+              8.088843128292722e-10,
+              1.022342669985079e-09
+            ],
+            "component_allowed_rad": [
+              1.6324598752789816e-10,
+              3.228499757964058e-10,
+              1.0012267045504953e-10
+            ],
+            "component_uncertainty_rad": 7.836770220295578e-16,
+            "component_bound_utilization": [
+              0.44940759379157225,
+              2.5054519347908815,
+              10.210908768370158
+            ],
             "director_error": [
               1.3035756607549628e-09,
               1.0252263727850666e-09,
@@ -1189,14 +1291,14 @@
             "bounds_met": true,
             "compared_components": 6,
             "violating_components": 0,
-            "maximum_absolute_error": 2.1866994326380507e-11,
+            "maximum_absolute_error": 1.1223918929686993e-11,
             "maximum_reference_uncertainty": 1.1717189718485344e-14,
-            "maximum_bound_utilization": 0.05867172184054203,
+            "maximum_bound_utilization": 0.041834037228051464,
             "worst_component": [
               1,
               1
             ],
-            "candidate_at_worst": 0.001683052813964913,
+            "candidate_at_worst": 0.0016830528184825528,
             "reference_at_worst": 0.0016830528297064717,
             "uncertainty_at_worst": 3.7426658994199613e-16,
             "relative_tolerance": 1e-07,
@@ -1206,14 +1308,14 @@
             "bounds_met": true,
             "compared_components": 6,
             "violating_components": 0,
-            "maximum_absolute_error": 7.670132617931813e-08,
+            "maximum_absolute_error": 3.2014213502407074e-08,
             "maximum_reference_uncertainty": 0.0,
-            "maximum_bound_utilization": 0.0006972847834483467,
+            "maximum_bound_utilization": 0.0002910383045588667,
             "worst_component": [
               0,
               0
             ],
-            "candidate_at_worst": -999.9999999232987,
+            "candidate_at_worst": -1000.0000000320142,
             "reference_at_worst": -1000.0,
             "uncertainty_at_worst": 0.0,
             "relative_tolerance": 1e-07,
@@ -1223,14 +1325,14 @@
             "bounds_met": true,
             "compared_components": 6,
             "violating_components": 0,
-            "maximum_absolute_error": 1.3626222425955348e-06,
+            "maximum_absolute_error": 6.922982720425352e-07,
             "maximum_reference_uncertainty": 7.22138793207705e-10,
-            "maximum_bound_utilization": 0.003728780588804306,
+            "maximum_bound_utilization": 0.0026589000296533866,
             "worst_component": [
               0,
               0
             ],
-            "candidate_at_worst": 2503.778734416843,
+            "candidate_at_worst": 2503.778734695416,
             "reference_at_worst": 2503.7787353877143,
             "uncertainty_at_worst": 2.0463630789890885e-11,
             "relative_tolerance": 1e-07,
@@ -1240,14 +1342,14 @@
             "bounds_met": true,
             "compared_components": 12,
             "violating_components": 0,
-            "maximum_absolute_error": 1.3626222425955348e-06,
+            "maximum_absolute_error": 6.922982720425352e-07,
             "maximum_reference_uncertainty": 7.22138793207705e-10,
-            "maximum_bound_utilization": 0.003728780588804306,
+            "maximum_bound_utilization": 0.0026589000296533866,
             "worst_component": [
               0,
               3
             ],
-            "candidate_at_worst": 2503.778734416843,
+            "candidate_at_worst": 2503.778734695416,
             "reference_at_worst": 2503.7787353877143,
             "uncertainty_at_worst": 2.0463630789890885e-11,
             "relative_tolerance": 1e-07,
@@ -1257,11 +1359,11 @@
             "bounds_met": true,
             "compared_components": 1,
             "violating_components": 0,
-            "maximum_absolute_error": 3.5594883485146056e-08,
+            "maximum_absolute_error": 1.7440422439563008e-08,
             "maximum_reference_uncertainty": 2.426148171252862e-11,
-            "maximum_bound_utilization": 0.06122918613233446,
+            "maximum_bound_utilization": 0.030021730829112584,
             "worst_component": [],
-            "candidate_at_worst": 5.717347412054516,
+            "candidate_at_worst": 5.717347430208977,
             "reference_at_worst": 5.7173474476493995,
             "uncertainty_at_worst": 2.426148171252862e-11,
             "relative_tolerance": 1e-07,
@@ -1275,6 +1377,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -1283,14 +1402,31 @@
           },
           "T0": {
             "bounds_met": true,
-            "geodesic_error_rad": 1.1500683324258268e-10,
+            "geodesic_error_rad": 8.438571554186187e-11,
             "reference_uncertainty_rad": 7.836768468053249e-16,
             "allowed_error_rad": 3.3165099114590096e-10,
-            "bound_utilization": 0.3467730234185701,
+            "bound_utilization": 0.8413475385024564,
+            "geodesic_bound_utilization": 0.2544436816761543,
+            "component_error_rad": [
+              1.925389968987501e-12,
+              4.619822319834599e-12,
+              8.423717865862651e-11
+            ],
+            "component_allowed_rad": [
+              1.6324598752789816e-10,
+              3.228499757964058e-10,
+              1.0012267045504953e-10
+            ],
+            "component_uncertainty_rad": 7.836770220295578e-16,
+            "component_bound_utilization": [
+              0.011799209739720888,
+              0.01431192920321126,
+              0.8413475385024564
+            ],
             "director_error": [
-              1.1496960604989399e-10,
-              1.1465904160612172e-10,
-              9.404107194262008e-12
+              8.436155297896869e-11,
+              8.426061731053774e-11,
+              5.017441714237572e-12
             ]
           }
         },
@@ -1302,16 +1438,16 @@
               0.0
             ],
             [
-              0.005917915743309572,
-              0.001683052813964913,
-              -6.737451332259955e-05
+              0.005917915754321681,
+              0.0016830528184825528,
+              -6.737451348515157e-05
             ]
           ],
           "reaction_force_n": [
             [
-              -999.9999999232987,
-              -600.0000000000043,
-              61685.027506808474
+              -1000.0000000320142,
+              -600.0000000000073,
+              61685.02750680851
             ],
             [
               0.0,
@@ -1321,9 +1457,9 @@
           ],
           "reaction_moment_nm": [
             [
-              2503.778734416843,
-              -4364.979420881702,
-              -1.867696632020923
+              2503.778734695416,
+              -4364.979421578645,
+              -1.8676966341107293
             ],
             [
               0.0,
@@ -1333,21 +1469,21 @@
           ],
           "physical_end_actions": [
             [
-              -999.9999999232987,
-              -600.0000000000043,
-              61685.027506808474,
-              2503.778734416843,
-              -4364.979420881702,
-              -1.867696632020923,
-              1000.0000000096245,
-              599.9999999997632,
-              -61685.02750680858,
-              -3.78077968955633e-11,
-              -2.4011224900512225e-09,
-              1.2832373624693266e-12
+              -1000.0000000320142,
+              -600.0000000000073,
+              61685.02750680851,
+              2503.778734695416,
+              -4364.979421578645,
+              -1.8676966341107293,
+              999.9999999532537,
+              600.0000000002138,
+              -61685.02750680827,
+              2.861588911481023e-11,
+              9.415391828885335e-09,
+              -6.593836937597662e-12
             ]
           ],
-          "strain_energy_j": 5.717347412054516
+          "strain_energy_j": 5.717347430208977
         },
         "reference": {
           "translation_m": [
@@ -1500,19 +1636,19 @@
           "T0": {
             "candidate_orientation": [
               [
-                0.9999975168947925,
-                -1.931306849782002e-06,
-                0.0022284973680041123
+                0.9999975168947828,
+                -1.931337237009828e-06,
+                0.0022284973723482437
               ],
               [
-                5.218708129907846e-07,
-                0.999999799996592,
-                0.0006324606735549881
+                5.219011955198305e-07,
+                0.9999997999965915,
+                0.0006324606744617233
               ],
               [
-                -0.0022284981437726754,
-                -0.0006324579401008629,
-                0.9999973168928891
+                -0.002228498148136025,
+                -0.00063245794093988,
+                0.9999973168928789
               ]
             ],
             "reference_orientation": [
@@ -2277,39 +2413,39 @@
         }
       ],
       "refinement": {
-        "translation_m": 6.501317799056447e-08,
-        "rotation_rad": 1.5361203737228277e-07,
-        "member_end_actions": 8.712110238852262e-08
+        "translation_m": 3.467062447481543e-08,
+        "rotation_rad": 1.1302644135815905e-07,
+        "member_end_actions": 4.1831187856889316e-08
       },
       "native_equilibrium_verified": true,
       "refinement_verified": true,
       "equilibrium": {
         "force_residual_n": [
-          7.670132617931813e-08,
-          -4.320099833421409e-12,
-          -2.1827872842550278e-11
+          -3.2014213502407074e-08,
+          -7.275957614183426e-12,
+          1.4551915228366852e-11
         ],
         "deformed_geometry_moment_residual_nm": [
-          -4.547473508864641e-13,
-          1.400167093379423e-08,
-          -9.281464485866309e-14
+          -9.094947017729282e-13,
+          -3.8216967368498445e-09,
+          -2.7355895326763857e-13
         ],
         "force_relative_residual": [
-          7.662470147784029e-11,
-          7.188186078904175e-15,
-          3.5385440957664297e-16
+          3.198223127113594e-11,
+          1.2106418659207032e-14,
+          2.35902939717762e-16
         ],
         "moment_relative_residual": [
-          1.8155190501980101e-16,
-          3.2069942580997585e-12,
-          3.236557306037556e-14
+          3.6310380999921876e-16,
+          8.753354901227056e-13,
+          9.539326789791177e-14
         ],
         "accepted": true
       },
       "stability": {
         "domain": "full spatial conservative energy Hessian",
         "positive_definite": true,
-        "minimum_generalized_eigenvalue": 0.7981171320550317,
+        "minimum_generalized_eigenvalue": 0.7980853053178704,
         "generalized_mode": [
           0.0,
           0.0,
@@ -2317,78 +2453,90 @@
           0.0,
           0.0,
           0.0,
-          -2.485172406412537,
-          -0.23610923358894578,
-          0.022893880461039573,
-          0.09601629390736292,
+          -2.485092802518682,
+          -0.23612495770536843,
+          0.022889886148374228,
+          0.09602632378298707,
           -1.0,
-          -0.003990091896576072,
-          -0.020207436189351623,
-          -0.0018746310386684186,
-          2.4168523309808318e-05,
-          0.011244000921714785,
-          -0.12116750086682028,
-          -0.0010473769685755323,
-          -0.08065183892976285,
-          -0.007489949563787664,
-          0.00018715573216023068,
-          0.02243234882993824,
-          -0.24125512867278692,
-          -0.0018956199419850653,
-          -0.18077191923588873,
-          -0.016815357901766203,
-          0.0006092427436924326,
-          0.03348614279033816,
-          -0.35902229790181883,
-          -0.002562894313005769,
-          -0.3195505406838741,
-          -0.029787324194301634,
-          0.001387860021480665,
-          0.04428645895693619,
-          -0.47296376112877625,
-          -0.003069107326690156,
-          -0.49541849424084317,
-          -0.0462947871979887,
-          0.002594758875933958,
-          0.054667711767268784,
-          -0.5812713127429356,
-          -0.0034358342284988275,
-          -0.7061562313218117,
-          -0.0661638437089573,
-          0.004273383876692753,
-          0.06441991259944722,
-          -0.6818591371936178,
-          -0.00368605894892694,
-          -0.9488137575308092,
-          -0.08914453082075115,
-          0.006436856446424984,
-          0.0732988517643834,
-          -0.7724461663861275,
-          -0.0038435870568392116,
-          -1.219666007013989,
-          -0.11490210439182867,
-          0.00906707409114089,
-          0.08104270372841556,
-          -0.8506847019611777,
-          -0.003932090268683476,
-          -1.5142167114407843,
-          -0.143014620732276,
-          0.012115402211622937,
-          0.08739299112532681,
-          -0.9143202336798423,
-          -0.003973837665596048,
-          -1.8272581133270398,
-          -0.1729778568543138,
-          0.015505295545657091,
-          0.09211735808555391,
-          -0.961363703967687,
-          -0.003988248831145046,
-          -2.1529872276589788,
-          -0.20421770441641207,
-          0.01913695876027897,
-          0.09503133094283833,
-          -0.9902554007220525,
-          -0.003990457468695147
+          -0.004084822698487322,
+          -0.01484762855806154,
+          -0.0013773703287342297,
+          1.5281734831900185e-05,
+          0.009639355448807951,
+          -0.10388712929069016,
+          -0.0009203431638106542,
+          -0.05929532844810358,
+          -0.005505015763841205,
+          0.00011897592463671198,
+          0.019244790070049086,
+          -0.20710254812061546,
+          -0.0016925513555895988,
+          -0.13304624282493693,
+          -0.012367368094450413,
+          0.00038972025638913765,
+          0.028771380324517194,
+          -0.3088968452629956,
+          -0.0023277654462314336,
+          -0.2355713703867843,
+          -0.02193316587550992,
+          0.0008942618247981129,
+          0.03815428847105352,
+          -0.40838838777063075,
+          -0.0028380211816776578,
+          -0.3660671659556296,
+          -0.03414906961833072,
+          0.0016861417752365264,
+          0.04730416118351746,
+          -0.50453470499034,
+          -0.00323623727892999,
+          -0.5234087038212429,
+          -0.04893248575628564,
+          0.002804405586824284,
+          0.0561061776239428,
+          -0.5961298864674116,
+          -0.0035361735320236366,
+          -0.7061056258001808,
+          -0.0661646079246026,
+          0.004272450253786948,
+          0.06442249683574418,
+          -0.681826381096946,
+          -0.0037522863503914256,
+          -0.9122674831625746,
+          -0.08568459334324321,
+          0.006097167363875202,
+          0.07209771672087167,
+          -0.7601784915181922,
+          -0.0038994405083322267,
+          -1.1395841314619826,
+          -0.1072856583823063,
+          0.008268558389348831,
+          0.07896679504008472,
+          -0.8297036031963833,
+          -0.003992467293231629,
+          -1.3853255217493747,
+          -0.1307136963469476,
+          0.010759985297637675,
+          0.08486471550734667,
+          -0.8889559090384127,
+          -0.0040455888266063235,
+          -1.6463635713646054,
+          -0.15566879439784753,
+          0.013529178196953734,
+          0.08963703639459795,
+          -0.9366062864518392,
+          -0.004071753689406279,
+          -1.9192168733306552,
+          -0.18180976578062502,
+          0.016520057445320358,
+          0.09315036477265265,
+          -0.9715212702413026,
+          -0.0040819475237027815,
+          -2.200116954543998,
+          -0.20876153660278096,
+          0.01966534868933696,
+          0.09530178224710047,
+          -0.9928339279982836,
+          -0.004084551761574377
         ],
         "normalization": "max(abs(mode)/[span translations, unit rotations])=1",
         "normative_stability_verified": false
@@ -2400,12 +2548,12 @@
           "newton_residual_evaluations": 5,
           "line_search_force_evaluations": 4,
           "linear_system_solves": 8,
-          "algebraic_relative_residual": 3.0029528061107352e-12,
-          "scaled_displacement_increment": 1.239213638901759e-15,
-          "scaled_internal_force_change": 5.442653562680834e-12,
-          "minimum_tangent_ratio": 0.979707940416357,
-          "maximum_tangent_ratio": 1.0107957493879176,
-          "scaled_tangent_condition": 111022.58129577411
+          "algebraic_relative_residual": 2.368664714517106e-12,
+          "scaled_displacement_increment": 3.5802912639004315e-16,
+          "scaled_internal_force_change": 4.76228440217239e-12,
+          "minimum_tangent_ratio": 0.9797044853055388,
+          "maximum_tangent_ratio": 1.0107995134959937,
+          "scaled_tangent_condition": 204760.08804738006
         },
         {
           "step": 2,
@@ -2413,12 +2561,12 @@
           "newton_residual_evaluations": 5,
           "line_search_force_evaluations": 4,
           "linear_system_solves": 8,
-          "algebraic_relative_residual": 1.7038674738340783e-12,
-          "scaled_displacement_increment": 6.73055966253084e-16,
-          "scaled_internal_force_change": 4.276297116539374e-12,
-          "minimum_tangent_ratio": 0.9594254538234342,
-          "maximum_tangent_ratio": 1.0220315438505336,
-          "scaled_tangent_condition": 112075.81067143465
+          "algebraic_relative_residual": 2.6563212211318462e-12,
+          "scaled_displacement_increment": 5.189986297605326e-16,
+          "scaled_internal_force_change": 6.349714840006845e-12,
+          "minimum_tangent_ratio": 0.9594185952091275,
+          "maximum_tangent_ratio": 1.0220392527447542,
+          "scaled_tangent_condition": 206701.6989955515
         },
         {
           "step": 3,
@@ -2426,12 +2574,12 @@
           "newton_residual_evaluations": 5,
           "line_search_force_evaluations": 4,
           "linear_system_solves": 8,
-          "algebraic_relative_residual": 2.4032918649806026e-12,
-          "scaled_displacement_increment": 3.7657552696716046e-16,
-          "scaled_internal_force_change": 4.276325222618682e-12,
-          "minimum_tangent_ratio": 0.939157171803712,
-          "maximum_tangent_ratio": 1.033730402864294,
-          "scaled_tangent_condition": 113150.76936511222
+          "algebraic_relative_residual": 4.24629318574443e-12,
+          "scaled_displacement_increment": 3.7616044074192595e-16,
+          "scaled_internal_force_change": 9.52452272880493e-12,
+          "minimum_tangent_ratio": 0.9391469645010164,
+          "maximum_tangent_ratio": 1.0337422484738303,
+          "scaled_tangent_condition": 208683.2694799999
         },
         {
           "step": 4,
@@ -2439,12 +2587,12 @@
           "newton_residual_evaluations": 5,
           "line_search_force_evaluations": 4,
           "linear_system_solves": 8,
-          "algebraic_relative_residual": 1.978667983319862e-12,
-          "scaled_displacement_increment": 5.649420045493208e-16,
-          "scaled_internal_force_change": 2.7213577671409662e-12,
-          "minimum_tangent_ratio": 0.9189079605326899,
-          "maximum_tangent_ratio": 1.045916837328229,
-          "scaled_tangent_condition": 114248.14544800477
+          "algebraic_relative_residual": 2.681526384451409e-12,
+          "scaled_displacement_increment": 3.946556845074952e-16,
+          "scaled_internal_force_change": 5.291423734651955e-12,
+          "minimum_tangent_ratio": 0.9188944626249956,
+          "maximum_tangent_ratio": 1.0459330236333257,
+          "scaled_tangent_condition": 210706.05851389983
         },
         {
           "step": 5,
@@ -2452,12 +2600,12 @@
           "newton_residual_evaluations": 5,
           "line_search_force_evaluations": 4,
           "linear_system_solves": 8,
-          "algebraic_relative_residual": 1.805775049097391e-12,
-          "scaled_displacement_increment": 7.98512543666114e-16,
-          "scaled_internal_force_change": 3.109589344406556e-12,
-          "minimum_tangent_ratio": 0.8986829283831531,
-          "maximum_tangent_ratio": 1.0586169632100506,
-          "scaled_tangent_condition": 115368.65652660119
+          "algebraic_relative_residual": 3.699484344487775e-12,
+          "scaled_displacement_increment": 6.818188395792916e-16,
+          "scaled_internal_force_change": 5.820615132491551e-12,
+          "minimum_tangent_ratio": 0.8986662013308814,
+          "maximum_tangent_ratio": 1.0586377071318187,
+          "scaled_tangent_condition": 212771.3788339559
         },
         {
           "step": 6,
@@ -2465,12 +2613,12 @@
           "newton_residual_evaluations": 5,
           "line_search_force_evaluations": 4,
           "linear_system_solves": 8,
-          "algebraic_relative_residual": 3.038938033111311e-12,
-          "scaled_displacement_increment": 1.1263788337547807e-15,
-          "scaled_internal_force_change": 5.831333224571466e-12,
-          "minimum_tangent_ratio": 0.8784874334406,
-          "maximum_tangent_ratio": 1.0718586250235616,
-          "scaled_tangent_condition": 116513.05134647345
+          "algebraic_relative_residual": 3.5813337591611297e-12,
+          "scaled_displacement_increment": 4.807045459327414e-16,
+          "scaled_internal_force_change": 6.878737140615192e-12,
+          "minimum_tangent_ratio": 0.8784675421712672,
+          "maximum_tangent_ratio": 1.0718841573784434,
+          "scaled_tangent_condition": 214880.5997363054
         },
         {
           "step": 7,
@@ -2478,12 +2626,12 @@
           "newton_residual_evaluations": 5,
           "line_search_force_evaluations": 4,
           "linear_system_solves": 8,
-          "algebraic_relative_residual": 2.6743109549108936e-12,
-          "scaled_displacement_increment": 3.381157199195637e-16,
-          "scaled_internal_force_change": 3.887349064629116e-12,
-          "minimum_tangent_ratio": 0.8583270908779257,
-          "maximum_tangent_ratio": 1.0856715300809137,
-          "scaled_tangent_condition": 117682.11150432499
+          "algebraic_relative_residual": 3.3465217499557922e-12,
+          "scaled_displacement_increment": 7.571275811158138e-16,
+          "scaled_internal_force_change": 6.878847721910832e-12,
+          "minimum_tangent_ratio": 0.8583041038578803,
+          "maximum_tangent_ratio": 1.0857020966068631,
+          "scaled_tangent_condition": 217035.1502795113
         },
         {
           "step": 8,
@@ -2491,12 +2639,12 @@
           "newton_residual_evaluations": 5,
           "line_search_force_evaluations": 4,
           "linear_system_solves": 8,
-          "algebraic_relative_residual": 2.0741549321050723e-12,
-          "scaled_displacement_increment": 3.599560409699957e-16,
-          "scaled_internal_force_change": 3.4985286419642425e-12,
-          "minimum_tangent_ratio": 0.8382077800217551,
-          "maximum_tangent_ratio": 1.100087394502208,
-          "scaled_tangent_condition": 118876.6532805116
+          "algebraic_relative_residual": 4.3430693281346446e-12,
+          "scaled_displacement_increment": 1.4582236806987984e-15,
+          "scaled_internal_force_change": 7.408051099390789e-12,
+          "minimum_tangent_ratio": 0.8381817693611244,
+          "maximum_tangent_ratio": 1.1001232569896926,
+          "scaled_tangent_condition": 219236.52250933833
         },
         {
           "step": 9,
@@ -2504,12 +2652,12 @@
           "newton_residual_evaluations": 5,
           "line_search_force_evaluations": 4,
           "linear_system_solves": 8,
-          "algebraic_relative_residual": 2.8058068595997028e-12,
-          "scaled_displacement_increment": 6.038913585892903e-16,
-          "scaled_internal_force_change": 6.219571252412635e-12,
-          "minimum_tangent_ratio": 0.8181356511866448,
-          "maximum_tangent_ratio": 1.1151401021986753,
-          "scaled_tangent_condition": 120097.5296081953
+          "algebraic_relative_residual": 2.8640297547757997e-12,
+          "scaled_displacement_increment": 7.07228885554851e-16,
+          "scaled_internal_force_change": 4.762375170985894e-12,
+          "minimum_tangent_ratio": 0.818106692687392,
+          "maximum_tangent_ratio": 1.1151815396884637,
+          "scaled_tangent_condition": 221486.27500314
         },
         {
           "step": 10,
@@ -2517,12 +2665,12 @@
           "newton_residual_evaluations": 5,
           "line_search_force_evaluations": 4,
           "linear_system_solves": 8,
-          "algebraic_relative_residual": 2.0419886762249663e-12,
-          "scaled_displacement_increment": 9.424352537482963e-16,
-          "scaled_internal_force_change": 4.275955696789085e-12,
-          "minimum_tangent_ratio": 0.7981171320550321,
-          "maximum_tangent_ratio": 1.1308658780194518,
-          "scaled_tangent_condition": 121345.63214043454
+          "algebraic_relative_residual": 1.851571371175934e-12,
+          "scaled_displacement_increment": 3.390742138712262e-16,
+          "scaled_internal_force_change": 6.349710693208259e-12,
+          "minimum_tangent_ratio": 0.7980853053178713,
+          "maximum_tangent_ratio": 1.130913188136592,
+          "scaled_tangent_condition": 223786.03668413882
         }
       ],
       "blockers": [
@@ -2555,14 +2703,14 @@
       "attempted_input_sha256": "c1ce1b74d98b930d9688e3f3d5f5282e1ab6d2e83daeed7b56ecbd3217d0a3b4",
       "before_execution": {
         "status": "diagnostic",
-        "elapsed_seconds": 4.489037599996664,
+        "elapsed_seconds": 5.725261899991892,
         "memory_limit_bytes": 805306368,
         "memory_kind": "windows-job-process-commit",
         "local_only": true
       },
       "execution": {
         "status": "diagnostic",
-        "elapsed_seconds": 7.654209099942818,
+        "elapsed_seconds": 9.344021099968813,
         "memory_limit_bytes": 805306368,
         "memory_kind": "windows-job-process-commit",
         "local_only": true
@@ -2669,6 +2817,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -2681,6 +2846,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -2692,7 +2874,24 @@
             "geodesic_error_rad": 6.215797570264653e-09,
             "reference_uncertainty_rad": 4.564271558853897e-13,
             "allowed_error_rad": 1.3783747173166685e-10,
-            "bound_utilization": 45.09843309896124,
+            "bound_utilization": 48.348392361060995,
+            "geodesic_bound_utilization": 45.09843309896124,
+            "component_error_rad": [
+              3.899240753413649e-09,
+              2.4392277114164765e-10,
+              4.834517864923995e-09
+            ],
+            "component_allowed_rad": [
+              1.316229122433958e-10,
+              1.2077656565672345e-10,
+              1.0000279339125685e-10
+            ],
+            "component_uncertainty_rad": 4.56427158608119e-13,
+            "component_bound_utilization": [
+              29.627798945528387,
+              2.0233991335276187,
+              48.348392361060995
+            ],
             "director_error": [
               4.841071934997324e-09,
               6.210979602868672e-09,
@@ -2704,7 +2903,24 @@
             "geodesic_error_rad": 5.70906082084219e-09,
             "reference_uncertainty_rad": 2.81613806569888e-13,
             "allowed_error_rad": 1.378375547493917e-10,
-            "bound_utilization": 41.42080469309802,
+            "bound_utilization": 48.33900804708543,
+            "geodesic_bound_utilization": 41.42080469309802,
+            "component_error_rad": [
+              3.0287992707411435e-09,
+              2.3360414579294553e-10,
+              4.833754219713709e-09
+            ],
+            "component_allowed_rad": [
+              1.3162349830175313e-10,
+              1.2077584823540206e-10,
+              1.0000279337162409e-10
+            ],
+            "component_uncertainty_rad": 2.8161380824980887e-13,
+            "component_bound_utilization": [
+              23.013222742379032,
+              1.936527567542583,
+              48.33900804708543
+            ],
             "director_error": [
               4.8390813866548154e-09,
               5.704248143998853e-09,
@@ -3296,6 +3512,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -3308,6 +3541,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -3319,7 +3569,24 @@
             "geodesic_error_rad": 1.5048442842548421e-09,
             "reference_uncertainty_rad": 4.564271558853897e-13,
             "allowed_error_rad": 1.3783747173166685e-10,
-            "bound_utilization": 10.920838089232733,
+            "bound_utilization": 12.10868293168732,
+            "geodesic_bound_utilization": 10.920838089232733,
+            "component_error_rad": [
+              8.939602980399461e-10,
+              1.457931635118724e-11,
+              1.210445690299157e-09
+            ],
+            "component_allowed_rad": [
+              1.316229122433958e-10,
+              1.2077656565672345e-10,
+              1.0000279339125685e-10
+            ],
+            "component_uncertainty_rad": 4.56427158608119e-13,
+            "component_bound_utilization": [
+              6.795296578338941,
+              0.12449222602115233,
+              12.10868293168732
+            ],
             "director_error": [
               1.2106263344511633e-09,
               1.5047717920954825e-09,
@@ -3331,7 +3598,24 @@
             "geodesic_error_rad": 1.4738418983375321e-09,
             "reference_uncertainty_rad": 2.81613806569888e-13,
             "allowed_error_rad": 1.3783738398850152e-10,
-            "bound_utilization": 10.694656772266327,
+            "bound_utilization": 12.104576987888358,
+            "geodesic_bound_utilization": 10.694656772266327,
+            "component_error_rad": [
+              8.410744421890812e-10,
+              1.3990998192891374e-11,
+              1.2102098975624655e-09
+            ],
+            "component_allowed_rad": [
+              1.3162327952927027e-10,
+              1.2077584823540206e-10,
+              1.0000279337162409e-10
+            ],
+            "component_uncertainty_rad": 2.816138082497937e-13,
+            "component_bound_utilization": [
+              6.392152353339828,
+              0.11817438842013077,
+              12.104576987888358
+            ],
             "director_error": [
               1.2102033905528847e-09,
               1.4737736603965755e-09,
@@ -5050,7 +5334,7 @@
       "attempted_input_sha256": "b8eb2d0f1912a23d88965c7e3ccb70a72336c1b45a0f6369be269abed8a00c37",
       "before_execution": {
         "status": "diagnostic",
-        "elapsed_seconds": 9.687260700040497,
+        "elapsed_seconds": 11.636993600055575,
         "memory_limit_bytes": 805306368,
         "memory_kind": "windows-job-process-commit",
         "local_only": true
@@ -5058,7 +5342,7 @@
       "execution": {
         "status": "TIMEOUT",
         "limit_seconds": 20,
-        "elapsed_seconds": 20.081272599985823
+        "elapsed_seconds": 20.009970200015232
       },
       "evaluated_subdivisions": [
         1,
@@ -5162,6 +5446,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -5174,6 +5475,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -5186,6 +5504,23 @@
             "reference_uncertainty_rad": 2.2514187783525905e-11,
             "allowed_error_rad": 1.2303146908338617e-10,
             "bound_utilization": 8.693283150643522,
+            "geodesic_bound_utilization": 8.693283150643522,
+            "component_error_rad": [
+              2.399638898773881e-10,
+              9.452798464500752e-10,
+              3.8097491485336017e-10
+            ],
+            "component_allowed_rad": [
+              1.0797270529811876e-10,
+              1.2160751115613414e-10,
+              1.0000007655423087e-10
+            ],
+            "component_uncertainty_rad": 2.2514187833286823e-11,
+            "component_bound_utilization": [
+              2.4309669465626342,
+              7.958340937023153,
+              4.034887937989042
+            ],
             "director_error": [
               1.019173991253679e-09,
               4.5021754975103204e-10,
@@ -5198,6 +5533,23 @@
             "reference_uncertainty_rad": 1.8540772022533196e-11,
             "allowed_error_rad": 1.230310067790537e-10,
             "bound_utilization": 8.325714594518745,
+            "geodesic_bound_utilization": 8.325714594518745,
+            "component_error_rad": [
+              9.32690597118483e-11,
+              9.261236688564572e-10,
+              3.810377918884356e-10
+            ],
+            "component_allowed_rad": [
+              1.0797347505975823e-10,
+              1.2160673777917434e-10,
+              1.0000007647988966e-10
+            ],
+            "component_uncertainty_rad": 1.8540772063510415e-11,
+            "component_bound_utilization": [
+              1.0355305477894199,
+              7.768191616449605,
+              3.9957825835493495
+            ],
             "director_error": [
               1.0014425433799714e-09,
               3.9225091405028076e-10,
@@ -5210,6 +5562,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -5222,6 +5591,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -5234,6 +5620,23 @@
             "reference_uncertainty_rad": 2.2093219595911736e-11,
             "allowed_error_rad": 1.230322819193529e-10,
             "bound_utilization": 10.72839223193378,
+            "geodesic_bound_utilization": 10.72839223193378,
+            "component_error_rad": [
+              2.4009992038716114e-10,
+              1.2172280640571943e-09,
+              3.8093364572307823e-10
+            ],
+            "component_allowed_rad": [
+              1.0797263063158885e-10,
+              1.2160840510585966e-10,
+              1.0000007654602072e-10
+            ],
+            "component_uncertainty_rad": 2.2093219644745678e-11,
+            "component_bound_utilization": [
+              2.428329647042967,
+              10.191082455387154,
+              4.0302655686703215
+            ],
             "director_error": [
               1.275450650721921e-09,
               4.5024598511744235e-10,
@@ -5246,6 +5649,23 @@
             "reference_uncertainty_rad": 1.812048822260699e-11,
             "allowed_error_rad": 1.230318195483269e-10,
             "bound_utilization": 10.393154489291323,
+            "geodesic_bound_utilization": 10.393154489291323,
+            "component_error_rad": [
+              9.312707859910913e-11,
+              1.1979988403479792e-09,
+              3.8099653979491625e-10
+            ],
+            "component_allowed_rad": [
+              1.0797340036859742e-10,
+              1.2160763167889312e-10,
+              1.0000007647168329e-10
+            ],
+            "component_uncertainty_rad": 1.812048826265816e-11,
+            "component_bound_utilization": [
+              1.0303238249605235,
+              10.000353693441047,
+              3.9911672284629818
+            ],
             "director_error": [
               1.257120485735334e-09,
               3.921665774802855e-10,
@@ -6375,6 +6795,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -6387,6 +6824,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -6399,6 +6853,23 @@
             "reference_uncertainty_rad": 2.2514187783525905e-11,
             "allowed_error_rad": 1.2303146908338617e-10,
             "bound_utilization": 8.693283150643522,
+            "geodesic_bound_utilization": 8.693283150643522,
+            "component_error_rad": [
+              2.399638898773881e-10,
+              9.452798464500752e-10,
+              3.8097491485336017e-10
+            ],
+            "component_allowed_rad": [
+              1.0797270529811876e-10,
+              1.2160751115613414e-10,
+              1.0000007655423087e-10
+            ],
+            "component_uncertainty_rad": 2.2514187833286823e-11,
+            "component_bound_utilization": [
+              2.4309669465626342,
+              7.958340937023153,
+              4.034887937989042
+            ],
             "director_error": [
               1.019173991253679e-09,
               4.5021754975103204e-10,
@@ -6411,6 +6882,23 @@
             "reference_uncertainty_rad": 1.8540772022533196e-11,
             "allowed_error_rad": 1.230310067790537e-10,
             "bound_utilization": 8.325714594518745,
+            "geodesic_bound_utilization": 8.325714594518745,
+            "component_error_rad": [
+              9.32690597118483e-11,
+              9.261236688564572e-10,
+              3.810377918884356e-10
+            ],
+            "component_allowed_rad": [
+              1.0797347505975823e-10,
+              1.2160673777917434e-10,
+              1.0000007647988966e-10
+            ],
+            "component_uncertainty_rad": 1.8540772063510415e-11,
+            "component_bound_utilization": [
+              1.0355305477894199,
+              7.768191616449605,
+              3.9957825835493495
+            ],
             "director_error": [
               1.0014425433799714e-09,
               3.9225091405028076e-10,
@@ -6423,6 +6911,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -6435,6 +6940,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -6447,6 +6969,23 @@
             "reference_uncertainty_rad": 2.2093219595911736e-11,
             "allowed_error_rad": 1.230322819193529e-10,
             "bound_utilization": 10.72839223193378,
+            "geodesic_bound_utilization": 10.72839223193378,
+            "component_error_rad": [
+              2.4009992038716114e-10,
+              1.2172280640571943e-09,
+              3.8093364572307823e-10
+            ],
+            "component_allowed_rad": [
+              1.0797263063158885e-10,
+              1.2160840510585966e-10,
+              1.0000007654602072e-10
+            ],
+            "component_uncertainty_rad": 2.2093219644745678e-11,
+            "component_bound_utilization": [
+              2.428329647042967,
+              10.191082455387154,
+              4.0302655686703215
+            ],
             "director_error": [
               1.275450650721921e-09,
               4.5024598511744235e-10,
@@ -6459,6 +6998,23 @@
             "reference_uncertainty_rad": 1.812048822260699e-11,
             "allowed_error_rad": 1.230318195483269e-10,
             "bound_utilization": 10.393154489291323,
+            "geodesic_bound_utilization": 10.393154489291323,
+            "component_error_rad": [
+              9.312707859910913e-11,
+              1.1979988403479792e-09,
+              3.8099653979491625e-10
+            ],
+            "component_allowed_rad": [
+              1.0797340036859742e-10,
+              1.2160763167889312e-10,
+              1.0000007647168329e-10
+            ],
+            "component_uncertainty_rad": 1.812048826265816e-11,
+            "component_bound_utilization": [
+              1.0303238249605235,
+              10.000353693441047,
+              3.9911672284629818
+            ],
             "director_error": [
               1.257120485735334e-09,
               3.921665774802855e-10,
@@ -9603,14 +10159,14 @@
       "attempted_input_sha256": "3f2e2c419889c235c4fcedf707b88ca12329ccd8108dddfaeca8eccc53b7c648",
       "before_execution": {
         "status": "diagnostic",
-        "elapsed_seconds": 5.088403999921866,
+        "elapsed_seconds": 4.302131499978714,
         "memory_limit_bytes": 805306368,
         "memory_kind": "windows-job-process-commit",
         "local_only": true
       },
       "execution": {
         "status": "diagnostic",
-        "elapsed_seconds": 11.540530300000682,
+        "elapsed_seconds": 11.910408199997619,
         "memory_limit_bytes": 805306368,
         "memory_kind": "windows-job-process-commit",
         "local_only": true
@@ -9717,6 +10273,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -9728,7 +10301,24 @@
             "geodesic_error_rad": 7.464869155759935e-09,
             "reference_uncertainty_rad": 2.962924029793683e-13,
             "allowed_error_rad": 1.6694651727190776e-10,
-            "bound_utilization": 44.71591004204245,
+            "bound_utilization": 74.42592066636581,
+            "geodesic_bound_utilization": 44.71591004204245,
+            "component_error_rad": [
+              5.751498769975862e-10,
+              7.442679262651202e-09,
+              1.265438600260571e-12
+            ],
+            "component_allowed_rad": [
+              1.4216440932460698e-10,
+              1.0000515261913725e-10,
+              1.519999879591901e-10
+            ],
+            "component_uncertainty_rad": 2.962924085124268e-13,
+            "component_bound_utilization": [
+              4.04775127712992,
+              74.42592066636581,
+              0.010274546924255685
+            ],
             "director_error": [
               7.4428285186094354e-09,
               5.73214835302045e-10,
@@ -9740,7 +10330,24 @@
             "geodesic_error_rad": 7.464854771182403e-09,
             "reference_uncertainty_rad": 2.9629229889184774e-13,
             "allowed_error_rad": 1.689063570368119e-10,
-            "bound_utilization": 44.19698106362167,
+            "bound_utilization": 74.42624061538537,
+            "geodesic_bound_utilization": 44.19698106362167,
+            "component_error_rad": [
+              5.750568398744417e-10,
+              7.442672032572861e-09,
+              1.265428517180367e-12
+            ],
+            "component_allowed_rad": [
+              1.4216440902961264e-10,
+              1.0000462556399775e-10,
+              1.5449998755656225e-10
+            ],
+            "component_uncertainty_rad": 2.962923047536033e-13,
+            "component_bound_utilization": [
+              4.047096851500646,
+              74.42624061538537,
+              0.010108226198802936
+            ],
             "director_error": [
               7.442828419522058e-09,
               5.730287641983594e-10,
@@ -10208,6 +10815,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -10219,7 +10843,24 @@
             "geodesic_error_rad": 4.658953024428479e-10,
             "reference_uncertainty_rad": 2.962924029793683e-13,
             "allowed_error_rad": 1.6694651727190776e-10,
-            "bound_utilization": 2.792460738108933,
+            "bound_utilization": 4.6616571256997466,
+            "geodesic_bound_utilization": 2.792460738108933,
+            "component_error_rad": [
+              1.3195238630046846e-12,
+              4.658934399051794e-10,
+              4.955129188910501e-14
+            ],
+            "component_allowed_rad": [
+              1.4216440932460698e-10,
+              1.0000515261913725e-10,
+              1.5199998783760135e-10
+            ],
+            "component_uncertainty_rad": 2.962924085124268e-13,
+            "component_bound_utilization": [
+              0.011365828333501419,
+              4.6616571256997466,
+              0.0022752876847005766
+            ],
             "director_error": [
               4.658937611689506e-10,
               1.199379384172876e-12,
@@ -10231,7 +10872,24 @@
             "geodesic_error_rad": 4.658952664254374e-10,
             "reference_uncertainty_rad": 2.9629229889184774e-13,
             "allowed_error_rad": 1.689063570368119e-10,
-            "bound_utilization": 2.760059283160824,
+            "bound_utilization": 4.661681502616711,
+            "geodesic_bound_utilization": 2.760059283160824,
+            "component_error_rad": [
+              1.3136997999846356e-12,
+              4.65893420863045e-10,
+              4.95519424104085e-14
+            ],
+            "component_allowed_rad": [
+              1.4216440902961264e-10,
+              1.0000462556399775e-10,
+              1.5449998743497461e-10
+            ],
+            "component_uncertainty_rad": 2.962923047536033e-13,
+            "component_bound_utilization": [
+              0.01132486053104107,
+              4.661681502616711,
+              0.0022384742737249054
+            ],
             "director_error": [
               4.658937549664938e-10,
               1.1877413527750602e-12,
@@ -10699,6 +11357,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -10710,7 +11385,24 @@
             "geodesic_error_rad": 7.464893830456575e-09,
             "reference_uncertainty_rad": 4.7338447102986223e-17,
             "allowed_error_rad": 1.6694651729057485e-10,
-            "bound_utilization": 44.714283346217854,
+            "bound_utilization": 74.4229767714636,
+            "geodesic_bound_utilization": 44.714283346217854,
+            "component_error_rad": [
+              5.754462381862141e-10,
+              7.442681103075972e-09,
+              1.2654178919990766e-12
+            ],
+            "component_allowed_rad": [
+              1.421644093542431e-10,
+              1.000051526193213e-10,
+              1.519999879591901e-10
+            ],
+            "component_uncertainty_rad": 4.733844798699942e-17,
+            "component_bound_utilization": [
+              4.047752093076783,
+              74.4229767714636,
+              0.008325429807184087
+            ],
             "director_error": [
               7.442830436084454e-09,
               5.735111959460693e-10,
@@ -10722,7 +11414,24 @@
             "geodesic_error_rad": 7.464879438575395e-09,
             "reference_uncertainty_rad": 4.744944203281876e-17,
             "allowed_error_rad": 1.6890635705494824e-10,
-            "bound_utilization": 44.19537320076342,
+            "bound_utilization": 74.42329667007401,
+            "geodesic_bound_utilization": 44.19537320076342,
+            "component_error_rad": [
+              5.753532016051707e-10,
+              7.442673869293298e-09,
+              1.265407158397569e-12
+            ],
+            "component_allowed_rad": [
+              1.421644090592488e-10,
+              1.0000462556418142e-10,
+              1.5449998755656225e-10
+            ],
+            "component_uncertainty_rad": 4.744944297154391e-17,
+            "component_bound_utilization": [
+              4.047097672771446,
+              74.42329667007401,
+              0.008190645370616999
+            ],
             "director_error": [
               7.442830336997278e-09,
               5.733251253774161e-10,
@@ -11190,6 +11899,23 @@
             "reference_uncertainty_rad": 0.0,
             "allowed_error_rad": 1e-10,
             "bound_utilization": 0.0,
+            "geodesic_bound_utilization": 0.0,
+            "component_error_rad": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_allowed_rad": [
+              1e-10,
+              1e-10,
+              1e-10
+            ],
+            "component_uncertainty_rad": 0.0,
+            "component_bound_utilization": [
+              0.0,
+              0.0,
+              0.0
+            ],
             "director_error": [
               0.0,
               0.0,
@@ -11201,7 +11927,24 @@
             "geodesic_error_rad": 4.65898076476501e-10,
             "reference_uncertainty_rad": 4.7338447102986223e-17,
             "allowed_error_rad": 1.6694651729057485e-10,
-            "bound_utilization": 2.790702863265126,
+            "bound_utilization": 4.658713230925917,
+            "geodesic_bound_utilization": 2.790702863265126,
+            "component_error_rad": [
+              1.6158850516326262e-12,
+              4.658952803299498e-10,
+              4.9530583627610536e-14
+            ],
+            "component_allowed_rad": [
+              1.421644093542431e-10,
+              1.000051526193213e-10,
+              1.5199998783760135e-10
+            ],
+            "component_uncertainty_rad": 4.733844798699942e-17,
+            "component_bound_utilization": [
+              0.011366645121804414,
+              4.658713230925917,
+              0.00032617056606982884
+            ],
             "director_error": [
               4.65895678645302e-10,
               1.495544999647626e-12,
@@ -11213,7 +11956,24 @@
             "geodesic_error_rad": 4.658980330518689e-10,
             "reference_uncertainty_rad": 4.744944203281876e-17,
             "allowed_error_rad": 1.6890635705494824e-10,
-            "bound_utilization": 2.7583217625713523,
+            "bound_utilization": 4.658737557433489,
+            "geodesic_bound_utilization": 2.7583217625713523,
+            "component_error_rad": [
+              1.6100615307136634e-12,
+              4.658952575834822e-10,
+              4.9530583627610536e-14
+            ],
+            "component_allowed_rad": [
+              1.421644090592488e-10,
+              1.0000462556418142e-10,
+              1.5449998743497461e-10
+            ],
+            "component_uncertainty_rad": 4.744944297154391e-17,
+            "component_bound_utilization": [
+              0.01132568264315439,
+              4.658737557433489,
+              0.0003208934440298793
+            ],
             "director_error": [
               4.658956724430889e-10,
               1.4839040659381844e-12,

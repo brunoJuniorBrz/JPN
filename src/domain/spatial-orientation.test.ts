@@ -18,6 +18,8 @@ it("independently repeats Python physical SO(3) comparisons, including failed ca
         expect(computed.boundsMet).toBe(recorded.bounds_met);
         expect(Math.abs(computed.geodesicErrorRad-recorded.geodesic_error_rad)).toBeLessThan(2e-16);
         expect(Math.abs(computed.allowedErrorRad-recorded.allowed_error_rad)).toBeLessThan(2e-16);
+        computed.componentErrorRad.forEach((v,i)=>expect(Math.abs(v-recorded.component_error_rad[i])).toBeLessThan(2e-16));
+        computed.componentAllowedRad.forEach((v,i)=>expect(Math.abs(v-recorded.component_allowed_rad[i])).toBeLessThan(2e-16));
         computed.directorError.forEach((v,i)=>expect(Math.abs(v-recorded.director_error[i])).toBeLessThan(5e-16));
       }
     }
@@ -57,4 +59,14 @@ it("uses angular absolute bounds near zero and includes independent uncertainty"
   expect(()=>comparePhysicalOrientations(identity,identity,-1)).toThrow();
   expect(()=>quaternionOrientation([2,0,0,0])).toThrow();
   expect(()=>quaternionOrientation([NaN,0,0,0])).toThrow();
+});
+
+it("retains component-wise angular floors when another axis has a larger rotation",()=>{
+  const a=quaternionOrientation([Math.cos(.005),Math.sin(.005),0,0]);
+  const phi=Math.hypot(.01,1.1e-10),scale=Math.sin(phi/2)/phi;
+  const b=quaternionOrientation([Math.cos(phi/2),.01*scale,0,1.1e-10*scale]);
+  const check=comparePhysicalOrientations(a,b);
+  expect(check.geodesicErrorRad).toBeLessThan(check.allowedErrorRad);
+  expect(check.componentBoundUtilization[2]).toBeGreaterThan(1);
+  expect(check.boundsMet).toBe(false);
 });

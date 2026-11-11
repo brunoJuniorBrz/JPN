@@ -14,7 +14,7 @@ reprovados e não homologou o domínio espacial ou qualquer procedimento normati
    subdivisões é `5,716717677 J`; a referência contínua fornece `5,717347448 J`.
    Comparar somente a primeira distorcia a atribuição do erro ao JPN. Três malhas
    e uma estimativa assintótica explícita substituem essa comparação.
-3. **Erro de discretização do candidato:** refinar a coluna de 4 para 12
+3. **Erro de discretização do candidato:** refinar a coluna de 4 para 14
    elementos permite passar todos os critérios. O braço ainda apresenta erro
    físico detectável, mesmo quando energia e esforços passam. O pórtico continua
    com momentos pequenos sensíveis à malha. O quadro não concluiu a tentativa
@@ -34,14 +34,19 @@ colunas. O arquivo histórico também preserva a comparação original da P4.
 
 | Caso | Malha anterior → avaliada | Erro U antes → depois (J) | Resultado P5 |
 |---|---|---|---|
-| Coluna biaxial comprimida | 4 → 12 | `3,490e-6` → `2,719e-8` | Passa comparação completa, refinamento e ambos os oráculos |
+| Coluna biaxial comprimida | 4 → 14 | `3,490e-6` → `9,037e-9` | Passa comparação completa, refinamento e ambos os oráculos |
 | Pórtico fora do plano | 2 → 4 por barra | `6,116e-6` → `3,774e-7` | Falha em componentes e refinamento |
 | Quadro com quatro pilares | 2; tentativa de 4 interrompida | `4,305e-5` → sem nova solução | Falha; limite de tempo preservado |
 | Braço excêntrico físico | 2 → 8 por barra | `4,476e-7` → `6,446e-10` | Falha em deslocamento e orientação física |
 
-A coluna tem erro máximo de deslocamento `1,503e-11 m`; a auditoria angular
-também passa contra a barra contínua independente. No braço, o erro angular
+A coluna tem erro máximo de deslocamento `1,033e-11 m`; a auditoria angular
+também passa contra a barra contínua independente. Cada componente angular é
+verificado após obter logaritmos compatíveis das matrizes físicas, além da
+distância geodésica. Na coluna, a componente angular próxima de zero difere
+`8,423e-11 rad` e passa seu limite `1,001e-10 rad`, incluindo incerteza.
+No braço, o erro angular
 remanescente é `4,659e-10 rad`, acima do limite aproximado `1,67e-10 rad`.
+Sua componente angular quase nula também falha no piso de aproximadamente `1e-10 rad`.
 O componente vertical de ARM difere `4,659e-10 m`; ele continua reprovado.
 No pórtico, um momento governante é `-0,121637` contra `-0,124767 N·m`.
 Não se descartaram esses componentes por serem pequenos.

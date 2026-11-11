@@ -45,11 +45,26 @@ def compare_orientation(candidate, reference, uncertainty=0.):
         raise ValueError("Invalid angular uncertainty")
     error = float((a*b.inv()).magnitude())
     allowance = CRITERIA["absolute"]["rotation_rad"]+CRITERIA["reference_relative"]*max(a.magnitude(), b.magnitude())
+    # Principal logarithms derived from BOTH physical matrices are compatible.
+    # A norm-based relative scale alone can hide an error on a near-zero axis.
+    ra, rb = a.as_rotvec(), b.as_rotvec()
+    radius = max(a.magnitude(), b.magnitude())+uncertainty
+    if radius >= np.pi-.05:
+        raise ValueError("Physical logarithm outside the validated principal branch")
+    log_lipschitz = radius/(2*np.sin(radius/2)) if radius else 1.
+    component_uncertainty = uncertainty*log_lipschitz
+    component_error = abs(ra-rb)
+    component_allowed = CRITERIA["absolute"]["rotation_rad"]+CRITERIA["reference_relative"]*np.maximum(abs(ra), abs(rb))
+    component_utilization = (component_error+component_uncertainty)/component_allowed
     # Unit-director distance <= angle. Also retain all three director errors.
     directors = np.linalg.norm(a.as_matrix()-b.as_matrix(), axis=0)
-    return dict(bounds_met=bool(error+uncertainty <= allowance), geodesic_error_rad=error,
+    return dict(bounds_met=bool(error+uncertainty <= allowance and np.all(component_utilization <= 1)), geodesic_error_rad=error,
                 reference_uncertainty_rad=float(uncertainty), allowed_error_rad=float(allowance),
-                bound_utilization=float((error+uncertainty)/allowance), director_error=directors.tolist())
+                bound_utilization=float(max((error+uncertainty)/allowance, component_utilization.max())),
+                geodesic_bound_utilization=float((error+uncertainty)/allowance),
+                component_error_rad=component_error.tolist(), component_allowed_rad=component_allowed.tolist(),
+                component_uncertainty_rad=float(component_uncertainty), component_bound_utilization=component_utilization.tolist(),
+                director_error=directors.tolist())
 
 
 def richardson(arrays):

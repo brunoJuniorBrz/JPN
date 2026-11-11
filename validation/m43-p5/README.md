@@ -19,6 +19,8 @@ python validation/m43-p5/reproduce.py --opensees-python .tools/opensees/bin/pyth
 ```
 
 No Windows, o executável independente fica em `.tools/opensees/Scripts/python.exe`.
+O caminho do executável privado preserva o link simbólico POSIX do ambiente
+virtual: resolver seu destino selecionaria o Python externo sem o OpenSees.
 Fixar `OPENBLAS_NUM_THREADS=1`, `OMP_NUM_THREADS=1` e `MKL_NUM_THREADS=1`.
 A CI executa a campanha nos dois sistemas. Os arquivos detalhados de trabalho
 ficam em `.tools/m43-p5-campaign/`, sem bibliotecas ou binários publicados.
@@ -88,7 +90,11 @@ momentos aplicados. Não é uma capacidade adicional do aplicativo.
 
 Para cada componente, `|a-b| + incerteza <= atol + 1e-7 max(|a|,|b|)`.
 Para orientação física, a mesma regra angular usa as magnitudes das rotações
-totais compatíveis; os diretores permanecem no relatório. Os pisos dimensionais
+totais compatíveis e, adicionalmente, **cada componente dos logaritmos das duas
+matrizes físicas** deve cumprir seu próprio piso e escala relativos. Uma rotação
+maior em X não permite exceder o piso em Z. A incerteza angular é propagada
+ao logaritmo pelo limite `phi/(2 sin(phi/2))` da Jacobiana inversa no ramo
+validado. Os diretores permanecem no relatório. Os pisos dimensionais
 estão no contrato congelado. Equilíbrio `1e-8` e refinamento `1e-4` são mantidos.
 
 `evidence.json` contém entradas vinculadas, números antes/depois, componentes

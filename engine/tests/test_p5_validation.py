@@ -110,6 +110,15 @@ def test_near_zero_components_use_dimensional_absolute_bounds_and_uncertainty():
     with pytest.raises(ValueError): physical.compare([0.], [[0.]], "translation_m")
 
 
+def test_large_rotation_about_one_axis_cannot_mask_an_error_on_a_near_zero_axis():
+    a = Rotation.from_rotvec([.01, 0., 0.]).as_matrix()
+    b = Rotation.from_rotvec([.01, 0., 1.1e-10]).as_matrix()
+    check = physical.compare_orientation(a, b)
+    assert check["geodesic_bound_utilization"] < 1
+    assert check["component_bound_utilization"][2] > 1
+    assert not check["bounds_met"]
+
+
 def test_continuous_rod_axial_and_torsional_exact_solution_and_energy():
     length, ea, gj, n, torque = 4., 4e9, 1.3e6, -20000., 200.
     pos, rotation, moment, energy = rod.segment(np.zeros(3), np.eye(3), [torque, 0., 0.], np.array([n, 0., 0.]),

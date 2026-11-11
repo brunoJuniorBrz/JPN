@@ -20,6 +20,13 @@ function angle(r: RotationMatrix) {
   return Math.atan2(sine,cosine);
 }
 
+function logarithm(r: RotationMatrix) {
+  const phi=angle(r);
+  if(phi>=Math.PI-.05)throw new Error("INVALID_SO3_BRANCH");
+  const scale=phi<1e-7?.5+phi*phi/12+7*phi**4/720:phi/(2*Math.sin(phi));
+  return [r[2][1]-r[1][2],r[0][2]-r[2][0],r[1][0]-r[0][1]].map(v=>scale*v);
+}
+
 export function quaternionOrientation(q: readonly number[]): RotationMatrix {
   if(q.length!==4||q.some(v=>!Number.isFinite(v))||Math.abs(q.reduce((s,x)=>s+x*x,0)-1)>2e-10)throw new Error("INVALID_SO3_QUATERNION");
   const [w,x,y,z]=q;
@@ -32,7 +39,14 @@ export function comparePhysicalOrientations(candidate: RotationMatrix,reference:
   if(!Number.isFinite(uncertaintyRad)||uncertaintyRad<0)throw new Error("INVALID_SO3_UNCERTAINTY");
   const relative=a.map(row=>b.map(other=>row.reduce((s,x,k)=>s+x*other[k],0)));
   const error=angle(relative),allowed=1e-10+1e-7*Math.max(angle(a),angle(b));
-  return {boundsMet:error+uncertaintyRad<=allowed,geodesicErrorRad:error,allowedErrorRad:allowed,
-    boundUtilization:(error+uncertaintyRad)/allowed,
+  const ra=logarithm(a),rb=logarithm(b),radius=Math.max(angle(a),angle(b))+uncertaintyRad;
+  if(radius>=Math.PI-.05)throw new Error("INVALID_SO3_BRANCH");
+  const componentUncertaintyRad=uncertaintyRad*(radius?radius/(2*Math.sin(radius/2)):1);
+  const componentErrorRad=ra.map((v,i)=>Math.abs(v-rb[i]));
+  const componentAllowedRad=ra.map((v,i)=>1e-10+1e-7*Math.max(Math.abs(v),Math.abs(rb[i])));
+  const componentBoundUtilization=componentErrorRad.map((v,i)=>(v+componentUncertaintyRad)/componentAllowedRad[i]);
+  return {boundsMet:error+uncertaintyRad<=allowed&&componentBoundUtilization.every(v=>v<=1),geodesicErrorRad:error,allowedErrorRad:allowed,
+    boundUtilization:Math.max((error+uncertaintyRad)/allowed,...componentBoundUtilization),
+    componentErrorRad,componentAllowedRad,componentUncertaintyRad,componentBoundUtilization,
     directorError:[0,1,2].map(j=>Math.hypot(...a.map((row,i)=>row[j]-b[i][j])))};
 }

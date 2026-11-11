@@ -94,7 +94,9 @@ def worker(request):
 
 def native(executable, model, subdivisions):
     raw = json.dumps(model, separators=(",", ":"), allow_nan=False).encode()
-    done = subprocess.run([str(executable.resolve()), "-I", "-X", "utf8", str(Path(__file__).with_name("opensees_orientations.py")), str(subdivisions)],
+    # POSIX venv executables are symlinks. Resolving their target bypasses
+    # pyvenv.cfg and silently selects the system interpreter without OpenSees.
+    done = subprocess.run([str(executable.absolute()), "-I", "-X", "utf8", str(Path(__file__).with_name("opensees_orientations.py")), str(subdivisions)],
                           input=raw, capture_output=True, timeout=60, cwd=ROOT)
     if done.returncode:
         raise RuntimeError("Independent native reference failure: "+done.stderr.decode(errors="replace")[:2000])
@@ -137,7 +139,7 @@ def run(args):
     cases = []
     cache = ROOT/".tools/m43-p5-campaign"
     cache.mkdir(parents=True, exist_ok=True)
-    for old, coarse, levels in zip(baseline["cases"], (6, 2, 2, 4), ((16, 32, 64), (8, 16, 32), (4, 8, 16), (8, 16, 32))):
+    for old, coarse, levels in zip(baseline["cases"], (7, 2, 2, 4), ((16, 32, 64), (8, 16, 32), (4, 8, 16), (8, 16, 32))):
         name, request = old["case"], deepcopy(old["request"])
         model = request["model"]
         before, before_execution = worker(request)
