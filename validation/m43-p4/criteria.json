@@ -1,0 +1,17 @@
+{
+  "schema_version": "jpn.m43-p4-fixed-criteria/1",
+  "defined_before_algorithm": true,
+  "physical_equilibrium_relative": 1e-8,
+  "mesh_relative": 1e-4,
+  "newton_increment": 1e-10,
+  "newton_force_change": 1e-8,
+  "same_operator_relative_comparison": 1e-7,
+  "spatial_distinct_triad_comparison_relative": 0.002,
+  "translation_absolute_m": 1e-10,
+  "rotation_absolute_rad": 1e-10,
+  "force_absolute_n": 1e-5,
+  "moment_absolute_nm": 1e-5,
+  "energy_relative": 1e-7,
+  "energy_absolute_j": 1e-8,
+  "interpretation": "P2/P3 acceptance stays unchanged. P4 spatial mean-director triad and OpenSees triad are distinct finite element operators; 0.2% is a predeclared diagnostic comparison bound, never equilibrium, mesh or homologation. Every discrepancy is retained. Matching linear and planar operators retain 1e-7."
+}
