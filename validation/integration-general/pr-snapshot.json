@@ -1,0 +1,2153 @@
+{
+  "schema_version": "jpn.integration-pr-snapshot/1",
+  "snapshot_at": "2026-11-11T19:57:18.877787+00:00",
+  "main_sha": "cc516b6f5cc97750de5aecf7564fcaff47a1d4f3",
+  "core_sha": "b228070020800055e835d5ba029224070b49199f",
+  "pull_requests": [
+    {
+      "number": 83,
+      "title": "M43-P5 ? Orienta??es f?sicas e valida??o espacial com crit?rios estritos",
+      "head": "feat/m43-p5-spatial-corotational-validation",
+      "sha": "b228070020800055e835d5ba029224070b49199f",
+      "base": "feat/m43-p4-spatial-corotational-stability",
+      "base_sha": "3f7569cea3d8766f2329148026175d68533915aa",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/83",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 156,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 0,
+      "maximal_dependencies": [
+        82
+      ]
+    },
+    {
+      "number": 82,
+      "title": "M43-P4 ? Converg?ncia dos p?rticos e motor corrotacional espacial experimental",
+      "head": "feat/m43-p4-spatial-corotational-stability",
+      "sha": "3f7569cea3d8766f2329148026175d68533915aa",
+      "base": "feat/m43-p3-consistent-second-order-equilibrium",
+      "base_sha": "00ce874beac86a53fb50f9c654f7225c87fa2037",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/82",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 152,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 4,
+      "maximal_dependencies": [
+        81
+      ]
+    },
+    {
+      "number": 81,
+      "title": "M43-P3 ? Consist?ncia de Kg, recupera??o de esfor?os e equil?brio f?sico P-?",
+      "head": "feat/m43-p3-consistent-second-order-equilibrium",
+      "sha": "00ce874beac86a53fb50f9c654f7225c87fa2037",
+      "base": "feat/m43-p2-second-order-frame-engine",
+      "base_sha": "696ae3fbaa2410b70ecba3be0b3ddb2693be48af",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/81",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 150,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 6,
+      "maximal_dependencies": [
+        80
+      ]
+    },
+    {
+      "number": 80,
+      "title": "M43-P2 ? Motor experimental P-? para p?rticos f?sicos e auditoria de estabilidade",
+      "head": "feat/m43-p2-second-order-frame-engine",
+      "sha": "696ae3fbaa2410b70ecba3be0b3ddb2693be48af",
+      "base": "integration/jpn-m35-m41-structural-stack",
+      "base_sha": "2b009d2aeff8b3e0c512cac5e0025fe02e702eea",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/80",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 148,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 8,
+      "maximal_dependencies": [
+        79,
+        75
+      ]
+    },
+    {
+      "number": 79,
+      "title": "M43-P1: benchmark anal?tico P-Delta e auditoria de escopo linear do motor misto",
+      "head": "feat/m43-p1-second-order-reference",
+      "sha": "2b009d2aeff8b3e0c512cac5e0025fe02e702eea",
+      "base": "feat/m42-p1-combination-coverage-audit",
+      "base_sha": "13b0ed4e056e590b510b503c423b453853f8280d",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/79",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 147,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 9,
+      "maximal_dependencies": [
+        78
+      ]
+    },
+    {
+      "number": 78,
+      "title": "M42-P1: auditar cobertura ELU/ELS, casos de vento e duplicidades sem presumir fatores normativos",
+      "head": "feat/m42-p1-combination-coverage-audit",
+      "sha": "13b0ed4e056e590b510b503c423b453853f8280d",
+      "base": "feat/m41-p4-facade-solver-load-audit",
+      "base_sha": "c4f896bc35ab2325a88b5ab6ec59b482066cf13e",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/78",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 139,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 17,
+      "maximal_dependencies": [
+        77
+      ]
+    },
+    {
+      "number": 77,
+      "title": "M41-P4: auditar carregamentos de fachadas nas barras reais do solver 3D",
+      "head": "feat/m41-p4-facade-solver-load-audit",
+      "sha": "c4f896bc35ab2325a88b5ab6ec59b482066cf13e",
+      "base": "feat/m41-p3-facade-traction-distribution",
+      "base_sha": "a6eb4ed2be5f45e569027255a54ae07f99412d2c",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/77",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 134,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 22,
+      "maximal_dependencies": [
+        74
+      ]
+    },
+    {
+      "number": 76,
+      "title": "M41-P3: press?o l?quida de fachadas declarada e transmitida a pilares reais via PyNite",
+      "head": "feat/m41-p3-facade-traction-distribution",
+      "sha": "5530151dd65943a55cbf70c99e2ceb8658889d4d",
+      "base": "feat/m41-p2-facade-envelope-audit",
+      "base_sha": "d7beb28a6bca3fec32c81f8894327f589c7892c2",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/76",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 129,
+      "behind_main": 0,
+      "exclusive_to_p83": 1,
+      "p83_exclusive": 28,
+      "maximal_dependencies": [
+        74
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "5530151dd65943a55cbf70c99e2ceb8658889d4d"
+      ],
+      "changed_files": [
+        "docs/M41-P3-PRESSAO-FACHADA-FISICA.md",
+        "src/domain/declared-facade-mixed-real.test.ts",
+        "src/domain/declared-facade-traction-contract.ts",
+        "src/domain/declared-facade-traction.test.ts",
+        "src/domain/declared-facade-traction.ts",
+        "src/domain/loaded-mixed-adapter.ts",
+        "src/domain/mixed-adapter.ts",
+        "src/domain/structural-loading.ts"
+      ],
+      "identical_files": [
+        "docs/M41-P3-PRESSAO-FACHADA-FISICA.md",
+        "src/domain/declared-facade-traction-contract.ts",
+        "src/domain/declared-facade-traction.ts",
+        "src/domain/mixed-adapter.ts",
+        "src/domain/structural-loading.ts"
+      ],
+      "missing_files": [],
+      "different_files": [
+        "src/domain/declared-facade-mixed-real.test.ts",
+        "src/domain/declared-facade-traction.test.ts",
+        "src/domain/loaded-mixed-adapter.ts"
+      ]
+    },
+    {
+      "number": 75,
+      "title": "Integra??o JPN: motor M35?M43-P1, a??es f?sicas e auditorias estruturais",
+      "head": "integration/jpn-m35-m41-structural-stack",
+      "sha": "2b009d2aeff8b3e0c512cac5e0025fe02e702eea",
+      "base": "main",
+      "base_sha": "cc516b6f5cc97750de5aecf7564fcaff47a1d4f3",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/75",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 147,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 9,
+      "maximal_dependencies": [
+        78
+      ]
+    },
+    {
+      "number": 74,
+      "title": "M41-P2: conferir sobreposi??o global de fachadas e lacunas expl?citas de fechamento",
+      "head": "feat/m41-p2-facade-envelope-audit",
+      "sha": "d7beb28a6bca3fec32c81f8894327f589c7892c2",
+      "base": "feat/m41-p1-physical-facade-surfaces",
+      "base_sha": "4e822823e6dbeb3da142a37dcaf6cacdee94e37c",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/74",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 117,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 39,
+      "maximal_dependencies": [
+        73
+      ]
+    },
+    {
+      "number": 73,
+      "title": "M41-P1: superf?cies verticais reais, front?es e aberturas para vento de fachadas",
+      "head": "feat/m41-p1-physical-facade-surfaces",
+      "sha": "4e822823e6dbeb3da142a37dcaf6cacdee94e37c",
+      "base": "feat/m40-p1-roof-reaction-audit",
+      "base_sha": "1b153b62c10a1fc0e6ca29f5824a547139e1232a",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/73",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 112,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 44,
+      "maximal_dependencies": [
+        72
+      ]
+    },
+    {
+      "number": 72,
+      "title": "M40-P1: rastrear a??es reais de cobertura at? rea??es e interfaces f?sicas de apoio",
+      "head": "feat/m40-p1-roof-reaction-audit",
+      "sha": "1b153b62c10a1fc0e6ca29f5824a547139e1232a",
+      "base": "feat/m39-p3-physical-roof-workflow",
+      "base_sha": "35ac0dbf3b6e61166e465fb43822d9522fe483c5",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/72",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 107,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 49,
+      "maximal_dependencies": [
+        71
+      ]
+    },
+    {
+      "number": 71,
+      "title": "M39-P3: editar panos XYZ, vincular ter?as e auditar cargas reais na prepara??o estrutural",
+      "head": "feat/m39-p3-physical-roof-workflow",
+      "sha": "35ac0dbf3b6e61166e465fb43822d9522fe483c5",
+      "base": "feat/m39-p2-orthogonal-irregular-roof",
+      "base_sha": "2d57fa08c0fe5209a405a531f8976aaf042119e3",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/71",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 97,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 59,
+      "maximal_dependencies": [
+        69
+      ]
+    },
+    {
+      "number": 70,
+      "title": "M39-P2: distribuir cargas com conserva??o em telhados ortogonais em L e com recortes",
+      "head": "feat/m39-p2-orthogonal-irregular-roof",
+      "sha": "2d57fa08c0fe5209a405a531f8976aaf042119e3",
+      "base": "feat/m39-p1-declared-roof-load-path",
+      "base_sha": "74abcc451e66b5cc21e3482552188988304e02dd",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/70",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 89,
+      "behind_main": 0,
+      "exclusive_to_p83": 2,
+      "p83_exclusive": 69,
+      "maximal_dependencies": [
+        69
+      ],
+      "patch_equivalents": {
+        "275ba1793c0e0b889e35edf8c29628661edbec37": [
+          "7ad0e993971f8de9d4cd7b1fd2bb4e394572b067"
+        ],
+        "2d57fa08c0fe5209a405a531f8976aaf042119e3": [
+          "35ac0dbf3b6e61166e465fb43822d9522fe483c5"
+        ]
+      },
+      "unmatched_commits": [],
+      "changed_files": [
+        "docs/M39-P2-COBERTURA-ORTOGONAL.md",
+        "docs/PLANO-JPN-100-POR-CENTO.md",
+        "src/domain/declared-roof-load-path.test.ts",
+        "src/domain/declared-roof-load-path.ts",
+        "src/domain/orthogonal-roof-cells-real.test.ts",
+        "src/domain/orthogonal-roof-cells.test.ts",
+        "src/domain/orthogonal-roof-cells.ts"
+      ],
+      "identical_files": [
+        "docs/M39-P2-COBERTURA-ORTOGONAL.md",
+        "src/domain/declared-roof-load-path.test.ts",
+        "src/domain/declared-roof-load-path.ts",
+        "src/domain/orthogonal-roof-cells.test.ts",
+        "src/domain/orthogonal-roof-cells.ts"
+      ],
+      "missing_files": [],
+      "different_files": [
+        "docs/PLANO-JPN-100-POR-CENTO.md",
+        "src/domain/orthogonal-roof-cells-real.test.ts"
+      ]
+    },
+    {
+      "number": 69,
+      "title": "M39-P1: distribuir cargas de cobertura real para ter?as de geometria declarada",
+      "head": "feat/m39-p1-declared-roof-load-path",
+      "sha": "74abcc451e66b5cc21e3482552188988304e02dd",
+      "base": "feat/m37-p2-physical-roof-coverage",
+      "base_sha": "d7adaa9d54d5123879e3678db9adaf7353c2512d",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/69",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 77,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 79,
+      "maximal_dependencies": [
+        68
+      ]
+    },
+    {
+      "number": 68,
+      "title": "M37-P2: auditar uni?o dos panos e associar ter?as ?s superf?cies f?sicas",
+      "head": "feat/m37-p2-physical-roof-coverage",
+      "sha": "d7adaa9d54d5123879e3678db9adaf7353c2512d",
+      "base": "feat/m37-p1-physical-roof-faces",
+      "base_sha": "d5c7e6500409e2f163741e235a4572c4c0af1135",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/68",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 60,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 96,
+      "maximal_dependencies": [
+        67
+      ]
+    },
+    {
+      "number": 67,
+      "title": "M37-P1: superf?cies f?sicas de cobertura com contornos reais, aberturas e ?rea inclinada",
+      "head": "feat/m37-p1-physical-roof-faces",
+      "sha": "d5c7e6500409e2f163741e235a4572c4c0af1135",
+      "base": "integration/m36-f-full-engine",
+      "base_sha": "82776103d2ab035db433d1c1d1ca5933665f7cf8",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/67",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 57,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 99,
+      "maximal_dependencies": [
+        64
+      ]
+    },
+    {
+      "number": 66,
+      "title": "M36-F: consolidar motor estrutural 3D, apoios f?sicos e transporte seguro",
+      "head": "integration/m36-f-full-engine",
+      "sha": "e1e229b93c33872ac3fe3cbc5aa0e2d6ab45d3b1",
+      "base": "integration/m35-pr60-tom-guided-review",
+      "base_sha": "4530587508dda0896ab2136b4a47aa58ca9adef6",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/66",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 56,
+      "behind_main": 0,
+      "exclusive_to_p83": 3,
+      "p83_exclusive": 103,
+      "maximal_dependencies": [
+        64
+      ],
+      "patch_equivalents": {
+        "6c29569778c459988d1e221c68f341b7bd71d499": [
+          "d5c7e6500409e2f163741e235a4572c4c0af1135"
+        ]
+      },
+      "unmatched_commits": [
+        "e1dfb0bf269182375cbf78413b5fd65ffa24369b",
+        "e1e229b93c33872ac3fe3cbc5aa0e2d6ab45d3b1"
+      ],
+      "changed_files": [
+        ".env.example",
+        "docs/ENGINE-SUPPORTED-DOMAIN.md",
+        "docs/M35-P3-TERCAS-ONLINE.md",
+        "docs/M36-P2-APOIOS-FISICOS.md",
+        "docs/PLANO-JPN-100-POR-CENTO.md",
+        "docs/ROADMAP-CONCLUSAO-MOTOR-JPN.md",
+        "engine/app.py",
+        "engine/jpn_structural/mixed3d.py",
+        "engine/tests/test_general_topologies.py",
+        "engine/tests/test_vercel_purlin_http.py",
+        "src/app/api/experimental/purlin/route.ts",
+        "src/components/planning/spatial-preparation-panel.tsx",
+        "src/components/planning/support-interface-editor.tsx",
+        "src/domain/general-topologies.test.ts",
+        "src/domain/mixed-adapter.ts",
+        "src/domain/mixed-analysis.ts",
+        "src/domain/resistance-report.ts",
+        "src/domain/spatial-preparation.ts",
+        "src/domain/support-interface.test.ts",
+        "src/domain/support-interface.ts",
+        "src/domain/support-interfaces-real.test.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.test.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.ts",
+        "tests/e2e/m36-support-interfaces.spec.ts"
+      ],
+      "identical_files": [
+        ".env.example",
+        "docs/ENGINE-SUPPORTED-DOMAIN.md",
+        "docs/M35-P3-TERCAS-ONLINE.md",
+        "docs/M36-P2-APOIOS-FISICOS.md",
+        "docs/ROADMAP-CONCLUSAO-MOTOR-JPN.md",
+        "engine/app.py",
+        "engine/tests/test_general_topologies.py",
+        "engine/tests/test_vercel_purlin_http.py",
+        "src/app/api/experimental/purlin/route.ts",
+        "src/components/planning/support-interface-editor.tsx",
+        "src/domain/general-topologies.test.ts",
+        "src/domain/mixed-analysis.ts",
+        "src/domain/support-interface.test.ts",
+        "src/domain/support-interface.ts",
+        "src/domain/support-interfaces-real.test.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.test.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.ts",
+        "tests/e2e/m36-support-interfaces.spec.ts"
+      ],
+      "missing_files": [],
+      "different_files": [
+        "docs/PLANO-JPN-100-POR-CENTO.md",
+        "engine/jpn_structural/mixed3d.py",
+        "src/components/planning/spatial-preparation-panel.tsx",
+        "src/domain/mixed-adapter.ts",
+        "src/domain/resistance-report.ts",
+        "src/domain/spatial-preparation.ts"
+      ]
+    },
+    {
+      "number": 65,
+      "title": "feat(integration): M36-F unificar motor geral, apoios f?sicos e transporte Python",
+      "head": "integration/m36f-unified-engine",
+      "sha": "91f529375175a83672dfc2cbe8f506c4697ce2be",
+      "base": "feat/m36-p2-support-interfaces",
+      "base_sha": "5d323a55e7fe9f3e989fb51c95fb23a2343d8e5e",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/65",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 54,
+      "behind_main": 0,
+      "exclusive_to_p83": 2,
+      "p83_exclusive": 104,
+      "maximal_dependencies": [
+        64
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "251fc2d973bb1cb3586fbe5bb102a2573595b96b",
+        "91f529375175a83672dfc2cbe8f506c4697ce2be"
+      ],
+      "changed_files": [
+        ".env.example",
+        "docs/M35-P3-TERCAS-ONLINE.md",
+        "engine/app.py",
+        "engine/tests/test_vercel_purlin_http.py",
+        "src/app/api/experimental/purlin/route.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.test.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.ts"
+      ],
+      "identical_files": [
+        ".env.example",
+        "docs/M35-P3-TERCAS-ONLINE.md",
+        "engine/app.py",
+        "engine/tests/test_vercel_purlin_http.py",
+        "src/app/api/experimental/purlin/route.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.ts"
+      ],
+      "missing_files": [],
+      "different_files": [
+        "src/infrastructure/analysis/remote-purlin-runner.test.ts"
+      ]
+    },
+    {
+      "number": 64,
+      "title": "feat(engine): M36-P2 vincular apoios em alvenaria, concreto e pilares a n?s f?sicos e rea??es",
+      "head": "feat/m36-p2-support-interfaces",
+      "sha": "5d323a55e7fe9f3e989fb51c95fb23a2343d8e5e",
+      "base": "feat/m36-general-topologies-engine",
+      "base_sha": "7e43be96e3cc6fc4119387e6fa0fc78c712872e5",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/64",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 52,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 104,
+      "maximal_dependencies": [
+        61
+      ]
+    },
+    {
+      "number": 63,
+      "title": "feat(engine): M36 aceitar p?rticos puros, treli?as axiais e estruturas mistas no motor 3D",
+      "head": "feat/m36-general-topologies-engine",
+      "sha": "8dee13ecfdd3b06077af660db316c06f16ded67b",
+      "base": "integration/m35-pr60-tom-guided-review",
+      "base_sha": "4530587508dda0896ab2136b4a47aa58ca9adef6",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/63",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 42,
+      "behind_main": 0,
+      "exclusive_to_p83": 1,
+      "p83_exclusive": 115,
+      "maximal_dependencies": [
+        61
+      ],
+      "patch_equivalents": {
+        "8dee13ecfdd3b06077af660db316c06f16ded67b": [
+          "fd5dd9ddae307e97afb9c82c98855bec30b3253d"
+        ]
+      },
+      "unmatched_commits": [],
+      "changed_files": [
+        "docs/ENGINE-SUPPORTED-DOMAIN.md",
+        "engine/jpn_structural/mixed3d.py",
+        "engine/tests/test_general_topologies.py",
+        "src/domain/general-topologies.test.ts",
+        "src/domain/mixed-analysis.ts"
+      ],
+      "identical_files": [
+        "docs/ENGINE-SUPPORTED-DOMAIN.md",
+        "engine/tests/test_general_topologies.py",
+        "src/domain/general-topologies.test.ts",
+        "src/domain/mixed-analysis.ts"
+      ],
+      "missing_files": [],
+      "different_files": [
+        "engine/jpn_structural/mixed3d.py"
+      ]
+    },
+    {
+      "number": 62,
+      "title": "feat(engine): M35-P3 c?lculo de ter?as via backend Python protegido na Vercel",
+      "head": "feat/m35-p3-online-purlin-transport",
+      "sha": "b23796937a24fe890405739640c26f0f3cb236b3",
+      "base": "integration/m35-pr60-tom-guided-review",
+      "base_sha": "4530587508dda0896ab2136b4a47aa58ca9adef6",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/62",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 49,
+      "behind_main": 0,
+      "exclusive_to_p83": 9,
+      "p83_exclusive": 116,
+      "maximal_dependencies": [
+        61
+      ],
+      "patch_equivalents": {
+        "7e2207c4202608dabd3afd81713da77c27bab0e7": [
+          "d5c7e6500409e2f163741e235a4572c4c0af1135"
+        ]
+      },
+      "unmatched_commits": [
+        "190c81780a7ade00366d046e6c761bdad57a1812",
+        "3a978b7a07c90b8fa4b8ddfafaca6e4939848fbc",
+        "56902480e0475eb4ec00a5e279492eb5596065da",
+        "8684390cebf829f74559141ce0cf2aef5fcf5c28",
+        "8d836a3775c3ea51509440b69ae96b8520961189",
+        "b22bd418f74d175a41c9c4eaa32024c27ace45ef",
+        "b23796937a24fe890405739640c26f0f3cb236b3",
+        "d4166a59d2506dec2d139a6b644169f85d76e630"
+      ],
+      "changed_files": [
+        ".env.example",
+        "docs/M35-P3-TERCAS-ONLINE.md",
+        "engine/app.py",
+        "engine/tests/test_vercel_purlin_http.py",
+        "src/app/api/experimental/purlin/route.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.test.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.ts"
+      ],
+      "identical_files": [
+        ".env.example",
+        "docs/M35-P3-TERCAS-ONLINE.md",
+        "engine/app.py",
+        "engine/tests/test_vercel_purlin_http.py",
+        "src/app/api/experimental/purlin/route.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.test.ts",
+        "src/infrastructure/analysis/remote-purlin-runner.ts"
+      ],
+      "missing_files": [],
+      "different_files": []
+    },
+    {
+      "number": 61,
+      "title": "feat(integration): trazer apoios mistos e demonstra??o Tom para a M35 do PR #60",
+      "head": "integration/m35-pr60-tom-guided-review",
+      "sha": "4530587508dda0896ab2136b4a47aa58ca9adef6",
+      "base": "integration/visual-3d-m35-consolidation",
+      "base_sha": "28de4cff75985901d9e51499c573dcbd628a1a3e",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/61",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 40,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 116,
+      "maximal_dependencies": [
+        60,
+        59
+      ]
+    },
+    {
+      "number": 60,
+      "title": "WIP: consolidar melhorias visuais/Studio 3D e integra??es M35",
+      "head": "integration/visual-3d-m35-consolidation",
+      "sha": "28de4cff75985901d9e51499c573dcbd628a1a3e",
+      "base": "main",
+      "base_sha": "cc516b6f5cc97750de5aecf7564fcaff47a1d4f3",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/60",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 37,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 119,
+      "maximal_dependencies": [
+        58
+      ]
+    },
+    {
+      "number": 59,
+      "title": "feat(engine): M35-P2 cargas superficiais declaradas e peso pr?prio por ter?a",
+      "head": "feat/m35-p2-purlin-traceable-loads",
+      "sha": "28de4cff75985901d9e51499c573dcbd628a1a3e",
+      "base": "feat/m35-purlin-calculator",
+      "base_sha": "faca9a89c2bb7990c2fba44ce1037fc3235837d1",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/59",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 37,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 119,
+      "maximal_dependencies": [
+        58
+      ]
+    },
+    {
+      "number": 58,
+      "title": "feat(engine): primeira an?lise real de ter?as com compara??o de perfis e testes anal?ticos",
+      "head": "feat/m35-purlin-calculator",
+      "sha": "faca9a89c2bb7990c2fba44ce1037fc3235837d1",
+      "base": "feat/m35-visual-guided-setup",
+      "base_sha": "cf2ceb1d5407dc128d34718a6bafd54a90bcc32d",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/58",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 27,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 129,
+      "maximal_dependencies": [
+        56
+      ]
+    },
+    {
+      "number": 57,
+      "title": "feat(ux): apresenta??o guiada da M35.1 para o Tom, com navega??o m?vel simplificada",
+      "head": "feat/m351-presentation-ux-polish",
+      "sha": "c641f6a097cac4c2bb7b655c2bb2a0722b4f387c",
+      "base": "feat/m351-client-demonstration",
+      "base_sha": "016dcf5d2c965c5f8dea0533344c320a98ebc382",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/57",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 11,
+      "behind_main": 0,
+      "exclusive_to_p83": 10,
+      "p83_exclusive": 155,
+      "maximal_dependencies": [
+        54
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "016dcf5d2c965c5f8dea0533344c320a98ebc382",
+        "04e6cb312747a088ce19984e732e5dbd251c519d",
+        "098d3706f2bea2fd1f0514077672e8c58a39e8c5",
+        "0b68d51ff7efd4cfee62e1dc4159b07a594deea1",
+        "4a6acbf1bd4cd69352618ca61a9307c9c07098f8",
+        "52fd4a9c2dc006945ab082a7a7c096d83fb15ca6",
+        "64426a964251d4ac0697417b74d6292d9c975f51",
+        "8a6e2c3fcb7a61c4516ff584c3912948b22feed7",
+        "c641f6a097cac4c2bb7b655c2bb2a0722b4f387c",
+        "dc097a9aef712b7d6e3327330df466cf721a3674"
+      ],
+      "changed_files": [
+        "src/components/demonstration/demo-presentation.css",
+        "src/components/demonstration/demo-presentation.tsx",
+        "src/components/demonstration/demo-workspace.tsx",
+        "tests/e2e/m351-presentation-ux.spec.ts"
+      ],
+      "identical_files": [
+        "src/components/demonstration/demo-presentation.css",
+        "src/components/demonstration/demo-presentation.tsx",
+        "src/components/demonstration/demo-workspace.tsx",
+        "tests/e2e/m351-presentation-ux.spec.ts"
+      ],
+      "missing_files": [],
+      "different_files": []
+    },
+    {
+      "number": 56,
+      "title": "feat(ux): assistente visual de barrac?es com escolhas ilustradas e 3D edit?vel",
+      "head": "feat/m35-visual-guided-setup",
+      "sha": "cf2ceb1d5407dc128d34718a6bafd54a90bcc32d",
+      "base": "feat/m35-irregular-structures-loads-takeoff",
+      "base_sha": "6a64398d1e4d12577d816efb07d8483767ff4459",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/56",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 9,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 147,
+      "maximal_dependencies": [
+        53
+      ]
+    },
+    {
+      "number": 55,
+      "title": "feat(ui): assistente visual de coberturas com alvenaria, apoios mistos e amplia??o parcial",
+      "head": "feat/m35b-guided-roof-supports",
+      "sha": "cdb6dab4f9accd3db5593090a17f2be175b7efa6",
+      "base": "feat/m35-irregular-structures-loads-takeoff",
+      "base_sha": "6a64398d1e4d12577d816efb07d8483767ff4459",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/55",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 22,
+      "behind_main": 0,
+      "exclusive_to_p83": 21,
+      "p83_exclusive": 155,
+      "maximal_dependencies": [
+        53
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "174ab33bcaeaeb4616dc8d3119d5fabbfe2b552c",
+        "1b7430212b305e4358c00b548bca2b4144b1897a",
+        "22a30af372c7d9b30c5d34fd054e2453e8699660",
+        "22d5f7858a39e55ce43e901d2dcc08543ca036c2",
+        "2be5cf5973cb8a78b68219f7ef5cc8b22dbd185f",
+        "39e2f0999e3daa7c075326b62c1a98b1cb7beeea",
+        "40abf0bcffc71780c70740170a16dafccda9cd82",
+        "6b4b62a5c1838fc3c42b475796eade399d8830c7",
+        "72c6d83243f0800e871cb61cdde179c2a3d8069d",
+        "78dc4ebf7b864a984bdad30b1307c420adad7e91",
+        "7ac543e212429103ea17e3ec33d2fa60b2d44ef7",
+        "993921b72c11d0ce1688f2a013b9ed282af1780f",
+        "aa15c2c630a4a18f7d8f49a07179a51f4e24af83",
+        "abd8796955d78bd2b2a6f5b193e11c4043ecad1f",
+        "c5d3615263c5d62d23f358d0b80b76aab8ff0e1d",
+        "cdb6dab4f9accd3db5593090a17f2be175b7efa6",
+        "d6f59dfd4ac8294408e10cdc7f27f0d0cd90d8de",
+        "dbdd5a83cb5c2f83678bf368e16972e0e6dcb801",
+        "ded8e0fbd1130f6852e5f1b002afc7ef81e42ec4",
+        "f2ac0ac1e4a01f6cf112f319e3e8d7cd71457f34",
+        "f66030e7c1205bbf0d5192aff1dbbf5f364a33ce"
+      ],
+      "changed_files": [
+        "src/components/geometry/roof-form.tsx",
+        "src/components/planning/guided-roof-setup.module.css",
+        "src/components/planning/guided-roof-setup.tsx",
+        "src/components/planning/planning-editor.tsx",
+        "src/components/planning/structure-form.tsx",
+        "src/domain/calculations/estimate.ts",
+        "src/domain/calculations/project-basis.ts",
+        "src/domain/calculations/structure.ts",
+        "src/domain/edit-declared-structure.ts",
+        "src/domain/guided-support.test.ts",
+        "src/domain/guided-support.ts",
+        "src/domain/workspace.ts",
+        "tests/e2e/guided-roof-supports.spec.ts"
+      ],
+      "identical_files": [
+        "src/components/planning/guided-roof-setup.module.css",
+        "src/components/planning/guided-roof-setup.tsx",
+        "src/components/planning/planning-editor.tsx",
+        "src/domain/calculations/estimate.ts",
+        "src/domain/calculations/project-basis.ts",
+        "src/domain/calculations/structure.ts",
+        "src/domain/guided-support.test.ts",
+        "src/domain/guided-support.ts",
+        "tests/e2e/guided-roof-supports.spec.ts"
+      ],
+      "missing_files": [],
+      "different_files": [
+        "src/components/geometry/roof-form.tsx",
+        "src/components/planning/structure-form.tsx",
+        "src/domain/edit-declared-structure.ts",
+        "src/domain/workspace.ts"
+      ]
+    },
+    {
+      "number": 54,
+      "title": "M35.1: demonstra??o do cliente Tom e valida??o matem?tica utiliz?vel",
+      "head": "feat/m351-client-demonstration",
+      "sha": "016dcf5d2c965c5f8dea0533344c320a98ebc382",
+      "base": "main",
+      "base_sha": "cc516b6f5cc97750de5aecf7564fcaff47a1d4f3",
+      "draft": false,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/54",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 2,
+      "behind_main": 0,
+      "exclusive_to_p83": 1,
+      "p83_exclusive": 155,
+      "maximal_dependencies": [
+        53
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "016dcf5d2c965c5f8dea0533344c320a98ebc382"
+      ],
+      "changed_files": [
+        "Encerrar-Demonstracao-JPN.cmd",
+        "Iniciar-Demonstracao-JPN.cmd",
+        "docs/DEMONSTRACAO-M351.md",
+        "docs/ENTREGA-M35-ESTRUTURAS-IRREGULARES.md",
+        "engine/vercel.json",
+        "playwright.config.ts",
+        "scripts/start-client-demo.ps1",
+        "src/app/api/demonstration/route.ts",
+        "src/app/demonstracao/page.tsx",
+        "src/app/globals.css",
+        "src/app/projetos/page.tsx",
+        "src/components/demonstration/demo-entry.tsx",
+        "src/components/demonstration/demo-workspace.tsx",
+        "src/components/demonstration/mathematical-comparison.tsx",
+        "src/components/number-field.tsx",
+        "src/components/planning/declared-model-summary.tsx",
+        "src/components/planning/declared-structure-editor.tsx",
+        "src/components/planning/declared-takeoff-panel.tsx",
+        "src/components/planning/member-physical-catalog-panel.tsx",
+        "src/components/planning/mixed-analysis-workspace.tsx",
+        "src/components/planning/planning-editor.tsx",
+        "src/components/planning/project-workbench.tsx",
+        "src/components/planning/roof-outline-panel.tsx",
+        "src/components/planning/structural-loads-panel.tsx",
+        "src/components/projects/project-card.tsx",
+        "src/components/projects/project-editor.tsx",
+        "src/domain/calculations/estimate.ts",
+        "src/domain/calculations/project-basis.ts",
+        "src/domain/client-demonstration.test.ts",
+        "src/domain/client-demonstration.ts",
+        "src/domain/declared-loading-real.test.ts",
+        "src/domain/declared-structure.ts",
+        "src/domain/declared-takeoff.test.ts",
+        "src/domain/declared-takeoff.ts",
+        "src/domain/demonstration-schema.ts",
+        "src/domain/edit-declared-structure.test.ts",
+        "src/domain/edit-declared-structure.ts",
+        "src/domain/loaded-mixed-adapter.ts",
+        "src/domain/m34ab-declared.test.ts",
+        "src/domain/member-physical.ts",
+        "src/domain/mixed-adapter.ts",
+        "src/domain/physical-model-import.ts",
+        "src/domain/project-details.ts",
+        "src/domain/roof-outline.test.ts",
+        "src/domain/roof-outline.ts",
+        "src/domain/test-support/m35-fixtures.ts",
+        "src/domain/tom-commercial.ts",
+        "src/domain/tom-real-commercial.test.ts",
+        "src/domain/workspace.ts",
+        "src/lib/exports/demonstration.test.ts",
+        "src/lib/exports/demonstration.ts",
+        "tests/e2e/m35-irregular.spec.ts",
+        "tests/e2e/m351-client-demo.spec.ts",
+        "validation/m35/browser-1440.json",
+        "validation/m35/browser-375.json",
+        "validation/m35/checks.json",
+        "validation/m35/declared-1440.png",
+        "validation/m35/declared-375.png",
+        "validation/m35/declared-loaded-real.json",
+        "validation/m35/logs/baseline.txt",
+        "validation/m35/logs/build.txt",
+        "validation/m35/logs/cad.txt",
+        "validation/m35/logs/dxf.txt",
+        "validation/m35/logs/e2e-final.txt",
+        "validation/m35/logs/e2e-first.txt",
+        "validation/m35/logs/e2e-fixed.txt",
+        "validation/m35/logs/e2e-header.txt",
+        "validation/m35/logs/extra-analytic.txt",
+        "validation/m35/logs/lint-last.txt",
+        "validation/m35/logs/outline-fixed.txt",
+        "validation/m35/logs/python-cli-fixed.txt",
+        "validation/m35/logs/python-final.txt",
+        "validation/m35/logs/python.txt",
+        "validation/m35/logs/typecheck-last.txt",
+        "validation/m35/logs/vitest-final.txt",
+        "validation/m35/logs/vitest.txt",
+        "validation/m35/playwright.json",
+        "validation/m35/preservation.json",
+        "validation/m35/python-final/pytest.xml",
+        "validation/m35/python-final/validation.json",
+        "validation/m35/python/pytest.xml",
+        "validation/m35/python/validation.json",
+        "validation/m351/checks.json",
+        "validation/m351/execution-1440.json",
+        "validation/m351/execution-375.json",
+        "validation/m351/model-1440.png",
+        "validation/m351/model-375.png",
+        "validation/m351/tom-1440.png",
+        "validation/m351/tom-375.png",
+        "validation/m351/validation-1440.png",
+        "validation/m351/validation-375.png",
+        "validation/tom-2026/REPORT.md",
+        "validation/tom-2026/tom-commercial-source.json",
+        "vercel.json"
+      ],
+      "identical_files": [
+        "Encerrar-Demonstracao-JPN.cmd",
+        "Iniciar-Demonstracao-JPN.cmd",
+        "docs/DEMONSTRACAO-M351.md",
+        "docs/ENTREGA-M35-ESTRUTURAS-IRREGULARES.md",
+        "playwright.config.ts",
+        "scripts/start-client-demo.ps1",
+        "src/app/api/demonstration/route.ts",
+        "src/app/demonstracao/page.tsx",
+        "src/app/globals.css",
+        "src/components/demonstration/demo-entry.tsx",
+        "src/components/demonstration/mathematical-comparison.tsx",
+        "src/components/number-field.tsx",
+        "src/components/planning/declared-model-summary.tsx",
+        "src/components/planning/declared-structure-editor.tsx",
+        "src/components/planning/declared-takeoff-panel.tsx",
+        "src/components/planning/member-physical-catalog-panel.tsx",
+        "src/components/planning/mixed-analysis-workspace.tsx",
+        "src/components/planning/project-workbench.tsx",
+        "src/components/planning/roof-outline-panel.tsx",
+        "src/components/planning/structural-loads-panel.tsx",
+        "src/components/projects/project-card.tsx",
+        "src/components/projects/project-editor.tsx",
+        "src/domain/client-demonstration.test.ts",
+        "src/domain/client-demonstration.ts",
+        "src/domain/declared-loading-real.test.ts",
+        "src/domain/declared-structure.ts",
+        "src/domain/declared-takeoff.test.ts",
+        "src/domain/declared-takeoff.ts",
+        "src/domain/demonstration-schema.ts",
+        "src/domain/edit-declared-structure.test.ts",
+        "src/domain/edit-declared-structure.ts",
+        "src/domain/m34ab-declared.test.ts",
+        "src/domain/member-physical.ts",
+        "src/domain/physical-model-import.ts",
+        "src/domain/project-details.ts",
+        "src/domain/roof-outline.test.ts",
+        "src/domain/roof-outline.ts",
+        "src/domain/test-support/m35-fixtures.ts",
+        "src/domain/tom-commercial.ts",
+        "src/domain/tom-real-commercial.test.ts",
+        "src/lib/exports/demonstration.test.ts",
+        "src/lib/exports/demonstration.ts",
+        "tests/e2e/m35-irregular.spec.ts",
+        "tests/e2e/m351-client-demo.spec.ts",
+        "validation/m35/browser-1440.json",
+        "validation/m35/browser-375.json",
+        "validation/m35/checks.json",
+        "validation/m35/declared-1440.png",
+        "validation/m35/declared-375.png",
+        "validation/m35/declared-loaded-real.json",
+        "validation/m35/logs/baseline.txt",
+        "validation/m35/logs/build.txt",
+        "validation/m35/logs/cad.txt",
+        "validation/m35/logs/dxf.txt",
+        "validation/m35/logs/e2e-final.txt",
+        "validation/m35/logs/e2e-first.txt",
+        "validation/m35/logs/e2e-fixed.txt",
+        "validation/m35/logs/e2e-header.txt",
+        "validation/m35/logs/extra-analytic.txt",
+        "validation/m35/logs/lint-last.txt",
+        "validation/m35/logs/outline-fixed.txt",
+        "validation/m35/logs/python-cli-fixed.txt",
+        "validation/m35/logs/python-final.txt",
+        "validation/m35/logs/python.txt",
+        "validation/m35/logs/typecheck-last.txt",
+        "validation/m35/logs/vitest-final.txt",
+        "validation/m35/logs/vitest.txt",
+        "validation/m35/playwright.json",
+        "validation/m35/preservation.json",
+        "validation/m35/python-final/pytest.xml",
+        "validation/m35/python-final/validation.json",
+        "validation/m35/python/pytest.xml",
+        "validation/m35/python/validation.json",
+        "validation/m351/checks.json",
+        "validation/m351/execution-1440.json",
+        "validation/m351/execution-375.json",
+        "validation/m351/model-1440.png",
+        "validation/m351/model-375.png",
+        "validation/m351/tom-1440.png",
+        "validation/m351/tom-375.png",
+        "validation/m351/validation-1440.png",
+        "validation/m351/validation-375.png",
+        "validation/tom-2026/REPORT.md",
+        "validation/tom-2026/tom-commercial-source.json"
+      ],
+      "missing_files": [],
+      "different_files": [
+        "engine/vercel.json",
+        "src/app/projetos/page.tsx",
+        "src/components/demonstration/demo-workspace.tsx",
+        "src/components/planning/planning-editor.tsx",
+        "src/domain/calculations/estimate.ts",
+        "src/domain/calculations/project-basis.ts",
+        "src/domain/loaded-mixed-adapter.ts",
+        "src/domain/mixed-adapter.ts",
+        "src/domain/workspace.ts",
+        "vercel.json"
+      ]
+    },
+    {
+      "number": 53,
+      "title": "M35: estruturas declaradas, cargas distribu?das e quantitativos rastre?veis",
+      "head": "feat/m35-irregular-structures-loads-takeoff",
+      "sha": "6a64398d1e4d12577d816efb07d8483767ff4459",
+      "base": "main",
+      "base_sha": "cc516b6f5cc97750de5aecf7564fcaff47a1d4f3",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/53",
+      "in_main": false,
+      "in_p83": true,
+      "ahead_main": 1,
+      "behind_main": 0,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 155,
+      "maximal_dependencies": [
+        49
+      ]
+    },
+    {
+      "number": 52,
+      "title": "test(audit): caso real Tom ? quantitativos, or?amento e limites da main integrada",
+      "head": "audit/tom-2026-11-05",
+      "sha": "3fd6106b4ed639157fee1b13bd51bdc7b2cf28dd",
+      "base": "main",
+      "base_sha": "cc516b6f5cc97750de5aecf7564fcaff47a1d4f3",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/52",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 3,
+      "behind_main": 0,
+      "exclusive_to_p83": 3,
+      "p83_exclusive": 156,
+      "maximal_dependencies": [
+        49
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "25a70e0c805756ab797a620ac0e223ebb3340f48",
+        "3fd6106b4ed639157fee1b13bd51bdc7b2cf28dd",
+        "5e76babf8fb07a8c4c51ac97a50fef388c851efc"
+      ],
+      "changed_files": [
+        "src/domain/tom-real-commercial.test.ts",
+        "validation/tom-2026/REPORT.md",
+        "validation/tom-2026/tom-commercial-source.json"
+      ],
+      "identical_files": [
+        "validation/tom-2026/REPORT.md",
+        "validation/tom-2026/tom-commercial-source.json"
+      ],
+      "missing_files": [],
+      "different_files": [
+        "src/domain/tom-real-commercial.test.ts"
+      ]
+    },
+    {
+      "number": 51,
+      "title": "test(reference): dados auditados UFSC 2023 para valida??o futura do motor",
+      "head": "data/ufsc2023-validated-benchmark",
+      "sha": "645884fa6b258b349d6791878dd09ff226d90bc0",
+      "base": "main",
+      "base_sha": "01caa9f2c5fd6f38b2d98769f597d9b73aaee359",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/51",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 6,
+      "behind_main": 102,
+      "exclusive_to_p83": 6,
+      "p83_exclusive": 258,
+      "maximal_dependencies": [],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "30114ff0a90efbc6c018d3d2231092757e3aa75e",
+        "645884fa6b258b349d6791878dd09ff226d90bc0",
+        "839b6199ca6b2a776f1007bbecec01971c02d3b4",
+        "87ee6ff0dfd3058dbf3f570c4a549e3e9db296a9",
+        "dcbf6d2ef6ce1424d66468c848c9e06ec0293413",
+        "ef61609e1a2a9a1404695f6d0bbae0c92fae8d7a"
+      ],
+      "changed_files": [
+        "validation/ufsc-2023/README.md",
+        "validation/ufsc-2023/audit-and-gaps.json",
+        "validation/ufsc-2023/published-displacements.json",
+        "validation/ufsc-2023/published-member-results.json",
+        "validation/ufsc-2023/source-model-actions.json",
+        "validation/ufsc-2023/validate-reference.mjs"
+      ],
+      "identical_files": [],
+      "missing_files": [
+        "validation/ufsc-2023/README.md",
+        "validation/ufsc-2023/audit-and-gaps.json",
+        "validation/ufsc-2023/published-displacements.json",
+        "validation/ufsc-2023/published-member-results.json",
+        "validation/ufsc-2023/source-model-actions.json",
+        "validation/ufsc-2023/validate-reference.mjs"
+      ],
+      "different_files": []
+    },
+    {
+      "number": 49,
+      "title": "M34-A/B: estruturas declaradas e propriedades f?sicas por barra",
+      "head": "feat/m34ab-flexible-physical-model",
+      "sha": "bdf21a3afd6839c80c60d2ad0c07427191f3d382",
+      "base": "feat/m33a-normative-wind-combinations",
+      "base_sha": "91bf8215a79d81292cb016d12c4f4c58cab41f20",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/49",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 10,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 166,
+      "maximal_dependencies": [
+        46
+      ]
+    },
+    {
+      "number": 48,
+      "title": "feat(engine): cargas uniformes diretamente nas barras 3D + benchmark UFSC",
+      "head": "feat/engine-frame3d-uniform-loads-ufsc",
+      "sha": "b1797239d38c6b23ed6feb4b8c975c4840cbdbff",
+      "base": "feat/m32-numerics-mixed-second-order",
+      "base_sha": "566e068010446c3af8cb4889391ac177dcf752e3",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/48",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 2,
+      "behind_main": 17,
+      "exclusive_to_p83": 2,
+      "p83_exclusive": 173,
+      "maximal_dependencies": [
+        44
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "3b34f3cd2bd1fc0b991b4ddce272528a09c28cee",
+        "b1797239d38c6b23ed6feb4b8c975c4840cbdbff"
+      ],
+      "changed_files": [
+        "docs/VALIDACAO-TERCA-UFSC-CARGA-UNIFORME.md",
+        "engine/examples/ufsc-2015-purlin-uniform-v2.json",
+        "engine/jpn_structural/frame3d.py",
+        "engine/jpn_structural/frame3d_model.py",
+        "engine/tests/test_frame3d_member_uniform.py"
+      ],
+      "identical_files": [
+        "docs/VALIDACAO-TERCA-UFSC-CARGA-UNIFORME.md",
+        "engine/examples/ufsc-2015-purlin-uniform-v2.json",
+        "engine/jpn_structural/frame3d.py",
+        "engine/jpn_structural/frame3d_model.py",
+        "engine/tests/test_frame3d_member_uniform.py"
+      ],
+      "missing_files": [],
+      "different_files": []
+    },
+    {
+      "number": 47,
+      "title": "feat(3D Studio): medi??o entre n?s com suporte mobile",
+      "head": "feat/3d-studio-node-measurement",
+      "sha": "f4fdc331e8659eb49f3443719b5918792a537db2",
+      "base": "feat/m32-numerics-mixed-second-order",
+      "base_sha": "566e068010446c3af8cb4889391ac177dcf752e3",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/47",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 2,
+      "behind_main": 17,
+      "exclusive_to_p83": 2,
+      "p83_exclusive": 173,
+      "maximal_dependencies": [
+        44
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "8f0272950bf870abd0ca772f504c436e95990e9a",
+        "f4fdc331e8659eb49f3443719b5918792a537db2"
+      ],
+      "changed_files": [
+        "docs/STUDIO-3D-INSPECAO.md",
+        "src/app/globals.css",
+        "src/components/planning/node-measurement.test.ts",
+        "src/components/planning/node-measurement.ts",
+        "src/components/planning/structure-3d.tsx",
+        "tests/e2e/studio-measurement.spec.ts"
+      ],
+      "identical_files": [
+        "src/components/planning/node-measurement.test.ts",
+        "src/components/planning/node-measurement.ts",
+        "tests/e2e/studio-measurement.spec.ts"
+      ],
+      "missing_files": [],
+      "different_files": [
+        "docs/STUDIO-3D-INSPECAO.md",
+        "src/app/globals.css",
+        "src/components/planning/structure-3d.tsx"
+      ]
+    },
+    {
+      "number": 46,
+      "title": "M33-A: CI, origem normativa restrita e valida??o de fechamento",
+      "head": "feat/m33a-normative-wind-combinations",
+      "sha": "91bf8215a79d81292cb016d12c4f4c58cab41f20",
+      "base": "feat/m32-numerics-mixed-second-order",
+      "base_sha": "566e068010446c3af8cb4889391ac177dcf752e3",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/46",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 12,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 168,
+      "maximal_dependencies": [
+        44
+      ]
+    },
+    {
+      "number": 45,
+      "title": "research(m33): pr?-auditoria normativa e roadmap 3D sem retrabalho",
+      "head": "research/m33-normative-preflight-and-visual-roadmap",
+      "sha": "e505f4b005458fb9e18901f144959a98bdb0c66d",
+      "base": "feat/m32-numerics-mixed-second-order",
+      "base_sha": "566e068010446c3af8cb4889391ac177dcf752e3",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/45",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 7,
+      "behind_main": 17,
+      "exclusive_to_p83": 7,
+      "p83_exclusive": 173,
+      "maximal_dependencies": [
+        44
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "40be19b40694e54a818f9d74d2d810d92065cc6a",
+        "71fa06e41910131338011b021642502cb3248150",
+        "8d79748f9cdc0e4b104ecc92b7b454170234271b",
+        "8e46f0979fce63a3381a1496732b7c3885112635",
+        "ac62883d4b9fc73a863025ce82bb70fa28487283",
+        "ac9bb3f0db12c9d59059d46bc26bcce72686eddd",
+        "e505f4b005458fb9e18901f144959a98bdb0c66d"
+      ],
+      "changed_files": [
+        "docs/MAPA-INTEGRACAO-REAL-POS-M32.md",
+        "docs/MISSAO-33-PREFLIGHT-ORIGEM-NORMATIVA.md",
+        "docs/PROMPT-CHECKPOINT-UX-PRE-M33-CODEX.md",
+        "docs/PROMPT-M33-CODEX-FOCO-NORMATIVO.md",
+        "docs/ROADMAP-3D-CONSTRUTIVO-JPN.md"
+      ],
+      "identical_files": [],
+      "missing_files": [
+        "docs/MAPA-INTEGRACAO-REAL-POS-M32.md",
+        "docs/MISSAO-33-PREFLIGHT-ORIGEM-NORMATIVA.md",
+        "docs/PROMPT-CHECKPOINT-UX-PRE-M33-CODEX.md",
+        "docs/PROMPT-M33-CODEX-FOCO-NORMATIVO.md",
+        "docs/ROADMAP-3D-CONSTRUTIVO-JPN.md"
+      ],
+      "different_files": []
+    },
+    {
+      "number": 44,
+      "title": "Miss?o 32: equil?brio reduzido, cFSM validado externamente e prot?tipo misto 3D",
+      "head": "feat/m32-numerics-mixed-second-order",
+      "sha": "566e068010446c3af8cb4889391ac177dcf752e3",
+      "base": "research/m32-claude-handoff-and-oracles",
+      "base_sha": "0d7ebc2729fb4f370a7d99fa7f6f4751d6f12696",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/44",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 17,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 173,
+      "maximal_dependencies": [
+        43
+      ]
+    },
+    {
+      "number": 43,
+      "title": "research(m32): handoff Claude e or?culos para segunda ordem mista",
+      "head": "research/m32-claude-handoff-and-oracles",
+      "sha": "0d7ebc2729fb4f370a7d99fa7f6f4751d6f12696",
+      "base": "feat/m31-structural-audit",
+      "base_sha": "5b3f854908fc8d02ff22c064c900c96b1739b25c",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/43",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 22,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 178,
+      "maximal_dependencies": [
+        41
+      ]
+    },
+    {
+      "number": 42,
+      "title": "research: matrizes de rigidez geom?trica e plano da segunda ordem mista",
+      "head": "research/second-order-geometric-matrix-audit",
+      "sha": "45db57402a9b6c63ba6ea374825478a0b46a9f18",
+      "base": "feat/m27-m30-structural-engine-complete",
+      "base_sha": "00e61f68d1013f2d34dfa74554c84edc27efad72",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/42",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 6,
+      "behind_main": 28,
+      "exclusive_to_p83": 6,
+      "p83_exclusive": 184,
+      "maximal_dependencies": [
+        37
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "1dc9afa8b0c8bf408392cbde3cde5a56f6f2c6bf",
+        "35f34b5e55df82b7326909d9e5b0358734b2a483",
+        "45db57402a9b6c63ba6ea374825478a0b46a9f18",
+        "55ef844a47d6bd45ef8e521273be34df0187eab8",
+        "577922f0bca6cf6cf8d6192acfcbf81b85a65edf",
+        "87cc51b6458bc8c8059d91d5495a23fbe3ca21fb"
+      ],
+      "changed_files": [
+        "docs/ESTUDO-RIGIDEZ-GEOMETRICA-SEGUNDA-ORDEM-MISTA.md",
+        "validation/geometric-stiffness-audit/example-results.json",
+        "validation/geometric-stiffness-audit/kg_reference.py"
+      ],
+      "identical_files": [],
+      "missing_files": [
+        "docs/ESTUDO-RIGIDEZ-GEOMETRICA-SEGUNDA-ORDEM-MISTA.md",
+        "validation/geometric-stiffness-audit/example-results.json",
+        "validation/geometric-stiffness-audit/kg_reference.py"
+      ],
+      "different_files": []
+    },
+    {
+      "number": 41,
+      "title": "M31: corrigir integridade resistente e auditar flambagem e segunda ordem",
+      "head": "feat/m31-structural-audit",
+      "sha": "5b3f854908fc8d02ff22c064c900c96b1739b25c",
+      "base": "feat/m27-m30-structural-engine-complete",
+      "base_sha": "00e61f68d1013f2d34dfa74554c84edc27efad72",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/41",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 26,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 182,
+      "maximal_dependencies": [
+        37
+      ]
+    },
+    {
+      "number": 40,
+      "title": "feat(ux): pend?ncias com corre??o direta e busca de pe?as 2D/3D",
+      "head": "feat/ux-actionable-pending-piece-search",
+      "sha": "291183a75fc31884a4802b0e842cceab1ffe5270",
+      "base": "feat/result-workspace-tabs",
+      "base_sha": "6c70402350cc95076849876d6f4b0e11967f4f88",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/40",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 45,
+      "behind_main": 94,
+      "exclusive_to_p83": 45,
+      "p83_exclusive": 250,
+      "maximal_dependencies": [
+        39
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "012fe4b484d82661bfe1de9a19497bea103de4fa",
+        "0759fcb921e620eddb0f15e8acf9b5b75fab2586",
+        "1fb2af749146bd63d271950214916ad8973f3b22",
+        "21a56b07e8e8edaf6765c086591db414e683c4cb",
+        "263b225b26b3b985d21c0c0c0cc433c6ee16f09e",
+        "2752118f53d6694c05270f2117e5bb350618ae3b",
+        "291183a75fc31884a4802b0e842cceab1ffe5270",
+        "2cb9f042405f0023ea5b79da3d6b9e0dd2083235",
+        "310fd50f9e95e101bb3e5f07ceebfb71cb04724f",
+        "3277a22f0501018bd291982972470da8fb5017c2",
+        "451af1962c05d77c7b12e9bbf0df5ce1191684d5",
+        "47e09f8fe58fd8838e21a93f5f5cebee9431bbf0",
+        "4a5aa5ec5528a80e18d6c6592de0f8542c918c0a",
+        "4d024fe9e5bb3b243c36acfb17748b63ed38e7a3",
+        "5d34eeb6b81f8dc2f6f830057424ef573f52e8dc",
+        "6c70402350cc95076849876d6f4b0e11967f4f88",
+        "77c2cad58c42b2d6c2d9bd39f630eb2397ecdb58",
+        "77f4de0ce3e0c573d86d7fde275338e167373966",
+        "78b42991efc95f588fa39b988508e547b6b04b3d",
+        "7ab3e65d5d5e771936c1dbcdb140300d23a79216",
+        "83d449ae73b8c4ad20ca009d34d9c15d114b31da",
+        "856c0a8ca50341ae9e61016a191f66f870ceb32c",
+        "88caa605c3874eb62f60beb57b35e2be60c93050",
+        "8d05cf278ed313233f85f05f185d9565306cb26c",
+        "91129e0ca6d2f0a79370ae75f0d6230863184368",
+        "920833abd7808813f467a706c1ac01e5f0b0e9f8",
+        "b029c934f0691aa23ec1e4ab2f3631b3f697203b",
+        "b13b97a19e7ae05ad8e5a3f47a327f894ff8e116",
+        "b23fd232f6bfa1e257421f12813b276435337764",
+        "b3c568696083248f1906444ba9bc7986fa5cc8d2",
+        "b42ab282f947896cf5b5d8d85c924fe2bc8bb538",
+        "b583f0b221c435dbc1d6d17505902a0a50f9c1a6",
+        "b8acb6e69a3711e54f81a0edc5c670912dad68f7",
+        "bb1d2b0c4cc1e51fea87798d414f5ab9069d75e9",
+        "c5d8ec8da34d97c1f15546acae9051d7ef63c19f",
+        "dbd59ec615b6a64cd8e1b308c0f4f2c443730d97",
+        "e1cde6b4120b85ac7f833a33171a31f2eab06723",
+        "e3aaeb15625fe65dad8ad0259fa612e1cbf21103",
+        "e7aa237c1da16e56d34e7f2c71e5cfc92bc75553",
+        "e80e8c046427193207a58935fe6b48baa16d92c3",
+        "f62954c63c0f140d85c9068e49b7ec683276d02c",
+        "f65fbbeb74af6b200aea75b8bd84a9ad98c8a514",
+        "fa106f171e8cebfc6dc0bc2f6f482ad664e2539e",
+        "fdc6d376cc1fd473689197617427a39bffe222db",
+        "ffc0b1457e52eeab40562bbfc21c897050359595"
+      ],
+      "changed_files": [
+        "docs/UX-PENDENCIAS-BUSCA-PECAS.md",
+        "src/app/globals.css",
+        "src/components/planning/piece-search.test.ts",
+        "src/components/planning/piece-search.ts",
+        "src/components/planning/planning-editor.tsx",
+        "src/components/planning/result-presentation.test.ts",
+        "src/components/planning/result-presentation.ts",
+        "src/components/planning/structure-form.tsx",
+        "src/components/planning/structure-preview.tsx",
+        "src/components/planning/takeoff-summary.tsx",
+        "tests/e2e/ux-actions.spec.ts"
+      ],
+      "identical_files": [
+        "src/components/planning/piece-search.test.ts",
+        "src/components/planning/piece-search.ts",
+        "src/components/planning/result-presentation.test.ts",
+        "src/components/planning/result-presentation.ts",
+        "src/components/planning/structure-preview.tsx",
+        "tests/e2e/ux-actions.spec.ts"
+      ],
+      "missing_files": [
+        "docs/UX-PENDENCIAS-BUSCA-PECAS.md"
+      ],
+      "different_files": [
+        "src/app/globals.css",
+        "src/components/planning/planning-editor.tsx",
+        "src/components/planning/structure-form.tsx",
+        "src/components/planning/takeoff-summary.tsx"
+      ]
+    },
+    {
+      "number": 39,
+      "title": "feat(ui): resultado em quatro abas, 3D persistente e materiais agrupados",
+      "head": "feat/result-workspace-tabs",
+      "sha": "6c70402350cc95076849876d6f4b0e11967f4f88",
+      "base": "feat/3d-studio-inspection",
+      "base_sha": "91129e0ca6d2f0a79370ae75f0d6230863184368",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/39",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 33,
+      "behind_main": 94,
+      "exclusive_to_p83": 33,
+      "p83_exclusive": 250,
+      "maximal_dependencies": [
+        23
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "012fe4b484d82661bfe1de9a19497bea103de4fa",
+        "0759fcb921e620eddb0f15e8acf9b5b75fab2586",
+        "21a56b07e8e8edaf6765c086591db414e683c4cb",
+        "2752118f53d6694c05270f2117e5bb350618ae3b",
+        "2cb9f042405f0023ea5b79da3d6b9e0dd2083235",
+        "310fd50f9e95e101bb3e5f07ceebfb71cb04724f",
+        "3277a22f0501018bd291982972470da8fb5017c2",
+        "451af1962c05d77c7b12e9bbf0df5ce1191684d5",
+        "4a5aa5ec5528a80e18d6c6592de0f8542c918c0a",
+        "4d024fe9e5bb3b243c36acfb17748b63ed38e7a3",
+        "5d34eeb6b81f8dc2f6f830057424ef573f52e8dc",
+        "6c70402350cc95076849876d6f4b0e11967f4f88",
+        "77c2cad58c42b2d6c2d9bd39f630eb2397ecdb58",
+        "77f4de0ce3e0c573d86d7fde275338e167373966",
+        "7ab3e65d5d5e771936c1dbcdb140300d23a79216",
+        "83d449ae73b8c4ad20ca009d34d9c15d114b31da",
+        "856c0a8ca50341ae9e61016a191f66f870ceb32c",
+        "91129e0ca6d2f0a79370ae75f0d6230863184368",
+        "920833abd7808813f467a706c1ac01e5f0b0e9f8",
+        "b13b97a19e7ae05ad8e5a3f47a327f894ff8e116",
+        "b23fd232f6bfa1e257421f12813b276435337764",
+        "b42ab282f947896cf5b5d8d85c924fe2bc8bb538",
+        "b583f0b221c435dbc1d6d17505902a0a50f9c1a6",
+        "b8acb6e69a3711e54f81a0edc5c670912dad68f7",
+        "c5d8ec8da34d97c1f15546acae9051d7ef63c19f",
+        "e1cde6b4120b85ac7f833a33171a31f2eab06723",
+        "e3aaeb15625fe65dad8ad0259fa612e1cbf21103",
+        "e7aa237c1da16e56d34e7f2c71e5cfc92bc75553",
+        "e80e8c046427193207a58935fe6b48baa16d92c3",
+        "f65fbbeb74af6b200aea75b8bd84a9ad98c8a514",
+        "fa106f171e8cebfc6dc0bc2f6f482ad664e2539e",
+        "fdc6d376cc1fd473689197617427a39bffe222db",
+        "ffc0b1457e52eeab40562bbfc21c897050359595"
+      ],
+      "changed_files": [
+        "docs/RESULTADO-ABAS-UX.md",
+        "src/app/globals.css",
+        "src/components/planning/planning-editor.tsx",
+        "src/components/planning/project-workbench.tsx",
+        "src/components/planning/result-presentation.test.ts",
+        "src/components/planning/result-presentation.ts",
+        "src/components/planning/structure-preview.tsx",
+        "src/components/planning/takeoff-summary.tsx",
+        "tests/e2e/mixed-local.spec.ts",
+        "tests/e2e/planning.spec.ts",
+        "tests/e2e/quick-project.spec.ts",
+        "tests/e2e/result-tabs.ts",
+        "tests/e2e/result-workspace.spec.ts",
+        "tests/e2e/spatial-adapter.spec.ts",
+        "tests/e2e/spatial-analysis.spec.ts",
+        "tests/e2e/spatial-coordination.spec.ts",
+        "tests/e2e/spatial-preparation.spec.ts"
+      ],
+      "identical_files": [
+        "tests/e2e/quick-project.spec.ts",
+        "tests/e2e/result-tabs.ts",
+        "tests/e2e/spatial-adapter.spec.ts",
+        "tests/e2e/spatial-analysis.spec.ts",
+        "tests/e2e/spatial-coordination.spec.ts",
+        "tests/e2e/spatial-preparation.spec.ts"
+      ],
+      "missing_files": [
+        "docs/RESULTADO-ABAS-UX.md"
+      ],
+      "different_files": [
+        "src/app/globals.css",
+        "src/components/planning/planning-editor.tsx",
+        "src/components/planning/project-workbench.tsx",
+        "src/components/planning/result-presentation.test.ts",
+        "src/components/planning/result-presentation.ts",
+        "src/components/planning/structure-preview.tsx",
+        "src/components/planning/takeoff-summary.tsx",
+        "tests/e2e/mixed-local.spec.ts",
+        "tests/e2e/planning.spec.ts",
+        "tests/e2e/result-workspace.spec.ts"
+      ]
+    },
+    {
+      "number": 38,
+      "title": "feat(engine): verifica??es isoladas NBR 14762 de parafuso e solda plana com testes",
+      "head": "feat/independent-nbr14762-single-bolt-check",
+      "sha": "95a5e55b2140b47fac10ac2f908b422a7ac3ea11",
+      "base": "feat/m27-m30-structural-engine-complete",
+      "base_sha": "aa80040ed47e5379f54b1e79b5aa3fdf25dc3834",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/38",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 8,
+      "behind_main": 29,
+      "exclusive_to_p83": 8,
+      "p83_exclusive": 185,
+      "maximal_dependencies": [
+        36
+      ],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "21203d6fe233435cf3dbba51e45c6834d79a6992",
+        "5f0de10adc29707e01ded9b6bc8600ce8d1f1e86",
+        "6377321bc6a79789eb78fe13d282a507d34393ef",
+        "82007b00327a01c45ef2ad5bc549b34e8a055f65",
+        "95a5e55b2140b47fac10ac2f908b422a7ac3ea11",
+        "ca9fc902aa04f723dc183a20ecd216f0ae7963f8",
+        "d9d12a6de3cd4a2f46e28d5c2a286663932324aa",
+        "e8ad09f6eb931a013502de0badd73d8e6920b0cf"
+      ],
+      "changed_files": [
+        "docs/ENGINE-CONNECTION-ISOLATED-14762.md",
+        "engine/check_single_bolt.py",
+        "engine/examples/single-bolt-14762.json",
+        "engine/jpn_structural/flat_fillet_weld_14762.py",
+        "engine/jpn_structural/single_bolt_14762.py",
+        "engine/tests/test_flat_fillet_weld_14762.py",
+        "engine/tests/test_single_bolt_14762.py",
+        "engine/tests/test_single_bolt_cli.py"
+      ],
+      "identical_files": [
+        "docs/ENGINE-CONNECTION-ISOLATED-14762.md",
+        "engine/check_single_bolt.py",
+        "engine/examples/single-bolt-14762.json",
+        "engine/jpn_structural/flat_fillet_weld_14762.py",
+        "engine/jpn_structural/single_bolt_14762.py",
+        "engine/tests/test_flat_fillet_weld_14762.py",
+        "engine/tests/test_single_bolt_14762.py",
+        "engine/tests/test_single_bolt_cli.py"
+      ],
+      "missing_files": [],
+      "different_files": []
+    },
+    {
+      "number": 37,
+      "title": "Motor experimental: auditoria, compress?o Ue autom?tica e vento parcial",
+      "head": "feat/m27-m30-structural-engine-complete",
+      "sha": "00e61f68d1013f2d34dfa74554c84edc27efad72",
+      "base": "docs/m27-m30-engine-release-gate",
+      "base_sha": "b05c7fb9d04ad522b2795e58e4f6a9989124ea95",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/37",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 28,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 184,
+      "maximal_dependencies": [
+        36
+      ]
+    },
+    {
+      "number": 36,
+      "title": "docs: crit?rios obrigat?rios para conclus?o do motor estrutural M27?M30",
+      "head": "docs/m27-m30-engine-release-gate",
+      "sha": "b05c7fb9d04ad522b2795e58e4f6a9989124ea95",
+      "base": "feat/m26-integrated-normative-engine",
+      "base_sha": "51273a29f89fe5c366d837411d8f452d4c7a7547",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/36",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 32,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 188,
+      "maximal_dependencies": [
+        35
+      ]
+    },
+    {
+      "number": 35,
+      "title": "M26 parcial: integrar M22?M25 e recuperar solicita??es cr?ticas cont?nuas",
+      "head": "feat/m26-integrated-normative-engine",
+      "sha": "51273a29f89fe5c366d837411d8f452d4c7a7547",
+      "base": "docs/m26-normative-readiness",
+      "base_sha": "6c3022749288f29f70648d6dd699fc5b8191d59f",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/35",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 33,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 189,
+      "maximal_dependencies": [
+        34,
+        32,
+        29
+      ]
+    },
+    {
+      "number": 34,
+      "title": "docs: preparar integra??o M22?M25 e verifica??es normativas Ue com benchmarks rastre?veis",
+      "head": "docs/m26-normative-readiness",
+      "sha": "6c3022749288f29f70648d6dd699fc5b8191d59f",
+      "base": "feat/m24-connections-stability",
+      "base_sha": "f2c94b7e1ffb1d0e48214ade907b897d0dec8b7c",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/34",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 48,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 204,
+      "maximal_dependencies": [
+        33
+      ]
+    },
+    {
+      "number": 33,
+      "title": "M24 parcial: a??es globais de liga??es e diagn?stico de estabilidade",
+      "head": "feat/m24-connections-stability",
+      "sha": "f2c94b7e1ffb1d0e48214ade907b897d0dec8b7c",
+      "base": "feat/m23-resistant-design",
+      "base_sha": "e97fb74c5eef2e0c70bf3ba88fc0c91de64566fe",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/33",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 50,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 206,
+      "maximal_dependencies": [
+        31
+      ]
+    },
+    {
+      "number": 32,
+      "title": "docs: campanha priorit?ria de valida??o com coberturas e galp?es de refer?ncia",
+      "head": "docs/real-roof-validation-campaign",
+      "sha": "34eb8cf13093ca943dbb886f5b3646f997ef5a0e",
+      "base": "feat/m23-resistant-design",
+      "base_sha": "e97fb74c5eef2e0c70bf3ba88fc0c91de64566fe",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/32",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 50,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 206,
+      "maximal_dependencies": [
+        31
+      ]
+    },
+    {
+      "number": 31,
+      "title": "feat(engine): solicita??es concomitantes e relat?rio resistente bloqueado (M23 parcial)",
+      "head": "feat/m23-resistant-design",
+      "sha": "e97fb74c5eef2e0c70bf3ba88fc0c91de64566fe",
+      "base": "feat/engineering-m22-m24",
+      "base_sha": "280a4c89b6e41a2a5295142dcd2b5bfc6d7208e0",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/31",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 52,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 208,
+      "maximal_dependencies": [
+        30
+      ]
+    },
+    {
+      "number": 30,
+      "title": "feat(engine): vento zonal conservativo e combina??es declaradas (M22)",
+      "head": "feat/engineering-m22-m24",
+      "sha": "280a4c89b6e41a2a5295142dcd2b5bfc6d7208e0",
+      "base": "integration/m21-studio-release-candidate",
+      "base_sha": "92b9a2836e9cdb50553f98173f300e425acef877",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/30",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 53,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 209,
+      "maximal_dependencies": [
+        26
+      ]
+    },
+    {
+      "number": 29,
+      "title": "Miss?o 25: dossi? preliminar de materiais e pr?-fabrica??o PDF/Excel",
+      "head": "feat/m25-preproduction-dossier",
+      "sha": "085c22876226a2b9de4f18e589368236c2619715",
+      "base": "integration/m21-studio-release-candidate",
+      "base_sha": "92b9a2836e9cdb50553f98173f300e425acef877",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/29",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 42,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 198,
+      "maximal_dependencies": [
+        26
+      ]
+    },
+    {
+      "number": 26,
+      "title": "feat(engine): refer?ncias el?sticas por pe?a para preparar dimensionamento",
+      "head": "feat/resistance-elastic-reference",
+      "sha": "0f4f9c9d28f6ec466a7a1adda87959d9b82c89f8",
+      "base": "audit/mission21-independent",
+      "base_sha": "6921bb29a502861e1ec9620b2a34b732b7725b87",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/26",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 66,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 222,
+      "maximal_dependencies": [
+        25
+      ]
+    },
+    {
+      "number": 25,
+      "title": "test(engine): auditoria independente do caminho de cargas da Miss?o 21",
+      "head": "audit/mission21-independent",
+      "sha": "6921bb29a502861e1ec9620b2a34b732b7725b87",
+      "base": "feat/roof-area-load-path",
+      "base_sha": "02ad7caf7746d3af5b39e964d9c5ba57c0d50ea2",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/25",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 74,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 230,
+      "maximal_dependencies": [
+        24
+      ]
+    },
+    {
+      "number": 24,
+      "title": "feat(engine): a??es por ?rea conservativas e regi?es preliminares (M21)",
+      "head": "feat/roof-area-load-path",
+      "sha": "02ad7caf7746d3af5b39e964d9c5ba57c0d50ea2",
+      "base": "feat/technical-catalog-integrated-no-prices",
+      "base_sha": "243ab80638593a61bf2e61f81f1049f1036382c3",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/24",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 79,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 235,
+      "maximal_dependencies": [
+        22
+      ]
+    },
+    {
+      "number": 23,
+      "title": "feat: JPN 3D Studio ? inspe??o por camadas, isolamento e c?mera m?vel",
+      "head": "feat/3d-studio-inspection",
+      "sha": "91129e0ca6d2f0a79370ae75f0d6230863184368",
+      "base": "main",
+      "base_sha": "01caa9f2c5fd6f38b2d98769f597d9b73aaee359",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/23",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 4,
+      "behind_main": 94,
+      "exclusive_to_p83": 4,
+      "p83_exclusive": 250,
+      "maximal_dependencies": [],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "2752118f53d6694c05270f2117e5bb350618ae3b",
+        "3277a22f0501018bd291982972470da8fb5017c2",
+        "91129e0ca6d2f0a79370ae75f0d6230863184368",
+        "b13b97a19e7ae05ad8e5a3f47a327f894ff8e116"
+      ],
+      "changed_files": [
+        "docs/STUDIO-3D-INSPECAO.md",
+        "src/app/globals.css",
+        "src/components/planning/profile-geometry.test.ts",
+        "src/components/planning/profile-scene.ts",
+        "src/components/planning/structure-3d.tsx",
+        "tests/e2e/profiles-3d.spec.ts"
+      ],
+      "identical_files": [
+        "src/components/planning/profile-geometry.test.ts",
+        "src/components/planning/profile-scene.ts"
+      ],
+      "missing_files": [],
+      "different_files": [
+        "docs/STUDIO-3D-INSPECAO.md",
+        "src/app/globals.css",
+        "src/components/planning/structure-3d.tsx",
+        "tests/e2e/profiles-3d.spec.ts"
+      ]
+    },
+    {
+      "number": 22,
+      "title": "feat(JPN): cat?logo t?cnico integrado ? obra original, sem pre?os nem dimensionamento",
+      "head": "feat/technical-catalog-integrated-no-prices",
+      "sha": "243ab80638593a61bf2e61f81f1049f1036382c3",
+      "base": "feat/secure-remote-mixed-integration",
+      "base_sha": "ee04006e56d0759efca801bda713c6c98eda6a61",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/22",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 80,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 236,
+      "maximal_dependencies": [
+        20
+      ]
+    },
+    {
+      "number": 21,
+      "title": "feat(JPN): triagem preliminar de inc?ndio SP e alternativas geom?tricas",
+      "head": "feat/fire-feasibility-sp-mvp",
+      "sha": "700af6aab45f880df94b549711a8a989bfcab694",
+      "base": "main",
+      "base_sha": "01caa9f2c5fd6f38b2d98769f597d9b73aaee359",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/21",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 1,
+      "behind_main": 102,
+      "exclusive_to_p83": 1,
+      "p83_exclusive": 258,
+      "maximal_dependencies": [],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "700af6aab45f880df94b549711a8a989bfcab694"
+      ],
+      "changed_files": [
+        "docs/MISSAO-19-VIABILIDADE-INCENDIO-SP.md",
+        "src/components/planning/fire-screening-hint.tsx",
+        "src/components/planning/quick-project-form.tsx",
+        "src/domain/fire-feasibility-sp.test.ts",
+        "src/domain/fire-feasibility-sp.ts",
+        "src/domain/fire-rules-sp.ts"
+      ],
+      "identical_files": [],
+      "missing_files": [
+        "docs/MISSAO-19-VIABILIDADE-INCENDIO-SP.md",
+        "src/components/planning/fire-screening-hint.tsx",
+        "src/domain/fire-feasibility-sp.test.ts",
+        "src/domain/fire-feasibility-sp.ts",
+        "src/domain/fire-rules-sp.ts"
+      ],
+      "different_files": [
+        "src/components/planning/quick-project-form.tsx"
+      ]
+    },
+    {
+      "number": 20,
+      "title": "feat(engine): integra??o remota mista segura e smoke HTTP (18B)",
+      "head": "feat/secure-remote-mixed-integration",
+      "sha": "ee04006e56d0759efca801bda713c6c98eda6a61",
+      "base": "fix/vercel-python-mixed-entrypoint",
+      "base_sha": "adea5a8d588286427526752a37c3d4db5ed635e6",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/20",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 84,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 240,
+      "maximal_dependencies": [
+        19
+      ]
+    },
+    {
+      "number": 19,
+      "title": "fix(engine): entrada WSGI Vercel e HTTP misto autenticado",
+      "head": "fix/vercel-python-mixed-entrypoint",
+      "sha": "adea5a8d588286427526752a37c3d4db5ed635e6",
+      "base": "feat/explicit-selfweight-distributed-mixed3d",
+      "base_sha": "91efa3db0bd6a6547afc06d4bbe3bbdcd9f0268a",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/19",
+      "in_main": true,
+      "in_p83": true,
+      "ahead_main": 0,
+      "behind_main": 90,
+      "exclusive_to_p83": 0,
+      "p83_exclusive": 246,
+      "maximal_dependencies": []
+    },
+    {
+      "number": 13,
+      "title": "feat(deploy): Vercel Hobby Python functions for 2D/3D solver",
+      "head": "feat/vercel-python-free-runtime",
+      "sha": "d529ae85c533a0b03a00f42ed1a9972a6d69ba97",
+      "base": "main",
+      "base_sha": "537f82089ff1aff44e6acba9b9947c37fd8849e6",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/13",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 7,
+      "behind_main": 116,
+      "exclusive_to_p83": 7,
+      "p83_exclusive": 272,
+      "maximal_dependencies": [],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "29749a84e60bcb375c34440081f5da308342f22b",
+        "567caeac1425be30d7811fd66617ce2f0de924cb",
+        "56a3fbb08a9a9e599fa3c9958db2532542d18f60",
+        "57c7cfe4883b7908418d7b1f3de439574d0df77c",
+        "7d4ab11f42a2113ca7e1105590ca188ef20f7525",
+        "d529ae85c533a0b03a00f42ed1a9972a6d69ba97",
+        "efcf0d06bcd64c5f860345f5bc711cfbe89850a6"
+      ],
+      "changed_files": [
+        "docs/VERCEL-PYTHON-GRATUITO.md",
+        "engine/api/analyze.py",
+        "engine/api/analyze3d.py",
+        "engine/tests/test_vercel_entrypoints.py",
+        "engine/vercel.json"
+      ],
+      "identical_files": [],
+      "missing_files": [
+        "docs/VERCEL-PYTHON-GRATUITO.md",
+        "engine/api/analyze.py",
+        "engine/api/analyze3d.py",
+        "engine/tests/test_vercel_entrypoints.py"
+      ],
+      "different_files": [
+        "engine/vercel.json"
+      ]
+    },
+    {
+      "number": 1,
+      "title": "Experimento: validar motor 2D com PyNiteFEA (n?o integrar ainda)",
+      "head": "experimento/motor-estrutural-2d",
+      "sha": "f08cb0d9ff685906c25bcce02c306d3ee8f9f772",
+      "base": "main",
+      "base_sha": "ade0e8716cdd540750ced660f3dee842a09447b6",
+      "draft": true,
+      "url": "https://github.com/brunoJuniorBrz/JPN/pull/1",
+      "in_main": false,
+      "in_p83": false,
+      "ahead_main": 12,
+      "behind_main": 256,
+      "exclusive_to_p83": 12,
+      "p83_exclusive": 412,
+      "maximal_dependencies": [],
+      "patch_equivalents": {},
+      "unmatched_commits": [
+        "16a64919401d4d1aa82dc34623f86ef5a49a8a65",
+        "27c4635c475f0bcd50995be9cf5efcc12b933ef3",
+        "52abbf02bb9c8a802fe09bf582a07943a411e8e6",
+        "5b8178e86cae393a6750e74fa0708da377753156",
+        "694f59cc590910f24d16f65e538bde6dcefc2ecd",
+        "696e89503a3a72bf3a85a136e2df03ce886e50d2",
+        "6a5e70d7ef78c37f8704ca1d2a5fc1d1094cc282",
+        "7e9d48cd9235015a5deb4a6b3c02c077c7eea311",
+        "94d3047972372ff65234a2025a40e9a8aa442f45",
+        "aa18f4f55007a7c7a939f980d7189fe2cd8b6817",
+        "c4d41e296c8c1ced98b4c061a00b0b081964dd29",
+        "f08cb0d9ff685906c25bcce02c306d3ee8f9f772"
+      ],
+      "changed_files": [
+        ".github/workflows/jpn-structural-validation.yml",
+        "engine/README.md",
+        "engine/VALIDACAO.md",
+        "engine/__init__.py",
+        "engine/__main__.py",
+        "engine/examples/triangulo.json",
+        "engine/requirements-crosscheck.txt",
+        "engine/requirements.txt",
+        "engine/tests/test_pynite_crosscheck.py",
+        "engine/tests/test_truss2d.py",
+        "engine/tests/test_validation.py",
+        "engine/truss2d.py"
+      ],
+      "identical_files": [],
+      "missing_files": [
+        ".github/workflows/jpn-structural-validation.yml",
+        "engine/VALIDACAO.md",
+        "engine/__init__.py",
+        "engine/__main__.py",
+        "engine/examples/triangulo.json",
+        "engine/requirements-crosscheck.txt",
+        "engine/requirements.txt",
+        "engine/tests/test_pynite_crosscheck.py",
+        "engine/tests/test_truss2d.py",
+        "engine/tests/test_validation.py",
+        "engine/truss2d.py"
+      ],
+      "different_files": [
+        "engine/README.md"
+      ]
+    }
+  ]
+}

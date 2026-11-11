@@ -31,9 +31,10 @@ export function generalIntegrationProject(){
   d.physicalCatalog!.assignments=pieces.map(pieceId=>({pieceId,materialId:"STEEL",sectionId:"S1",rotationDeg:0}));
   d.memberKinds=pieces.map(pieceId=>({pieceId,kind:"frame"}));
   d.memberConnections=pieces.map(pieceId=>({pieceId,start:"rigid",end:"rigid"}));
-  d.supports=["A0","A5","B0","B5"].map(nodeId=>({nodeId,dofs:["fixed","fixed","fixed","fixed","fixed","fixed"]}));
+  const fixed=["fixed","fixed","fixed","fixed","fixed","fixed"] as const;
+  d.supports=["A0","A5","B0","B5"].map(nodeId=>({nodeId,dofs:[...fixed]}));
   d.supportInterfaces=d.supports.map(s=>({
-    nodeId:s.nodeId,side:s.nodeId.startsWith("A")?"A":"B",kind:"existing-concrete",dofs:s.dofs,
+    nodeId:s.nodeId,side:s.nodeId.startsWith("A")?"A":"B",kind:"existing-concrete",dofs:[...fixed],
     source:"Interfaces de concreto explícitas da referência analítica sintética",
     revision:"INTEGRATION-SUPPORT-1",loadPath:"Terça contínua -> nó de borda -> interface declarada",
     restraintBasis:"Engaste de referência explicitamente informado; capacidade não verificada",

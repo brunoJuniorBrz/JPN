@@ -63,7 +63,7 @@ for(const width of [390,1440])test(`integração geral: obra/superfície/apoios/
   const expected=-400*5**4/(384*200e9*1e-6);
   expect(combo.nodes.AM.translation_m[2]).toBeCloseTo(expected,10);
   expect(combo.nodes.BM.translation_m[2]).toBeCloseTo(expected,10);
-  const rz=Object.values(combo.nodes).reduce((s,n)=>s+(n as {reaction_force_n:number[]}).reaction_force_n[2],0);
+  const rz=Object.values(combo.nodes).reduce<number>((s,n)=>s+(n as {reaction_force_n:number[]}).reaction_force_n[2],0);
   expect(rz).toBeCloseTo(4000,5);expect(combo.equilibrium.relative_residual).toBeLessThan(1e-8);
   await expect(panel.getByTestId("mixed-result-state")).toContainText("Resultado calculado");
   const reportPanel=panel.getByTestId("resistance-report");await expect(reportPanel).toBeVisible();
