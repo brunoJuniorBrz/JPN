@@ -1,0 +1,266 @@
+{
+  "schema_version": "jpn.ufsc2023.reference/1",
+  "case_id": "benvenuti-ufsc-2023",
+  "kind": "published_data_not_solver_ready",
+  "source": {
+    "author": "Davi Werner Benvenuti",
+    "title": "Análise e dimensionamento de um galpão industrial em estrutura metálica",
+    "institution": "UFSC",
+    "year": 2023,
+    "url": "https://repositorio.ufsc.br/bitstream/handle/123456789/248184/TCC_Davi%20Benvenuti.pdf?sequence=1",
+    "page_convention": "printed PDF page labels; source page citations accompany sections"
+  },
+  "use_limits": {
+    "structural_approval": false,
+    "fabrication_release": false,
+    "current_NBR_verification": false,
+    "source_exact_FE_model": false,
+    "notes": "Historical results are reference targets only. Missing exact node connectivity, sections, restraints and load vectors must not be invented."
+  },
+  "geometry": {
+    "source_pages": [
+      55,
+      56
+    ],
+    "location": "Brusque/SC",
+    "length_m": 80,
+    "width_m": 40,
+    "eave_height_reported_m": 8,
+    "columns_height_used_for_drift_m": 7,
+    "frame_spacing_m": 8,
+    "roof_pitch_deg": 10,
+    "ridge_height_reported_m": 11.53,
+    "truss_depth_m": 1,
+    "truss_parallel_chords": true,
+    "web_nodes_pinned": true,
+    "chords": "double equal-leg angle",
+    "web_members": "single equal-leg angle",
+    "panel_length_end_m": 1.31,
+    "panel_length_typical_m": 1,
+    "roof_sloping_half_span_m": 20.31,
+    "derived_estimate_portals": 11,
+    "exact_node_coordinates": null,
+    "exact_element_connectivity": null,
+    "exact_support_DOF_map": null,
+    "source_limitation": "Schematic Fig 21/22 and text are not exact SAP2000 node/member list"
+  },
+  "material": {
+    "source_pages": [
+      61,
+      64,
+      66,
+      83,
+      98,
+      136
+    ],
+    "steel": "ASTM A36",
+    "young_modulus_MPa": 200000,
+    "yield_strength_MPa": 250,
+    "columns": {
+      "section": "W 610 x 155,0",
+      "mass_kg_m": 155,
+      "depth_mm": 611,
+      "flange_width_mm": 324,
+      "web_thickness_mm": 12.7,
+      "flange_thickness_mm": 19,
+      "area_cm2": 198.1,
+      "bases": "fixed"
+    },
+    "chords": {
+      "section": "2L 203,20 x 57,9",
+      "type": "double angle",
+      "lateral_brace_length_upper_m": [
+        2.31,
+        2
+      ],
+      "lateral_brace_length_lower_m": [
+        4.31,
+        4
+      ]
+    },
+    "purlins": {
+      "section": "U 254 x 29,76"
+    },
+    "incomplete_section_moments_for_each_member": true
+  },
+  "loads": {
+    "source_pages": [
+      57,
+      58,
+      59,
+      60
+    ],
+    "permanent_kN_m2": {
+      "roof_sheets": 0.1,
+      "bracing": 0.05,
+      "ties_and_purlins": 0.1,
+      "columns_and_trusses": 0.2,
+      "total": 0.45
+    },
+    "live_roof_kN_m2": 0.25,
+    "frame_tributary_width_m": 8,
+    "frame_permanent_kN_m": 3.6,
+    "frame_live_kN_m": 2,
+    "application": "equivalent loads at upper chord joints where purlins connect; exact nodal values not listed",
+    "wind": {
+      "basis": "NBR 6123:1988, VisualVentos",
+      "V0_m_s": 45,
+      "S1": 1,
+      "S2": 0.9,
+      "S3": 0.95,
+      "Vk_reported_m_s": 38.39,
+      "q_first_reported_kN_m2": 0.903,
+      "q_later_used_kN_m2": 0.904,
+      "terrain_category": 3,
+      "building_class": "C",
+      "group": 3,
+      "Cpi": [
+        0.2,
+        -0.3
+      ],
+      "Cpe_roof_wind0": {
+        "E": -0.8,
+        "F": -0.6,
+        "G": -0.8,
+        "H": -0.6,
+        "I": -0.2,
+        "J": -0.2
+      },
+      "Cpe_roof_wind90": {
+        "E": -1.2,
+        "F": -1.2,
+        "G": -0.4,
+        "H": -0.4,
+        "I": -1.2,
+        "J": -0.4
+      },
+      "wind0_figure26_roof_line_kN_m": {
+        "Cpi_positive": -7.23,
+        "Cpi_negative": -3.61
+      },
+      "wind90_figure27_line_kN_m": {
+        "Cpi_positive": {
+          "roof_left": -10.12,
+          "roof_right": -4.34,
+          "wall_left": 3.61,
+          "wall_right": -5.06
+        },
+        "Cpi_negative": {
+          "roof_left": -6.51,
+          "roof_right": -0.72,
+          "wall_left": 7.23,
+          "wall_right": -1.45
+        }
+      },
+      "warning": "Graph annotations: NOT complete global vector loads; zones and case assignment unresolved."
+    }
+  },
+  "combinations": {
+    "source_pages": [
+      60,
+      81
+    ],
+    "ultimate": [
+      {
+        "id": "F1",
+        "factors": {
+          "G": 1.25,
+          "Q": 1.5,
+          "W90": 0.84
+        },
+        "wind_Cpi": null
+      },
+      {
+        "id": "F2",
+        "factors": {
+          "G": 1.25,
+          "Q": 1.5,
+          "W0": 0.84
+        },
+        "wind_Cpi": null
+      },
+      {
+        "id": "F3",
+        "factors": {
+          "G": 1.25,
+          "Q": 1.05,
+          "W90": 1.4
+        },
+        "wind_Cpi": null
+      },
+      {
+        "id": "F4",
+        "factors": {
+          "G": 1.25,
+          "Q": 1.05,
+          "W0": 1.4
+        },
+        "wind_Cpi": null
+      },
+      {
+        "id": "F5",
+        "factors": {
+          "G": 1.25,
+          "Q": 1.5
+        }
+      },
+      {
+        "id": "F6",
+        "factors": {
+          "G": 1.25,
+          "W0": 1.4
+        },
+        "wind_Cpi": 0.2
+      },
+      {
+        "id": "F7",
+        "factors": {
+          "G": 1.25,
+          "W0": 1.4
+        },
+        "wind_Cpi": -0.3
+      },
+      {
+        "id": "F8",
+        "factors": {
+          "G": 1.25,
+          "W90": 1.4
+        },
+        "wind_Cpi": 0.2
+      },
+      {
+        "id": "F9",
+        "factors": {
+          "G": 1.25,
+          "W90": 1.4
+        },
+        "wind_Cpi": -0.3
+      }
+    ],
+    "service": [
+      {
+        "id": "S1",
+        "factors": {
+          "G": 1,
+          "Q": 0.6
+        }
+      },
+      {
+        "id": "S2",
+        "factors": {
+          "G": 1,
+          "Q": 0.6,
+          "W90": 0.3
+        }
+      },
+      {
+        "id": "S3",
+        "factors": {
+          "G": 1,
+          "Q": 0.6,
+          "W0": 0.3
+        }
+      }
+    ]
+  }
+}
