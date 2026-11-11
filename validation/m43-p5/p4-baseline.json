@@ -1,0 +1,2916 @@
+{
+  "schema_version": "jpn.m43-p5-p4-baseline/1",
+  "source_commit": "3f7569cea3d8766f2329148026175d68533915aa",
+  "interpretation": "Actual fresh executions before P5 corrections. Raw rotational parameter comparisons are diagnostic, not physical orientation validation.",
+  "source_sha256_lf": {
+    "engine/jpn_structural/spatial_corotational.py": "3912941f6c83e310c57e60d97063fbfc3f5cb7b681d8c46b1b5f0efeae65e85e",
+    "engine/jpn_structural/second_jet.py": "9f16673b08d1841b6e91ed8e2ee67bcac6a0b864b0da2ffa5ebc01e6195de5be",
+    "engine/jpn_structural/p4_frame.py": "aeb7c1d29b92270b040f9533d84bf96f2a4193a7e233facf8fba0faac452e706",
+    "src/domain/p4-energy-audit.ts": "785fe480803b06d05d327480b568d03b05292b8ff4a98fc6166fb50b2b4803c1",
+    "src/domain/p4-frame.ts": "ac23080439fb9a952c342c95bf2a51b04cd7fa0f4122d59534a0cabc8f60199c"
+  },
+  "cases": [
+    {
+      "case": "cantilever",
+      "source_commit": "3f7569cea3d8766f2329148026175d68533915aa",
+      "request": {
+        "schema_version": "jpn.second-order-frame/3",
+        "units": "SI",
+        "analysis_type": "experimental-p4-corotational-diagnostic",
+        "binding": {
+          "model_sha256": "75d43c90f490f982e58a6df7aff555c56e49afbc87f89c3f3236d316dd2092bd",
+          "preparation_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "mapping_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "model": {
+          "schema_version": "jpn.mixed3d/1",
+          "units": "SI",
+          "theory": "linear-elastic-frame-axial",
+          "project": {
+            "id": "M43-P2-cantilever",
+            "revision": "explicit-1",
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+          },
+          "nodes": [
+            {
+              "id": "B0",
+              "x_m": 0.0,
+              "y_m": 0.0,
+              "z_m": 0.0
+            },
+            {
+              "id": "T0",
+              "x_m": 0.0,
+              "y_m": 0.0,
+              "z_m": 4.0
+            }
+          ],
+          "members": [
+            {
+              "id": "C0-S0",
+              "start": "B0",
+              "end": "T0",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            }
+          ],
+          "materials": [
+            {
+              "id": "M",
+              "e_pa": 200000000000.0,
+              "g_pa": 76923076923.07692,
+              "nu": 0.3,
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+              "revision": "1"
+            }
+          ],
+          "sections": [
+            {
+              "id": "S",
+              "area_m2": 0.02,
+              "iy_m4": 2e-05,
+              "iz_m4": 4e-05,
+              "j_m4": 2e-05,
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+              "revision": "1"
+            }
+          ],
+          "supports": [
+            {
+              "node": "B0",
+              "restrained": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            }
+          ],
+          "cases": [
+            {
+              "id": "P",
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+            },
+            {
+              "id": "H",
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+            }
+          ],
+          "nodal_loads": [
+            {
+              "node": "T0",
+              "case": "P",
+              "fx_n": 0.0,
+              "fy_n": 0.0,
+              "fz_n": -61685.027506808496,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T0",
+              "case": "H",
+              "fx_n": 1000.0,
+              "fy_n": 600.0,
+              "fz_n": 0.0,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            }
+          ],
+          "combinations": [
+            {
+              "id": "C",
+              "factors": {
+                "P": 1.0,
+                "H": 1.0
+              }
+            }
+          ]
+        },
+        "numerics": {
+          "coarse_subdivisions": 2,
+          "fine_subdivisions": 4,
+          "equilibrium_relative_tolerance": 1e-08,
+          "refinement_relative_tolerance": 0.0001,
+          "load_steps": 10,
+          "max_newton_iterations": 30,
+          "displacement_increment_tolerance": 1e-10,
+          "force_change_tolerance": 1e-08
+        },
+        "dimensionality": 3,
+        "formulation": "spatial-quaternion-arc/1"
+      },
+      "solver_seconds": 2.929391600075178,
+      "native_reference_invocation_sha256": "dd196f613d3408e39b46becb981013c44cebb2ce17b2107cae8d7ab231473e71",
+      "old_checks": {
+        "translation_m": {
+          "maximum_absolute_error": 5.249384963041184e-07,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.04435127737824628,
+          "compared_components": 6,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            1,
+            0
+          ],
+          "candidate_at_worst": 0.005917913667959582,
+          "reference_at_worst": 0.005917388729463278,
+          "uncertainty_at_worst": 0.0
+        },
+        "rotation_rad": {
+          "maximum_absolute_error": 1.9841392130638333e-07,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 4.8840432806714045,
+          "compared_components": 6,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            1,
+            2
+          ],
+          "candidate_at_worst": 1.2256822078252395e-06,
+          "reference_at_worst": 1.2132212335944377e-06,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_force_n": {
+          "maximum_absolute_error": 4.826665644941386e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.0018752118806173968,
+          "compared_components": 6,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            1,
+            0
+          ],
+          "candidate_at_worst": 0.0,
+          "reference_at_worst": 1.8752189134829678e-08,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_moment_nm": {
+          "maximum_absolute_error": 0.03237528780573484,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.06519780213261958,
+          "compared_components": 6,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            2
+          ],
+          "candidate_at_worst": -1.8676956371857338,
+          "reference_at_worst": -1.8674514459065181,
+          "uncertainty_at_worst": 0.0
+        },
+        "physical_end_actions": {
+          "maximum_absolute_error": 0.03237528780573484,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.06519780213261958,
+          "compared_components": 12,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            5
+          ],
+          "candidate_at_worst": -1.8676956371857338,
+          "reference_at_worst": -1.8674514459065181,
+          "uncertainty_at_worst": 0.0
+        },
+        "strain_energy_j": {
+          "maximum_absolute_error": 0.0006262720064569294,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 1076.5600451084097,
+          "compared_components": 1,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08,
+          "worst_component": [],
+          "candidate_at_worst": 5.717343949392657,
+          "reference_at_worst": 5.7167176773862005,
+          "uncertainty_at_worst": 0.0
+        }
+      },
+      "strict_checks": {
+        "translation_m": {
+          "maximum_absolute_error": 5.249384963041184e-07,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 758.8104181400511,
+          "compared_components": 6,
+          "violating_components": 3,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            1,
+            0
+          ],
+          "candidate_at_worst": 0.005917913667959582,
+          "reference_at_worst": 0.005917388729463278,
+          "uncertainty_at_worst": 0.0
+        },
+        "rotation_rad": {
+          "maximum_absolute_error": 1.9841392130638333e-07,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 614.5701901589265,
+          "compared_components": 6,
+          "violating_components": 3,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": 0.0022284989490797455,
+          "reference_at_worst": 0.002228300535158439,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_force_n": {
+          "maximum_absolute_error": 4.826665644941386e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.001875218913131323,
+          "compared_components": 6,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            1,
+            0
+          ],
+          "candidate_at_worst": 0.0,
+          "reference_at_worst": 1.8752189134829678e-08,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_moment_nm": {
+          "maximum_absolute_error": 0.03237528780573484,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 72.50937951067662,
+          "compared_components": 6,
+          "violating_components": 3,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            1
+          ],
+          "candidate_at_worst": -4364.979292915857,
+          "reference_at_worst": -4364.946917628051,
+          "uncertainty_at_worst": 0.0
+        },
+        "physical_end_actions": {
+          "maximum_absolute_error": 0.03237528780573484,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 72.50937951067662,
+          "compared_components": 12,
+          "violating_components": 3,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            4
+          ],
+          "candidate_at_worst": -4364.979292915857,
+          "reference_at_worst": -4364.946917628051,
+          "uncertainty_at_worst": 0.0
+        },
+        "strain_energy_j": {
+          "maximum_absolute_error": 0.0006262720064569294,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 1076.5600451084097,
+          "compared_components": 1,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08,
+          "worst_component": [],
+          "candidate_at_worst": 5.717343949392657,
+          "reference_at_worst": 5.7167176773862005,
+          "uncertainty_at_worst": 0.0
+        }
+      },
+      "refinement": {
+        "translation_m": 5.16702891614435e-06,
+        "rotation_rad": 5.48598342259265e-06,
+        "member_end_actions": 8.546269566312684e-06
+      },
+      "equilibrium": {
+        "force_residual_n": [
+          -1.2662439985433593e-09,
+          5.229594535194337e-12,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          -2.2737367544323206e-12,
+          -6.884874892421067e-10,
+          1.2434497875801753e-14
+        ],
+        "force_relative_residual": [
+          1.2649790195238355e-12,
+          8.701488411305054e-15,
+          0.0
+        ],
+        "moment_relative_residual": [
+          9.077595306880692e-16,
+          1.5769371383857458e-13,
+          4.336059139108823e-15
+        ],
+        "accepted": true
+      },
+      "native_reference_equilibrium": {
+        "force_residual_n": [
+          -4.953290044795722e-08,
+          1.2505552149377763e-11,
+          0.0
+        ],
+        "moment_residual_nm": [
+          -2.2737367544323206e-12,
+          -4.122739483136684e-09,
+          1.425526363618701e-13
+        ],
+        "maximum_free_physical_node_reaction_imbalance": 1.8752189134829678e-08,
+        "note": "Raw independent residuals retained; not a declaration of reference stability or normative verification"
+      },
+      "energy_j": 5.717343949392657,
+      "native_energy_j": 5.7167176773862005,
+      "rotation_measure_note": "Raw OpenSees nodal rotation DOFs recorded as baseline only; physical SO3 comparison is not yet available",
+      "candidate_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "orientation_quaternion": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.0000000012662,
+            -599.9999999999948,
+            61685.027506808496
+          ],
+          "reaction_moment_nm": [
+            2503.7787189949495,
+            -4364.979292915857,
+            -1.8676956371857338
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.005917913667959582,
+            0.001683052563590003,
+            -6.737447583700432e-05
+          ],
+          "rotation_rad": [
+            -0.0006324598019157788,
+            0.0022284989490797455,
+            1.2256822078252395e-06
+          ],
+          "orientation_quaternion": [
+            0.9999993292232663,
+            -0.00031622983025133286,
+            0.0011142492254023206,
+            6.128409668860956e-07
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "native_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -1000.0000000495329,
+            -599.9999999999875,
+            61685.027506808496
+          ],
+          "reaction_moment_nm": [
+            2503.7743567659727,
+            -4364.946917628051,
+            -1.8674514459065181
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.005917388729463278,
+            0.001682981791771306,
+            -6.736892149289941e-05
+          ],
+          "rotation_rad": [
+            -0.0006324326634929779,
+            0.002228300535158439,
+            1.2132212335944377e-06
+          ],
+          "reaction_force_n": [
+            1.8752189134829678e-08,
+            -5.97196958551649e-10,
+            1.4551915228366852e-11
+          ],
+          "reaction_moment_nm": [
+            -7.205433911997295e-11,
+            -1.2982809754738503e-09,
+            1.176405319068821e-12
+          ]
+        }
+      }
+    },
+    {
+      "case": "sway",
+      "source_commit": "3f7569cea3d8766f2329148026175d68533915aa",
+      "request": {
+        "schema_version": "jpn.second-order-frame/3",
+        "units": "SI",
+        "analysis_type": "experimental-p4-corotational-diagnostic",
+        "binding": {
+          "model_sha256": "01bd7e38b4797e2450e02169a57de51048bb369013b43b83f983ac592f7897a5",
+          "preparation_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "mapping_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "model": {
+          "schema_version": "jpn.mixed3d/1",
+          "units": "SI",
+          "theory": "linear-elastic-frame-axial",
+          "project": {
+            "id": "M43-P2-sway",
+            "revision": "explicit-1",
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+          },
+          "nodes": [
+            {
+              "id": "B0",
+              "x_m": 0.0,
+              "y_m": 0.0,
+              "z_m": 0.0
+            },
+            {
+              "id": "B1",
+              "x_m": 6.0,
+              "y_m": 0.0,
+              "z_m": 0.0
+            },
+            {
+              "id": "T0",
+              "x_m": 0.0,
+              "y_m": 0.0,
+              "z_m": 4.0
+            },
+            {
+              "id": "T1",
+              "x_m": 6.0,
+              "y_m": 0.0,
+              "z_m": 4.0
+            }
+          ],
+          "members": [
+            {
+              "id": "C0-S0",
+              "start": "B0",
+              "end": "T0",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "id": "C1-S0",
+              "start": "B1",
+              "end": "T1",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "id": "R0-S0",
+              "start": "T0",
+              "end": "T1",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            }
+          ],
+          "materials": [
+            {
+              "id": "M",
+              "e_pa": 200000000000.0,
+              "g_pa": 76923076923.07692,
+              "nu": 0.3,
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+              "revision": "1"
+            }
+          ],
+          "sections": [
+            {
+              "id": "S",
+              "area_m2": 0.02,
+              "iy_m4": 2e-05,
+              "iz_m4": 4e-05,
+              "j_m4": 2e-05,
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+              "revision": "1"
+            }
+          ],
+          "supports": [
+            {
+              "node": "B0",
+              "restrained": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "node": "B1",
+              "restrained": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            }
+          ],
+          "cases": [
+            {
+              "id": "P",
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+            },
+            {
+              "id": "H",
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+            }
+          ],
+          "nodal_loads": [
+            {
+              "node": "T0",
+              "case": "P",
+              "fx_n": 0.0,
+              "fy_n": 0.0,
+              "fz_n": -61685.027506808496,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T0",
+              "case": "H",
+              "fx_n": 500.0,
+              "fy_n": 300.0,
+              "fz_n": 0.0,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T1",
+              "case": "P",
+              "fx_n": 0.0,
+              "fy_n": 0.0,
+              "fz_n": -61685.027506808496,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T1",
+              "case": "H",
+              "fx_n": 500.0,
+              "fy_n": 300.0,
+              "fz_n": 0.0,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            }
+          ],
+          "combinations": [
+            {
+              "id": "C",
+              "factors": {
+                "P": 1.0,
+                "H": 1.0
+              }
+            }
+          ]
+        },
+        "numerics": {
+          "coarse_subdivisions": 1,
+          "fine_subdivisions": 2,
+          "equilibrium_relative_tolerance": 1e-08,
+          "refinement_relative_tolerance": 0.0001,
+          "load_steps": 10,
+          "max_newton_iterations": 30,
+          "displacement_increment_tolerance": 1e-10,
+          "force_change_tolerance": 1e-08
+        },
+        "dimensionality": 3,
+        "formulation": "spatial-quaternion-arc/1"
+      },
+      "solver_seconds": 3.2632941999472678,
+      "native_reference_invocation_sha256": "998eea753995d8bda8a9fda9b4f05c6b5757c9bc966ee08ddd5a72c767e4e8f8",
+      "old_checks": {
+        "translation_m": {
+          "maximum_absolute_error": 6.138570103186164e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.027704807130944538,
+          "compared_components": 12,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            2,
+            0
+          ],
+          "candidate_at_worst": 0.0011078028852723478,
+          "reference_at_worst": 0.001107741499571316,
+          "uncertainty_at_worst": 0.0
+        },
+        "rotation_rad": {
+          "maximum_absolute_error": 1.640204282300512e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 29.783783544935147,
+          "compared_components": 12,
+          "violating_components": 2,
+          "bounds_met": false,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            2,
+            2
+          ],
+          "candidate_at_worst": -2.309939470352546e-08,
+          "reference_at_worst": -2.772955519762581e-08,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_force_n": {
+          "maximum_absolute_error": 0.004683368177211378,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.00682644548869463,
+          "compared_components": 12,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": -299.93310655478336,
+          "reference_at_worst": -299.9290115325146,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_moment_nm": {
+          "maximum_absolute_error": 0.01734945777457142,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 47.41688599386608,
+          "compared_components": 12,
+          "violating_components": 2,
+          "bounds_met": false,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            2
+          ],
+          "candidate_at_worst": -0.11225823395863843,
+          "reference_at_worst": -0.12454331517221522,
+          "uncertainty_at_worst": 0.0
+        },
+        "physical_end_actions": {
+          "maximum_absolute_error": 0.01734945777457142,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 118.18281673479011,
+          "compared_components": 36,
+          "violating_components": 12,
+          "bounds_met": false,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            2,
+            9
+          ],
+          "candidate_at_worst": -0.0025041743361197584,
+          "reference_at_worst": -0.0007304454154966449,
+          "uncertainty_at_worst": 0.0
+        },
+        "strain_energy_j": {
+          "maximum_absolute_error": 8.322234205149215e-05,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 175.36035164646458,
+          "compared_components": 1,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08,
+          "worst_component": [],
+          "candidate_at_worst": 4.645790098509419,
+          "reference_at_worst": 4.645706876167368,
+          "uncertainty_at_worst": 0.0
+        }
+      },
+      "strict_checks": {
+        "translation_m": {
+          "maximum_absolute_error": 6.138570103186164e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 291.2307477173324,
+          "compared_components": 12,
+          "violating_components": 6,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            2,
+            0
+          ],
+          "candidate_at_worst": 0.0011078028852723478,
+          "reference_at_worst": 0.001107741499571316,
+          "uncertainty_at_worst": 0.0
+        },
+        "rotation_rad": {
+          "maximum_absolute_error": 1.640204282300512e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 124.61333298863288,
+          "compared_components": 12,
+          "violating_components": 6,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            3,
+            0
+          ],
+          "candidate_at_worst": -0.0003162349830175314,
+          "reference_at_worst": -0.0003162185809747084,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_force_n": {
+          "maximum_absolute_error": 0.004683368177211378,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 102.39268021678718,
+          "compared_components": 12,
+          "violating_components": 4,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": -299.93310655478336,
+          "reference_at_worst": -299.9290115325146,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_moment_nm": {
+          "maximum_absolute_error": 0.01734945777457142,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 1226.9799997894406,
+          "compared_components": 12,
+          "violating_components": 6,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            2
+          ],
+          "candidate_at_worst": -0.11225823395863843,
+          "reference_at_worst": -0.12454331517221522,
+          "uncertainty_at_worst": 0.0
+        },
+        "physical_end_actions": {
+          "maximum_absolute_error": 0.01734945777457142,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 1226.9799997894406,
+          "compared_components": 36,
+          "violating_components": 32,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            5
+          ],
+          "candidate_at_worst": -0.11225823395863843,
+          "reference_at_worst": -0.12454331517221522,
+          "uncertainty_at_worst": 0.0
+        },
+        "strain_energy_j": {
+          "maximum_absolute_error": 8.322234205149215e-05,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 175.36035164646458,
+          "compared_components": 1,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08,
+          "worst_component": [],
+          "candidate_at_worst": 4.645790098509419,
+          "reference_at_worst": 4.645706876167368,
+          "uncertainty_at_worst": 0.0
+        }
+      },
+      "refinement": {
+        "translation_m": 3.842367432313034e-05,
+        "rotation_rad": 5.321899382746759e-05,
+        "member_end_actions": 0.03731609961845825
+      },
+      "equilibrium": {
+        "force_residual_n": [
+          -3.078071131312754e-09,
+          -1.8189894035458565e-12,
+          -1.4551915228366852e-11
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          9.094947017729282e-13,
+          -2.735760062932968e-09,
+          -2.7284841053187847e-12
+        ],
+        "force_relative_residual": [
+          3.0749961351775764e-12,
+          3.026604664801758e-15,
+          1.1795242592973446e-16
+        ],
+        "moment_relative_residual": [
+          3.631033511794907e-16,
+          7.310023662181249e-15,
+          1.514982857287523e-15
+        ],
+        "accepted": true
+      },
+      "native_reference_equilibrium": {
+        "force_residual_n": [
+          -9.073346518562175e-09,
+          7.048583938740194e-12,
+          -1.4551915228366852e-11
+        ],
+        "moment_residual_nm": [
+          -6.821210263296962e-13,
+          -6.984919309616089e-10,
+          2.7284841053187847e-12
+        ],
+        "maximum_free_physical_node_reaction_imbalance": 3.058600386851573e-08,
+        "note": "Raw independent residuals retained; not a declaration of reference stability or normative verification"
+      },
+      "energy_j": 4.645790098509419,
+      "native_energy_j": 4.645706876167368,
+      "rotation_measure_note": "Raw OpenSees nodal rotation DOFs recorded as baseline only; physical SO3 comparison is not yet available",
+      "candidate_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "orientation_quaternion": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -500.09025737814113,
+            -300.06689344521845,
+            61408.134796544866
+          ],
+          "reaction_moment_nm": [
+            1251.927728050374,
+            -1237.6753861988154,
+            -0.11225823395863843
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "orientation_quaternion": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.90974262493694,
+            -299.93310655478336,
+            61961.92021707212
+          ],
+          "reaction_moment_nm": [
+            1251.8541716995505,
+            -1237.5745034880872,
+            -0.11225069655467357
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.0011078028852723478,
+            0.0008415198374457444,
+            -6.168693006732743e-05
+          ],
+          "rotation_rad": [
+            -0.00031622522319320453,
+            0.00020776541264446325,
+            -2.309939470352546e-08
+          ],
+          "orientation_quaternion": [
+            0.9999999821043927,
+            -0.00015811261065342853,
+            0.00010388270570255025,
+            -1.1549697282866446e-08
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.001107777144613261,
+            0.0008415316620637495,
+            -6.224071224930375e-05
+          ],
+          "rotation_rad": [
+            -0.0003162349830175314,
+            0.0002077582487498747,
+            -2.3099962021237074e-08
+          ],
+          "orientation_quaternion": [
+            0.9999999821039932,
+            -0.0001581174905655418,
+            0.00010387912375526351,
+            -1.1549980941719023e-08
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "native_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -500.0900815922997,
+            -300.07098846747834,
+            61408.13947991303
+          ],
+          "reaction_moment_nm": [
+            1251.9408298582514,
+            -1237.6851318331728,
+            -0.12454331517221522
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.9099184167737,
+            -299.9290115325146,
+            61961.91553370394
+          ],
+          "reaction_moment_nm": [
+            1251.836822241776,
+            -1237.5853163607605,
+            -0.12453350067122324
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.001107741499571316,
+            0.000841495186706731,
+            -6.168659383970399e-05
+          ],
+          "rotation_rad": [
+            -0.0003162157281358551,
+            0.0002077617757267397,
+            -2.772955519762581e-08
+          ],
+          "reaction_force_n": [
+            -3.058600386851573e-08,
+            5.165209926438763e-11,
+            -1.0510348147363402e-10
+          ],
+          "reaction_moment_nm": [
+            2.6234560314072897e-12,
+            3.2664502214174718e-09,
+            7.0910222138564905e-12
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.001107716263317646,
+            0.0008414874491587493,
+            -6.224036221032158e-05
+          ],
+          "rotation_rad": [
+            -0.0003162185809747084,
+            0.00020775485632965304,
+            -2.772892144125711e-08
+          ],
+          "reaction_force_n": [
+            1.671163371574913e-08,
+            1.4261528069603457e-10,
+            -5.962874638498761e-11
+          ],
+          "reaction_moment_nm": [
+            4.567779856613774e-12,
+            -3.0136106943245977e-09,
+            -1.9467982781407045e-11
+          ]
+        }
+      }
+    },
+    {
+      "case": "spatial",
+      "source_commit": "3f7569cea3d8766f2329148026175d68533915aa",
+      "request": {
+        "schema_version": "jpn.second-order-frame/3",
+        "units": "SI",
+        "analysis_type": "experimental-p4-corotational-diagnostic",
+        "binding": {
+          "model_sha256": "b695e1c774c7e3b09e73aab5e26be4dbf153be58ffd877c6199daf42a4614771",
+          "preparation_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "mapping_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "model": {
+          "schema_version": "jpn.mixed3d/1",
+          "units": "SI",
+          "theory": "linear-elastic-frame-axial",
+          "project": {
+            "id": "M43-P2-spatial",
+            "revision": "explicit-1",
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+          },
+          "nodes": [
+            {
+              "id": "B0",
+              "x_m": 0.0,
+              "y_m": 0.0,
+              "z_m": 0.0
+            },
+            {
+              "id": "B1",
+              "x_m": 6.0,
+              "y_m": 0.0,
+              "z_m": 0.0
+            },
+            {
+              "id": "T0",
+              "x_m": 0.0,
+              "y_m": 0.0,
+              "z_m": 4.0
+            },
+            {
+              "id": "T1",
+              "x_m": 6.0,
+              "y_m": 0.0,
+              "z_m": 4.0
+            },
+            {
+              "id": "B2",
+              "x_m": 0.0,
+              "y_m": 5.0,
+              "z_m": 0.0
+            },
+            {
+              "id": "B3",
+              "x_m": 6.0,
+              "y_m": 5.0,
+              "z_m": 0.0
+            },
+            {
+              "id": "T2",
+              "x_m": 0.0,
+              "y_m": 5.0,
+              "z_m": 4.0
+            },
+            {
+              "id": "T3",
+              "x_m": 6.0,
+              "y_m": 5.0,
+              "z_m": 4.0
+            }
+          ],
+          "members": [
+            {
+              "id": "C0-S0",
+              "start": "B0",
+              "end": "T0",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "id": "C1-S0",
+              "start": "B1",
+              "end": "T1",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "id": "R0-S0",
+              "start": "T0",
+              "end": "T1",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "id": "C2-S0",
+              "start": "B2",
+              "end": "T2",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "id": "C3-S0",
+              "start": "B3",
+              "end": "T3",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "id": "R1-S0",
+              "start": "T2",
+              "end": "T3",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "id": "R2-S0",
+              "start": "T0",
+              "end": "T2",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "id": "R3-S0",
+              "start": "T1",
+              "end": "T3",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            }
+          ],
+          "materials": [
+            {
+              "id": "M",
+              "e_pa": 200000000000.0,
+              "g_pa": 76923076923.07692,
+              "nu": 0.3,
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+              "revision": "1"
+            }
+          ],
+          "sections": [
+            {
+              "id": "S",
+              "area_m2": 0.02,
+              "iy_m4": 2e-05,
+              "iz_m4": 6.000000000000001e-05,
+              "j_m4": 2e-05,
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+              "revision": "1"
+            }
+          ],
+          "supports": [
+            {
+              "node": "B0",
+              "restrained": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "node": "B1",
+              "restrained": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "node": "B2",
+              "restrained": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            },
+            {
+              "node": "B3",
+              "restrained": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            }
+          ],
+          "cases": [
+            {
+              "id": "P",
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+            },
+            {
+              "id": "H",
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+            }
+          ],
+          "nodal_loads": [
+            {
+              "node": "T0",
+              "case": "P",
+              "fx_n": 0.0,
+              "fy_n": 0.0,
+              "fz_n": -123370.05501361699,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T0",
+              "case": "H",
+              "fx_n": 500.0,
+              "fy_n": 300.0,
+              "fz_n": 0.0,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T1",
+              "case": "P",
+              "fx_n": 0.0,
+              "fy_n": 0.0,
+              "fz_n": -123370.05501361699,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T1",
+              "case": "H",
+              "fx_n": 500.0,
+              "fy_n": 300.0,
+              "fz_n": 0.0,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T2",
+              "case": "P",
+              "fx_n": 0.0,
+              "fy_n": 0.0,
+              "fz_n": -123370.05501361699,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T2",
+              "case": "H",
+              "fx_n": 500.0,
+              "fy_n": 300.0,
+              "fz_n": 0.0,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T3",
+              "case": "P",
+              "fx_n": 0.0,
+              "fy_n": 0.0,
+              "fz_n": -123370.05501361699,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "T3",
+              "case": "H",
+              "fx_n": 500.0,
+              "fy_n": 300.0,
+              "fz_n": 0.0,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            }
+          ],
+          "combinations": [
+            {
+              "id": "C",
+              "factors": {
+                "P": 1.0,
+                "H": 1.0
+              }
+            }
+          ]
+        },
+        "numerics": {
+          "coarse_subdivisions": 1,
+          "fine_subdivisions": 2,
+          "equilibrium_relative_tolerance": 1e-08,
+          "refinement_relative_tolerance": 0.0001,
+          "load_steps": 10,
+          "max_newton_iterations": 30,
+          "displacement_increment_tolerance": 1e-10,
+          "force_change_tolerance": 1e-08
+        },
+        "dimensionality": 3,
+        "formulation": "spatial-quaternion-arc/1"
+      },
+      "solver_seconds": 8.553201499977149,
+      "native_reference_invocation_sha256": "e873bb926455251e74a41ed2b8b63670b7770983e6d5f890030f0d7236385e1e",
+      "old_checks": {
+        "translation_m": {
+          "maximum_absolute_error": 1.2598213624528606e-07,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.05467469797165045,
+          "compared_components": 24,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            2,
+            0
+          ],
+          "candidate_at_worst": 0.001152056375700598,
+          "reference_at_worst": 0.0011519303935643528,
+          "uncertainty_at_worst": 0.0
+        },
+        "rotation_rad": {
+          "maximum_absolute_error": 7.919231375237657e-09,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 4.742589099592689,
+          "compared_components": 24,
+          "violating_components": 4,
+          "bounds_met": false,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            6,
+            2
+          ],
+          "candidate_at_worst": -3.845265614397502e-10,
+          "reference_at_worst": -8.670092082395054e-10,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_force_n": {
+          "maximum_absolute_error": 0.013500788874807768,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.00782570435620334,
+          "compared_components": 24,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            2,
+            0
+          ],
+          "candidate_at_worst": 0.0,
+          "reference_at_worst": 7.825826841417749e-08,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_moment_nm": {
+          "maximum_absolute_error": 0.016702414001429133,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 10.318976303250706,
+          "compared_components": 24,
+          "violating_components": 4,
+          "bounds_met": false,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            4,
+            2
+          ],
+          "candidate_at_worst": -0.1289807400674357,
+          "reference_at_worst": -0.13180409652795488,
+          "uncertainty_at_worst": 0.0
+        },
+        "physical_end_actions": {
+          "maximum_absolute_error": 0.031414303442488745,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 26.794351798212233,
+          "compared_components": 96,
+          "violating_components": 32,
+          "bounds_met": false,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            2,
+            5
+          ],
+          "candidate_at_worst": -0.027802428427159936,
+          "reference_at_worst": -0.029659802299287105,
+          "uncertainty_at_worst": 0.0
+        },
+        "strain_energy_j": {
+          "maximum_absolute_error": 0.0002682900140023037,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 83.92176529534919,
+          "compared_components": 1,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08,
+          "worst_component": [],
+          "candidate_at_worst": 31.869062263895433,
+          "reference_at_worst": 31.86879397388143,
+          "uncertainty_at_worst": 0.0
+        }
+      },
+      "strict_checks": {
+        "translation_m": {
+          "maximum_absolute_error": 1.2598213624528606e-07,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 585.403512973831,
+          "compared_components": 24,
+          "violating_components": 12,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            2,
+            0
+          ],
+          "candidate_at_worst": 0.001152056375700598,
+          "reference_at_worst": 0.0011519303935643528,
+          "uncertainty_at_worst": 0.0
+        },
+        "rotation_rad": {
+          "maximum_absolute_error": 7.919231375237657e-09,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 65.12128614205366,
+          "compared_components": 24,
+          "violating_components": 12,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            2,
+            1
+          ],
+          "candidate_at_worst": 0.00021607416628149502,
+          "reference_at_worst": 0.00021606624705011978,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_force_n": {
+          "maximum_absolute_error": 0.013500788874807768,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 16.333702312720472,
+          "compared_components": 24,
+          "violating_components": 10,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": -300.0049363851459,
+          "reference_at_worst": -300.00428302899047,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_moment_nm": {
+          "maximum_absolute_error": 0.016702414001429133,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 281.9640059413527,
+          "compared_components": 24,
+          "violating_components": 12,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            4,
+            2
+          ],
+          "candidate_at_worst": -0.1289807400674357,
+          "reference_at_worst": -0.13180409652795488,
+          "uncertainty_at_worst": 0.0
+        },
+        "physical_end_actions": {
+          "maximum_absolute_error": 0.031414303442488745,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 325.9083962106269,
+          "compared_components": 96,
+          "violating_components": 92,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            10
+          ],
+          "candidate_at_worst": -863.8997892581579,
+          "reference_at_worst": -863.8683749547154,
+          "uncertainty_at_worst": 0.0
+        },
+        "strain_energy_j": {
+          "maximum_absolute_error": 0.0002682900140023037,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 83.92176529534919,
+          "compared_components": 1,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08,
+          "worst_component": [],
+          "candidate_at_worst": 31.869062263895433,
+          "reference_at_worst": 31.86879397388143,
+          "uncertainty_at_worst": 0.0
+        }
+      },
+      "refinement": {
+        "translation_m": 3.662980246150606e-05,
+        "rotation_rad": 6.91032532774522e-05,
+        "member_end_actions": 0.008685943323139586
+      },
+      "equilibrium": {
+        "force_residual_n": [
+          8.731149137020111e-11,
+          1.5916157281026244e-12,
+          2.9103830456733704e-11
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          3.4924596548080444e-10,
+          3.4924596548080444e-10,
+          9.036284609464929e-09
+        ],
+        "force_relative_residual": [
+          4.3633928720740184e-14,
+          1.3252420716924433e-15,
+          5.897657149652295e-17
+        ],
+        "moment_relative_residual": [
+          2.819573783404029e-16,
+          2.345491169513922e-16,
+          1.8068955546563212e-12
+        ],
+        "accepted": true
+      },
+      "native_reference_equilibrium": {
+        "force_residual_n": [
+          -2.7735723051591776e-08,
+          -4.547473508864641e-12,
+          -8.731149137020111e-11
+        ],
+        "moment_residual_nm": [
+          0.0,
+          -1.979060471057892e-09,
+          9.5917357612052e-08
+        ],
+        "maximum_free_physical_node_reaction_imbalance": 7.825826841417749e-08,
+        "note": "Raw independent residuals retained; not a declaration of reference stability or normative verification"
+      },
+      "energy_j": 31.869062263895433,
+      "native_energy_j": 31.86879397388143,
+      "rotation_measure_note": "Raw OpenSees nodal rotation DOFs recorded as baseline only; physical SO3 comparison is not yet available",
+      "candidate_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "orientation_quaternion": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -500.1357536064407,
+            -300.0234658644521,
+            122929.13195299827
+          ],
+          "reaction_moment_nm": [
+            854.2021759993609,
+            -1278.2029344970165,
+            -0.1289773164922986
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "orientation_quaternion": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.94090234462374,
+            -300.0049363851459,
+            123505.04827571085
+          ],
+          "reaction_moment_nm": [
+            854.2604982801846,
+            -1278.093601136338,
+            -0.1289856400221303
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.001152056375700598,
+            0.00029722038395645913,
+            -0.000123128353006374
+          ],
+          "rotation_rad": [
+            -7.972681301729758e-05,
+            0.00021607416628149502,
+            -3.8456739379730164e-10
+          ],
+          "orientation_quaternion": [
+            0.9999999933694488,
+            -3.986340642054334e-05,
+            0.00010803708290196571,
+            -1.9228369647366853e-10
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.0011520285348255873,
+            0.0002972491762960673,
+            -0.0001237042636000893
+          ],
+          "rotation_rad": [
+            -7.973475059758228e-05,
+            0.00021606645166807455,
+            -3.837611045684511e-10
+          ],
+          "orientation_quaternion": [
+            0.9999999933697072,
+            -3.986737521068035e-05,
+            0.00010803322559527331,
+            -1.9188055186015082e-10
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "B2": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "orientation_quaternion": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -500.0591097586573,
+            -299.99506718229367,
+            123235.0349874758
+          ],
+          "reaction_moment_nm": [
+            854.1802195901629,
+            -1278.2147660386618,
+            -0.1289807400674357
+          ]
+        },
+        "B3": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "orientation_quaternion": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.86423429019095,
+            -299.9765305681068,
+            123811.00483828307
+          ],
+          "reaction_moment_nm": [
+            854.2385363951653,
+            -1278.1054181366771,
+            -0.1289890633685124
+          ]
+        },
+        "T2": {
+          "translation_m": [
+            0.0011521058807085819,
+            0.0002972172284071471,
+            -0.00012343427227367313
+          ],
+          "rotation_rad": [
+            -7.972606621596807e-05,
+            0.00021608283383053262,
+            -3.845265614397502e-10
+          ],
+          "orientation_quaternion": [
+            0.9999999933689954,
+            -3.986303301987338e-05,
+            0.0001080414166764586,
+            -1.9226328029490886e-10
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T3": {
+          "translation_m": [
+            0.0011520780376061365,
+            0.00029724602012084946,
+            -0.0001240102363944811
+          ],
+          "rotation_rad": [
+            -7.973400368597414e-05,
+            0.00021607511879009086,
+            -3.8372029305617433e-10
+          ],
+          "orientation_quaternion": [
+            0.9999999933692539,
+            -3.9867001754871086e-05,
+            0.00010803755915625557,
+            -1.9186014610402853e-10
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "native_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -500.13517442455276,
+            -300.0240504382273,
+            122929.14522923586
+          ],
+          "reaction_moment_nm": [
+            854.210451768128,
+            -1278.2165605637392,
+            -0.13180056223050943
+          ]
+        },
+        "B1": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.94068281284945,
+            -300.00428302899047,
+            123505.04138771212
+          ],
+          "reaction_moment_nm": [
+            854.2653374430441,
+            -1278.1082984074635,
+            -0.13180825659498766
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            0.0011519303935643528,
+            0.0002972103657948811,
+            -0.00012312808827613392
+          ],
+          "rotation_rad": [
+            -7.972529431929855e-05,
+            0.00021606624705011978,
+            -8.669394241466248e-10
+          ],
+          "reaction_force_n": [
+            7.825826841417749e-08,
+            5.750476744087463e-10,
+            -4.348521542851813e-11
+          ],
+          "reaction_moment_nm": [
+            -2.9558577807620168e-12,
+            -2.4209414854758915e-10,
+            -9.847403614759997e-09
+          ]
+        },
+        "T1": {
+          "translation_m": [
+            0.001151903099310659,
+            0.00029723792286616565,
+            -0.0001237039790671362
+          ],
+          "rotation_rad": [
+            -7.973291573452808e-05,
+            0.0002160587869138748,
+            -8.658156948075308e-10
+          ],
+          "reaction_force_n": [
+            -5.052486307804971e-08,
+            -2.4640631896000187e-10,
+            2.1307755559973884e-10
+          ],
+          "reaction_moment_nm": [
+            4.718003765447065e-12,
+            -4.123016648146377e-09,
+            1.3776550664146292e-08
+          ]
+        },
+        "B2": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -500.05932944520083,
+            -299.99572045744316,
+            123235.0421000257
+          ],
+          "reaction_moment_nm": [
+            854.188734470309,
+            -1278.2303976962444,
+            -0.13180409652795488
+          ]
+        },
+        "B3": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            -499.8648133451327,
+            -299.9759460753436,
+            123810.9913374942
+          ],
+          "reaction_moment_nm": [
+            854.2436148237601,
+            -1278.1221205506786,
+            -0.13181179062737644
+          ]
+        },
+        "T2": {
+          "translation_m": [
+            0.0011519813533358483,
+            0.0002972072721045079,
+            -0.00012343400198408478
+          ],
+          "rotation_rad": [
+            -7.972457152821324e-05,
+            0.0002160752012722361,
+            -8.670092082395054e-10
+          ],
+          "reaction_force_n": [
+            -2.4678096677277495e-08,
+            -6.438608778081001e-10,
+            1.1220890883123502e-10
+          ],
+          "reaction_moment_nm": [
+            -2.7682744985213503e-11,
+            1.0202924195616692e-09,
+            -7.22462399627144e-09
+          ]
+        },
+        "T3": {
+          "translation_m": [
+            0.0011519540568263292,
+            0.0002972348285869777,
+            -0.00012400994585313
+          ],
+          "rotation_rad": [
+            -7.973219284374052e-05,
+            0.00021606774066764266,
+            -8.658854895414046e-10
+          ],
+          "reaction_force_n": [
+            6.176427081588942e-08,
+            7.298492695623215e-10,
+            -3.367119916219963e-10
+          ],
+          "reaction_moment_nm": [
+            2.347633198951371e-11,
+            -3.989628980481663e-09,
+            7.81935316496174e-09
+          ]
+        }
+      }
+    },
+    {
+      "case": "torsion",
+      "source_commit": "3f7569cea3d8766f2329148026175d68533915aa",
+      "request": {
+        "schema_version": "jpn.second-order-frame/3",
+        "units": "SI",
+        "analysis_type": "experimental-p4-corotational-diagnostic",
+        "binding": {
+          "model_sha256": "402b9eb771a567a82fe8b31876144b56f43f1880b201c8c9adc8b01d7dd5b6df",
+          "preparation_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "mapping_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        "model": {
+          "schema_version": "jpn.mixed3d/1",
+          "units": "SI",
+          "theory": "linear-elastic-frame-axial",
+          "project": {
+            "id": "M43-P2-cantilever",
+            "revision": "explicit-1",
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+          },
+          "nodes": [
+            {
+              "id": "B0",
+              "x_m": 0.0,
+              "y_m": 0.0,
+              "z_m": 0.0
+            },
+            {
+              "id": "T0",
+              "x_m": 0.0,
+              "y_m": 0.0,
+              "z_m": 4.0
+            },
+            {
+              "id": "ARM",
+              "x_m": 1.0,
+              "y_m": 0.0,
+              "z_m": 4.0
+            }
+          ],
+          "members": [
+            {
+              "id": "C0-S0",
+              "start": "B0",
+              "end": "T0",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            },
+            {
+              "id": "PHYSICAL-ARM",
+              "start": "T0",
+              "end": "ARM",
+              "kind": "frame",
+              "material": "M",
+              "section": "S",
+              "rotation_deg": 0.0,
+              "release_start": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ],
+              "release_end": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false
+              ]
+            }
+          ],
+          "materials": [
+            {
+              "id": "M",
+              "e_pa": 200000000000.0,
+              "g_pa": 76923076923.07692,
+              "nu": 0.3,
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+              "revision": "1"
+            }
+          ],
+          "sections": [
+            {
+              "id": "S",
+              "area_m2": 0.02,
+              "iy_m4": 2e-05,
+              "iz_m4": 2e-05,
+              "j_m4": 2e-05,
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+              "revision": "1"
+            }
+          ],
+          "supports": [
+            {
+              "node": "B0",
+              "restrained": [
+                true,
+                true,
+                true,
+                true,
+                true,
+                true
+              ]
+            }
+          ],
+          "cases": [
+            {
+              "id": "P",
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+            },
+            {
+              "id": "H",
+              "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+            }
+          ],
+          "nodal_loads": [
+            {
+              "node": "T0",
+              "case": "P",
+              "fx_n": 0.0,
+              "fy_n": 0.0,
+              "fz_n": -30842.513753404248,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            },
+            {
+              "node": "ARM",
+              "case": "H",
+              "fx_n": 0.0,
+              "fy_n": 200.0,
+              "fz_n": 0.0,
+              "mx_nm": 0.0,
+              "my_nm": 0.0,
+              "mz_nm": 0.0
+            }
+          ],
+          "combinations": [
+            {
+              "id": "C",
+              "factors": {
+                "P": 1.0,
+                "H": 1.0
+              }
+            }
+          ]
+        },
+        "numerics": {
+          "coarse_subdivisions": 1,
+          "fine_subdivisions": 2,
+          "equilibrium_relative_tolerance": 1e-08,
+          "refinement_relative_tolerance": 0.0001,
+          "load_steps": 10,
+          "max_newton_iterations": 30,
+          "displacement_increment_tolerance": 1e-10,
+          "force_change_tolerance": 1e-08
+        },
+        "dimensionality": 3,
+        "formulation": "spatial-quaternion-arc/1"
+      },
+      "solver_seconds": 2.131924799992703,
+      "native_reference_invocation_sha256": "766949c9b2854000943996f99b7473b288fddaffd4d738fa67b82905215ba9b1",
+      "old_checks": {
+        "translation_m": {
+          "maximum_absolute_error": 4.591902674549661e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.11462489195353112,
+          "compared_components": 9,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            2,
+            2
+          ],
+          "candidate_at_worst": -3.118523287026822e-05,
+          "reference_at_worst": -3.1192395182612574e-05,
+          "uncertainty_at_worst": 0.0
+        },
+        "rotation_rad": {
+          "maximum_absolute_error": 1.7267454522555507e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 28.013916741199445,
+          "compared_components": 9,
+          "violating_components": 2,
+          "bounds_met": false,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            2,
+            1
+          ],
+          "candidate_at_worst": 3.88129679449613e-08,
+          "reference_at_worst": 4.4084307880178705e-08,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_force_n": {
+          "maximum_absolute_error": 3.3898942319865455e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.003389871249376554,
+          "compared_components": 9,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": 0.0,
+          "reference_at_worst": -3.3898942319865455e-08,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_moment_nm": {
+          "maximum_absolute_error": 0.001417608990550434,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.014470407361357442,
+          "compared_components": 9,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            1
+          ],
+          "candidate_at_worst": 0.0027416413352521554,
+          "reference_at_worst": 0.002741417285844622,
+          "uncertainty_at_worst": 0.0
+        },
+        "physical_end_actions": {
+          "maximum_absolute_error": 0.001417608990550434,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.14550154309277963,
+          "compared_components": 24,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 0.002,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            1,
+            3
+          ],
+          "candidate_at_worst": -3.074215842143033e-05,
+          "reference_at_worst": -3.220654605665599e-05,
+          "uncertainty_at_worst": 0.0
+        },
+        "strain_energy_j": {
+          "maximum_absolute_error": 9.515597316989144e-06,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 127.32763666552086,
+          "compared_components": 1,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08,
+          "worst_component": [],
+          "candidate_at_worst": 0.6473316529062603,
+          "reference_at_worst": 0.6473221373089433,
+          "uncertainty_at_worst": 0.0
+        }
+      },
+      "strict_checks": {
+        "translation_m": {
+          "maximum_absolute_error": 4.591902674549661e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 216.37725183171813,
+          "compared_components": 9,
+          "violating_components": 4,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": 0.0011220520122334102,
+          "reference_at_worst": 0.001122006095855145,
+          "uncertainty_at_worst": 0.0
+        },
+        "rotation_rad": {
+          "maximum_absolute_error": 1.7267454522555507e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 121.46121258569595,
+          "compared_components": 9,
+          "violating_components": 4,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10,
+          "worst_component": [
+            2,
+            0
+          ],
+          "candidate_at_worst": -0.00042164351523928665,
+          "reference_at_worst": -0.0004216262477847641,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_force_n": {
+          "maximum_absolute_error": 3.3898942319865455e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.003389894230837407,
+          "compared_components": 9,
+          "violating_components": 0,
+          "bounds_met": true,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": 0.0,
+          "reference_at_worst": -3.3898942319865455e-08,
+          "uncertainty_at_worst": 0.0
+        },
+        "reaction_moment_nm": {
+          "maximum_absolute_error": 0.001417608990550434,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 15.168071666715942,
+          "compared_components": 9,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            0
+          ],
+          "candidate_at_worst": 834.6006675727702,
+          "reference_at_worst": 834.5992499637797,
+          "uncertainty_at_worst": 0.0
+        },
+        "physical_end_actions": {
+          "maximum_absolute_error": 0.001417608990550434,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 15.168071666715942,
+          "compared_components": 24,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05,
+          "worst_component": [
+            0,
+            3
+          ],
+          "candidate_at_worst": 834.6006675727702,
+          "reference_at_worst": 834.5992499637797,
+          "uncertainty_at_worst": 0.0
+        },
+        "strain_energy_j": {
+          "maximum_absolute_error": 9.515597316989144e-06,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 127.32763666552086,
+          "compared_components": 1,
+          "violating_components": 1,
+          "bounds_met": false,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08,
+          "worst_component": [],
+          "candidate_at_worst": 0.6473316529062603,
+          "reference_at_worst": 0.6473221373089433,
+          "uncertainty_at_worst": 0.0
+        }
+      },
+      "refinement": {
+        "translation_m": 1.3446126448939718e-05,
+        "rotation_rad": 4.069528067158896e-05,
+        "member_end_actions": 4.43623706077595e-06
+      },
+      "equilibrium": {
+        "force_residual_n": [
+          3.584037008147467e-10,
+          -2.8421709430404007e-13,
+          0.0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          4.547473508864641e-13,
+          2.1794234732891438e-10,
+          -1.1368683772161603e-13
+        ],
+        "force_relative_residual": [
+          3.584037008147467e-10,
+          1.4140153945474631e-15,
+          0.0
+        ],
+        "moment_relative_residual": [
+          5.442161172601763e-16,
+          2.173464613338198e-10,
+          5.656062888922223e-16
+        ],
+        "accepted": true
+      },
+      "native_reference_equilibrium": {
+        "force_residual_n": [
+          9.83293569574231e-09,
+          -2.8421709430404007e-12,
+          -3.637978807091713e-12
+        ],
+        "moment_residual_nm": [
+          5.684341886080801e-13,
+          8.194052060137014e-10,
+          1.1368683772161603e-13
+        ],
+        "maximum_free_physical_node_reaction_imbalance": 3.3898942319865455e-08,
+        "note": "Raw independent residuals retained; not a declaration of reference stability or normative verification"
+      },
+      "energy_j": 0.6473316529062603,
+      "native_energy_j": 0.6473221373089433,
+      "rotation_measure_note": "Raw OpenSees nodal rotation DOFs recorded as baseline only; physical SO3 comparison is not yet available",
+      "candidate_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "orientation_quaternion": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            3.584037008147467e-10,
+            -200.00000000000028,
+            30842.513753404248
+          ],
+          "reaction_moment_nm": [
+            834.6006675727702,
+            0.0027416413352521554,
+            -199.9999534203896
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            -8.889162340106597e-08,
+            0.0011220520122334102,
+            -3.1031522077579066e-05
+          ],
+          "rotation_rad": [
+            -0.0004216435180961928,
+            4.4083512109789634e-08,
+            0.0005199998795919009
+          ],
+          "orientation_quaternion": [
+            0.9999999439771089,
+            -0.00021082175511114826,
+            2.2041755643280516e-08,
+            0.0002599999349406343
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "ARM": {
+          "translation_m": [
+            -2.3289805257917831e-07,
+            0.0016587185055990988,
+            -3.118523287026822e-05
+          ],
+          "rotation_rad": [
+            -0.00042164351523928665,
+            3.88129679449613e-08,
+            0.0005449998755656227
+          ],
+          "orientation_quaternion": [
+            0.9999999406489856,
+            -0.0002108217534488149,
+            1.9406483588549144e-08,
+            0.0002724999323917621
+          ],
+          "reaction_force_n": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_moment_nm": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "native_physical_nodes": {
+        "B0": {
+          "translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reaction_force_n": [
+            9.83293569574231e-09,
+            -200.00000000000284,
+            30842.513753404244
+          ],
+          "reaction_moment_nm": [
+            834.5992499637797,
+            0.002741417285844622,
+            -199.99995342187327
+          ]
+        },
+        "T0": {
+          "translation_m": [
+            -8.888433959559577e-08,
+            0.001122006095855145,
+            -3.1031362445708715e-05
+          ],
+          "rotation_rad": [
+            -0.0004216262510393619,
+            4.9448915866769845e-08,
+            0.000519999875172263
+          ],
+          "reaction_force_n": [
+            1.7848072509079466e-08,
+            -3.3898942319865455e-08,
+            -6.400731270398158e-10
+          ],
+          "reaction_moment_nm": [
+            -1.0244125331544153e-11,
+            -1.15164883148395e-09,
+            -1.0534506600379245e-09
+          ]
+        },
+        "ARM": {
+          "translation_m": [
+            -2.3289063297705937e-07,
+            0.0016586725865723533,
+            -3.1192395182612574e-05
+          ],
+          "rotation_rad": [
+            -0.0004216262477847641,
+            4.4084307880178705e-08,
+            0.0005449998715239907
+          ],
+          "reaction_force_n": [
+            7.899514375964145e-13,
+            -4.358014393801568e-09,
+            3.712954964835365e-10
+          ],
+          "reaction_moment_nm": [
+            -6.300484606403266e-15,
+            1.1601874578132437e-11,
+            1.3877329726112206e-10
+          ]
+        }
+      }
+    }
+  ],
+  "production_enabled": false,
+  "computed_structural_approval": false,
+  "fabrication_release": false,
+  "release_gate": "NOT_READY_BLOCKED"
+}
