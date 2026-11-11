@@ -71,6 +71,7 @@ jobs:
       - run: python -m pip install -r engine/requirements-validation.lock
       - run: python -m pip install --no-build-isolation --no-deps -e ./engine
       - run: python -m pip check
+      - run: python validation/geometric-stiffness-audit/kg_reference.py
       - run: python engine/validate.py
       - run: python engine/audit_loading.py
       - uses: actions/upload-artifact@v4
@@ -87,18 +88,22 @@ jobs:
       MKL_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: python validation/integration-general/audit.py
       - run: python -m venv .venv
       - run: .venv/bin/python -m pip install -r engine/requirements-sections.lock
       - run: .venv/bin/python -m pip install --no-build-isolation --no-deps -e ./engine
       - run: python -m venv .tools/sections-fsm
       - run: .tools/sections-fsm/bin/python -m pip install -r engine/requirements-sections-fsm.lock
       - run: npx --yes pnpm@12.15.0 install --frozen-lockfile
+      - run: node validation/ufsc-2023/validate-reference.mjs
       - run: npx --yes pnpm@12.15.0 typecheck
       - run: npx --yes pnpm@12.15.0 lint
       - run: npx --yes pnpm@12.15.0 test
@@ -110,6 +115,13 @@ jobs:
         env:
           JPN_SECTION_FSM_PYTHON_EXECUTABLE: .tools/sections-fsm/bin/python
       - run: npx --yes pnpm@12.15.0 build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: general-integration-browser-evidence
+          path: |
+            .tools/integration-general-runtime/
+            test-results/
 
   optional-numerical-profiles:
     runs-on: ${{ matrix.os }}
