@@ -39,6 +39,10 @@ jobs:
       # General spatial discrepancies remain blocked and cannot deteriorate
       # beyond their committed diagnostic baseline. Never re-record it in CI.
       - run: python validation/m43-p4/reproduce.py --opensees-python ${{ matrix.reference-python }} --p3-evidence .tools/m43-p3-independent-evidence.json --output .tools/m43-p4-independent-evidence.json
+      # P5 compares physical SO(3) orientations, not incompatible raw DOFs.
+      # A strict cantilever regression is mandatory. Remaining failed cases
+      # and the unchanged 20s/768MiB worker guards remain explicit in evidence.
+      - run: python validation/m43-p5/reproduce.py --opensees-python ${{ matrix.reference-python }} --output .tools/m43-p5-independent-evidence.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -47,6 +51,7 @@ jobs:
             .tools/m43-p2-independent-evidence.json
             .tools/m43-p3-independent-evidence.json
             .tools/m43-p4-independent-evidence.json
+            .tools/m43-p5-independent-evidence.json
 
   structural:
     runs-on: ${{ matrix.os }}

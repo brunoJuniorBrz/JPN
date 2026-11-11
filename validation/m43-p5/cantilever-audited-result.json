@@ -1,0 +1,4134 @@
+{
+  "request": {
+    "schema_version": "jpn.second-order-frame/3",
+    "units": "SI",
+    "analysis_type": "experimental-p4-corotational-diagnostic",
+    "binding": {
+      "model_sha256": "75d43c90f490f982e58a6df7aff555c56e49afbc87f89c3f3236d316dd2092bd",
+      "preparation_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mapping_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "model": {
+      "schema_version": "jpn.mixed3d/1",
+      "units": "SI",
+      "theory": "linear-elastic-frame-axial",
+      "project": {
+        "id": "M43-P2-cantilever",
+        "revision": "explicit-1",
+        "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+      },
+      "nodes": [
+        {
+          "id": "B0",
+          "x_m": 0.0,
+          "y_m": 0.0,
+          "z_m": 0.0
+        },
+        {
+          "id": "T0",
+          "x_m": 0.0,
+          "y_m": 0.0,
+          "z_m": 4.0
+        }
+      ],
+      "members": [
+        {
+          "id": "C0-S0",
+          "start": "B0",
+          "end": "T0",
+          "kind": "frame",
+          "material": "M",
+          "section": "S",
+          "rotation_deg": 0.0,
+          "release_start": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "release_end": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        }
+      ],
+      "materials": [
+        {
+          "id": "M",
+          "e_pa": 200000000000.0,
+          "g_pa": 76923076923.07692,
+          "nu": 0.3,
+          "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+          "revision": "1"
+        }
+      ],
+      "sections": [
+        {
+          "id": "S",
+          "area_m2": 0.02,
+          "iy_m4": 2e-05,
+          "iz_m4": 4e-05,
+          "j_m4": 2e-05,
+          "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+          "revision": "1"
+        }
+      ],
+      "supports": [
+        {
+          "node": "B0",
+          "restrained": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ]
+        }
+      ],
+      "cases": [
+        {
+          "id": "P",
+          "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+        },
+        {
+          "id": "H",
+          "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+        }
+      ],
+      "nodal_loads": [
+        {
+          "node": "T0",
+          "case": "P",
+          "fx_n": 0.0,
+          "fy_n": 0.0,
+          "fz_n": -61685.027506808496,
+          "mx_nm": 0.0,
+          "my_nm": 0.0,
+          "mz_nm": 0.0
+        },
+        {
+          "node": "T0",
+          "case": "H",
+          "fx_n": 1000.0,
+          "fy_n": 600.0,
+          "fz_n": 0.0,
+          "mx_nm": 0.0,
+          "my_nm": 0.0,
+          "mz_nm": 0.0
+        }
+      ],
+      "combinations": [
+        {
+          "id": "C",
+          "factors": {
+            "P": 1.0,
+            "H": 1.0
+          }
+        }
+      ]
+    },
+    "numerics": {
+      "coarse_subdivisions": 6,
+      "fine_subdivisions": 12,
+      "equilibrium_relative_tolerance": 1e-08,
+      "refinement_relative_tolerance": 0.0001,
+      "load_steps": 10,
+      "max_newton_iterations": 30,
+      "displacement_increment_tolerance": 1e-10,
+      "force_change_tolerance": 1e-08
+    },
+    "dimensionality": 3,
+    "formulation": "spatial-quaternion-arc/1"
+  },
+  "result": {
+    "schema_version": "jpn.second-order-frame-diagnostic/3",
+    "status": "diagnostic-only",
+    "units": "SI",
+    "input_sha256": "9e316edc612dee95e05e528b464eefb253ce4c2403ec518dede6d1852efa2aec",
+    "binding": {
+      "model_sha256": "75d43c90f490f982e58a6df7aff555c56e49afbc87f89c3f3236d316dd2092bd",
+      "preparation_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mapping_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    },
+    "project": {
+      "id": "M43-P2-cantilever",
+      "revision": "explicit-1",
+      "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+    },
+    "dimensionality": 3,
+    "formulation": "spatial-quaternion-arc/1",
+    "solver": {
+      "name": "JPN-P4",
+      "version": "1.0",
+      "method": "energy-consistent-Newton",
+      "rotation_measure": "SO(3) exponential coordinates; scalar-first quaternions"
+    },
+    "coarse": {
+      "analysis_model": {
+        "schema_version": "jpn.mixed3d/1",
+        "units": "SI",
+        "theory": "linear-elastic-frame-axial",
+        "project": {
+          "id": "M43-P2-cantilever",
+          "revision": "explicit-1",
+          "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+        },
+        "nodes": [
+          {
+            "id": "B0",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 0.0
+          },
+          {
+            "id": "T0",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 4.0
+          },
+          {
+            "id": "P2N-0",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 0.6666666666666666
+          },
+          {
+            "id": "P2N-1",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 1.3333333333333333
+          },
+          {
+            "id": "P2N-2",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 2.0
+          },
+          {
+            "id": "P2N-3",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 2.6666666666666665
+          },
+          {
+            "id": "P2N-4",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 3.3333333333333335
+          }
+        ],
+        "members": [
+          {
+            "id": "P2M-0",
+            "start": "B0",
+            "end": "P2N-0",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-1",
+            "start": "P2N-0",
+            "end": "P2N-1",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-2",
+            "start": "P2N-1",
+            "end": "P2N-2",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-3",
+            "start": "P2N-2",
+            "end": "P2N-3",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-4",
+            "start": "P2N-3",
+            "end": "P2N-4",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-5",
+            "start": "P2N-4",
+            "end": "T0",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "M",
+            "e_pa": 200000000000.0,
+            "g_pa": 76923076923.07692,
+            "nu": 0.3,
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+            "revision": "1"
+          }
+        ],
+        "sections": [
+          {
+            "id": "S",
+            "area_m2": 0.02,
+            "iy_m4": 2e-05,
+            "iz_m4": 4e-05,
+            "j_m4": 2e-05,
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+            "revision": "1"
+          }
+        ],
+        "supports": [
+          {
+            "node": "B0",
+            "restrained": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        ],
+        "cases": [
+          {
+            "id": "P",
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+          },
+          {
+            "id": "H",
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+          }
+        ],
+        "nodal_loads": [
+          {
+            "node": "T0",
+            "case": "P",
+            "fx_n": 0.0,
+            "fy_n": 0.0,
+            "fz_n": -61685.027506808496,
+            "mx_nm": 0.0,
+            "my_nm": 0.0,
+            "mz_nm": 0.0
+          },
+          {
+            "node": "T0",
+            "case": "H",
+            "fx_n": 1000.0,
+            "fy_n": 600.0,
+            "fz_n": 0.0,
+            "mx_nm": 0.0,
+            "my_nm": 0.0,
+            "mz_nm": 0.0
+          }
+        ],
+        "combinations": [
+          {
+            "id": "C",
+            "factors": {
+              "P": 1.0,
+              "H": 1.0
+            }
+          }
+        ]
+      },
+      "subdivisions": 6,
+      "node_count": 7,
+      "member_count": 6,
+      "numerical_member_mapping": [
+        {
+          "id": "P2M-0",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.0,
+          "end_fraction": 0.16666666666666666
+        },
+        {
+          "id": "P2M-1",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.16666666666666666,
+          "end_fraction": 0.3333333333333333
+        },
+        {
+          "id": "P2M-2",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.3333333333333333,
+          "end_fraction": 0.5
+        },
+        {
+          "id": "P2M-3",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.5,
+          "end_fraction": 0.6666666666666666
+        },
+        {
+          "id": "P2M-4",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.6666666666666666,
+          "end_fraction": 0.8333333333333334
+        },
+        {
+          "id": "P2M-5",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.8333333333333334,
+          "end_fraction": 1.0
+        }
+      ],
+      "elastic_scaled_condition": 7225.040649599455,
+      "combinations": {
+        "C": {
+          "nodes": {
+            "B0": {
+              "translation_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rotation_rad": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "orientation_quaternion": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_force_n": [
+                -999.9999999907959,
+                -599.9999999999997,
+                61685.02750680846
+              ],
+              "reaction_moment_nm": [
+                2503.778730218296,
+                -4364.979397167299,
+                -1.8676964693051334
+              ]
+            },
+            "T0": {
+              "translation_m": [
+                0.0059179153585670625,
+                0.0016830527458354392,
+                -6.737450662145436e-05
+              ],
+              "rotation_rad": [
+                -0.0006324598560542101,
+                0.002228499600662287,
+                1.2262476040242242e-06
+              ],
+              "orientation_quaternion": [
+                0.9999993292228946,
+                -0.0003162298573205033,
+                0.0011142495511933803,
+                6.131236649223029e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-0": {
+              "translation_m": [
+                0.00023001557165853239,
+                6.582553946973351e-05,
+                -1.0337241760719067e-05
+              ],
+              "rotation_rad": [
+                -0.00019186736690986075,
+                0.0006711429127694788,
+                6.316026854529502e-07
+              ],
+              "orientation_quaternion": [
+                0.9999999390942138,
+                -9.593368150729156e-05,
+                0.0003355714495719916,
+                3.1580133631509873e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-1": {
+              "translation_m": [
+                0.0008691392781677598,
+                0.0002482674790773823,
+                -2.095848682144639e-05
+              ],
+              "rotation_rad": [
+                -0.0003497541126997789,
+                0.0012266427560310323,
+                9.822246070156935e-07
+              ],
+              "orientation_quaternion": [
+                0.9999997966273375,
+                -0.00017487704449481846,
+                0.0006133213364379151,
+                4.911122702149074e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-2": {
+              "translation_m": [
+                0.0018389636089867919,
+                0.0005244856186854982,
+                -3.200739485135908e-05
+              ],
+              "rotation_rad": [
+                -0.00047311941193500876,
+                0.0016626943901066878,
+                1.1494389975973211e-06
+              ],
+              "orientation_quaternion": [
+                0.9999996264505315,
+                -0.00023655967651191952,
+                0.000831347091536907,
+                5.747194272366044e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-3": {
+              "translation_m": [
+                0.0030588158826552548,
+                0.0008713184443269402,
+                -4.349708322471079e-05
+              ],
+              "rotation_rad": [
+                -0.0005615406387858797,
+                0.0019763109579027977,
+                1.2114735726133794e-06
+              ],
+              "orientation_quaternion": [
+                0.9999994723582515,
+                -0.0002807702700108907,
+                0.0009881553051540313,
+                6.057366797693469e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-4": {
+              "translation_m": [
+                0.004446310918425511,
+                0.0012653625323363188,
+                -5.533890589549173e-05
+              ],
+              "rotation_rad": [
+                -0.0006147148511434591,
+                0.0021653442939256824,
+                1.2254757877160894e-06
+              ],
+              "orientation_quaternion": [
+                0.9999993666760967,
+                -0.00030735736068612535,
+                0.0010826719184021149,
+                6.127377645041877e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "members": {
+            "P2M-0": {
+              "end_actions_global": [
+                -999.9999999907959,
+                -599.9999999999997,
+                61685.02750680846,
+                2503.778730218296,
+                -4364.979397167299,
+                -1.8676964693051334,
+                999.9999999907959,
+                599.9999999999997,
+                -61685.02750680846,
+                -2099.724482350511,
+                3684.134550883773,
+                1.795512665706332
+              ],
+              "end_actions_local": [
+                61684.61926188134,
+                -606.0904268706263,
+                1021.2832256020874,
+                -1.4348182062396353,
+                -4364.980024862112,
+                -2503.7779214079937,
+                -61684.61926188134,
+                606.0904268706263,
+                -1021.2832256020874,
+                1.4348182061669155,
+                3684.135054534505,
+                2099.7238761109074
+              ],
+              "current_basis": [
+                [
+                  0.00034502868523689223,
+                  9.873983389243354e-05,
+                  0.9999999356028243
+                ],
+                [
+                  -3.3285255392292876e-07,
+                  0.9999999951251786,
+                  -9.873972492597483e-05
+                ],
+                [
+                  -0.9999999404775467,
+                  -2.987844950163077e-07,
+                  0.00034502871642067
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 1.8930468656059736,
+              "local_state": {
+                "extension_m": -1.0280769876980217e-05,
+                "arc_extension_m": 1.354109580332642e-08,
+                "axial_n": -61684.61926188131,
+                "torsion_nm": 1.4576239899612493,
+                "local_rotation_i": [
+                  -3.158185312488921e-07,
+                  -0.00034502870823510646,
+                  -9.873978152872682e-05
+                ],
+                "local_rotation_j": [
+                  3.158185310676492e-07,
+                  0.0003261142036482229,
+                  9.312758836780109e-05
+                ],
+                "torsion_rad": 6.316370623165413e-07
+              }
+            },
+            "P2M-1": {
+              "end_actions_global": [
+                -999.9999999917299,
+                -599.9999999999955,
+                61685.027506808474,
+                2099.724482350511,
+                -3684.1345508777417,
+                -1.795512665707706,
+                999.9999999917299,
+                599.9999999999955,
+                -61685.027506808474,
+                -1688.4769190344573,
+                2978.054142045375,
+                1.594480381491236
+              ],
+              "end_actions_local": [
+                61683.87394870265,
+                -616.8801563418469,
+                1059.1374174187315,
+                -0.7907317038273947,
+                -3684.135891345618,
+                -2099.7227491889007,
+                -61683.87394870265,
+                616.8801563418469,
+                -1059.1374174187315,
+                0.7907317039102877,
+                2978.0551781689664,
+                1688.4756592731135
+              ],
+              "current_basis": [
+                [
+                  0.0009587003571840391,
+                  0.00027366713342949695,
+                  0.9999995029998392
+                ],
+                [
+                  -9.381227802114232e-07,
+                  0.999999962552921,
+                  -0.00027366635981504255
+                ],
+                [
+                  -0.9999995404462669,
+                  -6.757582770603127e-07,
+                  0.0009587005780169466
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 1.39643493429931,
+              "local_state": {
+                "extension_m": -1.0280645658117108e-05,
+                "arc_extension_m": 9.271076102611067e-09,
+                "axial_n": -61683.87394870265,
+                "torsion_nm": 0.8098841754505178,
+                "local_rotation_i": [
+                  -1.754749047240295e-07,
+                  -0.0002875577226570743,
+                  -8.179939311442061e-05
+                ],
+                "local_rotation_j": [
+                  1.7547490463786152e-07,
+                  0.0002679421363001495,
+                  7.60872967252614e-05
+                ],
+                "torsion_rad": 3.50949809361891e-07
+              }
+            },
+            "P2M-2": {
+              "end_actions_global": [
+                -999.9999999829583,
+                -599.9999999999974,
+                61685.027506808496,
+                1688.4769190344523,
+                -2978.054142034459,
+                -1.594480381495255,
+                999.9999999829583,
+                599.9999999999974,
+                -61685.027506808496,
+                -1271.4450248396672,
+                2251.5748837638407,
+                1.2888039225805592
+              ],
+              "end_actions_local": [
+                61683.25358011904,
+                -625.5566652836477,
+                1089.7362731118158,
+                -0.3720595612319152,
+                -2978.0555342922053,
+                -1688.4751753021442,
+                -61683.25358011904,
+                625.5566652836477,
+                -1089.7362731118158,
+                0.37205956120522876,
+                2251.5758948551565,
+                1271.4438330811663
+              ],
+              "current_basis": [
+                [
+                  0.0014547589422586604,
+                  0.0004143336023232203,
+                  0.9999988560013884
+                ],
+                [
+                  -1.3672249129933968e-06,
+                  0.999999914163537,
+                  -0.000414332051770913
+                ],
+                [
+                  -0.9999989418367152,
+                  -7.644700915118816e-07,
+                  0.0014547593838745154
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.9830755286825352,
+              "local_state": {
+                "extension_m": -1.0280542263353176e-05,
+                "arc_extension_m": 5.711793077047214e-09,
+                "axial_n": -61683.253580119046,
+                "torsion_nm": 0.38726838804206776,
+                "local_rotation_i": [
+                  -8.390815075902703e-08,
+                  -0.00022811697883875907,
+                  -6.457881173036689e-05
+                ],
+                "local_rotation_j": [
+                  8.390815072586899e-08,
+                  0.00020793468625673254,
+                  5.878637704290037e-05
+                ],
+                "torsion_rad": 1.6781630148489603e-07
+              }
+            },
+            "P2M-3": {
+              "end_actions_global": [
+                -1000.0000000166085,
+                -600.0000000000459,
+                61685.02750680856,
+                1271.4450248396824,
+                -2251.574883763,
+                -1.2888039225805088,
+                1000.0000000166085,
+                600.0000000000459,
+                -61685.02750680856,
+                -850.05752626272,
+                1509.673085718154,
+                0.9037253840382464
+              ],
+              "end_actions_local": [
+                61682.773930976386,
+                -632.0902127323855,
+                1112.8704591247295,
+                -0.133701235031547,
+                -2251.5760146098664,
+                -1271.4436684159596,
+                -61682.773930976386,
+                632.0902127323855,
+                -1112.8704591247295,
+                0.13370123504324713,
+                1509.6738193068759,
+                850.0566933096924
+              ],
+              "current_basis": [
+                [
+                  0.001829806635505915,
+                  0.0005202572634974941,
+                  0.9999981905683916
+                ],
+                [
+                  -1.6564369123135648e-06,
+                  0.9999998646659328,
+                  -0.000520255103495738
+                ],
+                [
+                  -0.9999983259010655,
+                  -7.044676745719463e-07,
+                  0.0018298072496440443
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.6634794369128479,
+              "local_state": {
+                "extension_m": -1.0280462321829394e-05,
+                "arc_extension_m": 2.956919464184507e-09,
+                "axial_n": -61682.77393097638,
+                "torsion_nm": 0.14473442565857372,
+                "local_rotation_i": [
+                  -3.135912556382381e-08,
+                  -0.00016711367580296254,
+                  -4.713701529208781e-05
+                ],
+                "local_rotation_j": [
+                  3.135912555489145e-08,
+                  0.00014650292792618512,
+                  4.12840836252816e-05
+                ],
+                "torsion_rad": 6.271825111871526e-08
+              }
+            },
+            "P2M-4": {
+              "end_actions_global": [
+                -1000.0000000383884,
+                -599.9999999999679,
+                61685.02750680857,
+                850.0575262627235,
+                -1509.6730857405594,
+                -0.9037253840258606,
+                1000.0000000383884,
+                599.9999999999679,
+                -61685.02750680857,
+                -425.758010948593,
+                757.4305914239225,
+                0.46527245059361
+              ],
+              "end_actions_local": [
+                61682.44721074633,
+                -636.4583981267077,
+                1128.3817247524082,
+                -0.026850480167889733,
+                -1509.6738464757073,
+                -850.056655189047,
+                -61682.44721074633,
+                636.4583981267077,
+                -1128.3817247524082,
+                0.026850480173270706,
+                757.4309647493219,
+                425.7576001765702
+              ],
+              "current_basis": [
+                [
+                  0.002081274651552445,
+                  0.0005910752477126637,
+                  0.9999976594601995
+                ],
+                [
+                  -1.8335465709652665e-06,
+                  0.9999998253148289,
+                  -0.0005910727117757891
+                ],
+                [
+                  -0.9999978341438863,
+                  -6.033576272331735e-07,
+                  0.0020812753717486254
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.445781834240333,
+              "local_state": {
+                "extension_m": -1.0280407868457724e-05,
+                "arc_extension_m": 1.0789992925648253e-09,
+                "axial_n": -61682.447210746315,
+                "torsion_nm": 0.033538969965407534,
+                "local_rotation_i": [
+                  -7.266776826510909e-09,
+                  -0.00010496569339388212,
+                  -2.9533745612496302e-05
+                ],
+                "local_rotation_j": [
+                  7.266776825165696e-09,
+                  8.40676707818702e-05,
+                  2.3640366519191974e-05
+                ],
+                "torsion_rad": 1.4533553651676606e-08
+              }
+            },
+            "P2M-5": {
+              "end_actions_global": [
+                -999.9999999965102,
+                -600.0000000000385,
+                61685.02750680848,
+                425.7580109485955,
+                -757.4305914341376,
+                -0.4652724505872439,
+                999.9999999965102,
+                600.0000000000385,
+                -61685.02750680848,
+                1.2435101764780138e-11,
+                1.2504558788858633e-09,
+                -1.122773598072306e-12
+              ],
+              "end_actions_local": [
+                61682.281742180654,
+                -638.6462424097668,
+                1136.1639718876763,
+                -6.984101440765889e-13,
+                -757.4309675837961,
+                -425.7575959988261,
+                -61682.281742180654,
+                638.6462424097668,
+                -1136.1639718876763,
+                -3.118540362263885e-13,
+                1.2504563130696291e-09,
+                -1.243821804117784e-11
+              ],
+              "current_basis": [
+                [
+                  0.002207440700629393,
+                  0.0006265449820495373,
+                  0.9999973673200039
+                ],
+                [
+                  -1.9173581521728382e-06,
+                  0.9999998037205308,
+                  -0.000626542276102515
+                ],
+                [
+                  -0.9999975635979704,
+                  -5.342981834486954e-07,
+                  0.00220744146866525
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.3355281719246988,
+              "local_state": {
+                "extension_m": -1.028038029036344e-05,
+                "arc_extension_m": 1.2750344299111634e-10,
+                "axial_n": -61682.281742180654,
+                "torsion_nm": 0.002240994053348681,
+                "local_rotation_i": [
+                  -4.855487115191749e-10,
+                  -4.209873499842433e-05,
+                  -1.1829302446382617e-05
+                ],
+                "local_rotation_j": [
+                  4.855487115985864e-10,
+                  2.105658233093891e-05,
+                  5.915664753360654e-06
+                ],
+                "torsion_rad": 9.710974231177614e-10
+              }
+            }
+          },
+          "equilibrium": {
+            "force_residual_n": [
+              9.204086381942034e-09,
+              3.410605131648481e-13,
+              -3.637978807091713e-11
+            ],
+            "deformed_geometry_moment_residual_nm": [
+              0.0,
+              2.253727870993316e-09,
+              -3.352873534367973e-13
+            ],
+            "force_relative_residual": [
+              9.194891490451582e-12,
+              5.674883746503296e-16,
+              5.89757349294405e-16
+            ],
+            "moment_relative_residual": [
+              0.0,
+              5.162021315204554e-13,
+              1.169187035746776e-13
+            ],
+            "accepted": true
+          },
+          "newton_steps": [
+            {
+              "step": 1,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 4.76884371602544e-13,
+              "scaled_displacement_increment": 3.73014012013876e-16,
+              "scaled_internal_force_change": 9.718453293767526e-13,
+              "minimum_tangent_ratio": 0.9797459850518017,
+              "maximum_tangent_ratio": 1.0107538998448142,
+              "scaled_tangent_condition": 7293.117383506179
+            },
+            {
+              "step": 2,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 8.921528452744346e-13,
+              "scaled_displacement_increment": 2.0095472756519065e-16,
+              "scaled_internal_force_change": 1.3605927223109636e-12,
+              "minimum_tangent_ratio": 0.9595009919828581,
+              "maximum_tangent_ratio": 1.0219458225500775,
+              "scaled_tangent_condition": 7362.619765152837
+            },
+            {
+              "step": 3,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 3.266341095508763e-13,
+              "scaled_displacement_increment": 4.364835376786996e-16,
+              "scaled_internal_force_change": 5.830518609026917e-13,
+              "minimum_tangent_ratio": 0.9392696166253687,
+              "maximum_tangent_ratio": 1.0335986626154186,
+              "scaled_tangent_condition": 7433.594896842261
+            },
+            {
+              "step": 4,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 3.7244517580217116e-13,
+              "scaled_displacement_increment": 3.027516471258125e-16,
+              "scaled_internal_force_change": 7.774841884942564e-13,
+              "minimum_tangent_ratio": 0.9190566883108723,
+              "maximum_tangent_ratio": 1.0457367968987648,
+              "scaled_tangent_condition": 7506.0919274022435
+            },
+            {
+              "step": 5,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 4.799099219267965e-13,
+              "scaled_displacement_increment": 4.588580281859985e-16,
+              "scaled_internal_force_change": 9.715672634937576e-13,
+              "minimum_tangent_ratio": 0.8988672775205467,
+              "maximum_tangent_ratio": 1.0583861975362308,
+              "scaled_tangent_condition": 7580.162192522937
+            },
+            {
+              "step": 6,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 6.382715523913636e-13,
+              "scaled_displacement_increment": 3.415270809457303e-16,
+              "scaled_internal_force_change": 1.0689598966071657e-12,
+              "minimum_tangent_ratio": 0.8787067034313796,
+              "maximum_tangent_ratio": 1.0715745546207547,
+              "scaled_tangent_condition": 7655.859360514802
+            },
+            {
+              "step": 7,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 4.798269859550665e-13,
+              "scaled_displacement_increment": 4.600892124077424e-16,
+              "scaled_internal_force_change": 5.830767416942107e-13,
+              "minimum_tangent_ratio": 0.8585805412940288,
+              "maximum_tangent_ratio": 1.085331409565102,
+              "scaled_tangent_condition": 7733.239584114931
+            },
+            {
+              "step": 8,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 5.385991015661758e-13,
+              "scaled_displacement_increment": 4.0639838996188865e-16,
+              "scaled_internal_force_change": 4.858647246970149e-13,
+              "minimum_tangent_ratio": 0.8384946295881264,
+              "maximum_tangent_ratio": 1.099688300181968,
+              "scaled_tangent_condition": 7812.361660088191
+            },
+            {
+              "step": 9,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 4.698894135202112e-13,
+              "scaled_displacement_increment": 5.984647646136827e-16,
+              "scaled_internal_force_change": 1.1659765533153973e-12,
+              "minimum_tangent_ratio": 0.8184550768720634,
+              "maximum_tangent_ratio": 1.1146789186110486,
+              "scaled_tangent_condition": 7893.2871982340685
+            },
+            {
+              "step": 10,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 6.789046494743115e-13,
+              "scaled_displacement_increment": 3.828527076646742e-16,
+              "scaled_internal_force_change": 8.746685601675421e-13,
+              "minimum_tangent_ratio": 0.7984682682590641,
+              "maximum_tangent_ratio": 1.1303392833507473,
+              "scaled_tangent_condition": 7976.080801027887
+            }
+          ],
+          "strain_energy_j": 5.7173467716656985,
+          "final_external_dead_load_potential_j": 11.083745300270389,
+          "stability": {
+            "domain": "full spatial conservative energy Hessian",
+            "positive_definite": true,
+            "minimum_generalized_eigenvalue": 0.798468268259064,
+            "generalized_mode": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -2.486100235272706,
+              -0.23593803847616068,
+              0.022939466742348893,
+              0.09589951112373578,
+              -1.0,
+              -0.003806372827414968,
+              -0.08073920848034057,
+              -0.007491703695047095,
+              0.0001876553912984202,
+              0.022439181935469992,
+              -0.2415223038967808,
+              -0.0018497633318633985,
+              -0.31986011659263225,
+              -0.029789946874713882,
+              0.001391493891895717,
+              0.044284526871334,
+              -0.4733710767242061,
+              -0.002978438788532111,
+              -0.7067285406703202,
+              -0.06615529873428674,
+              0.004283860651578876,
+              0.06439013225751603,
+              -0.6822402270737229,
+              -0.003555923376397996,
+              -1.2204477503650673,
+              -0.1148605404785944,
+              0.009087632360455632,
+              0.08097389003161497,
+              -0.8509180791657265,
+              -0.003772174210559035,
+              -1.8281503289660357,
+              -0.17287931638151918,
+              0.015537945833202614,
+              0.09201423844038799,
+              -0.9614336332470292,
+              -0.0038104183714812
+            ],
+            "normalization": "max(abs(mode)/[span translations, unit rotations])=1",
+            "normative_stability_verified": false
+          },
+          "physical_equilibrium_verified": true
+        }
+      }
+    },
+    "candidate": {
+      "analysis_model": {
+        "schema_version": "jpn.mixed3d/1",
+        "units": "SI",
+        "theory": "linear-elastic-frame-axial",
+        "project": {
+          "id": "M43-P2-cantilever",
+          "revision": "explicit-1",
+          "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+        },
+        "nodes": [
+          {
+            "id": "B0",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 0.0
+          },
+          {
+            "id": "T0",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 4.0
+          },
+          {
+            "id": "P2N-0",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 0.3333333333333333
+          },
+          {
+            "id": "P2N-1",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 0.6666666666666666
+          },
+          {
+            "id": "P2N-2",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 1.0
+          },
+          {
+            "id": "P2N-3",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 1.3333333333333333
+          },
+          {
+            "id": "P2N-4",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 1.6666666666666667
+          },
+          {
+            "id": "P2N-5",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 2.0
+          },
+          {
+            "id": "P2N-6",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 2.3333333333333335
+          },
+          {
+            "id": "P2N-7",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 2.6666666666666665
+          },
+          {
+            "id": "P2N-8",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 3.0
+          },
+          {
+            "id": "P2N-9",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 3.3333333333333335
+          },
+          {
+            "id": "P2N-10",
+            "x_m": 0.0,
+            "y_m": 0.0,
+            "z_m": 3.6666666666666665
+          }
+        ],
+        "members": [
+          {
+            "id": "P2M-0",
+            "start": "B0",
+            "end": "P2N-0",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-1",
+            "start": "P2N-0",
+            "end": "P2N-1",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-2",
+            "start": "P2N-1",
+            "end": "P2N-2",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-3",
+            "start": "P2N-2",
+            "end": "P2N-3",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-4",
+            "start": "P2N-3",
+            "end": "P2N-4",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-5",
+            "start": "P2N-4",
+            "end": "P2N-5",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-6",
+            "start": "P2N-5",
+            "end": "P2N-6",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-7",
+            "start": "P2N-6",
+            "end": "P2N-7",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-8",
+            "start": "P2N-7",
+            "end": "P2N-8",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-9",
+            "start": "P2N-8",
+            "end": "P2N-9",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-10",
+            "start": "P2N-9",
+            "end": "P2N-10",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          {
+            "id": "P2M-11",
+            "start": "P2N-10",
+            "end": "T0",
+            "kind": "frame",
+            "material": "M",
+            "section": "S",
+            "rotation_deg": 0.0,
+            "release_start": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ],
+            "release_end": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          }
+        ],
+        "materials": [
+          {
+            "id": "M",
+            "e_pa": 200000000000.0,
+            "g_pa": 76923076923.07692,
+            "nu": 0.3,
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+            "revision": "1"
+          }
+        ],
+        "sections": [
+          {
+            "id": "S",
+            "area_m2": 0.02,
+            "iy_m4": 2e-05,
+            "iz_m4": 4e-05,
+            "j_m4": 2e-05,
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure",
+            "revision": "1"
+          }
+        ],
+        "supports": [
+          {
+            "node": "B0",
+            "restrained": [
+              true,
+              true,
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        ],
+        "cases": [
+          {
+            "id": "P",
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+          },
+          {
+            "id": "H",
+            "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+          }
+        ],
+        "nodal_loads": [
+          {
+            "node": "T0",
+            "case": "P",
+            "fx_n": 0.0,
+            "fy_n": 0.0,
+            "fz_n": -61685.027506808496,
+            "mx_nm": 0.0,
+            "my_nm": 0.0,
+            "mz_nm": 0.0
+          },
+          {
+            "node": "T0",
+            "case": "H",
+            "fx_n": 1000.0,
+            "fy_n": 600.0,
+            "fz_n": 0.0,
+            "mx_nm": 0.0,
+            "my_nm": 0.0,
+            "mz_nm": 0.0
+          }
+        ],
+        "combinations": [
+          {
+            "id": "C",
+            "factors": {
+              "P": 1.0,
+              "H": 1.0
+            }
+          }
+        ]
+      },
+      "subdivisions": 12,
+      "node_count": 13,
+      "member_count": 12,
+      "numerical_member_mapping": [
+        {
+          "id": "P2M-0",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.0,
+          "end_fraction": 0.08333333333333333
+        },
+        {
+          "id": "P2M-1",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.08333333333333333,
+          "end_fraction": 0.16666666666666666
+        },
+        {
+          "id": "P2M-2",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.16666666666666666,
+          "end_fraction": 0.25
+        },
+        {
+          "id": "P2M-3",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.25,
+          "end_fraction": 0.3333333333333333
+        },
+        {
+          "id": "P2M-4",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.3333333333333333,
+          "end_fraction": 0.4166666666666667
+        },
+        {
+          "id": "P2M-5",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.4166666666666667,
+          "end_fraction": 0.5
+        },
+        {
+          "id": "P2M-6",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.5,
+          "end_fraction": 0.5833333333333334
+        },
+        {
+          "id": "P2M-7",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.5833333333333334,
+          "end_fraction": 0.6666666666666666
+        },
+        {
+          "id": "P2M-8",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.6666666666666666,
+          "end_fraction": 0.75
+        },
+        {
+          "id": "P2M-9",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.75,
+          "end_fraction": 0.8333333333333334
+        },
+        {
+          "id": "P2M-10",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.8333333333333334,
+          "end_fraction": 0.9166666666666666
+        },
+        {
+          "id": "P2M-11",
+          "parent_member": "C0-S0",
+          "start_fraction": 0.9166666666666666,
+          "end_fraction": 1.0
+        }
+      ],
+      "elastic_scaled_condition": 109990.42118741493,
+      "combinations": {
+        "C": {
+          "nodes": {
+            "B0": {
+              "translation_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rotation_rad": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "orientation_quaternion": [
+                1.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_force_n": [
+                -999.9999999232987,
+                -600.0000000000043,
+                61685.027506808474
+              ],
+              "reaction_moment_nm": [
+                2503.778734416843,
+                -4364.979420881702,
+                -1.867696632020923
+              ]
+            },
+            "T0": {
+              "translation_m": [
+                0.005917915743309572,
+                0.001683052813964913,
+                -6.737451332259955e-05
+              ],
+              "rotation_rad": [
+                -0.0006324598724807124,
+                0.0022284997489904835,
+                1.2265899284109502e-06
+              ],
+              "orientation_quaternion": [
+                0.9999993292228092,
+                -0.0003162298655337436,
+                0.0011142496253574304,
+                6.132948270773779e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-0": {
+              "translation_m": [
+                5.9072095032305924e-05,
+                1.692291660399439e-05,
+                -5.147904017937115e-06
+              ],
+              "rotation_rad": [
+                -0.00010014289507135813,
+                0.00034975775254781315,
+                3.5782137845949354e-07
+              ],
+              "orientation_quaternion": [
+                0.9999999834550984,
+                -5.007144725953667e-05,
+                0.0001748788753094553,
+                1.7891068824306017e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-1": {
+              "translation_m": [
+                0.00023001558064850492,
+                6.582555333283329e-05,
+                -1.033724424408305e-05
+              ],
+              "rotation_rad": [
+                -0.00019186737360336767,
+                0.0006711429591426101,
+                6.317791142500993e-07
+              ],
+              "orientation_quaternion": [
+                0.9999999390942056,
+                -9.59336848540447e-05,
+                0.00033557147275855583,
+                3.1588955071188144e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-2": {
+              "translation_m": [
+                0.0005032799330049188,
+                0.00014388853676900015,
+                -1.560001844481403e-05
+              ],
+              "rotation_rad": [
+                -0.00027509487824133136,
+                0.0009636050061535903,
+                8.35741245784444e-07
+              ],
+              "orientation_quaternion": [
+                0.9999998744734403,
+                -0.00013754743336538003,
+                0.0004818024829171248,
+                4.178706054076013e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-3": {
+              "translation_m": [
+                0.0008691393275936906,
+                0.00024826750429591393,
+                -2.095849104426928e-05
+              ],
+              "rotation_rad": [
+                -0.00034975412377334425,
+                0.0012266428397182325,
+                9.824988930718377e-07
+              ],
+              "orientation_quaternion": [
+                0.9999997966273109,
+                -0.00017487705003159918,
+                0.0006133213782815068,
+                4.91249413233678e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-4": {
+              "translation_m": [
+                0.001317709307642484,
+                0.000376095544202563,
+                -2.642592724251797e-05
+              ],
+              "rotation_rad": [
+                -0.00041578115958235416,
+                0.001459805822194216,
+                1.083695061592604e-06
+              ],
+              "orientation_quaternion": [
+                0.9999997120114906,
+                -0.00020789055983447732,
+                0.0007299028410292229,
+                5.418474787810135e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-5": {
+              "translation_m": [
+                0.001838963722663581,
+                0.0005244856543643463,
+                -3.200740021776158e-05
+              ],
+              "rotation_rad": [
+                -0.00047311942573352106,
+                0.0016626945023630302,
+                1.1497599189543078e-06
+              ],
+              "orientation_quaternion": [
+                0.9999996264504831,
+                -0.00023655968341117098,
+                0.0008313471476650578,
+                5.748798878951084e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-6": {
+              "translation_m": [
+                0.002422751908222662,
+                0.0006905332174353874,
+                -3.770066464350756e-05
+              ],
+              "rotation_rad": [
+                -0.0005217198026285501,
+                0.0018349612980902389,
+                1.1898528778787445e-06
+              ],
+              "orientation_quaternion": [
+                0.9999995450905428,
+                -0.00026085986175839517,
+                0.0009174805099215739,
+                5.94926348726815e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-7": {
+              "translation_m": [
+                0.003058816077613043,
+                0.0008713184904870715,
+                -4.349708928625669e-05
+              ],
+              "rotation_rad": [
+                -0.000561540654165897,
+                0.0019763110902961067,
+                1.2118117838970209e-06
+              ],
+              "orientation_quaternion": [
+                0.9999994723581839,
+                -0.00028077027770089164,
+                0.0009881553713506517,
+                6.059057853814115e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-8": {
+              "translation_m": [
+                0.0037368088957865156,
+                0.0010639091070275865,
+                -4.9382641034854114e-05
+              ],
+              "rotation_rad": [
+                -0.0005925478643532609,
+                0.0020865017272421464,
+                1.2221094694605192e-06
+              ],
+              "orientation_quaternion": [
+                0.9999994119245673,
+                -0.0002962738740994879,
+                0.0010432506591176642,
+                6.110546149481624e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-9": {
+              "translation_m": [
+                0.004446311205604278,
+                0.0012653625893376116,
+                -5.533891235207835e-05
+              ],
+              "rotation_rad": [
+                -0.0006147148673265565,
+                0.002165344438285439,
+                1.2258178981804152e-06
+              ],
+              "orientation_quaternion": [
+                0.999999366676016,
+                -0.000307357368777664,
+                0.0010826719905819486,
+                6.12908819700223e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            },
+            "P2N-10": {
+              "translation_m": [
+                0.005176849876231835,
+                0.001472728869057874,
+                -6.134418383474024e-05
+              ],
+              "rotation_rad": [
+                -0.0006280226707375725,
+                0.0022127041564096867,
+                1.2265800837948156e-06
+              ],
+              "orientation_quaternion": [
+                0.999999338690865,
+                -0.00031401126614926165,
+                0.0011063518343245873,
+                6.132899067059661e-07
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "members": {
+            "P2M-0": {
+              "end_actions_global": [
+                -999.9999999232987,
+                -600.0000000000043,
+                61685.027506808474,
+                2503.778734416843,
+                -4364.979420881702,
+                -1.867696632020923,
+                999.9999999232987,
+                600.0000000000043,
+                -61685.027506808474,
+                -2302.7379325830384,
+                4028.0073716710012,
+                1.8491762914404086
+              ],
+              "end_actions_local": [
+                61684.81877791379,
+                -603.1315338999016,
+                1010.9318494910323,
+                -1.645587356003353,
+                -4364.979779656712,
+                -2503.7782647750128,
+                -61684.81877791379,
+                603.1315338999016,
+                -1010.9318494910323,
+                1.6455873558394905,
+                4028.007694947309,
+                2302.737521588861
+              ],
+              "current_basis": [
+                [
+                  0.0001772190190049705,
+                  5.076953301936644e-05,
+                  0.9999999830079368
+                ],
+                [
+                  -1.8341180190587351e-07,
+                  0.999999998711212,
+                  -5.076950131255424e-05
+                ],
+                [
+                  -0.9999999842966928,
+                  -1.7441447757134265e-07,
+                  0.00017721902808826018
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 1.0133332360221976,
+              "local_state": {
+                "extension_m": -5.1404015648261495e-06,
+                "arc_extension_m": 1.8385194100874692e-09,
+                "axial_n": -61684.818777913795,
+                "torsion_nm": 1.6515059145725863,
+                "local_rotation_i": [
+                  -1.789131407519794e-07,
+                  -0.00017721902455040088,
+                  -5.0769517453520226e-05
+                ],
+                "local_rotation_j": [
+                  1.7891314073874755e-07,
+                  0.00017253872787234299,
+                  4.937337803651736e-05
+                ],
+                "torsion_rad": 3.57826281490727e-07
+              }
+            },
+            "P2M-1": {
+              "end_actions_global": [
+                -999.9999999213865,
+                -599.9999999999724,
+                61685.027506808474,
+                2302.737932583033,
+                -4028.007371644419,
+                -1.849176291443642,
+                999.9999999213865,
+                599.9999999999724,
+                -61685.027506808474,
+                -2099.724485695405,
+                3684.1345740651727,
+                1.7955128369054942
+              ],
+              "end_actions_local": [
+                61684.417866806165,
+                -609.0492665404432,
+                1031.6345960318738,
+                -1.2591933251831586,
+                -4028.008283037747,
+                -2302.7367365469663,
+                -61684.417866806165,
+                609.0492665404432,
+                -1031.6345960318738,
+                1.2591933252896963,
+                3684.1353889427855,
+                2099.7234460492878
+              ],
+              "current_basis": [
+                [
+                  0.0005128383677696635,
+                  0.0001467101733023412,
+                  0.9999998577364564
+                ],
+                [
+                  -5.324250762927288e-07,
+                  0.9999999892379575,
+                  -0.00014670991954690606
+                ],
+                [
+                  -0.9999998684982536,
+                  -4.5718652487200377e-07,
+                  0.0005128384403626507
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.8797139004185799,
+              "local_state": {
+                "extension_m": -5.1403681555671815e-06,
+                "arc_extension_m": 1.5516209787900857e-09,
+                "axial_n": -61684.41786680618,
+                "torsion_nm": 1.264675565362873,
+                "local_rotation_i": [
+                  -1.3700651958572154e-07,
+                  -0.00016308067730921776,
+                  -4.656715309241867e-05
+                ],
+                "local_rotation_j": [
+                  1.3700651957623427e-07,
+                  0.00015830453187964743,
+                  4.515731618571238e-05
+                ],
+                "torsion_rad": 2.740130391619558e-07
+              }
+            },
+            "P2M-2": {
+              "end_actions_global": [
+                -1000.0000000473466,
+                -600.0000000000346,
+                61685.02750680859,
+                2099.724485695409,
+                -3684.1345740553834,
+                -1.7955128369072255,
+                1000.0000000473466,
+                600.0000000000346,
+                -61685.02750680859,
+                -1894.912326079395,
+                3333.9501843887338,
+                1.7096172089857458
+              ],
+              "end_actions_local": [
+                61684.04476529154,
+                -614.4452913485777,
+                1050.5697945753445,
+                -0.9369429945518921,
+                -3684.135794803203,
+                -2099.7229024404683,
+                -61684.04476529154,
+                614.4452913485777,
+                -1050.5697945753445,
+                0.9369429946044016,
+                3333.9512649102858,
+                1894.9109645693702
+              ],
+              "current_basis": [
+                [
+                  0.000819805702460985,
+                  0.00023419256269701646,
+                  0.9999996365361605
+                ],
+                [
+                  -8.297629362375304e-07,
+                  0.9999999725767178,
+                  -0.00023419196115061024
+                ],
+                [
+                  -0.9999996639589042,
+                  -6.377707294269089e-07,
+                  0.0008198058743035253
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.755363215214093,
+              "local_state": {
+                "extension_m": -5.140337063774298e-06,
+                "arc_extension_m": 1.2843926974619634e-09,
+                "axial_n": -61684.04476529157,
+                "torsion_nm": 0.9419682351224249,
+                "local_rotation_i": [
+                  -1.020465588082323e-07,
+                  -0.00014866293214468588,
+                  -4.232490397167472e-05
+                ],
+                "local_rotation_j": [
+                  1.0204655880162645e-07,
+                  0.00014379912150735532,
+                  4.090257700754697e-05
+                ],
+                "torsion_rad": 2.0409311760985875e-07
+              }
+            },
+            "P2M-3": {
+              "end_actions_global": [
+                -1000.0000000000895,
+                -600.0000000000183,
+                61685.027506808474,
+                1894.9123260794022,
+                -3333.9501844039887,
+                -1.709617208981863,
+                1000.0000000000895,
+                600.0000000000183,
+                -61685.027506808474,
+                -1688.476921679926,
+                2978.0541627243924,
+                1.5944805397745323
+              ],
+              "end_actions_local": [
+                61683.7018458555,
+                -619.3149844347262,
+                1067.7050423117098,
+                -0.6737685232523164,
+                -3333.9515339500563,
+                -1894.9106030929513,
+                -61683.7018458555,
+                619.3149844347262,
+                -1067.7050423117098,
+                0.6737685232713595,
+                2978.0553426216925,
+                1688.4754590613304
+              ],
+              "current_basis": [
+                [
+                  0.0010975951131187434,
+                  0.0003131417324917389,
+                  0.9999993486133997
+                ],
+                [
+                  -1.0809774972163724e-06,
+                  0.9999999509708549,
+                  -0.0003131407346387277
+                ],
+                [
+                  -0.9999993976417184,
+                  -7.372750530242511e-07,
+                  0.0010975953978037412
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.6410719004922639,
+              "local_state": {
+                "extension_m": -5.140308487154623e-06,
+                "arc_extension_m": 1.038594426179654e-09,
+                "axial_n": -61683.70184585549,
+                "torsion_nm": 0.678317730759237,
+                "local_rotation_i": [
+                  -7.348442083447282e-08,
+                  -0.00013399049342235198,
+                  -3.8046402716535414e-05
+                ],
+                "local_rotation_j": [
+                  7.348442083002847e-08,
+                  0.00012904735107970806,
+                  3.6612803865872354e-05
+                ],
+                "torsion_rad": 1.469688416645013e-07
+              }
+            },
+            "P2M-4": {
+              "end_actions_global": [
+                -1000.0000000149352,
+                -600.0000000000346,
+                61685.02750680854,
+                1688.4769216799343,
+                -2978.054162723182,
+                -1.5944805397755513,
+                1000.0000000149352,
+                600.0000000000346,
+                -61685.02750680854,
+                -1480.595125983859,
+                2617.0562452630306,
+                1.4531665916431526
+              ],
+              "end_actions_local": [
+                61683.39129070235,
+                -623.6541723032423,
+                1083.0110189795946,
+                -0.46429784947430114,
+                -2978.05551233144,
+                -1688.4752303266544,
+                -61683.39129070235,
+                623.6541723032423,
+                -1083.0110189795946,
+                0.4642978494626396,
+                2617.057407204515,
+                1480.5937124930742
+              ],
+              "current_basis": [
+                [
+                  0.0013457306957483928,
+                  0.00038349003440001496,
+                  0.9999990209716648
+                ],
+                [
+                  -1.291138477368378e-06,
+                  0.9999999264673938,
+                  -0.0003834886441225607
+                ],
+                [
+                  -0.9999990945032039,
+                  -7.750647734405499e-07,
+                  0.0013457310919319787
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.5375672578074909,
+              "local_state": {
+                "extension_m": -5.140282607558531e-06,
+                "arc_extension_m": 8.158455612151713e-10,
+                "axial_n": -61683.39129070234,
+                "torsion_nm": 0.46835373201737474,
+                "local_rotation_i": [
+                  -5.073832096995325e-08,
+                  -0.00011908850099847317,
+                  -3.3735313228809516e-05
+                ],
+                "local_rotation_j": [
+                  5.073832096714465e-08,
+                  0.00011407449614388011,
+                  3.229167035694306e-05
+                ],
+                "torsion_rad": 1.014766419370979e-07
+              }
+            },
+            "P2M-5": {
+              "end_actions_global": [
+                -1000.0000001104798,
+                -600.0000000000922,
+                61685.02750680869,
+                1480.5951259838832,
+                -2617.056245291062,
+                -1.4531665916313181,
+                1000.0000001104798,
+                600.0000000000922,
+                -61685.02750680869,
+                -1271.44502684057,
+                2251.574900465255,
+                1.2888040528047413
+              ],
+              "end_actions_local": [
+                61683.115077383656,
+                -627.4591356105046,
+                1096.4615357367154,
+                -0.3028824852274476,
+                -2617.0575078400993,
+                -1480.5935764811677,
+                -61683.115077383656,
+                627.4591356105046,
+                -1096.4615357367154,
+                0.3028824852354271,
+                2251.57596603531,
+                1271.443756968033
+              ],
+              "current_basis": [
+                [
+                  0.0015637873627798449,
+                  0.00044517719628925053,
+                  0.9999986781923004
+                ],
+                [
+                  -1.4648107101363774e-06,
+                  0.9999999009083317,
+                  -0.0004451754499597595
+                ],
+                [
+                  -0.9999987772827216,
+                  -7.686490310714034e-07,
+                  0.0015637878599218946
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.4455083805726763,
+              "local_state": {
+                "extension_m": -5.140259589781971e-06,
+                "arc_extension_m": 6.176141692020919e-10,
+                "axial_n": -61683.11507738366,
+                "torsion_nm": 0.30642957801816695,
+                "local_rotation_i": [
+                  -3.3196537619458836e-08,
+                  -0.00010398248720328623,
+                  -2.9395327539337774e-05
+                ],
+                "local_rotation_j": [
+                  3.319653761781065e-08,
+                  9.890621022764197e-05,
+                  2.7942877152615117e-05
+                ],
+                "torsion_rad": 6.639307523726948e-08
+              }
+            },
+            "P2M-6": {
+              "end_actions_global": [
+                -999.9999999946426,
+                -600.0000000000073,
+                61685.027506808474,
+                1271.4450268405851,
+                -2251.5749004783497,
+                -1.2888040527990559,
+                999.9999999946426,
+                600.0000000000073,
+                -61685.027506808474,
+                -1061.2057943037623,
+                1882.2362701268664,
+                1.1045787045142397
+              ],
+              "end_actions_local": [
+                61682.874965771116,
+                -630.7266125218989,
+                1108.0335793684105,
+                -0.18362669230998344,
+                -2251.5760210775074,
+                -1271.4436823342382,
+                -61682.874965771116,
+                630.7266125218989,
+                -1108.0335793684105,
+                0.18362669229047163,
+                1882.237190672736,
+                1061.204720526974
+              ],
+              "current_basis": [
+                [
+                  0.001751391566733207,
+                  0.0004981503717152362,
+                  0.9999983422355191
+                ],
+                [
+                  -1.6060338760125886e-06,
+                  0.9999998759228265,
+                  -0.0004981483229245557
+                ],
+                [
+                  -0.9999984663113238,
+                  -7.335784418343563e-07,
+                  0.001751392149471842
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.36548181213581976,
+              "local_state": {
+                "extension_m": -5.14023958048093e-06,
+                "arc_extension_m": 4.452071351491248e-10,
+                "axial_n": -61682.87496577114,
+                "torsion_nm": 0.18665143413805013,
+                "local_rotation_i": [
+                  -2.0220572032010717e-08,
+                  -8.869833315770338e-05,
+                  -2.503016263196068e-05
+                ],
+                "local_rotation_j": [
+                  2.0220572031233498e-08,
+                  8.356848095197861e-05,
+                  2.3570148816012928e-05
+                ],
+                "torsion_rad": 4.0441144063244215e-08
+              }
+            },
+            "P2M-7": {
+              "end_actions_global": [
+                -1000.0000000086326,
+                -599.9999999998917,
+                61685.02750680846,
+                1061.2057943037455,
+                -1882.2362701264672,
+                -1.1045787045136628,
+                1000.0000000086326,
+                599.9999999998917,
+                -61685.02750680846,
+                -850.0575276175488,
+                1509.6730974299592,
+                0.9037254759319996
+              ],
+              "end_actions_local": [
+                61682.672486459705,
+                -633.4538016624149,
+                1117.7073521450263,
+                -0.10041789310298384,
+                -1882.2372176810743,
+                -1061.2046837580424,
+                -61682.672486459705,
+                633.4538016624149,
+                -1117.7073521450263,
+                0.10041789310221418,
+                1509.673845899155,
+                850.0566728207383
+              ],
+              "current_basis": [
+                [
+                  0.0019082219359442543,
+                  0.0005423641832608633,
+                  0.9999980322631319
+                ],
+                [
+                  -1.718304550425839e-06,
+                  0.9999998529203019,
+                  -0.0005423618918091577
+                ],
+                [
+                  -0.9999981793413879,
+                  -6.833543100841135e-07,
+                  0.0019082225872303904
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.29799768072318666,
+              "local_state": {
+                "extension_m": -5.140222707204971e-06,
+                "arc_extension_m": 2.997613911094282e-10,
+                "axial_n": -61682.672486459705,
+                "torsion_nm": 0.10290869354047023,
+                "local_rotation_i": [
+                  -1.114844180040104e-08,
+                  -7.32622245125269e-05,
+                  -2.0643557242057726e-05
+                ],
+                "local_rotation_j": [
+                  1.1148441800034156e-08,
+                  6.808758558631246e-05,
+                  1.9177230592758043e-05
+                ],
+                "torsion_rad": 2.2296883600435197e-08
+              }
+            },
+            "P2M-8": {
+              "end_actions_global": [
+                -999.9999999779428,
+                -599.9999999998066,
+                61685.02750680851,
+                850.057527617498,
+                -1509.6730974305096,
+                -0.9037254759318077,
+                999.9999999779428,
+                599.9999999998066,
+                -61685.02750680851,
+                -638.1811014697564,
+                1134.523644017828,
+                0.6895204015668621
+              ],
+              "end_actions_local": [
+                61682.5089306791,
+                -635.6383646544722,
+                1125.4663041373674,
+                -0.04695816486195954,
+                -1509.6738572700592,
+                -850.0566572615076,
+                -61682.5089306791,
+                635.6383646544722,
+                -1125.4663041373674,
+                0.04695816486473438,
+                1134.5242078948204,
+                638.1804698066117
+              ],
+              "current_basis": [
+                [
+                  0.0020340098213398328,
+                  0.0005777807596791399,
+                  0.9999977644842212
+                ],
+                [
+                  -1.8045606536782124e-06,
+                  0.9999998330844846,
+                  -0.0005777782843769452
+                ],
+                [
+                  -0.9999979313982553,
+                  -6.293499145748919e-07,
+                  0.0020340105244724405
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.24348633707399792,
+              "local_state": {
+                "extension_m": -5.140209077556596e-06,
+                "arc_extension_m": 1.8223628464178205e-10,
+                "axial_n": -61682.50893067912,
+                "torsion_nm": 0.04890546153336566,
+                "local_rotation_i": [
+                  -5.298091666210131e-09,
+                  -5.770060666499286e-05,
+                  -1.6239268632808352e-05
+                ],
+                "local_rotation_j": [
+                  5.298091666019101e-09,
+                  5.2490046115905474e-05,
+                  1.4767885180931232e-05
+                ],
+                "torsion_rad": 1.0596183332229231e-08
+              }
+            },
+            "P2M-9": {
+              "end_actions_global": [
+                -999.9999999528738,
+                -600.0000000002709,
+                61685.02750680839,
+                638.1811014697628,
+                -1134.5236440057017,
+                -0.6895204015749876,
+                999.9999999528738,
+                600.0000000002709,
+                -61685.02750680839,
+                -425.7580116348267,
+                757.4305974621411,
+                0.46527249799284787
+              ],
+              "end_actions_local": [
+                61682.38534178084,
+                -637.2784282403411,
+                1131.297161922076,
+                -0.016796659501945328,
+                -1134.5242116739253,
+                -638.1804645733454,
+                -61682.38534178084,
+                637.2784282403411,
+                -1131.297161922076,
+                0.016796659510118633,
+                757.4309728978615,
+                425.75759762388986
+              ],
+              "current_basis": [
+                [
+                  0.002128539753402048,
+                  0.0006043697668416443,
+                  0.9999975520248553
+                ],
+                [
+                  -1.8671683773141675e-06,
+                  0.9999998173684073,
+                  -0.0006043671615983036
+                ],
+                [
+                  -0.9999977346549501,
+                  -5.807442774195598e-07,
+                  0.0021285404931236096
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.20229551734436707,
+              "local_state": {
+                "extension_m": -5.140198778481739e-06,
+                "arc_extension_m": 9.340713875798741e-11,
+                "axial_n": -61682.385341780835,
+                "torsion_nm": 0.01819296547473775,
+                "local_rotation_i": [
+                  -1.970904593169099e-09,
+                  -4.204013954544005e-05,
+                  -1.182106935239834e-05
+                ],
+                "local_rotation_j": [
+                  1.9709045930240824e-09,
+                  3.68025838960295e-05,
+                  1.0345889483003383e-05
+                ],
+                "torsion_rad": 3.941809186193181e-09
+              }
+            },
+            "P2M-10": {
+              "end_actions_global": [
+                -999.9999999789893,
+                -600.0000000001336,
+                61685.02750680839,
+                425.7580116348997,
+                -757.4305974477705,
+                -0.4652724980004635,
+                999.9999999789893,
+                600.0000000001336,
+                -61685.02750680839,
+                -212.97022012921602,
+                379.03997140047534,
+                0.23431557533724767
+              ],
+              "end_actions_local": [
+                61682.30250835969,
+                -638.3725859820065,
+                1135.1899507750384,
+                -0.003362787524678338,
+                -757.4309737376417,
+                -425.757596422457,
+                -61682.30250835969,
+                638.3725859820065,
+                -1135.1899507750384,
+                0.0033627875221881203,
+                379.0401586118939,
+                212.9700158076505
+              ],
+              "current_basis": [
+                [
+                  0.0021916498086069214,
+                  0.0006221084324941135,
+                  0.9999974048227405
+                ],
+                [
+                  -1.9079116494357317e-06,
+                  0.9999998064903827,
+                  -0.0006221057451106302
+                ],
+                [
+                  -0.9999975983308547,
+                  -5.44468760861833e-07,
+                  0.0021916505714294487
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.17468805027366727,
+              "local_state": {
+                "extension_m": -5.140191875696633e-06,
+                "arc_extension_m": 3.386004685325425e-11,
+                "axial_n": -61682.30250835965,
+                "torsion_nm": 0.004202728354739895,
+                "local_rotation_i": [
+                  -4.5529557171182555e-10,
+                  -2.630765204149409e-05,
+                  -7.392743975451021e-06
+                ],
+                "local_rotation_j": [
+                  4.552955718151508e-10,
+                  2.1052073973726258e-05,
+                  5.9150313430358574e-06
+                ],
+                "torsion_rad": 9.105911435269763e-10
+              }
+            },
+            "P2M-11": {
+              "end_actions_global": [
+                -1000.0000000096245,
+                -599.9999999997632,
+                61685.02750680858,
+                212.97022012919746,
+                -379.0399713996999,
+                -0.23431557533804478,
+                1000.0000000096245,
+                599.9999999997632,
+                -61685.02750680858,
+                -3.78077968955633e-11,
+                -2.4011224900512225e-09,
+                1.2832373624693266e-12
+              ],
+              "end_actions_local": [
+                61682.26095905272,
+                -638.9198995434722,
+                1137.1380114305719,
+                9.150534280836338e-13,
+                -379.0401586996301,
+                -212.97001567664938,
+                -61682.26095905272,
+                638.9198995434722,
+                -1137.1380114305719,
+                -3.1588559000499967e-13,
+                -2.401122748864894e-09,
+                3.781181738289935e-11
+              ],
+              "current_basis": [
+                [
+                  0.0022232318847519306,
+                  0.0006309815648210513,
+                  0.9999973295475604
+                ],
+                [
+                  -1.9279841893216575e-06,
+                  0.999999800930975,
+                  -0.0006309788378552202
+                ],
+                [
+                  -0.9999975286150811,
+                  -5.251667698081132e-07,
+                  0.002223232658697727
+                ]
+              ],
+              "reference_basis": [
+                [
+                  0.0,
+                  0.0,
+                  1.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -1.0,
+                  0.0,
+                  0.0
+                ]
+              ],
+              "strain_energy_j": 0.1608401239761742,
+              "local_state": {
+                "extension_m": -5.140188413254394e-06,
+                "arc_extension_m": 3.9879377982044276e-12,
+                "axial_n": -61682.2609590527,
+                "torsion_nm": 0.0002803403537964395,
+                "local_rotation_i": [
+                  -3.037020488625084e-11,
+                  -1.0530096137937017e-05,
+                  -2.9580858320213486e-06
+                ],
+                "local_rotation_j": [
+                  3.0370205102977747e-11,
+                  5.265499150332509e-06,
+                  1.4791062724808102e-06
+                ],
+                "torsion_rad": 6.074040998922859e-11
+              }
+            }
+          },
+          "equilibrium": {
+            "force_residual_n": [
+              7.670132617931813e-08,
+              -4.320099833421409e-12,
+              -2.1827872842550278e-11
+            ],
+            "deformed_geometry_moment_residual_nm": [
+              -4.547473508864641e-13,
+              1.400167093379423e-08,
+              -9.281464485866309e-14
+            ],
+            "force_relative_residual": [
+              7.662470147784029e-11,
+              7.188186078904175e-15,
+              3.5385440957664297e-16
+            ],
+            "moment_relative_residual": [
+              1.8155190501980101e-16,
+              3.2069942580997585e-12,
+              3.236557306037556e-14
+            ],
+            "accepted": true
+          },
+          "newton_steps": [
+            {
+              "step": 1,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 3.0029528061107352e-12,
+              "scaled_displacement_increment": 1.239213638901759e-15,
+              "scaled_internal_force_change": 5.442653562680834e-12,
+              "minimum_tangent_ratio": 0.979707940416357,
+              "maximum_tangent_ratio": 1.0107957493879176,
+              "scaled_tangent_condition": 111022.58129577411
+            },
+            {
+              "step": 2,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 1.7038674738340783e-12,
+              "scaled_displacement_increment": 6.73055966253084e-16,
+              "scaled_internal_force_change": 4.276297116539374e-12,
+              "minimum_tangent_ratio": 0.9594254538234342,
+              "maximum_tangent_ratio": 1.0220315438505336,
+              "scaled_tangent_condition": 112075.81067143465
+            },
+            {
+              "step": 3,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 2.4032918649806026e-12,
+              "scaled_displacement_increment": 3.7657552696716046e-16,
+              "scaled_internal_force_change": 4.276325222618682e-12,
+              "minimum_tangent_ratio": 0.939157171803712,
+              "maximum_tangent_ratio": 1.033730402864294,
+              "scaled_tangent_condition": 113150.76936511222
+            },
+            {
+              "step": 4,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 1.978667983319862e-12,
+              "scaled_displacement_increment": 5.649420045493208e-16,
+              "scaled_internal_force_change": 2.7213577671409662e-12,
+              "minimum_tangent_ratio": 0.9189079605326899,
+              "maximum_tangent_ratio": 1.045916837328229,
+              "scaled_tangent_condition": 114248.14544800477
+            },
+            {
+              "step": 5,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 1.805775049097391e-12,
+              "scaled_displacement_increment": 7.98512543666114e-16,
+              "scaled_internal_force_change": 3.109589344406556e-12,
+              "minimum_tangent_ratio": 0.8986829283831531,
+              "maximum_tangent_ratio": 1.0586169632100506,
+              "scaled_tangent_condition": 115368.65652660119
+            },
+            {
+              "step": 6,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 3.038938033111311e-12,
+              "scaled_displacement_increment": 1.1263788337547807e-15,
+              "scaled_internal_force_change": 5.831333224571466e-12,
+              "minimum_tangent_ratio": 0.8784874334406,
+              "maximum_tangent_ratio": 1.0718586250235616,
+              "scaled_tangent_condition": 116513.05134647345
+            },
+            {
+              "step": 7,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 2.6743109549108936e-12,
+              "scaled_displacement_increment": 3.381157199195637e-16,
+              "scaled_internal_force_change": 3.887349064629116e-12,
+              "minimum_tangent_ratio": 0.8583270908779257,
+              "maximum_tangent_ratio": 1.0856715300809137,
+              "scaled_tangent_condition": 117682.11150432499
+            },
+            {
+              "step": 8,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 2.0741549321050723e-12,
+              "scaled_displacement_increment": 3.599560409699957e-16,
+              "scaled_internal_force_change": 3.4985286419642425e-12,
+              "minimum_tangent_ratio": 0.8382077800217551,
+              "maximum_tangent_ratio": 1.100087394502208,
+              "scaled_tangent_condition": 118876.6532805116
+            },
+            {
+              "step": 9,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 2.8058068595997028e-12,
+              "scaled_displacement_increment": 6.038913585892903e-16,
+              "scaled_internal_force_change": 6.219571252412635e-12,
+              "minimum_tangent_ratio": 0.8181356511866448,
+              "maximum_tangent_ratio": 1.1151401021986753,
+              "scaled_tangent_condition": 120097.5296081953
+            },
+            {
+              "step": 10,
+              "iterations": 4,
+              "newton_residual_evaluations": 5,
+              "line_search_force_evaluations": 4,
+              "linear_system_solves": 8,
+              "algebraic_relative_residual": 2.0419886762249663e-12,
+              "scaled_displacement_increment": 9.424352537482963e-16,
+              "scaled_internal_force_change": 4.275955696789085e-12,
+              "minimum_tangent_ratio": 0.7981171320550321,
+              "maximum_tangent_ratio": 1.1308658780194518,
+              "scaled_tangent_condition": 121345.63214043454
+            }
+          ],
+          "strain_energy_j": 5.717347412054516,
+          "final_external_dead_load_potential_j": 11.08374613925091,
+          "stability": {
+            "domain": "full spatial conservative energy Hessian",
+            "positive_definite": true,
+            "minimum_generalized_eigenvalue": 0.7981171320550317,
+            "generalized_mode": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              -2.485172406412537,
+              -0.23610923358894578,
+              0.022893880461039573,
+              0.09601629390736292,
+              -1.0,
+              -0.003990091896576072,
+              -0.020207436189351623,
+              -0.0018746310386684186,
+              2.4168523309808318e-05,
+              0.011244000921714785,
+              -0.12116750086682028,
+              -0.0010473769685755323,
+              -0.08065183892976285,
+              -0.007489949563787664,
+              0.00018715573216023068,
+              0.02243234882993824,
+              -0.24125512867278692,
+              -0.0018956199419850653,
+              -0.18077191923588873,
+              -0.016815357901766203,
+              0.0006092427436924326,
+              0.03348614279033816,
+              -0.35902229790181883,
+              -0.002562894313005769,
+              -0.3195505406838741,
+              -0.029787324194301634,
+              0.001387860021480665,
+              0.04428645895693619,
+              -0.47296376112877625,
+              -0.003069107326690156,
+              -0.49541849424084317,
+              -0.0462947871979887,
+              0.002594758875933958,
+              0.054667711767268784,
+              -0.5812713127429356,
+              -0.0034358342284988275,
+              -0.7061562313218117,
+              -0.0661638437089573,
+              0.004273383876692753,
+              0.06441991259944722,
+              -0.6818591371936178,
+              -0.00368605894892694,
+              -0.9488137575308092,
+              -0.08914453082075115,
+              0.006436856446424984,
+              0.0732988517643834,
+              -0.7724461663861275,
+              -0.0038435870568392116,
+              -1.219666007013989,
+              -0.11490210439182867,
+              0.00906707409114089,
+              0.08104270372841556,
+              -0.8506847019611777,
+              -0.003932090268683476,
+              -1.5142167114407843,
+              -0.143014620732276,
+              0.012115402211622937,
+              0.08739299112532681,
+              -0.9143202336798423,
+              -0.003973837665596048,
+              -1.8272581133270398,
+              -0.1729778568543138,
+              0.015505295545657091,
+              0.09211735808555391,
+              -0.961363703967687,
+              -0.003988248831145046,
+              -2.1529872276589788,
+              -0.20421770441641207,
+              0.01913695876027897,
+              0.09503133094283833,
+              -0.9902554007220525,
+              -0.003990457468695147
+            ],
+            "normalization": "max(abs(mode)/[span translations, unit rotations])=1",
+            "normative_stability_verified": false
+          },
+          "physical_equilibrium_verified": true
+        }
+      }
+    },
+    "linear_baseline": {
+      "schema_version": "jpn.mixed3d-result/1",
+      "status": "analysis_completed_experimental",
+      "units": "SI",
+      "project": {
+        "id": "M43-P2-cantilever",
+        "revision": "explicit-1",
+        "source": "M43-P2 independent synthetic physical reference, not the Tom structure"
+      },
+      "input_sha256": "f5b5e94ea7e6e0f4a39a726174366c8bc5de8f4a342573e6367e976d4fa6225a",
+      "solver": {
+        "name": "PyNiteFEA",
+        "version": "3.2.1",
+        "adapter": "jpn-mixed3d/1"
+      },
+      "assumptions": [
+        "Primeira ordem, p\u00f3rtico Euler-Bernoulli e mola axial bilateral EA/L.",
+        "Rota\u00e7\u00e3o inativa em n\u00f3s apenas axiais \u00e9 eliminada matematicamente, n\u00e3o representa apoio.",
+        "Sem peso pr\u00f3prio, vento, flambagem, resist\u00eancia normativa ou libera\u00e7\u00e3o para fabrica\u00e7\u00e3o."
+      ],
+      "diagnostics": {
+        "free_dofs": 72,
+        "scaled_condition": 109990.42118741493,
+        "elapsed_seconds": 0.09589019999839365
+      },
+      "combinations": {
+        "C": {
+          "nodes": {
+            "B0": {
+              "translation_m": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "rotation_rad": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_force_n": [
+                -1000.0000000022701,
+                -600.0000000013824,
+                61685.02750680812
+              ],
+              "reaction_moment_nm": [
+                2400.0000000044897,
+                -4000.0000000073924,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "T0": {
+              "translation_m": [
+                0.005333333333341997,
+                0.0016000000000026286,
+                -6.168502750680822e-05
+              ],
+              "rotation_rad": [
+                -0.0006000000000009075,
+                0.0020000000000029937,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-0": {
+              "translation_m": [
+                5.401234567911151e-05,
+                1.620370370373381e-05,
+                -5.140418958900677e-06
+              ],
+              "rotation_rad": [
+                -9.583333333351079e-05,
+                0.000319444444445029,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-1": {
+              "translation_m": [
+                0.00020987654321025917,
+                6.296296296307912e-05,
+                -1.0280837917801353e-05
+              ],
+              "rotation_rad": [
+                -0.00018333333333366898,
+                0.000611111111112217,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-2": {
+              "translation_m": [
+                0.00045833333333416236,
+                0.00013750000000025162,
+                -1.5421256876702032e-05
+              ],
+              "rotation_rad": [
+                -0.00026250000000047394,
+                0.0008750000000015616,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-3": {
+              "translation_m": [
+                0.0007901234567915397,
+                0.0002370370370374669,
+                -2.056167583560271e-05
+              ],
+              "rotation_rad": [
+                -0.0003333333333339254,
+                0.001111111111113062,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-4": {
+              "translation_m": [
+                0.0011959876543231095,
+                0.00035879629629694036,
+                -2.5702094794503392e-05
+              ],
+              "rotation_rad": [
+                -0.00039583333333402277,
+                0.0013194444444467155,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-5": {
+              "translation_m": [
+                0.0016666666666695896,
+                0.0005000000000008872,
+                -3.084251375340407e-05
+              ],
+              "rotation_rad": [
+                -0.0004500000000007662,
+                0.0015000000000025238,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-6": {
+              "translation_m": [
+                0.0021929012345716986,
+                0.000657870370371523,
+                -3.598293271230475e-05
+              ],
+              "rotation_rad": [
+                -0.0004958333333341563,
+                0.0016527777777804896,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-7": {
+              "translation_m": [
+                0.0027654320987701556,
+                0.0008296296296310631,
+                -4.1123351671205434e-05
+              ],
+              "rotation_rad": [
+                -0.0005333333333341942,
+                0.0017777777777806154,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-8": {
+              "translation_m": [
+                0.0033750000000056833,
+                0.001012500000001725,
+                -4.626377063010613e-05
+              ],
+              "rotation_rad": [
+                -0.0005625000000008858,
+                0.0018750000000029203,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-9": {
+              "translation_m": [
+                0.004012345679019014,
+                0.0012037037037057273,
+                -5.1404189589006825e-05
+              ],
+              "rotation_rad": [
+                -0.000583333333334237,
+                0.0019444444444474246,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            },
+            "P2N-10": {
+              "translation_m": [
+                0.004668209876550875,
+                0.0014004629629652888,
+                -5.654460854790751e-05
+              ],
+              "rotation_rad": [
+                -0.000595833333334242,
+                0.0019861111111141084,
+                0.0
+              ],
+              "reaction_force_n": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reaction_moment_nm": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "active_rotations": true
+            }
+          },
+          "members": {
+            "P2M-0": {
+              "kind": "frame",
+              "length_m": 0.3333333333333333,
+              "end_actions_local": [
+                61685.02750680812,
+                -600.0000000013824,
+                1000.0000000022701,
+                0.0,
+                -4000.0000000073924,
+                -2400.0000000044897,
+                -61685.02750680812,
+                600.0000000013824,
+                -1000.0000000022701,
+                0.0,
+                3666.6666666733054,
+                2200.000000004029
+              ]
+            },
+            "P2M-1": {
+              "kind": "frame",
+              "length_m": 0.3333333333333333,
+              "end_actions_local": [
+                61685.02750680812,
+                -600.0000000013824,
+                1000.000000002241,
+                0.0,
+                -3666.6666666733,
+                -2200.0000000040272,
+                -61685.02750680812,
+                600.0000000013824,
+                -1000.000000002241,
+                0.0,
+                3333.3333333392147,
+                2000.000000003567
+              ]
+            },
+            "P2M-2": {
+              "kind": "frame",
+              "length_m": 0.33333333333333337,
+              "end_actions_local": [
+                61685.02750680814,
+                -600.0000000013679,
+                1000.0000000023283,
+                0.0,
+                -3333.3333333392075,
+                -2000.0000000035507,
+                -61685.02750680814,
+                600.0000000013679,
+                -1000.0000000023283,
+                0.0,
+                3000.0000000050786,
+                1800.000000003085
+              ]
+            },
+            "P2M-3": {
+              "kind": "frame",
+              "length_m": 0.33333333333333326,
+              "end_actions_local": [
+                61685.02750680814,
+                -600.0000000015134,
+                1000.0000000024447,
+                0.0,
+                -3000.0000000050786,
+                -1800.0000000030996,
+                -61685.02750680814,
+                600.0000000015134,
+                -1000.0000000024447,
+                0.0,
+                2666.666666670906,
+                1600.0000000025902
+              ]
+            },
+            "P2M-4": {
+              "kind": "frame",
+              "length_m": 0.3333333333333335,
+              "end_actions_local": [
+                61685.02750680814,
+                -600.0000000015134,
+                1000.0000000023283,
+                0.0,
+                -2666.666666670877,
+                -1600.0000000025902,
+                -61685.02750680814,
+                600.0000000015134,
+                -1000.0000000023283,
+                0.0,
+                2333.3333333367773,
+                1400.000000002081
+              ]
+            },
+            "P2M-5": {
+              "kind": "frame",
+              "length_m": 0.33333333333333326,
+              "end_actions_local": [
+                61685.02750680817,
+                -600.000000001397,
+                1000.0000000025611,
+                0.0,
+                -2333.3333333368064,
+                -1400.0000000020664,
+                -61685.02750680817,
+                600.000000001397,
+                -1000.0000000025611,
+                0.0,
+                2000.0000000025611,
+                1200.0000000016007
+              ]
+            },
+            "P2M-6": {
+              "kind": "frame",
+              "length_m": 0.3333333333333335,
+              "end_actions_local": [
+                61685.02750680817,
+                -600.000000001397,
+                1000.0000000023283,
+                0.0,
+                -2000.0000000026193,
+                -1200.0000000016007,
+                -61685.02750680817,
+                600.000000001397,
+                -1000.0000000023283,
+                0.0,
+                1666.6666666685487,
+                1000.000000001106
+              ]
+            },
+            "P2M-7": {
+              "kind": "frame",
+              "length_m": 0.33333333333333304,
+              "end_actions_local": [
+                61685.027506808285,
+                -600.0000000009313,
+                1000.0000000023283,
+                0.0,
+                -1666.666666668607,
+                -1000.000000001106,
+                -61685.027506808285,
+                600.0000000009313,
+                -1000.0000000023283,
+                0.0,
+                1333.3333333344199,
+                800.0000000007567
+              ]
+            },
+            "P2M-8": {
+              "kind": "frame",
+              "length_m": 0.3333333333333335,
+              "end_actions_local": [
+                61685.027506808285,
+                -600.0000000009313,
+                1000.0,
+                0.0,
+                -1333.333333334187,
+                -800.0000000006985,
+                -61685.027506808285,
+                600.0000000009313,
+                -1000.0,
+                0.0,
+                1000.0000000010477,
+                600.0000000005239
+              ]
+            },
+            "P2M-9": {
+              "kind": "frame",
+              "length_m": 0.3333333333333335,
+              "end_actions_local": [
+                61685.027506808285,
+                -600.000000001397,
+                1000.0000000018626,
+                0.0,
+                -1000.0000000009313,
+                -600.0000000005239,
+                -61685.027506808285,
+                600.000000001397,
+                -1000.0000000018626,
+                0.0,
+                666.6666666670935,
+                400.00000000029104
+              ]
+            },
+            "P2M-10": {
+              "kind": "frame",
+              "length_m": 0.33333333333333304,
+              "end_actions_local": [
+                61685.027506808285,
+                -600.0000000009313,
+                1000.0000000009313,
+                0.0,
+                -666.6666666669771,
+                -400.00000000023283,
+                -61685.027506808285,
+                600.0000000009313,
+                -1000.0000000009313,
+                0.0,
+                333.33333333337214,
+                200.0
+              ]
+            },
+            "P2M-11": {
+              "kind": "frame",
+              "length_m": 0.3333333333333335,
+              "end_actions_local": [
+                61685.02750680852,
+                -600.0,
+                1000.0,
+                0.0,
+                -333.3333333332557,
+                -200.0,
+                -61685.02750680852,
+                600.0,
+                -1000.0,
+                0.0,
+                0.0,
+                0.0
+              ]
+            }
+          },
+          "equilibrium": {
+            "force_n": [
+              -2.270098775625229e-09,
+              -1.382431946694851e-09,
+              -3.7834979593753815e-10
+            ],
+            "moment_nm": [
+              4.48972059530206e-09,
+              -7.392372936010361e-09,
+              0.0
+            ],
+            "relative_residual": 2.175747213713244e-14
+          }
+        }
+      }
+    },
+    "comparison": {
+      "C": {
+        "translation_m": 6.501317799056447e-08,
+        "rotation_rad": 1.5361203737228277e-07,
+        "member_end_actions": 8.712110238852262e-08
+      }
+    },
+    "blockers": [
+      "P4_PRODUCTION_DOMAIN_NOT_VERIFIED",
+      "P4_NORMATIVE_REVIEW_PENDING",
+      "P4_SPATIAL_DOMAIN_NOT_VERIFIED",
+      "P4_WARPING_WAGNER_STABILITY_PENDING"
+    ],
+    "physical_convergence_verified": true,
+    "spatial_domain_verified": false,
+    "production_enabled": false,
+    "normative_stability_verified": false,
+    "computed_structural_approval": false,
+    "fabrication_release": false,
+    "release_gate": "NOT_READY_BLOCKED"
+  }
+}
