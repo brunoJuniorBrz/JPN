@@ -84,6 +84,21 @@ def main():
         def nonfinite(_):
             raise ValueError('Nonfinite JSON constant')
         data = json.loads(body.decode('utf-8'), object_pairs_hook=_unique_object, parse_constant=nonfinite)
+        if '--p4-frame' in sys.argv:
+            from jpn_structural.p4_frame import analyze_p4_frame
+            return dict(schema_version='jpn.local-p4-frame/1', status='diagnostic',
+                        execution=limits, diagnostic=analyze_p4_frame(data))
+        if '--corotational-planar' in sys.argv:
+            from jpn_structural.corotational_planar import analyze_corotational_planar
+            return dict(schema_version='jpn.local-corotational-frame/1', status='diagnostic',
+                        execution=limits, diagnostic=analyze_corotational_planar(data))
+        if '--second-order-frame' in sys.argv:
+            from jpn_structural.second_order_frame import analyze_second_order_frame
+            return dict(schema_version='jpn.local-second-order-frame/1',status='diagnostic',
+                        execution=limits,diagnostic=analyze_second_order_frame(data))
+        if '--purlin' in sys.argv:
+            from jpn_structural.purlin import analyze_purlin
+            return dict(schema_version='jpn.local-purlin/1',status='completed',execution=limits,result=analyze_purlin(data))
         joint_actions = {} if '--joint-actions' in sys.argv else None
         if type(data) is dict and data.get('schema_version')=='jpn.mixed3d/2':
             from jpn_structural.mixed3d_loads import analyze_loaded_mixed3d

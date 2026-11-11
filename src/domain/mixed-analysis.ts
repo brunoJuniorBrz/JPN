@@ -8,7 +8,7 @@ const axial = z.object({ id, start: id, end: id, kind: z.literal("axial"), e_pa:
 export const mixedRequestObject = z.object({
   ...base, schema_version: z.literal("jpn.mixed3d/1"), theory: z.literal("linear-elastic-frame-axial"),
   nodes: z.array(base.nodes.element).min(2).max(150),
-  members: z.array(z.discriminatedUnion("kind", [base.members.element, axial])).min(2).max(320),
+  members: z.array(z.discriminatedUnion("kind", [base.members.element, axial])).min(1).max(320),
   materials: z.array(base.materials.element).max(50), sections: z.array(base.sections.element).max(50),
   supports: z.array(base.supports.element).max(150), nodal_loads: base.nodal_loads.min(1),
 }).strict();
@@ -16,7 +16,8 @@ export function validateMixedReferences(v: Omit<z.infer<typeof mixedRequestObjec
   const issue = (message: string) => ctx.addIssue({ code: "custom", message });
   for (const values of [v.nodes, v.members, v.materials, v.sections, v.cases, v.combinations]) if (new Set(values.map(x => x.id)).size !== values.length) issue("IDs duplicados.");
   const nodes = new Set(v.nodes.map(x => x.id)), cases = new Set(v.cases.map(c => c.id)), frameNodes = new Set<string>(), edges = new Set<string>();
-  if (!v.members.some(m => m.kind === "frame") || !v.members.some(m => m.kind === "axial")) issue("O modelo misto exige pórtico e barra axial explicitamente declarados.");
+  // Frame-only, truss-only and genuinely mixed topologies share a single
+  // physical contract. Element types, DOFs and stability are never inferred.
   for (const m of v.members) {
     if (!nodes.has(m.start) || !nodes.has(m.end) || m.start === m.end) issue(`${m.id}: extremos inválidos.`);
     const edge = [m.start, m.end].sort().join("|"); if (edges.has(edge)) issue("Barras duplicadas."); edges.add(edge);

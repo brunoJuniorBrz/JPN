@@ -4,7 +4,7 @@ import { EngineeringCombinationsControl } from "./engineering-combinations-contr
 import { RoofLoadPathPanel } from "./roof-load-path-panel";
 import { useState } from "react";
 import type { Project } from "@/domain/models";
-import { generateStructure } from "@/domain/calculations/structure";
+import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { mixedPieceKind } from "@/domain/mixed-adapter";
 import { newSpatialPreparation, pieceRoles } from "@/domain/spatial-preparation";
 import { densitySchema, emptyLoading, loadingDraftSchema, needsSelfWeightOverlapReview, selfWeightOverlapReviewBasis, type LoadingDraft } from "@/domain/structural-loading";
@@ -14,7 +14,7 @@ import { structureSignature } from "@/domain/calculations/project-basis";
 import { Field, Input, Select } from "@/components/ui";
 
 export function StructuralLoadsPanel({project,onChange,onSelectPiece}:{project:Project;onChange:(patch:Partial<Project>)=>void;onSelectPiece?:(id:string)=>void}){
-  const d=project.workspace.spatialPreparation??newSpatialPreparation(project), loading=d.loading??emptyLoading(), pieces=generateStructure(project).model?.pieces??[];
+  const d=project.workspace.spatialPreparation??newSpatialPreparation(project), loading=d.loading??emptyLoading(), pieces=resolvePhysicalStructure(project).model?.pieces??[];
   const [density,setDensity]=useState(""),[densitySource,setDensitySource]=useState(""),[densityRevision,setDensityRevision]=useState(""),[role,setRole]=useState<typeof pieceRoles[number]>("column");
   const [gravity,setGravity]=useState(["","",""]),[caseId,setCaseId]=useState(""),[caseSource,setCaseSource]=useState("");
   const [piece,setPiece]=useState(""),[qCase,setQCase]=useState(""),[q,setQ]=useState(["","",""]),[coordinates,setCoordinates]=useState(""),[qSource,setQSource]=useState(""),[qRevision,setQRevision]=useState("");

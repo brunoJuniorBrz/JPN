@@ -15,6 +15,7 @@ import { SpatialAnalysisPanel } from "./spatial-analysis-panel";
 import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { SpatialCoordinationPanel } from "./spatial-coordination-panel";
 import { MixedAnalysisWorkspace } from "./mixed-analysis-workspace";
+import { DeclaredTakeoffPanel } from "./declared-takeoff-panel";
 import type { ResultSection } from "./takeoff-summary";
 
 export function ProjectWorkbench({ project, onChange, onEditStructure, activeSection = "engineering" }: { project: Project; onChange: (patch: Partial<Project>) => void; onEditStructure?: () => void; activeSection?: ResultSection }) {
@@ -54,7 +55,8 @@ export function ProjectWorkbench({ project, onChange, onEditStructure, activeSec
     finally{setBusy(false);}
   }
   return <section className="project-workbench" hidden={activeSection==="model"} aria-label={activeSection==="materials"?"Aproveitamento e orçamento":activeSection==="engineering"?"Ferramentas de engenharia":"Desenhos e revisões"}>
-    {!declared && activeSection === "materials" && <div className="result-business-action"><div><h3>Do levantamento ao orçamento</h3><p>Quantitativos geométricos preliminares. Confira preços e custos antes de apresentar uma proposta.</p></div><button type="button" className="button" disabled={!model} onClick={() => action(() => { onChange(transferTakeoff(project, Math.round(data.settings.defaultWastePercent * 100) / 100)); setMessage("Quantitativos vinculados ao orçamento de venda. Confira preços por metro e custos na área comercial."); })}>Atualizar quantitativos no orçamento</button></div>}
+    {activeSection === "materials" && <div className="result-business-action"><div><h3>Do levantamento ao orçamento</h3><p>Quantitativos geométricos preliminares. Confira preços e custos antes de apresentar uma proposta.</p></div><button type="button" className="button" disabled={!model} onClick={() => action(() => { onChange(transferTakeoff(project, Math.round(data.settings.defaultWastePercent * 100) / 100)); setMessage("Quantitativos vinculados ao orçamento de venda. Confira preços por metro e custos na área comercial."); })}>Atualizar quantitativos no orçamento</button></div>}
+    {declared&&activeSection==="materials"&&<DeclaredTakeoffPanel project={project}/>}
     {activeSection === "engineering" && <div className="actions"><button type="button" className="button" onClick={()=>{setTab("mixedlocal");setMixedOpened(true);}}>Preparar e analisar este projeto</button></div>}
     {!declared && activeSection === "engineering" && <div className="spatial-jump"><p>Consulte o roteiro estrutural e os módulos de análise disponíveis nesta revisão. Nenhum resultado libera fabricação.</p><button type="button" className="button secondary" onClick={() => setTab("overview")}>Ver roteiro estrutural</button></div>}
     {!declared && activeSection === "engineering" && <Field label="Ferramenta de engenharia"><Select value={tab} onChange={e=>{setTab(e.target.value);if(e.target.value==="mixedlocal")setMixedOpened(true);}}>{[["overview","Roteiro estrutural"],["prepare","Preparar análise"],["analysis","Análise disponível"],["spatial","Análise 3D experimental"],["mixedlocal","Análise Estrutural Experimental"]].map(([key,title])=><option key={key} value={key}>{title}</option>)}</Select></Field>}

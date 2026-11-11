@@ -1,4 +1,4 @@
-"""Experimental mixed spatial frame/axial model; NOT wired to JPN UI/HTTP.
+"""Experimental linear spatial frame and/or axial model, consumed via JPN adapter.
 
 Frame elements are PyNiteFEA 3.2.1 beam-columns; axial elements are
 bilateral Spring3D elements with k=EA/L. Only pure axial nodes have their
@@ -100,8 +100,9 @@ def validate_mixed3d(data, *, distributed_cases=()):
         length=float(np.linalg.norm(points[b]-points[a]))
         if not 1e-5 <= length <= 1000:
             fail('INVALID_GEOMETRY','Comprimento fora de 1e-5–1000 m.')
-    if not frames or not any(m['kind']=='axial' for m in data['members']):
-        fail('UNSUPPORTED_MODEL','Modelo misto deve conter pórtico e barra axial.')
+    # A real structure may consist solely of frames or solely of axial bars.
+    # Never create a fictitious element merely to satisfy a mixed-model contract.
+    # Stability and inactive rotations remain checked by the protected solver.
     supported={}
     for s in data['supports']:
         obj(s,'node restrained','apoio');text(s['node'],'apoio.node',True)
@@ -138,16 +139,20 @@ def validate_mixed3d(data, *, distributed_cases=()):
     return data,points,frames,supported
 
 
-def analyze_mixed3d(raw, *, _loading=None, _joint_actions=None):
-    started=time.perf_counter()
+def build_mixed_model(raw, *, _loading=None, _model_factory=None):
+    """Shared strict physical input and PyNite assembly; does not solve a model.
+
+    The optional factory is internal instrumentation for the isolated P-Delta
+    pilot. It cannot be selected by JSON or change the linear API's default.
+    """
     data,points,frame_nodes,supports=validate_mixed3d(raw, distributed_cases=() if _loading is None else {l['case'] for l in _loading['frame_loads']})
     try:
         if version('PyNiteFEA')!='3.2.1':
             fail('DEPENDENCY_VERSION','Exigido PyNiteFEA 3.2.1.')
-        from Pynite import FEModel3D,Analysis
+        from Pynite import FEModel3D
     except ImportError as exc:
         raise AnalysisError('DEPENDENCY_MISSING','PyNiteFEA 3.2.1 indisponível.') from exc
-    model=FEModel3D()
+    model=(_model_factory or FEModel3D)()
     for nid,xyz in points.items():
         model.add_node(nid,*xyz)
     for mat in data['materials']:
@@ -184,39 +189,52 @@ def analyze_mixed3d(raw, *, _loading=None, _joint_actions=None):
             for direction,value in zip(('FX','FY','FZ') if load['coordinate_system']=='global' else ('Fx','Fy','Fz'), load['force_per_length_n_m']):
                 if value:
                     model.add_member_dist_load(load['member'],direction,value,value,case=load['case'])
+    return data,points,frame_nodes,supports,model,axial
+
+
+def audit_elastic_model(model,data,frame_nodes,supports):
+    """The same orientation, mechanism and conditioning gate as the linear API."""
+    from Pynite import Analysis
+    Analysis._prepare_model(model)
+    if any(len(m.sub_members)!=1 for m in model.members.values()):
+        fail('UNRESOLVED_CONTACT','PyNite gerou segmentação implícita.')
+    elements=list(model.springs.values())+[next(iter(m.sub_members.values())) for m in model.members.values()]
+    for element in elements:
+        axes=np.asarray(element.T()[:3,:3],dtype=float)
+        # PyNite 3.2.1 uses isclose on absolute coordinates for axis
+        # classification. Near-axis elements at a distant origin can
+        # produce a nonorthogonal basis: refuse, never repair supports.
+        if not np.isfinite(axes).all() or not np.allclose(axes@axes.T,np.eye(3),rtol=0,atol=1e-12):
+            fail('INVALID_GEOMETRY',f'{element.name}: base local não ortogonal no PyNite 3.2.1; modelo recusado.')
+    matrix=model.Ke(data['combinations'][0]['id'],check_stability=False,sparse=False)
+    free=[]
+    for node in model.nodes.values():
+        dofs=supports.get(node.name,[False]*6).copy()
+        if node.name not in frame_nodes: dofs[3:]=[True]*3
+        free.extend(6*node.ID+i for i in range(6) if not dofs[i])
+    free=np.array(free,dtype=int);condition=1.
+    if len(free):
+        kff=matrix[np.ix_(free,free)]
+        diagonal=np.diag(kff)
+        if not np.isfinite(kff).all() or np.any(diagonal<=0):
+            fail('UNSTABLE','Rigidez nula ou não finita.')
+        scale=np.sqrt(diagonal)
+        eigs=eigvalsh(kff/scale[:,None]/scale[None,:])
+        if eigs[0]<=10*len(free)*np.finfo(float).eps*eigs[-1]:
+            fail('UNSTABLE','Mecanismo / movimento de corpo rígido.')
+        condition=float(eigs[-1]/eigs[0])
+        if condition>1e10:
+            fail('ILL_CONDITIONED','Condicionamento excede limite experimental.')
+    return free,condition
+
+
+def analyze_mixed3d(raw, *, _loading=None, _joint_actions=None):
+    started=time.perf_counter()
+    data,points,frame_nodes,supports,model,axial=build_mixed_model(raw,_loading=_loading)
     try:
         with contextlib.redirect_stdout(io.StringIO()),warnings.catch_warnings():
             warnings.simplefilter('error')
-            Analysis._prepare_model(model)
-            if any(len(m.sub_members)!=1 for m in model.members.values()):
-                fail('UNRESOLVED_CONTACT','PyNite gerou segmentação implícita.')
-            elements=list(model.springs.values())+[next(iter(m.sub_members.values())) for m in model.members.values()]
-            for element in elements:
-                axes=np.asarray(element.T()[:3,:3],dtype=float)
-                # PyNite 3.2.1 uses isclose on absolute coordinates for axis
-                # classification. Near-axis elements at a distant origin can
-                # produce a nonorthogonal basis: refuse, never repair supports.
-                if not np.isfinite(axes).all() or not np.allclose(axes@axes.T,np.eye(3),rtol=0,atol=1e-12):
-                    fail('INVALID_GEOMETRY',f'{element.name}: base local não ortogonal no PyNite 3.2.1; modelo recusado.')
-            matrix=model.Ke(data['combinations'][0]['id'],check_stability=False,sparse=False)
-            free=[]
-            for node in model.nodes.values():
-                dofs=supports.get(node.name,[False]*6).copy()
-                if node.name not in frame_nodes: dofs[3:]=[True]*3
-                free.extend(6*node.ID+i for i in range(6) if not dofs[i])
-            free=np.array(free,dtype=int);condition=1.
-            if len(free):
-                kff=matrix[np.ix_(free,free)]
-                diagonal=np.diag(kff)
-                if not np.isfinite(kff).all() or np.any(diagonal<=0):
-                    fail('UNSTABLE','Rigidez nula ou não finita.')
-                scale=np.sqrt(diagonal)
-                eigs=eigvalsh(kff/scale[:,None]/scale[None,:])
-                if eigs[0]<=10*len(free)*np.finfo(float).eps*eigs[-1]:
-                    fail('UNSTABLE','Mecanismo / movimento de corpo rígido.')
-                condition=float(eigs[-1]/eigs[0])
-                if condition>1e10:
-                    fail('ILL_CONDITIONED','Condicionamento excede limite experimental.')
+            free,condition=audit_elastic_model(model,data,frame_nodes,supports)
             model.analyze_linear(log=False,check_stability=True,sparse=True)
     except AnalysisError:
         raise

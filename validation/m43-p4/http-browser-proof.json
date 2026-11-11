@@ -1,0 +1,107 @@
+{
+  "schema_version": "jpn.m43-p4-http-browser-proof/1",
+  "generated_at_utc": "2026-11-11T16:42:12.011Z",
+  "flow": "Existing Projects page -> explicit synthetic diagnostic v3 requests -> local Next -> bounded Python -> independent TypeScript energy audit -> blocked HTTP response. Real Project adapter covered by integration tests; no new visual design journey.",
+  "page": "http://127.0.0.1:3025/projetos",
+  "browser_errors": [],
+  "evidence": [
+    {
+      "status": 422,
+      "code": "PDELTA_NOT_VERIFIED",
+      "input_sha256": "585363e54ff35d4a043991abec1a1c0947105a0a56f3ba98af02d8a967dafdcc",
+      "dimensionality": 2,
+      "formulation": "xz-hermite-arc/1",
+      "solver": {
+        "name": "JPN-P4",
+        "version": "1.0",
+        "method": "energy-consistent-Newton",
+        "rotation_measure": "SO(3) exponential coordinates; scalar-first quaternions"
+      },
+      "physical_convergence_verified": true,
+      "spatial_domain_verified": false,
+      "production_enabled": false,
+      "fabrication_release": false,
+      "release_gate": "NOT_READY_BLOCKED",
+      "blockers": [
+        "P4_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "P4_NORMATIVE_REVIEW_PENDING",
+        "P4_OUT_OF_PLANE_STABILITY_PENDING"
+      ],
+      "equilibrium": {
+        "force_residual_n": [
+          -1.3642420526593924e-12,
+          0,
+          0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          0,
+          0,
+          0
+        ],
+        "force_relative_residual": [
+          1.3628791734859064e-15,
+          0,
+          0
+        ],
+        "moment_relative_residual": [
+          0,
+          0,
+          0
+        ],
+        "accepted": true
+      },
+      "minimum_tangent_ratio": 0.8006903952941588,
+      "nodeCount": 5
+    },
+    {
+      "status": 422,
+      "code": "PDELTA_NOT_VERIFIED",
+      "input_sha256": "2ac166d547c4704d44d05e978b9f4e938053459a3aaff35413072217a1e37ce5",
+      "dimensionality": 3,
+      "formulation": "spatial-quaternion-arc/1",
+      "solver": {
+        "name": "JPN-P4",
+        "version": "1.0",
+        "method": "energy-consistent-Newton",
+        "rotation_measure": "SO(3) exponential coordinates; scalar-first quaternions"
+      },
+      "physical_convergence_verified": true,
+      "spatial_domain_verified": false,
+      "production_enabled": false,
+      "fabrication_release": false,
+      "release_gate": "NOT_READY_BLOCKED",
+      "blockers": [
+        "P4_PRODUCTION_DOMAIN_NOT_VERIFIED",
+        "P4_NORMATIVE_REVIEW_PENDING",
+        "P4_SPATIAL_DOMAIN_NOT_VERIFIED",
+        "P4_WARPING_WAGNER_STABILITY_PENDING"
+      ],
+      "equilibrium": {
+        "force_residual_n": [
+          -1.2662439985433593e-9,
+          5.229594535194337e-12,
+          0
+        ],
+        "deformed_geometry_moment_residual_nm": [
+          -2.2737367544323206e-12,
+          -6.884874892421067e-10,
+          1.2434497875801753e-14
+        ],
+        "force_relative_residual": [
+          1.2649790195238355e-12,
+          8.701488411305054e-15,
+          0
+        ],
+        "moment_relative_residual": [
+          9.077595306880692e-16,
+          1.5769371383857458e-13,
+          4.336059139108823e-15
+        ],
+        "accepted": true
+      },
+      "minimum_tangent_ratio": 0.7990435369942165,
+      "nodeCount": 5
+    }
+  ],
+  "foreign_origin_status": 403
+}

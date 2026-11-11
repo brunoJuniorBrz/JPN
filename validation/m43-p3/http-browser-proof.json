@@ -1,0 +1,183 @@
+{
+  "schema_version": "jpn.m43-p3-http-browser-proof/1",
+  "generated_at_utc": "2026-11-11T12:00:39.012Z",
+  "flow": "Existing Projects page -> browser fetch explicit diagnostic v2 -> local Next -> protected Python -> audited blocked response; no new visual design workflow",
+  "page": "http://127.0.0.1:3024/projetos",
+  "browser_errors": [],
+  "evidence": {
+    "status": 422,
+    "code": "PDELTA_NOT_VERIFIED",
+    "input_sha256": "d4586164a4db894bcbdde73edac1564580d002ab53fcddb8ba26b1faa4c960b0",
+    "solver": {
+      "name": "JPN-Corotational-XZ",
+      "version": "1.0",
+      "method": "energy-gradient-consistent-Newton",
+      "adapter": "jpn.second-order-frame/2",
+      "formulation": "finite chord rotation; small elastic basic strains; no within-element P-small-delta"
+    },
+    "physical_convergence_verified": true,
+    "production_enabled": false,
+    "fabrication_release": false,
+    "release_gate": "NOT_READY_BLOCKED",
+    "equilibrium": {
+      "force_residual_n": [
+        8.731149137020111e-11,
+        0,
+        0
+      ],
+      "deformed_geometry_moment_residual_nm": [
+        0,
+        -3.637978807091713e-12,
+        0
+      ],
+      "force_relative_residual": [
+        4.3633928720740184e-14,
+        0,
+        0
+      ],
+      "moment_relative_residual": [
+        0,
+        3.7734047168020564e-16,
+        0
+      ],
+      "accepted": true
+    },
+    "iterations": [
+      {
+        "step": 1,
+        "iterations": 4,
+        "newton_residual_evaluations": 5,
+        "line_search_force_evaluations": 4,
+        "linear_system_solves": 8,
+        "algebraic_relative_residual": 5.138636783753844e-13,
+        "scaled_displacement_increment": 6.432602178034889e-16,
+        "scaled_internal_force_change": 5.912427096218323e-13,
+        "minimum_tangent_ratio": 0.9597828135161969,
+        "maximum_tangent_ratio": 1.0212589563504042,
+        "scaled_tangent_condition": 89199823.45750496
+      },
+      {
+        "step": 2,
+        "iterations": 4,
+        "newton_residual_evaluations": 5,
+        "line_search_force_evaluations": 4,
+        "linear_system_solves": 8,
+        "algebraic_relative_residual": 8.697421634467765e-13,
+        "scaled_displacement_increment": 8.656456810899662e-16,
+        "scaled_internal_force_change": 1.1122948633469197e-12,
+        "minimum_tangent_ratio": 0.9195956066065113,
+        "maximum_tangent_ratio": 1.04433817325999,
+        "scaled_tangent_condition": 90925590.26690319
+      },
+      {
+        "step": 3,
+        "iterations": 4,
+        "newton_residual_evaluations": 5,
+        "line_search_force_evaluations": 4,
+        "linear_system_solves": 8,
+        "algebraic_relative_residual": 9.845421355155273e-13,
+        "scaled_displacement_increment": 1.1866916444007446e-15,
+        "scaled_internal_force_change": 1.6306391575950206e-12,
+        "minimum_tangent_ratio": 0.8794772546368259,
+        "maximum_tangent_ratio": 1.0694374350755222,
+        "scaled_tangent_condition": 92724376.30351612
+      },
+      {
+        "step": 4,
+        "iterations": 4,
+        "newton_residual_evaluations": 5,
+        "line_search_force_evaluations": 4,
+        "linear_system_solves": 8,
+        "algebraic_relative_residual": 9.84194725945058e-13,
+        "scaled_displacement_increment": 1.6201365973699393e-15,
+        "scaled_internal_force_change": 1.6306529802569756e-12,
+        "minimum_tangent_ratio": 0.8394707122948145,
+        "maximum_tangent_ratio": 1.096783947696454,
+        "scaled_tangent_condition": 94600946.98312084
+      },
+      {
+        "step": 5,
+        "iterations": 4,
+        "newton_residual_evaluations": 5,
+        "line_search_force_evaluations": 4,
+        "linear_system_solves": 8,
+        "algebraic_relative_residual": 1.7747855625050552e-12,
+        "scaled_displacement_increment": 2.26227626766323e-15,
+        "scaled_internal_force_change": 2.5483975626303146e-12,
+        "minimum_tangent_ratio": 0.7996232650644645,
+        "maximum_tangent_ratio": 1.1266368058877387,
+        "scaled_tangent_condition": 96560495.42008176
+      },
+      {
+        "step": 6,
+        "iterations": 4,
+        "newton_residual_evaluations": 5,
+        "line_search_force_evaluations": 4,
+        "linear_system_solves": 8,
+        "algebraic_relative_residual": 1.71103175952536e-12,
+        "scaled_displacement_increment": 3.1144255086764117e-15,
+        "scaled_internal_force_change": 2.3759054856045394e-12,
+        "minimum_tangent_ratio": 0.759986764372018,
+        "maximum_tangent_ratio": 1.1592922924861215,
+        "scaled_tangent_condition": 98608681.85566415
+      },
+      {
+        "step": 7,
+        "iterations": 4,
+        "newton_residual_evaluations": 5,
+        "line_search_force_evaluations": 4,
+        "linear_system_solves": 8,
+        "algebraic_relative_residual": 1.4555742224240193e-12,
+        "scaled_displacement_increment": 4.410145514474559e-15,
+        "scaled_internal_force_change": 3.390934884328037e-12,
+        "minimum_tangent_ratio": 0.720617837741719,
+        "maximum_tangent_ratio": 1.1950901831436256,
+        "scaled_tangent_condition": 100751701.88480772
+      },
+      {
+        "step": 8,
+        "iterations": 4,
+        "newton_residual_evaluations": 5,
+        "line_search_force_evaluations": 4,
+        "linear_system_solves": 8,
+        "algebraic_relative_residual": 4.7762420654591605e-12,
+        "scaled_displacement_increment": 6.23971160159594e-15,
+        "scaled_internal_force_change": 6.501266044926179e-12,
+        "minimum_tangent_ratio": 0.6815780386991869,
+        "maximum_tangent_ratio": 1.2344212532652454,
+        "scaled_tangent_condition": 102996335.97891285
+      },
+      {
+        "step": 9,
+        "iterations": 4,
+        "newton_residual_evaluations": 5,
+        "line_search_force_evaluations": 4,
+        "linear_system_solves": 8,
+        "algebraic_relative_residual": 2.876632336435581e-12,
+        "scaled_displacement_increment": 8.901520210490922e-15,
+        "scaled_internal_force_change": 4.039313567140904e-12,
+        "minimum_tangent_ratio": 0.6429339665551225,
+        "maximum_tangent_ratio": 1.2777362748540964,
+        "scaled_tangent_condition": 105350028.97741948
+      },
+      {
+        "step": 10,
+        "iterations": 4,
+        "newton_residual_evaluations": 5,
+        "line_search_force_evaluations": 4,
+        "linear_system_solves": 8,
+        "algebraic_relative_residual": 2.3035115973921656e-12,
+        "scaled_displacement_increment": 1.2760213968634622e-14,
+        "scaled_internal_force_change": 5.071759519927715e-12,
+        "minimum_tangent_ratio": 0.6047572858969831,
+        "maximum_tangent_ratio": 1.3255567910051953,
+        "scaled_tangent_condition": 107820978.43347776
+      }
+    ],
+    "blockers": [
+      "COROTATIONAL_PRODUCTION_DOMAIN_NOT_VERIFIED",
+      "COROTATIONAL_3D_STABILITY_PENDING"
+    ]
+  },
+  "foreign_origin_status": 403
+}

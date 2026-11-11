@@ -1,0 +1,7 @@
+corepack : $ eslint .
+No linha:16 caractere:1
++ corepack pnpm lint *> ..\m35-lint-last.txt
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ eslint .:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

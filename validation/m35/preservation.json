@@ -1,0 +1,8 @@
+{
+  "base": "cc516b6f5cc97750de5aecf7564fcaff47a1d4f3",
+  "python_files_verified_unchanged": 93,
+  "method": "Exact Git blob SHA-1 comparison of all existing engine Python sources against main.",
+  "package_json_unchanged": true,
+  "pnpm_lock_unchanged": true,
+  "baseline_proofs_not_republished": true
+}

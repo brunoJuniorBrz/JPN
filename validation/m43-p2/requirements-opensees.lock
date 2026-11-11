@@ -1,0 +1,4 @@
+# Internal independent validation only. Not a JPN runtime/deployment dependency.
+openseespy==3.8.0.0 --hash=sha256:ce6a43503b737025f763a87bebacb1cc2fbd82a156982647e9e014a11b85fdbd
+openseespywin==3.8.0.0; sys_platform == "win32" --hash=sha256:ee0f48317582641cf06347fe0babd34a230823b56397603c9b5b2d3b96089b73
+openseespylinux==3.8.0.0; sys_platform == "linux" --hash=sha256:2307e40213f1d7128a5a5151d5c8beee8244b8b988528a58f5e44394a045ba64

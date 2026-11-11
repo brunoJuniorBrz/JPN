@@ -1,0 +1,42 @@
+corepack : $ vitest run
+No linha:8 caractere:1
++ corepack pnpm test *> ..\m35-vitest.txt
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ vitest run:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ RUN  v5.0.5 C:/Users/Bruno/Downloads/JPN-main/.tools/mission35-worktree
+
+ ❯ src/domain/roof-outline.test.ts (12 tests | 2 failed) 35ms
+   × refuses ambiguous or invalid outline: empty 5ms
+   × refuses ambiguous or invalid outline: empty-hole 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/domain/roof-outline.test.ts > refuses ambiguous or invalid outline: empty
+ FAIL  src/domain/roof-outline.test.ts > refuses ambiguous or invalid outline: empty-hole
+TypeError: Cannot read properties of undefined (reading '0')
+ ❯ src/domain/roof-outline.ts:19:46
+     18|   if(new Set(v.supportPieceIds).size!==v.supportPieceIds.length)issue(…
+     19|   for(const [r,ring] of rings.entries()){
+     20|     const a=ring[0],b=ring[ring.length-1];if(a[0]!==b[0]||a[1]!==b[1])…
+       |    ^
+     21|     const area=signedRingAreaMm2(ring);if(r===0?area<=epsilon:area>=-e…
+     22|     for(let i=0;i<ring.length-1;i++){
+ ❯ Internals.check ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/api.js:998:16
+ ❯ runChecks ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/schemas.js:51:35
+ ❯ inst._zod.run ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/schemas.js:118:20
+ ❯ Module.<anonymous> ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/parse.js:43:32
+ ❯ _.safeParse ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/classic/schemas.js:141:22
+ ❯ src/domain/roof-outline.test.ts:18:90
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed | 59 passed (60)
+      Tests  2 failed | 531 passed (533)
+   Start at  18:12:09
+   Duration  201.27s (tests 93%, import 6%, transform 1%)
+
+[ELIFECYCLE] Test failed. See above for more details.

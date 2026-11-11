@@ -150,12 +150,10 @@ it.each(["duplicate-node","duplicate-member","missing-node","zero-length","orpha
   await expect(adaptMixedProject(p)).rejects.toThrow();expect(generator.generateStructure).not.toHaveBeenCalled();
 });
 
-it.each(["wind","roof","weight","uniform","distribution"])("blocks unsupported declared loading before any generator call: %s",async kind=>{
+it.each(["wind","roof","distribution"])("blocks unsupported declared loading before any generator call: %s",async kind=>{
   const p=m34abProject(),l=emptyLoading();p.workspace.spatialPreparation!.loading=l;
   if(kind==="wind")(l as unknown as {wind:object}).wind={};
   if(kind==="roof")l.roofArea.push({caseId:"Q",knM2:1,projection:"horizontal",direction:[0,0,-1],source:"Explicit test",revision:"1",loadPath:"Declared test"});
-  if(kind==="weight")l.selfWeight={caseId:"Q",gravity:[0,0,-9.81],axialLumping:"half-to-end-nodes"};
-  if(kind==="uniform")l.uniform.push({id:"L1",pieceId:"F1",caseId:"Q",coordinates:"global",knM:[0,0,-1],source:"Explicit test",revision:"1"});
   if(kind==="distribution")l.roofDistribution={version:1,method:"parallel-purlin-strips",geometrySignature:structureSignature(p)};
   await expect(adaptLoadedMixedProject(p)).rejects.toThrow(/DECLARED_STRUCTURE_UNSUPPORTED/);
   await expect(adaptMixedProject(p)).rejects.toThrow();

@@ -2,6 +2,7 @@ import type { Project } from "../models";
 import { planningSchema, roles, roleLabels, type MaterialGroup, type Node3D, type PieceRole, type StructurePiece, type StructureResult } from "../structure";
 import { generateGeometry, type GeometryModel, type Entity, type ViewName } from "./geometry";
 import { formatMeasure } from "./units";
+import { guidedSupportIssue } from "../guided-support";
 
 export const STRUCTURE_NOTES = [
   "Modelo geométrico de uma água: banzo inferior horizontal, montantes e uma diagonal por painel; dois pilares por linha de tesoura.",
@@ -18,7 +19,9 @@ const intervals = (length: number, max: number) => {
 };
 export function generateStructure(project: Project): StructureResult {
   const pending: string[] = [], notes = [...STRUCTURE_NOTES];
-  if (project.category !== "Cobertura metálica") return { model: null, pending: ["O gerador de peças desta versão atende coberturas de uma água."], notes };
+  const supportIssue=guidedSupportIssue(project);
+  if(supportIssue)return {model:null,pending:[supportIssue],notes:[...notes,"Referências de paredes existentes não equivalem a apoios estruturais verificados; não foram criados pilares fictícios."]};
+  if (!["Cobertura metálica","Galpão","Barracão"].includes(project.category)) return { model: null, pending: ["O gerador geométrico atende coberturas, galpões e barracões com tipologia compatível."], notes };
   const roof = generateGeometry(project.roof, project.planning?.typology);
   if (!roof.model) return { model: null, pending: roof.pending, notes };
   const parsed = planningSchema.safeParse(project.planning);
