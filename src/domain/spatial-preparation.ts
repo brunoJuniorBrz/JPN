@@ -21,6 +21,7 @@ import { physicalRoofFacesSchema } from "./physical-roof-faces";
 import { physicalFacadesSchema } from "./physical-facades";
 import { auditPhysicalFacadeEnvelope } from "./physical-facade-envelope";
 import { auditPhysicalRoofCoverage } from "./physical-roof-coverage";
+import { physicalRestraintsSchema } from "./physical-restraint-contracts";
 
 // Human declarations, NOT finite-element input. A pending field is never
 // translated to zero, a free support or a material property by default.
@@ -41,6 +42,7 @@ export const spatialPreparationSchema = z.object({
   groups: z.object({ column: physicalGroupSchema, topChord: physicalGroupSchema, bottomChord: physicalGroupSchema, web: physicalGroupSchema, purlin: physicalGroupSchema, beam: physicalGroupSchema.optional() }).strict(),
   supports: z.array(supportSchema).max(200),
   supportInterfaces: supportInterfacesSchema.optional(),
+  physicalRestraints: physicalRestraintsSchema.optional(),
   memberConnections: z.array(z.object({ pieceId: z.string().min(1).max(100), start: z.enum(["inherit", ...connectionChoices]), end: z.enum(["inherit", ...connectionChoices]) }).strict()).max(5000),
   cases: z.array(z.object({ id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/), source: meaningful }).strict()).max(10),
   loads: z.array(loadSchema).max(500),
