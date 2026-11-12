@@ -1,8 +1,8 @@
 # M51 — primeira referência de flambagem lateral com torção
 
 PR #87 revisado e integrado com histórico em `4301ab20fdb02898a9d0a03d25d8ab23d39321c4`.
-HEAD M50 `7a5431f` tinha CI push/PR 11/11. Nenhum deploy. Acompanhamento da
-[CI da main](https://github.com/brunoJuniorBrz/JPN/actions/runs/43279287664).
+HEAD M50 `7a5431f` tinha CI push/PR 11/11. Nenhum deploy.
+[CI da main pós-merge: 11/11 aprovada](https://github.com/brunoJuniorBrz/JPN/actions/runs/43279287664).
 
 ## Domínio executado
 
@@ -58,8 +58,21 @@ Fixture sintética: I 200x100x6x10 mm, r=0, L=6 m, E=200 GPa, G=200/2,6 GPa,
 fy=250 MPa, binários de 10 kNm, 30 kNm e sentido inverso. Momento, flecha
 `|M|L²/(8EIforte)`, equilíbrio de forças/momentos, inversão de sinal e caso acima
 do crítico são comparados independentemente. O caso com altura 0,1 m fica bloqueado.
+Resultado reproduzido: Mcr ≈ 24,8968267 kNm; razões elásticas 0,4016576 e
+1,2049728, respectivamente. `fy W ≈ 52,4566667 kNm` é somente referência de
+início de escoamento. Os valores completos e hashes estão nos artefatos.
 Casos inválidos incluem eixos C1 não suportados, diagrama não uniforme,
 empenamento desconhecido, contenção ausente, Lb artificial e dados obsoletos.
+O ensaio de contenção finita usa uma perturbação lateral explícita de 1 N: a barra
+axial existe no FE, mas não vira apoio rígido e o trecho segmentado permanece
+fora do procedimento LTB. O primeiro ensaio legado v1, com contraventamento
+para +Y e força transversal exatamente nula, foi recusado pelo equilíbrio
+global/nodal no Windows. Entrada e resposta/erro são preservadas no artefato
+`legacy-zero-brace-block.json`; nenhuma tolerância de equilíbrio foi alterada.
+O diagnóstico desse caso de razão residual próxima de zero permanece pendente;
+em qualquer plataforma, o procedimento LTB desse trecho fica bloqueado.
+O fluxo principal usa v2 sem carga distribuída, reutilizando suas amostras
+nativas de deslocamento; v1 não fornece cinemática interior para validar flecha.
 
 ## Estados e segurança
 
@@ -92,6 +105,13 @@ Usar perfis Python já fixados no projeto; execução Next→Python somente com
 executor local configurado. CI final executa suíte integral, referências por OS,
 worker I sob 20 s/768 MiB no Linux/Windows, HTTP real, exportações e build.
 Evidências ficam nos artefatos `.tools/m51-runtime/` e `engine/validation-results/`.
-No PC local, o primeiro perfil recusou por memória e o perfil isolado atingiu
-20 s ao calcular seção. As proteções foram preservadas; esses resultados não
-são contados como validação aprovada da cadeia local.
+O primeiro SHA M51 `76c15e1` expôs falta de memória real na fatoração SuperLU
+da seção I, nos dois sistemas: COLAMD produz preenchimento excessivo na matriz
+Lagrange do empenamento. `scripts/section-i-worker.py` troca somente a ordenação
+para MMD_AT_PLUS_A, executando depois o worker existente integralmente. O limite
+OS nativo é instalado antes de importar SciPy; nenhuma função de eixos do motor
+é alterada. A matriz/RHS, cache exato, malhas, convergência, resíduos/multiplicadores,
+20 s, 768 MiB e limites de bytes permanecem os mesmos. Ue/MRD seguem o worker original.
+`capped_section.py` compara malhas/propriedades com o método original offline
+(referência sem servir como fallback da aplicação), inclusive nas duas plataformas.
+As falhas iniciais locais/CI permanecem documentadas e não contam como validação.

@@ -23,6 +23,9 @@ export function m51Project(){
   d.groups.beam={...emptyPhysicalGroup(),steelGrade:"Synthetic elastic steel fy250",eGpa:200,gGpa:200/2.6,nu:.3,
     materialSource:source,materialRevision:revision,connection:"rigid",elementKind:"frame",rotationDeg:0};
   d.memberKinds=[{pieceId:"V",kind:"frame"}];d.memberConnections=[];
+  // Existing v2 also transports interior displacement samples with NO added
+  // distributed load. Legacy v1 transports end actions/nodal kinematics only.
+  d.loading={version:1,selfWeight:null,uniform:[],roofArea:[]};
   d.supports=[{nodeId:"A",dofs:["fixed","fixed","fixed","fixed","free","free"]},
     {nodeId:"B",dofs:["free","fixed","fixed","fixed","free","free"]}];
   d.supportInterfaces=supportInterfacesSchema.parse(d.supports.map(s=>({nodeId:s.nodeId,side:"internal",kind:"other",dofs:[...s.dofs],source,revision,

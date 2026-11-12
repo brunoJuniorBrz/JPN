@@ -8,7 +8,7 @@ import {structureSignature} from "./calculations/project-basis";
 import {applyCalculatedSection} from "./apply-calculated-section";
 import {projectSchema} from "./models";
 import {mixedInputHash} from "./mixed-analysis";
-import {adaptMixedProject} from "./mixed-adapter";
+import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
 import {buildResistanceReport} from "./resistance-report";
 import {runLocalSection} from "@/infrastructure/analysis/local-section-runner";
 import {runLocalMixed} from "@/infrastructure/analysis/local-mixed-runner";
@@ -42,7 +42,7 @@ beforeAll(async()=>{
   vi.stubEnv("NODE_ENV","development");vi.stubEnv("JPN_LOCAL_MIXED_ENABLED","1");vi.stubEnv("JPN_LOCAL_MIXED_ORIGIN","http://127.0.0.1:3000");
   geometric=await computeSection();
   project=projectSchema.parse(await applyCalculatedSection(m51Project(),"V",m51SectionRequest,geometric.result));
-  const prepared=await adaptMixedProject(project),analysis=await runLocalMixed(JSON.stringify(prepared.request),"connections");
+  const prepared=await adaptLoadedMixedProject(project),analysis=await runLocalMixed(JSON.stringify(prepared.request),"connections");
   if(analysis.status!=="completed"||!analysis.joint_actions)throw Error("Actual Python trace required");
   base=await buildResistanceReport(project,prepared,analysis.result,analysis.joint_actions);
   result=await runLocalStructuralAssessment(payload(project));
@@ -80,7 +80,8 @@ it("conserves joint forces/moments and independently recovers the constant-curva
     expect(Math.hypot(...s.reactionOnSteel.momentNm!)).toBeLessThan(1e-7);
   }
   const f=base.continuousDemands!.pieces[0].fields.find(f=>f.combinationId==="LOW")!;
-  const mid=f.rows.find(r=>r.segmentPositionM===3)!;
+  const mid=f.rows.reduce((a,b)=>Math.abs(b.chordRelativeLocalM![2])>Math.abs(a.chordRelativeLocalM![2])?b:a);
+  expect(mid.segmentPositionM).toBeCloseTo(3,12);
   const iy=project.workspace.spatialPreparation!.groups.beam!.iyCm4!*1e-8;
   expect(Math.abs(mid.chordRelativeLocalM![2])).toBeCloseTo(10000*6**2/(8*200e9*iy),10);
 });
@@ -112,7 +113,9 @@ it("keeps yielding-before-bifurcation conditional instead of treating min(My,Mcr
 it.each([
   ["free warping",(p:typeof project)=>{p.workspace.spatialPreparation!.elasticLtbStudies![0].endWarping[0]="unknown";},"free-warping"],
   ["moment gradient",(p:typeof project)=>{p.workspace.spatialPreparation!.loads[1].myKnm=5;},"constant"],
-  ["C1 roll",(p:typeof project)=>{p.workspace.spatialPreparation!.groups.beam!.rotationDeg=10;},"C1"],
+  // Explicit smaller test couples keep even the HIGH combination inside the
+  // unchanged linear-displacement gate, isolating the unsupported-axis check.
+  ["C1 roll",(p:typeof project)=>{p.workspace.spatialPreparation!.groups.beam!.rotationDeg=10;p.workspace.spatialPreparation!.loads.forEach(l=>l.myKnm!*=.1);},"C1"],
   ["weak-axis bending",(p:typeof project)=>{p.workspace.spatialPreparation!.loads[0].mzKnm=1;},"Only declared end My"],
   ["undeclared brace",(p:typeof project)=>{p.workspace.spatialPreparation!.physicalRestraints!.items.pop();},"Six explicit"],
   ["artificially shortened Lb",(p:typeof project)=>{p.workspace.spatialPreparation!.resistance![0].lateralRestraintM=3;},"without automatic shortening"],
@@ -135,15 +138,16 @@ it("strict declarations reject duplicates, hidden factors and implicit warping",
 it("keeps a real finite EA/L intermediate brace in FE and blocks rigid-span substitution",async()=>{
   const p=structuredClone(project),d=p.workspace.spatialPreparation!,model=p.workspace.physicalStructure!;
   d.elasticLtbStudies=d.elasticLtbStudies!.slice(0,1);
-  model.nodes.push({id:"C",x:3000,y:0,z:0},{id:"R",x:3000,y:1000,z:0});
+  model.nodes.push({id:"C",x:3000,y:0,z:0},{id:"R",x:3000,y:-1000,z:0});
   model.pieces.push({id:"BRACE",role:"web",start:"C",end:"R"});
   d.groups.web={...d.groups.beam!,elementKind:"axial",connection:"axial"};
   d.memberKinds!.push({pieceId:"BRACE",kind:"axial"});d.memberConnections.push({pieceId:"BRACE",start:"axial",end:"axial"});
+  d.loads.push({id:"51515151-5151-4151-8151-515151515153",caseId:"M",nodeId:"C",fxKn:0,fyKn:.001,fzKn:0,mxKnm:0,myKnm:0,mzKnm:0});
   d.supports.push({nodeId:"R",dofs:["fixed","fixed","fixed","free","free","free"]});
   d.supportInterfaces!.push({nodeId:"R",side:"internal",kind:"other",dofs:["fixed","fixed","fixed","free","free","free"],
     source:"Synthetic brace fixture",revision:"M51-brace",loadPath:"Physical axial brace to R",restraintBasis:"Explicit R translational restraint",reviewStatus:"site-reviewed"});
   reviewM34Fixture(p);d.physicalRestraints!.geometrySignature=structureSignature(p);
-  d.physicalRestraints!.items.push({id:"FINITE",pieceId:"V",nodeId:"C",positionM:3,kind:"lateral",directionGlobal:[0,1,0],binding:{kind:"axial-member",pieceId:"BRACE"},
+  d.physicalRestraints!.items.push({id:"FINITE",pieceId:"V",nodeId:"C",positionM:3,kind:"lateral",directionGlobal:[0,-1,0],binding:{kind:"axial-member",pieceId:"BRACE"},
     capacity:{positive:null,negative:null,units:"N",source:"Synthetic declared capacity pending",revision:"M51-brace"},
     source:"Synthetic finite EA/L fixture",revision:"M51-brace",physicalBasis:"Actual axial brace, no rigid Y constraint"});
   const r=await runLocalStructuralAssessment(payload(p)),attempt=r.lateralTorsional[0];
@@ -151,6 +155,20 @@ it("keeps a real finite EA/L intermediate brace in FE and blocks rigid-span subs
   expect(r.restraints.items.find(a=>a.declaration.id==="FINITE")!.stiffnessRepresentation).toBe("existing-finite-axial-stiffness");
   expect(attempt.status).toBe("BLOCKED");if(attempt.status!=="BLOCKED")throw Error("Explicit block required");
   expect(attempt.reason).toContain("no segmented/continuous-span shortening");expect(r.releaseGate).toBe("NOT_READY_BLOCKED");
+  const legacyZero=structuredClone(p),ld=legacyZero.workspace.spatialPreparation!;
+  delete ld.loading;ld.loads=ld.loads.filter(l=>l.nodeId!=="C");
+  legacyZero.workspace.physicalStructure!.nodes.find(n=>n.id==="R")!.y=1000;
+  ld.physicalRestraints!.items.find(r=>r.id==="FINITE")!.directionGlobal=[0,1,0];
+  reviewM34Fixture(legacyZero);ld.physicalRestraints!.geometrySignature=structureSignature(legacyZero);
+  let witnessError:string|null=null,witnessResult:typeof r|null=null;
+  try{witnessResult=await runLocalStructuralAssessment(payload(legacyZero));}catch(e){witnessError=e instanceof Error?e.message:String(e);}
+  // Preserve the initially discovered legacy zero-transverse-force failure.
+  // This unsupported braced span is NOT claimed as solved by the M51 formula.
+  writeFileSync(".tools/m51-runtime/legacy-zero-brace-block.json",JSON.stringify({project:legacyZero,witnessError,witnessResult,computedStructuralApproval:false,fabricationRelease:false},null,2));
+  // Near-zero residual ratios may differ by OS. Neither a numeric refusal nor
+  // successful first-order execution authorizes LTB on this unsupported span.
+  if(witnessError)expect(witnessError).toContain("Equilíbrio global ou nodal");
+  else{expect(witnessResult!.lateralTorsional[0].status).toBe("BLOCKED");expect(witnessResult!.releaseGate).toBe("NOT_READY_BLOCKED");}
 },25000);
 
 it("seals the integrated resistance report after attaching elastic diagnostics",async()=>{
