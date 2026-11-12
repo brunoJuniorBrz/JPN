@@ -6,7 +6,8 @@ export type PieceRole = typeof roles[number];
 // Declared beams do not add trusses or profiles to the historic roof generator.
 export const physicalRoles = [...roles, "beam"] as const;
 export type PhysicalRole = typeof physicalRoles[number];
-export const roleLabels: Record<PhysicalRole, string> = { column: "Pilares", topChord: "Banzos superiores", bottomChord: "Banzos inferiores", web: "Diagonais e montantes", purlin: "Terças", beam: "Vigas" };
+export const roleLabels: Record<PieceRole, string> = { column: "Pilares", topChord: "Banzos superiores", bottomChord: "Banzos inferiores", web: "Diagonais e montantes", purlin: "Terças" };
+export const physicalRoleLabels: Record<PhysicalRole, string> = {...roleLabels,beam:"Vigas"};
 const positive = z.number().finite().positive();
 export const sectionDataSchema = z.object({
   kind: z.enum(["unspecified", "tube", "angle", "channel", "i", "other"]).default("unspecified"),

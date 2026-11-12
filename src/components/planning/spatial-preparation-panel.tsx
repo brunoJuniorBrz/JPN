@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import type { Project } from "@/domain/models";
-import { roleLabels,physicalRoles as pieceRoles } from "@/domain/structure";
+import { physicalRoleLabels as roleLabels,physicalRoles as pieceRoles } from "@/domain/structure";
 import { Field, Input, Select, Textarea } from "@/components/ui";
 import { NumberField } from "@/components/number-field";
 import { useData } from "@/components/data-provider";

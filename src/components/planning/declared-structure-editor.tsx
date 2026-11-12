@@ -2,7 +2,7 @@
 import { useState } from "react";
 import type { Project } from "@/domain/models";
 import { declaredDraft,editDeclaredStructure,removeDeletedReferences } from "@/domain/edit-declared-structure";
-import { physicalRoles as roles,roleLabels } from "@/domain/structure";
+import { physicalRoles as roles,physicalRoleLabels as roleLabels } from "@/domain/structure";
 import { Field,Input,Select } from "@/components/ui";
 import { NumberField } from "@/components/number-field";
 

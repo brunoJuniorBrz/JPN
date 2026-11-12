@@ -2,7 +2,7 @@ import type { Project } from "./models";
 import { resolvePhysicalStructure } from "./physical-structure";
 import { resolveMemberPhysical } from "./member-physical";
 import { newSpatialPreparation } from "./spatial-preparation";
-import { roleLabels } from "./structure";
+import { physicalRoleLabels as roleLabels } from "./structure";
 
 const canonical=(v:unknown):unknown=>Array.isArray(v)?v.map(canonical):v&&typeof v==="object"?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b,"en")).map(([k,x])=>[k,canonical(x)])):v;
 /** Independent from the analysis identity: display roles and density/prices
