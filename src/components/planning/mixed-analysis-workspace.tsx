@@ -17,6 +17,7 @@ import { roofAreaReferenceProject } from "@/domain/examples/roof-area-project";
 import { mixedReferenceProject } from "@/domain/examples/mixed-project";
 import { loadedMixedReferenceProject } from "@/domain/examples/loaded-mixed-project";
 import { adaptMixedProject } from "@/domain/mixed-adapter";
+import { auditSecondaryFixity, executorFailureCodes, presumedSecondaryFixity, type SecondaryFixityVerdict } from "@/domain/secondary-fixity";
 import { mixedStations, verifyMixedResult } from "@/domain/mixed-analysis";
 import { anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
 import { adaptLoadedMixedProject } from "@/domain/loaded-mixed-adapter";
@@ -31,7 +32,7 @@ import { PhysicalLineView } from "./physical-line-view";
 import { MathematicalComparison } from "@/components/demonstration/mathematical-comparison";
 
 type Prepared = Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>>;
-type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; jointActions: JointActionTrace | null;designExecutions?:MemberExecution[] };
+type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; jointActions: JointActionTrace | null;designExecutions?:MemberExecution[];secondaryFixity:SecondaryFixityVerdict|null };
 const show = (v: number) => v === 0 ? "0" : v.toExponential(5);
 export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=false }: { project: Project; onChange: (patch: Partial<Project>) => void; demoPresentation?:boolean }) {
   const [example, setExample] = useState<Project | null>(null), [pane, setPane] = useState(demoPresentation?"results":"prepare");
@@ -103,6 +104,17 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       const parsed = anyMixedResultSchema.parse(out.result); if(parsed.schema_version!==prepared.request.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error("Versão de resposta incompatível."); verifyMixedResult(prepared.request, parsed, prepared.input_sha256);
       verifyLoadingTrace(prepared.request,parsed);
       if (controller.signal.aborted || ticket.current.value !== mine) return;
+      // C2: the same route and solver analyse the model with the bending continuity that
+      // purlins merely inherited released. A dependent structure throws here: nothing is published.
+      const secondaryFixity = await auditSecondaryFixity(active, prepared, async counterfactual => {
+        const answer = await fetch("/api/experimental/mixed3d", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(counterfactual), signal: controller.signal });
+        const body = await answer.json();
+        if (answer.ok) { if (body.status !== "completed") throw new Error("Auditoria de engaste presumido sem resposta de análise."); return { completed: true }; }
+        const code = body.error?.code;
+        if (typeof code !== "string" || executorFailureCodes.has(code)) throw new Error(`${code ?? answer.status}: auditoria de engaste presumido das terças não concluída; nenhum resultado publicado.`);
+        return { completed: false, refusalCode: code };
+      });
+      if (controller.signal.aborted || ticket.current.value !== mine) return;
       let resistance: ResistanceReport | null = null, resistanceError = "";
       try { resistance = await buildResistanceReport(active, prepared, parsed,includeConnections?out.joint_actions:undefined); } catch(e) { resistanceError = (e as Error).message; }
       if (controller.signal.aborted || ticket.current.value !== mine) return;
@@ -110,7 +122,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       if(includeConnections){try{jointActions=jointActionTraceSchema.parse(out.joint_actions);connections=await buildConnectionReport(active,prepared,parsed,jointActions);}catch(e){connectionError=(e as Error).message;}}
       if(controller.signal.aborted||ticket.current.value!==mine)return;
       if(!prepared.request.nodes.some(n=>n.id===connectionNodeId))setConnectionNodeId(prepared.request.nodes[0].id);
-      setSession({ identity, prepared, result: parsed, execution: out.execution, resistance, resistanceError, connections, connectionError, jointActions }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
+      setSession({ identity, prepared, result: parsed, execution: out.execution, resistance, resistanceError, connections, connectionError, jointActions, secondaryFixity }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
     } catch (e) { if (ticket.current.value === mine) setError(controller.signal.aborted ? "Execução cancelada ou prazo excedido; nenhum resultado publicado." : (e as Error).message); }
     finally { clearTimeout(timeout); if (ticket.current.value === mine) setBusyIdentity(null); }
   }
@@ -120,9 +132,11 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     try{
       if(file.size>5*1024*1024)throw Error("Resultado excede 5 MB.");
       const loaded=await restoreMixedAnalysis(active,await file.text());
+      // A saved file carries no counterfactual. It may only be shown when nothing was presumed.
+      if(presumedSecondaryFixity(active,loaded.prepared).length)throw Error("SECONDARY_FIXITY_AUDIT_PENDING: o modelo herda continuidade de flexão nas terças; reexecute a análise para auditar a estabilidade.");
       const resistance=await buildResistanceReport(active,loaded.prepared,loaded.result);
       if(ticket.current.value!==mine)return;
-      setSession({identity,prepared:loaded.prepared,result:loaded.result,execution:loaded.execution,resistance,resistanceError:"",connections:null,connectionError:"",jointActions:null});setRestored(true);setPane("results");setCombo(Object.keys(loaded.result.combinations)[0]);
+      setSession({identity,prepared:loaded.prepared,result:loaded.result,execution:loaded.execution,resistance,resistanceError:"",connections:null,connectionError:"",jointActions:null,secondaryFixity:null});setRestored(true);setPane("results");setCombo(Object.keys(loaded.result.combinations)[0]);
     }catch(e){if(ticket.current.value===mine)setError(`Resultado não restaurado: ${e instanceof Error?e.message:"arquivo inválido"}`);}
   }
   async function exportResistance(){
@@ -179,8 +193,9 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       </div>}
       {current && result && !demoPresentation && <div data-testid="mixed-results">
         <p>{current.prepared.request.nodes.length} nós · {new Set(current.prepared.mapping.members.map(m => m.originalId)).size} peças · {current.prepared.request.members.length} segmentos · {current.prepared.request.members.filter(m => m.kind === "axial").length} axiais.</p>
-        {current.result.schema_version==="jpn.mixed3d-result/2" && <p data-testid="loaded-result-trace">{current.result.loading.self_weight ? `Peso próprio declarado: ${show(current.result.loading.self_weight.total_mass_kg)} kg · caso ${current.result.loading.self_weight.case}.` : "Peso próprio desativado."} {current.result.loading.member_loads.length} cargas distribuídas físicas; sem duplicação automática.</p>}
-        {current.result.schema_version==="jpn.mixed3d-result/2"&&<ul data-testid="declared-load-trace">{current.result.loading.member_loads.map(l=><li key={l.id}>{l.id}: peça {current.prepared.mapping.members.find(m=>m.id===l.member)?.originalId} → segmento {l.member} · {l.case} · {l.coordinate_system} · {l.force_per_length_n_m.join("; ")} N/m · {l.source} ({l.revision})</li>)}</ul>}
+        <p data-testid="secondary-fixity-verdict">{current.secondaryFixity ? `Engaste presumido de terças: ${current.secondaryFixity.message}${current.secondaryFixity.declaredMomentEnds.length ? ` ${current.secondaryFixity.declaredMomentEnds.length} extremidade(s) com ligação a momento declarada peça por peça; resistência e rigidez dessas ligações não verificadas.` : ""}` : "Resultado restaurado: nenhuma continuidade de flexão de terça é herdada do grupo; contrafactual não reexecutado."} Isto não aprova a estrutura.</p>
+        {current.result.schema_version!=="jpn.mixed3d-result/1" && <p data-testid="loaded-result-trace">{current.result.loading.self_weight ? `Peso próprio declarado: ${show(current.result.loading.self_weight.total_mass_kg)} kg · caso ${current.result.loading.self_weight.case}.` : "Peso próprio desativado."} {current.result.loading.member_loads.length} cargas distribuídas físicas; sem duplicação automática.</p>}
+        {current.result.schema_version!=="jpn.mixed3d-result/1"&&<ul data-testid="declared-load-trace">{current.result.loading.member_loads.map(l=><li key={l.id}>{l.id}: peça {current.prepared.mapping.members.find(m=>m.id===l.member)?.originalId} → segmento {l.member} · {l.case} · {l.coordinate_system} · {l.force_per_length_n_m.join("; ")} N/m · {l.source} ({l.revision})</li>)}</ul>}
         {"roof_load_path" in current.prepared && current.prepared.roof_load_path && <p data-testid="roof-result-trace">{current.prepared.roof_load_path.actions.length} ação por área distribuída; áreas, resultantes e momentos globais conservados. A transferência até os apoios foi calculada pelo solver.</p>}
         {"wind_load_path" in current.prepared && current.prepared.wind_load_path && <p data-testid="wind-result-trace">{current.prepared.wind_load_path.cases.length} casos de vento zonal transmitidos às terças e ao Python; forças e momentos conservados. Combinações declaradas, validação normativa pendente.</p>}
         <Field label="Combinação mista"><Select value={selectedCombo ?? ""} onChange={e => setCombo(e.target.value)}>{Object.keys(current.result.combinations).map(id => <option key={id}>{id}</option>)}</Select></Field>

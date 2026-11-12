@@ -6,6 +6,7 @@ import type {MemberExecution} from "@/domain/resistance-assessment";
 import {localMixedEnabled,localMixedLimits,runLocalMixed} from "./local-mixed-runner";
 import {runLocalSection} from "./local-section-runner";
 import {SolverFailure} from "./runner";
+import {runLocalSecondaryFixityAudit} from "./secondary-fixity-runner";
 import {prepareElasticLtb,evaluateElasticLtb,type ElasticLtbAttempt} from "@/domain/elastic-ltb";
 import type {z} from "zod";
 import type {sectionAnalysisResultSchema} from "@/domain/section-analysis";
@@ -31,6 +32,11 @@ export async function runLocalStructuralAssessment(payload:string,signal?:AbortS
     phase="linear-worker";
     const analysis=await runLocalMixed(JSON.stringify(adapted.request),"connections",controller.signal);
     if(analysis.status!=="completed"||!analysis.joint_actions)throw new SolverFailure("INVALID_RESPONSE","Actual member end actions required");
+    // C2: before any demand or resistance is derived, the same worker must show
+    // that stability does not rest on bending continuity purlins merely inherited.
+    phase="secondary-fixity-counterfactual";
+    requireActive();
+    const secondaryFixity=await runLocalSecondaryFixityAudit(project,adapted,controller.signal);
     phase="continuous-demand-recovery";
     const prepared=await prepareStructuralAssessment(project,adapted,analysis.result,analysis.joint_actions);
     const records:MemberExecution[]=[],attempts:ResistanceAttempt[]=[],requests:Awaited<ReturnType<typeof prepareColdformedDesign>>[]=[];
@@ -65,7 +71,7 @@ export async function runLocalStructuralAssessment(payload:string,signal?:AbortS
       catch(e){lateralTorsional.push({study,status:"BLOCKED",reason:e instanceof Error?e.message:String(e),designResistance:null});}
     }
     phase="assessment-binding";
-    const result=await finishStructuralAssessment(project,prepared,records,attempts,resistanceBatch,lateralTorsional);
+    const result=await finishStructuralAssessment(project,prepared,records,attempts,resistanceBatch,lateralTorsional,secondaryFixity);
     requireActive();
     if(Buffer.byteLength(JSON.stringify(result))>localMixedLimits.outputBytes)throw new SolverFailure("OUTPUT_LIMIT","Integrated response exceeds 2 MB");
     return result;
