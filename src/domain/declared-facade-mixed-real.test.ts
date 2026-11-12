@@ -123,6 +123,13 @@ it("M41-P3: pressão explícita em fachada -> pilares físicos -> PyNite real e 
   extra.member_loads.push({...extra.member_loads[0],id:"FACADE:WIND-X:FAKE:Z"});
   expect(()=>auditFacadeSolverLoads(p,sourceTrace,extra,prepared.mapping))
     .toThrow("FACADE_AUDIT_UNTRACED_LOAD");
+  // Regression: an attacker or buggy adapter can add the same physical facade
+  // pressure with a different ID. Prefix-only detection used to miss this and
+  // report the expected 12 kN while sending 12 kN extra to the solver.
+  const disguised=structuredClone(prepared.request);
+  disguised.member_loads.push({...disguised.member_loads[0],id:"EXTRA-WIND-LOAD"});
+  expect(()=>auditFacadeSolverLoads(p,sourceTrace,disguised,prepared.mapping))
+    .toThrow("FACADE_AUDIT_UNTRACED_LOAD");
   const result=await runLocalMixed(JSON.stringify(prepared.request));
   if(result.status!=="completed"||result.result.schema_version!=="jpn.mixed3d-result/2")
     throw Error("PyNite não analisou os pilares reais carregados pelas faces medidas");
