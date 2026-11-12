@@ -1,0 +1,16 @@
+corepack : $ vitest run
+No linha:8 caractere:1
++ corepack pnpm test *> ..\m35-vitest-final.txt
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ($ vitest run:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ RUN  v5.0.5 C:/Users/Bruno/Downloads/JPN-main/.tools/mission35-worktree
+
+
+ Test Files  60 passed (60)
+      Tests  533 passed (533)
+   Start at  18:16:30
+   Duration  191.32s (tests 95%, import 5%)
+

@@ -1,8 +1,9 @@
 import type { Project } from "../models";
 import type { CostLine, MaterialLine } from "../project-details";
 import { generateGeometry, type GeometryResult } from "./geometry";
-import { structureSignature } from "./project-basis";
+import { takeoffSignature } from "./project-basis";
 import { generateStructure } from "./structure";
+import { guidedSupportIssue } from "../guided-support";
 
 const SCALE = 1000000n, RATE = 10000n;
 const scaled = (value: number) => BigInt(Math.round(value * Number(SCALE)));
@@ -50,8 +51,8 @@ export interface EstimateResult {
 export function calculateEstimate(project: Project): EstimateResult {
   const result: EstimateResult = { materials: [], materialsCents: 0, laborCents: 0, expensesCents: 0, directCostCents: 0, costChargesCents: 0, saleChargesCents: 0, totalCostCents: 0, saleCents: null, profitCents: null, grossMarginPercent: null, pending: [], warnings: [] };
   const e = project.estimate;
-  if (e.materials.some(line => line.source === "takeoff" && line.quantityOrigin?.signature !== structureSignature(project))) result.pending.push("Levantamento alterado: atualize os quantitativos vinculados antes de emitir o orçamento.");
-  const geometry: GeometryResult = project.category === "Cobertura metálica" ? generateGeometry(project.roof, project.planning?.typology) : { model: null, pending: ["Gerador indisponível para esta categoria."] };
+  if (e.materials.some(line => line.source === "takeoff" && line.quantityOrigin?.signature !== takeoffSignature(project))) result.pending.push("Levantamento alterado: atualize os quantitativos vinculados antes de emitir o orçamento.");
+  const geometry: GeometryResult = !project.workspace.physicalStructure&&["Cobertura metálica","Galpão","Barracão"].includes(project.category)&&!guidedSupportIssue(project) ? generateGeometry(project.roof, project.planning?.typology) : { model: null, pending: ["Área/contorno e caminho físico não declarados; não se utiliza o retângulo envolvente."] };
   if (geometry.model && project.planning) {
     const structure = generateStructure(project).model;
     if (structure) { geometry.model.metrics.roofAreaM2 = structure.roofAreaM2; geometry.model.metrics.projectedAreaM2 = structure.projectedAreaM2; }

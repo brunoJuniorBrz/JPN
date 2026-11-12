@@ -4,6 +4,13 @@
   "git": {
     "deploymentEnabled": {
       "main": false,
+      "integration/jpn-general-candidate": false,
+      "feat/m351-client-demonstration": false,
+      "feat/m43-p1-second-order-reference": false,
+      "feat/m43-p2-second-order-frame-engine": false,
+      "feat/m43-p3-consistent-second-order-equilibrium": false,
+      "feat/m43-p4-spatial-corotational-stability": false,
+      "feat/m43-p5-spatial-corotational-validation": false,
       "integration/jpn-functional-main": false,
       "feat/roof-area-load-path": false,
       "audit/mission21-independent": false,
@@ -18,7 +25,8 @@
       "feat/m31-structural-audit": false,
       "feat/m32-numerics-mixed-second-order": false,
       "feat/m33a-normative-wind-combinations": false,
-      "feat/m34ab-flexible-physical-model": false
+      "feat/m34ab-flexible-physical-model": false,
+      "feat/m35-irregular-structures-loads-takeoff": false
     }
   },
   "functions": {

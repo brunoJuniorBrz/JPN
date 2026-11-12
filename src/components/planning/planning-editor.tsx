@@ -7,6 +7,10 @@ import { newProject, projectSchema, type Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
 import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { PhysicalModelImport } from "./physical-model-import";
+import { DeclaredStructureEditor } from "./declared-structure-editor";
+import { RoofOutlinePanel } from "./roof-outline-panel";
+import { GuidedRoofSetup } from "./guided-roof-setup";
+import { applyTomCommercial } from "@/domain/tom-commercial";
 import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { transferTakeoff } from "@/domain/calculations/project-basis";
 import { useData } from "@/components/data-provider";
@@ -82,6 +86,9 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
     {project.isExample && <p className="example-banner">EXEMPLO FICTÍCIO · Medidas, distribuição e perfis apenas para demonstrar o cálculo geométrico.</p>}
     {step !== 3 && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
     <PhysicalModelImport project={project} onImport={importModel}/>
+    <details className="technical-details"><summary>Referência comercial auditada — Tom</summary><p>Reproduz R$ 9.651,29 com 31 telhas e 107,65 m lineares, seis peças U e vinte peças Ue. Não cria tesouras, pilares, contorno ou propriedades. Reprodução de custo com margem zero; use orçamento vazio.</p><button type="button" className="button secondary" onClick={()=>{try{const next=applyTomCommercial(project);update({estimate:next.estimate});setMessage("Orçamento comercial do Tom carregado; nenhuma estrutura real foi presumida.");}catch(e){setMessage((e as Error).message);}}}>Carregar orçamento auditado do Tom</button></details>
+    <DeclaredStructureEditor key={project.id+JSON.stringify(project.workspace.physicalStructure)} project={project} onCommit={importModel}/>
+    {declared&&<RoofOutlinePanel key={project.id+JSON.stringify(project.workspace.roofOutline)} project={project} onChange={update}/>}
     <section className="panel workflow-panel"><nav className="workflow-steps planning-steps" aria-label="Etapas do levantamento">{workflowSteps.map((label, i) => <button key={label} type="button" className={step === i ? "current" : ""} aria-current={step === i ? "step" : undefined} onClick={() => go(i)}><span>{i + 1}</span>{label}</button>)}</nav><p className="workflow-progress">Passo {step + 1} de 4 — {workflowSteps[step]}</p>
       <div className="viewer-shortcut"><button type="button" className="button secondary" onClick={() => {
         if (preview.model) { go(3, true); return; }
@@ -91,7 +98,8 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
       }}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button><span className="field-hint">{preview.model ? "Visualização 3D da estrutura disponível também no celular." : `Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span></div>
       <div className="workflow-content">
         {step === 0 && <GeneralForm project={project} onChange={update} errors={submitted || initial ? errors : {}} />}
-        {step === 1 && (declared?<p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no Resultado ou importe uma nova revisão JSON. Nenhuma cobertura foi gerada.</p>:project.category === "Cobertura metálica" ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>)}
+        {step === 1 && !declared && <GuidedRoofSetup project={project} onChange={update}/>}
+        {step === 1 && (declared?<p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no Resultado ou importe uma nova revisão JSON. Nenhuma cobertura foi gerada.</p>:["Cobertura metálica","Galpão","Barracão"].includes(project.category) ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning partialOutline={project.workspace.guidedSupport?.coverage==="partial"} /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>)}
         {step === 2 && (declared?<SpatialPreparationPanel project={project} onChange={update} mixed/>:<StructureForm project={project} onChange={update} profileToEdit={profileToEdit} />)}
         {step === 3 && <><TakeoffSummary project={project} activeSection={resultSection} onSectionChange={setResultSection} onResolvePending={target => { setProfileToEdit(target.role); go(target.step); }} startIn3D={open3D} open3DRequest={open3DRequest} onEditStructure={() => { setProfileToEdit(undefined); go(2); }} onConfigureProfile={role => { setProfileToEdit(role); go(2); }} /><ProjectWorkbench project={project} activeSection={resultSection} onChange={update} onEditStructure={() => { setProfileToEdit(undefined); go(2); }} /></>}
       </div>

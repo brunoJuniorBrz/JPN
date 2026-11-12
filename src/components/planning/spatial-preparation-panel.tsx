@@ -15,6 +15,8 @@ import type { Material } from "@/domain/models";
 import { SpatialAdapterPanel } from "./spatial-adapter-panel";
 import { mixedPreparationReview } from "@/domain/mixed-adapter";
 import { MemberPhysicalCatalogPanel } from "./member-physical-catalog-panel";
+import { SupportInterfaceEditor } from "./support-interface-editor";
+import { PhysicalRoofWorkflow } from "./physical-roof-workflow";
 
 const numberFields = [
   ["eGpa", "Elasticidade E (GPa)"], ["gGpa", "Cisalhamento G (GPa)"],
@@ -162,23 +164,24 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
       </div>
     </>}
     {section === "supports" && <>
-      <h4>Apoios nas bases</h4><p className="field-hint">Escolha os vínculos de cada base real, inclusive quando o grau de liberdade estiver livre. Nenhum pilar é considerado engastado automaticamente.</p>
-      {base.length ? <>
+      <h4>{mixed ? "Apoios nos nós físicos" : "Apoios nas bases"}</h4><p className="field-hint">Declare os vínculos dos nós reais; nenhum pilar, parede ou viga de concreto é considerado engastado automaticamente. Valores pendentes bloqueiam a análise.</p>
+      {supportNodes.length ? <>
         <div className="form-grid">
           <Field label={mixed ? "Nó do apoio misto" : "Base do pilar"}><Select value={selectedBase} onChange={e => setSupport(e.target.value)}>{supportNodes.map(id => <option key={id} value={id}>{id}</option>)}</Select></Field>
-          <Field label="Modelo de apoio para todas as bases"><Select value={bulk} onChange={e => setBulk(e.target.value)}><option value="">Selecione para aplicar explicitamente</option><option value="fixed">Seis graus restritos (hipótese de engaste)</option><option value="pinned">Translações restritas; rotações livres (hipótese de articulação)</option></Select></Field>
+          {base.length > 0 && <Field label="Modelo de apoio para todas as bases"><Select value={bulk} onChange={e => setBulk(e.target.value)}><option value="">Selecione para aplicar explicitamente</option><option value="fixed">Seis graus restritos (hipótese de engaste)</option><option value="pinned">Translações restritas; rotações livres (hipótese de articulação)</option></Select></Field>}
         </div>
-        <div className="actions"><button type="button" className="button secondary" disabled={!bulk} onClick={() => {
+        {base.length > 0 && <div className="actions"><button type="button" className="button secondary" disabled={!bulk} onClick={() => {
           const preset = presets[bulk as keyof typeof presets];
           if (!preset) return;
           change({ ...draft, supports: [...draft.supports.filter(s => !base.includes(s.nodeId)), ...base.map(nodeId => ({ nodeId, dofs: [...preset] as SpatialPreparation["supports"][number]["dofs"] }))] });
-        }}>Aplicar hipótese escolhida às {base.length} bases</button></div>
+        }}>Aplicar hipótese escolhida às {base.length} bases</button></div>}
         <div className="physical-dofs">
           {dofNames.map((d, i) => <Field key={selectedBase + d} label={`${selectedBase} · ${d}`}><Select value={supportDofs[i]} onChange={e => {
             const updated = [...supportDofs] as SupportState[]; updated[i] = e.target.value as SupportState; writeSupport(selectedBase, updated);
           }}>{supportChoices.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}</Select></Field>)}
         </div>
-      </> : <p className="notice">Não há bases identificadas. Revise a geometria.</p>}
+      </> : <p className="notice">Não há nós disponíveis para declarar apoios. Revise a geometria.</p>}
+      {mixed && <SupportInterfaceEditor draft={draft} onChange={change}/>}
       <h4>Comportamento das ligações</h4><p className="field-hint">{mixed ? "O tipo físico é declarado separadamente. Uma extremidade articulada não transforma pórtico em axial. Axiais exigem ambas as extremidades axiais; contradições bloqueiam a execução." : "Hipóteses por grupo, editáveis. Ligações axiais/mistas ainda não são interpretadas pelo solver 3D; a missão de conectividade continua necessária."}</p>
       <div className="form-grid">
         {pieceRoles.map(key => <Field label={roleLabels[key]} key={key}><Select value={draft.groups[key].connection}
@@ -212,6 +215,7 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
         const id = selectCaseName(draft.cases, "CASO"); if (!id) return;
         change({ ...draft, cases: [...draft.cases, { id, source: "" }], combinations: draft.combinations.map(c => ({ ...c, factors: { ...c.factors, [id]: null } })) });
       }}>Adicionar caso</button>
+      {mixed && project.workspace.physicalStructure && <PhysicalRoofWorkflow project={project} draft={draft} onChange={change}/>} 
       <h4>Forças e momentos nos nós</h4>
       {nodes.length > 0 && <div className="physical-row">
         <Field label="Nó do modelo"><Select value={selectedNode} onChange={e => setNode(e.target.value)}>{nodes.map(n => <option value={n.id} key={n.id}>{n.id} · {Math.round(n.x)}/{Math.round(n.y)}/{Math.round(n.z)} mm</option>)}</Select></Field>

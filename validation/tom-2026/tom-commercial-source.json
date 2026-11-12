@@ -1,0 +1,173 @@
+{
+  "schema_version": "jpn.tom-2026-source-commercial/1",
+  "case_id": "tom-metal-cover-nov2026",
+  "description": "Dados transcritos de duas páginas PDF da obra do Tom; fonte comercial e desenho esquemático, NÃO um modelo de cálculo estrutural.",
+  "source_files": [
+    {
+      "name": "planta baixa(2).pdf",
+      "pages": 1,
+      "kind": "drawing"
+    },
+    {
+      "name": "ton valores(2).pdf",
+      "pages": 1,
+      "kind": "commercial-worksheet"
+    }
+  ],
+  "geometric_reference": {
+    "upper_bound_length_m": 14.28,
+    "upper_bound_width_m": 5.38,
+    "reference_rectangle_m2": 76.8264,
+    "actual_net_roof_area_m2": null,
+    "visible_dimensions_m": [
+      14.28,
+      9.02,
+      5.38,
+      5.48,
+      5.26,
+      5.06,
+      4.51,
+      3.78,
+      3.68,
+      2.71,
+      2.65,
+      1.13,
+      0.6,
+      1.34
+    ],
+    "drawing_roof_segment_projected_m": 5.37,
+    "drawing_roof_segment_sloped_m": 5.41,
+    "interpretation": "Figure contains multiple different views and notches; cannot replace actual footprint with enclosing rectangle. No per-piece FE topology, support and connection schedule."
+  },
+  "metal_profiles": [
+    {
+      "source_label": "Tesoura",
+      "designation": "Viga U 75x40x2,65",
+      "quantity_pieces": 6,
+      "unit_price_cents": 13500,
+      "subtotal_cents": 81000,
+      "notes": "Six commercial pieces, not necessarily six complete trusses."
+    },
+    {
+      "source_label": "terças",
+      "designation": "Viga U enrijecida 75x40x2,65",
+      "quantity_pieces": 20,
+      "unit_price_cents": 15500,
+      "subtotal_cents": 310000
+    }
+  ],
+  "roofing_sheet": {
+    "designation": "TR25 espessura nominal 0,43 mm",
+    "unit_price_cents_per_linear_m": 3500,
+    "rows": [
+      {
+        "length_m": 5.38,
+        "count": 9,
+        "linear_m": 48.42,
+        "subtotal_cents": 169470
+      },
+      {
+        "length_m": 2.71,
+        "count": 6,
+        "linear_m": 16.26,
+        "subtotal_cents": 56910
+      },
+      {
+        "length_m": 3.78,
+        "count": 6,
+        "linear_m": 22.68,
+        "subtotal_cents": 79380
+      },
+      {
+        "length_m": 1.13,
+        "count": 2,
+        "linear_m": 2.26,
+        "subtotal_cents": 7910
+      },
+      {
+        "length_m": 2.65,
+        "count": 5,
+        "linear_m": 13.25,
+        "subtotal_cents": 46375
+      },
+      {
+        "length_m": 0.5,
+        "count": 2,
+        "linear_m": 1,
+        "subtotal_cents": 3500
+      },
+      {
+        "length_m": 3.78,
+        "count": 1,
+        "linear_m": 3.78,
+        "subtotal_cents": 13230
+      }
+    ],
+    "total_pieces": 31,
+    "total_linear_m": 107.65,
+    "notes": "Linear metres are not roof square metres; preserve repeated 3.78m commercial rows."
+  },
+  "roofing_fasteners": {
+    "name": "brocante",
+    "quantity": 600,
+    "unit_price_cents": 60,
+    "total_cents": 36000
+  },
+  "consumables": [
+    {
+      "name": "Disco desbaste 07",
+      "quantity": 2,
+      "unit_price_cents": 1087,
+      "subtotal_cents": 2174
+    },
+    {
+      "name": "Disco corte 12",
+      "quantity": 15,
+      "unit_price_cents": 1312,
+      "subtotal_cents": 19680
+    },
+    {
+      "name": "Disco corte 9",
+      "quantity": 25,
+      "unit_price_cents": 1500,
+      "subtotal_cents": 37500
+    },
+    {
+      "name": "Eletrodo 6013 3,25",
+      "quantity": 20,
+      "unit_price_cents": 2500,
+      "subtotal_cents": 50000
+    },
+    {
+      "name": "Tinta azul",
+      "quantity": 1,
+      "unit_price_cents": 31000,
+      "subtotal_cents": 31000
+    },
+    {
+      "name": "Thinner",
+      "quantity": 1,
+      "unit_price_cents": 21000,
+      "subtotal_cents": 21000
+    }
+  ],
+  "reported_totals": {
+    "metal_profiles_cents": 391000,
+    "roofing_sheets_and_fasteners_cents": 412775,
+    "consumables_cents": 161354,
+    "labor_cents": 0,
+    "grand_total_cents": 965129
+  },
+  "missing_for_structural_validation": [
+    "exact 3D coordinates and member connectivity",
+    "confirmed structure supports, restraints and boundary conditions",
+    "connections and welded/bolted detailing",
+    "steel grade and certified A,Iy,Iz,J,E,G,nu by section",
+    "member stock lengths and the physical location of 6/20 commercial pieces",
+    "roof sheet density, effective width and support path",
+    "real loads and wind design input, including roof zones",
+    "member and support design checks"
+  ],
+  "release_gate": "NOT_READY_BLOCKED",
+  "claim_structural_analysis_complete": false
+}

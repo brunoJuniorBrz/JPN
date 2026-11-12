@@ -1,0 +1,76 @@
+{
+  "schema_version": "jpn.m35-validation/1",
+  "base": "cc516b6f5cc97750de5aecf7564fcaff47a1d4f3",
+  "environment": {
+    "platform": "Windows",
+    "python": "3.12.10",
+    "pynite": "3.2.1",
+    "node": "24.13.0",
+    "pnpm": "12.15.0",
+    "blas_threads": 1,
+    "pip_check": "No broken requirements found."
+  },
+  "results": [
+    {
+      "command": "python engine/validate.py --output-dir validation/m35/python-final",
+      "exit_code": 0,
+      "passed": 1683,
+      "reference_comparisons": 1000
+    },
+    {
+      "command": "pnpm test",
+      "exit_code": 0,
+      "passed": 533,
+      "files": 60,
+      "seconds": 191.32,
+      "note": "Before the final two added tests; both passed in the following targeted run."
+    },
+    {
+      "command": "pnpm exec vitest run src/domain/declared-loading-real.test.ts src/domain/declared-takeoff.test.ts",
+      "exit_code": 0,
+      "passed": 18
+    },
+    {
+      "command": "pnpm exec vitest run src/domain/roof-outline.test.ts",
+      "exit_code": 0,
+      "passed": 12
+    },
+    {
+      "command": "pnpm typecheck",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm lint",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/m35-irregular.spec.ts tests/e2e/integration-declared.spec.ts tests/e2e/integration-generated.spec.ts tests/e2e/app.spec.ts tests/e2e/delivery.spec.ts tests/e2e/preproduction.spec.ts tests/e2e/quick-project.spec.ts --reporter=line,json",
+      "exit_code": 0,
+      "passed": 24
+    },
+    {
+      "command": "pnpm exec playwright test tests/e2e/m35-irregular.spec.ts --reporter=line",
+      "exit_code": 0,
+      "passed": 4,
+      "note": "After loaded-mode summary diagnostic correction."
+    },
+    {
+      "command": "pnpm exec vitest run src/lib/exports/cad.test.ts",
+      "exit_code": 0,
+      "passed": 3
+    },
+    {
+      "command": "python tests/verify_dxf.py",
+      "exit_code": 0,
+      "lines_verified": 130
+    },
+    {
+      "command": "pnpm build",
+      "exit_code": 0
+    }
+  ],
+  "remote_ci": "See the new pull request; baseline CI is not evidence for this branch.",
+  "production_tested": false,
+  "computedStructuralApproval": false,
+  "fabricationRelease": false
+}

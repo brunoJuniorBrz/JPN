@@ -16,6 +16,11 @@ import { engineeringCombinationsSchema } from "./engineering-combinations";
 import { connectionsSchema } from "./connections";
 import { declaredServiceCriterionSchema } from "./declared-service";
 import { memberDesignDeclarationSchema } from "./coldformed-design";
+import { supportInterfacesSchema } from "./support-interface";
+import { physicalRoofFacesSchema } from "./physical-roof-faces";
+import { physicalFacadesSchema } from "./physical-facades";
+import { auditPhysicalFacadeEnvelope } from "./physical-facade-envelope";
+import { auditPhysicalRoofCoverage } from "./physical-roof-coverage";
 
 // Human declarations, NOT finite-element input. A pending field is never
 // translated to zero, a free support or a material property by default.
@@ -35,6 +40,7 @@ export const spatialPreparationSchema = z.object({
   physicalCatalog: physicalCatalogSchema.optional(),
   groups: z.object({ column: physicalGroupSchema, topChord: physicalGroupSchema, bottomChord: physicalGroupSchema, web: physicalGroupSchema, purlin: physicalGroupSchema }).strict(),
   supports: z.array(supportSchema).max(200),
+  supportInterfaces: supportInterfacesSchema.optional(),
   memberConnections: z.array(z.object({ pieceId: z.string().min(1).max(100), start: z.enum(["inherit", ...connectionChoices]), end: z.enum(["inherit", ...connectionChoices]) }).strict()).max(5000),
   cases: z.array(z.object({ id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/), source: meaningful }).strict()).max(10),
   loads: z.array(loadSchema).max(500),
@@ -44,6 +50,8 @@ export const spatialPreparationSchema = z.object({
   memberKinds: z.array(z.object({ pieceId: z.string().min(1).max(100), kind: z.enum(["frame", "axial"]) }).strict()).max(5000).optional(),
   loading: loadingDraftSchema.optional(),
   roofRegions:roofRegionsSchema.optional(),
+  physicalRoofFaces:physicalRoofFacesSchema.optional(),
+  physicalFacades:physicalFacadesSchema.optional(),
   resistance: z.array(resistancePreparationSchema).max(5000).optional(),
   engineeringCombinations: engineeringCombinationsSchema.optional(),
   connections: connectionsSchema.optional(),
@@ -73,6 +81,15 @@ export function spatialPreparationReview(project: Project, draft: SpatialPrepara
   let geometry:PhysicalGeometry|null=null;
   try{geometry=resolvePhysicalStructure(project).model;}catch(e){add("GEOMETRY",e instanceof Error?e.message:String(e));}
   const declared=project.workspace.physicalStructure!==undefined;
+  if(draft.physicalFacades){
+    if(!declared||!geometry)add("PHYSICAL_FACADES_STRUCTURE_PENDING","Fachadas físicas exigem modelo estrutural XYZ declarado.");
+    else try{auditPhysicalFacadeEnvelope(draft.physicalFacades,geometry);}
+    catch(e){add("PHYSICAL_FACADES_INVALID",e instanceof Error?e.message:String(e));}
+  }
+  if(draft.physicalRoofFaces&&geometry){
+    try{auditPhysicalRoofCoverage(draft.physicalRoofFaces,geometry);}
+    catch(e){add("PHYSICAL_ROOF_COVERAGE",e instanceof Error?e.message:String(e));}
+  }
   if(draft.roofRegions)add("COMPOSED_ROOF_PRELIMINARY","Regiões compostas são preliminares e ainda não analisáveis. O modelo retangular não as substitui.");
   const stale = draft.geometrySignature !== structureSignature(project);
   if (stale) add("STALE_GEOMETRY", "Medidas, distribuição ou perfis mudaram. Revise o cadastro e atualize o vínculo geométrico.");

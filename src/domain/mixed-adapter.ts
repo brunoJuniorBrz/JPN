@@ -7,6 +7,7 @@ import { ConnectivityError, discretizeGeometry } from "./spatial-connectivity";
 import { mixedInputHash, mixedRequestSchema } from "./mixed-analysis";
 import { spatialSI } from "./spatial-analysis";
 import { verifyEngineeringCombinations } from "./engineering-combinations";
+import { reviewSupportInterfaces } from "./support-interface";
 
 export function mixedPieceKind(piece: PhysicalPiece, draft: SpatialPreparation) {
   return draft.memberKinds?.find(m => m.pieceId === piece.id)?.kind ?? draft.groups[piece.role].elementKind;
@@ -20,6 +21,7 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
   let mapping: ReturnType<typeof discretizeGeometry> | undefined;
   if (!common.geometry || !draft.connectivity) add("CONNECTIVITY_PENDING", "Revise e registre a conectividade física.");
   else { try { mapping = discretizeGeometry(common.geometry, draft.connectivity, structureSignature(project)); } catch (e) { add(e instanceof ConnectivityError ? e.code : "CONNECTIVITY", (e as Error).message); } }
+  for(const issue of reviewSupportInterfaces(project,draft,common.geometry))add(issue.code,issue.message);
   const pieces = common.geometry?.pieces ?? [];
   if (new Set(draft.supports.map(s => s.nodeId)).size !== draft.supports.length) add("DUPLICATE_SUPPORT", "Declarações de apoio duplicadas.");
   if (new Set(draft.memberKinds?.map(m => m.pieceId)).size !== (draft.memberKinds?.length ?? 0)) add("DUPLICATE_KIND", "Tipos físicos duplicados por peça.");
@@ -46,8 +48,14 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
 
 export async function prepareMixedInput(project: Project, loaded = false) {
   const draft = spatialPreparationSchema.parse(project.workspace.spatialPreparation ?? newSpatialPreparation(project));
-  if(project.workspace.physicalStructure&&draft.loading&&(draft.loading.selfWeight||draft.loading.uniform.length||draft.loading.roofArea.length||draft.loading.wind||draft.loading.roofDistribution))throw Error("DECLARED_STRUCTURE_UNSUPPORTED: estrutura declarada aceita somente cargas nodais explícitas; vento, cobertura, peso próprio e cargas distribuídas dependem de validação específica.");
-  if (!loaded && draft.loading?.wind) throw new Error("WIND_LOADED_REQUIRED: vento exige o adaptador com cargas distribuídas.");
+  if(draft.roofRegions)throw Error("COMPOSED_ROOF_PRELIMINARY: regiões retangulares compostas ainda sem transmissão auditada.");
+  if(project.workspace.physicalStructure&&draft.loading?.wind)throw Error("DECLARED_STRUCTURE_UNSUPPORTED: vento em estrutura física declarada exige zonas e fachadas validadas.");
+  if(project.workspace.physicalStructure&&draft.loading?.roofDistribution&&!draft.loading.roofArea.length)throw Error("DECLARED_STRUCTURE_UNSUPPORTED: distribuição de área sem ação e faces verificadas.");
+  if(project.workspace.physicalStructure&&draft.loading?.roofArea.length&&!draft.physicalRoofFaces)throw Error("DECLARED_STRUCTURE_UNSUPPORTED: declare e revise superfícies de cobertura físicas para distribuir cargas.");
+  if(!loaded&&draft.loading?.wind)throw Error("WIND_LOADED_REQUIRED: vento exige o adaptador com cargas distribuídas.");
+  if(!loaded&&draft.loading?.facadeTraction)throw Error("FACADE_LOADED_REQUIRED: vento em fachadas exige o adaptador misto com transmissão explícita.");
+  if(!loaded&&draft.loading?.roofArea.length)throw Error("DISTRIBUTED_LOADED_REQUIRED: carga de superfície só pode ser analisada pelo adaptador com distribuição explícita.");
+  if(!loaded&&draft.loading&&(draft.loading.selfWeight||draft.loading.uniform.length||draft.loading.roofDistribution))throw Error("DISTRIBUTED_LOADED_REQUIRED: carregamento não nodal exige o adaptador mixed3d/2.");
   if (draft.engineeringCombinations) verifyEngineeringCombinations(draft.engineeringCombinations,draft.cases,draft.combinations);
   const review = mixedPreparationReview(project, draft, loaded), blockers = review.issues.filter(i => i.code !== "TOPOLOGY");
   if (blockers.length) throw new ConnectivityError("PREPARATION_INCOMPLETE", blockers.slice(0, 12).map(i => `${i.code}: ${i.message}`).join(" "));

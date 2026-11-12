@@ -1,6 +1,7 @@
 import type { Project } from "../models";
 import { generateStructure } from "./structure";
 import { roles, roleLabels } from "../structure";
+import { declaredTakeoffSignature,transferDeclaredTakeoff } from "../declared-takeoff";
 
 // Content identity for dependent drafts, not a cryptographic signature or approval.
 export function structureSignature(project: Pick<Project, "roof" | "planning"> & Partial<Pick<Project,"workspace">>): string {
@@ -20,11 +21,11 @@ export function structureSignature(project: Pick<Project, "roof" | "planning"> &
     });
     return JSON.stringify(canonical({physicalStructure:{...project.workspace.physicalStructure,pieces},assignments}));
   }
-  return JSON.stringify(canonical({ roof: project.roof, planning: project.planning }));
+  return JSON.stringify(canonical({ roof: project.roof, planning: project.planning, ...(project.workspace?.guidedSupport?{guidedSupport:project.workspace.guidedSupport}:{}) }));
 }
 
 export function transferTakeoff(project: Project, wastePercent: number): Project {
-  if(project.workspace.physicalStructure)throw Error("DECLARED_STRUCTURE_UNSUPPORTED: quantitativos de cobertura não se aplicam à geometria física declarada.");
+  if(project.workspace.physicalStructure)return transferDeclaredTakeoff(project,wastePercent);
   const result = generateStructure(project);
   if (!result.model || !project.planning) throw new Error("Gere a geometria antes de transferir os quantitativos.");
   const signature = structureSignature(project);
@@ -40,6 +41,8 @@ export function transferTakeoff(project: Project, wastePercent: number): Project
   }
   return { ...project, estimate: { ...project.estimate, materials } };
 }
+
+export function takeoffSignature(project:Project){return project.workspace.physicalStructure?declaredTakeoffSignature(project):structureSignature(project);}
 
 export function captureRevision(project: Project, label: string, author: string): Project {
   if (!label.trim() || !author.trim()) throw new Error("Informe identificação da revisão e responsável pelo registro.");

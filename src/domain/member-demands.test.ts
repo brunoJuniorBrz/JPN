@@ -113,6 +113,27 @@ it("mudanças de norma, material, cargas, apoios, giro, perfil e discretização
   await expect(assertResistanceReportCurrent(report,roof,prepared,modified)).rejects.toThrow(/STALE_RESISTANCE_REPORT/);
   const tampered=structuredClone(report);tampered.pieces[0].approved=true as false;await expect(assertResistanceReportCurrent(tampered,roof,prepared,result)).rejects.toThrow(/conteúdo/);
 },20000);
+it("M43 mantém relatório misto linear e rejeita aprovação forjada mesmo com hash recalculado",async()=>{
+  expect(report.secondOrderAudit.topology).toBe("mixed-frame-axial");
+  expect(report.secondOrderAudit.blockers.some(b=>b.includes("AXIAL_SPRING_KG_UNSUPPORTED"))).toBe(true);
+  expect(report.secondOrderAudit.combinations.map(c=>c.combinationId))
+    .toEqual(prepared.request.combinations.map(c=>c.id));
+  expect(report.secondOrderAudit.baselineIsLinear).toBe(true);
+  expect(report.secondOrderAudit.computedStructuralApproval).toBe(false);
+  const forged=structuredClone(report);
+  Object.assign(forged.secondOrderAudit,{
+    pDeltaExecuted:true,normativeStabilityVerified:true,
+    computedStructuralApproval:true,fabricationRelease:true,
+  });
+  const {reportSha256:oldHash,...body}=forged;
+  expect(oldHash).toBe(report.reportSha256);
+  forged.reportSha256=await mixedInputHash(body);
+  await expect(assertResistanceReportCurrent(forged,roof,prepared,result))
+    .rejects.toThrow("STALE_RESISTANCE_REPORT");
+  const wrongHash=structuredClone(result);
+  wrongHash.input_sha256="0".repeat(64);
+  await expect(buildResistanceReport(roof,prepared,wrongHash)).rejects.toThrow();
+},20000);
 it("propriedades inválidas, inconsistências e perfis não identificados permanecem pendentes",async()=>{
   for(const n of [NaN,Infinity,0,-1])expect(resistancePreparationSchema.safeParse({...declaration("P1"),fyMpa:n}).success).toBe(false);
   const p=structuredClone(roof),d=p.workspace.spatialPreparation!;d.resistance![0].fuMpa=100;d.resistance![0].sectionProperties.areaCm2=1e6;d.resistance![0].geometry!.dimensionsMm.wallThickness=60;

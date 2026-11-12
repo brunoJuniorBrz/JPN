@@ -1,0 +1,53 @@
+{
+  "flow": "Browser -> local Next API -> bounded Python worker -> checked diagnostic rejection",
+  "evidence": [
+    {
+      "geometry": "cantilever",
+      "status": 422,
+      "code": "PDELTA_NOT_VERIFIED",
+      "diagnostic": {
+        "status": "diagnostic-rejected",
+        "solver": {
+          "name": "PyNiteFEA",
+          "version": "3.2.1",
+          "method": "analyze_PDelta",
+          "adapter": "jpn.second-order-frame/1"
+        },
+        "blockers": [
+          "PDELTA_PRODUCTION_DOMAIN_NOT_VERIFIED",
+          "PDELTA_DEAD_LOAD_EQUILIBRIUM_NOT_VERIFIED:C"
+        ],
+        "production_enabled": false,
+        "fabrication_release": false,
+        "input_sha256": "425cf7daf4a2576b36a516f7d4bf51c0c1f6df4553f79df244a1b210b5ff1412",
+        "nodeCount": 65
+      }
+    },
+    {
+      "geometry": "spatial",
+      "status": 422,
+      "code": "PDELTA_NOT_VERIFIED",
+      "diagnostic": {
+        "status": "diagnostic-rejected",
+        "solver": {
+          "name": "PyNiteFEA",
+          "version": "3.2.1",
+          "method": "analyze_PDelta",
+          "adapter": "jpn.second-order-frame/1"
+        },
+        "blockers": [
+          "PDELTA_PRODUCTION_DOMAIN_NOT_VERIFIED",
+          "PDELTA_DEAD_LOAD_EQUILIBRIUM_NOT_VERIFIED:C"
+        ],
+        "production_enabled": false,
+        "fabrication_release": false,
+        "input_sha256": "1b50433e44870edd9f3efc0b2911a82d2e0784ace7f0fc9fe0368ac415ed00aa",
+        "nodeCount": 128
+      }
+    },
+    {
+      "scenario": "foreign-origin",
+      "status": 403
+    }
+  ]
+}
