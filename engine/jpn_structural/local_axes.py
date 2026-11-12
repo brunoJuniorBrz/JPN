@@ -92,22 +92,29 @@ def legacy_axis_ambiguity(data):
     Members with equal principal inertias are unaffected. An offset of exactly
     0 or 180 degrees gives the same physical section (180 only flips local
     signs), so those are not ambiguous either. Input must already be valid.
+
+    A /2 member load declared in LOCAL coordinates is a direction, not a
+    section: there a 180 degree offset reverses the physical load and equal
+    inertias do not help, so any nonzero offset is ambiguous for that member.
     """
     points = {n["id"]: (n["x_m"], n["y_m"], n["z_m"]) for n in data["nodes"]}
     sections = {s["id"]: s for s in data["sections"]}
+    locally_loaded = {l["member"] for l in data.get("member_loads") or () if l["coordinate_system"] == "local"}
     found = []
     for m in data["members"]:
         if m.get("kind") != "frame":
             continue
         s = sections[m["section"]]
-        if math.isclose(s["iy_m4"], s["iz_m4"], rel_tol=1e-9, abs_tol=0.):
+        section = not math.isclose(s["iy_m4"], s["iz_m4"], rel_tol=1e-9, abs_tol=0.)
+        load = m["id"] in locally_loaded
+        if not section and not load:
             continue
         x = _unit_x(points[m["start"]], points[m["end"]])
         lean = float(np.linalg.norm(np.cross([0., 0., 1.], x)))
         if EXACT_VERTICAL < lean < NEAR_VERTICAL:
             found.append(m["id"]); continue
-        delta = offset_deg(points[m["start"]], points[m["end"]], m["id"])
-        if min(abs(delta), abs(abs(delta)-180.)) > ANGLE_TOLERANCE_DEG:
+        delta = abs(offset_deg(points[m["start"]], points[m["end"]], m["id"]))
+        if (delta if load else min(delta, abs(delta-180.))) > ANGLE_TOLERANCE_DEG:
             found.append(m["id"])
     return found
 
@@ -115,7 +122,7 @@ def legacy_axis_ambiguity(data):
 def refuse_ambiguous_legacy_axes(data):
     members = legacy_axis_ambiguity(data)
     if members:
-        fail("AXIS_CONVENTION_AMBIGUOUS", "Nos contratos mixed3d/1 e /2 a orientação física da seção destas barras "
-             "(Iy diferente de Iz) depende da direção global, não do giro declarado: "
+        fail("AXIS_CONVENTION_AMBIGUOUS", "Nos contratos mixed3d/1 e /2 a orientação física da seção (Iy diferente de Iz) "
+             "ou de uma carga em eixos locais destas barras depende da direção global, não do giro declarado: "
              + ", ".join(members[:8])+("..." if len(members) > 8 else "")
              + ". Use jpn.mixed3d/3 com local_axes='jpn-z-up/1' e revise o giro de cada peça.")

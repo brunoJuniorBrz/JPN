@@ -156,6 +156,32 @@ def test_ambiguity_guard_flags_only_members_whose_physical_axes_depend_on_global
         assert flagged(direction, iy=IY, iz=IY) == []        # equal inertias: nothing to confuse
 
 
+def test_legacy_local_member_load_is_ambiguous_wherever_the_library_axes_differ_from_the_reference():
+    """A local load is a direction: a 180 degree offset reverses it and equal
+    inertias do not help. Closed form for the cantilever tip: q L^4 / (8 E I)."""
+    def local(direction, version, **k):
+        raw = cantilever(direction, version=version, **k)[0]
+        raw["nodal_loads"] = []
+        raw["member_loads"][0].update(coordinate_system="local", force_per_length_n_m=[0., 0., -100.])
+        return raw
+    w = -100.*3.**4/(8*E*IY)
+    for direction in ((1, 0, 0), (0, 1, 0), (0, -1, 0), (2, 3, 0), (10, 0, 1), (0, 0, 1)):
+        assert legacy_axis_ambiguity(local(direction, 2)) == []
+        legacy, declared = tip(local(direction, 2)), tip(local(direction, 3))
+        assert legacy == pytest.approx(declared, rel=1e-9, abs=1e-15)
+    # -X is the SAME section (offset 180), yet its legacy local z points down:
+    # the unguarded /2 answer is the mirror image of the declared one.
+    for direction in ((-1, 0, 0), (-10, 0, 1)):
+        raw = local(direction, 2)
+        assert offset_deg((1., 2., 3.), tuple(n for n in (raw["nodes"][1][k] for k in ("x_m", "y_m", "z_m")))) == pytest.approx(180., abs=1e-9)
+        assert legacy_axis_ambiguity(raw) == ["B"] == legacy_axis_ambiguity(local(direction, 2, iy=IY, iz=IY))
+        declared = tip(local(direction, 3))
+        assert declared == pytest.approx(w*reference_basis((0, 0, 0), direction)[2], rel=1e-9, abs=1e-15)
+        assert tip(local(direction, 2)) == pytest.approx(-declared, rel=1e-9, abs=1e-15)
+        # Without a local load the same member is not ambiguous.
+        assert legacy_axis_ambiguity(cantilever(direction, version=2)[0]) == []
+
+
 def test_v3_contract_is_explicit_and_fails_closed():
     raw = cantilever((2, 3, 1))[0]
     result = analyze_mixed3d_v3(raw)
