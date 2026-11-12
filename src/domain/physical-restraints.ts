@@ -12,6 +12,9 @@ import type {extractContinuousDemands} from "./continuous-demands";
 const dot=(a:readonly number[],b:readonly number[])=>a.reduce((s,v,i)=>s+v*b[i],0);
 const unit=(a:readonly number[])=>a.map(v=>v/Math.hypot(...a));
 const near=(a:number,b:number)=>Math.abs(a-b)<=1e-7;
+// A dot product near +/-1 loses the transverse error quadratically. Compare
+// actual vector components so an oblique constraint is never rounded to a DOF.
+const parallel=(a:readonly number[],b:readonly number[])=>Math.min(Math.hypot(...a.map((v,i)=>v-b[i])),Math.hypot(...a.map((v,i)=>v+b[i])))<=1e-10;
 
 /** Review only EXISTING physical nodes, supports and axial members. No nearest
  * node, sheeting stiffness, fictitious support, spring or rigid brace is added. */
@@ -31,12 +34,12 @@ export function reviewPhysicalRestraints(project:Project,draft:SpatialPreparatio
     const at=[a.x,a.y,a.z].map((v,i)=>v/1000+r.positionM*axis[i]);
     if(r.positionM>piece.lengthMm/1000+1e-7||![node.x,node.y,node.z].every((v,i)=>near(v/1000,at[i]))){add(r.id+": position is not an explicit node on the original member");continue;}
     const alignment=Math.abs(dot(axis,r.directionGlobal));
-    if(r.kind==="torsional"&&Math.abs(alignment-1)>1e-10||r.kind==="lateral"&&alignment>=1-1e-10){add(r.id+": direction contradicts the physical restraint kind");continue;}
+    if(r.kind==="torsional"&&!parallel(axis,r.directionGlobal)||r.kind==="lateral"&&alignment>=1-1e-10){add(r.id+": direction contradicts the physical restraint kind");continue;}
     const physical=resolveMemberPhysical(piece,draft).properties;
     if((draft.memberKinds?.find(k=>k.pieceId===piece.id)?.kind??physical.elementKind)!=="frame")add(r.id+": restrained member must be a frame");
     if(r.binding.kind==="support"){
       const axisIndex=r.directionGlobal.findIndex(v=>Math.abs(Math.abs(v)-1)<=1e-10);
-      if(axisIndex<0){add(r.id+": oblique support constraints require an unsupported multipoint formulation");continue;}
+      if(axisIndex<0||r.directionGlobal.some((v,i)=>i!==axisIndex&&Math.abs(v)>1e-10)){add(r.id+": oblique support constraints require an unsupported multipoint formulation");continue;}
       const dof=axisIndex+(r.kind==="torsional"?3:0),support=draft.supports.find(s=>s.nodeId===r.nodeId),face=draft.supportInterfaces?.find(s=>s.nodeId===r.nodeId);
       if(!support||support.dofs[dof]!=="fixed"||!face||face.dofs[dof]!=="fixed")add(r.id+": no matching declared support DOF and physical interface");
       if(r.kind==="lateral"&&alignment>1e-10)add(r.id+": grounded lateral restraint must be transverse to the member");
@@ -52,7 +55,7 @@ export function reviewPhysicalRestraints(project:Project,draft:SpatialPreparatio
       const group=resolveMemberPhysical(brace,draft).properties;
       if((draft.memberKinds?.find(k=>k.pieceId===brace.id)?.kind??group.elementKind)!=="axial")add(r.id+": brace is not an explicitly axial element");
       const c=nodes.get(brace.start)!,d=nodes.get(brace.end)!,braceAxis=unit([d.x-c.x,d.y-c.y,d.z-c.z]);
-      if(Math.abs(Math.abs(dot(braceAxis,r.directionGlobal))-1)>1e-10)add(r.id+": direction is not the actual brace axis");
+      if(!parallel(braceAxis,r.directionGlobal))add(r.id+": direction is not the actual brace axis");
       const key=`brace:${brace.id}:${r.nodeId}`;
       if(bindings.has(key))add(r.id+": duplicate brace binding");bindings.add(key);
     }
@@ -99,7 +102,7 @@ export async function auditPhysicalRestraints(project:Project,prepared:DemandInp
     if(!axes||!group.eGpa||!group.iyCm4||!group.izCm4)return [];
     const physicalLengthM=physical.lengthMm/1000,ePa=group.eGpa*1e9,inertias=[0,group.izCm4*1e-8,group.iyCm4*1e-8];
     return ([1,2] as const).flatMap(axis=>{
-      const positions=[...new Set(r.filter(r=>Math.abs(Math.abs(dot(r.directionGlobal,axes[axis]))-1)<=1e-10).map(r=>r.positionM))].sort((a,b)=>a-b);
+      const positions=[...new Set(r.filter(r=>parallel(r.directionGlobal,axes[axis])).map(r=>r.positionM))].sort((a,b)=>a-b);
       if(positions.length<2||!near(positions[0],0)||!near(positions.at(-1)!,physicalLengthM))return [];
       const maximumSpanM=Math.max(...positions.slice(1).map((x,i)=>x-positions[i]));
       const inertiaM4=inertias[axis];

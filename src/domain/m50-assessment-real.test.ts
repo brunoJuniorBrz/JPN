@@ -101,7 +101,7 @@ it("persists physical bindings but keeps every approval gate blocked and records
   mkdirSync(".tools/m50-runtime",{recursive:true});writeFileSync(".tools/m50-runtime/assessment.json",JSON.stringify({project,result},null,2));
 });
 
-it.each(["stale","position","dof","direction","brace-kind","torsional-brace","released-torsion","duplicate"])("refuses %s physical restraint data without fabricating a binding",async(kind)=>{
+it.each(["stale","position","dof","direction","brace-kind","torsional-brace","released-torsion","duplicate","almost-axis-support","almost-axis-torsion","almost-brace-axis"])("refuses %s physical restraint data without fabricating a binding",async(kind)=>{
   const p=m50Project(),d=p.workspace.spatialPreparation!,items=d.physicalRestraints!.items;
   if(kind==="stale")d.physicalRestraints!.geometrySignature="stale";
   if(kind==="position")items[0].positionM=.5;
@@ -111,6 +111,9 @@ it.each(["stale","position","dof","direction","brace-kind","torsional-brace","re
   if(kind==="torsional-brace"){items.at(-1)!.kind="torsional";items.at(-1)!.capacity.units="Nm";items.at(-1)!.directionGlobal=[1,0,0];}
   if(kind==="released-torsion")d.memberConnections.find(m=>m.pieceId==="V0")!.start="pinned";
   if(kind==="duplicate")items.push({...items[0],id:"DUPLICATE",directionGlobal:[0,-1,0]});
+  if(kind==="almost-axis-support")items[0].directionGlobal=[0,1,1e-6];
+  if(kind==="almost-axis-torsion")items[2].directionGlobal=[1,1e-6,0];
+  if(kind==="almost-brace-axis")items.at(-1)!.directionGlobal=[1e-6,1,0];
   expect(reviewPhysicalRestraints(p,d).length).toBeGreaterThan(0);
   await expect(adaptLoadedMixedProject(p)).rejects.toThrow(/PHYSICAL_RESTRAINT/);
 });

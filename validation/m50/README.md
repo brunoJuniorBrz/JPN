@@ -19,6 +19,8 @@ Importação/backup preservam o contrato. A preparação recusa assinatura obsol
 posição sem nó físico, vetor inválido, eixo/DOF incompatível, vínculo duplicado,
 barra inexistente/não axial e suposta contenção torsional desconectada por rótula.
 Contenção oblíqua no solo exige formulação multiponto ainda não suportada.
+O alinhamento é conferido pelas componentes do vetor: cosseno próximo de 1
+não basta para eliminar uma componente transversal fisicamente não representada.
 
 A barra de contraventamento contribui com sua **rigidez finita EA/L** no solver
 existente. Não vira apoio rígido nem reduz automaticamente o comprimento de
