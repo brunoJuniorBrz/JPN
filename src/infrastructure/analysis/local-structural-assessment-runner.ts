@@ -6,6 +6,9 @@ import type {MemberExecution} from "@/domain/resistance-assessment";
 import {localMixedEnabled,localMixedLimits,runLocalMixed} from "./local-mixed-runner";
 import {runLocalSection} from "./local-section-runner";
 import {SolverFailure} from "./runner";
+import {prepareElasticLtb,evaluateElasticLtb,type ElasticLtbAttempt} from "@/domain/elastic-ltb";
+import type {z} from "zod";
+import type {sectionAnalysisResultSchema} from "@/domain/section-analysis";
 
 /** Reuses the capped workers sequentially, with the SAME 20 s budget for the
  * complete orchestration. No background solver, parallel worker or UI route. */
@@ -47,8 +50,22 @@ export async function runLocalStructuralAssessment(payload:string,signal?:AbortS
       for(let i=0;i<requests.length;i++)records.push({schema_version:"jpn.member-design-record/1",request:requests[i],result:calculated.result.results[i]});
       resistanceBatch={geometryEvaluations:calculated.result.geometry_evaluations,geometryReuses:calculated.result.geometry_reuses};
     }
+    const lateralTorsional:ElasticLtbAttempt[]=[],sections=new Map<string,z.infer<typeof sectionAnalysisResultSchema>>();
+    for(const study of project.workspace.spatialPreparation?.elasticLtbStudies??[]){
+      requireActive();
+      let plan;
+      try{plan=await prepareElasticLtb(project,prepared.base,study);}
+      catch(e){lateralTorsional.push({study,status:"BLOCKED",reason:e instanceof Error?e.message:String(e),designResistance:null});continue;}
+      phase="elastic-ltb-geometric-properties";
+      let section=sections.get(plan.sectionRequestSha256);
+      if(!section){section=(await runLocalSection(JSON.stringify(plan.sectionRequest),controller.signal)).result;sections.set(plan.sectionRequestSha256,section);}
+      // Worker failures/timeouts propagate. Unsupported physical conditions are
+      // explicit blocked diagnostics, never a successful resistance procedure.
+      try{lateralTorsional.push({study,status:"CALCULATED_ELASTIC_REFERENCE",result:await evaluateElasticLtb(plan,section)});}
+      catch(e){lateralTorsional.push({study,status:"BLOCKED",reason:e instanceof Error?e.message:String(e),designResistance:null});}
+    }
     phase="assessment-binding";
-    const result=await finishStructuralAssessment(project,prepared,records,attempts,resistanceBatch);
+    const result=await finishStructuralAssessment(project,prepared,records,attempts,resistanceBatch,lateralTorsional);
     requireActive();
     if(Buffer.byteLength(JSON.stringify(result))>localMixedLimits.outputBytes)throw new SolverFailure("OUTPUT_LIMIT","Integrated response exceeds 2 MB");
     return result;

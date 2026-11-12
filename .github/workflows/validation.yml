@@ -76,6 +76,7 @@ jobs:
       - run: python validation/geometric-stiffness-audit/kg_reference.py
       - run: python engine/validate.py
       - run: python engine/audit_loading.py
+      - run: python validation/m51/reproduce.py --output engine/validation-results/m51-independent-reference.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -112,6 +113,7 @@ jobs:
         env:
           JPN_SECTION_FSM_PYTHON_EXECUTABLE: .tools/sections-fsm/bin/python
       - run: python validation/m49/summarize.py
+      - run: .venv/bin/python validation/m51/reproduce.py --evidence .tools/m51-runtime/assessment.json
       - run: .venv/bin/python tests/verify_dxf.py
       - run: npx --yes pnpm@12.15.0 exec playwright install --with-deps chromium
       - run: npx --yes pnpm@12.15.0 test:e2e
@@ -126,6 +128,7 @@ jobs:
             .tools/integration-general-runtime/
             .tools/m49-runtime/
             .tools/m50-runtime/
+            .tools/m51-runtime/
             test-results/
 
   optional-numerical-profiles:
@@ -148,7 +151,14 @@ jobs:
       - run: python -m pip check
       - if: matrix.profile == 'sections'
         run: python -m pytest engine/section_tests/test_section_properties.py engine/section_tests/test_verified_design.py engine/section_tests/test_exact_shape_cache.py engine/section_tests/test_verified_design_batch.py -q
+      - if: matrix.profile == 'sections'
+        run: python validation/m51/capped_section.py
       - if: matrix.profile == 'fsm'
         run: python -m pytest engine/section_tests/test_elastic_strip.py -q
       - if: matrix.profile == 'sections-fsm'
         run: python -m pytest engine/section_tests/test_member_buckling.py engine/section_tests/test_modal_numerics.py engine/section_tests/test_modal_kinematics.py engine/section_tests/test_exact_shape_cache.py -q
+      - uses: actions/upload-artifact@v4
+        if: always() && matrix.profile == 'sections'
+        with:
+          name: m51-capped-section-${{ matrix.os }}
+          path: .tools/m51-runtime/
