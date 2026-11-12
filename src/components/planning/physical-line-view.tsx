@@ -1,7 +1,7 @@
 "use client";
 import { useMemo,useState } from "react";
 import type { PhysicalGeometry } from "@/domain/structure";
-import { roleLabels } from "@/domain/structure";
+import { physicalRoleLabels as roleLabels } from "@/domain/structure";
 import { calculateNodeMeasurement } from "./node-measurement";
 import { Field,Select } from "@/components/ui";
 

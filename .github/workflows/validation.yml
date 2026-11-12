@@ -109,6 +109,7 @@ jobs:
       - run: npx --yes pnpm@12.15.0 test
         env:
           JPN_SECTION_FSM_PYTHON_EXECUTABLE: .tools/sections-fsm/bin/python
+      - run: python validation/m49/summarize.py
       - run: .venv/bin/python tests/verify_dxf.py
       - run: npx --yes pnpm@12.15.0 exec playwright install --with-deps chromium
       - run: npx --yes pnpm@12.15.0 test:e2e
@@ -121,6 +122,7 @@ jobs:
           name: general-integration-browser-evidence
           path: |
             .tools/integration-general-runtime/
+            .tools/m49-runtime/
             test-results/
 
   optional-numerical-profiles:

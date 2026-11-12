@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { physicalGroupSchema,type PhysicalGroup } from "./physical-declaration";
+import { physicalGroupSchema,emptyPhysicalGroup,type PhysicalGroup } from "./physical-declaration";
 import { physicalId } from "./declared-structure";
 import type { PhysicalPiece } from "./structure";
 import type { SpatialPreparation } from "./spatial-preparation";
@@ -14,7 +14,7 @@ export const physicalCatalogSchema=z.object({schema_version:z.literal("jpn.physi
   for(const a of v.assignments)if(!v.materials.some(m=>m.id===a.materialId)||!v.sections.some(s=>s.id===a.sectionId))issue(`PHYSICAL_REFERENCE_MISSING: ${a.pieceId}: material/seção inexistente; sem fallback ao grupo.`);
 });
 export function resolveMemberPhysical(piece:PhysicalPiece,draft:SpatialPreparation):{properties:PhysicalGroup;materialId:string;sectionId:string}{
-  const group=draft.groups[piece.role],assignment=draft.physicalCatalog?.assignments.find(a=>a.pieceId===piece.id);
+  const group=draft.groups[piece.role]??emptyPhysicalGroup(),assignment=draft.physicalCatalog?.assignments.find(a=>a.pieceId===piece.id);
   if(!assignment)return {properties:group,materialId:`MAT-${piece.role}`,sectionId:`SEC-${piece.role}`};
   const material=draft.physicalCatalog!.materials.find(m=>m.id===assignment.materialId),section=draft.physicalCatalog!.sections.find(s=>s.id===assignment.sectionId);
   if(!material||!section)throw Error(`PHYSICAL_REFERENCE_MISSING: ${piece.id}: material/seção inexistente; sem fallback ao grupo.`);

@@ -3,6 +3,7 @@
   "git": {
     "deploymentEnabled": {
       "main": false,
+      "feat/m49-beam-purlin-load-path": false,
       "integration/jpn-general-candidate": false,
       "feat/m351-client-demonstration": false,
       "feat/m43-p1-second-order-reference": false,

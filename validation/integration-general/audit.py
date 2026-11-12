@@ -13,6 +13,10 @@ ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).parent
 GIT = os.environ.get("JPN_GIT_EXECUTABLE", "git")
 BRANCH = "integration/jpn-general-candidate"
+# PR84 is now merged. Audit its frozen deliverable, not require every future
+# engineering feature to remain byte-identical to its application sources.
+# Its matrix/goldens/tests stay historical evidence; never re-record them in CI.
+INTEGRATED_SHA = "6f473efa5350a498e444a7f006881a71e7ae9d59"
 
 NOTES = {
     1: ("SUPERSEDED_NOT_MERGED", "Experimento 2D antigo substituído pelo pacote e oráculos atuais; não reinserir layout/dependências incompatíveis.", ["engine/validate.py"]),
@@ -60,11 +64,21 @@ def tree(ref):
 def verify_guards(snapshot):
     assert ancestor(snapshot["main_sha"], "HEAD"), "Candidate lost main ancestry"
     assert ancestor(snapshot["core_sha"], "HEAD"), "Candidate lost verified PR83 ancestry"
+    assert ancestor(INTEGRATED_SHA, "HEAD"), "PR84 integration ancestry lost"
     # Existing application, physical preparation, numerical sources, tests and
     # golden files remain byte-identical to the verified P83 tree.
-    changed = git("diff", "--name-only", "--diff-filter=MD", snapshot["core_sha"], "HEAD", "--", "src", "engine", "tests", "validation").splitlines()
+    changed = git("diff", "--name-only", "--diff-filter=MD", snapshot["core_sha"], INTEGRATED_SHA, "--", "src", "engine", "tests", "validation").splitlines()
     assert set(changed) <= {"engine/vercel.json"}, "Existing verified files overwritten: "+str(changed)
     assert not git("diff", "--name-only", "--diff-filter=D", snapshot["core_sha"], "HEAD"), "Deleted evidence/source"
+    # Future reviewed source evolution is allowed; previously verified tests,
+    # golden files and evidence cannot be silently rewritten or removed.
+    historic = tree(INTEGRATED_SHA)
+    current = tree("HEAD")
+    protected = [p for p in historic if p.startswith(("tests/", "engine/tests/", "engine/section_tests/", "validation/")) or p.endswith(".test.ts")]
+    for path in protected:
+        if path == "validation/integration-general/audit.py":
+            continue  # This runner evolves; the original stays in INTEGRATED_SHA.
+        assert current.get(path) == historic[path], "Historical test/evidence drift: " + path
     for path in (ROOT/"vercel.json", ROOT/"engine/vercel.json"):
         flags = json.loads(path.read_text(encoding="utf-8"))["git"]["deploymentEnabled"]
         assert flags["main"] is False and flags[BRANCH] is False, "Deployment guard changed"
@@ -73,12 +87,12 @@ def verify_guards(snapshot):
 
 def record(snapshot):
     rows = []
-    candidate_tree = tree("HEAD")
+    candidate_tree = tree(INTEGRATED_SHA)
     for original in snapshot["pull_requests"]:
         n, sha = original["number"], original["sha"]
         mb = git("merge-base", sha, original["base_sha"])
         files = git("diff", "--name-only", mb, sha).splitlines()
-        in_main, in_core, in_candidate = [ancestor(sha, target) for target in (snapshot["main_sha"], snapshot["core_sha"], "HEAD")]
+        in_main, in_core, in_candidate = [ancestor(sha, target) for target in (snapshot["main_sha"], snapshot["core_sha"], INTEGRATED_SHA)]
         status = "ALREADY_MAIN" if in_main else "ANCESTRY_PR83" if in_core else NOTES[n][0]
         note = "Ancestralidade preservada; não executar merge duplicado." if in_main or in_core else NOTES[n][1]
         tests = [f for f in files if (f.endswith((".test.ts", ".spec.ts")) or (Path(f).name.startswith("test_") and f.endswith(".py"))) and (ROOT/f).is_file()]
@@ -137,14 +151,14 @@ def record(snapshot):
 def verify(snapshot):
     verify_guards(snapshot)
     matrix = json.loads((HERE/"pr-matrix.json").read_text(encoding="utf-8"))
-    candidate_tree = tree("HEAD")
+    candidate_tree = tree(INTEGRATED_SHA)
     assert len(matrix["pull_requests"]) == len(snapshot["pull_requests"]) == 64
     for row in matrix["pull_requests"]:
-        assert ancestor(row["source_sha"], "HEAD") == row["candidate_ancestor"], "Ancestry drift: PR "+str(row["number"])
+        assert ancestor(row["source_sha"], INTEGRATED_SHA) == row["candidate_ancestor"], "Ancestry drift: PR "+str(row["number"])
         for item in row["files"]:
             assert candidate_tree.get(item["path"]) == item["candidate_blob"], "File drift: "+item["path"]
         assert all((ROOT/p).is_file() for p in row["tests"]), "Mapped test missing"
-    print("Integration audit PASS: 64 PRs; main + PR83 ancestry; source/test/golden preservation; deploy and SCI guards")
+    print("Integration audit PASS: frozen PR84 matrix; main + PR83 + PR84 ancestry; historical tests/goldens/evidence; deploy and SCI guards")
 
 
 if __name__ == "__main__":

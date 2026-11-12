@@ -1,12 +1,13 @@
 import type { Project } from "./models";
 import { structureSignature } from "./calculations/project-basis";
-import { spatialPreparationSchema, spatialPreparationReview } from "./spatial-preparation";
+import { emptyPhysicalGroup,spatialPreparationSchema, spatialPreparationReview } from "./spatial-preparation";
 import { canonicalSpatialInput, spatialRequestSchema, spatialInputHash, spatialSI } from "./spatial-analysis";
 import { ConnectivityError, discretizeGeometry } from "./spatial-connectivity";
 
 export async function adaptSpatialProject(project: Project) {
   if(project.workspace.physicalStructure||project.workspace.spatialPreparation?.physicalCatalog)throw Error("PHYSICAL_MODEL_MIXED_REQUIRED: geometria declarada e propriedades individuais exigem o adaptador mixed3d; sem fallback ao grupo ou gerador.");
   const draft = spatialPreparationSchema.parse(project.workspace.spatialPreparation);
+  if(Object.values(draft.groups).some(g=>g.connection==="bending-pinned")||draft.memberConnections.some(m=>m.start==="bending-pinned"||m.end==="bending-pinned"))throw Error("BENDING_RELEASE_MIXED_REQUIRED: articulação à flexão exige o adaptador misto auditado.");
   if (new Set(draft.supports.map(s => s.nodeId)).size !== draft.supports.length) throw new ConnectivityError("DUPLICATE_SUPPORT", "Há declarações de apoio repetidas para o mesmo nó; revise, sem consolidar restrições automaticamente.");
   const review = spatialPreparationReview(project, draft);
   const blockers = review.issues.filter(i => i.code !== "TOPOLOGY");
@@ -15,7 +16,7 @@ export async function adaptSpatialProject(project: Project) {
   const mapping = discretizeGeometry(review.geometry, draft.connectivity, structureSignature(project));
   const pieces = new Map(review.geometry.pieces.map(p => [p.id, p]));
   const members = mapping.members.map(segment => {
-    const piece = pieces.get(segment.originalId)!, group = draft.groups[piece.role], override = draft.memberConnections.find(m => m.pieceId === piece.id);
+    const piece = pieces.get(segment.originalId)!, group = draft.groups[piece.role]??emptyPhysicalGroup(), override = draft.memberConnections.find(m => m.pieceId === piece.id);
     const start = override && override.start !== "inherit" ? override.start : group.connection;
     const end = override && override.end !== "inherit" ? override.end : group.connection;
     if ([start, end].includes("axial")) throw new ConnectivityError("AXIAL_UNSUPPORTED", "Este núcleo não converte barras axiais em pórticos. Modelo misto ainda não implementado.", [piece.id]);
@@ -31,8 +32,8 @@ export async function adaptSpatialProject(project: Project) {
   const request = spatialRequestSchema.parse({ schema_version: "jpn.frame3d/1", units: "SI", theory: "linear-elastic-euler-bernoulli",
     project: { id: project.id, revision, source: `JPN adaptador geométrico-físico/1; declarações SHA-256 ${revision}; sem aprovação normativa` },
     nodes: mapping.nodes.map(n => ({ id: n.id, x_m: spatialSI.metres(n.x), y_m: spatialSI.metres(n.y), z_m: spatialSI.metres(n.z) })), members,
-    materials: roles.map(role => { const p = draft.groups[role]; return { id: `MAT-${role}`, e_pa: spatialSI.modulus(p.eGpa!), g_pa: spatialSI.modulus(p.gGpa!), nu: p.nu!, source: `${p.steelGrade}; ${p.materialSource}`, revision: p.materialRevision }; }),
-    sections: roles.map(role => { const p = draft.groups[role]; return { id: `SEC-${role}`, area_m2: spatialSI.area(p.areaCm2!), iy_m4: spatialSI.inertia(p.iyCm4!), iz_m4: spatialSI.inertia(p.izCm4!), j_m4: spatialSI.inertia(p.jCm4!), source: p.sectionSource, revision: p.sectionRevision }; }),
+    materials: roles.map(role => { const p = draft.groups[role]??emptyPhysicalGroup(); return { id: `MAT-${role}`, e_pa: spatialSI.modulus(p.eGpa!), g_pa: spatialSI.modulus(p.gGpa!), nu: p.nu!, source: `${p.steelGrade}; ${p.materialSource}`, revision: p.materialRevision }; }),
+    sections: roles.map(role => { const p = draft.groups[role]??emptyPhysicalGroup(); return { id: `SEC-${role}`, area_m2: spatialSI.area(p.areaCm2!), iy_m4: spatialSI.inertia(p.iyCm4!), iz_m4: spatialSI.inertia(p.izCm4!), j_m4: spatialSI.inertia(p.jCm4!), source: p.sectionSource, revision: p.sectionRevision }; }),
     supports: draft.supports.filter(s => s.dofs.some(d => d === "fixed")).map(s => ({ node: s.nodeId, restrained: s.dofs.map(d => d === "fixed") })),
     cases: draft.cases,
     nodal_loads: draft.loads.map(l => ({ node: l.nodeId, case: l.caseId, fx_n: spatialSI.force(l.fxKn!), fy_n: spatialSI.force(l.fyKn!), fz_n: spatialSI.force(l.fzKn!), mx_nm: spatialSI.moment(l.mxKnm!), my_nm: spatialSI.moment(l.myKnm!), mz_nm: spatialSI.moment(l.mzKnm!) })),

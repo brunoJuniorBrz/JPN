@@ -14,7 +14,7 @@ export async function applyCalculatedSection(project:Project,pieceId:string,inpu
   const computedDimensions=request.geometry as Record<string,unknown>;
   if(request.geometry.shape!==g.shape||keys.some(k=>g.dimensionsMm[k as keyof typeof g.dimensionsMm]!==computedDimensions[k])||request.source!==g.source||request.revision!==g.revision)throw Error("Geometria revisada: recalcule a seção física.");
   if(result.input_sha256!==await mixedInputHash(request)||result.convergence.status!=="observed")throw Error("Cálculo incompatível ou refinamento não atingido.");
-  const group=draft.groups[piece.role];if(group.nu!==request.poisson)throw Error("Poisson do cálculo deve corresponder ao material físico do grupo.");
+  const group=draft.groups[piece.role];if(!group||group.nu!==request.poisson)throw Error("Poisson do cálculo deve corresponder ao material físico do grupo.");
   const p=result.properties,properties={areaCm2:p.areaMm2/100,iyCm4:p.iyMm4/1e4,izCm4:p.izMm4/1e4,jCm4:p.jMm4/1e4,wyCm3:Math.min(p.wyPositiveMm3,p.wyNegativeMm3)/1000,wzCm3:Math.min(p.wzPositiveMm3,p.wzNegativeMm3)/1000};
   // Storage quantization is explicit, not an engineering percent tolerance.
   // Sparse warping solves need not reproduce their last binary digits across
