@@ -1,5 +1,5 @@
 import type {Project} from "./models";
-import {loadedMixedRequestSchema,loadedMixedResultSchema,verifyLoadingTrace} from "./structural-loading";
+import {anyLoadedMixedRequestSchema,anyLoadedMixedResultSchema,verifyLoadingTrace} from "./structural-loading";
 import {mixedInputHash,verifyMixedResult} from "./mixed-analysis";
 import {canonicalSpatialInput} from "./spatial-analysis";
 import {resolvePhysicalStructure} from "./physical-structure";
@@ -41,8 +41,8 @@ export async function auditPhysicalRoofReactionPath(
   const draft=project.workspace.spatialPreparation;
   if(!project.workspace.physicalStructure||!draft?.physicalRoofFaces||!draft.loading)
     fail("M40_PHYSICAL_ROOF_PENDING","estrutura, pano e cargas físicas devem existir");
-  const request=loadedMixedRequestSchema.parse(rawRequest),
-    result=loadedMixedResultSchema.parse(rawResult);
+  const request=anyLoadedMixedRequestSchema.parse(rawRequest),
+    result=anyLoadedMixedResultSchema.parse(rawResult);
   if(request.project.id!==project.id)
     fail("M40_PROJECT_MISMATCH","resultado não pertence ao projeto físico declarado");
   const sha=await mixedInputHash(request);

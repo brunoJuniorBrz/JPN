@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { loadingDraftSchema } from "./structural-loading";
+import { localAxesConvention } from "./local-axes";
 import { resistancePreparationSchema } from "./resistance-preparation";
 import { physicalGroupSchema, emptyPhysicalGroup,connectionChoices,type PhysicalGroup } from "./physical-declaration";
 export { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
@@ -52,6 +53,12 @@ export const spatialPreparationSchema = z.object({
   connectionsReview: meaningful, lateralSystem: meaningful, loadPathReview: meaningful,
   connectivity: connectivityDeclarationSchema.optional(),
   memberKinds: z.array(z.object({ pieceId: z.string().min(1).max(100), kind: z.enum(["frame", "axial"]) }).strict()).max(5000).optional(),
+  // C1: explicit, reviewed local-axis reference for every declared roll.
+  // Absent => historical /1 and /2 contracts, unchanged hashes, and refusal of
+  // members whose physical orientation those contracts leave ambiguous.
+  // Like every human declaration here, a blank source/revision is storable but
+  // blocks the analysis (LOCAL_AXES_REVIEW in mixedPreparationReview).
+  localAxes: z.object({ convention: z.literal(localAxesConvention), source: meaningful, revision: meaningful }).strict().optional(),
   loading: loadingDraftSchema.optional(),
   roofRegions:roofRegionsSchema.optional(),
   physicalRoofFaces:physicalRoofFacesSchema.optional(),

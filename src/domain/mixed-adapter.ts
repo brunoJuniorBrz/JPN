@@ -5,6 +5,7 @@ import { structureSignature } from "./calculations/project-basis";
 import { newSpatialPreparation, spatialPreparationSchema, spatialPreparationReview, type SpatialPreparation } from "./spatial-preparation";
 import { ConnectivityError, discretizeGeometry } from "./spatial-connectivity";
 import { mixedInputHash, mixedRequestSchema } from "./mixed-analysis";
+import { zUpMixedRequestSchema } from "./structural-loading";
 import { spatialSI } from "./spatial-analysis";
 import { verifyEngineeringCombinations } from "./engineering-combinations";
 import { reviewSupportInterfaces } from "./support-interface";
@@ -24,6 +25,7 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
   else { try { mapping = discretizeGeometry(common.geometry, draft.connectivity, structureSignature(project)); } catch (e) { add(e instanceof ConnectivityError ? e.code : "CONNECTIVITY", (e as Error).message); } }
   for(const issue of reviewSupportInterfaces(project,draft,common.geometry))add(issue.code,issue.message);
   for(const issue of reviewPhysicalRestraints(project,draft))add(issue.code,issue.message);
+  if (draft.localAxes && (!draft.localAxes.source.trim() || !draft.localAxes.revision.trim())) add("LOCAL_AXES_REVIEW", "Convenção de eixos jpn-z-up/1 declarada sem fonte e revisão da conferência dos giros.");
   const pieces = common.geometry?.pieces ?? [];
   if (new Set(draft.supports.map(s => s.nodeId)).size !== draft.supports.length) add("DUPLICATE_SUPPORT", "Declarações de apoio duplicadas.");
   if (new Set(draft.memberKinds?.map(m => m.pieceId)).size !== (draft.memberKinds?.length ?? 0)) add("DUPLICATE_KIND", "Tipos físicos duplicados por peça.");
@@ -92,5 +94,15 @@ export async function prepareMixedInput(project: Project, loaded = false) {
 }
 export async function adaptMixedProject(project: Project) {
   const prepared=await prepareMixedInput(project);
-  return {...prepared,request:mixedRequestSchema.parse(prepared.request)};
+  const axes=declaredLocalAxes(project);
+  if(!axes)return {...prepared,request:mixedRequestSchema.parse(prepared.request)};
+  // C1: the explicit axis reference exists only in /3, which carries the /2
+  // loading fields. Nothing is loaded here: both are declared empty.
+  const request=zUpMixedRequestSchema.parse({...prepared.request,schema_version:"jpn.mixed3d/3",member_loads:[],self_weight:null,local_axes:axes});
+  return {...prepared,request,input_sha256:await mixedInputHash(request)};
+}
+/** The reviewed axis convention of this preparation, or null for the historical
+ * contracts. Never inferred from geometry, roles or saved rolls. */
+export function declaredLocalAxes(project: Project){
+  return project.workspace.spatialPreparation?.localAxes?.convention??null;
 }

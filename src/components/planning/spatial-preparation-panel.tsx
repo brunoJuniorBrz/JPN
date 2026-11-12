@@ -207,6 +207,15 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
       </>}
       <Field label="Revisão de ligações e justificativa"><Textarea rows={3} value={draft.connectionsReview} onChange={e => change({ ...draft, connectionsReview: e.target.value })} maxLength={1000}/></Field>
       <Field label="Sistema de estabilidade lateral"><Textarea rows={3} value={draft.lateralSystem} onChange={e => change({ ...draft, lateralSystem: e.target.value })} maxLength={1000}/></Field>
+      {mixed && <div data-testid="local-axes-declaration">
+        <h4>Eixos locais das seções</h4>
+        <p className="field-hint">Convenção JPN Z-up (jpn-z-up/1): com giro 0, o eixo y da seção é horizontal e o eixo z fica no plano vertical da barra, para cima; Iy resiste às cargas nesse plano. Em barra exatamente vertical, y aponta para +Y global. Sem esta declaração o cálculo usa os contratos anteriores e recusa barras cuja orientação física dependa da direção global.</p>
+        <label className="field-hint"><input type="checkbox" checked={!!draft.localAxes} onChange={e => { const next = { ...draft }; if (e.target.checked) next.localAxes = { convention: "jpn-z-up/1", source: "", revision: "" }; else delete next.localAxes; change(next); }}/> Declaro que o giro de cada peça foi conferido nesta convenção</label>
+        {draft.localAxes && <>
+          <Field label="Fonte da conferência dos giros"><Input value={draft.localAxes.source} maxLength={1000} onChange={e => change({ ...draft, localAxes: { ...draft.localAxes!, source: e.target.value } })}/></Field>
+          <Field label="Revisão da conferência dos giros"><Input value={draft.localAxes.revision} maxLength={1000} onChange={e => change({ ...draft, localAxes: { ...draft.localAxes!, revision: e.target.value } })}/></Field>
+        </>}
+      </div>}
     </>}
     {section === "loads" && <>
       <h4>Casos de carga</h4><p className="field-hint">O sistema não gera vento, peso próprio ou sobrecargas por conta própria. Cada força deve ter origem definida e seis componentes explícitas, inclusive os zeros.</p>

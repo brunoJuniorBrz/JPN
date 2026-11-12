@@ -24,7 +24,7 @@ TIMEOUT_SECONDS = 20
 MEMORY_BYTES = 768 * 1024 * 1024
 WORKER = Path(__file__).resolve().with_name('local_mixed_worker.py')
 VERCEL_VENV = Path('/tmp/_vc_deps')
-CONTRACTS = ('jpn.mixed3d/1', 'jpn.mixed3d/2')
+CONTRACTS = ('jpn.mixed3d/1', 'jpn.mixed3d/2', 'jpn.mixed3d/3')
 PURLIN_CONTRACT = 'jpn.purlin/1'
 _slot = threading.BoundedSemaphore(1)  # Per instance, not a distributed quota.
 _disabled = False
@@ -287,7 +287,7 @@ def _handle(environ):
                     request_sha256=hashlib.sha256(payload).hexdigest(),
                     result=result, execution=_execution(output))
     if not isinstance(request, dict) or request.get('schema_version') not in CONTRACTS:
-        raise TransportError('UNSUPPORTED_MODEL', 'Only jpn.mixed3d/1 and jpn.mixed3d/2 are accepted.')
+        raise TransportError('UNSUPPORTED_MODEL', 'Only jpn.mixed3d/1, /2 and /3 are accepted.')
     trace_header = environ.get('HTTP_X_JPN_JOINT_ACTIONS', '')
     if trace_header not in ('', '1'):
         raise TransportError('INVALID_INPUT', 'Invalid joint-action option.')

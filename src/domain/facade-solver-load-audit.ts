@@ -1,12 +1,12 @@
 import type {Project} from "./models";
-import type {loadedMixedRequestSchema} from "./structural-loading";
+import type {anyLoadedMixedRequestSchema} from "./structural-loading";
 import type {z} from "zod";
 import {canonicalSpatialInput} from "./spatial-analysis";
 import {resolvePhysicalStructure} from "./physical-structure";
 import {distributeDeclaredFacadeTractions} from "./declared-facade-traction";
 
 type V=[number,number,number];
-type Request=z.infer<typeof loadedMixedRequestSchema>;
+type Request=z.infer<typeof anyLoadedMixedRequestSchema>;
 type Trace=ReturnType<typeof distributeDeclaredFacadeTractions>;
 type MemberMapping={members:readonly {id:string;originalId:string}[]};
 const zero=():V=>[0,0,0];

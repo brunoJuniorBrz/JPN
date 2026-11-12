@@ -109,11 +109,11 @@ export async function buildConnectionReport(project:Project,prepared:DemandInput
     });
     // Global body-load resultants: frame UDL and frame self-weight only.
     const bodies:{member:string;forceN:V3}[]=[];
-    if(request.schema_version==="jpn.mixed3d/2"){
+    if(request.schema_version!=="jpn.mixed3d/1"){
       for(const l of request.member_loads){const m=request.members.find(m=>m.id===l.member)!,a=nodes.get(m.start)!,b=nodes.get(m.end)!,length=Math.hypot(b.x_m-a.x_m,b.y_m-a.y_m,b.z_m-a.z_m);
         const q=l.coordinate_system==="global"?l.force_per_length_n_m:toGlobal(trace.members[m.id].global_to_local,l.force_per_length_n_m);
         bodies.push({member:m.id,forceN:scale3(q,length*(combo.factors[l.case]??0))});}
-      if(result.schema_version==="jpn.mixed3d-result/2"&&result.loading.self_weight){const sw=result.loading.self_weight;for(const w of sw.members)if(w.representation==="consistent-frame-udl")bodies.push({member:w.member,forceN:scale3(w.force_n,combo.factors[sw.case]??0)});}
+      if(result.schema_version!=="jpn.mixed3d-result/1"&&result.loading.self_weight){const sw=result.loading.self_weight;for(const w of sw.members)if(w.representation==="consistent-frame-udl")bodies.push({member:w.member,forceN:scale3(w.force_n,combo.factors[sw.case]??0)});}
     }
     for(const body of bodies){const m=request.members.find(m=>m.id===body.member)!,a=nodes.get(m.start)!,b=nodes.get(m.end)!,mid:V3=[(a.x_m+b.x_m)/2,(a.y_m+b.y_m)/2,(a.z_m+b.z_m)/2];
       const relativeMoment=cross3(mid.map((x,i)=>x-originM[i]) as V3,body.forceN);

@@ -1,6 +1,6 @@
 import type { Project } from "./models";
-import { prepareMixedInput } from "./mixed-adapter";
-import { loadedMixedRequestSchema, needsSelfWeightOverlapReview, selfWeightOverlapReviewBasis } from "./structural-loading";
+import { declaredLocalAxes, prepareMixedInput } from "./mixed-adapter";
+import { loadedMixedRequestSchema, zUpMixedRequestSchema,needsSelfWeightOverlapReview, selfWeightOverlapReviewBasis } from "./structural-loading";
 import { mixedInputHash } from "./mixed-analysis";
 import { resolvePhysicalStructure,assertGeneratedPhysicalStructure } from "./physical-structure";
 import { resolveMemberPhysical } from "./member-physical";
@@ -87,7 +87,11 @@ export async function adaptLoadedMixedProject(project:Project){
   const self_weight=loading.selfWeight?{case:loading.selfWeight.caseId,gravity_m_s2:loading.selfWeight.gravity,axial_lumping:loading.selfWeight.axialLumping,densities:prepared.mapping.members.map(m=>{
     const d=resolveMemberPhysical(pieces.get(m.originalId)!,draft).properties.density;if(!d)throw new Error(`${m.originalId}: densidade, fonte e revisão pendentes.`);
     return {member:m.id,kg_m3:d.kgM3,source:d.source,revision:d.revision};})}:null;
-  const request=loadedMixedRequestSchema.parse({...prepared.request,schema_version:"jpn.mixed3d/2",member_loads,self_weight});
+  // C1: with a declared axis reference the same loading travels as /3; local
+  // member loads then follow the declared axes. Without it, /2 is unchanged.
+  const axes=declaredLocalAxes(project);
+  const request=axes?zUpMixedRequestSchema.parse({...prepared.request,schema_version:"jpn.mixed3d/3",member_loads,self_weight,local_axes:axes})
+    :loadedMixedRequestSchema.parse({...prepared.request,schema_version:"jpn.mixed3d/2",member_loads,self_weight});
   const facade_solver_audit=facade_traction_path?auditFacadeSolverLoads(project,facade_traction_path,request,prepared.mapping):null;
   return {...prepared,schema_version:"jpn.mixed-adapter/2" as const,request,roof_load_path,wind_load_path,facade_traction_path,facade_solver_audit,engineering_combinations,engineering_combination_coverage,input_sha256:await mixedInputHash(request)};
 }

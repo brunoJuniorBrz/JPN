@@ -12,11 +12,16 @@ export async function fixture(mode="propped",segmented=false,rotation=0,global=f
   const frames=(segmented?[["F1","A","CUT"],["F2","CUT","B"]]:[["F","A","B"]]).map(([id,start,end])=>({id,start,end,kind:"frame",material:"M",section:"S",rotation_deg:rotation,release_start:free,release_end:mode==="released"?[false,false,false,false,true,true]:free}));
   if(inclined)for(const n of nodes){const x=n.x_m,y=n.y_m;n.x_m=(2*x-3*y)/Math.sqrt(29);n.y_m=(3*x+2*y)/Math.sqrt(29);n.z_m=4*x/Math.sqrt(29);}
   const direction=inclined?[2,3,4].map(v=>v/Math.sqrt(29)):[1,0,0];
-  const request=anyMixedRequestSchema.parse({schema_version:`jpn.mixed3d/${version}`,units:"SI",theory:"linear-elastic-frame-axial",project:{id:"M26",revision:"1",source},nodes,
+  // C1: a skewed, inclined bar with a rolled section and LOCAL loads has no defined
+  // physical orientation in /1 or /2 (the worker now refuses it). The same physical
+  // case and the same local-axis references are kept under the explicit jpn-z-up/1
+  // reference of /3. The +X fixtures are unambiguous and stay on their contract.
+  const contract=inclined&&version===2?3:version;
+  const request=anyMixedRequestSchema.parse({schema_version:`jpn.mixed3d/${contract}`,units:"SI",theory:"linear-elastic-frame-axial",project:{id:"M26",revision:"1",source},nodes,
     members:[...frames,{id:"AX",kind:"axial",start:"A",end:"D",e_pa:200e9,area_m2:.001,source,revision:"1"}],materials:[{id:"M",e_pa:200e9,g_pa:200e9/2.6,nu:.3,source,revision:"1"}],sections:[{id:"S",area_m2:.01,iy_m4:2e-5,iz_m4:1e-5,j_m4:1e-5,source,revision:"1"}],
     supports:[{node:"A",restrained:mode==="simple"?[true,true,true,true,false,false]:[true,true,true,true,true,true]},{node:"D",restrained:[true,true,true,false,false,false]},...(mode!=="cantilever"?[{node:"B",restrained:mode==="released"?[true,true,true,true,true,true]:[false,true,true,false,false,false]}]:[])],
     cases:[{id:"Q",source}],combinations:[{id:"POS",factors:{Q:1}},{id:"NEG",factors:{Q:-2}}],nodal_loads:[{node:"B",case:"Q",fx_n:1234*direction[0],fy_n:1234*direction[1],fz_n:1234*direction[2],mx_nm:20*direction[0],my_nm:20*direction[1],mz_nm:20*direction[2]}],
-    ...(version===2?{member_loads:frames.map(m=>({id:m.id,member:m.id,case:"Q",coordinate_system:global?"global":"local",force_per_length_n_m:global?globalQ:q,source,revision:"1"})),self_weight:null}:{}),
+    ...(version===2?{member_loads:frames.map(m=>({id:m.id,member:m.id,case:"Q",coordinate_system:global?"global":"local",force_per_length_n_m:global?globalQ:q,source,revision:"1"})),self_weight:null}:{}),...(contract===3?{local_axes:"jpn-z-up/1"}:{}),
   });
   const mapping:DemandInput["mapping"]={schema_version:"jpn.geometry-physical-map/1",units:"mm",geometrySignature:"analytical",junctions:[],nodes:nodes.map(n=>({id:n.id,x:n.x_m*1000,y:n.y_m*1000,z:n.z_m*1000})),members:request.members.map(m=>{const a=nodes.find(n=>n.id===m.start)!,b=nodes.find(n=>n.id===m.end)!,t0=m.id==="F2"?1.3/4:0,t1=m.id==="F1"?1.3/4:1;return {id:m.id,originalId:m.kind==="frame"?"BEAM":"AX",start:m.start,end:m.end,lengthMm:1000*Math.hypot(b.x_m-a.x_m,b.y_m-a.y_m,b.z_m-a.z_m),t0,t1,originalStart:t0===0,originalEnd:t1===1};})};
   const prepared={request,mapping,input_sha256:await mixedInputHash(request),preparation_sha256:"a".repeat(64)};

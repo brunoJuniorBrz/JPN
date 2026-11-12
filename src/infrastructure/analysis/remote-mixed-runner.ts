@@ -4,11 +4,12 @@ import { z } from "zod";
 import { anyMixedRequestSchema, anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
 import { mixedInputHash, verifyMixedResult } from "@/domain/mixed-analysis";
 import { SolverFailure } from "./runner";
+import { gateRequestAxes, gateResultAxes } from "./mixed-axes-gate";
 
 export const remoteMixedLimits = { inputBytes:500000, outputBytes:2000000, milliseconds:28000 } as const;
 const execution=z.object({memory_limit_bytes:z.literal(805306368),memory_kind:z.enum(["linux-address-space","windows-job-process-commit"]),timeout_seconds:z.literal(20),concurrency_per_instance:z.literal(1),isolation:z.literal("subprocess")}).strict();
 const envelope=z.object({schema_version:z.literal("jpn.http-mixed/1"),request_sha256:z.string().regex(/^[a-f0-9]{64}$/),execution,result:anyMixedResultSchema,joint_actions:jointActionTraceSchema.optional()}).strict();
-const health=z.object({schema_version:z.literal("jpn.http-mixed/1"),status:z.literal("ready"),contracts:z.array(z.enum(["jpn.mixed3d/1","jpn.mixed3d/2"])).length(2),dependencies:z.object({python:z.literal("3.12"),PyNiteFEA:z.literal("3.2.1"),numpy:z.string(),scipy:z.string()}).strict(),execution}).strict();
+const health=z.object({schema_version:z.literal("jpn.http-mixed/1"),status:z.literal("ready"),contracts:z.array(z.enum(["jpn.mixed3d/1","jpn.mixed3d/2","jpn.mixed3d/3"])).min(2).max(3),dependencies:z.object({python:z.literal("3.12"),PyNiteFEA:z.literal("3.2.1"),numpy:z.string(),scipy:z.string()}).strict(),execution}).strict();
 const globals=globalThis as typeof globalThis & {__jpnRemoteMixedGate?:{active:number}};
 const gate=globals.__jpnRemoteMixedGate??={active:0};
 export function remoteMixedEnabled(){return process.env.JPN_MIXED_REMOTE_ENABLED==="1";}
@@ -53,7 +54,7 @@ export async function runRemoteMixed(payload:string,mode:"health"|"analysis"|"co
   const config=configuration();
   if(Buffer.byteLength(payload)>remoteMixedLimits.inputBytes)throw new SolverFailure("INPUT_LIMIT","Entrada excede 500 kB.");
   let request:ReturnType<typeof anyMixedRequestSchema.parse>|undefined;
-  if(mode!=="health"){try{request=anyMixedRequestSchema.parse(JSON.parse(payload));}catch{throw new SolverFailure("INVALID_INPUT","Modelo misto incompatível com o contrato SI.");}}
+  if(mode!=="health"){try{request=anyMixedRequestSchema.parse(JSON.parse(payload));}catch{throw new SolverFailure("INVALID_INPUT","Modelo misto incompatível com o contrato SI.");}gateRequestAxes(request);}
   if(gate.active)throw new SolverFailure("BUSY","Uma consulta remota já está em execução nesta instância.");
   gate.active++;
   const controller=new AbortController();let timeout:ReturnType<typeof setTimeout>|undefined,hasResponse=false;
@@ -73,13 +74,16 @@ export async function runRemoteMixed(payload:string,mode:"health"|"analysis"|"co
       if(!response.ok){const code=raw?.error?.code;if(typeof code!=="string"||!/^[A-Z_]{1,80}$/.test(code))throw new SolverFailure("UNAVAILABLE","Backend indisponível.");throw new SolverFailure(code,"O backend recusou a consulta; nenhum resultado publicado.");}
       if(controller.signal.aborted)throw new SolverFailure("CANCELLED","Resposta descartada.");
       if(mode==="health"){
-        const h=health.parse(raw);if(new Set(h.contracts).size!==2)throw new Error();
-        return {schema_version:"jpn.remote-mixed/1" as const,status:"ready" as const,dependencies:h.dependencies,execution:{...h.execution,transport:"remote" as const,local_only:false as const}};
+        // A backend published before C1 announces only /1 and /2; it then answers a
+        // /3 request with UNSUPPORTED_MODEL. Nothing is downgraded on its behalf.
+        const h=health.parse(raw);if(new Set(h.contracts).size!==h.contracts.length||!h.contracts.includes("jpn.mixed3d/1")||!h.contracts.includes("jpn.mixed3d/2"))throw new Error();
+        return {schema_version:"jpn.remote-mixed/1" as const,status:"ready" as const,contracts:h.contracts,dependencies:h.dependencies,execution:{...h.execution,transport:"remote" as const,local_only:false as const}};
       }
       const out=envelope.parse(raw);
       if(out.request_sha256!==createHash("sha256").update(payload).digest("hex")||out.result.schema_version!==request!.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error();
       verifyMixedResult(request!,out.result,await mixedInputHash(request));verifyLoadingTrace(request!,out.result);
       if(mode==="connections"){if(!out.joint_actions)throw new SolverFailure("JOINT_TRACE_UNAVAILABLE","Backend ainda não fornece ações de ligação; requer publicação autorizada dessa versão.");verifyJointActionTrace(request!,out.result,out.joint_actions);}
+      gateResultAxes(request!,out.result,mode==="connections"?out.joint_actions:undefined);
       return {...(out.joint_actions?{joint_actions:out.joint_actions}:{}),schema_version:"jpn.remote-mixed/1" as const,status:"completed" as const,request_sha256:out.request_sha256,result:out.result,execution:{...out.execution,transport:"remote" as const,local_only:false as const}};
     })()]);
   }catch(e){if(e instanceof SolverFailure)throw e;throw new SolverFailure(controller.signal.aborted?"CANCELLED":hasResponse?"INVALID_RESPONSE":"UNAVAILABLE","Resposta remota inválida ou backend indisponível; nenhum resultado publicado.");}

@@ -7,6 +7,7 @@ import { mixedInputHash, verifyMixedResult } from "@/domain/mixed-analysis";
 import { anyMixedRequestSchema, anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
 import { SolverFailure } from "./runner";
 import { terminateWorker } from "./worker-process";
+import { gateRequestAxes, gateResultAxes } from "./mixed-axes-gate";
 
 export const localMixedLimits = { inputBytes: 500000, outputBytes: 2000000, milliseconds: 20000, memoryBytes: 768 * 1024 * 1024, concurrency: 1 } as const;
 const executionSchema = z.object({ memory_limit_bytes: z.literal(localMixedLimits.memoryBytes), memory_kind: z.enum(["windows-job-process-commit", "linux-address-space"]), local_only: z.literal(true) }).strict();
@@ -28,6 +29,7 @@ export async function runLocalMixed(payload: string, mode: "health" | "analysis"
   if (mode !== "health") {
     try { request = anyMixedRequestSchema.parse(JSON.parse(payload)); }
     catch { throw new SolverFailure("INVALID_INPUT", "Modelo misto incompleto ou incompatível com o contrato SI."); }
+    gateRequestAxes(request);
   }
   if (gate.active >= localMixedLimits.concurrency) throw new SolverFailure("BUSY", "Uma análise local já está em execução. Aguarde.");
   gate.active++;
@@ -71,6 +73,7 @@ export async function runLocalMixed(payload: string, mode: "health" | "analysis"
     verifyMixedResult(request!, output.result, await mixedInputHash(request));
     verifyLoadingTrace(request!,output.result);
     if(mode==="connections"){if(!output.joint_actions)throw new SolverFailure("JOINT_TRACE_UNAVAILABLE","Executor não forneceu ações de extremidade.");verifyJointActionTrace(request!,output.result,output.joint_actions);}
+    gateResultAxes(request!,output.result,mode==="connections"?output.joint_actions:undefined);
     return output;
   } catch (e) {
     if (e instanceof SolverFailure) throw e;

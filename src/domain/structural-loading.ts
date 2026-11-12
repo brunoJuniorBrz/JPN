@@ -4,6 +4,7 @@ import { canonicalSpatialInput } from "./spatial-analysis";
 import { roofDistributionSchema } from "./roof-regions";
 import { windDeclarationSchema } from "./wind-contracts";
 import {declaredFacadeTractionSchema} from "./declared-facade-traction-contract";
+import {localAxesConvention} from "./local-axes";
 const n=z.number().finite(), source=z.string().min(1).max(1000).refine(s=>!!s.trim()), id=z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/);
 const vec=z.tuple([n,n,n]);
 export const densitySchema=z.object({ kgM3:n.positive().max(100000),source,revision:source }).strict();
@@ -44,9 +45,11 @@ export function selfWeightOverlapReviewBasis(
 }
 
 const uniformSchema=z.object({id,member:id,case:id,coordinate_system:z.enum(["global","local"]),force_per_length_n_m:vec.refine(v=>v.every(x=>Math.abs(x)<=1e9)),source,revision:source}).strict();
-export const loadedMixedRequestSchema=mixedRequestObject.extend({schema_version:z.literal("jpn.mixed3d/2"),nodal_loads:z.array(mixedRequestObject.shape.nodal_loads.element).max(500),
+const loadedMixedRequestObject=mixedRequestObject.extend({schema_version:z.literal("jpn.mixed3d/2"),nodal_loads:z.array(mixedRequestObject.shape.nodal_loads.element).max(500),
   member_loads:z.array(uniformSchema).max(640),self_weight:z.object({case:id,gravity_m_s2:vec.refine(v=>v.every(x=>Math.abs(x)<=100)&&Math.hypot(...v)>0),axial_lumping:z.literal("half-to-end-nodes"),densities:z.array(z.object({member:id,kg_m3:n.positive().max(100000),source,revision:source}).strict()).max(320)}).strict().nullable(),
-}).strict().superRefine((v,ctx)=>{
+}).strict();
+type LoadedShape=Omit<z.infer<typeof loadedMixedRequestObject>,"schema_version">;
+const refineLoaded=(v:LoadedShape,ctx:z.RefinementCtx)=>{
   const issue=(message:string)=>ctx.addIssue({code:"custom",message});
   validateMixedReferences(v,ctx,[...v.member_loads.map(l=>l.case),...(v.self_weight?[v.self_weight.case]:[])]);
   if(new Set(v.member_loads.map(l=>l.id)).size!==v.member_loads.length)issue("IDs de cargas uniformes duplicados.");
@@ -54,17 +57,33 @@ export const loadedMixedRequestSchema=mixedRequestObject.extend({schema_version:
   const sw=v.self_weight;
   if(sw){if(!v.cases.some(c=>c.id===sw.case)||v.member_loads.some(l=>l.case===sw.case)||v.nodal_loads.some(l=>l.case===sw.case))issue("Caso exclusivo de peso próprio ausente ou contém cargas manuais.");
     if(sw.densities.length!==v.members.length||new Set(sw.densities.map(d=>d.member)).size!==v.members.length||sw.densities.some(d=>!v.members.some(m=>m.id===d.member)))issue("Densidades devem cobrir cada segmento uma única vez.");}
-});
+};
+export const loadedMixedRequestSchema=loadedMixedRequestObject.superRefine(refineLoaded);
+/** C1: the /2 loading contract plus an EXPLICIT local-axis reference. `rotation_deg`
+ * is measured from jpn-z-up/1, never from the solver library's Y-up branches. */
+export const zUpMixedRequestSchema=loadedMixedRequestObject.extend({schema_version:z.literal("jpn.mixed3d/3"),local_axes:z.literal(localAxesConvention)}).strict().superRefine(refineLoaded);
 const legacyCombo=mixedResultSchema.shape.combinations.valueType;
 const axial=legacyCombo.shape.members.valueType.options[0], frame=legacyCombo.shape.members.valueType.options[1];
 export const loadedMixedResultSchema=mixedResultSchema.extend({schema_version:z.literal("jpn.mixed3d-result/2"),solver:mixedResultSchema.shape.solver.extend({adapter:z.literal("jpn-mixed3d/2")}),
   combinations:z.record(id,legacyCombo.extend({members:z.record(id,z.discriminatedUnion("kind",[axial,frame.extend({stations:z.array(z.object({x_m:n,n_n:n,vy_n:n,vz_n:n,t_nm:n,my_nm:n,mz_nm:n,translation_local_m:vec}).strict()).length(5)})]))})),
   loading:z.object({member_loads:z.array(uniformSchema).max(640),self_weight:z.object({case:id,gravity_m_s2:vec,axial_lumping:z.literal("half-to-end-nodes"),total_mass_kg:n.nonnegative(),members:z.array(z.object({member:id,mass_kg:n.nonnegative(),force_n:vec,density:z.object({member:id,kg_m3:n.positive(),source,revision:source}).strict(),representation:z.enum(["consistent-frame-udl","half-to-end-nodes"])}).strict()).max(320)}).strict().nullable()}).strict(),
 });
-export const anyMixedRequestSchema=z.union([mixedRequestObject.superRefine((v,c)=>validateMixedReferences(v,c)),loadedMixedRequestSchema]);
-export const anyMixedResultSchema=z.union([mixedResultSchema,loadedMixedResultSchema]);
+const basis=z.tuple([vec,vec,vec]);
+export const zUpMixedResultSchema=loadedMixedResultSchema.extend({schema_version:z.literal("jpn.mixed3d-result/3"),solver:mixedResultSchema.shape.solver.extend({adapter:z.literal("jpn-mixed3d/3")}),
+  local_axes:z.object({convention:z.literal(localAxesConvention),members:z.record(id,z.object({declared_rotation_deg:n,reference_offset_deg:n,solver_rotation_deg:n,global_to_local:basis}).strict())}).strict(),
+});
+export const anyMixedRequestSchema=z.union([mixedRequestObject.superRefine((v,c)=>validateMixedReferences(v,c)),loadedMixedRequestSchema,zUpMixedRequestSchema]);
+export const anyMixedResultSchema=z.union([mixedResultSchema,loadedMixedResultSchema,zUpMixedResultSchema]);
+export const anyLoadedMixedRequestSchema=z.union([loadedMixedRequestSchema,zUpMixedRequestSchema]);
+export const anyLoadedMixedResultSchema=z.union([loadedMixedResultSchema,zUpMixedResultSchema]);
+export type AnyMixedRequest=z.infer<typeof anyMixedRequestSchema>;
+export type AnyMixedResult=z.infer<typeof anyMixedResultSchema>;
+/** /2 and /3 share the distributed-loading fields; /3 only adds the axis reference. */
+export const isLoadedRequest=(r:AnyMixedRequest):r is Exclude<AnyMixedRequest,{schema_version:"jpn.mixed3d/1"}>=>r.schema_version!=="jpn.mixed3d/1";
+export const isLoadedResult=(r:AnyMixedResult):r is Exclude<AnyMixedResult,{schema_version:"jpn.mixed3d-result/1"}>=>r.schema_version!=="jpn.mixed3d-result/1";
+export const expectedResultVersion=(r:Pick<AnyMixedRequest,"schema_version">)=>r.schema_version.replace("mixed3d/","mixed3d-result/");
 export function verifyLoadingTrace(request:z.infer<typeof anyMixedRequestSchema>,result:z.infer<typeof anyMixedResultSchema>){
-  if(request.schema_version!=="jpn.mixed3d/2"||result.schema_version!=="jpn.mixed3d-result/2")return;
+  if(!isLoadedRequest(request)||!isLoadedResult(result))return;
   const equal=(a:unknown,b:unknown)=>canonicalSpatialInput(a)===canonicalSpatialInput(b),sw=request.self_weight,trace=result.loading.self_weight;
   if(!equal(request.member_loads,result.loading.member_loads)||!!sw!==!!trace)throw new Error("Rastreabilidade das cargas incompatível.");
   if(sw&&trace){

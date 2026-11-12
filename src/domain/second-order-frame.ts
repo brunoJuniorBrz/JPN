@@ -5,6 +5,7 @@ import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
 import {mixedInputHash,mixedRequestSchema,mixedResultSchema,verifyMixedResult} from "./mixed-analysis";
 import {anyMixedRequestSchema} from "./structural-loading";
 import {canonicalSpatialInput} from "./spatial-analysis";
+import {legacyAxisAmbiguity} from "./local-axes";
 
 const finite=z.number(),vector=z.tuple([finite,finite,finite]);
 const id=z.string().min(1).max(100),hash=z.string().regex(/^[a-f0-9]{64}$/);
@@ -25,8 +26,14 @@ export const secondOrderRequestSchema=z.object({
   if(v.model.nodes.some(n=>!connected.has(n.id)))issue("PDELTA_ORPHAN_NODE: nó sem barra física");
   if(v.model.members.some(m=>m.kind==="frame"&&[...m.release_start,...m.release_end].some(Boolean)))
     issue("PDELTA_RELEASE_PENDING: liberações não validadas no piloto");
-  if(v.model.schema_version==="jpn.mixed3d/2"&&(v.model.member_loads.length||v.model.self_weight))
+  if(v.model.schema_version!=="jpn.mixed3d/1"&&(v.model.member_loads.length||v.model.self_weight))
     issue("PDELTA_DISTRIBUTED_LOAD_PENDING: manter carregamentos reais; não converter para burlar o domínio");
+  // C1: the P-Delta pilot still assembles PyNite's native Y-up axes. It neither
+  // realises jpn-z-up/1 nor may publish an orientation the legacy contracts leave open.
+  if(v.model.schema_version==="jpn.mixed3d/3")
+    issue("PDELTA_LOCAL_AXES_PENDING: o piloto de segunda ordem ainda não realiza a convenção jpn-z-up/1");
+  else{let ambiguous:string[];try{ambiguous=legacyAxisAmbiguity(v.model);}catch{ambiguous=["geometria inválida"];}
+    if(ambiguous.length)issue("AXIS_CONVENTION_AMBIGUOUS: orientação física da seção depende da direção global: "+ambiguous.slice(0,8).join(", "));}
 });
 export type SecondOrderRequest=z.infer<typeof secondOrderRequestSchema>;
 const candidateNode=z.object({translation_m:vector,rotation_rad:vector,reaction_force_n:vector,reaction_moment_nm:vector}).strict();

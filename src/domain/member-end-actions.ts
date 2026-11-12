@@ -38,7 +38,7 @@ export function verifyJointActionTrace(request:z.infer<typeof anyMixedRequestSch
     for(const load of request.nodal_loads){const target=expected.get(load.node)!,factor=combo.factors[load.case]??0;[load.fx_n,load.fy_n,load.fz_n,load.mx_nm,load.my_nm,load.mz_nm].forEach((x,i)=>target[i]+=x*factor);}
     // Only AXIAL weight is nodal. Frame UDL/fixed-end effects already belong
     // to member end actions and must never be added as nodal loads again.
-    if(result.schema_version==="jpn.mixed3d-result/2"&&result.loading.self_weight){const sw=result.loading.self_weight;for(const w of sw.members)if(w.representation==="half-to-end-nodes"){
+    if(result.schema_version!=="jpn.mixed3d-result/1"&&result.loading.self_weight){const sw=result.loading.self_weight;for(const w of sw.members)if(w.representation==="half-to-end-nodes"){
       const m=request.members.find(m=>m.id===w.member)!;for(const node of [m.start,m.end])w.force_n.forEach((x,i)=>expected.get(node)![i]+=x*(combo.factors[sw.case]??0)/2);
     }}
     for(const [node,values]of expected)if(values.some((x,i)=>!close(x,c.nodal_loads[node][i])))fail("cargas nodais compiladas não correspondem às declaradas/peso axial.");
