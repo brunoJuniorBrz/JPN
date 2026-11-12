@@ -115,3 +115,18 @@ Reprodução do auditor: `python validation/integration-general/audit.py`, com
 histórico Git completo. No Windows, definir `JPN_GIT_EXECUTABLE` se Git não estiver
 no PATH. Diretório usado nesta máquina: `C:\Users\Usuario\Desktop\jpn-integracao-geral`;
 o próximo Codex pode usar outro checkout da mesma branch.
+
+## Retomada em 12/11/2026
+
+Os logs completos de `c17d75b` confirmaram 720 Vitest, 109 Playwright, build,
+1.847 Pytest e 1.000 comparações de referência aprovados. As etapas que falharam
+foram exclusivamente `actions/upload-artifact@v4`: o serviço devolveu HTML em
+vez de JSON após cinco tentativas. As execuções de `a80ace8` permaneceram na
+fila sem criar jobs durante a noite. A API recusou cancelamento normal/forçado
+(409: execução ainda não agendada) e repetição (403: execução já em andamento).
+O workflow estava ativo e não havia outra execução em andamento no repositório.
+
+Este registro documental dispara uma nova validação no mesmo código de cálculo
+e testes, sem afrouxar qualquer verificação. A conclusão depende de CI e envio
+das evidências aprovados no novo HEAD; registrar os resultados no corpo do PR
+#84, sem outro commit exclusivamente para atualizar o estado da CI.
