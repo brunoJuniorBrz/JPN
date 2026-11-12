@@ -1,0 +1,212 @@
+{
+  "schema_version": "jpn.m49-analytical-comparison/1",
+  "units": "SI",
+  "basis": "Synthetic declared 6 x 4 m garage; not site or normative approval",
+  "inputSha256": "669214e3a8e7c640403c421cd1f04e31079e12491fcddc421450328eb0e35fd3",
+  "solver": {
+    "name": "PyNiteFEA",
+    "version": "3.2.1",
+    "adapter": "jpn-mixed3d/2"
+  },
+  "nodes": 6,
+  "physicalMembers": 5,
+  "solverSegments": 7,
+  "supports": [
+    "A0",
+    "A4",
+    "B0",
+    "B4"
+  ],
+  "comparisons": [
+    {
+      "combination": "G_ONLY",
+      "pressureNPerM2": 600,
+      "expected": {
+        "pressureNPerM2": 600,
+        "totalDownwardN": 14400,
+        "edgeQ": 900,
+        "centerQ": 1800,
+        "beamPointLoad": 3600,
+        "cornerReactionN": 3600,
+        "beamShearN": 1800,
+        "beamMomentNm": 5400,
+        "purlinShearN": 3600,
+        "purlinMomentNm": 3600,
+        "beamMidspanM": -0.002025,
+        "purlinRelativeMidspanM": -0.00375,
+        "purlinAbsoluteMidspanM": -0.005775,
+        "edgeMidspanM": -0.001875
+      },
+      "actual": {
+        "cornerReactionN": 3600,
+        "beamMidspanM": -0.002025,
+        "purlinAbsoluteMidspanM": -0.005775000000000001
+      },
+      "absoluteErrors": {
+        "cornerReactionN": 0,
+        "beamMidspanM": 0.0,
+        "purlinAbsoluteMidspanM": 8.673617379884035e-19
+      },
+      "solverRelativeResidual": 0
+    },
+    {
+      "combination": "W_ONLY",
+      "pressureNPerM2": -900,
+      "expected": {
+        "pressureNPerM2": -900,
+        "totalDownwardN": -21600,
+        "edgeQ": -1350,
+        "centerQ": -2700,
+        "beamPointLoad": -5400,
+        "cornerReactionN": -5400,
+        "beamShearN": -2700,
+        "beamMomentNm": -8100,
+        "purlinShearN": -5400,
+        "purlinMomentNm": -5400,
+        "beamMidspanM": 0.0030374999999999994,
+        "purlinRelativeMidspanM": 0.005625,
+        "purlinAbsoluteMidspanM": 0.0086625,
+        "edgeMidspanM": 0.0028125
+      },
+      "actual": {
+        "cornerReactionN": -5400,
+        "beamMidspanM": 0.0030375,
+        "purlinAbsoluteMidspanM": 0.008662499999999998
+      },
+      "absoluteErrors": {
+        "cornerReactionN": 0,
+        "beamMidspanM": 4.336808689942018e-19,
+        "purlinAbsoluteMidspanM": 1.734723475976807e-18
+      },
+      "solverRelativeResidual": 0
+    },
+    {
+      "combination": "NET",
+      "pressureNPerM2": -300,
+      "expected": {
+        "pressureNPerM2": -300,
+        "totalDownwardN": -7200,
+        "edgeQ": -450,
+        "centerQ": -900,
+        "beamPointLoad": -1800,
+        "cornerReactionN": -1800,
+        "beamShearN": -900,
+        "beamMomentNm": -2700,
+        "purlinShearN": -1800,
+        "purlinMomentNm": -1800,
+        "beamMidspanM": 0.0010125,
+        "purlinRelativeMidspanM": 0.001875,
+        "purlinAbsoluteMidspanM": 0.0028875,
+        "edgeMidspanM": 0.0009375
+      },
+      "actual": {
+        "cornerReactionN": -1800,
+        "beamMidspanM": 0.0010125,
+        "purlinAbsoluteMidspanM": 0.0028875000000000003
+      },
+      "absoluteErrors": {
+        "cornerReactionN": 0,
+        "beamMidspanM": 0.0,
+        "purlinAbsoluteMidspanM": 4.336808689942018e-19
+      },
+      "solverRelativeResidual": 0
+    },
+    {
+      "combination": "ULS_G",
+      "pressureNPerM2": 600,
+      "expected": {
+        "pressureNPerM2": 600,
+        "totalDownwardN": 14400,
+        "edgeQ": 900,
+        "centerQ": 1800,
+        "beamPointLoad": 3600,
+        "cornerReactionN": 3600,
+        "beamShearN": 1800,
+        "beamMomentNm": 5400,
+        "purlinShearN": 3600,
+        "purlinMomentNm": 3600,
+        "beamMidspanM": -0.002025,
+        "purlinRelativeMidspanM": -0.00375,
+        "purlinAbsoluteMidspanM": -0.005775,
+        "edgeMidspanM": -0.001875
+      },
+      "actual": {
+        "cornerReactionN": 3600,
+        "beamMidspanM": -0.002025,
+        "purlinAbsoluteMidspanM": -0.005775000000000001
+      },
+      "absoluteErrors": {
+        "cornerReactionN": 0,
+        "beamMidspanM": 0.0,
+        "purlinAbsoluteMidspanM": 8.673617379884035e-19
+      },
+      "solverRelativeResidual": 0
+    },
+    {
+      "combination": "ULS_W",
+      "pressureNPerM2": -900,
+      "expected": {
+        "pressureNPerM2": -900,
+        "totalDownwardN": -21600,
+        "edgeQ": -1350,
+        "centerQ": -2700,
+        "beamPointLoad": -5400,
+        "cornerReactionN": -5400,
+        "beamShearN": -2700,
+        "beamMomentNm": -8100,
+        "purlinShearN": -5400,
+        "purlinMomentNm": -5400,
+        "beamMidspanM": 0.0030374999999999994,
+        "purlinRelativeMidspanM": 0.005625,
+        "purlinAbsoluteMidspanM": 0.0086625,
+        "edgeMidspanM": 0.0028125
+      },
+      "actual": {
+        "cornerReactionN": -5400,
+        "beamMidspanM": 0.0030375,
+        "purlinAbsoluteMidspanM": 0.008662499999999998
+      },
+      "absoluteErrors": {
+        "cornerReactionN": 0,
+        "beamMidspanM": 4.336808689942018e-19,
+        "purlinAbsoluteMidspanM": 1.734723475976807e-18
+      },
+      "solverRelativeResidual": 0
+    },
+    {
+      "combination": "ULS_NET",
+      "pressureNPerM2": -300,
+      "expected": {
+        "pressureNPerM2": -300,
+        "totalDownwardN": -7200,
+        "edgeQ": -450,
+        "centerQ": -900,
+        "beamPointLoad": -1800,
+        "cornerReactionN": -1800,
+        "beamShearN": -900,
+        "beamMomentNm": -2700,
+        "purlinShearN": -1800,
+        "purlinMomentNm": -1800,
+        "beamMidspanM": 0.0010125,
+        "purlinRelativeMidspanM": 0.001875,
+        "purlinAbsoluteMidspanM": 0.0028875,
+        "edgeMidspanM": 0.0009375
+      },
+      "actual": {
+        "cornerReactionN": -1800,
+        "beamMidspanM": 0.0010125,
+        "purlinAbsoluteMidspanM": 0.0028875000000000003
+      },
+      "absoluteErrors": {
+        "cornerReactionN": 0,
+        "beamMidspanM": 0.0,
+        "purlinAbsoluteMidspanM": 4.336808689942018e-19
+      },
+      "solverRelativeResidual": 0
+    }
+  ],
+  "allSupportCapacities": "pending",
+  "computedStructuralApproval": false,
+  "fabricationRelease": false,
+  "releaseGate": "NOT_READY_BLOCKED"
+}

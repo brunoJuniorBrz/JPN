@@ -1,14 +1,14 @@
 "use client";
 import { useMemo, useState } from "react";
 import type { Project } from "@/domain/models";
-import { roleLabels } from "@/domain/structure";
+import { roleLabels,physicalRoles as pieceRoles } from "@/domain/structure";
 import { Field, Input, Select, Textarea } from "@/components/ui";
 import { NumberField } from "@/components/number-field";
 import { useData } from "@/components/data-provider";
 import { downloadText } from "@/lib/format";
 import { structureSignature } from "@/domain/calculations/project-basis";
 import {
-  dofNames, emptyPhysicalGroup, emptyPhysicalLoad, newSpatialPreparation, pieceRoles,
+  dofNames, emptyPhysicalGroup, emptyPhysicalLoad, newSpatialPreparation,
   spatialPreparationReview, type PhysicalGroup, type SpatialPreparation,
 } from "@/domain/spatial-preparation";
 import type { Material } from "@/domain/models";
@@ -82,7 +82,8 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
   const [memberId, setMemberId] = useState("");
   const [section, setSection] = useState<"profiles" | "supports" | "loads" | "review">(initialSection);
   const [notice, setNotice] = useState("");
-  const currentRole = draft.groups[role];
+  const groupFor=(key:typeof pieceRoles[number])=>draft.groups[key]??emptyPhysicalGroup();
+  const currentRole = groupFor(role);
   const needsBending = !mixed || currentRole.elementKind !== "axial" || draft.memberKinds?.some(m => m.kind === "frame" && review.geometry?.pieces.some(p => p.id === m.pieceId && p.role === role));
   const nodes = review.geometry?.nodes ?? [];
   const base = review.base;
@@ -184,22 +185,22 @@ export function SpatialPreparationPanel({ project, onChange, initialSection = "p
       {mixed && <SupportInterfaceEditor draft={draft} onChange={change}/>}
       <h4>Comportamento das ligações</h4><p className="field-hint">{mixed ? "O tipo físico é declarado separadamente. Uma extremidade articulada não transforma pórtico em axial. Axiais exigem ambas as extremidades axiais; contradições bloqueiam a execução." : "Hipóteses por grupo, editáveis. Ligações axiais/mistas ainda não são interpretadas pelo solver 3D; a missão de conectividade continua necessária."}</p>
       <div className="form-grid">
-        {pieceRoles.map(key => <Field label={roleLabels[key]} key={key}><Select value={draft.groups[key].connection}
-          onChange={e => change({ ...draft, groups: { ...draft.groups, [key]: { ...draft.groups[key], connection: e.target.value as PhysicalGroup["connection"] } } })}>
+        {pieceRoles.map(key => <Field label={roleLabels[key]} key={key}><Select value={groupFor(key).connection}
+          onChange={e => change({ ...draft, groups: { ...draft.groups, [key]: { ...groupFor(key), connection: e.target.value as PhysicalGroup["connection"] } } })}>
           <option value="pending">Não declarada</option><option value="rigid">Rígida (hipótese declarada)</option>
-          <option value="pinned">Articulada (hipótese declarada)</option><option value="axial">{mixed ? "Axial — sem transferência de momentos" : "Axial/treliça (adaptador futuro)"}</option>
+          <option value="pinned">Articulada (hipótese declarada)</option>{mixed&&<option value="bending-pinned">Articulada à flexão; torção contida, declarada</option>}<option value="axial">{mixed ? "Axial — sem transferência de momentos" : "Axial/treliça (adaptador futuro)"}</option>
         </Select></Field>)}
       </div>
       <h4>Ajustar ligação de uma peça individual</h4>
       <p className="field-hint">Uma peça pode ter ligação diferente no início e no fim. `Usar grupo` herda a hipótese do grupo; não significa vínculo validado. Recalcule as hipóteses depois de mudar a geometria.</p>
       {selectedMember && <>
         <Field label="Peça para revisar extremidades"><Select value={selectedMember.id} onChange={e => setMemberId(e.target.value)}>{review.geometry!.pieces.map(p => <option key={p.id} value={p.id}>{p.id} · {roleLabels[p.role]}</option>)}</Select></Field>
-        {mixed && <Field label="Tipo físico desta peça"><Select value={draft.memberKinds?.find(m => m.pieceId === selectedMember.id)?.kind ?? "inherit"} onChange={e => change({ ...draft, memberKinds: [...(draft.memberKinds ?? []).filter(m => m.pieceId !== selectedMember.id), ...(e.target.value === "inherit" ? [] : [{ pieceId: selectedMember.id, kind: e.target.value as "frame" | "axial" }])] })}><option value="inherit">Usar tipo do grupo ({draft.groups[selectedMember.role].elementKind ?? "pendente"})</option><option value="frame">Pórtico Euler–Bernoulli</option><option value="axial">Barra exclusivamente axial</option></Select></Field>}
+        {mixed && <Field label="Tipo físico desta peça"><Select value={draft.memberKinds?.find(m => m.pieceId === selectedMember.id)?.kind ?? "inherit"} onChange={e => change({ ...draft, memberKinds: [...(draft.memberKinds ?? []).filter(m => m.pieceId !== selectedMember.id), ...(e.target.value === "inherit" ? [] : [{ pieceId: selectedMember.id, kind: e.target.value as "frame" | "axial" }])] })}><option value="inherit">Usar tipo do grupo ({groupFor(selectedMember.role).elementKind ?? "pendente"})</option><option value="frame">Pórtico Euler–Bernoulli</option><option value="axial">Barra exclusivamente axial</option></Select></Field>}
         <div className="form-grid">
           {(["start", "end"] as const).map(end => <Field key={selectedMember.id + end} label={end === "start" ? "Ligação da extremidade inicial" : "Ligação da extremidade final"}><Select value={memberOverride?.[end] ?? "inherit"} onChange={e => changeMemberEnd(end, e.target.value as SpatialPreparation["memberConnections"][number]["start"])}>
-            <option value="inherit">Usar grupo ({draft.groups[selectedMember.role].connection})</option>
+            <option value="inherit">Usar grupo ({groupFor(selectedMember.role).connection})</option>
             <option value="pending">Pendente</option><option value="rigid">Rígida, declarada</option>
-            <option value="pinned">Articulada, declarada</option><option value="axial">{mixed ? "Axial, declarada" : "Axial/treliça (adaptador futuro)"}</option>
+            <option value="pinned">Articulada, declarada</option>{mixed&&<option value="bending-pinned">Articulada à flexão; torção contida, declarada</option>}<option value="axial">{mixed ? "Axial, declarada" : "Axial/treliça (adaptador futuro)"}</option>
           </Select></Field>)}
         </div>
         <p className="field-hint">{draft.memberConnections.length} peças possuem exceções declaradas no cadastro.</p>

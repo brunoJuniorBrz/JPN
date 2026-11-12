@@ -4,7 +4,9 @@ import { densitySchema } from "./structural-loading";
 // Traceable physical properties are independent of synthetic 3D display geometry.
 const positive = z.number().finite().positive().max(1e12).nullable();
 const meaningful = z.string().max(1000);
-export const connectionChoices = ["pending", "rigid", "pinned", "axial"] as const;
+// Bending hinges release local Ry/Rz; local Rx remains connected. This is an
+// explicit torsional restraint hypothesis, never inferred from a beam label.
+export const connectionChoices = ["pending", "rigid", "pinned", "bending-pinned", "axial"] as const;
 export const physicalGroupSchema = z.object({
   steelGrade: meaningful, materialSource: meaningful, materialRevision: meaningful,
   eGpa: positive, gGpa: positive, nu: z.number().finite().min(-.99).max(.499).nullable(),

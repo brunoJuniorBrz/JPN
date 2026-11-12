@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { loadingDraftSchema } from "./structural-loading";
 import { resistancePreparationSchema } from "./resistance-preparation";
-import { physicalGroupSchema, emptyPhysicalGroup,type PhysicalGroup } from "./physical-declaration";
+import { physicalGroupSchema, emptyPhysicalGroup,connectionChoices,type PhysicalGroup } from "./physical-declaration";
 export { physicalGroupSchema, emptyPhysicalGroup } from "./physical-declaration";
 export type { PhysicalGroup } from "./physical-declaration";
 import type { Project } from "./models";
-import type { PhysicalGeometry } from "./structure";
+import { roles,type PhysicalGeometry } from "./structure";
 import { resolvePhysicalStructure } from "./physical-structure";
 import { physicalCatalogSchema,resolveMemberPhysical } from "./member-physical";
 import { structureSignature } from "./calculations/project-basis";
@@ -28,8 +28,8 @@ const meaningful = z.string().max(1000);
 const signed = z.number().finite().min(-1e9).max(1e9).nullable();
 const choice = z.enum(["pending", "fixed", "free"]);
 export const dofNames = ["UX", "UY", "UZ", "RX", "RY", "RZ"] as const;
-export const pieceRoles = ["column", "topChord", "bottomChord", "web", "purlin"] as const;
-export const connectionChoices = ["pending", "rigid", "pinned", "axial"] as const;
+export const pieceRoles = roles;
+export { connectionChoices } from "./physical-declaration";
 const supportSchema = z.object({ nodeId: z.string().min(1).max(100), dofs: z.tuple([choice, choice, choice, choice, choice, choice]) }).strict();
 const loadSchema = z.object({
   id: z.string().uuid(), caseId: z.string().min(1).max(40), nodeId: z.string().min(1).max(100),
@@ -38,7 +38,7 @@ const loadSchema = z.object({
 export const spatialPreparationSchema = z.object({
   version: z.literal(1), geometrySignature: z.string().max(100000),
   physicalCatalog: physicalCatalogSchema.optional(),
-  groups: z.object({ column: physicalGroupSchema, topChord: physicalGroupSchema, bottomChord: physicalGroupSchema, web: physicalGroupSchema, purlin: physicalGroupSchema }).strict(),
+  groups: z.object({ column: physicalGroupSchema, topChord: physicalGroupSchema, bottomChord: physicalGroupSchema, web: physicalGroupSchema, purlin: physicalGroupSchema, beam: physicalGroupSchema.optional() }).strict(),
   supports: z.array(supportSchema).max(200),
   supportInterfaces: supportInterfacesSchema.optional(),
   memberConnections: z.array(z.object({ pieceId: z.string().min(1).max(100), start: z.enum(["inherit", ...connectionChoices]), end: z.enum(["inherit", ...connectionChoices]) }).strict()).max(5000),
@@ -109,7 +109,7 @@ export function spatialPreparationReview(project: Project, draft: SpatialPrepara
   const properties:[string,PhysicalGroup][]=[];
   if(declared||draft.physicalCatalog){
     for(const piece of geometry?.pieces??[])try{properties.push([piece.id,resolveMemberPhysical(piece,draft).properties]);}catch(e){add("PHYSICAL_REFERENCE",String(e));}
-  }else for(const role of pieceRoles)properties.push([role,draft.groups[role]]);
+  }else for(const role of roles)properties.push([role,draft.groups[role]]);
   for (const [role,p] of properties) {
     if (!p.steelGrade.trim() || !p.materialSource.trim() || !p.materialRevision.trim()
       || !p.sectionSource.trim() || !p.sectionRevision.trim()

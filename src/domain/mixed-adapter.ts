@@ -10,7 +10,7 @@ import { verifyEngineeringCombinations } from "./engineering-combinations";
 import { reviewSupportInterfaces } from "./support-interface";
 
 export function mixedPieceKind(piece: PhysicalPiece, draft: SpatialPreparation) {
-  return draft.memberKinds?.find(m => m.pieceId === piece.id)?.kind ?? draft.groups[piece.role].elementKind;
+  return draft.memberKinds?.find(m => m.pieceId === piece.id)?.kind ?? draft.groups[piece.role]?.elementKind;
 }
 export function mixedPreparationReview(project: Project, draft: SpatialPreparation, loaded = false) {
   const common = spatialPreparationReview(project, draft);
@@ -39,7 +39,7 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
     } else {
       if ([group.gGpa, group.nu, group.iyCm4, group.izCm4, group.jCm4, group.rotationDeg].some(v => v === null)) add("FRAME_PROPERTIES", `${piece.id}: pórtico exige G, ν, Iy, Iz, J e giro físico.`);
       else if (Math.abs(group.eGpa! / (2 * group.gGpa! * (1 + group.nu!)) - 1) > .001) add("ISOTROPY", `${piece.id}: E/G/ν incompatíveis.`);
-      if (ends.some(e => !["rigid", "pinned"].includes(e))) add("CONTRADICTION", `${piece.id}: pórtico exige ligação rígida ou articulada em cada extremo; axial não é liberação de pórtico.`);
+      if (ends.some(e => !["rigid", "pinned", "bending-pinned"].includes(e))) add("CONTRADICTION", `${piece.id}: pórtico exige ligação rígida ou articulada em cada extremo; axial não é liberação de pórtico.`);
       if (ends.every(e => e === "pinned")) add("UNSUPPORTED_RELEASE", `${piece.id}: pórtico esférico nas duas extremidades ainda não suportado.`);
     }
   }
@@ -68,8 +68,11 @@ export async function prepareMixedInput(project: Project, loaded = false) {
     if (kind === "axial") return { id: s.id, start: s.start, end: s.end, kind, e_pa: spatialSI.modulus(group.eGpa!), area_m2: spatialSI.area(group.areaCm2!), source: `${group.steelGrade}; ${group.materialSource}; A: ${group.sectionSource}`, revision: `${group.materialRevision}; ${group.sectionRevision}` };
     const override = draft.memberConnections.find(m => m.pieceId === piece.id);
     const end = (e: "start" | "end") => override && override[e] !== "inherit" ? override[e] : group.connection;
-    const release = (value: boolean): [boolean, boolean, boolean, boolean, boolean, boolean] => [false, false, false, value, value, value];
-    return { id: s.id, start: s.start, end: s.end, kind, material: physical.materialId, section: physical.sectionId, rotation_deg: group.rotationDeg!, release_start: release(s.originalStart && end("start") === "pinned"), release_end: release(s.originalEnd && end("end") === "pinned") };
+    const release = (originalEnd: boolean, value: string): [boolean, boolean, boolean, boolean, boolean, boolean] => {
+      const bending = originalEnd && (value === "pinned" || value === "bending-pinned");
+      return [false, false, false, originalEnd && value === "pinned", bending, bending];
+    };
+    return { id: s.id, start: s.start, end: s.end, kind, material: physical.materialId, section: physical.sectionId, rotation_deg: group.rotationDeg!, release_start: release(s.originalStart,end("start")), release_end: release(s.originalEnd,end("end")) };
   });
   const framePhysical=review.geometry.pieces.filter(p=>mixedPieceKind(p,draft)==="frame").map(p=>resolveMemberPhysical(p,draft));
   const materials=[...new Map(framePhysical.map(p=>[p.materialId,p])).values()].map(({materialId:id,properties:p})=>({id,e_pa:spatialSI.modulus(p.eGpa!),g_pa:spatialSI.modulus(p.gGpa!),nu:p.nu!,source:`${p.steelGrade}; ${p.materialSource}`,revision:p.materialRevision}));

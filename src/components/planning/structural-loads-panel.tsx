@@ -1,4 +1,5 @@
 "use client";
+import { physicalRoles as pieceRoles } from "@/domain/structure";
 import { WindEngineeringPanel } from "./wind-engineering-panel";
 import { EngineeringCombinationsControl } from "./engineering-combinations-control";
 import { RoofLoadPathPanel } from "./roof-load-path-panel";
@@ -6,7 +7,7 @@ import { useState } from "react";
 import type { Project } from "@/domain/models";
 import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { mixedPieceKind } from "@/domain/mixed-adapter";
-import { newSpatialPreparation, pieceRoles } from "@/domain/spatial-preparation";
+import { newSpatialPreparation, emptyPhysicalGroup } from "@/domain/spatial-preparation";
 import { densitySchema, emptyLoading, loadingDraftSchema, needsSelfWeightOverlapReview, selfWeightOverlapReviewBasis, type LoadingDraft } from "@/domain/structural-loading";
 import { resistanceDiagnostics, resistancePreparationSchema } from "@/domain/resistance-preparation";
 import { elasticMemberReference } from "@/domain/resistance-elastic-reference";
@@ -29,16 +30,17 @@ export function StructuralLoadsPanel({project,onChange,onSelectPiece}:{project:P
   function change(next:LoadingDraft){onChange({workspace:{...project.workspace,spatialPreparation:{...d,loading:loadingDraftSchema.parse(next)}}});}
   const selected=pieces.find(p=>p.id===piece)??pieces[0], activeCase=d.cases.some(c=>c.id===qCase)?qCase:d.cases[0]?.id??"";
   const resistanceGeometryStale = d.geometrySignature !== structureSignature(project);
-  const elasticReference=selected && !resistanceGeometryStale ? elasticMemberReference(selected,d.groups[selected.role],d.resistance?.find(v=>v.pieceId===selected.id)) : null;
+  const selectedDensity=d.groups[role]?.density;
+  const elasticReference=selected && !resistanceGeometryStale ? elasticMemberReference(selected,(d.groups[selected.role]??emptyPhysicalGroup()),d.resistance?.find(v=>v.pieceId===selected.id)) : null;
   const overlapNeeded=needsSelfWeightOverlapReview(d,loading);
   const overlapValid=!overlapNeeded||(loading.overlapReview?.confirmed===true&&loading.overlapReview.basis===selfWeightOverlapReviewBasis(d,loading));
   const input=(label:string,value:string,change:(s:string)=>void)=><Field key={label} label={label}><Input value={value} onChange={e=>change(e.target.value)} maxLength={1000}/></Field>;
   return <details className="technical-details" data-testid="structural-loads"><summary>Carregamentos físicos automáticos e base resistente</summary>
     <p>Sem densidade ou gravidade presumidas. Pórticos recebem peso distribuído consistente; barras axiais recebem metade do peso em cada nó, sem flexão. Ativar peso cria caso e combinação isolados: fator 1 no caso novo e 0 nos demais, sem coeficientes normativos.</p>
     <h4>Densidade física declarada</h4><Field label="Grupo da densidade"><Select value={role} onChange={e=>setRole(e.target.value as typeof role)}>{pieceRoles.map(r=><option key={r}>{r}</option>)}</Select></Field>
-    <p>Densidade registrada neste grupo: {d.groups[role].density?`${d.groups[role].density.kgM3} kg/m³ · ${d.groups[role].density.source} · ${d.groups[role].density.revision}`:"Pendente"}</p>
+    <p>Densidade registrada neste grupo: {selectedDensity?`${selectedDensity.kgM3} kg/m³ · ${selectedDensity.source} · ${selectedDensity.revision}`:"Pendente"}</p>
     <div className="form-grid">{input("Densidade (kg/m³)",density,setDensity)}{input("Fonte da densidade",densitySource,setDensitySource)}{input("Revisão da densidade",densityRevision,setDensityRevision)}</div>
-    {[false,true].map(all=><button key={String(all)} className="button secondary" onClick={()=>attempt(()=>{const value=densitySchema.parse({kgM3:number(density),source:densitySource,revision:densityRevision});onChange({workspace:{...project.workspace,spatialPreparation:{...d,groups:{...d.groups,...Object.fromEntries((all?pieceRoles:[role]).map(r=>[r,{...d.groups[r],density:value}]))}}}});})}>{all?"Aplicar densidade declarada a todos os grupos":"Registrar densidade deste grupo"}</button>)}
+    {[false,true].map(all=><button key={String(all)} className="button secondary" onClick={()=>attempt(()=>{const value=densitySchema.parse({kgM3:number(density),source:densitySource,revision:densityRevision});onChange({workspace:{...project.workspace,spatialPreparation:{...d,groups:{...d.groups,...Object.fromEntries((all?pieceRoles:[role]).map(r=>[r,{...(d.groups[r]??emptyPhysicalGroup()),density:value}]))}}}});})}>{all?"Aplicar densidade declarada a todos os grupos":"Registrar densidade deste grupo"}</button>)}
     <h4>Peso próprio — ativação explícita</h4><div className="form-grid">{input("ID do novo caso permanente",caseId,setCaseId)}{input("Fonte do caso permanente",caseSource,setCaseSource)}{gravity.map((s,i)=>input(`Gravidade ${"XYZ"[i]} (m/s²)`,s,v=>setGravity(gravity.map((x,j)=>i===j?v:x))))}</div>
     <button className="button secondary" onClick={()=>attempt(()=>{
       if(!/^[A-Za-z0-9][A-Za-z0-9_-]{0,23}$/.test(caseId)||!caseSource.trim()||d.cases.some(c=>c.id===caseId)||d.combinations.some(c=>c.id===caseId+"-ISO")||d.cases.length>=10||d.combinations.length>=10||loading.selfWeight)throw new Error("Informe ID novo (até 24 caracteres), fonte e capacidade para um caso/combinação. Peso já ativo deve ser desativado antes.");

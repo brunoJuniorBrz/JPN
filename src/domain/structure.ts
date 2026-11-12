@@ -3,7 +3,10 @@ import { visualSectionSchema } from "./profile-section";
 
 export const roles = ["column", "topChord", "bottomChord", "web", "purlin"] as const;
 export type PieceRole = typeof roles[number];
-export const roleLabels: Record<PieceRole, string> = { column: "Pilares", topChord: "Banzos superiores", bottomChord: "Banzos inferiores", web: "Diagonais e montantes", purlin: "Terças" };
+// Declared beams do not add trusses or profiles to the historic roof generator.
+export const physicalRoles = [...roles, "beam"] as const;
+export type PhysicalRole = typeof physicalRoles[number];
+export const roleLabels: Record<PhysicalRole, string> = { column: "Pilares", topChord: "Banzos superiores", bottomChord: "Banzos inferiores", web: "Diagonais e montantes", purlin: "Terças", beam: "Vigas" };
 const positive = z.number().finite().positive();
 export const sectionDataSchema = z.object({
   kind: z.enum(["unspecified", "tube", "angle", "channel", "i", "other"]).default("unspecified"),
@@ -43,7 +46,7 @@ export function emptyPlanning(): Planning {
 export interface Node3D { id: string; x: number; y: number; z: number; }
 export interface StructurePiece { id: string; role: PieceRole; start: string; end: string; lengthMm: number; profile: ProfileSpec; massKg: number | null; }
 /** Shared geometry only: no fabricated roof metrics or visual section. */
-export type PhysicalPiece = Pick<StructurePiece,"id"|"role"|"start"|"end"|"lengthMm">;
+export type PhysicalPiece = Pick<StructurePiece,"id"|"start"|"end"|"lengthMm"> & {role:PhysicalRole};
 export interface PhysicalGeometry { units:"mm"; nodes:Node3D[]; pieces:PhysicalPiece[]; }
 export interface MaterialGroup { key: string; role: PieceRole; profile: ProfileSpec; pieceIds: string[]; lengthMm: number; totalLengthM: number; massKg: number | null; }
 export interface StructureModel {
