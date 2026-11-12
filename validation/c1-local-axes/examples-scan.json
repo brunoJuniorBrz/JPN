@@ -1,0 +1,52 @@
+[
+ {
+  "file": "frame-pdelta-cantilever.json",
+  "frame_members": 16,
+  "ambiguous": []
+ },
+ {
+  "file": "mixed-adapted-roof.json",
+  "frame_members": 207,
+  "ambiguous": []
+ },
+ {
+  "file": "mixed-incomplete-all-webs-axial.json",
+  "frame_members": 165,
+  "ambiguous": []
+ },
+ {
+  "file": "mixed-initial-stress-axial-brace.json",
+  "frame_members": 1,
+  "ambiguous": []
+ },
+ {
+  "file": "mixed-initial-stress-portal.json",
+  "frame_members": 12,
+  "ambiguous": []
+ },
+ {
+  "file": "mixed-loaded-roof.json",
+  "frame_members": 207,
+  "ambiguous": []
+ },
+ {
+  "file": "spatial-adapted-roof.json",
+  "frame_members": 243,
+  "ambiguous": []
+ },
+ {
+  "file": "spatial-adapted-tee.json",
+  "frame_members": 3,
+  "ambiguous": []
+ },
+ {
+  "file": "spatial-portal.json",
+  "frame_members": 4,
+  "ambiguous": []
+ },
+ {
+  "file": "ufsc-2015-purlin-uniform-v2.json",
+  "frame_members": 1,
+  "ambiguous": []
+ }
+]

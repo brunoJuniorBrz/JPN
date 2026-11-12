@@ -52,6 +52,13 @@ def memory_limit():
     return dict(memory_limit_bytes=MEMORY_BYTES, memory_kind=kind, local_only=True)
 
 
+def _refuse_ambiguous_axes(data):
+    """/1 and /2 keep their numbers, but an already valid request whose section
+    orientation is decided by PyNite's Y-up branches publishes no result."""
+    from jpn_structural.local_axes import refuse_ambiguous_legacy_axes
+    refuse_ambiguous_legacy_axes(data)
+
+
 def main():
     phase = 'memory_cap'
     try:
@@ -100,11 +107,16 @@ def main():
             from jpn_structural.purlin import analyze_purlin
             return dict(schema_version='jpn.local-purlin/1',status='completed',execution=limits,result=analyze_purlin(data))
         joint_actions = {} if '--joint-actions' in sys.argv else None
-        if type(data) is dict and data.get('schema_version')=='jpn.mixed3d/2':
+        if type(data) is dict and data.get('schema_version')=='jpn.mixed3d/3':
+            from jpn_structural.mixed3d_v3 import analyze_mixed3d_v3
+            result=analyze_mixed3d_v3(data, _joint_actions=joint_actions)
+        elif type(data) is dict and data.get('schema_version')=='jpn.mixed3d/2':
             from jpn_structural.mixed3d_loads import analyze_loaded_mixed3d
             result=analyze_loaded_mixed3d(data, _joint_actions=joint_actions)
+            _refuse_ambiguous_axes(data)
         else:
             result = analyze_mixed3d(data, _joint_actions=joint_actions)
+            _refuse_ambiguous_axes(data)
         if joint_actions is not None:
             # The installed PyNite native global actions are audited directly in
             # Python tests. Transport only its actual bases + compiled nodal
