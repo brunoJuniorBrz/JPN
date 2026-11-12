@@ -7,11 +7,21 @@ from .coldformed_design import analyze_coldformed_design
 from .coldformed_connection import audit_member_connection
 
 
-def analyze_verified_coldformed(raw):
+def analyze_verified_coldformed(raw, *, _geometry_cache=None):
     obj(raw,'schema_version geometry_analysis solver_j_m4 property_resolutions design'+(' connection_context' if 'connection_context'in raw else '')+(' stability_model' if 'stability_model'in raw else ''),'verified member design')
     if raw['schema_version']!='jpn.verified-coldformed/1':fail('UNSUPPORTED_MODEL','Verified physical section request required.')
     connection_audit=audit_member_connection(raw.get('connection_context'),raw['design']['piece_id'],raw['design']['tension'])
-    geometry=analyze_section(raw['geometry_analysis'])
+    # Private cache is scoped to ONE capped worker batch. Every admission and
+    # resistance/connection check below still runs for each request. Clients
+    # cannot supply a computed section. Full source/revision/Poisson/refinement
+    # inputs participate in the exact key; no rounded shape key is used.
+    geometry_key=input_hash(raw['geometry_analysis'])
+    if _geometry_cache is not None and geometry_key in _geometry_cache:
+        geometry=copy.deepcopy(_geometry_cache[geometry_key])
+    else:
+        geometry=analyze_section(raw['geometry_analysis'])
+        if _geometry_cache is not None:
+            _geometry_cache[geometry_key]=copy.deepcopy(geometry)
     if raw['geometry_analysis']['geometry']['shape']!='u-stiffened':fail('UNSUPPORTED_FAMILY','Physical Ue required.')
     if geometry['convergence']['status']!='observed':fail('SECTION_NOT_CONVERGED','Section refinement target not achieved; resistance execution blocked.')
     p=geometry['properties'];s=raw['design']['section']

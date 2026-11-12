@@ -47,6 +47,13 @@ export const coldformedDesignResultSchema=z.object({schema_version:z.literal("jp
 }).strict();
 
 export const verifiedColdformedRequestSchema=z.object({schema_version:z.literal("jpn.verified-coldformed/1"),geometry_analysis:sectionAnalysisRequestSchema,solver_j_m4:positive,property_resolutions:z.object({area_m2:n.nonnegative(),iy_m4:n.nonnegative(),iz_m4:n.nonnegative(),wy_m3:n.nonnegative(),wz_m3:n.nonnegative(),j_m4:n.nonnegative()}).strict(),design:coldformedDesignRequestSchema,connection_context:connectionContextSchema.optional(),stability_model:stabilityModelSchema.optional()}).strict();
+export const verifiedColdformedBatchRequestSchema=z.object({schema_version:z.literal("jpn.verified-coldformed-batch/1"),requests:z.array(verifiedColdformedRequestSchema).min(1).max(4)}).strict().superRefine((v,ctx)=>{
+  if(new Set(v.requests.map(r=>JSON.stringify([r.design.piece_id,r.design.combination_id]))).size!==v.requests.length)ctx.addIssue({code:"custom",message:"Duplicated member/combination execution"});
+});
+export const verifiedColdformedBatchResultSchema=z.object({schema_version:z.literal("jpn.verified-coldformed-batch-result/1"),input_sha256:sha,
+  results:z.array(coldformedDesignResultSchema.required({geometry_audit:true,calculation_input_sha256:true,connection_audit:true})).min(1).max(4),
+  geometry_evaluations:z.number().int().min(1).max(4),geometry_reuses:z.number().int().min(0).max(3),
+  computed_structural_approval:z.literal(false),approved_for_fabrication:z.literal(false)}).strict();
 
 /** Historical /2 and /3 remain readable; corrected physical modal spaces
  * require a /4 recalculation, even when the physical input hash is unchanged. */
@@ -68,15 +75,17 @@ export function requireCommonMemberAxes(matrices:number[][][]){
 /** Exclude only the derived project preparation hash (which includes this
  * declaration), preventing a self-referential hash. ALL mechanical data,
  * actions, combinations, source revisions and connection declarations remain. */
-export async function memberDesignBasis(project:Project,report:ResistanceReport,pieceId:string){
+export async function memberDesignBasis(project:Project,report:Pick<ResistanceReport,"physicalInput">,pieceId:string){
   const declaration=project.workspace.spatialPreparation?.resistance?.find(d=>d.pieceId===pieceId);
   const {project:meta,...mechanical}=report.physicalInput;
-  return mixedInputHash({projectId:meta.id,mechanical,pieceId,declaration,connections:project.workspace.spatialPreparation?.connections??null});
+  return mixedInputHash({projectId:meta.id,mechanical,pieceId,declaration,connections:project.workspace.spatialPreparation?.connections??null,
+    ...(project.workspace.spatialPreparation?.physicalRestraints?{physicalRestraints:project.workspace.spatialPreparation.physicalRestraints}:{})});
 }
 export async function prepareColdformedDesign(project:Project,report:ResistanceReport,declaration:MemberDesignDeclaration){
   const draft=project.workspace.spatialPreparation!,d=draft.resistance?.find(d=>d.pieceId===declaration.pieceId),piece=report.pieces.find(p=>p.pieceId===declaration.pieceId),group=piece?.physicalProperties;
   if(!d||!group||d.family!=="cold-formed"||d.geometry?.shape!=="u-stiffened")throw Error("Domínio: U enrijecido físico, com material e geometria declarados.");
   if(piece.dataIssues.length)throw Error("Corrija os dados físicos antes de verificar: "+piece.dataIssues.join(" "));
+  if(declaration.study.minimum_search==="computed-cfsm-ss"&&draft.physicalRestraints?.items.some(r=>r.pieceId===declaration.pieceId&&r.positionM>1e-7&&r.positionM<report.demands.pieces.find(p=>p.pieceId===declaration.pieceId)!.lengthM-1e-7))throw Error("UNSUPPORTED_BUCKLING_MODEL: computed-cfsm-ss does not represent intermediate physical restraints; supply a separately reviewed matching study.");
   if(!draft.engineeringCombinations?.combinations.some(c=>c.id===declaration.combinationId&&c.purpose==="ULS"))throw Error("Selecione uma combinação explicitamente declarada ULS.");
   const basis=await memberDesignBasis(project,report,declaration.pieceId);
   if(declaration.study.basis_sha256!==basis)throw Error("Estudo crítico obsoleto: revise geometria, material, contenções e padrão de carregamento e registre novamente.");
