@@ -35,10 +35,12 @@ export function createStudioStage(renderer: THREE.WebGLRenderer, scene: THREE.Sc
       try {
         pmrem = new THREE.PMREMGenerator(renderer);
         room = new RoomEnvironment();
-        const generated = pmrem.fromScene(room, .04, .1, 100, { size: options.environmentSize }).texture;
-        resources.push(generated);
-        environment = generated;
-        scene.environment = generated; scene.environmentIntensity = neutral ? .15 : .5;
+        // Keep the render target, not just its texture: only disposing the
+        // target releases the WebGL render-target attachments as well.
+        const target = pmrem.fromScene(room, .04, .1, 100, { size: options.environmentSize });
+        resources.push(target);
+        environment = target.texture;
+        scene.environment = environment; scene.environmentIntensity = neutral ? .15 : .5;
         ambient.intensity = .95; sun.intensity = 2.3; fill.intensity = .45;
       } catch {
         // Keep technical lighting if WebGL cannot generate the PMREM.
