@@ -8,7 +8,9 @@ from .dual import variables
 from .test_pilot import X,PARAM
 from . import test_pilot as historical_checks
 
-def test_material_curvature_against_matrix_so3_derivative():
+@pytest.mark.parametrize('length',[1.,2.,6.])
+@pytest.mark.parametrize('stiffness',[(8e3,2e4,1e4),(3e4,7e3,4e4),(1.2e4,1.2e4,1.2e4)])
+def test_material_curvature_against_matrix_so3_derivative(length,stiffness):
     li=np.array([.012,.02,-.025]);lj=np.array([-.01,-.015,.03])
     rotations=[Rotation.from_rotvec(r) for r in (li,lj)]
     directors=[r.apply([1.,0.,0.]) for r in rotations]
@@ -20,14 +22,19 @@ def test_material_curvature_against_matrix_so3_derivative():
         y=np.array([-t[1],1-t[1]**2/(1+t[0]),-t[1]*t[2]/(1+t[0])])
         z=np.cross(t,y);phi=(1-u)*rolls[0]+u*rolls[1]
         return np.column_stack([t,np.cos(phi)*y+np.sin(phi)*z,-np.sin(phi)*y+np.cos(phi)*z])
-    expected=material_energy(2.,li,lj,2e4,1e4,8e3,element.rotate,element.exponential,element.atan2,element.sin,element.cos)
+    gj,eiy,eiz=stiffness
+    expected=material_energy(length,li,lj,eiy,eiz,gj,element.rotate,element.exponential,element.atan2,element.sin,element.cos)
     errors=[]
     for h in (1e-3,1e-4,1e-5):
         total=0.
         for point,weight in zip(*np.polynomial.legendre.leggauss(16)):
             u=(point+1)/2;R=frame(u);dR=(frame(u+h)-frame(u-h))/(2*h)
-            K=R.T@dR;k=np.array([K[2,1],K[0,2],K[1,0]])/2
-            total+=weight/2*(8e3*k[0]**2+2e4*k[1]**2+1e4*k[2]**2)
+            K=R.T@dR
+            # vee is applied to the skew part; u is dimensionless.
+            omega=np.array([K[2,1]-K[1,2],K[0,2]-K[2,0],K[1,0]-K[0,1]])/2
+            kappa=omega/length             # 1/m
+            density=.5*(gj*kappa[0]**2+eiy*kappa[1]**2+eiz*kappa[2]**2) # J/m
+            total+=weight/2*length*density # dS=L0 du; energy in J
         errors.append(abs(total-expected))
     assert errors[1]<errors[0] and min(errors)<1e-7
 
