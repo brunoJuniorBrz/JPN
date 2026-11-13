@@ -15,7 +15,7 @@ def spin(r):
     K=[[0,-r[2],r[1]],[r[2],0,-r[0]],[-r[1],r[0],0]];K2=matmul(K,K)
     return [[float(i==j)+a*K[i][j]+b*K2[i][j] for j in range(3)] for i in range(3)]
 
-def solve(model,bases,subdivisions=16,test_tolerance=1e-14):
+def solve(model,bases,subdivisions=16,test_tolerance=1e-14,*,convergence_test='NormDispIncr',linear_system='BandGeneral',load_steps=10):
     started=time.perf_counter()
     if ops.version()!='3.8.0':raise ValueError('Pinned OpenSees 3.8.0 required')
     if not 1<=subdivisions<=64:raise ValueError('Declared additional reference domain exceeded')
@@ -52,18 +52,21 @@ def solve(model,bases,subdivisions=16,test_tolerance=1e-14):
         for i,k in enumerate(('fx_n','fy_n','fz_n','mx_nm','my_nm','mz_nm')):loads[l['node']][i]+=factor.get(l['case'],0)*l[k]
     ops.timeSeries('Linear',1);ops.pattern('Plain',1,1)
     for n,v in loads.items():ops.load(ids[n],*v)
-    ops.constraints('Plain');ops.numberer('RCM');ops.system('BandGeneral')
+    if convergence_test not in ('NormDispIncr','NormUnbalance','EnergyIncr') or linear_system not in ('BandGeneral','UmfPack') or load_steps not in (10,20):raise ValueError('Undeclared reference study control')
+    ops.constraints('Plain');ops.numberer('RCM');ops.system(linear_system)
     with tempfile.TemporaryDirectory(prefix='jpn-p6-v2-') as folder:
         log=Path(folder)/'newton.log';ops.logFile(str(log),'-noEcho');ops.setPrecision(17)
-        ops.test('NormDispIncr',test_tolerance,50,4);ops.algorithm('Newton');ops.integrator('LoadControl',.1);ops.analysis('Static')
-        iterations=[]
-        for _ in range(10):
-            if ops.analyze(1):raise RuntimeError('Native reference failed Newton')
+        ops.test(convergence_test,test_tolerance,50,4);ops.algorithm('Newton');ops.integrator('LoadControl',1/load_steps);ops.analysis('Static')
+        iterations=[];test_norms=[]
+        for step in range(load_steps):
+            if ops.analyze(1):raise RuntimeError(json.dumps(dict(reason='Native reference failed Newton',failed_step=step+1,iterations=ops.testIter(),norms=list(ops.testNorms()),completed_iterations=iterations)))
             iterations.append(ops.testIter())
+            test_norms.append(list(ops.testNorms())[:ops.testIter()])
         ops.logFile('NUL' if __import__('sys').platform=='win32' else '/dev/null','-noEcho')
         raw=log.read_bytes()
         if len(raw)>64000000:raise ValueError('Native trace limit exceeded')
     increments=[list(map(float,l.split('deltaX:',1)[1].split())) for l in raw.decode().splitlines() if l.lstrip().startswith('deltaX:')]
+    unbalances=[list(map(float,l.split('deltaR:',1)[1].split())) for l in raw.decode().splitlines() if l.lstrip().startswith('deltaR:')]
     dofs={n:ops.nodeDOFs(tag) for n,tag in ids.items()};active=sorted(v for row in dofs.values() for v in row if v>=0)
     if active!=list(range(len(active))) or len(increments)!=sum(iterations) or any(len(v)!=len(active) for v in increments):raise ValueError('Incomplete native increment/RCM trace')
     ops.reactions();nodes={};trace_error=0.;free_residual={}
@@ -96,11 +99,34 @@ def solve(model,bases,subdivisions=16,test_tolerance=1e-14):
         scales.append([abs(v) for v in loads[name][:3]]+[abs(loads[name][i+3])+abs(applied[i]) for i in range(3)])
     residual=[math.fsum(v[i] for v in contributions) for i in range(6)];scale=[1+math.fsum(v[i] for v in scales) for i in range(6)]
     relative=[abs(a)/b for a,b in zip(residual,scale)]
+    # Independent path B: assemble EVERY native element end force, then
+    # subtract applied loads. Do not substitute these values into path A.
+    assembled={name:[[] for _ in range(6)] for name in points}
+    for tag,m in enumerate(members,1):
+        f=ops.eleForce(tag)
+        for node,offset in ((m['start'],0),(m['end'],6)):
+            for k in range(6):assembled[node][k].append(f[offset+k])
+    free_max=[0.]*6;support_difference=[0.]*6;free_resultants=[]
+    for name in points:
+        imbalance=[math.fsum(assembled[name][k])-loads[name][k] for k in range(6)]
+        mask=supports.get(name,[False]*6);reaction=nodes[name]['reaction_force_n']+nodes[name]['reaction_moment_nm']
+        free=[0. if mask[k] else imbalance[k] for k in range(6)]
+        position=[points[name][k]-origin[k]+nodes[name]['translation_m'][k] for k in range(3)]
+        moment=cross(position,free[:3]);free_resultants.append(free[:3]+[free[k+3]+moment[k] for k in range(3)])
+        for k in range(6):
+            if mask[k]:support_difference[k]=max(support_difference[k],abs(imbalance[k]-reaction[k]))
+            else:free_max[k]=max(free_max[k],abs(imbalance[k]))
+    free_sum=[math.fsum(v[k] for v in free_resultants) for k in range(6)]
     return dict(schema_version='jpn.p6-native-reference-v2/1',version=ops.version(),transformation='Corotational',corotational02_available=corot02,
         test_tolerance=test_tolerance,subdivisions=subdivisions,reference_node_count=len(points),reference_member_count=len(members),
         nodes={n:nodes[n] for n in original},physical_end_actions=actions,strain_energy_j=energy,
         native_axes_maximum_error=axes_error,trace_sha256=hashlib.sha256(raw).hexdigest(),trace_reconstruction_error=trace_error,
         free_wrench_residual={n:free_residual[n] for n in original},
+        convergence_test=convergence_test,linear_system=linear_system,load_steps=load_steps,iterations_per_step=iterations,test_norms=test_norms,
+        increment_euclidean_norms=[math.sqrt(math.fsum(v*v for v in row)) for row in increments],
+        unbalance_euclidean_norms=[math.sqrt(math.fsum(v*v for v in row)) for row in unbalances],
+        norm_units='Native mixed translational/rotational DOFs; diagnostic norms, not component equilibrium criteria',
+        assembled_equilibrium=dict(free_maximum_absolute=free_max,free_resultant=free_sum,support_recovery_difference=support_difference,path_a_plus_free_resultant=[a+b for a,b in zip(residual,free_sum)],condition_number=None,condition_number_reason='Not exposed by selected native systems; not inferred from convergence'),
         physical_support_equilibrium=dict(force_residual_n=residual[:3],moment_residual_nm=residual[3:],relative_residual=relative,accepted=max(relative)<=1e-8),
         bases_global_to_local=bases,elapsed_seconds=time.perf_counter()-started,computed_structural_approval=False,fabrication_release=False,release_gate='NOT_READY_BLOCKED')
 

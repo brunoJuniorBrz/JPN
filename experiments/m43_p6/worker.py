@@ -8,6 +8,9 @@ limits=memory_limit()
 sys.path.insert(0,str(ROOT))
 try:
     from experiments.m43_p6.pilot import run,single_mesh_study
+    if '--baseline-reciprocals' in sys.argv:
+        from experiments.m43_p6 import material_curvature
+        material_curvature.REUSE_RECIPROCALS=False
     if '--material-curvature' in sys.argv:
         from experiments.m43_p6 import element
         element.MATERIAL_CURVATURE=True

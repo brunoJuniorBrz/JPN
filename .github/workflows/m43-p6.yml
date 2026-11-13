@@ -35,6 +35,13 @@ jobs:
         run: python validation/m43-p6/reference_v2/campaign.py --opensees-python .tools/opensees/Scripts/python.exe
       - if: runner.os != 'Windows'
         run: python validation/m43-p6/reference_v2/campaign.py --opensees-python .tools/opensees/bin/python
+      - if: runner.os == 'Windows'
+        run: python validation/m43-p6/directed_study.py --opensees-python .tools/opensees/Scripts/python.exe
+      - if: runner.os != 'Windows'
+        run: python validation/m43-p6/directed_study.py --opensees-python .tools/opensees/bin/python
+      - run: python validation/m43-p6/kinematic_study.py
+      - run: python validation/m43-p6/kernel_cost.py
+      - run: python validation/m43-p6/profile_spatial.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
