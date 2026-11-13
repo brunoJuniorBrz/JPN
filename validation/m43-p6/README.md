@@ -13,12 +13,26 @@ Diagnóstico inicial comprovado pela P5:
   referência independente continuam divergentes. A referência OpenSees mais
   fina também falha no equilíbrio. Não atribuir uma causa constitutiva sem prova.
 
-Piloto: diferenciação de primeira ordem somente nas forças da busca linear.
-Energia original, Hessiana completa nas iterações de Newton, recuperação,
-SO(3), estabilidade e todos os critérios históricos permanecem intactos.
+Piloto: comprimento de arco da linha central Hermite em três dimensões,
+calculado por oito pontos de Gauss; inclinações obtidas dos diretores rotacionados,
+e comprimento da corda deformada. Corrige duas aproximações cinemáticas do
+alongamento axial P4 (ângulos como inclinações e comprimento inicial no excesso
+de arco). A lei de flexão/torção permanece uma aproximação a validar.
+Esse funcional é diferenciado em primeira ordem na busca linear e em segunda
+ordem na tangente de Newton. Recuperação, SO(3), estabilidade e todos os
+critérios históricos permanecem intactos. Saída própria
+`jpn.m43-p6-experimental/1`; nenhum contrato histórico é substituído.
 Derivadas são comparadas com AD de segunda ordem e diferenças centrais;
 equilíbrio físico, conjugação de momentos, movimento rígido finito, extensão,
 torção analítica e perda de positividade da tangente são testados.
+
+Campanha: `python validation/m43-p6/reproduce.py`. Usa as referências físicas
+OpenSees/SO(3) e Kirchhoff arquivadas na P5, com hashes e incertezas originais;
+não afirma novas execuções OpenSees. Não alterar referências para favorecer o
+piloto. Resultados completos em `.tools/m43-p6/evidence.json`/artefatos da CI.
+O relatório distingue execução, critérios físicos e aprovação (sempre bloqueada).
+Falhas/TIMEOUT permanecem explícitos. CI verde desta campanha significa que a
+auditoria executou, não que os três benchmarks foram resolvidos.
 
 Reprodução: `python -m pytest experiments/m43_p6 -q`.
 Execução isolada: `python -I experiments/m43_p6/worker.py`, entrada P4 no stdin,

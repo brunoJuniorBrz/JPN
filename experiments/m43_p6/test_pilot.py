@@ -1,9 +1,10 @@
 import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
-from .pilot import energy,solver,trial_assemble
+from .pilot import energy,solver,trial_assemble,full
 from .dual import variables
-from jpn_structural.spatial_corotational import element_response,left_jacobian
+from jpn_structural.spatial_corotational import left_jacobian
+element_response=full.element_response
 
 X=np.array([[0.,0.,0.],[2.,0.,0.]])
 PARAM=(2e8,2e4,1e4,8e3,np.eye(3))
@@ -39,6 +40,20 @@ def test_analytical_extension_and_torsion():
     e,_=energy.energy_state(X,variables(q),*PARAM)
     assert abs(e.v-(.5*PARAM[0]/2*.001**2+.5*PARAM[3]/2*.01**2))<1e-9
     assert abs(e.g[9]-PARAM[3]/2*.01)<1e-9
+
+def test_arc_matches_independent_adaptive_quadrature():
+    from scipy.integrate import quad
+    from .arc import extension
+    from jpn_structural.spatial_corotational import rotate,exponential
+    a,b=[.01,.02,-.03],[-.02,-.01,.025]
+    di,dj=[Rotation.from_rotvec(r).apply([1.,0.,0.]) for r in (a,b)]
+    si,sj=di[1:]/di[0],dj[1:]/dj[0]
+    def f(t):
+        s=(1-4*t+3*t*t)*si+(-2*t+3*t*t)*sj
+        return float(s@s)/(np.sqrt(1+s@s)+1)
+    expected,error=quad(f,0,1,epsabs=1e-13,epsrel=1e-13)
+    assert abs(extension(2.,a,b,rotate,exponential)-2*expected)<1e-12
+    assert error<1e-12
 
 def test_tangent_detects_loss_of_stability_without_relaxing_gate():
     # Same geometric energy, fixed first node; compression makes bending
