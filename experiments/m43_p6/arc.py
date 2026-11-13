@@ -7,8 +7,9 @@ independent validation. Eight Gauss points, never tuned to benchmark outcomes.
 import numpy as np
 POINTS,WEIGHTS=np.polynomial.legendre.leggauss(8)
 
-def extension(length,li,lj,rotate,exponential):
-    di,dj=[rotate(exponential(r),[1.,0.,0.]) for r in (li,lj)]
+def extension(length,li,lj,rotate,exponential,*,quaternions=None):
+    qi,qj=quaternions if quaternions is not None else (exponential(li),exponential(lj))
+    di,dj=[rotate(q,[1.,0.,0.]) for q in (qi,qj)]
     si=[di[k]/di[0] for k in (1,2)];sj=[dj[k]/dj[0] for k in (1,2)]
     ii=sum(s*s for s in si);jj=sum(s*s for s in sj);ij=sum(a*b for a,b in zip(si,sj))
     excess=0.

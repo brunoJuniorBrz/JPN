@@ -6,8 +6,8 @@ components is NOT the twist of this field. No benchmark acceptance implied.
 """
 from .arc import POINTS,WEIGHTS
 
-def energy(length0,li,lj,eiy,eiz,gj,rotate,exponential,atan2,sin,cos,*,with_twist=False):
-    qi,qj=exponential(li),exponential(lj)
+def energy(length0,li,lj,eiy,eiz,gj,rotate,exponential,atan2,sin,cos,*,with_twist=False,quaternions=None):
+    qi,qj=quaternions if quaternions is not None else (exponential(li),exponential(lj))
     di,dj=rotate(qi,[1.,0.,0.]),rotate(qj,[1.,0.,0.])
     si=[di[k]/di[0] for k in (1,2)];sj=[dj[k]/dj[0] for k in (1,2)]
     # Swing quaternion has zero x component: endpoint residual roll is

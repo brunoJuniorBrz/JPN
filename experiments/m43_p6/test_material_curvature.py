@@ -6,6 +6,7 @@ from . import element
 from .material_curvature import energy as material_energy
 from .dual import variables
 from .test_pilot import X,PARAM
+from . import test_pilot as historical_checks
 
 def test_material_curvature_against_matrix_so3_derivative():
     li=np.array([.012,.02,-.025]);lj=np.array([-.01,-.015,.03])
@@ -50,3 +51,17 @@ def test_material_energy_gradient_hessian_sensitivity(monkeypatch,h):
     if h==1e-4:
         error=np.max(abs(coarse-r['tangent']@d));refined=np.max(abs(fine-r['tangent']@d))
         assert 3.9<error/refined<4.1
+
+@pytest.mark.parametrize('seed',range(8))
+def test_material_physical_balance_and_ad_orders(monkeypatch,seed):
+    monkeypatch.setattr(element,'MATERIAL_CURVATURE',True)
+    historical_checks.test_gradient_tangent_and_physical_balance(seed)
+
+@pytest.mark.parametrize('check',[
+    historical_checks.test_finite_rigid_motion_objectivity,
+    historical_checks.test_analytical_extension_and_torsion,
+    historical_checks.test_tangent_detects_loss_of_stability_without_relaxing_gate,
+])
+def test_material_analytical_and_instability_controls(monkeypatch,check):
+    monkeypatch.setattr(element,'MATERIAL_CURVATURE',True)
+    check()

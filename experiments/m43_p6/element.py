@@ -109,12 +109,14 @@ def energy_state(x, q, ea, eiy, eiz, gj, reference_basis, *, arc=True):
     director = rotate(mean_frame, [1., 0., 0.])
     alignment = unit([1+dot(director, n), *cross(director, n)])
     frame = multiply(alignment, mean_frame)
-    local_i = logarithm(multiply(conjugate(frame), multiply(qi, initial)))
-    local_j = logarithm(multiply(conjugate(frame), multiply(qj, initial)))
+    local_qi = multiply(conjugate(frame), multiply(qi, initial))
+    local_qj = multiply(conjugate(frame), multiply(qj, initial))
+    local_i = logarithm(local_qi)
+    local_j = logarithm(local_qj)
     extension = (2*dot(r0, du)+dot(du, du))/(length+length0)
     arc_extension = 0.
     if arc:
-        arc_extension = hermite_extension(length, local_i, local_j, rotate, exponential)
+        arc_extension = hermite_extension(length, local_i, local_j, rotate, exponential,quaternions=(local_qi,local_qj))
     strain_extension = extension+arc_extension
     torsion = local_j[0]-local_i[0]
     if (abs(value(strain_extension))/length0 > .01 or
@@ -122,7 +124,7 @@ def energy_state(x, q, ea, eiy, eiz, gj, reference_basis, *, arc=True):
         fail("SPATIAL_STRAIN_LIMIT", "Deformações locais fora do piloto elástico de pequenas deformações.")
     energy = .5*ea/length0*strain_extension**2
     if MATERIAL_CURVATURE:
-        bending,twist=material_energy(length0,local_i,local_j,eiy,eiz,gj,rotate,exponential,atan2,sin,cos,with_twist=True)
+        bending,twist=material_energy(length0,local_i,local_j,eiy,eiz,gj,rotate,exponential,atan2,sin,cos,with_twist=True,quaternions=(local_qi,local_qj))
         energy += bending
         torsion=twist  # integrated material twist; scalar is its mean moment,
         # not a substitute for the concurrent physical end wrench from dU/dq.

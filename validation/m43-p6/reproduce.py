@@ -2,7 +2,7 @@
 
 Never overwrite historical evidence or promote a passed mathematical diagnostic.
 """
-import hashlib,json,os,subprocess,sys,time
+import argparse,hashlib,json,os,subprocess,sys,time
 from pathlib import Path
 import numpy as np
 ROOT=Path(__file__).resolve().parents[2]
@@ -14,6 +14,9 @@ from jpn_structural.frame3d_model import input_hash
 
 def sha(p): return hashlib.sha256(p.read_bytes().replace(b'\r\n',b'\n')).hexdigest()
 def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--material-curvature',action='store_true')
+    args=parser.parse_args()
     baseline=json.loads((ROOT/'validation/m43-p5/p4-baseline.json').read_text())
     evidence=json.loads((ROOT/'validation/m43-p5/evidence.json').read_text())
     cases=[]
@@ -21,7 +24,8 @@ def main():
         request=original['request'];request['numerics']=old['requested_numerics']
         started=time.perf_counter()
         try:
-            completed=subprocess.run([sys.executable,'-I','-X','utf8',str(ROOT/'experiments/m43_p6/worker.py')],
+            command=[sys.executable,'-I','-X','utf8',str(ROOT/'experiments/m43_p6/worker.py')]+(['--material-curvature'] if args.material_curvature else [])
+            completed=subprocess.run(command,
                 input=json.dumps(request).encode(),capture_output=True,timeout=20,cwd=ROOT,
                 env={**os.environ,'OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1','MKL_NUM_THREADS':'1'})
             assert len(completed.stdout)<=2000000 and len(completed.stderr)<=16000
@@ -32,6 +36,7 @@ def main():
                  production_enabled=False,computed_structural_approval=False,fabrication_release=False,release_gate='NOT_READY_BLOCKED')
         if answer['status']=='diagnostic':
             result=answer['diagnostic'];assert result['input_sha256']==input_hash(request)
+            assert result['experimental_controls']['material_curvature']==args.material_curvature
             assert answer['execution']['memory_limit_bytes']==768*1024*1024
             for k in ('production_enabled','computed_structural_approval','fabrication_release','spatial_domain_verified','normative_stability_verified'): assert result[k] is False
             actual=measures(result['candidate'],request['model']);ref=old['after']
@@ -49,11 +54,12 @@ def main():
             row['strictly_verified_diagnostic']=row['all_archived_bounds_met'] and row['physical_convergence_verified'] and old['native_equilibrium_verified']
         cases.append(row)
         print(json.dumps({k:row.get(k) for k in ('case','elapsed_seconds','all_archived_bounds_met','physical_convergence_verified')}),flush=True)
-    output=ROOT/'.tools/m43-p6/evidence.json';output.parent.mkdir(parents=True,exist_ok=True)
+    output=ROOT/('.tools/m43-p6/material-evidence.json' if args.material_curvature else '.tools/m43-p6/evidence.json');output.parent.mkdir(parents=True,exist_ok=True)
     output.write_text(json.dumps(dict(schema_version='jpn.m43-p6-campaign/1',
         criteria_sha256=sha(ROOT/'validation/m43-p5/criteria.json'),reference_sha256=sha(ROOT/'validation/m43-p5/evidence.json'),
         source_sha256_lf={str(p.relative_to(ROOT)):sha(p) for p in (ROOT/'experiments/m43_p6').glob('*.py')},
         references='Archived OpenSees SO(3)/Kirchhoff P5; not newly generated OpenSees results',cases=cases,
+        material_curvature=args.material_curvature,
         computed_structural_approval=False,fabrication_release=False,release_gate='NOT_READY_BLOCKED'),indent=2,allow_nan=False)+'\n',encoding='utf-8')
     assert cases[0].get('strictly_verified_diagnostic') is True, 'Previously demonstrated cantilever regressed; evidence retained'
 
