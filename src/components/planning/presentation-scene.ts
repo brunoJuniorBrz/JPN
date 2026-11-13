@@ -96,7 +96,6 @@ export function createPresentationScene(envelope: PresentationEnvelope, initial:
   const roofMaterial=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,roughness:.5,metalness:.55,envMapIntensity:.9});
   resources.add(roofMaterial);
   let roofStyle="";
-  const roofGeometries:THREE.BufferGeometry[]=[];
   for(let i=0;i<roofBase.length;i++){
     const mesh=new THREE.Mesh(new THREE.BufferGeometry(),roofMaterial);
     mesh.receiveShadow=true; mesh.castShadow=true; fixed.add(mesh);roofMeshes.push(mesh);
@@ -104,11 +103,17 @@ export function createPresentationScene(envelope: PresentationEnvelope, initial:
   const ridgeCap=new THREE.Mesh(new THREE.BufferGeometry(),roofMaterial);
   ridgeCap.castShadow=true;ridgeCap.visible=false;fixed.add(ridgeCap);
   const rebuildRoof=(finish:RoofFinish)=>{
-    for(const g of roofGeometries)g.dispose();roofGeometries.length=0;
-    roofBase.forEach((corners,i)=>{const g=roofReliefGeometry(corners,finish,roofLiftM);roofMeshes[i].geometry.dispose();roofMeshes[i].geometry=g;roofGeometries.push(g);});
+    // Each roof mesh owns exactly one geometry. Dispose the old buffer once,
+    // then replace it; never also dispose an overlapping inventory of buffers.
+    roofBase.forEach((corners,i)=>{
+      const old=roofMeshes[i].geometry;
+      roofMeshes[i].geometry=roofReliefGeometry(corners,finish,roofLiftM);
+      old.dispose();
+    });
     const cap=roofBase.length===2?ridgeCapGeometry(roofBase[0],roofBase[1],finish,roofLiftM):null;
-    ridgeCap.geometry.dispose();ridgeCap.visible=!!cap;
-    if(cap){ridgeCap.geometry=cap;roofGeometries.push(cap);}else ridgeCap.geometry=new THREE.BufferGeometry();
+    const oldCap=ridgeCap.geometry;
+    ridgeCap.geometry=cap??new THREE.BufferGeometry();ridgeCap.visible=!!cap;
+    oldCap.dispose();
   };
   let car: THREE.Group|null=null, person: THREE.Group|null=null, disposed=false, loadToken=0, opts=initial;
   let carSource:"pending"|"gltf"|"fallback"="pending", personSource:"pending"|"gltf"|"fallback"="pending";
@@ -166,7 +171,10 @@ export function createPresentationScene(envelope: PresentationEnvelope, initial:
   // GLB and GLTFLoader are downloaded only for the first activation of Acabado.
   void loadReferences();
   return {root,update,dispose:()=>{
+    if(disposed)return;
     disposed=true;loadToken++;if(car)disposeLoaded(car);if(person)disposeLoaded(person);
-    for(const g of roofGeometries)g.dispose();resources.forEach(resource=>resource.dispose());root.clear();
+    for(const mesh of roofMeshes)mesh.geometry.dispose();
+    ridgeCap.geometry.dispose();
+    resources.forEach(resource=>resource.dispose());root.clear();
   },status:()=>({loadedCar:!!car,loadedPerson:!!person,carSource,personSource}),roofMeshes,roofMaterial};
 }
