@@ -27,16 +27,24 @@ def physical_equilibrium(elements,q,rows,target,free):
     nodes={str(i):dict(translation_m=motion[i,:3],reaction_force_n=reactions[i,:3],reaction_moment_nm=reactions[i,3:]) for i in range(count)}
     return equilibrium(data,nodes,{str(i):loads[i] for i in range(count)})
 
-def newton(elements, force, free, initial, span, dimension, *, assemble, trial_assemble):
+def newton(elements, force, free, initial, span, dimension, *, assemble, trial_assemble, use_cache=True):
     q = np.zeros(len(force))
     qs = np.tile([span, span, 1.] if dimension == 2 else [span, span, span, 1., 1., 1.], len(q)//(3 if dimension == 2 else 6))
     load_scale = max(1., float(np.max(abs(force*qs)))/span)
     rs = qs/(load_scale*span)
     history = []
+    cached_q=None;cached_state=None;full_evaluations=0;state_reuses=0
     for step in range(1, 11):
         target, increment, previous, searches = force*step/10, math.inf, None, 0
         for iteration in range(1, 31):
-            internal, k, energy, rows = assemble(elements, q, dimension)
+            # Between two load steps only the external target changes. Reuse
+            # the exact same internal state, never a rounded/nearby state or
+            # the first-order trial approximation. Elements/controls are fixed.
+            if use_cache and cached_q is not None and q.tobytes()==cached_q.tobytes():
+                internal,k,energy,rows=cached_state;state_reuses+=1
+            else:
+                internal,k,energy,rows=assemble(elements,q,dimension);full_evaluations+=1
+                cached_q=q.copy();cached_state=(internal,k,energy,rows)
             residual = internal-target
             relative = float(np.max(abs(residual[free]*rs[free])))
             change = float(np.max(abs((internal-previous)*rs))) if previous is not None else math.inf
@@ -80,7 +88,8 @@ def newton(elements, force, free, initial, span, dimension, *, assemble, trial_a
             increment = float(np.max(abs(factor*direction)/qs))
         else:
             fail("P4_NONCONVERGENCE", "Newton não demonstrou convergência de força, movimento e equilíbrio.")
-    _, final_k, _, _ = assemble(elements, q, dimension)
+    # The converged state's Hessian has already been evaluated and audited.
+    final_k=k if use_cache else assemble(elements,q,dimension)[1]
     scale = np.sqrt(np.diag(initial)[free])
     a = final_k[np.ix_(free, free)]/scale[:, None]/scale[None, :]
     b = initial[np.ix_(free, free)]/scale[:, None]/scale[None, :]
@@ -92,4 +101,6 @@ def newton(elements, force, free, initial, span, dimension, *, assemble, trial_a
                      positive_definite=True, minimum_generalized_eigenvalue=float(eigenvalues[0]),
                      generalized_mode=mode.tolist(), normalization="max(abs(mode)/[span translations, unit rotations])=1",
                      normative_stability_verified=False)
+    stability['full_assembly_evaluations']=full_evaluations
+    stability['exact_state_reuses']=state_reuses
     return q, internal, rows, energy, history, stability

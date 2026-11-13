@@ -48,7 +48,7 @@ o algoritmo histórico de solução SPD e sua correção de residual.
 
 ## Validação e resultados intermediários
 
-31 testes do piloto e 12 regressões mecânicas históricas passaram localmente.
+33 testes do piloto e 12 regressões mecânicas históricas passaram localmente.
 Incluem diferenças finitas em `h=1e-4/1e-5/1e-6`, ordem de truncamento,
 objetividade rígida finita, equilíbrio, torção/extensão analíticas, compressão e
 perda de positividade. A diferença central grosseira em `h=1e-4` não satisfazia
@@ -96,6 +96,16 @@ entre os dois critérios. A execução local de TORSION com essa parada consiste
 e o solver SPD histórico passou novamente nas comparações e equilíbrio.
 Esses resultados não apagam recusas anteriores; a reprodutibilidade final nos
 dois sistemas deve ser conferida nos artefatos do SHA em revisão.
+
+Para recuperar margem de execução sem alterar a equação, a montagem completa
+é reutilizada somente para estados `q` byte a byte idênticos dentro da mesma
+análise (por exemplo, entre duas etapas, quando muda só a carga externa).
+Também se evita remontar a Hessiana já calculada e auditada no estado final.
+Não se reutiliza o gradiente aproximado da busca linear nem uma configuração
+próxima/arredondada. Dois testes, com ambas as leis, comparam Newton com cache
+ligado/desligado e exigem solução/forças byte a byte iguais, mesma energia e
+mesmas iterações, além do equilíbrio final. Contadores acompanham as montagens
+efetivas e reutilizações. Nenhuma auditoria de tangente foi removida.
 
 ### Refinamento SWAY comprovado nos dois sistemas
 
