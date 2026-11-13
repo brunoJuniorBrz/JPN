@@ -42,12 +42,13 @@ no Git para comparação. Nenhum seletor de produção aponta para a variante.
 
 Mantém-se AD de primeira ordem na busca linear e Hessiana completa em Newton.
 Quaternions locais já calculados são reutilizados em vez de repetir `Exp(Log(Q))`.
-A solução SPD reutiliza uma fatoração de Cholesky para as duas RHS da correção
-de residual, sem remover auditorias, mudar equações ou critérios de parada.
+A tentativa de reutilizar a fatoração SPD foi investigada e não foi mantida,
+após sensibilidade entre plataformas em componentes próximas de zero. Mantém-se
+o algoritmo histórico de solução SPD e sua correção de residual.
 
 ## Validação e resultados intermediários
 
-30 testes do piloto e 12 regressões mecânicas históricas passaram localmente.
+31 testes do piloto e 12 regressões mecânicas históricas passaram localmente.
 Incluem diferenças finitas em `h=1e-4/1e-5/1e-6`, ordem de truncamento,
 objetividade rígida finita, equilíbrio, torção/extensão analíticas, compressão e
 perda de positividade. A diferença central grosseira em `h=1e-4` não satisfazia
@@ -76,6 +77,25 @@ contribuição omitida de flexão/twist material neste benchmark. Não prova dom
 espacial completo. A falha da referência nativa arquivada não é apagada, e o
 campo `strictly_verified_diagnostic` permanece falso quando seu gate exige essa
 referência. A comparação contínua Kirchhoff é preservada separadamente.
+
+### Consistência entre parada de Newton e aceite físico
+
+No SHA 0e46a6d, a campanha final Windows registrou `Fx=3,85234e-8 N`, acima do
+critério físico de 1e-8, apesar de Newton satisfazer o residual algébrico
+escalado. Esse é um impedimento efetivo diferente da comparação de orientações.
+O piloto passa a reaplicar a função histórica de equilíbrio à iteração da carga
+final ANTES de encerrar Newton. Se falhar, continua resolvendo as mesmas equações
+até os mesmos limites de iterações/tempo; nunca modifica reações ou a decisão
+posterior para aprovar o resultado. Etapas intermediárias mantêm seus critérios
+históricos e não são declaradas estados físicos independentemente validados.
+
+`newton_physical_attempts` registra a sequência dos resíduos e recusas, inclusive
+se as iterações terminarem sem convergência. Um teste com residual algébrico
+relativo pequeno e força residual em componente sem carga demonstra a diferença
+entre os dois critérios. A execução local de TORSION com essa parada consistente
+e o solver SPD histórico passou novamente nas comparações e equilíbrio.
+Esses resultados não apagam recusas anteriores; a reprodutibilidade final nos
+dois sistemas deve ser conferida nos artefatos do SHA em revisão.
 
 ### Refinamento SWAY comprovado nos dois sistemas
 

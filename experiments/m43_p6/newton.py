@@ -1,9 +1,31 @@
 """Static experimental Newton; historical criteria unchanged."""
 import math
 import numpy as np
-from scipy.linalg import cho_factor,cho_solve,eigh
+from scipy.linalg import solve,eigh
 from jpn_structural.frame3d_model import fail
 from jpn_structural.corotational_planar import audit_tangent
+from jpn_structural.corotational_planar import equilibrium
+physical_attempts=[]
+
+def physical_equilibrium(elements,q,rows,target,free):
+    """Apply the unchanged physical gate to the actual current iterate.
+
+    Computational node indices label the same coordinates/DOFs from element
+    assembly; no extra support, load, reaction or balancing force is created.
+    Reactions are existing constrained components only, exactly as in run_mesh.
+    """
+    count=len(q)//6;coordinates=np.zeros((count,3));seen=set();actions=np.zeros(len(q))
+    for element,row in zip(elements,rows):
+        actions[element['dofs']]+=row['physical_end_actions']
+        for at,node in enumerate((element['dofs'][0]//6,element['dofs'][6]//6)):
+            coordinates[node]=element['coordinates'][at];seen.add(node)
+    if len(seen)!=count:raise ValueError('Missing actual element coordinates')
+    constrained=np.ones(len(q),dtype=bool);constrained[free]=False
+    reactions=np.where(constrained,actions-target,0.).reshape(count,6)
+    motion=q.reshape(count,6);loads=target.reshape(count,6)
+    data={'nodes':[dict(id=str(i),x_m=float(x[0]),y_m=float(x[1]),z_m=float(x[2])) for i,x in enumerate(coordinates)]}
+    nodes={str(i):dict(translation_m=motion[i,:3],reaction_force_n=reactions[i,:3],reaction_moment_nm=reactions[i,3:]) for i in range(count)}
+    return equilibrium(data,nodes,{str(i):loads[i] for i in range(count)})
 
 def newton(elements, force, free, initial, span, dimension, *, assemble, trial_assemble):
     q = np.zeros(len(force))
@@ -19,21 +41,29 @@ def newton(elements, force, free, initial, span, dimension, *, assemble, trial_a
             relative = float(np.max(abs(residual[free]*rs[free])))
             change = float(np.max(abs((internal-previous)*rs))) if previous is not None else math.inf
             minimum, condition, maximum = audit_tangent(k, free, initial)
-            if relative <= 1e-8 and increment <= 1e-10 and change <= 1e-8:
+            algebraic_convergence=relative <= 1e-8 and increment <= 1e-10 and change <= 1e-8
+            # The historical physical acceptance concerns the FINAL load case.
+            # Intermediate steps retain their original Newton criteria; they
+            # are not reported as independently physically verified states.
+            physical=physical_equilibrium(elements,q,rows,target,free) if algebraic_convergence and step==10 else None
+            if physical is not None:
+                physical_attempts.append(dict(node_count=len(q)//6,step=step,iteration=iteration,**physical))
+            if algebraic_convergence and (physical is None or physical['accepted']):
                 history.append(dict(step=step, iterations=iteration-1, newton_residual_evaluations=iteration,
                                     line_search_force_evaluations=searches, linear_system_solves=2*(iteration-1),
                                     algebraic_relative_residual=relative, scaled_displacement_increment=increment,
                                     scaled_internal_force_change=change, minimum_tangent_ratio=minimum,
-                                    maximum_tangent_ratio=maximum, scaled_tangent_condition=condition))
+                                    maximum_tangent_ratio=maximum, scaled_tangent_condition=condition,
+                                    physical_equilibrium_at_convergence=physical))
                 break
             scale = np.sqrt(np.diag(k)[free])
             scaled = k[np.ix_(free, free)]/scale[:, None]/scale[None, :]
             rhs = -residual[free]/scale
-            # Same SPD equation and residual correction; factor once for the
-            # two RHS. No tangent audit, iteration or acceptance gate skipped.
-            factorization=cho_factor(scaled)
-            delta = cho_solve(factorization, rhs)
-            delta += cho_solve(factorization, rhs-scaled@delta)
+            # Retain the historical SPD solve and residual correction. The
+            # factorization-reuse trial is not retained after platform-sensitive
+            # near-zero equilibrium failures. No tolerance or oracle is changed.
+            delta = solve(scaled, rhs, assume_a='pos')
+            delta += solve(scaled, rhs-scaled@delta, assume_a='pos')
             direction = np.zeros(len(q))
             direction[free] = delta/scale
             for backtrack in range(9):

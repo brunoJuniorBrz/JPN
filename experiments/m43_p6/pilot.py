@@ -26,7 +26,7 @@ def private(name, path):
 
 from functools import partial
 from . import element as full
-from .newton import newton
+from .newton import newton,physical_attempts
 energy=full
 solver=private('frame',ROOT/'engine/jpn_structural/p4_frame.py')
 solver.spatial_element=full.element_response
@@ -51,6 +51,7 @@ solver.newton=partial(newton,assemble=solver.assemble,trial_assemble=trial_assem
 
 def run(request):
     equilibrium_audits.clear()
+    physical_attempts.clear()
     if request.get('dimensionality')!=3: raise ValueError('Explicit spatial P4 input required')
     answer=solver.analyze_p4_frame(request)
     answer['schema_version']='jpn.m43-p6-experimental/1'
@@ -62,6 +63,7 @@ def run(request):
     from .diagnostics import refinement_components
     answer['governing_refinement_components']=refinement_components(answer)
     answer['equilibrium_audits']=list(equilibrium_audits)
+    answer['newton_physical_attempts']=list(physical_attempts)
     from jpn_structural.frame3d_model import input_hash
     answer['experimental_input_sha256']=input_hash({'physical_request':request,'controls':controls})
     if full.MATERIAL_CURVATURE:
