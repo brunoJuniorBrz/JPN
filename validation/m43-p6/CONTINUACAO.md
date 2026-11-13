@@ -47,7 +47,7 @@ de residual, sem remover auditorias, mudar equações ou critérios de parada.
 
 ## Validação e resultados intermediários
 
-28 testes do piloto e 12 regressões mecânicas históricas passaram localmente.
+30 testes do piloto e 12 regressões mecânicas históricas passaram localmente.
 Incluem diferenças finitas em `h=1e-4/1e-5/1e-6`, ordem de truncamento,
 objetividade rígida finita, equilíbrio, torção/extensão analíticas, compressão e
 perda de positividade. A diferença central grosseira em `h=1e-4` não satisfazia
@@ -77,6 +77,38 @@ espacial completo. A falha da referência nativa arquivada não é apagada, e o
 campo `strictly_verified_diagnostic` permanece falso quando seu gate exige essa
 referência. A comparação contínua Kirchhoff é preservada separadamente.
 
+### Refinamento SWAY comprovado nos dois sistemas
+
+O estudo 4/8 passou em Linux e Windows no SHA 8add9a9, campanha
+[43446809307](https://github.com/brunoJuniorBrz/JPN/actions/runs/43446809307):
+`strictly_verified_diagnostic=true`, refinamento de esforços ≈ 9,89555e-7,
+erro máximo de translação ≈ 2,88598e-11 m e orçamento independente completo
+cumprido, incluindo a incerteza. Execução em 12,75/15,14 s, dentro de 20 s.
+Isso demonstra a contribuição da lei material e o erro restante de
+discretização da malha 2/4, sem mudar estrutura, coeficientes ou critérios.
+
+### Certificado de inviabilidade da referência SPATIAL arquivada
+
+O impedimento restante não é apenas custo do solver. Para `d=|c-r|`, incerteza
+`u`, piso `a` e tolerância relativa `t<1`, o critério histórico exige
+`d+u <= a+t max(|c|,|r|)`. Pela desigualdade triangular,
+`max(|c|,|r|) <= |r|+d`; portanto é necessário
+`(1-t)d+u <= a+t|r|`.
+
+Se `u > a+t|r|`, nenhum candidato pode passar, nem mesmo `c=r`.
+Em T2/X da referência SPATIAL arquivada: `u≈1,60622e-9 m`, enquanto
+`a+t|r|≈2,15212e-10 m` (razão >7). A energia também tem incerteza acima do
+próprio orçamento. `reference_feasibility.py` gera o certificado por componente,
+com hashes LF das evidências e critérios originais; testes conferem o argumento
+inclusive contra candidatos de magnitude artificialmente grande.
+
+Esse certificado não altera ou desacredita o OpenSees: demonstra insuficiência
+da precisão disponível na referência arquivada para o critério adotado. A causa
+dos erros remanescentes do candidato e o custo continuam pendentes. Seria
+necessária evidência independente adicional com incerteza suficientemente menor,
+sem sobrescrever o oráculo, os hashes ou seus resultados históricos. Sob a
+referência fixa atual, declarar SPATIAL resolvido seria matematicamente falso.
+
 `governing_refinement_components` identifica barra/extremo/componente que governa.
 `equilibrium_audits` preserva os resíduos absolutos e relativos da função
 histórica, inclusive na recusa. O observador retorna a mesma decisão; não zera
@@ -89,6 +121,7 @@ python -m pytest experiments/m43_p6 engine/tests/test_p4_mechanics.py -q
 python validation/m43-p6/reproduce.py
 python validation/m43-p6/reproduce.py --material-curvature
 python validation/m43-p6/reproduce.py --material-curvature --case sway --refined-sway
+python validation/m43-p6/reference_feasibility.py
 ```
 
 O modo padrão e a variante geram artefatos separados, com controles e hashes de
