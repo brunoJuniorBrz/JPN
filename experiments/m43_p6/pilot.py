@@ -24,19 +24,10 @@ def private(name, path):
     spec.loader.exec_module(module)
     return module
 
-import inspect
-def spatial_kernel(name):
-    module=private(name,ROOT/'engine/jpn_structural/spatial_corotational.py')
-    source=inspect.getsource(module.energy_state)
-    old='arc_extension = length0/30*sum(2*local_i[k]**2-local_i[k]*local_j[k]+2*local_j[k]**2 for k in (1, 2))'
-    assert source.count(old)==1
-    module.hermite_extension=hermite_extension
-    exec(compile(source.replace(old,'arc_extension = hermite_extension(length, local_i, local_j, rotate, exponential)'),__file__,'exec'),module.__dict__)
-    return module
-
-full=spatial_kernel('full')
-energy=spatial_kernel('energy')
-for name in ('value','variables','sin','cos','atan2'): setattr(energy,name,getattr(dual,name))
+from functools import partial
+from . import element as full
+from .newton import newton
+energy=full
 solver=private('frame',ROOT/'engine/jpn_structural/p4_frame.py')
 solver.spatial_element=full.element_response
 solver.energy_state=full.energy_state
@@ -49,14 +40,7 @@ def trial_assemble(elements,q,dimension):
         force[row['dofs']]+=e.g
     return force,None,None,None
 
-# Derive a private function from the exact archived Newton source. Assert the
-# single surgical substitution rather than maintain a drifting solver fork.
-source=inspect.getsource(solver.newton)
-old='trial_internal, _, _, _ = assemble(elements, trial, dimension)'
-assert source.count(old)==1
-exec(compile(source.replace(old,'trial_internal, _, _, _ = trial_assemble(elements, trial, dimension)'),__file__,'exec'),
-     {**solver.__dict__,'trial_assemble':trial_assemble},namespace:={})
-solver.newton=namespace['newton']
+solver.newton=partial(newton,assemble=solver.assemble,trial_assemble=trial_assemble)
 
 def run(request):
     if request.get('dimensionality')!=3: raise ValueError('Explicit spatial P4 input required')
@@ -65,4 +49,11 @@ def run(request):
     answer['formulation']='spatial-director-hermite-arc/p6-experimental'
     answer['solver']['name']='JPN-P6 isolated experiment'
     answer['experimental_execution']='P6 director-Hermite length and first-order AD line search; unchanged acceptance gates'
+    controls={'material_curvature':full.MATERIAL_CURVATURE,'quadrature_points':8}
+    answer['experimental_controls']=controls
+    from jpn_structural.frame3d_model import input_hash
+    answer['experimental_input_sha256']=input_hash({'physical_request':request,'controls':controls})
+    if full.MATERIAL_CURVATURE:
+        answer['formulation']='spatial-director-material-curvature/p6-experimental'
+        answer['experimental_execution']='Opt-in material-curvature energy; assumed mean axial extension remains unverified'
     return answer

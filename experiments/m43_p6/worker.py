@@ -8,6 +8,9 @@ limits=memory_limit()
 sys.path.insert(0,str(ROOT))
 try:
     from experiments.m43_p6.pilot import run
+    if '--material-curvature' in sys.argv:
+        from experiments.m43_p6 import element
+        element.MATERIAL_CURVATURE=True
     raw=sys.stdin.buffer.read(500001)
     if len(raw)>500000: raise ValueError('INPUT_LIMIT')
     result=run(json.loads(raw))
