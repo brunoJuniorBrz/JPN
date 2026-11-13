@@ -30,3 +30,16 @@ def test_node_reversal_and_equivalent_section_axis_relabelling(monkeypatch):
     c=element.element_response(x,q,props[0],props[2],props[1],props[3],basis)
     assert abs(a['energy']-c['energy'])<1e-10
     np.testing.assert_allclose(a['physical_end_actions'],c['physical_end_actions'],rtol=1e-10,atol=1e-7)
+
+
+def test_local_rotation_boundary_remains_explicit(monkeypatch):
+    monkeypatch.setattr(element,'MATERIAL_CURVATURE',True)
+    x=np.array([[0.,0.,0.],[2.,0.,0.]])
+    q=np.zeros(12);q[4]=-.049;q[10]=.049
+    answer=element.element_response(x,q,2e8,2e4,7e4,8e3,np.eye(3))
+    assert np.isfinite(answer['energy'])
+    q[4]=-.051;q[10]=.051
+    from jpn_structural.frame3d_model import AnalysisError
+    with pytest.raises(AnalysisError) as error:
+        element.element_response(x,q,2e8,2e4,7e4,8e3,np.eye(3))
+    assert error.value.code=='SPATIAL_STRAIN_LIMIT'

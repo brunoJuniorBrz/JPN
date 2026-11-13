@@ -165,5 +165,8 @@ def main():
         source_sha256_lf={str(p.relative_to(ROOT)):sha(p) for folder in ('experiments/m43_p6','validation/m43-p6/reference_v2') for p in (ROOT/folder).glob('*.py')},**FLAGS)
     manifest['raw_file_sha256']={p.name:digest(p.read_bytes()) for p in directory.glob('*.json') if '-summary' not in p.name and not p.name.startswith('campaign-')}
     (directory/('campaign-'+(args.case or 'all')+'.json')).write_text(json.dumps(manifest,indent=2,allow_nan=False)+'\n',encoding='utf-8')
+    # Newly demonstrated reference precision is mandatory, independently of
+    # candidate pass/fail. Retain ALL raw evidence before failing the CI gate.
+    assert all(r['reference_qualification']['qualified'] for r in rows if r['case']!='torsion'), 'Additional reference qualification regressed; raw evidence retained'
 
 if __name__=='__main__':main()
