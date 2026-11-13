@@ -64,3 +64,11 @@ def test_tangent_detects_loss_of_stability_without_relaxing_gate():
         k=element_response(X,q,*PARAM)['tangent'][6:,6:]
         values.append(float(np.linalg.eigvalsh(k)[0]))
     assert values[0]>0 and values[1]<0
+
+def test_trial_assembly_has_no_tangent_and_matches_full_energy():
+    row=dict(coordinates=X,ea=PARAM[0],eiy=PARAM[1],eiz=PARAM[2],gj=PARAM[3],basis=PARAM[4],dofs=np.arange(12))
+    q=np.random.default_rng(31).normal(size=12)*1e-4
+    trial=trial_assemble([row],q,3)
+    np.testing.assert_allclose(trial[0],element_response(X,q,*PARAM)['force'],rtol=1e-12,atol=1e-8)
+    assert trial[1:] == (None,None,None)
+    with pytest.raises(ValueError): trial_assemble([row],q,2)

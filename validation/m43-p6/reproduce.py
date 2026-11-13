@@ -55,5 +55,6 @@ def main():
         source_sha256_lf={str(p.relative_to(ROOT)):sha(p) for p in (ROOT/'experiments/m43_p6').glob('*.py')},
         references='Archived OpenSees SO(3)/Kirchhoff P5; not newly generated OpenSees results',cases=cases,
         computed_structural_approval=False,fabrication_release=False,release_gate='NOT_READY_BLOCKED'),indent=2,allow_nan=False)+'\n',encoding='utf-8')
+    assert cases[0].get('strictly_verified_diagnostic') is True, 'Previously demonstrated cantilever regressed; evidence retained'
 
 if __name__=='__main__': main()

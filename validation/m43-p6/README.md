@@ -33,6 +33,35 @@ piloto. Resultados completos em `.tools/m43-p6/evidence.json`/artefatos da CI.
 O relatório distingue execução, critérios físicos e aprovação (sempre bloqueada).
 Falhas/TIMEOUT permanecem explícitos. CI verde desta campanha significa que a
 auditoria executou, não que os três benchmarks foram resolvidos.
+Ela exige preservar o balanço previamente demonstrado contra ambos os oráculos.
+
+## Resultado local e limites do diagnóstico
+
+`local-evidence.json` contém o resumo com hashes de fontes/critérios/referências.
+13 testes P6 e 12 regressões mecânicas P4 passaram. Na última campanha:
+- cantilever: critérios independentes OpenSees/Kirchhoff e refinamento passaram;
+- sway: erro relativo de refinamento de esforços 0,00936942, ainda > 1e-4;
+- spatial: TIMEOUT em 20 s; numa tentativa anterior executou em 18,697 s e
+  apresentou erro de refinamento dos esforços 0,00216243. Não declarar corrigido
+  o custo total, nem confundir TIMEOUT com divergência matemática de Newton;
+- torsion: refinamento passou, comparação física estrita falhou. Tentativas
+  anteriores foram recusadas por equilíbrio físico; esse resultado também é
+  preservado neste registro. A ordenação algébrica equivalente do integrando
+  alterou o caminho de arredondamento, sem alterar qualquer critério.
+
+A P5 identifica o componente angular Y em T0/ARM como governante: erro de
+aproximadamente 4,659e-10 rad contra piso ~1e-10, tanto para OpenSees quanto
+Kirchhoff. As duas referências concordam melhor que o candidato; não é válido
+culpar somente DOFs rotacionais aditivos ou a referência OpenSees. A causa
+constitutiva/discreta restante não foi demonstrada; composição do twist material,
+interpolação dos diretores e recuperação devem ser investigadas em conjunto.
+O funcional de comprimento corrigido não elimina essa divergência.
+
+Esta entrega NÃO conclui os três benchmarks nem homologa a formulação espacial.
+Próxima prioridade: equilíbrio torsional próximo de componentes nulas e medida
+de twist compatível com a curvatura material Kirchhoff, seguida de refinamento
+de esforços dos pórticos. Exigir validação independente antes de substituir a
+lei de energia; não corrigir forças a posteriori nem ajustar referências.
 
 Reprodução: `python -m pytest experiments/m43_p6 -q`.
 Execução isolada: `python -I experiments/m43_p6/worker.py`, entrada P4 no stdin,
