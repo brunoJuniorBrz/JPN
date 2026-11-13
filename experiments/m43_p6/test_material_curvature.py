@@ -39,15 +39,17 @@ def test_material_curvature_against_matrix_so3_derivative(length,stiffness):
     assert errors[1]<errors[0] and min(errors)<1e-7
 
 @pytest.mark.parametrize('h',[1e-4,1e-5,1e-6])
-def test_material_energy_gradient_hessian_sensitivity(monkeypatch,h):
+@pytest.mark.parametrize('length',[1.,2.,6.])
+def test_material_energy_gradient_hessian_sensitivity(monkeypatch,h,length):
     monkeypatch.setattr(element,'MATERIAL_CURVATURE',True)
+    coordinates=np.array([[0.,0.,0.],[length,0.,0.]])
     q=np.random.default_rng(73).normal(size=12)*1e-4
     d=np.random.default_rng(2).normal(size=12);d/=np.linalg.norm(d)
-    r=element.element_response(X,q,*PARAM)
-    a=element.energy_state(X,variables(q+h*d),*PARAM)[0]
-    b=element.energy_state(X,variables(q-h*d),*PARAM)[0]
-    ah=element.energy_state(X,variables(q+h/2*d),*PARAM)[0]
-    bh=element.energy_state(X,variables(q-h/2*d),*PARAM)[0]
+    r=element.element_response(coordinates,q,*PARAM)
+    a=element.energy_state(coordinates,variables(q+h*d),*PARAM)[0]
+    b=element.energy_state(coordinates,variables(q-h*d),*PARAM)[0]
+    ah=element.energy_state(coordinates,variables(q+h/2*d),*PARAM)[0]
+    bh=element.energy_state(coordinates,variables(q-h/2*d),*PARAM)[0]
     coarse=(a.g-b.g)/(2*h);fine=(ah.g-bh.g)/h
     # Remove the O(h²) CENTRAL-DIFFERENCE truncation term only in this
     # independent derivative check. No solver force or benchmark is corrected.

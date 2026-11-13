@@ -9,7 +9,7 @@ SciPy's independent 4th-order collocation solves the network simultaneously.
 """
 import time
 import numpy as np
-from scipy.integrate import solve_bvp
+from scipy.integrate import solve_bvp,simpson
 from scipy.spatial.transform import Rotation
 
 def benchmark_bases(model):
@@ -83,6 +83,15 @@ def solve(model,bases,tolerance=1e-10,initial_nodes=9,max_nodes=257):
     result=solve_bvp(ode,boundary,np.linspace(0,1,initial_nodes),np.zeros((count*13,initial_nodes)),
                      p=np.zeros(6*len(free)),tol=tolerance,bc_tol=min(tolerance,1e-13),max_nodes=max_nodes)
     if not result.success:raise RuntimeError('Independent network BVP refused: '+result.message)
+    # Quantify the unrepresented nonuniform axial strain of an assumed-mean
+    # element. This is a diagnostic, never an energy/force correction.
+    grid=np.linspace(0,1,513)
+    _,_,_,director,force,_,_,_=fields(result.sol(grid))
+    axial=np.sum(director*force,axis=2)
+    mean=simpson(axial,x=grid,axis=1)
+    variance=simpson((axial-mean[:,None])**2,x=grid,axis=1)
+    axial_study={m['id']:dict(minimum_axial_force_n=float(axial[i].min()),maximum_axial_force_n=float(axial[i].max()),
+        mean_axial_force_n=float(mean[i]),strain_variance_energy_j=float(.5*L[i]/EA[i]*variance[i])) for i,m in enumerate(members)}
     pose=np.zeros((len(nodes),6));pose[free]=result.p.reshape(-1,6);pose[:,:3]*=length_scale
     a=result.y[:,0].reshape(count,13);b=result.y[:,-1].reshape(count,13)
     scale=np.array([force_scale]*3+[moment_scale]*3)
@@ -102,4 +111,5 @@ def solve(model,bases,tolerance=1e-10,initial_nodes=9,max_nodes=257):
         free_wrench_residual=free_residual.tolist(),mesh_points=len(result.x),iterations=result.niter,
         maximum_collocation_residual=float(np.max(result.rms_residuals)),boundary_residual_max=float(np.max(abs(boundary(result.y[:,0],result.y[:,-1],result.p)))),
         requested_tolerance=tolerance,bases_global_to_local=bases,elapsed_seconds=time.perf_counter()-started,
+        nonuniform_axial_strain_diagnostic=axial_study,
         computed_structural_approval=False,fabrication_release=False,release_gate='NOT_READY_BLOCKED')

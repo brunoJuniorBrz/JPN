@@ -32,3 +32,33 @@ def test_continuous_circular_arc_under_pure_end_couple(length):
     np.testing.assert_allclose(r['nodes']['B']['translation_m'],expected,rtol=0,atol=1e-10)
     assert abs(r['strain_energy_j']-20**2*length/(2*2e4))<1e-10
     assert r['physical_support_equilibrium']['accepted']
+
+
+def test_anisotropic_network_covariance_in_arbitrary_global_orientation():
+    model=bar(2.,[300.,40.,-70.,4.,10.,-6.]);basis=network.benchmark_bases(model)
+    a=network.solve(model,basis,1e-10)
+    import copy
+    rotated=copy.deepcopy(model);G=Rotation.from_rotvec([.23,-.31,.17]);matrix=G.as_matrix()
+    for node in rotated['nodes']:
+        p=G.apply([node[k] for k in ('x_m','y_m','z_m')])
+        node.update(zip(('x_m','y_m','z_m'),p))
+    for load in rotated['nodal_loads']:
+        for keys in (('fx_n','fy_n','fz_n'),('mx_nm','my_nm','mz_nm')):
+            load.update(zip(keys,G.apply([load[k] for k in keys])))
+    frames={k:(np.array(v)@matrix.T).tolist() for k,v in basis.items()}
+    b=network.solve(rotated,frames,1e-10)
+    for node in ('A','B'):
+        for field in ('translation_m','reaction_force_n','reaction_moment_nm'):
+            np.testing.assert_allclose(b['nodes'][node][field],G.apply(a['nodes'][node][field]),rtol=1e-9,atol=1e-10)
+        np.testing.assert_allclose(b['nodes'][node]['orientation_matrix'],matrix@np.array(a['nodes'][node]['orientation_matrix'])@matrix.T,rtol=0,atol=1e-11)
+    assert abs(a['strain_energy_j']-b['strain_energy_j'])<1e-10
+    assert b['physical_support_equilibrium']['accepted']
+
+
+@pytest.mark.parametrize('mutation',['partial_support','release','invalid_basis'])
+def test_reference_refuses_unsupported_domain(mutation):
+    model=bar(2.,[0.,0.,-100.,0.,0.,0.]);basis=network.benchmark_bases(model)
+    if mutation=='partial_support':model['supports'][0]['restrained'][5]=False
+    if mutation=='release':model['members'][0]['release_end'][5]=True
+    if mutation=='invalid_basis':basis['AB'][1][1]=-1.
+    with pytest.raises(ValueError):network.solve(model,basis)

@@ -70,3 +70,20 @@ def run(request):
         answer['formulation']='spatial-director-material-curvature/p6-experimental'
         answer['experimental_execution']='Opt-in material-curvature energy; assumed mean axial extension remains unverified'
     return answer
+
+def single_mesh_study(request,subdivisions):
+    """Additional P6 study, NOT the historical paired-mesh contract.
+
+    Each raw mesh is executed once under the same guards; results are never
+    extrapolated. Historical request, geometry and acceptance remain intact.
+    """
+    if request.get('dimensionality')!=3 or subdivisions not in (2,3,4,6,8):raise ValueError('Explicit spatial refinement-study domain required')
+    data=solver.validate_request(request)
+    equilibrium_audits.clear();physical_attempts.clear()
+    mesh=solver.run_mesh(data,subdivisions,3)
+    from jpn_structural.frame3d_model import input_hash
+    controls={'material_curvature':full.MATERIAL_CURVATURE,'subdivisions':subdivisions,'paired_historical_acceptance':False}
+    return dict(schema_version='jpn.m43-p6-single-mesh-study/1',input_sha256=input_hash(request),
+        experimental_input_sha256=input_hash({'request':request,'controls':controls}),experimental_controls=controls,
+        candidate=mesh,equilibrium_audits=list(equilibrium_audits),newton_physical_attempts=list(physical_attempts),
+        production_enabled=False,computed_structural_approval=False,fabrication_release=False,release_gate='NOT_READY_BLOCKED')

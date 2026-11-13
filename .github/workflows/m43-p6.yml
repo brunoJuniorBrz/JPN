@@ -26,6 +26,15 @@ jobs:
       - run: python validation/m43-p6/reproduce.py
       - run: python validation/m43-p6/reproduce.py --material-curvature
       - run: python validation/m43-p6/reproduce.py --material-curvature --case sway --refined-sway
+      - run: python -m venv .tools/opensees
+      - if: runner.os == 'Windows'
+        run: .tools/opensees/Scripts/python -m pip install --require-hashes -r validation/m43-p2/requirements-opensees.lock
+      - if: runner.os != 'Windows'
+        run: .tools/opensees/bin/python -m pip install --require-hashes -r validation/m43-p2/requirements-opensees.lock
+      - if: runner.os == 'Windows'
+        run: python validation/m43-p6/reference_v2/campaign.py --opensees-python .tools/opensees/Scripts/python.exe
+      - if: runner.os != 'Windows'
+        run: python validation/m43-p6/reference_v2/campaign.py --opensees-python .tools/opensees/bin/python
       - uses: actions/upload-artifact@v4
         if: always()
         with:
