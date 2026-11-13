@@ -67,7 +67,6 @@ export function buildProfileScene(model: StructureModel, segments = 32) {
   const focusMaterial = new THREE.MeshStandardMaterial({ color: SELECTED, metalness: .35, roughness: .45, emissive: 0x7a3a05, emissiveIntensity: .35 }); resources.add(focusMaterial);
   const emptyGeometry = new THREE.BufferGeometry(); resources.add(emptyGeometry);
   const focusMesh = new THREE.Mesh(emptyGeometry, focusMaterial); focusMesh.visible = false; focusMesh.matrixAutoUpdate = false; focusMesh.renderOrder = 3; focusMesh.castShadow = true;
-  root.add(focusMesh);
   const lineTargets: THREE.LineSegments[] = [];
   for (const role of roles) for (const fallback of [false, true]) {
     const pieces = model.pieces.filter(p => p.role === role && simplified.has(p.id) === fallback && nodes.has(p.start) && nodes.has(p.end));
@@ -79,6 +78,7 @@ export function buildProfileScene(model: StructureModel, segments = 32) {
   }
   const markerGeometry = new THREE.BufferGeometry(), markerMaterial = new THREE.LineBasicMaterial({ color: 0xf15c17, depthTest: false });
   const marker = new THREE.Line(markerGeometry, markerMaterial); marker.visible = false; marker.renderOrder = 10; root.add(marker); resources.add(markerGeometry); resources.add(markerMaterial);
+  root.add(focusMesh); // after the marker: existing code addresses root.children by index
   const bounds = new THREE.Box3().setFromPoints([...nodes.values()]);
   solids.children.forEach(mesh => bounds.union((mesh as THREE.InstancedMesh).boundingBox!));
   let currentMode: ViewerMode = "structural", selected = "", disposed = false;
