@@ -19,6 +19,31 @@ async function seed(page: Page) {
   await expect(page.getByTestId("takeoff-totals")).toBeVisible();
 }
 
+for (const width of [375, 1440]) test(`Studio releases WebGL after repeated mounts at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 900 });
+  const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));
+  await seed(page);
+  const saved = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
+  let triangles: string | null = null;
+  for (let cycle = 0; cycle < 3; cycle++) {
+    await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+    const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
+    await expect(canvas).toHaveAttribute("data-environment", "procedural");
+    if (triangles === null) triangles = await canvas.getAttribute("data-triangles");
+    else await expect(canvas).toHaveAttribute("data-triangles", triangles);
+    const handle = await canvas.elementHandle();
+    await page.getByLabel("Acabamento do aço (visual)").selectOption(cycle % 2 ? "painted" : "galvanized");
+    await page.getByRole("button", { name: "Voltar às vistas 2D", exact: true }).click();
+    await expect(canvas).toHaveCount(0);
+    // forceContextLoss releases GPU resources as well as removing the DOM node.
+    await expect.poll(() => handle!.evaluate(element => (element as HTMLCanvasElement).getContext("webgl2")?.isContextLost())).toBe(true);
+    expect(await handle!.evaluate(element => element.isConnected)).toBe(false);
+    await handle!.dispose();
+  }
+  expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(saved);
+  expect(errors).toEqual([]);
+});
+
 for (const width of [375, 1440]) test.describe(`studio-next ${width}px`, () => {
   test.use({ isMobile: width === 375, hasTouch: width === 375, deviceScaleFactor: width === 375 ? 2 : 1 });
   test("view tools are visual only", async ({ page }) => {

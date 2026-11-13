@@ -4,12 +4,14 @@ import { expect, test } from "@playwright/test";
 for (const viewport of [375, 1440]) test(`preparação física é editável, persistente e segura em ${viewport}px`, async ({ page }) => {
   await page.setViewportSize({ width: viewport, height: 930 });
   const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));
+  let originalCanvas: import("@playwright/test").ElementHandle | null = null;
   await page.goto("/projetos/novo");
   await page.getByLabel("Largura (m)").fill("10");
   await page.getByLabel("Comprimento (m)").fill("20");
   await page.getByLabel("Altura (m)").fill("4");
   await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
   await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
+  originalCanvas = await page.getByRole("img", { name: "Modelo 3D da estrutura" }).elementHandle();
   await openEngineeringTool(page, "Preparar análise");
   await expect(page.getByTestId("physical-prep-status")).toContainText("Preparação em andamento");
   await expect(page.getByTestId("physical-prep-status")).toContainText("pendências");
@@ -49,6 +51,8 @@ for (const viewport of [375, 1440]) test(`preparação física é editável, per
   expect(stored.fz).toBe(-12); expect(stored.factor).toBe(1);
   expect(stored.connections).toHaveLength(1);
   expect(stored.connections[0]).toMatchObject({ start: "rigid", end: "pinned" });
+  // Editing preparation must retain the same WebGL canvas, even in a hidden tab.
+  expect(await originalCanvas!.evaluate(canvas => canvas.isConnected)).toBe(true);
   await page.reload();
   await openEngineeringTool(page, "Preparar análise");
   await expect(page.getByLabel("Elasticidade E (GPa)")).toHaveValue("200");
