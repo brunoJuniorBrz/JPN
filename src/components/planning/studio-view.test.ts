@@ -8,7 +8,7 @@ import { createQuickProject } from "@/domain/quick-project";
 import examples from "../../../examples/perfis-3d.json" with { type: "json" };
 import { buildProfileScene, roleColors } from "./profile-scene";
 import { pieceMatrix, scenePoint } from "./profile-geometry";
-import { presentationEnvelope, roofPlaneCorners } from "./presentation-scene";
+import { createPresentationScene, initialPresentationOptions, presentationEnvelope, roofPlaneCorners } from "./presentation-scene";
 import { reliefPolyline, reliefProfiles, ridgeCapGeometry, roofReliefGeometry, VISUAL_EAVE_OVERHANG_M } from "./roof-relief";
 import { createCameraRig } from "./studio-stage";
 import { reviewResultOverlay, type ResultOverlay } from "./studio-result-overlay";
@@ -134,6 +134,27 @@ describe("procedural roof relief is finite, bounded and visual only", () => {
     const apart = planes[1].map(v => v.clone().add(new THREE.Vector3(.5, 0, 0)));
     expect(ridgeCapGeometry(planes[0], apart, "trapezoidal")).toBeNull();
   });
+  it("disposes each replaced roof sheet and ridge cap exactly once", () => {
+    const view = createPresentationScene(envelope, initialPresentationOptions, () => {});
+    const disposeCounts = new Map<THREE.BufferGeometry, number>();
+    const observe = () => view.root.traverse(object => {
+      if (!(object instanceof THREE.Mesh) || !object.geometry?.userData.visualOnly) return;
+      const geometry = object.geometry as THREE.BufferGeometry;
+      if (disposeCounts.has(geometry)) return;
+      disposeCounts.set(geometry, 0);
+      geometry.addEventListener("dispose", () => disposeCounts.set(geometry, disposeCounts.get(geometry)! + 1));
+    });
+    observe();
+    for (const roofFinish of ["sandwich", "standing", "trapezoidal"] as const) {
+      view.update({ ...initialPresentationOptions, roofFinish });
+      observe();
+    }
+    view.dispose();
+    view.dispose(); // unmount/cleanup must also be idempotent
+    expect(disposeCounts.size).toBeGreaterThan(6);
+    for (const calls of disposeCounts.values()) expect(calls).toBe(1);
+  });
+
 });
 
 describe("cameras, projection and section planes", () => {
