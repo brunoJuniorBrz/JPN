@@ -4,21 +4,18 @@ import { interpolatePose, matchingOrthoHalfHeight, type CameraPose, type Project
 
 /** Lighting, environment and shadow rig shared by every Studio 3D mode.
  * Rendering only: it receives bounds and never touches the structural model. */
-export function createStudioStage(renderer: THREE.WebGLRenderer, scene: THREE.Scene, options: { shadows: boolean; shadowMapSize: number }) {
+export function createStudioStage(renderer: THREE.WebGLRenderer, scene: THREE.Scene, options: { shadows: boolean; shadowMapSize: number; environmentSize: number }) {
   const resources: { dispose(): void }[] = [];
   renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = options.shadows; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  // Small procedural studio environment: soft reflections for metal, no HDR download.
-  let environment: THREE.Texture | null = null;
-  try {
-    const pmrem = new THREE.PMREMGenerator(renderer), room = new RoomEnvironment();
-    environment = pmrem.fromScene(room, .04).texture; scene.environment = environment; scene.environmentIntensity = .5;
-    room.traverse(o => { if (o instanceof THREE.Mesh) { o.geometry.dispose(); (o.material as THREE.Material).dispose(); } });
-    pmrem.dispose(); resources.push(environment);
-  } catch { scene.environment = null; }
-  const ambient = new THREE.HemisphereLight(0xffffff, 0x8d978a, environment ? .95 : 2);
-  const sun = new THREE.DirectionalLight(0xfff4e6, environment ? 2.3 : 2.5);
-  const fill = new THREE.DirectionalLight(0xdfe9ff, environment ? .45 : 0);
+  // Small procedural studio environment: soft reflections for metal, no HDR
+  // download. It is generated AFTER the first frame (see loadEnvironment) so
+  // opening the viewer never waits for it, and at a reduced cube size.
+  let environment: THREE.Texture | null = null, environmentMs = 0;
+  // Without an environment the rig is the original flat technical lighting.
+  const ambient = new THREE.HemisphereLight(0xffffff, 0x8d978a, 1.7);
+  const sun = new THREE.DirectionalLight(0xfff4e6, 2.5);
+  const fill = new THREE.DirectionalLight(0xdfe9ff, .35);
   sun.castShadow = options.shadows; sun.shadow.mapSize.set(options.shadowMapSize, options.shadowMapSize);
   sun.shadow.bias = -.0004; sun.shadow.normalBias = .02; sun.shadow.radius = 3;
   scene.add(ambient, sun, sun.target, fill);
@@ -27,7 +24,23 @@ export function createStudioStage(renderer: THREE.WebGLRenderer, scene: THREE.Sc
   scene.add(ground); resources.push(groundMaterial, groundGeometry);
   let neutral = false;
   return {
-    ambient, sun, fill, ground, hasEnvironment: !!environment,
+    ambient, sun, fill, ground,
+    environmentMs: () => environmentMs,
+    /** Build the reflection environment once; returns false when unavailable. */
+    loadEnvironment() {
+      if (environment) return true;
+      const started = performance.now();
+      try {
+        const pmrem = new THREE.PMREMGenerator(renderer), room = new RoomEnvironment();
+        environment = pmrem.fromScene(room, .04, .1, 100, { size: options.environmentSize }).texture;
+        room.traverse(o => { if (o instanceof THREE.Mesh) { o.geometry.dispose(); (o.material as THREE.Material).dispose(); } });
+        pmrem.dispose(); resources.push(environment);
+        scene.environment = environment; scene.environmentIntensity = neutral ? .15 : .5;
+        ambient.intensity = .95; sun.intensity = 2.3; fill.intensity = .45;
+      } catch { scene.environment = null; environment = null; }
+      environmentMs = performance.now() - started;
+      return !!environment;
+    },
     /** Aim the sun and fit its shadow frustum to what is being shown. */
     frame(bounds: THREE.Box3, groundY: number, showGround: boolean) {
       const sphere = bounds.getBoundingSphere(new THREE.Sphere()), radius = Math.max(sphere.radius, 1), center = sphere.center;

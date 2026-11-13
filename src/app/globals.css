@@ -733,7 +733,8 @@ body { font-size: 16px; }
 .structure-viewer--expanded.studio .studio-stats, .structure-viewer--expanded.studio .presentation-viewport > .inspection-selected-piece { bottom:18px; }
 @media (max-width:640px) {
   .studio-camera { top:18px; right:8px; }
-  .studio-camera .inspection-view-buttons button, .studio-projection { min-height:44px; padding:0 8px; font-size:11px; }
+  .studio-camera .inspection-view-buttons button, .studio-projection { min-height:44px; min-width:44px; padding:0 6px; font-size:11px; }
+  .studio-camera .inspection-view-buttons { gap:0; }
   .studio .presentation-viewport > .presentation-hud { max-width:calc(100% - 16px); top:118px; }
   .studio .presentation-viewport > .inspection-selected-piece { position:static; width:auto; margin:0 0 10px; }
   .studio-stats { bottom:18px; left:8px; }

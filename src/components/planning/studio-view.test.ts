@@ -11,6 +11,7 @@ import { pieceMatrix, scenePoint } from "./profile-geometry";
 import { presentationEnvelope, roofPlaneCorners } from "./presentation-scene";
 import { reliefPolyline, reliefProfiles, ridgeCapGeometry, roofReliefGeometry, VISUAL_EAVE_OVERHANG_M } from "./roof-relief";
 import { createCameraRig } from "./studio-stage";
+import { reviewResultOverlay, type ResultOverlay } from "./studio-result-overlay";
 import { easeInOut, finishedRoleColor, interpolatePose, matchingOrthoHalfHeight, sectionPlane, steelFinishes, steelFinishMaterial, studioViews, viewPose } from "./studio-view";
 
 function project() {
@@ -185,5 +186,24 @@ describe("cameras, projection and section planes", () => {
     const range = sectionPlane(bounds, { axis: "y", fraction: 0, flipped: false }).rangeMm; expect(range[0]).toBeCloseTo(0, 12); expect(range[1]).toBe(20000);
     expect(sectionPlane(bounds, { axis: "x", fraction: 7, flipped: false }).positionMm).toBe(10000); // clamped
     expect(bounds.min.toArray()).toEqual([0, 0, -20]); // bounds are never mutated
+  });
+});
+
+describe("future result overlays must be traced before anything is drawn", () => {
+  const hash = "a".repeat(64), model = { pieces: [{ id: "P1" }, { id: "P2" }] };
+  const overlay = (): ResultOverlay => ({ schema_version: "jpn.studio-result-overlay/1", kind: "axial", units: "N", pieces: [{ pieceId: "P1", value: 1200 }],
+    binding: { inputSha256: hash, resultSha256: "b".repeat(64), combinationId: "ULS-1", solver: { name: "PyNiteFEA", version: "3.2.1" } }, computedStructuralApproval: false, fabricationRelease: false });
+  it("accepts only a fully bound overlay for the displayed revision", () => {
+    expect(reviewResultOverlay(overlay(), model, hash)).toEqual([]);
+    expect(reviewResultOverlay(overlay(), model, "c".repeat(64)).map(i => i.code)).toEqual(["OVERLAY_STALE"]);
+  });
+  it("refuses unbound, orphan, duplicate, non-finite or approving overlays", () => {
+    const codes = (change: (o: ResultOverlay) => void) => { const o = overlay(); change(o); return reviewResultOverlay(o, model, hash).map(i => i.code); };
+    expect(codes(o => { o.binding.inputSha256 = ""; })).toContain("OVERLAY_UNBOUND");
+    expect(codes(o => { o.pieces.push({ pieceId: "P9", value: 1 }); })).toContain("OVERLAY_ORPHAN_PIECE");
+    expect(codes(o => { o.pieces.push({ pieceId: "P1", value: 2 }); })).toContain("OVERLAY_DUPLICATE_PIECE");
+    expect(codes(o => { o.pieces[0].value = NaN; })).toContain("OVERLAY_NONFINITE");
+    expect(codes(o => { o.binding.combinationId = " "; })).toContain("OVERLAY_PROVENANCE");
+    expect(codes(o => { (o as { computedStructuralApproval: boolean }).computedStructuralApproval = true; })).toContain("OVERLAY_APPROVAL");
   });
 });

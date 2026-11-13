@@ -79,12 +79,12 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     // Shadows cost one extra on-demand pass. Keep them unless the device is
     // limited AND the model is large.
     const shadows = !(quality.low && model.pieces.length > 600);
-    const stage = createStudioStage(renderer, scene, { shadows, shadowMapSize: quality.low ? 1024 : 2048 });
+    const stage = createStudioStage(renderer, scene, { shadows, shadowMapSize: quality.low ? 1024 : 2048, environmentSize: quality.low ? 64 : 128 });
     const reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
     const duration = reducedMotion ? 0 : TRANSITION_MS;
     const profiles = buildProfileScene(model, quality.segments); scene.add(profiles.root);
     canvas.dataset.quality = quality.low ? "reduced" : "standard";
-    canvas.dataset.shadows = shadows ? "on" : "off"; canvas.dataset.environment = stage.hasEnvironment ? "procedural" : "none";
+    canvas.dataset.shadows = shadows ? "on" : "off"; canvas.dataset.environment = "pending";
     canvas.dataset.solidCount = String(profiles.solidCount); canvas.dataset.fallbackCount = String(profiles.fallbackCount);
     canvas.dataset.framing = "whole-structure"; canvas.dataset.projection = "perspective";
     canvas.dataset.finish = "painted"; canvas.dataset.ghost = "false"; canvas.dataset.sectionAxis = "";
@@ -176,13 +176,23 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const cutOutline = new THREE.LineLoop(cutGeometry, cutMaterial); cutOutline.visible = false; cutOutline.renderOrder = 11; scene.add(cutOutline);
     resources.push(cutGeometry, cutMaterial);
     let activePlane: THREE.Plane | null = null;
+    // Shadow maps ignore renderer-level planes; clip the bar materials too so a
+    // removed half never leaves a shadow behind.
+    renderer.localClippingEnabled = true;
+    const clipMaterials = (plane: THREE.Plane | null) => {
+      for (const material of [profiles.material, profiles.focusMesh.material as THREE.Material]) {
+        const had = !!material.clippingPlanes?.length;
+        material.clippingPlanes = plane ? [plane] : null; material.clipShadows = !!plane;
+        if (had !== !!plane) material.needsUpdate = true;
+      }
+    };
     applySection.current = value => {
       if (!value || activeMode === "finished") {
-        activePlane = null; renderer.clippingPlanes = []; cutOutline.visible = false;
+        activePlane = null; renderer.clippingPlanes = []; clipMaterials(null); cutOutline.visible = false;
         canvas.dataset.sectionAxis = ""; canvas.dataset.sectionPositionMm = ""; render(); return;
       }
       const result = sectionPlane(bounds, value), pad = span * .04, p = result.positionMm / 1000;
-      activePlane = result.plane; renderer.clippingPlanes = [activePlane];
+      activePlane = result.plane; renderer.clippingPlanes = [activePlane]; clipMaterials(activePlane);
       const lo = bounds.min.clone().addScalar(-pad), hi = bounds.max.clone().addScalar(pad);
       // Keep the outline a hair inside the kept side so the plane never clips it.
       const inside = activePlane.normal.clone().multiplyScalar(.002);
@@ -209,7 +219,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       activeMode = value;
       profiles.setMode(value === "finished" ? "profiles" : value);
       grid.visible = value !== "finished";
-      if (value === "finished") { activePlane = null; renderer.clippingPlanes = []; cutOutline.visible = false; canvas.dataset.sectionAxis = ""; }
+      if (value === "finished") { activePlane = null; renderer.clippingPlanes = []; clipMaterials(null); cutOutline.visible = false; canvas.dataset.sectionAxis = ""; }
       canvas.dataset.mode = value; canvas.dataset.ghost = profiles.ghostActive() ? "true" : "false";
       if(environment) environment.root.visible = value === "finished";
       lightScene();
@@ -297,7 +307,13 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("webglcontextlost", lost);
     renderer.domElement.addEventListener("wheel", wheel, { passive: true });
     resize();
-    return () => { disposed = true; rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
+    // Reflections arrive after the first frame so opening never waits for them.
+    const environmentTimer = window.setTimeout(() => {
+      if (disposed) return;
+      canvas.dataset.environment = stage.loadEnvironment() ? "procedural" : "none";
+      canvas.dataset.environmentMs = stage.environmentMs().toFixed(0); render();
+    }, 60);
+    return () => { disposed = true; window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
   }, [model, gridSpacingM, envelope, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
