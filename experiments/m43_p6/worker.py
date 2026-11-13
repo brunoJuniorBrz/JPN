@@ -17,6 +17,8 @@ try:
     out=dict(status='diagnostic',execution=limits,diagnostic=result)
 except Exception as e:
     out=dict(status='refused',error=dict(code=getattr(e,'code',type(e).__name__),message=str(e)))
+    pilot=sys.modules.get('experiments.m43_p6.pilot')
+    out['equilibrium_audits']=getattr(pilot,'equilibrium_audits',[])
 body=json.dumps(out,allow_nan=False).encode()
 if len(body)>2000000: raise ValueError('OUTPUT_LIMIT')
 sys.stdout.buffer.write(body)

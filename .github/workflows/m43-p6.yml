@@ -24,6 +24,7 @@ jobs:
       - run: python -m pytest experiments/m43_p6 -q
       - run: python validation/m43-p6/reproduce.py
       - run: python validation/m43-p6/reproduce.py --material-curvature
+      - run: python validation/m43-p6/reproduce.py --material-curvature --case sway --refined-sway
       - uses: actions/upload-artifact@v4
         if: always()
         with:

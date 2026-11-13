@@ -31,6 +31,13 @@ energy=full
 solver=private('frame',ROOT/'engine/jpn_structural/p4_frame.py')
 solver.spatial_element=full.element_response
 solver.energy_state=full.energy_state
+equilibrium_audits=[]
+historical_equilibrium=solver.equilibrium
+def recorded_equilibrium(data,nodes,loads):
+    answer=historical_equilibrium(data,nodes,loads)
+    equilibrium_audits.append({'node_count':len(data['nodes']),**answer})
+    return answer
+solver.equilibrium=recorded_equilibrium
 
 def trial_assemble(elements,q,dimension):
     if dimension!=3: raise ValueError('P6 is spatial only; never project to a plane')
@@ -43,6 +50,7 @@ def trial_assemble(elements,q,dimension):
 solver.newton=partial(newton,assemble=solver.assemble,trial_assemble=trial_assemble)
 
 def run(request):
+    equilibrium_audits.clear()
     if request.get('dimensionality')!=3: raise ValueError('Explicit spatial P4 input required')
     answer=solver.analyze_p4_frame(request)
     answer['schema_version']='jpn.m43-p6-experimental/1'
@@ -51,6 +59,9 @@ def run(request):
     answer['experimental_execution']='P6 director-Hermite length and first-order AD line search; unchanged acceptance gates'
     controls={'material_curvature':full.MATERIAL_CURVATURE,'quadrature_points':8}
     answer['experimental_controls']=controls
+    from .diagnostics import refinement_components
+    answer['governing_refinement_components']=refinement_components(answer)
+    answer['equilibrium_audits']=list(equilibrium_audits)
     from jpn_structural.frame3d_model import input_hash
     answer['experimental_input_sha256']=input_hash({'physical_request':request,'controls':controls})
     if full.MATERIAL_CURVATURE:
