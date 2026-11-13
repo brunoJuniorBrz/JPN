@@ -30,14 +30,34 @@ export function createStudioStage(renderer: THREE.WebGLRenderer, scene: THREE.Sc
     loadEnvironment() {
       if (environment) return true;
       const started = performance.now();
+      let pmrem: THREE.PMREMGenerator | null = null;
+      let room: RoomEnvironment | null = null;
       try {
-        const pmrem = new THREE.PMREMGenerator(renderer), room = new RoomEnvironment();
-        environment = pmrem.fromScene(room, .04, .1, 100, { size: options.environmentSize }).texture;
-        room.traverse(o => { if (o instanceof THREE.Mesh) { o.geometry.dispose(); (o.material as THREE.Material).dispose(); } });
-        pmrem.dispose(); resources.push(environment);
-        scene.environment = environment; scene.environmentIntensity = neutral ? .15 : .5;
+        pmrem = new THREE.PMREMGenerator(renderer);
+        room = new RoomEnvironment();
+        const generated = pmrem.fromScene(room, .04, .1, 100, { size: options.environmentSize }).texture;
+        resources.push(generated);
+        environment = generated;
+        scene.environment = generated; scene.environmentIntensity = neutral ? .15 : .5;
         ambient.intensity = .95; sun.intensity = 2.3; fill.intensity = .45;
-      } catch { scene.environment = null; environment = null; }
+      } catch {
+        // Keep technical lighting if WebGL cannot generate the PMREM.
+        scene.environment = null; environment = null;
+      } finally {
+        // Failed PMREM generation must not leak its temporary room or generator.
+        // Three.js environments may share geometries/materials between meshes.
+        if (room) {
+          const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>();
+          room.traverse(o => {
+            if (!(o instanceof THREE.Mesh)) return;
+            geometries.add(o.geometry);
+            for (const material of Array.isArray(o.material) ? o.material : [o.material]) materials.add(material);
+          });
+          geometries.forEach(g => g.dispose());
+          materials.forEach(m => m.dispose());
+        }
+        pmrem?.dispose();
+      }
       environmentMs = performance.now() - started;
       return !!environment;
     },
