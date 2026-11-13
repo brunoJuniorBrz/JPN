@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { openEngineeringTool } from "./result-tabs";
 import { mkdirSync } from "node:fs";
 import { planningExample } from "../../src/domain/planning-example";
 import { emptySnapshot } from "../../src/domain/models";
@@ -41,6 +42,13 @@ for (const width of [375, 1440]) test(`Studio releases WebGL after repeated moun
     await handle!.dispose();
   }
   expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(saved);
+  await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+  const originalCanvas = await page.getByRole("img", { name: "Modelo 3D da estrutura" }).elementHandle();
+  await openEngineeringTool(page, "Preparar análise");
+  await page.getByLabel("Classe do aço").fill("Estudo M52");
+  await page.getByLabel("Elasticidade E (GPa)").fill("200");
+  expect(await originalCanvas!.evaluate(element => element.isConnected)).toBe(true);
+  await originalCanvas!.dispose();
   expect(errors).toEqual([]);
 });
 
