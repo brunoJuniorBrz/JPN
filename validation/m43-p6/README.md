@@ -1,5 +1,8 @@
 # M43-P6 — piloto isolado de consistência espacial
 
+Continuação no mesmo PR: [curvatura material, ablação, resultados e pendências](CONTINUACAO.md).
+Os resultados abaixo registram a primeira etapa; a continuação mantém esse histórico.
+
 Base `main` 4301ab20fdb02898a9d0a03d25d8ab23d39321c4, ancestral dos PRs
 80–83. Não modifica arquivos do motor, C1/C2/M51 ou frontend. Nenhum endpoint.
 Fontes P4 são conferidos pelos hashes LF congelados na P5 antes da execução.

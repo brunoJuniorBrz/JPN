@@ -1,7 +1,7 @@
 """Static experimental Newton; historical criteria unchanged."""
 import math
 import numpy as np
-from scipy.linalg import solve,eigh
+from scipy.linalg import cho_factor,cho_solve,eigh
 from jpn_structural.frame3d_model import fail
 from jpn_structural.corotational_planar import audit_tangent
 
@@ -29,8 +29,11 @@ def newton(elements, force, free, initial, span, dimension, *, assemble, trial_a
             scale = np.sqrt(np.diag(k)[free])
             scaled = k[np.ix_(free, free)]/scale[:, None]/scale[None, :]
             rhs = -residual[free]/scale
-            delta = solve(scaled, rhs, assume_a="pos")
-            delta += solve(scaled, rhs-scaled@delta, assume_a="pos")
+            # Same SPD equation and residual correction; factor once for the
+            # two RHS. No tangent audit, iteration or acceptance gate skipped.
+            factorization=cho_factor(scaled)
+            delta = cho_solve(factorization, rhs)
+            delta += cho_solve(factorization, rhs-scaled@delta)
             direction = np.zeros(len(q))
             direction[free] = delta/scale
             for backtrack in range(9):
