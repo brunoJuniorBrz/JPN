@@ -52,7 +52,12 @@ def ancestor(a, b):
 # change, or any further edit to these files, still fails until re-reviewed.
 # PR #85 (M41): facade loads duplicated under unrelated IDs are rejected.
 # PR M41-P5: piecewise facade pressure profile (simple-support transmission).
+# M44-P1: NBR 14762 audit (9.8.4 unblocked with Annex C MRd, 9.6.3 added) and procedure registry.
 REVIEWED_AMENDMENTS = {
+    "engine/jpn_structural/coldformed_design.py": "52a99c1e8c828af679792379b645691328f495af",
+    "engine/tests/test_coldformed_design.py": "3ffd991d47f070b881c9024ea69b61154d7172c4",
+    "src/domain/normative-procedures.ts": "ae20218d530ae7ab9e9a09ff3365140b1e53016b",
+    "src/domain/resistance-assessment.ts": "25e1873728e0140a89356248ece940c2a391f83f",
     "src/domain/declared-facade-traction-contract.ts": "d735af78acc47b75f7c210e2798d9461a64d06f5",
     "src/domain/declared-facade-traction.ts": "b5c9f38aa83922a913967a1bb902997095151a7f",
     "src/domain/facade-solver-load-audit.ts": "9f8e2ac7bc79b4b79cad56ee5d57a730b93f0da2",

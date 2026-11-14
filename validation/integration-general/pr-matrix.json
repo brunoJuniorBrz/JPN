@@ -7671,8 +7671,8 @@
         {
           "path": "engine/jpn_structural/coldformed_design.py",
           "source_blob": "6f0ef940abded38516bffedbcb309657f4456022",
-          "candidate_blob": "6f0ef940abded38516bffedbcb309657f4456022",
-          "identical_git_blob": true
+          "candidate_blob": "52a99c1e8c828af679792379b645691328f495af",
+          "identical_git_blob": false
         },
         {
           "path": "engine/jpn_structural/coldformed_geometry.py",
@@ -7755,8 +7755,8 @@
         {
           "path": "src/domain/resistance-assessment.ts",
           "source_blob": "45503ca90824fff8546f3c04660ba05053a52f76",
-          "candidate_blob": "45503ca90824fff8546f3c04660ba05053a52f76",
-          "identical_git_blob": true
+          "candidate_blob": "25e1873728e0140a89356248ece940c2a391f83f",
+          "identical_git_blob": false
         },
         {
           "path": "src/domain/resistance-integrity.test.ts",
@@ -8871,7 +8871,7 @@
         {
           "path": "engine/jpn_structural/coldformed_design.py",
           "source_blob": "0863dc119d9531fc67774f5c906782402c201a2e",
-          "candidate_blob": "6f0ef940abded38516bffedbcb309657f4456022",
+          "candidate_blob": "52a99c1e8c828af679792379b645691328f495af",
           "identical_git_blob": false
         },
         {
@@ -8985,8 +8985,8 @@
         {
           "path": "engine/tests/test_coldformed_design.py",
           "source_blob": "3126354ab983b054b58267815edb8425f2e3995b",
-          "candidate_blob": "3126354ab983b054b58267815edb8425f2e3995b",
-          "identical_git_blob": true
+          "candidate_blob": "3ffd991d47f070b881c9024ea69b61154d7172c4",
+          "identical_git_blob": false
         },
         {
           "path": "engine/tests/test_global_buckling.py",
@@ -9237,8 +9237,8 @@
         {
           "path": "src/domain/normative-procedures.ts",
           "source_blob": "d807323b074ddd5ad0dcb3511a3e00a40900af90",
-          "candidate_blob": "d807323b074ddd5ad0dcb3511a3e00a40900af90",
-          "identical_git_blob": true
+          "candidate_blob": "ae20218d530ae7ab9e9a09ff3365140b1e53016b",
+          "identical_git_blob": false
         },
         {
           "path": "src/domain/property-precision.ts",
@@ -9255,7 +9255,7 @@
         {
           "path": "src/domain/resistance-assessment.ts",
           "source_blob": "c029d41de1f7190acd4d501f7478f333c90dc7ae",
-          "candidate_blob": "45503ca90824fff8546f3c04660ba05053a52f76",
+          "candidate_blob": "25e1873728e0140a89356248ece940c2a391f83f",
           "identical_git_blob": false
         },
         {
