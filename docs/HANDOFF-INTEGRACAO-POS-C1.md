@@ -116,3 +116,13 @@ Faixas de arquivo para evitar conflito: somente quem integra edita `validation/i
 Inteiramente ancestrais da `main` (`git merge-base --is-ancestor`), podem ser fechados apontando o merge #75/#84: #56, #58, #59, #61, #64, #67, #68, #69, #71, #72, #73, #74, #77, #78, #79, #80, #81, #82, #83. O #79 tem o mesmo head (`2b009d2`) do #75.
 
 Com commits fora da main, mas já classificados como equivalentes em `audit.py` (`NOTES`): #54, #55, #57, #62, #63, #65, #66, #70, #76.
+
+## 6. Pendências registradas (14/11/2026, 15h40)
+
+- **C1 é correção física, não da CI.** `fix/c1-z-up-local-axes-mixed3d-v3` (`2f21553`): o PyNite 3.2.1 monta eixos locais para Y vertical; o JPN usa Z. No contrato `/2`, barras inclinadas fora do plano XZ ou em diagonal na planta podem ser analisadas no eixo fraco (ex. da própria C1: −8,52 mm contra −1,07 mm da solução fechada). Sem conflito com a `main` atual nem com `prep/m41-m42-rebased-on-main`. Sem PR aberto. CI: 2 testes recusados de propósito (`continuous-demands`, `whole-piece-deflection`).
+- **C2** (`fix/c2-secondary-fixity-stability-audit`, `dc33aa3`): CI verde, base antiga (`1a7002b`), merge limpo com a `main`, sem PR.
+- **UI ainda emite `/1` e `/2`.** Após a C1, análises com barras ambíguas serão recusadas até a UI emitir `/3`. A condição "após merge da M50" do doc da C1 já foi cumprida (#87).
+- **Reexecutar #101, #102 e #103 depois de C1 + `/3`.** O teste real NBR 6120 → 8681 → PyNite → NBR 8800 do #103 (`7eeda56`) rodou pelo contrato `/2`. A matriz peça × combinação precisa ser recalculada com `/3` antes de servir de referência.
+- **Pilha #101 → #102 → #103 ainda empilhada sobre #99.** Rebase sobre `prep/m41-m42-rebased-on-main` pendente; conflito esperado só em `validation/integration-general/audit.py` (emendas revisadas do M44-P1 em `477462c` precisam ser portadas para o `audit.py` da `main`, não descartadas).
+- **CI da `main`** continua vermelha até o patch da seção 0.
+- **19 PRs contidos na `main`** (seção 5) continuam abertos.
