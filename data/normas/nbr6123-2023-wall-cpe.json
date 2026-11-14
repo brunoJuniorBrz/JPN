@@ -1,0 +1,33 @@
+{
+  "schema_version": "jpn.nbr6123-wall-coefficients/1",
+  "revision": "M41-P4-1",
+  "standard": "ABNT NBR 6123",
+  "edition": "2023-original",
+  "errata": "not-verified",
+  "transcription": "Lido por inspeção visual das imagens do PDF escaneado fornecido (renderização a 220 dpi); cada célula carregada é legível. Valores das paredes laterais (A1/B1, A2/B2, C1/D1, C2/D2) e cpe médio NÃO foram carregados: a zona exige geometria de fachada subdividida ainda não integrada.",
+  "table6": {
+    "item": "6.1.1 Tabela 6",
+    "documentPage": 20,
+    "pdfPage": 32,
+    "applicability": "Planta retangular a x b (b menor dimensão), paredes verticais de arestas vivas; 1<=a/b<=4; 0<h/b<=6; a/b entre 3/2 e 2 interpola linearmente (Nota 2).",
+    "heightRows": [
+      {"id": "H1", "hOverB": "h/b<=1/2",
+       "bands": {"1-3/2": {"C": 0.7, "D": -0.4, "A": 0.7, "B": -0.4}, "2-4": {"C": 0.7, "D": -0.3, "A": 0.7, "B": -0.5}}},
+      {"id": "H2", "hOverB": "1/2<h/b<=3/2",
+       "bands": {"1-3/2": {"C": 0.7, "D": -0.5, "A": 0.7, "B": -0.5}, "2-4": {"C": 0.7, "D": -0.3, "A": 0.7, "B": -0.6}}},
+      {"id": "H3", "hOverB": "3/2<h/b<=6",
+       "bands": {"1-3/2": {"C": 0.8, "D": -0.6, "A": 0.8, "B": -0.6}, "2-4": {"C": 0.8, "D": -0.3, "A": 0.8, "B": -0.6}}}
+    ],
+    "columns": {"alpha0": {"windward": "C", "leeward": "D"}, "alpha90": {"windward": "A", "leeward": "B"}},
+    "alphaRule": "alpha=0: vento perpendicular à parede de comprimento b (face C); alpha=90: perpendicular à parede de comprimento a (face A)."
+  },
+  "internalPressure": {
+    "item": "6.3.2.1 a) e b)",
+    "documentPage": 43,
+    "pdfPage": 55,
+    "applicability": "Edificação com cobertura impermeável (6.3.2.1); paredes cujo índice de permeabilidade foi determinado pelo responsável.",
+    "twoOppositeFacesEquallyPermeable": {"windPerpendicularToPermeableFace": 0.2, "windPerpendicularToImpermeableFace": -0.3},
+    "fourFacesEquallyPermeable": {"alternatives": [-0.3, 0], "rule": "considerar o valor mais nocivo: ambos gerados como cenários exclusivos"}
+  },
+  "blocked": ["paredes paralelas ao vento (zonas A1/A2/A3, B1/B2/B3, C1/C2, D1/D2)", "abertura dominante 6.3.2.1 c)", "método detalhado 6.3.3", "efeito de vizinhança 6.4", "alta turbulência 6.1.3"]
+}
