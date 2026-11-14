@@ -1,0 +1,500 @@
+{
+ "platform": "Windows-10-10.0.19045-SP0",
+ "python": "3.12.16",
+ "research_timeout_seconds": 900,
+ "reference": "validation/m43-p6/reference-v2-evidence.json (spatial, qualified=True), read-only",
+ "reference_max_uncertainty": {
+  "translation_m": 1.8846168824022495e-11,
+  "rotation_rad": 2.8201024595703633e-13,
+  "reaction_force_n": 1.753162482949567e-06,
+  "reaction_moment_nm": 1.3747353979867793e-06,
+  "physical_end_actions": 2.1869062612302667e-06,
+  "strain_energy_j": 4.192532688935967e-08
+ },
+ "meshes": [
+  {
+   "subdivisions": 2,
+   "all_bounds_met": false,
+   "physical_equilibrium_verified": true,
+   "max_absolute_error": {
+    "translation_m": 1.4760626129142404e-08,
+    "rotation_rad": 1.1236537619146222e-09,
+    "reaction_force_n": 0.0016293087974190712,
+    "reaction_moment_nm": 0.0027316660571159446,
+    "physical_end_actions": 0.004458025440158053,
+    "strain_energy_j": 4.745048532583951e-05
+   },
+   "max_utilization": {
+    "translation_m": 68.67397740295195,
+    "rotation_rad": 9.2423217993849,
+    "reaction_force_n": 0.6844143978782534,
+    "reaction_moment_nm": 19.8307549150353,
+    "physical_end_actions": 46.26025748524242,
+    "strain_energy_j": 14.85571922559151
+   },
+   "orientation_max_utilization": 9.242336315659214,
+   "seconds": 3.0215868999948725
+  },
+  {
+   "subdivisions": 3,
+   "all_bounds_met": false,
+   "physical_equilibrium_verified": true,
+   "max_absolute_error": {
+    "translation_m": 3.3219953686752096e-09,
+    "rotation_rad": 2.2753287424212391e-10,
+    "reaction_force_n": 0.00032969207677524537,
+    "reaction_moment_nm": 0.000511497276420414,
+    "physical_end_actions": 0.0009014714958084369,
+    "strain_energy_j": 1.066236021429745e-05
+   },
+   "max_utilization": {
+    "translation_m": 15.523482275117063,
+    "rotation_rad": 1.8733619173638338,
+    "reaction_force_n": 0.17357155447205055,
+    "reaction_moment_nm": 3.720474769379835,
+    "physical_end_actions": 9.362852421921644,
+    "strain_energy_j": 3.34832151758321
+   },
+   "orientation_max_utilization": 1.8733764336381482,
+   "seconds": 3.484331600018777
+  },
+  {
+   "subdivisions": 4,
+   "all_bounds_met": false,
+   "physical_equilibrium_verified": true,
+   "max_absolute_error": {
+    "translation_m": 1.096508526988657e-09,
+    "rotation_rad": 7.267300216468042e-11,
+    "reaction_force_n": 0.00010557600762695074,
+    "reaction_moment_nm": 0.00015892635451564274,
+    "physical_end_actions": 0.00028779426736491587,
+    "strain_energy_j": 3.5175435328937965e-06
+   },
+   "max_utilization": {
+    "translation_m": 5.182583087696267,
+    "rotation_rad": 0.5999219157168133,
+    "reaction_force_n": 0.07649063793939963,
+    "reaction_moment_nm": 1.1620985881028665,
+    "physical_end_actions": 2.99626902959316,
+    "strain_energy_j": 1.1134088425165376
+   },
+   "orientation_max_utilization": 0.5999364322140176,
+   "seconds": 3.8058590999571607
+  },
+  {
+   "subdivisions": 6,
+   "all_bounds_met": false,
+   "physical_equilibrium_verified": true,
+   "max_absolute_error": {
+    "translation_m": 2.2335079532392887e-10,
+    "rotation_rad": 1.4487970881587459e-11,
+    "reaction_force_n": 2.1253828890621662e-05,
+    "reaction_moment_nm": 3.109067438344937e-05,
+    "physical_end_actions": 5.7345092955074506e-05,
+    "strain_energy_j": 7.162415585071358e-07
+   },
+   "max_utilization": {
+    "translation_m": 1.125387192968218,
+    "rotation_rad": 0.12145615606592217,
+    "reaction_force_n": 0.03899999138621037,
+    "reaction_moment_nm": 0.23447848996543422,
+    "physical_end_actions": 0.6055070568709862,
+    "strain_energy_j": 0.23715608916862563
+   },
+   "orientation_max_utilization": 0.1214706725631264,
+   "seconds": 4.647925499943085
+  },
+  {
+   "subdivisions": 8,
+   "all_bounds_met": true,
+   "physical_equilibrium_verified": true,
+   "max_absolute_error": {
+    "translation_m": 7.157688374295756e-11,
+    "rotation_rad": 4.615031528589983e-12,
+    "reaction_force_n": 6.867267074994743e-06,
+    "reaction_moment_nm": 9.836851859290618e-06,
+    "physical_end_actions": 1.8271330077368475e-05,
+    "strain_energy_j": 2.2950872491378504e-07
+   },
+   "max_utilization": {
+    "translation_m": 0.4201578069566899,
+    "rotation_rad": 0.04026923696750888,
+    "reaction_force_n": 0.03168262001111552,
+    "reaction_moment_nm": 0.08025335463406619,
+    "physical_end_actions": 0.23281829442729646,
+    "strain_energy_j": 0.08490510391938767
+   },
+   "orientation_max_utilization": 0.040283753241823476,
+   "seconds": 6.233764700009488
+  },
+  {
+   "subdivisions": 16,
+   "all_bounds_met": true,
+   "physical_equilibrium_verified": true,
+   "max_absolute_error": {
+    "translation_m": 4.604193328677786e-12,
+    "rotation_rad": 2.9819625501498193e-13,
+    "reaction_force_n": 4.858884494751692e-07,
+    "reaction_moment_nm": 6.368652520905016e-07,
+    "physical_end_actions": 1.1971281992373406e-06,
+    "strain_energy_j": 1.4766367684160286e-08
+   },
+   "max_utilization": {
+    "translation_m": 0.10896394729784531,
+    "rotation_rad": 0.004771140242088828,
+    "reaction_force_n": 0.029455852428260945,
+    "reaction_moment_nm": 0.014176801212652334,
+    "physical_end_actions": 0.23772230548762435,
+    "strain_energy_j": 0.017733273283713817
+   },
+   "orientation_max_utilization": 0.004785656739293061,
+   "seconds": 15.467325399979018
+  }
+ ],
+ "convergence": {
+  "translation_m": {
+   "maximum_absolute_errors": [
+    1.4760626129142404e-08,
+    3.3219953686752096e-09,
+    1.096508526988657e-09,
+    2.2335079532392887e-10,
+    7.157688374295756e-11,
+    4.604193328677786e-12
+   ],
+   "observed_orders": [
+    3.6782391186560957,
+    3.8529844498440307,
+    3.9242408381949234,
+    3.9556564296590566,
+    3.958473416039539
+   ],
+   "subdivisions": [
+    2,
+    3,
+    4,
+    6,
+    8,
+    16
+   ]
+  },
+  "rotation_rad": {
+   "maximum_absolute_errors": [
+    1.1236537619146222e-09,
+    2.2753287424212391e-10,
+    7.267300216468042e-11,
+    1.4487970881587459e-11,
+    4.615031528589983e-12,
+    2.9819625501498193e-13
+   ],
+   "observed_orders": [
+    3.9388006019428996,
+    3.967312819720632,
+    3.977287349947265,
+    3.9766121027436037,
+    3.9520064596496605
+   ],
+   "subdivisions": [
+    2,
+    3,
+    4,
+    6,
+    8,
+    16
+   ]
+  },
+  "reaction_force_n": {
+   "maximum_absolute_errors": [
+    0.0016293087974190712,
+    0.00032969207677524537,
+    0.00010557600762695074,
+    2.1253828890621662e-05,
+    6.867267074994743e-06,
+    4.858884494751692e-07
+   ],
+   "observed_orders": [
+    3.9405413760202417,
+    3.958286185542619,
+    3.953223226055687,
+    3.927150660407861,
+    3.821039030307318
+   ],
+   "subdivisions": [
+    2,
+    3,
+    4,
+    6,
+    8,
+    16
+   ]
+  },
+  "reaction_moment_nm": {
+   "maximum_absolute_errors": [
+    0.0027316660571159446,
+    0.000511497276420414,
+    0.00015892635451564274,
+    3.109067438344937e-05,
+    9.836851859290618e-06,
+    6.368652520905016e-07
+   ],
+   "observed_orders": [
+    4.131859154288114,
+    4.063170620788056,
+    4.023855488379284,
+    4.000152593737037,
+    3.9491366114061117
+   ],
+   "subdivisions": [
+    2,
+    3,
+    4,
+    6,
+    8,
+    16
+   ]
+  },
+  "physical_end_actions": {
+   "maximum_absolute_errors": [
+    0.004458025440158053,
+    0.0009014714958084369,
+    0.00028779426736491587,
+    5.7345092955074506e-05,
+    1.8271330077368475e-05,
+    1.1971281992373406e-06
+   ],
+   "observed_orders": [
+    3.9422203417222748,
+    3.9689040695060265,
+    3.978538637199694,
+    3.9757573286977617,
+    3.931932097621846
+   ],
+   "subdivisions": [
+    2,
+    3,
+    4,
+    6,
+    8,
+    16
+   ]
+  },
+  "strain_energy_j": {
+   "maximum_absolute_errors": [
+    4.745048532583951e-05,
+    1.066236021429745e-05,
+    3.5175435328937965e-06,
+    7.162415585071358e-07,
+    2.2950872491378504e-07,
+    1.4766367684160286e-08
+   ],
+   "observed_orders": [
+    3.682109559120898,
+    3.854800221755152,
+    3.925123644169417,
+    3.9560214049812314,
+    3.958162107158063
+   ],
+   "subdivisions": [
+    2,
+    3,
+    4,
+    6,
+    8,
+    16
+   ]
+  }
+ },
+ "orders_where_error_exceeds_10x_reference_uncertainty": {
+  "translation_m": [
+   {
+    "pair": [
+     2,
+     3
+    ],
+    "order": 3.6782391186560957
+   },
+   {
+    "pair": [
+     3,
+     4
+    ],
+    "order": 3.8529844498440307
+   },
+   {
+    "pair": [
+     4,
+     6
+    ],
+    "order": 3.9242408381949234
+   }
+  ],
+  "rotation_rad": [
+   {
+    "pair": [
+     2,
+     3
+    ],
+    "order": 3.9388006019428996
+   },
+   {
+    "pair": [
+     3,
+     4
+    ],
+    "order": 3.967312819720632
+   },
+   {
+    "pair": [
+     4,
+     6
+    ],
+    "order": 3.977287349947265
+   },
+   {
+    "pair": [
+     6,
+     8
+    ],
+    "order": 3.9766121027436037
+   }
+  ],
+  "reaction_force_n": [
+   {
+    "pair": [
+     2,
+     3
+    ],
+    "order": 3.9405413760202417
+   },
+   {
+    "pair": [
+     3,
+     4
+    ],
+    "order": 3.958286185542619
+   },
+   {
+    "pair": [
+     4,
+     6
+    ],
+    "order": 3.953223226055687
+   }
+  ],
+  "reaction_moment_nm": [
+   {
+    "pair": [
+     2,
+     3
+    ],
+    "order": 4.131859154288114
+   },
+   {
+    "pair": [
+     3,
+     4
+    ],
+    "order": 4.063170620788056
+   },
+   {
+    "pair": [
+     4,
+     6
+    ],
+    "order": 4.023855488379284
+   }
+  ],
+  "physical_end_actions": [
+   {
+    "pair": [
+     2,
+     3
+    ],
+    "order": 3.9422203417222748
+   },
+   {
+    "pair": [
+     3,
+     4
+    ],
+    "order": 3.9689040695060265
+   },
+   {
+    "pair": [
+     4,
+     6
+    ],
+    "order": 3.978538637199694
+   }
+  ],
+  "strain_energy_j": [
+   {
+    "pair": [
+     2,
+     3
+    ],
+    "order": 3.682109559120898
+   },
+   {
+    "pair": [
+     3,
+     4
+    ],
+    "order": 3.854800221755152
+   },
+   {
+    "pair": [
+     4,
+     6
+    ],
+    "order": 3.925123644169417
+   }
+  ]
+ },
+ "python_kernel_equivalence": [
+  {
+   "mesh": 6,
+   "python_status": "diagnostic",
+   "python_seconds": 26.412520900019445,
+   "structure_equal": true,
+   "discrete_differences": [],
+   "physical_scaled_deviation": {
+    "translation_m": 2.71963129672979e-13,
+    "rotation_rad": 1.13303024799468e-12,
+    "orientation_quaternion": 2.1807371446830315e-16,
+    "reaction_force_n": 1.937472052586591e-13,
+    "reaction_moment_nm": 4.170134695118289e-12,
+    "end_actions_global": 7.437653529795547e-13,
+    "strain_energy_j": 2.1849744769413958e-14
+   }
+  },
+  {
+   "mesh": 8,
+   "python_status": "diagnostic",
+   "python_seconds": 35.00234220002312,
+   "structure_equal": true,
+   "discrete_differences": [],
+   "physical_scaled_deviation": {
+    "translation_m": 5.986946944458633e-13,
+    "rotation_rad": 1.0299713676844485e-12,
+    "orientation_quaternion": 2.0036056147532122e-16,
+    "reaction_force_n": 5.163343139892701e-13,
+    "reaction_moment_nm": 1.250595717752842e-11,
+    "end_actions_global": 8.264058630515482e-13,
+    "strain_energy_j": 2.764661540844397e-14
+   }
+  }
+ ],
+ "raw_sha256": {
+  "compiled-16.json": "72c1b4076c651b3a3aecfe31fd177059ff4f35d6eb442b685748bf8f97d28788",
+  "compiled-2.json": "35c7a75e33d7e096ea5c9a5a5a9963257acb58ff91400e256a0b799f713c686a",
+  "compiled-3.json": "3bd267f311c8d22daf2fb59e7fe7c3409e49a4aca556eebd52315c4d55015ebe",
+  "compiled-4.json": "2fb503224cdc1f327bd5c0d5605c000621575287e2eef923f8a7f0e3f6e6fea4",
+  "compiled-6.json": "aed9f6a865b1bb18f1c014f299e8f611e2fa02c32af562b7006cfd99f31ca0f1",
+  "compiled-8.json": "999ddce55e5cdf7465929e4871251a9a275dbc239fc6a1d600f6f90b60e2a2b6",
+  "python-6.json": "c26182e08f6095de5d521014160849881d71e1c2ceb6cfffa9447c864c4d8664",
+  "python-8.json": "9607ecbeff5528550c18a479b2081f1dffa4565af26db91e667127f16f0c3b1b"
+ },
+ "computed_structural_approval": false,
+ "fabrication_release": false,
+ "release_gate": "NOT_READY_BLOCKED"
+}

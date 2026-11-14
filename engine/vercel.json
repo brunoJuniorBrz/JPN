@@ -29,7 +29,8 @@
       "feat/m32-numerics-mixed-second-order": false,
       "feat/m33a-normative-wind-combinations": false,
       "feat/m34ab-flexible-physical-model": false,
-      "feat/m35-irregular-structures-loads-takeoff": false
+      "feat/m35-irregular-structures-loads-takeoff": false,
+      "research/m43-p6-spatial-consistency": false
     }
   },
   "functions": {

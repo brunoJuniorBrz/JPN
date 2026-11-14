@@ -1,0 +1,952 @@
+{
+  "schema_version": "jpn.m43-p6-campaign/1",
+  "criteria_sha256": "19ad167819c9a9c15139b15c489aae40e6c37bfbd128201249760629adbfa381",
+  "reference_sha256": "089afed3da6c2a2659a6dfa6bcb2a7fa3cf55688a5c637b157aae907588b7075",
+  "source_sha256_lf": {
+    "experiments\\m43_p6\\arc.py": "bebc0a1da091ec9fbaeaf1adeb05f9b8c445f63ea203ea90d1bb16f7186b9ebc",
+    "experiments\\m43_p6\\dual.py": "76cc9d47cfae9a4768da18a5d9672a8900398003afebf8cb19a3fe9f4c7ec17c",
+    "experiments\\m43_p6\\pilot.py": "efc0c00c13e3442dcd2f72e3b23bac5cb134d5e89e8f0ead6551ed783e05c481",
+    "experiments\\m43_p6\\test_pilot.py": "d7b8c623d3a31ff58f4aa91838a5e2a2ff8b14626d55852b3ac56d9b164912b3",
+    "experiments\\m43_p6\\worker.py": "d63c0da1cdfb10d397eef41a805995ee0d2dfe336c09c6a1bbc47488c211e7ae",
+    "experiments\\m43_p6\\__init__.py": "cbbbe2447c6bd68c0f1bf679d80a1954947f6165eacd3137930dbd0b7d46b574"
+  },
+  "references": "Archived OpenSees SO(3)/Kirchhoff P5; not newly generated OpenSees results",
+  "computed_structural_approval": false,
+  "fabrication_release": false,
+  "release_gate": "NOT_READY_BLOCKED",
+  "cases": [
+    {
+      "case": "cantilever",
+      "input_sha256": "86d3a5b265724ba9b69b26ab996460ea8539475a68aaa8a67cadba49f267425e",
+      "elapsed_seconds": 11.440042400034145,
+      "production_enabled": false,
+      "computed_structural_approval": false,
+      "fabrication_release": false,
+      "release_gate": "NOT_READY_BLOCKED",
+      "independent_checks": {
+        "translation_m": {
+          "bounds_met": true,
+          "compared_components": 6,
+          "violating_components": 0,
+          "maximum_absolute_error": 1.462572077337576e-11,
+          "maximum_reference_uncertainty": 6.837733215285062e-12,
+          "maximum_bound_utilization": 0.04716061970827482,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": 0.0016830528170530168,
+          "reference_at_worst": 0.0016830528288144617,
+          "uncertainty_at_worst": 8.919985120906897e-13,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10
+        },
+        "reaction_force_n": {
+          "bounds_met": true,
+          "compared_components": 6,
+          "violating_components": 0,
+          "maximum_absolute_error": 1.3992913257728408e-06,
+          "maximum_reference_uncertainty": 9.954153736341847e-08,
+          "maximum_bound_utilization": 0.1498832842163221,
+          "worst_component": [
+            1,
+            0
+          ],
+          "candidate_at_worst": 0.0,
+          "reference_at_worst": 1.3992913257728408e-06,
+          "uncertainty_at_worst": 9.954153736341847e-08,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "reaction_moment_nm": {
+          "bounds_met": true,
+          "compared_components": 6,
+          "violating_components": 0,
+          "maximum_absolute_error": 9.18491423362866e-07,
+          "maximum_reference_uncertainty": 4.220315531711094e-07,
+          "maximum_bound_utilization": 0.0038311378385747848,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": 0.0,
+          "reference_at_worst": -3.589149980049393e-08,
+          "uncertainty_at_worst": 2.419878599004446e-09,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "physical_end_actions": {
+          "bounds_met": true,
+          "compared_components": 12,
+          "violating_components": 0,
+          "maximum_absolute_error": 1.3533548326449818e-06,
+          "maximum_reference_uncertainty": 4.220315531711094e-07,
+          "maximum_bound_utilization": 0.013208148778489286,
+          "worst_component": [
+            0,
+            6
+          ],
+          "candidate_at_worst": 1000.0000000459364,
+          "reference_at_worst": 1000.0000013992912,
+          "uncertainty_at_worst": 9.954153483704431e-08,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "strain_energy_j": {
+          "bounds_met": true,
+          "compared_components": 1,
+          "violating_components": 0,
+          "maximum_absolute_error": 2.7448646022776302e-08,
+          "maximum_reference_uncertainty": 8.403638081707262e-09,
+          "maximum_bound_utilization": 0.06162995158688844,
+          "worst_component": [],
+          "candidate_at_worst": 5.7173474117972765,
+          "reference_at_worst": 5.7173474392459225,
+          "uncertainty_at_worst": 8.403638081707262e-09,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08
+        }
+      },
+      "orientation_checks": {
+        "B0": {
+          "bounds_met": true,
+          "geodesic_error_rad": 0.0,
+          "reference_uncertainty_rad": 0.0,
+          "allowed_error_rad": 1e-10,
+          "bound_utilization": 0.0,
+          "geodesic_bound_utilization": 0.0,
+          "component_error_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "component_allowed_rad": [
+            1e-10,
+            1e-10,
+            1e-10
+          ],
+          "component_uncertainty_rad": 0.0,
+          "component_bound_utilization": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "director_error": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T0": {
+          "bounds_met": true,
+          "geodesic_error_rad": 8.466924332583079e-11,
+          "reference_uncertainty_rad": 4.295296530135812e-13,
+          "allowed_error_rad": 3.3165099110365953e-10,
+          "bound_utilization": 0.8456156288806691,
+          "geodesic_bound_utilization": 0.25659134228923874,
+          "component_error_rad": [
+            2.4364713805541394e-12,
+            8.202646895050236e-12,
+            8.423576519272457e-11
+          ],
+          "component_allowed_rad": [
+            1.6324598752511886e-10,
+            3.228499757532852e-10,
+            1.0012267045471728e-10
+          ],
+          "component_uncertainty_rad": 4.2952974905317233e-13,
+          "component_bound_utilization": [
+            0.017556334296831132,
+            0.026737423857513088,
+            0.8456156288806691
+          ],
+          "director_error": [
+            8.463142570719848e-11,
+            8.42735642046011e-11,
+            8.558603465310342e-12
+          ]
+        }
+      },
+      "refinement": {
+        "C": {
+          "translation_m": 4.0010163001486624e-08,
+          "rotation_rad": 1.1302180769159883e-07,
+          "member_end_actions": 4.97013592565497e-08
+        }
+      },
+      "physical_convergence_verified": true,
+      "archived_reference_equilibrium_verified": true,
+      "all_archived_bounds_met": true,
+      "continuous_checks": {
+        "translation_m": {
+          "bounds_met": true,
+          "compared_components": 6,
+          "violating_components": 0,
+          "maximum_absolute_error": 2.146250711876352e-11,
+          "maximum_reference_uncertainty": 1.1717189718485344e-14,
+          "maximum_bound_utilization": 0.04716205740068958,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": 0.0016830528170530168,
+          "reference_at_worst": 0.0016830528297064717,
+          "uncertainty_at_worst": 3.7426658994199613e-16,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10
+        },
+        "reaction_force_n": {
+          "bounds_met": true,
+          "compared_components": 6,
+          "violating_components": 0,
+          "maximum_absolute_error": 2.3819779926270712e-08,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.0002165434538751883,
+          "worst_component": [
+            0,
+            0
+          ],
+          "candidate_at_worst": -999.9999999761802,
+          "reference_at_worst": -1000.0,
+          "uncertainty_at_worst": 0.0,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "reaction_moment_nm": {
+          "bounds_met": true,
+          "compared_components": 6,
+          "violating_components": 0,
+          "maximum_absolute_error": 1.3285543900565244e-06,
+          "maximum_reference_uncertainty": 7.22138793207705e-10,
+          "maximum_bound_utilization": 0.0029970868591799793,
+          "worst_component": [
+            0,
+            0
+          ],
+          "candidate_at_worst": 2503.7787346073596,
+          "reference_at_worst": 2503.7787353877143,
+          "uncertainty_at_worst": 2.0463630789890885e-11,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "physical_end_actions": {
+          "bounds_met": true,
+          "compared_components": 12,
+          "violating_components": 0,
+          "maximum_absolute_error": 1.3285543900565244e-06,
+          "maximum_reference_uncertainty": 7.22138793207705e-10,
+          "maximum_bound_utilization": 0.0029970868591799793,
+          "worst_component": [
+            0,
+            3
+          ],
+          "candidate_at_worst": 2503.7787346073596,
+          "reference_at_worst": 2503.7787353877143,
+          "uncertainty_at_worst": 2.0463630789890885e-11,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "strain_energy_j": {
+          "bounds_met": true,
+          "compared_components": 1,
+          "violating_components": 0,
+          "maximum_absolute_error": 3.5852123048130125e-08,
+          "maximum_reference_uncertainty": 2.426148171252862e-11,
+          "maximum_bound_utilization": 0.06167138004510825,
+          "worst_component": [],
+          "candidate_at_worst": 5.7173474117972765,
+          "reference_at_worst": 5.7173474476493995,
+          "uncertainty_at_worst": 2.426148171252862e-11,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08
+        }
+      },
+      "continuous_orientations": {
+        "B0": {
+          "bounds_met": true,
+          "geodesic_error_rad": 0.0,
+          "reference_uncertainty_rad": 0.0,
+          "allowed_error_rad": 1e-10,
+          "bound_utilization": 0.0,
+          "geodesic_bound_utilization": 0.0,
+          "component_error_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "component_allowed_rad": [
+            1e-10,
+            1e-10,
+            1e-10
+          ],
+          "component_uncertainty_rad": 0.0,
+          "component_bound_utilization": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "director_error": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T0": {
+          "bounds_met": true,
+          "geodesic_error_rad": 8.471621307766214e-11,
+          "reference_uncertainty_rad": 7.836768468053249e-16,
+          "allowed_error_rad": 3.3165099114590096e-10,
+          "bound_utilization": 0.8413666060151554,
+          "geodesic_bound_utilization": 0.25544020375696685,
+          "component_error_rad": [
+            2.4642642527245018e-12,
+            8.633853181005957e-12,
+            8.423908774891687e-11
+          ],
+          "component_allowed_rad": [
+            1.6324598752789816e-10,
+            3.228499757964058e-10,
+            1.0012267045504953e-10
+          ],
+          "component_uncertainty_rad": 7.836770220295578e-16,
+          "component_bound_utilization": [
+            0.015100205322506095,
+            0.026745044154728767,
+            0.8413666060151554
+          ],
+          "director_error": [
+            8.467758121251317e-11,
+            8.427782974784171e-11,
+            8.979318598491084e-12
+          ]
+        }
+      },
+      "strictly_verified_diagnostic": true,
+      "execution": {
+        "status": "diagnostic",
+        "execution": {
+          "memory_limit_bytes": 805306368,
+          "memory_kind": "windows-job-process-commit",
+          "local_only": true
+        }
+      }
+    },
+    {
+      "case": "sway",
+      "input_sha256": "c1ce1b74d98b930d9688e3f3d5f5282e1ab6d2e83daeed7b56ecbd3217d0a3b4",
+      "elapsed_seconds": 8.233942799968645,
+      "production_enabled": false,
+      "computed_structural_approval": false,
+      "fabrication_release": false,
+      "release_gate": "NOT_READY_BLOCKED",
+      "independent_checks": {
+        "translation_m": {
+          "bounds_met": false,
+          "compared_components": 12,
+          "violating_components": 4,
+          "maximum_absolute_error": 2.5271937304340367e-09,
+          "maximum_reference_uncertainty": 4.5895348444712396e-11,
+          "maximum_bound_utilization": 13.761926284855358,
+          "worst_component": [
+            2,
+            1
+          ],
+          "candidate_at_worst": 0.0008415282058872463,
+          "reference_at_worst": 0.0008415307330809767,
+          "uncertainty_at_worst": 7.107289561568419e-12,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10
+        },
+        "reaction_force_n": {
+          "bounds_met": false,
+          "compared_components": 12,
+          "violating_components": 2,
+          "maximum_absolute_error": 0.0010431583780814435,
+          "maximum_reference_uncertainty": 3.810583924253782e-07,
+          "maximum_bound_utilization": 26.08358272851384,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": -299.92998059314937,
+          "reference_at_worst": -299.92893743478356,
+          "uncertainty_at_worst": 2.3076381694409066e-09,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "reaction_moment_nm": {
+          "bounds_met": false,
+          "compared_components": 12,
+          "violating_components": 4,
+          "maximum_absolute_error": 0.003883639445348308,
+          "maximum_reference_uncertainty": 2.040666716614699e-06,
+          "maximum_bound_utilization": 312.59153612677795,
+          "worst_component": [
+            0,
+            2
+          ],
+          "candidate_at_worst": -0.12163741080102865,
+          "reference_at_worst": -0.12476720920503603,
+          "uncertainty_at_worst": 1.7074618758698237e-08,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "physical_end_actions": {
+          "bounds_met": false,
+          "compared_components": 36,
+          "violating_components": 18,
+          "maximum_absolute_error": 0.003883639445348308,
+          "maximum_reference_uncertainty": 2.040666716614699e-06,
+          "maximum_bound_utilization": 312.59153612677795,
+          "worst_component": [
+            0,
+            5
+          ],
+          "candidate_at_worst": -0.12163741080102865,
+          "reference_at_worst": -0.12476720920503603,
+          "uncertainty_at_worst": 1.7074618758698237e-08,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "strain_energy_j": {
+          "bounds_met": true,
+          "compared_components": 1,
+          "violating_components": 0,
+          "maximum_absolute_error": 4.088860263706806e-07,
+          "maximum_reference_uncertainty": 5.233337099970943e-08,
+          "maximum_bound_utilization": 0.9718482979671875,
+          "worst_component": [],
+          "candidate_at_worst": 4.645795805761068,
+          "reference_at_worst": 4.645796214647095,
+          "uncertainty_at_worst": 5.233337099970943e-08,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08
+        }
+      },
+      "orientation_checks": {
+        "B0": {
+          "bounds_met": true,
+          "geodesic_error_rad": 0.0,
+          "reference_uncertainty_rad": 0.0,
+          "allowed_error_rad": 1e-10,
+          "bound_utilization": 0.0,
+          "geodesic_bound_utilization": 0.0,
+          "component_error_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "component_allowed_rad": [
+            1e-10,
+            1e-10,
+            1e-10
+          ],
+          "component_uncertainty_rad": 0.0,
+          "component_bound_utilization": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "director_error": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "B1": {
+          "bounds_met": true,
+          "geodesic_error_rad": 0.0,
+          "reference_uncertainty_rad": 0.0,
+          "allowed_error_rad": 1e-10,
+          "bound_utilization": 0.0,
+          "geodesic_bound_utilization": 0.0,
+          "component_error_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "component_allowed_rad": [
+            1e-10,
+            1e-10,
+            1e-10
+          ],
+          "component_uncertainty_rad": 0.0,
+          "component_bound_utilization": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "director_error": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T0": {
+          "bounds_met": false,
+          "geodesic_error_rad": 1.5064964197824233e-09,
+          "reference_uncertainty_rad": 4.564271558853897e-13,
+          "allowed_error_rad": 1.3783747173166685e-10,
+          "bound_utilization": 12.1061277763097,
+          "geodesic_bound_utilization": 10.93282420234715,
+          "component_error_rad": [
+            8.970675377116717e-10,
+            1.5526558337641827e-11,
+            1.2101901676238464e-09
+          ],
+          "component_allowed_rad": [
+            1.316229122433958e-10,
+            1.2077656565672345e-10,
+            1.0000279339125685e-10
+          ],
+          "component_uncertainty_rad": 4.56427158608119e-13,
+          "component_bound_utilization": [
+            6.818903711920515,
+            0.1323351546663241,
+            12.1061277763097
+          ],
+          "director_error": [
+            1.2103829335037565e-09,
+            1.5064144218809717e-09,
+            8.970795224512572e-10
+          ]
+        },
+        "T1": {
+          "bounds_met": false,
+          "geodesic_error_rad": 1.4716493196059914e-09,
+          "reference_uncertainty_rad": 2.81613806569888e-13,
+          "allowed_error_rad": 1.3783738364756683e-10,
+          "bound_utilization": 12.102001536235907,
+          "geodesic_bound_utilization": 10.678749802565223,
+          "component_error_rad": [
+            8.37583112134159e-10,
+            1.488598716406324e-11,
+            1.2099523452030269e-09
+          ],
+          "component_allowed_rad": [
+            1.3162327918013729e-10,
+            1.2077584823540206e-10,
+            1.0000279337162409e-10
+          ],
+          "component_uncertainty_rad": 2.8161380824979367e-13,
+          "component_bound_utilization": [
+            6.365627198785421,
+            0.1255847190801768,
+            12.102001536235907
+          ],
+          "director_error": [
+            1.209956898083082e-09,
+            1.4715720828028602e-09,
+            8.378444662887202e-10
+          ]
+        }
+      },
+      "refinement": {
+        "C": {
+          "translation_m": 7.576931417739218e-06,
+          "rotation_rad": 1.1448743544257607e-05,
+          "member_end_actions": 0.009369419717161764
+        }
+      },
+      "physical_convergence_verified": false,
+      "archived_reference_equilibrium_verified": true,
+      "all_archived_bounds_met": false,
+      "strictly_verified_diagnostic": false,
+      "execution": {
+        "status": "diagnostic",
+        "execution": {
+          "memory_limit_bytes": 805306368,
+          "memory_kind": "windows-job-process-commit",
+          "local_only": true
+        }
+      }
+    },
+    {
+      "case": "spatial",
+      "input_sha256": "b8eb2d0f1912a23d88965c7e3ccb70a72336c1b45a0f6369be269abed8a00c37",
+      "elapsed_seconds": 20.029662000015378,
+      "production_enabled": false,
+      "computed_structural_approval": false,
+      "fabrication_release": false,
+      "release_gate": "NOT_READY_BLOCKED",
+      "execution": {
+        "status": "TIMEOUT",
+        "limit_seconds": 20
+      }
+    },
+    {
+      "case": "torsion",
+      "input_sha256": "3f2e2c419889c235c4fcedf707b88ca12329ccd8108dddfaeca8eccc53b7c648",
+      "elapsed_seconds": 10.522871099994518,
+      "production_enabled": false,
+      "computed_structural_approval": false,
+      "fabrication_release": false,
+      "release_gate": "NOT_READY_BLOCKED",
+      "independent_checks": {
+        "translation_m": {
+          "bounds_met": false,
+          "compared_components": 9,
+          "violating_components": 1,
+          "maximum_absolute_error": 4.658815942821712e-10,
+          "maximum_reference_uncertainty": 9.513171182519893e-12,
+          "maximum_bound_utilization": 4.518250523144579,
+          "worst_component": [
+            2,
+            2
+          ],
+          "candidate_at_worst": -3.119221968334534e-05,
+          "reference_at_worst": -3.1192685564939625e-05,
+          "uncertainty_at_worst": 3.7094819494021504e-14,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10
+        },
+        "reaction_force_n": {
+          "bounds_met": true,
+          "compared_components": 9,
+          "violating_components": 0,
+          "maximum_absolute_error": 2.569547348230117e-07,
+          "maximum_reference_uncertainty": 2.0074480744369794e-08,
+          "maximum_bound_utilization": 0.02770292148555418,
+          "worst_component": [
+            1,
+            1
+          ],
+          "candidate_at_worst": 0.0,
+          "reference_at_worst": 2.569547348230117e-07,
+          "uncertainty_at_worst": 2.0074480744369794e-08,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "reaction_moment_nm": {
+          "bounds_met": true,
+          "compared_components": 9,
+          "violating_components": 0,
+          "maximum_absolute_error": 2.039149649135652e-07,
+          "maximum_reference_uncertainty": 2.934020358225098e-07,
+          "maximum_bound_utilization": 0.00532117079591486,
+          "worst_component": [
+            0,
+            0
+          ],
+          "candidate_at_worst": 834.600710651634,
+          "reference_at_worst": 834.600710447719,
+          "uncertainty_at_worst": 2.934020358225098e-07,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "physical_end_actions": {
+          "bounds_met": true,
+          "compared_components": 24,
+          "violating_components": 0,
+          "maximum_absolute_error": 2.5506361112093145e-07,
+          "maximum_reference_uncertainty": 2.934020358225098e-07,
+          "maximum_bound_utilization": 0.021143760796907867,
+          "worst_component": [
+            0,
+            6
+          ],
+          "candidate_at_worst": 6.035892417821653e-08,
+          "reference_at_worst": 2.5665046866632627e-07,
+          "uncertainty_at_worst": 1.5146064023624582e-08,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "strain_energy_j": {
+          "bounds_met": true,
+          "compared_components": 1,
+          "violating_components": 0,
+          "maximum_absolute_error": 1.9218393543241064e-10,
+          "maximum_reference_uncertainty": 2.029901306303354e-09,
+          "maximum_bound_utilization": 0.029733571455580345,
+          "worst_component": [],
+          "candidate_at_worst": 0.6473321007048843,
+          "reference_at_worst": 0.6473321005127004,
+          "uncertainty_at_worst": 2.029901306303354e-09,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08
+        }
+      },
+      "orientation_checks": {
+        "B0": {
+          "bounds_met": true,
+          "geodesic_error_rad": 0.0,
+          "reference_uncertainty_rad": 0.0,
+          "allowed_error_rad": 1e-10,
+          "bound_utilization": 0.0,
+          "geodesic_bound_utilization": 0.0,
+          "component_error_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "component_allowed_rad": [
+            1e-10,
+            1e-10,
+            1e-10
+          ],
+          "component_uncertainty_rad": 0.0,
+          "component_bound_utilization": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "director_error": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T0": {
+          "bounds_met": false,
+          "geodesic_error_rad": 4.658785373954106e-10,
+          "reference_uncertainty_rad": 2.962924029793683e-13,
+          "allowed_error_rad": 1.6694651727190776e-10,
+          "bound_utilization": 4.66147064520172,
+          "geodesic_bound_utilization": 2.792360316442693,
+          "component_error_rad": [
+            1.869884726658083e-12,
+            4.658747908945137e-10,
+            4.9516380579150976e-14
+          ],
+          "component_allowed_rad": [
+            1.4216440932460698e-10,
+            1.0000515261913725e-10,
+            1.5199998783759788e-10
+          ],
+          "component_uncertainty_rad": 2.962924085124268e-13,
+          "component_bound_utilization": [
+            0.015237126827041725,
+            4.66147064520172,
+            0.0022750580050115003
+          ],
+          "director_error": [
+            4.658752552494708e-10,
+            1.7494352734116367e-12,
+            4.658785348498183e-10
+          ]
+        },
+        "ARM": {
+          "bounds_met": false,
+          "geodesic_error_rad": 4.658784876178514e-10,
+          "reference_uncertainty_rad": 2.9629229889184774e-13,
+          "allowed_error_rad": 1.689063570368119e-10,
+          "bound_utilization": 4.661494952345025,
+          "geodesic_bound_utilization": 2.759959945232517,
+          "component_error_rad": [
+            1.8640606094279255e-12,
+            4.658747649729762e-10,
+            4.951703110045447e-14
+          ],
+          "component_allowed_rad": [
+            1.4216440902961264e-10,
+            1.0000462556399775e-10,
+            1.5449998743497112e-10
+          ],
+          "component_uncertainty_rad": 2.962923047536033e-13,
+          "component_bound_utilization": [
+            0.015196158651294575,
+            4.661494952345025,
+            0.0022382483105353557
+          ],
+          "director_error": [
+            4.658752490471383e-10,
+            1.7377922691043054e-12,
+            4.658784850720715e-10
+          ]
+        }
+      },
+      "refinement": {
+        "C": {
+          "translation_m": 8.424860276243239e-07,
+          "rotation_rad": 2.5629832071212685e-06,
+          "member_end_actions": 2.793672784805797e-07
+        }
+      },
+      "physical_convergence_verified": true,
+      "archived_reference_equilibrium_verified": false,
+      "all_archived_bounds_met": false,
+      "continuous_checks": {
+        "translation_m": {
+          "bounds_met": false,
+          "compared_components": 9,
+          "violating_components": 1,
+          "maximum_absolute_error": 4.659173552000527e-10,
+          "maximum_reference_uncertainty": 1.7763568394002505e-15,
+          "maximum_bound_utilization": 4.518254813701285,
+          "worst_component": [
+            2,
+            2
+          ],
+          "candidate_at_worst": -3.119221968334534e-05,
+          "reference_at_worst": -3.119268560070054e-05,
+          "uncertainty_at_worst": 1.7763568394002505e-15,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-10
+        },
+        "reaction_force_n": {
+          "bounds_met": true,
+          "compared_components": 9,
+          "violating_components": 0,
+          "maximum_absolute_error": 1.7634570886881917e-09,
+          "maximum_reference_uncertainty": 0.0,
+          "maximum_bound_utilization": 0.00017634570886570938,
+          "worst_component": [
+            0,
+            0
+          ],
+          "candidate_at_worst": 1.7634570886881917e-09,
+          "reference_at_worst": -0.0,
+          "uncertainty_at_worst": 0.0,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "reaction_moment_nm": {
+          "bounds_met": true,
+          "compared_components": 9,
+          "violating_components": 0,
+          "maximum_absolute_error": 8.951963081926806e-08,
+          "maximum_reference_uncertainty": 4.172306944383308e-11,
+          "maximum_bound_utilization": 0.0009582846755775338,
+          "worst_component": [
+            0,
+            0
+          ],
+          "candidate_at_worst": 834.600710651634,
+          "reference_at_worst": 834.6007107411536,
+          "uncertainty_at_worst": 4.172306944383308e-11,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "physical_end_actions": {
+          "bounds_met": true,
+          "compared_components": 24,
+          "violating_components": 0,
+          "maximum_absolute_error": 9.318134118341671e-08,
+          "maximum_reference_uncertainty": 4.172306944383308e-11,
+          "maximum_bound_utilization": 0.009318163089453317,
+          "worst_component": [
+            0,
+            9
+          ],
+          "candidate_at_worst": 3.213754302379545e-05,
+          "reference_at_worst": 3.223072436497887e-05,
+          "uncertainty_at_worst": 3.197442310920451e-13,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-05
+        },
+        "strain_energy_j": {
+          "bounds_met": true,
+          "compared_components": 1,
+          "violating_components": 0,
+          "maximum_absolute_error": 1.8380608146628674e-09,
+          "maximum_reference_uncertainty": 5.226929999935237e-13,
+          "maximum_bound_utilization": 0.02460196078031062,
+          "worst_component": [],
+          "candidate_at_worst": 0.6473321007048843,
+          "reference_at_worst": 0.6473321025429452,
+          "uncertainty_at_worst": 5.226929999935237e-13,
+          "relative_tolerance": 1e-07,
+          "absolute_tolerance": 1e-08
+        }
+      },
+      "continuous_orientations": {
+        "B0": {
+          "bounds_met": true,
+          "geodesic_error_rad": 0.0,
+          "reference_uncertainty_rad": 0.0,
+          "allowed_error_rad": 1e-10,
+          "bound_utilization": 0.0,
+          "geodesic_bound_utilization": 0.0,
+          "component_error_rad": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "component_allowed_rad": [
+            1e-10,
+            1e-10,
+            1e-10
+          ],
+          "component_uncertainty_rad": 0.0,
+          "component_bound_utilization": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "director_error": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "T0": {
+          "bounds_met": false,
+          "geodesic_error_rad": 4.65881661556332e-10,
+          "reference_uncertainty_rad": 4.7338447102986223e-17,
+          "allowed_error_rad": 1.6694651729057485e-10,
+          "bound_utilization": 4.658526750427891,
+          "geodesic_bound_utilization": 2.790604538841021,
+          "component_error_rad": [
+            2.1662459152860247e-12,
+            4.658766313192841e-10,
+            4.94956723176565e-14
+          ],
+          "component_allowed_rad": [
+            1.421644093542431e-10,
+            1.000051526193213e-10,
+            1.5199998783759788e-10
+          ],
+          "component_uncertainty_rad": 4.733844798699942e-17,
+          "component_bound_utilization": [
+            0.015237943614537694,
+            4.658526750427891,
+            0.0003259408863807081
+          ],
+          "director_error": [
+            4.658771727258236e-10,
+            2.045698227520206e-12,
+            4.658816590084538e-10
+          ]
+        },
+        "ARM": {
+          "bounds_met": false,
+          "geodesic_error_rad": 4.658816043720816e-10,
+          "reference_uncertainty_rad": 4.744944203281876e-17,
+          "allowed_error_rad": 1.6890635705494824e-10,
+          "bound_utilization": 4.658551007161804,
+          "geodesic_bound_utilization": 2.758224497553778,
+          "component_error_rad": [
+            2.1604223401569533e-12,
+            4.658766016934135e-10,
+            4.94956723176565e-14
+          ],
+          "component_allowed_rad": [
+            1.421644090592488e-10,
+            1.0000462556418142e-10,
+            1.5449998743497112e-10
+          ],
+          "component_uncertainty_rad": 4.744944297154391e-17,
+          "component_bound_utilization": [
+            0.01519698076260087,
+            4.658551007161804,
+            0.0003206674808402861
+          ],
+          "director_error": [
+            4.65877166523735e-10,
+            2.0340545610275967e-12,
+            4.658816018239857e-10
+          ]
+        }
+      },
+      "strictly_verified_diagnostic": false,
+      "execution": {
+        "status": "diagnostic",
+        "execution": {
+          "memory_limit_bytes": 805306368,
+          "memory_kind": "windows-job-process-commit",
+          "local_only": true
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+name: M43-P6 isolated physical campaign
+on:
+  push:
+    branches: [research/m43-p6-spatial-consistency]
+  pull_request:
+    paths: ['experiments/**', 'validation/m43-p6/**', '.github/workflows/m43-p6.yml']
+jobs:
+  physical-consistency:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r engine/requirements-validation.lock
+      - run: python -m pytest experiments/m43_p6 -q
+      - run: python validation/m43-p6/reference_feasibility.py
+      - run: python validation/m43-p6/reproduce.py
+      - run: python validation/m43-p6/reproduce.py --material-curvature
+      - run: python validation/m43-p6/reproduce.py --material-curvature --case sway --refined-sway
+      - run: python -m venv .tools/opensees
+      - if: runner.os == 'Windows'
+        run: .tools/opensees/Scripts/python -m pip install --require-hashes -r validation/m43-p2/requirements-opensees.lock
+      - if: runner.os != 'Windows'
+        run: .tools/opensees/bin/python -m pip install --require-hashes -r validation/m43-p2/requirements-opensees.lock
+      - if: runner.os == 'Windows'
+        run: python validation/m43-p6/reference_v2/campaign.py --opensees-python .tools/opensees/Scripts/python.exe
+      - if: runner.os != 'Windows'
+        run: python validation/m43-p6/reference_v2/campaign.py --opensees-python .tools/opensees/bin/python
+      - if: runner.os == 'Windows'
+        run: python validation/m43-p6/directed_study.py --opensees-python .tools/opensees/Scripts/python.exe
+      - if: runner.os != 'Windows'
+        run: python validation/m43-p6/directed_study.py --opensees-python .tools/opensees/bin/python
+      - run: python validation/m43-p6/kinematic_study.py
+      - run: python validation/m43-p6/kernel_cost.py
+      - run: python validation/m43-p6/profile_spatial.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: m43-p6-physical-${{ matrix.os }}
+          path: .tools/m43-p6/

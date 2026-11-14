@@ -1,0 +1,38 @@
+name: M43-P7 compiled spatial kernel (research)
+on:
+  push:
+    branches: [research/m43-p7-compiled-spatial-kernel]
+  pull_request:
+    paths: ['experiments/m43_p7/**', 'validation/m43-p7/**', '.github/workflows/m43-p7.yml']
+jobs:
+  compiled-kernel:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r engine/requirements-validation.lock
+      # Research-only dependency, NOT added to the production lock or the Vercel app.
+      - run: python -m pip install numba==0.68.1 llvmlite==0.50.0
+      - name: Build native cache (cold JIT, timed separately)
+        run: python validation/m43-p7/benchmark.py --warm-cache-only
+      - run: python validation/m43-p7/milestone.py
+      - run: python -m pytest experiments/m43_p6 experiments/m43_p7 engine/tests/test_p4_mechanics.py -q
+      - run: python validation/m43-p7/benchmark.py --meshes 2 3 4 6 8 --repeat 2
+      - run: python validation/m43-p7/spatial_convergence.py --meshes 2 3 4 6 8 16 --python-reference 6 8
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: m43-p7-${{ matrix.os }}
+          path: |
+            .tools/m43-p7/
+            validation/m43-p7/*.json
