@@ -1,10 +1,9 @@
 import type { Project } from "./models";
 import { resolvePhysicalStructure } from "./physical-structure";
 import { structureSignature } from "./calculations/project-basis";
-import { adaptMixedProject } from "./mixed-adapter";
-import { adaptLoadedMixedProject } from "./loaded-mixed-adapter";
+import { adaptMixedForVersion,requestVersionOf } from "./current-mixed-adapter";
 import { mixedInputHash } from "./mixed-analysis";
-import { anyMixedRequestSchema,anyMixedResultSchema } from "./structural-loading";
+import { anyMixedRequestSchema,anyMixedResultSchema,isLoadedRequest,isLoadedResult } from "./structural-loading";
 import { extractMemberDemands,type DemandInput } from "./member-demands";
 import { connectionsSchema } from "./connections";
 import { verifyJointActionTrace,toGlobal,cross3,scale3,type V3,type V6 } from "./member-end-actions";
@@ -25,7 +24,7 @@ function equilibrium(residual:V6,scale:number,length:number){
  * Frame f includes FER for distributed loads; only compiled NODAL loads enter
  * joint balance. Distributed resultants enter the GLOBAL check separately. */
 export async function buildConnectionReport(project:Project,prepared:DemandInput,value:unknown,sidecar:unknown){
-  const current=await (project.workspace.spatialPreparation?.loading?adaptLoadedMixedProject(project):adaptMixedProject(project));
+  const current=await adaptMixedForVersion(project,requestVersionOf(prepared.request));
   if(current.input_sha256!==prepared.input_sha256||current.preparation_sha256!==prepared.preparation_sha256||canonicalSpatialInput(current.mapping)!==canonicalSpatialInput(prepared.mapping))throw new Error("STALE_CONNECTION_ANALYSIS: projeto ou ligações mudaram; execute novamente.");
   const request=anyMixedRequestSchema.parse(prepared.request),result=anyMixedResultSchema.parse(value),demands=await extractMemberDemands(prepared,result);
   const trace=verifyJointActionTrace(request,result,sidecar),model=resolvePhysicalStructure(project).model!,draft=project.workspace.spatialPreparation!;
@@ -109,11 +108,11 @@ export async function buildConnectionReport(project:Project,prepared:DemandInput
     });
     // Global body-load resultants: frame UDL and frame self-weight only.
     const bodies:{member:string;forceN:V3}[]=[];
-    if(request.schema_version==="jpn.mixed3d/2"){
+    if(isLoadedRequest(request)){
       for(const l of request.member_loads){const m=request.members.find(m=>m.id===l.member)!,a=nodes.get(m.start)!,b=nodes.get(m.end)!,length=Math.hypot(b.x_m-a.x_m,b.y_m-a.y_m,b.z_m-a.z_m);
         const q=l.coordinate_system==="global"?l.force_per_length_n_m:toGlobal(trace.members[m.id].global_to_local,l.force_per_length_n_m);
         bodies.push({member:m.id,forceN:scale3(q,length*(combo.factors[l.case]??0))});}
-      if(result.schema_version==="jpn.mixed3d-result/2"&&result.loading.self_weight){const sw=result.loading.self_weight;for(const w of sw.members)if(w.representation==="consistent-frame-udl")bodies.push({member:w.member,forceN:scale3(w.force_n,combo.factors[sw.case]??0)});}
+      if(isLoadedResult(result)&&result.loading.self_weight){const sw=result.loading.self_weight;for(const w of sw.members)if(w.representation==="consistent-frame-udl")bodies.push({member:w.member,forceN:scale3(w.force_n,combo.factors[sw.case]??0)});}
     }
     for(const body of bodies){const m=request.members.find(m=>m.id===body.member)!,a=nodes.get(m.start)!,b=nodes.get(m.end)!,mid:V3=[(a.x_m+b.x_m)/2,(a.y_m+b.y_m)/2,(a.z_m+b.z_m)/2];
       const relativeMoment=cross3(mid.map((x,i)=>x-originM[i]) as V3,body.forceN);
