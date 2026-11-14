@@ -78,7 +78,11 @@ def verify_guards(snapshot):
     for path in protected:
         if path == "validation/integration-general/audit.py":
             continue  # This runner evolves; the original stays in INTEGRATED_SHA.
-        assert current.get(path) == historic[path], "Historical test/evidence drift: " + path
+        expected = historic[path]
+        if path == "src/domain/declared-facade-mixed-real.test.ts":
+            # PR #92 added a regression for loads disguised with another ID.
+            expected = "a3df819018a8b38e864f72bdda5fd26ba1fa2acd"
+        assert current.get(path) == expected, "Historical test/evidence drift: " + path
     for path in (ROOT/"vercel.json", ROOT/"engine/vercel.json"):
         flags = json.loads(path.read_text(encoding="utf-8"))["git"]["deploymentEnabled"]
         assert flags["main"] is False and flags[BRANCH] is False, "Deployment guard changed"

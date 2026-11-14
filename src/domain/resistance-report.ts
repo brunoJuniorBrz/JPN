@@ -20,6 +20,7 @@ import { evaluateDeclaredService } from "./declared-service";
 import { buildEngineReleaseGate } from "./engine-release-gate";
 import { availableNormativeProcedures,normativeProcedureRegistry } from "./normative-procedures";
 import { calculateWindSpeed } from "./wind-speed";
+import { auditEngineeringCombinationCoverage } from "./engineering-combination-coverage";
 
 const normativeModes=[
   {id:"tension",label:"Tração: escoamento bruto e ruptura da seção efetiva/líquida"},
@@ -43,6 +44,11 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
   if(current.input_sha256!==prepared.input_sha256||current.preparation_sha256!==prepared.preparation_sha256||canonicalSpatialInput(current.mapping)!==canonicalSpatialInput(prepared.mapping))
     throw new Error("STALE_RESISTANCE_ANALYSIS: projeto/discretização/declarações diferem da análise; execute novamente.");
   const demands=await extractMemberDemands(prepared,value),draft=project.workspace.spatialPreparation!,model=resolvePhysicalStructure(project).model!;
+  const engineeringCombinationCoverage="engineering_combination_coverage" in current
+    ?current.engineering_combination_coverage
+    :draft.engineeringCombinations
+      ?auditEngineeringCombinationCoverage(draft.engineeringCombinations,current.request.cases,current.request.combinations)
+      :null;
   const secondOrderAudit=auditSecondOrderReadiness(current.request,anyMixedResultSchema.parse(value));
   const roofReactionAudit="roof_load_path" in current&&isDeclaredRoofTrace(current.roof_load_path)?
     await auditPhysicalRoofReactionPath(project,current.request,value,current.roof_load_path,current.mapping):null;
@@ -108,6 +114,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
     approvedForFabrication:false as const,structureStatus:"NOT_APPROVED_FOR_FABRICATION" as const,
     normativeProceduresImplemented:[...availableNormativeProcedures],procedureRegistry:normativeProcedureRegistry,binding,physicalInput:current.request,
     engineeringCombinations:draft.engineeringCombinations??null,demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
+    ...(engineeringCombinationCoverage?{engineeringCombinationCoverage}:{}),
     supportAudits:assessSupportReactions(draft.supportInterfaces??[],anyMixedResultSchema.parse(value)),
     ...(roofReactionAudit?{physicalRoofReactionAudit:roofReactionAudit}:{}),
     secondOrderAudit,
