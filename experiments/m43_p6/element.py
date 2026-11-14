@@ -105,12 +105,22 @@ def energy_state(x, q, ea, eiy, eiz, gj, reference_basis, *, arc=True):
     # Initial physical basis is supplied by the existing audited preparation.
     xyzw = Rotation.from_matrix(np.asarray(reference_basis).T).as_quat()
     initial = [float(xyzw[3]), *map(float, xyzw[:3])]
-    mean_frame = multiply(mean, initial)
-    director = rotate(mean_frame, [1., 0., 0.])
+    # Rotate the reference chord itself. Recovering this axis from the
+    # reference quaternion introduces a spurious initial misalignment.
+    axis = [v/length0 for v in r0]
+    twice_cross = [2*v for v in cross(mean[1:], axis)]
+    second_cross = cross(mean[1:], twice_cross)
+    director = [a+mean[0]*t+c for a,t,c in zip(axis,twice_cross,second_cross)]
     alignment = unit([1+dot(director, n), *cross(director, n)])
-    frame = multiply(alignment, mean_frame)
-    local_qi = multiply(conjugate(frame), multiply(qi, initial))
-    local_qj = multiply(conjugate(frame), multiply(qj, initial))
+    global_frame = multiply(alignment, mean)
+    # Conjugation by the reference orientation rotates the vector part only.
+    # Form the small relative rotation first to avoid cancellation of O(1) terms.
+    basis = [rotate(initial, axis) for axis in ([1.,0.,0.],[0.,1.,0.],[0.,0.,1.])]
+    relative_i = multiply(conjugate(global_frame), qi)
+    relative_j = multiply(conjugate(global_frame), qj)
+    local_qi = [relative_i[0], *[dot(row,relative_i[1:]) for row in basis]]
+    local_qj = [relative_j[0], *[dot(row,relative_j[1:]) for row in basis]]
+    frame = multiply(global_frame, initial)
     local_i = logarithm(local_qi)
     local_j = logarithm(local_qj)
     extension = (2*dot(r0, du)+dot(du, du))/(length+length0)

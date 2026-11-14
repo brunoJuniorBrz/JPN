@@ -69,6 +69,33 @@ def logarithm(q):
 
 
 @njit(**OPTS)
+def rotate_reference_axis(q, axis):
+    """Rotate the exact reference chord axis without recovering it from a quaternion."""
+    m = q.shape[1]
+    a = np.empty((3, m, m))
+    for k in range(3):
+        a[k] = const(axis[k], m)
+    v = q[1:]
+    t = 2*cross(v, a)
+    wt = np.empty_like(t)
+    for k in range(3):
+        wt[k] = mul(q[0], t[k])
+    return a+wt+cross(v, t)
+
+
+@njit(**OPTS)
+def local_relative(frame, end, initial):
+    # Relative quaternion in world coordinates first. Conjugating by the
+    # initial basis rotates only its vector part, preserving its scalar.
+    relative = qmul(conjugate(frame), end)
+    basis = frame_basis(initial)
+    vector = relative[1:].copy()
+    for k in range(3):
+        relative[k+1] = dotc(basis[k], vector)
+    return relative
+
+
+@njit(**OPTS)
 def stage1(r0, length0, q, initial):
     """Returns (status, W[10], frame_value[4])."""
     W = np.zeros((10, 13, 13)); frame_value = np.zeros(4)
@@ -95,16 +122,16 @@ def stage1(r0, length0, q, initial):
     s, mean = unit(qi+qj)
     if s:
         return s, W, frame_value
-    mean_frame = qmulc(mean, initial)
-    director = rotate_e1(mean_frame)
+    director = rotate_reference_axis(mean, r0/length0)
     c = cross(director, n)
     align = np.empty((4, 13, 13)); align[0] = addc(dot(director, n), 1.); align[1:] = c
     s, alignment = unit(align)
     if s:
         return s, W, frame_value
-    frame = qmul(alignment, mean_frame)
-    local_qi = qmul(conjugate(frame), qmulc(qi, initial))
-    local_qj = qmul(conjugate(frame), qmulc(qj, initial))
+    global_frame = qmul(alignment, mean)
+    local_qi = local_relative(global_frame, qi, initial)
+    local_qj = local_relative(global_frame, qj, initial)
+    frame = qmulc(global_frame, initial)
     extension = div(dotc(r0, du)*2+dot(du, du), addc(length, length0))
     W[0] = extension; W[1] = length; W[2:6] = local_qi; W[6:10] = local_qj
     for k in range(4):

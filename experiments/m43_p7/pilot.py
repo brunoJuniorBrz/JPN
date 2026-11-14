@@ -39,10 +39,10 @@ def use_kernel(name):
 
 
 def single_mesh_study(request, subdivisions):
-    """P6 single-mesh study; 16 subdivisions allowed ONLY as a research refinement level."""
+    """P6 single-mesh study; Additional subdivisions are research levels under the original mesh caps."""
     if subdivisions in (2, 3, 4, 6, 8):
         out = p6.single_mesh_study(request, subdivisions)
-    elif subdivisions == 16 and request.get('dimensionality') == 3:
+    elif subdivisions in (16, 32) and request.get('dimensionality') == 3:
         data = p6.solver.validate_request(request)
         p6.equilibrium_audits.clear(); physical_attempts.clear()
         mesh = p6.solver.run_mesh(data, subdivisions, 3)
