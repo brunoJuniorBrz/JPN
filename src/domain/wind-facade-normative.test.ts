@@ -1,7 +1,7 @@
 import {afterEach,expect,it,vi} from "vitest";
 import {buildingProject} from "./test-support/m41-building-fixture";
 import type {Side} from "./test-support/m41-building-fixture";
-import {buildNormativeFacadeTraction,table6Coefficient,a3b3Coefficient,parallelWallZones,
+import {buildNormativeFacadeTraction,table6Coefficient,a3b3Coefficient,checkCellConfirmations,parallelWallZones,
   wallExternalCoefficients,internalPressureCoefficients} from "./wind-facade-normative";
 import {distributeDeclaredFacadeTractions} from "./declared-facade-traction";
 import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
@@ -13,17 +13,14 @@ const speed={schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:30,
   topography:"flat-or-gently-undulating",roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,
   reference:{standard:"ABNT NBR 6123",edition:"2023",clause:"5",source:"Dados sintéticos do ensaio",revision:"v1",responsible:"Responsável de referência"}};
 const building={longSideM:12,shortSideM:6,heightM:4,longAxis:"X",roofImpermeable:true};
-// Engineer confirmations for the blurred cells of row H2 (1/2<h/b<=3/2), band 2<=a/b<=4,
-// typed independently of the data file.
-const CONFIRM=[{cell:"H2/hi/A1B1",value:-0.9},{cell:"H2/hi/D",value:-0.3},{cell:"H2/hi/B",value:-0.6},{cell:"H2/hi/C1D1",value:-0.9}];
 const two={rule:"two-opposite-faces-equally-permeable",permeableAxis:"X"};
 const input=(cases:unknown[],extra:object={})=>({schema_version:"jpn.nbr6123-wall-wind/2",building,speed,
-  coefficientConfirmations:CONFIRM,cases,...extra});
+  cases,...extra});
 const wc=(id:string,windFrom:string)=>({id,windFrom,internalPressure:two});
 // Independent q: S2=1*1*(5/10)^0.085 (h<5 m -> 5 m), Vk=30*S2, q=0.613*Vk^2.
 const Q=0.613*(30*0.5**0.085)**2;
 
-it("Tabela 6: todas as células conferidas contra a transcrição da p.20 e marcação de glifos borrados",()=>{
+it("Tabela 6: 48 células conferidas contra a cópia nítida (p.20, PDF p.32)",()=>{
   const v=(c:Parameters<typeof table6Coefficient>[0],a:number,h:number)=>table6Coefficient(c,a,h).value;
   // row H1, bands lo/hi
   expect(["A1B1","A2B2","C","D","A","B","C1D1","C2D2"].map(c=>v(c as never,1,.5))).toEqual([-.8,-.5,.7,-.4,.7,-.4,-.8,-.4]);
@@ -37,14 +34,10 @@ it("Tabela 6: todas as células conferidas contra a transcrição da p.20 e marc
   expect(wallExternalCoefficients(1,1.5).row).toBe("H2");
   expect(wallExternalCoefficients(1,1.5000001).row).toBe("H3");
   expect(wallExternalCoefficients(1,.5).row).toBe("H1");
-  // blurred: final digit 3/6/8/9 -> needs confirmation; 4/5/7/0 are legible
-  const cellsOf=(c:Parameters<typeof table6Coefficient>[0])=>table6Coefficient(c,2,1).cells[0];
-  expect(cellsOf("A2B2").blurred).toBe(false);
-  expect(cellsOf("C").blurred).toBe(false);
-  expect(cellsOf("D").blurred).toBe(true);
-  expect(cellsOf("B").blurred).toBe(true);
-  expect(cellsOf("C1D1").blurred).toBe(true);
-  expect(cellsOf("C2D2").blurred).toBe(false);
+  // legibility: after the sharp-copy check no cell is flagged unverified (professional review stays pending)
+  for(const c of ["A1B1","A2B2","C","D","A","B","C1D1","C2D2"] as const)
+    for(const [a,h] of [[1,.5],[4,.5],[1,1],[4,1],[1,2],[4,2]])
+      expect(table6Coefficient(c,a,h).cells.every(x=>!x.blurred)).toBe(true);
   // Nota 2 interpolation between a/b=3/2 and 2 (row H1: D -0.4 -> -0.3, A2B2 -0.5 -> -0.4)
   expect(table6Coefficient("D",1.75,.5).value).toBeCloseTo(-.35,12);
   expect(table6Coefficient("A2B2",1.75,.5).value).toBeCloseTo(-.45,12);
@@ -75,14 +68,15 @@ it("rejeita domínio fora da Tabela 6 e Cpi incompleto",()=>{
   expect(internalPressureCoefficients("four-faces-equally-permeable","Y")).toEqual([-.3,0]);
   expect(()=>internalPressureCoefficients("two-opposite-faces-equally-permeable","X")).toThrow("WIND_CPI_INPUT");
 });
-it("células borradas exigem confirmação do responsável técnico e batem com o transcrito",()=>{
-  const p=buildingProject(["W1"]);
-  expect(()=>buildNormativeFacadeTraction(p,input([wc("W1","+X")],{coefficientConfirmations:[]}))).toThrow("WIND_COEFFICIENT_UNCONFIRMED");
-  const wrong=CONFIRM.map(c=>c.cell==="H2/hi/D"?{...c,value:-0.5}:c);
-  expect(()=>buildNormativeFacadeTraction(p,input([wc("W1","+X")],{coefficientConfirmations:wrong}))).toThrow("WIND_COEFFICIENT_CONFIRMATION_MISMATCH");
-  const ok=buildNormativeFacadeTraction(p,input([wc("W1","+X")]));
-  expect(ok.usedCells).toContain("H2/hi/D");
-  expect(ok.usedCells).toContain("H2/hi/A1B1");
+it("portão de confirmação continua ativo para células marcadas como não verificadas",()=>{
+  const cell={id:"H2/hi/D",value:-.3,blurred:true};
+  expect(()=>checkCellConfirmations([cell],new Map())).toThrow("WIND_COEFFICIENT_UNCONFIRMED");
+  expect(()=>checkCellConfirmations([cell],new Map([["H2/hi/D",-.5]]))).toThrow("WIND_COEFFICIENT_CONFIRMATION_MISMATCH");
+  expect(()=>checkCellConfirmations([cell],new Map([["H2/hi/D",-.3]]))).not.toThrow();
+  expect(()=>checkCellConfirmations([{...cell,blurred:false}],new Map())).not.toThrow();
+  const r=buildNormativeFacadeTraction(buildingProject(["W1"]),input([wc("W1","+X")]));
+  expect(r.usedCells).toContain("H2/hi/D");
+  expect(r.errataVerified).toBe(false);
 });
 
 // windFrom -> [windward, leeward, alpha, windwardCpe, leewardCpe, {parallelFacade: [[start,end,cpe]...]}]

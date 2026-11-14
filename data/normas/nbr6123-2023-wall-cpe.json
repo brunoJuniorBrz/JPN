@@ -1,29 +1,94 @@
 {
   "schema_version": "jpn.nbr6123-wall-coefficients/2",
-  "revision": "M41-P5-1",
+  "revision": "M41-P5-2",
   "standard": "ABNT NBR 6123",
   "edition": "2023-original",
   "errata": "not-verified",
-  "transcription": "Lido por inspeção visual das imagens do PDF escaneado fornecido (400 dpi). A digitalização é de baixa resolução: os dígitos finais 3, 6, 8 e 9 NÃO são distinguíveis com segurança entre si. Toda célula cujo último dígito é 3, 6, 8 ou 9 é tratada como borrada e só é usada quando o responsável técnico confirma o valor na sua cópia da norma (coefficientConfirmations). Dígitos 0, 1, 2, 4, 5 e 7 são legíveis.",
-  "blurredFinalDigits": [3, 6, 8, 9],
+  "transcription": "Transcrição conferida célula a célula contra uma cópia nítida da Tabela 6 (p.20 do documento, página 32 de 107, fornecida pelo usuário em 14/11/2026), que eliminou as ambiguidades de dígitos da digitalização original. Revisão normativa profissional continua PENDENTE: a cópia nítida não é exemplar oficial certificado e as erratas não foram verificadas.",
   "table6": {
     "item": "6.1.1 Tabela 6",
     "documentPage": 20,
     "pdfPage": 32,
     "applicability": "Planta retangular a x b (b menor dimensão), paredes verticais de arestas vivas; 1<=a/b<=4; 0<h/b<=6; a/b entre 3/2 e 2 interpola linearmente (Nota 2).",
     "heightRows": [
-      {"id": "H1", "hOverB": "h/b<=1/2",
-       "bands": {
-         "lo": {"A1B1": -0.8, "A2B2": -0.5, "C": 0.7, "D": -0.4, "A": 0.7, "B": -0.4, "C1D1": -0.8, "C2D2": -0.4},
-         "hi": {"A1B1": -0.8, "A2B2": -0.4, "C": 0.7, "D": -0.3, "A": 0.7, "B": -0.5, "C1D1": -0.9, "C2D2": -0.5}}},
-      {"id": "H2", "hOverB": "1/2<h/b<=3/2",
-       "bands": {
-         "lo": {"A1B1": -0.9, "A2B2": -0.5, "C": 0.7, "D": -0.5, "A": 0.7, "B": -0.5, "C1D1": -0.9, "C2D2": -0.5},
-         "hi": {"A1B1": -0.9, "A2B2": -0.4, "C": 0.7, "D": -0.3, "A": 0.7, "B": -0.6, "C1D1": -0.9, "C2D2": -0.5}}},
-      {"id": "H3", "hOverB": "3/2<h/b<=6",
-       "bands": {
-         "lo": {"A1B1": -1.0, "A2B2": -0.6, "C": 0.8, "D": -0.6, "A": 0.8, "B": -0.6, "C1D1": -1.0, "C2D2": -0.6},
-         "hi": {"A1B1": -1.0, "A2B2": -0.5, "C": 0.8, "D": -0.3, "A": 0.8, "B": -0.6, "C1D1": -1.0, "C2D2": -0.6}}}
+      {
+        "id": "H1",
+        "hOverB": "h/b<=1/2",
+        "bands": {
+          "lo": {
+            "A1B1": -0.8,
+            "A2B2": -0.5,
+            "C": 0.7,
+            "D": -0.4,
+            "A": 0.7,
+            "B": -0.4,
+            "C1D1": -0.8,
+            "C2D2": -0.4
+          },
+          "hi": {
+            "A1B1": -0.8,
+            "A2B2": -0.4,
+            "C": 0.7,
+            "D": -0.3,
+            "A": 0.7,
+            "B": -0.5,
+            "C1D1": -0.9,
+            "C2D2": -0.5
+          }
+        }
+      },
+      {
+        "id": "H2",
+        "hOverB": "1/2<h/b<=3/2",
+        "bands": {
+          "lo": {
+            "A1B1": -0.9,
+            "A2B2": -0.5,
+            "C": 0.7,
+            "D": -0.5,
+            "A": 0.7,
+            "B": -0.5,
+            "C1D1": -0.9,
+            "C2D2": -0.5
+          },
+          "hi": {
+            "A1B1": -0.9,
+            "A2B2": -0.4,
+            "C": 0.7,
+            "D": -0.3,
+            "A": 0.7,
+            "B": -0.6,
+            "C1D1": -0.9,
+            "C2D2": -0.5
+          }
+        }
+      },
+      {
+        "id": "H3",
+        "hOverB": "3/2<h/b<=6",
+        "bands": {
+          "lo": {
+            "A1B1": -1.0,
+            "A2B2": -0.6,
+            "C": 0.8,
+            "D": -0.6,
+            "A": 0.8,
+            "B": -0.6,
+            "C1D1": -1.0,
+            "C2D2": -0.6
+          },
+          "hi": {
+            "A1B1": -1.0,
+            "A2B2": -0.5,
+            "C": 0.8,
+            "D": -0.3,
+            "A": 0.8,
+            "B": -0.6,
+            "C1D1": -1.0,
+            "C2D2": -0.6
+          }
+        }
+      }
     ],
     "bandRule": "lo: 1<=a/b<=3/2; hi: 2<=a/b<=4",
     "alphaRule": "alpha=0: vento perpendicular à parede de comprimento b (faces C barlavento, D sotavento; paredes paralelas A1/A2/A3 e B1/B2/B3 de comprimento a). alpha=90: perpendicular à parede de comprimento a (A barlavento, B sotavento; paralelas C1/C2 e D1/D2 de comprimento b).",
@@ -31,7 +96,11 @@
       "alpha0": "A1/B1: comprimento min(max(b/3, a/4), 2h) a partir da aresta de barlavento; A2/B2: até a/2; A3/B3: de a/2 até a aresta de sotavento (figura da Tabela 6, p.20).",
       "alpha90": "C1/D1: comprimento min(2h, b/2) a partir da aresta de barlavento; C2/D2: restante (figura da Tabela 6, p.20)."
     },
-    "nota3": {"item": "Tabela 6, Nota 3", "a3b3": "a/b=1: igual a A2/B2; a/b>=2: Ce=-0,2; 1<a/b<2: interpolação linear.", "a3b3AtLargeRatio": -0.2},
+    "nota3": {
+      "item": "Tabela 6, Nota 3",
+      "a3b3": "a/b=1: igual a A2/B2; a/b>=2: Ce=-0,2; 1<a/b<2: interpolação linear.",
+      "a3b3AtLargeRatio": -0.2
+    },
     "nota4NotApplied": "cpe médio (faixa hachurada, 0,2b ou h) não é aplicado: destina-se a verificação local e não é carga global de fachada."
   },
   "internalPressure": {
@@ -39,8 +108,37 @@
     "documentPage": 43,
     "pdfPage": 55,
     "applicability": "Edificação com cobertura impermeável (6.3.2.1); paredes cujo índice de permeabilidade foi determinado pelo responsável.",
-    "twoOppositeFacesEquallyPermeable": {"windPerpendicularToPermeableFace": 0.2, "windPerpendicularToImpermeableFace": -0.3},
-    "fourFacesEquallyPermeable": {"alternatives": [-0.3, 0], "rule": "considerar o valor mais nocivo: ambos gerados como cenários exclusivos"}
+    "twoOppositeFacesEquallyPermeable": {
+      "windPerpendicularToPermeableFace": 0.2,
+      "windPerpendicularToImpermeableFace": -0.3
+    },
+    "fourFacesEquallyPermeable": {
+      "alternatives": [
+        -0.3,
+        0
+      ],
+      "rule": "considerar o valor mais nocivo: ambos gerados como cenários exclusivos"
+    }
   },
-  "blocked": ["abertura dominante 6.3.2.1 c)", "método detalhado 6.3.3", "efeito de vizinhança 6.4", "alta turbulência 6.1.3", "frontões, platibandas e aberturas nas paredes", "cpe médio (Nota 4)"]
+  "blocked": [
+    "abertura dominante 6.3.2.1 c)",
+    "método detalhado 6.3.3",
+    "efeito de vizinhança 6.4",
+    "alta turbulência 6.1.3",
+    "frontões, platibandas e aberturas nas paredes",
+    "cpe médio (Nota 4)"
+  ],
+  "unverifiedCells": [],
+  "unverifiedCellsRule": "Ids LINHA/faixa/coluna que exigem confirmação do responsável técnico (coefficientConfirmations) antes do uso. Vazio após a conferência com a cópia nítida; manter o mecanismo para futuras revisões.",
+  "verification": {
+    "date": "2026-11-14",
+    "source": "Cópia nítida da NBR 6123:2023 fornecida pelo usuário (captura de tela, página 32 de 107); digitalização original do PDF local tinha dígitos 3/6/8/9 ilegíveis",
+    "cellsCompared": 54,
+    "cellsCoincide": 54,
+    "cellsChanged": 0,
+    "scope": "48 células Cpe (6 linhas x 8 colunas A1B1,A2B2,C,D,A,B,C1D1,C2D2) e 6 valores de cpe médio (não usados); rótulos geométricos das figuras (b/3 ou a/4, menor que 2h; 2h ou b/2) também conferem.",
+    "notVisibleInCapture": "Notas 1-5 e demais páginas: a Nota 3 (A3/B3 = -0,2) permanece da leitura da digitalização original (dígito 2, legível); Cpi p.43 não foi recomparado.",
+    "professionalReview": "pending",
+    "errata": "not-verified"
+  }
 }

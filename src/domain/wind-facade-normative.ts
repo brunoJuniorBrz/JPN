@@ -12,8 +12,10 @@ import type {FacadeOrientation} from "./physical-facades";
  * EXISTING declared-facade-traction input (uniform for windward/leeward walls,
  * piecewise `profile` for walls parallel to the wind), so loads reuse the
  * audited column path. Dominant openings and other domains are blocked.
- * Table 6 is a blurred scan: cells whose final digit is 3/6/8/9 are only used
- * when the responsible engineer confirms the value (coefficientConfirmations). */
+ * Table 6 cells listed in data `unverifiedCells` are only used when the
+ * responsible engineer confirms the value (coefficientConfirmations); the
+ * list is empty after the cell-by-cell check against a sharp copy, but the
+ * gate stays active. Professional normative review remains pending. */
 const id=z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,59}$/);
 const axis=(o:FacadeOrientation)=>o.endsWith("X")?"X":"Y";
 const opposite=(o:FacadeOrientation):FacadeOrientation=>(o.startsWith("+")?"-":"+")+o[1] as FacadeOrientation;
@@ -27,7 +29,7 @@ export const normativeWallWindSchema=z.object({
     roofImpermeable:z.literal(true),
   }).strict(),
   speed:windSpeedInputSchema,
-  /** Engineer's confirmation, from the printed standard, of every blurred Table 6 cell used. */
+  /** Engineer's confirmation, from the printed standard, of every unverified Table 6 cell used. */
   coefficientConfirmations:z.array(z.object({cell:z.string().max(40),value:z.number().finite()}).strict()).max(64).default([]),
   cases:z.array(z.object({
     id,windFrom:facadeOrientationSchema,
@@ -42,7 +44,6 @@ type Band="lo"|"hi";
 type Cell="A1B1"|"A2B2"|"C"|"D"|"A"|"B"|"C1D1"|"C2D2";
 function fail(c:string,m:string):never{throw Error(c+": "+m);}
 const lerp=(a:number,b:number,t:number)=>a+(b-a)*t;
-const isBlurred=(v:number)=>(table.blurredFinalDigits as number[]).includes(Math.round(Math.abs(v)*10)%10);
 
 export type CoefficientLookup={value:number;cells:{id:string;value:number;blurred:boolean}[];row:string;band:string};
 function rowFor(hOverB:number,aOverB:number){
@@ -51,8 +52,18 @@ function rowFor(hOverB:number,aOverB:number){
   return table.table6.heightRows[hOverB<=0.5?0:hOverB<=1.5?1:2];
 }
 const cellRef=(row:{id:string;bands:Record<Band,Record<string,number>>},band:Band,cell:string)=>{
-  const value=row.bands[band][cell];return {id:row.id+"/"+band+"/"+cell,value,blurred:isBlurred(value)};
+  const id=row.id+"/"+band+"/"+cell,value=row.bands[band][cell];
+  return {id,value,blurred:(table.unverifiedCells as string[]).includes(id)};
 };
+/** Gate: every unverified cell used needs an engineer confirmation equal to the transcription. */
+export function checkCellConfirmations(cells:{id:string;value:number;blurred:boolean}[],confirmed:Map<string,number>){
+  for(const c of cells){
+    if(!c.blurred)continue;
+    const v=confirmed.get(c.id);
+    if(v===undefined)fail("WIND_COEFFICIENT_UNCONFIRMED",c.id+" não verificada; confirme "+c.value+" na norma impressa");
+    if(Math.abs(v-c.value)>1e-9)fail("WIND_COEFFICIENT_CONFIRMATION_MISMATCH",c.id+": confirmado "+v+" ≠ transcrito "+c.value+"; corrigir os dados antes de usar");
+  }
+}
 /** Tabela 6 cell for a/b and h/b; interpolation per Nota 2 between bands. */
 export function table6Coefficient(cell:Cell,aOverB:number,hOverB:number):CoefficientLookup{
   const row=rowFor(hOverB,aOverB) as {id:string;bands:Record<Band,Record<string,number>>};
@@ -114,13 +125,8 @@ export function buildNormativeFacadeTraction(project:Project,raw:unknown){
   const confirmed=new Map(input.coefficientConfirmations.map(c=>[c.cell,c.value]));
   const used=new Set<string>();
   const need=(l:CoefficientLookup)=>{
-    for(const c of l.cells){
-      used.add(c.id);
-      if(!c.blurred)continue;
-      const v=confirmed.get(c.id);
-      if(v===undefined)fail("WIND_COEFFICIENT_UNCONFIRMED",c.id+" tem dígito ilegível na digitalização; confirme "+c.value+" na norma impressa");
-      if(Math.abs(v-c.value)>1e-9)fail("WIND_COEFFICIENT_CONFIRMATION_MISMATCH",c.id+": confirmado "+v+" ≠ transcrito "+c.value+"; corrigir os dados antes de usar");
-    }
+    for(const c of l.cells)used.add(c.id);
+    checkCellConfirmations(l.cells,confirmed);
   };
   const speed=calculateWindSpeed(input.speed),q=speed.dynamicPressurePa;
   const aOverB=b.longSideM/b.shortSideM,hOverB=b.heightM/b.shortSideM;
