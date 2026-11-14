@@ -40,7 +40,11 @@ const show = (v: number) => v === 0 ? "0" : v.toExponential(5);
 export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=false }: { project: Project; onChange: (patch: Partial<Project>) => void; demoPresentation?:boolean }) {
   const [example, setExample] = useState<Project | null>(null), [pane, setPane] = useState(demoPresentation?"results":"prepare");
   // Built-in synthetic examples have isotropic sections: their roll is declared (and reviewed) here. User projects never get a default roll.
-  const active = useMemo(() => example ? withReviewedIsotropicAxes(example) : project, [example, project]), draft = active.workspace.spatialPreparation ?? newSpatialPreparation(active);
+  const active = useMemo(() => {
+    if (!example) return project;
+    if (example.workspace.spatialPreparation?.localAxes) return example;           // explicit declaration made in the UI wins
+    try { return withReviewedIsotropicAxes(example); } catch { return example; }   // anisotropic example: the roll becomes a visible pendency
+  }, [example, project]), draft = active.workspace.spatialPreparation ?? newSpatialPreparation(active);
   const axes = useMemo(() => { try { return projectFrameAxes(active); } catch { return { framePieceIds: [] as string[], allPieceIds: [] as string[], pending: [], signature: "" }; } }, [active]);
   const signature = structureSignature(active), identity = JSON.stringify([example ? "example" : "work", active.id, signature, draft]);
   const model = useMemo(() => resolvePhysicalStructure(active).model, [active]);
@@ -153,7 +157,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     {!demoPresentation&&<nav className="physical-prep-tabs" aria-label="Fluxo misto"><button className="button secondary" aria-pressed={pane === "prepare"} onClick={() => setPane("prepare")}>Preparação mista</button><button className="button secondary" aria-pressed={pane === "results"} onClick={() => setPane("results")}>Resultados 3D</button></nav>}
     {pane === "prepare" && <>
       <SpatialPreparationPanel key={example ? "example" : "work"} project={active} onChange={edit} mixed />
-      <LocalAxesPanel framePieceIds={axes.framePieceIds} pending={axes.pending} review={draft.localAxes} readOnly={!!example}
+      <LocalAxesPanel framePieceIds={axes.framePieceIds} pending={axes.pending} review={draft.localAxes} readOnly={false}
         onDeclare={members => edit({ workspace: { ...active.workspace, spatialPreparation: { ...draft, localAxes: { version: 1, convention: "jpn-z-up/1", geometrySignature: axes.signature, members } } } })} />
       <StructuralLoadsPanel project={active} onChange={edit} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setNodeId("");setPane("results");}}/>
       <details className="technical-details"><summary>Conectividade física e segmentação</summary>
