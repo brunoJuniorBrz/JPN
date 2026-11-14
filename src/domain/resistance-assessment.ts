@@ -8,7 +8,7 @@ import { axialConnectionMinimum } from "./axial-connection-minimum";
 
 export const memberExecutionSchema=z.object({schema_version:z.literal("jpn.member-design-record/1"),request:verifiedColdformedRequestSchema,result:coldformedDesignResultSchema.required({geometry_audit:true,calculation_input_sha256:true,connection_audit:true})}).strict();
 export type MemberExecution=z.infer<typeof memberExecutionSchema>;
-export const checkProcedures:Record<string,string>={compression:"NBR14762:2010-C.3",my_positive:"NBR14762:2010-C.4",my_negative:"NBR14762:2010-C.4",mz_positive:"NBR14762:2010-C.4",mz_negative:"NBR14762:2010-C.4",tension:"NBR14762:2010-9.6.2","compression-slenderness":"NBR14762:2010-9.7.4",shear_z:"NBR14762:2010-9.8.3","combined-9.9":"NBR14762:2010-9.9"};
+export const checkProcedures:Record<string,string>={compression:"NBR14762:2010-C.3",my_positive:"NBR14762:2010-C.4",my_negative:"NBR14762:2010-C.4",mz_positive:"NBR14762:2010-C.4",mz_negative:"NBR14762:2010-C.4",tension:"NBR14762:2010-9.6.2","compression-slenderness":"NBR14762:2010-9.7.4",shear_z:"NBR14762:2010-9.8.3","combined-9.9":"NBR14762:2010-9.9","bending-shear-9.8.4":"NBR14762:2010-9.8.4","tension-slenderness":"NBR14762:2010-9.6.3"};
 
 /** Derived report v3. Keep the historical basic v2 contract and its own hash.
  * Supplying an availability string or an unrelated record is never execution. */
