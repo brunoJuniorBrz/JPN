@@ -8,6 +8,7 @@ import {auditPhysicalRestraints} from "./physical-restraints";
 import {memberDesignBasis} from "./coldformed-design";
 import type {DemandInput} from "./member-demands";
 import type {coldformedDesignResultSchema} from "./coldformed-design";
+import type {ElasticLtbAttempt} from "./elastic-ltb";
 
 export const structuralAssessmentRequestSchema=z.object({schema_version:z.literal("jpn.structural-assessment/1"),project:projectSchema}).strict();
 export type ResistanceAttempt={pieceId:string;combinationId:string;status:"executed"|"blocked";reason:string|null};
@@ -52,8 +53,14 @@ export async function prepareStructuralAssessment(project:Project,prepared:Deman
   return {base,joints,restraints,studyBases,transfers:connectionTransferDemands(joints,base)};
 }
 
-export async function finishStructuralAssessment(project:Project,prepared:Awaited<ReturnType<typeof prepareStructuralAssessment>>,records:MemberExecution[],attempts:ResistanceAttempt[],resistanceBatch:{geometryEvaluations:number;geometryReuses:number}|null=null){
-  const resistance=await buildResistanceAssessment(project,prepared.base,records);
+export async function finishStructuralAssessment(project:Project,prepared:Awaited<ReturnType<typeof prepareStructuralAssessment>>,records:MemberExecution[],attempts:ResistanceAttempt[],resistanceBatch:{geometryEvaluations:number;geometryReuses:number}|null=null,lateralTorsional:ElasticLtbAttempt[]=[]){
+  const original=await buildResistanceAssessment(project,prepared.base,records);
+  // Preserve the base/verified-resistance records and their own hashes. Attach
+  // elastic evidence to the actual member without changing any normative state.
+  const {reportSha256,...originalBody}=original;
+  const withLtb={...originalBody,priorAssessmentSha256:reportSha256,elasticLateralTorsional:lateralTorsional,
+    pieces:original.pieces.map(p=>({...p,elasticLateralTorsional:lateralTorsional.filter(s=>s.study.pieceId===p.pieceId)}))};
+  const resistance=lateralTorsional.length?{...withLtb,reportSha256:await mixedInputHash(withLtb)}:original;
   const checks=records.flatMap(record=>record.result.checks.map(check=>({pieceId:record.result.piece_id,combinationId:record.result.combination_id,
     profile:prepared.base.pieces.find(p=>p.pieceId===record.result.piece_id)!.profileDesignation,
     steel:prepared.base.pieces.find(p=>p.pieceId===record.result.piece_id)!.physicalProperties.steelGrade,
@@ -65,7 +72,7 @@ export async function finishStructuralAssessment(project:Project,prepared:Awaite
     allMemberLimitStatesVerified:false as const})));
   const body={schema_version:"jpn.structural-assessment-result/1" as const,status:"partial-analysis-completed-experimental" as const,
     analysisInputSha256:prepared.base.binding.inputSha256,analysisResultSha256:prepared.base.binding.resultSha256,
-    report:resistance,restraints:prepared.restraints,studyBases:prepared.studyBases,transfers:prepared.transfers,resistanceAttempts:attempts,resistanceBatch,checks,
+    report:resistance,restraints:prepared.restraints,studyBases:prepared.studyBases,transfers:prepared.transfers,resistanceAttempts:attempts,resistanceBatch,checks,lateralTorsional,
     computedStructuralApproval:false as const,fabricationRelease:false as const,releaseGate:"NOT_READY_BLOCKED" as const,
     remaining:["M43/M44/M45 are not complete: lateral-torsional/local/distortional stability, full resistance, connections and existing supports need their applicable verifications.",
       "External critical-mode inputs remain conditional; declared restraint capacities are not verified resistances.",
