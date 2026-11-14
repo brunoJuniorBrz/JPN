@@ -696,8 +696,8 @@
         {
           "path": "src/domain/declared-facade-mixed-real.test.ts",
           "source_blob": "68e7233df10c7eff1bc0e937fc5880cd978d62e9",
-          "candidate_blob": "68e7233df10c7eff1bc0e937fc5880cd978d62e9",
-          "identical_git_blob": true
+          "candidate_blob": "3ecafd27b9fe38c78f437c841f3394d1cd115622",
+          "identical_git_blob": false
         },
         {
           "path": "src/domain/declared-roof-load-path-real.test.ts",
@@ -778,7 +778,7 @@
         {
           "path": "src/domain/declared-facade-mixed-real.test.ts",
           "source_blob": "907f02cb44474095707f84dfbbac915894ee0205",
-          "candidate_blob": "68e7233df10c7eff1bc0e937fc5880cd978d62e9",
+          "candidate_blob": "3ecafd27b9fe38c78f437c841f3394d1cd115622",
           "identical_git_blob": false
         },
         {
@@ -830,7 +830,7 @@
         {
           "path": "src/domain/declared-facade-mixed-real.test.ts",
           "source_blob": "65e7d5fe0711098e8f643431a5842bd72935a8ef",
-          "candidate_blob": "68e7233df10c7eff1bc0e937fc5880cd978d62e9",
+          "candidate_blob": "3ecafd27b9fe38c78f437c841f3394d1cd115622",
           "identical_git_blob": false
         },
         {
@@ -842,8 +842,8 @@
         {
           "path": "src/domain/facade-solver-load-audit.ts",
           "source_blob": "7861d1f7f172e06eb9293d1c4967eca21d8cae4b",
-          "candidate_blob": "7861d1f7f172e06eb9293d1c4967eca21d8cae4b",
-          "identical_git_blob": true
+          "candidate_blob": "9f8e2ac7bc79b4b79cad56ee5d57a730b93f0da2",
+          "identical_git_blob": false
         },
         {
           "path": "src/domain/loaded-mixed-adapter.ts",
@@ -882,7 +882,7 @@
         {
           "path": "src/domain/declared-facade-mixed-real.test.ts",
           "source_blob": "734b10ac14af838c86583b25ba707221bb905744",
-          "candidate_blob": "68e7233df10c7eff1bc0e937fc5880cd978d62e9",
+          "candidate_blob": "3ecafd27b9fe38c78f437c841f3394d1cd115622",
           "identical_git_blob": false
         },
         {
@@ -1423,8 +1423,8 @@
         {
           "path": "src/domain/declared-facade-mixed-real.test.ts",
           "source_blob": "68e7233df10c7eff1bc0e937fc5880cd978d62e9",
-          "candidate_blob": "68e7233df10c7eff1bc0e937fc5880cd978d62e9",
-          "identical_git_blob": true
+          "candidate_blob": "3ecafd27b9fe38c78f437c841f3394d1cd115622",
+          "identical_git_blob": false
         },
         {
           "path": "src/domain/declared-facade-traction-contract.ts",
@@ -1519,8 +1519,8 @@
         {
           "path": "src/domain/facade-solver-load-audit.ts",
           "source_blob": "7861d1f7f172e06eb9293d1c4967eca21d8cae4b",
-          "candidate_blob": "7861d1f7f172e06eb9293d1c4967eca21d8cae4b",
-          "identical_git_blob": true
+          "candidate_blob": "9f8e2ac7bc79b4b79cad56ee5d57a730b93f0da2",
+          "identical_git_blob": false
         },
         {
           "path": "src/domain/general-topologies.test.ts",

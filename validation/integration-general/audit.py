@@ -48,6 +48,14 @@ def ancestor(a, b):
     return subprocess.run([GIT, "merge-base", "--is-ancestor", a, b], cwd=ROOT, capture_output=True).returncode == 0
 
 
+# Reviewed post-PR83 amendments to frozen files, pinned by Git blob. Any other
+# change, or any further edit to these files, still fails until re-reviewed.
+# PR #85 (M41): facade loads duplicated under unrelated IDs are rejected.
+REVIEWED_AMENDMENTS = {
+    "src/domain/facade-solver-load-audit.ts": "9f8e2ac7bc79b4b79cad56ee5d57a730b93f0da2",
+    "src/domain/declared-facade-mixed-real.test.ts": "3ecafd27b9fe38c78f437c841f3394d1cd115622",
+}
+
 TREES = {}
 
 
@@ -63,7 +71,9 @@ def verify_guards(snapshot):
     # Existing application, physical preparation, numerical sources, tests and
     # golden files remain byte-identical to the verified P83 tree.
     changed = git("diff", "--name-only", "--diff-filter=MD", snapshot["core_sha"], "HEAD", "--", "src", "engine", "tests", "validation").splitlines()
-    assert set(changed) <= {"engine/vercel.json"}, "Existing verified files overwritten: "+str(changed)
+    head = tree("HEAD")
+    unreviewed = [f for f in changed if f != "engine/vercel.json" and head.get(f) != REVIEWED_AMENDMENTS.get(f)]
+    assert not unreviewed, "Existing verified files overwritten: "+str(unreviewed)
     assert not git("diff", "--name-only", "--diff-filter=D", snapshot["core_sha"], "HEAD"), "Deleted evidence/source"
     for path in (ROOT/"vercel.json", ROOT/"engine/vercel.json"):
         flags = json.loads(path.read_text(encoding="utf-8"))["git"]["deploymentEnabled"]
