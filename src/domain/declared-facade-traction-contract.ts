@@ -12,6 +12,12 @@ export const declaredFacadeTractionSchema=z.object({
     reference:evidence,
     zones:z.array(z.object({
       facadeId:id,netPressurePa:z.number().finite().min(-1e6).max(1e6),
+      /** Optional piecewise-constant pressure along the facade-local horizontal
+       * axis (metres from the u-min end, full height). netPressurePa MUST then
+       * be the width-weighted mean. Transmission is simple-support spans between
+       * the physical columns, which conserves force AND moment exactly. */
+      profile:z.array(z.object({startM:z.number().finite().min(0).max(1e4),endM:z.number().finite().min(0).max(1e4),
+        netPressurePa:z.number().finite().min(-1e6).max(1e6)}).strict()).min(2).max(8).optional(),
       source:evidence,revision:evidence,calculationBasis:evidence,
     }).strict()).min(1).max(32),
   }).strict()).min(1).max(10),
