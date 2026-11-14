@@ -6,6 +6,7 @@ import type {DeclaredFacadeTraction} from "./declared-facade-traction";
 import type {Project} from "./models";
 import {facadeOrientationSchema,toFacadeLocal,fromFacadeLocal} from "./physical-facades";
 import type {FacadeOrientation} from "./physical-facades";
+import {assertDominant,classifyOpeningSpan,highSuctionDominantCpi,highSuctionStripM,sealedCpiAlternatives,windwardDominantCpi} from "./wind-internal-pressure";
 
 /** M41-P4/P5: NBR 6123:2023 Tabela 6 (all wall zones) + 6.3.2.1 a)/b)
  * internal pressure -> net pressure per physical facade, emitted as the
@@ -19,6 +20,26 @@ import type {FacadeOrientation} from "./physical-facades";
 const id=z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,59}$/);
 const axis=(o:FacadeOrientation)=>o.endsWith("X")?"X":"Y";
 const opposite=(o:FacadeOrientation):FacadeOrientation=>(o.startsWith("+")?"-":"+")+o[1] as FacadeOrientation;
+const area=z.number().finite().positive().max(1e6),areaOrZero=z.number().finite().min(0).max(1e6);
+const span=z.tuple([z.number().finite().min(0),z.number().finite().min(0)]);
+/** Areas are DECLARED inputs (not verified against facade geometry); walls with physical
+ * openings remain blocked by the facade distribution path. */
+const dominantBase={otherFacesEquallyPermeable:z.literal(true),dominantOpeningAreaM2:area,otherOpeningsTotalAreaM2:areaOrZero};
+const internalSchema=z.discriminatedUnion("rule",[
+  z.object({rule:z.literal("two-opposite-faces-equally-permeable"),permeableAxis:z.enum(["X","Y"])}).strict(),
+  z.object({rule:z.literal("four-faces-equally-permeable")}).strict(),
+  z.object({rule:z.literal("sealed-building"),characterization:z.string().trim().min(20).max(1000)}).strict(),
+  z.object({rule:z.literal("dominant-opening-windward"),...dominantBase,
+    windwardFaceOpeningsAreaM2:area,suctionFacesOpeningsAreaM2:area}).strict(),
+  z.object({rule:z.literal("dominant-opening-parallel"),...dominantBase,openingSpanFromWindwardEdgeM:span,
+    highSuction:z.object({openingsInZoneAreaM2:area,otherSuctionFacesOpeningsAreaM2:area}).strict().optional()}).strict(),
+  z.object({rule:z.literal("dominant-opening-ce-fallback"),...dominantBase,
+    permeabilityRatioIndeterminate:z.string().trim().min(20).max(1000),
+    location:z.discriminatedUnion("wall",[z.object({wall:z.literal("windward")}).strict(),
+      z.object({wall:z.literal("parallel"),spanFromWindwardEdgeM:span}).strict()])}).strict(),
+  z.object({rule:z.enum(["dominant-opening-leeward","cylindrical-open-top","detailed-flow-balance"])}).strict(),
+]);
+type Internal=z.infer<typeof internalSchema>;
 export const normativeWallWindSchema=z.object({
   schema_version:z.literal("jpn.nbr6123-wall-wind/2"),
   building:z.object({
@@ -27,16 +48,15 @@ export const normativeWallWindSchema=z.object({
     heightM:z.number().finite().positive().max(500),      // h
     longAxis:z.enum(["X","Y"]),
     roofImpermeable:z.literal(true),
+    /** Tabela 6 Nota 1: h follows Detalhe I of Tabela 7 (not supplied here) - declared by the engineer. */
+    heightDefinitionConfirmed:z.literal(true),
   }).strict(),
   speed:windSpeedInputSchema,
   /** Engineer's confirmation, from the printed standard, of every unverified Table 6 cell used. */
   coefficientConfirmations:z.array(z.object({cell:z.string().max(40),value:z.number().finite()}).strict()).max(64).default([]),
   cases:z.array(z.object({
     id,windFrom:facadeOrientationSchema,
-    internalPressure:z.discriminatedUnion("rule",[
-      z.object({rule:z.literal("two-opposite-faces-equally-permeable"),permeableAxis:z.enum(["X","Y"])}).strict(),
-      z.object({rule:z.literal("four-faces-equally-permeable")}).strict(),
-    ]),
+    internalPressure:internalSchema,
   }).strict()).min(1).max(5),
 }).strict();
 
@@ -106,6 +126,61 @@ export function internalPressureCoefficients(rule:"two-opposite-faces-equally-pe
   return [windAxis===permeableAxis?ip.twoOppositeFacesEquallyPermeable.windPerpendicularToPermeableFace
     :ip.twoOppositeFacesEquallyPermeable.windPerpendicularToImpermeableFace];
 }
+/** Tabela 6 cpe médio (Nota 4): classification / local checks only; never replaces zone Cpe. */
+export function cpeMedioCoefficient(aOverB:number,hOverB:number){
+  const row=rowFor(hOverB,aOverB),m=table.table6.cpeMedio[row.id as "H1"|"H2"|"H3"];
+  return aOverB<=1.5?m.lo:aOverB>=2?m.hi:lerp(m.lo,m.hi,(aOverB-1.5)/.5);
+}
+type Scenario={cpi:number;basis:string;cells:CoefficientLookup["cells"]};
+type Ctx={windAxis:"X"|"Y";alpha:0|90;a:number;b:number;h:number;wLook:CoefficientLookup;zones:ParallelZone[]};
+function parallelCe(sp:[number,number],ctx:Ctx){
+  const wallM=ctx.alpha===0?ctx.a:ctx.b,cls=classifyOpeningSpan(sp,wallM,highSuctionStripM(ctx.b,ctx.h));
+  const zone=ctx.zones.find(z=>sp[0]>=z.startM-1e-9&&sp[1]<=z.endM+1e-9);
+  return {cls,zone};
+}
+function internalScenarios(ip:Internal,ctx:Ctx):Scenario[]{
+  switch(ip.rule){
+    case "two-opposite-faces-equally-permeable":
+    case "four-faces-equally-permeable":
+      return internalPressureCoefficients(ip.rule,ctx.windAxis,ip.rule==="two-opposite-faces-equally-permeable"?ip.permeableAxis:undefined)
+        .map(cpi=>({cpi,basis:ip.rule==="four-faces-equally-permeable"?"6.3.2.1 b)":"6.3.2.1 a)",cells:[]}));
+    case "sealed-building":
+      return sealedCpiAlternatives().map(cpi=>({cpi,basis:"6.3.2.2 (caracterizado: "+ip.characterization.slice(0,80)+")",cells:[]}));
+    case "dominant-opening-windward":{
+      assertDominant(ip.dominantOpeningAreaM2,ip.otherOpeningsTotalAreaM2);
+      if(ip.windwardFaceOpeningsAreaM2<ip.dominantOpeningAreaM2)fail("WIND_CPI_AREAS","aberturas a barlavento menores que a dominante");
+      const ratio=ip.windwardFaceOpeningsAreaM2/ip.suctionFacesOpeningsAreaM2;
+      return [{cpi:windwardDominantCpi(ratio),basis:"6.3.2.1 c) barlavento, razão "+ratio,cells:[]}];
+    }
+    case "dominant-opening-parallel":{
+      assertDominant(ip.dominantOpeningAreaM2,ip.otherOpeningsTotalAreaM2);
+      const {cls,zone}=parallelCe(ip.openingSpanFromWindwardEdgeM,ctx);
+      if(cls==="high-suction"){
+        if(!ip.highSuction)return fail("WIND_CPI_HIGH_SUCTION_AREAS_REQUIRED","abertura em zona de alta sucção exige as áreas highSuction");
+        if(ip.highSuction.openingsInZoneAreaM2<ip.dominantOpeningAreaM2)fail("WIND_CPI_AREAS","aberturas na zona menores que a dominante");
+        const ratio=ip.highSuction.openingsInZoneAreaM2/ip.highSuction.otherSuctionFacesOpeningsAreaM2;
+        return [{cpi:highSuctionDominantCpi(ratio),basis:"6.3.2.1 c) paralela em zona de alta sucção, razão "+ratio,cells:[]}];
+      }
+      if(!zone)return fail("WIND_CPI_OPENING_STRADDLES_ZONE","abertura cruza zonas da Tabela 6");
+      return [{cpi:zone.lookup.value,basis:"6.3.2.1 c) paralela fora da alta sucção: Ce de "+zone.zone,cells:zone.lookup.cells}];
+    }
+    case "dominant-opening-ce-fallback":{
+      assertDominant(ip.dominantOpeningAreaM2,ip.otherOpeningsTotalAreaM2);
+      if(ip.location.wall==="windward")
+        return [{cpi:ctx.wLook.value,basis:"6.3.2.1 c) Ce da face de barlavento (razão indeterminada)",cells:ctx.wLook.cells}];
+      const {cls,zone}=parallelCe(ip.location.spanFromWindwardEdgeM,ctx);
+      if(cls==="high-suction")return fail("WIND_CPI_FALLBACK_HIGH_SUCTION_AMBIGUOUS","Ce de zona x cpe médio não resolvido pela norma fornecida");
+      if(!zone)return fail("WIND_CPI_OPENING_STRADDLES_ZONE","abertura cruza zonas da Tabela 6");
+      return [{cpi:zone.lookup.value,basis:"6.3.2.1 c) Ce de "+zone.zone+" (razão indeterminada)",cells:zone.lookup.cells}];
+    }
+    case "dominant-opening-leeward":
+      return fail("WIND_CPI_LEEWARD_DOMINANT_BLOCKED","a norma remete à Tabela 4 para Ce de sotavento; referência cruzada não verificável");
+    case "cylindrical-open-top":
+      return fail("WIND_CPI_CYLINDRICAL_OUT_OF_DOMAIN","6.3.2.3 pertence a edificações cilíndricas, fora do módulo retangular");
+    case "detailed-flow-balance":
+      return fail("WIND_CPI_DETAILED_METHOD_BLOCKED","6.3.3 exige leitura integral e validação independente");
+  }
+}
 const f=(v:number)=>(v>0?"+":"")+v.toFixed(2).replace(/\.?0+$/,"");
 
 /** Net pressure q*(Cpe-Cpi) [Pa], positive INWARD (declared-facade-traction convention). */
@@ -133,12 +208,12 @@ export function buildNormativeFacadeTraction(project:Project,raw:unknown){
   const cases:DeclaredFacadeTraction["cases"]=[],trace:unknown[]=[];
   for(const c of input.cases){
     const windAxis=axis(c.windFrom),alpha:0|90=windAxis===b.longAxis?0:90,
-      cpis=internalPressureCoefficients(c.internalPressure.rule,windAxis,
-        c.internalPressure.rule==="two-opposite-faces-equally-permeable"?c.internalPressure.permeableAxis:undefined);
-    const wLook=table6Coefficient(alpha===0?"C":"A",aOverB,hOverB),lLook=table6Coefficient(alpha===0?"D":"B",aOverB,hOverB);
-    const zonesPar=parallelWallZones(alpha,b.longSideM,b.shortSideM,b.heightM);
-    for(const cpi of cpis){
-      const caseId=cpis.length>1?c.id+"-CPI"+(cpi<0?"N":"P")+Math.abs(cpi*10):c.id;
+      wLook=table6Coefficient(alpha===0?"C":"A",aOverB,hOverB),lLook=table6Coefficient(alpha===0?"D":"B",aOverB,hOverB),
+      zonesPar=parallelWallZones(alpha,b.longSideM,b.shortSideM,b.heightM),
+      scenarios=internalScenarios(c.internalPressure,{windAxis,alpha,a:b.longSideM,b:b.shortSideM,h:b.heightM,wLook,zones:zonesPar});
+    for(const sc of scenarios){
+      const cpi=sc.cpi;need({cells:sc.cells} as CoefficientLookup);
+      const caseId=scenarios.length>1?c.id+"-CPI"+(cpi<0?"N":"P")+Math.abs(cpi*10):c.id;
       const zones=faces.map(face=>{
         if(face.kind!=="wall")return fail("WIND_FACADE_KIND_UNSUPPORTED",face.id+" não é parede (Tabela 6 cobre paredes)");
         const loc=face.outer.map(p=>toFacadeLocal(face.outward,p)),
@@ -150,12 +225,12 @@ export function buildNormativeFacadeTraction(project:Project,raw:unknown){
         const base={facadeId:face.id,
           source:"ABNT NBR 6123:2023 Tabela 6 (p.20) e 6.3.2.1 (p.43); transcrição data/normas/nbr6123-2023-wall-cpe.json",
           revision:table.revision+" / "+input.speed.reference.revision};
-        const basis=(txt:string)=>"p=q(Cpe-Cpi); q="+q.toFixed(3)+" Pa; "+txt+"; Cpi="+f(cpi)+"; positivo = para dentro";
+        const basis=(txt:string)=>"p=q(Cpe-Cpi); q="+q.toFixed(3)+" Pa; "+txt+"; Cpi="+f(cpi)+" ("+sc.basis+"); positivo = para dentro";
         if(face.outward===c.windFrom||face.outward===opposite(c.windFrom)){
           const windward=face.outward===c.windFrom,look=windward?wLook:lLook,col=alpha===0?(windward?"C":"D"):(windward?"A":"B");
           need(look);
           const net=q*(look.value-cpi);
-          trace.push({caseId,facadeId:face.id,role:windward?"windward":"leeward",alpha,column:col,cpe:look.value,cpi,qPa:q,netPressurePa:net});
+          trace.push({caseId,facadeId:face.id,role:windward?"windward":"leeward",alpha,column:col,cpe:look.value,cpi,cpiBasis:sc.basis,qPa:q,netPressurePa:net});
           return {...base,netPressurePa:net,calculationBasis:basis("Cpe("+col+", α="+alpha+"°, "+look.row+" "+look.band+")="+f(look.value))};
         }
         // Wall parallel to the wind: piecewise zones from the windward edge.
@@ -167,7 +242,7 @@ export function buildNormativeFacadeTraction(project:Project,raw:unknown){
           const net=q*(zn.lookup.value-cpi),
             startM=windwardAtMin?zn.startM:w-zn.endM,endM=windwardAtMin?zn.endM:w-zn.startM;
           trace.push({caseId,facadeId:face.id,role:"parallel",alpha,zone:zn.zone,fromWindwardM:[zn.startM,zn.endM],
-            cpe:zn.lookup.value,cpi,qPa:q,netPressurePa:net});
+            cpe:zn.lookup.value,cpi,cpiBasis:sc.basis,qPa:q,netPressurePa:net});
           return {startM,endM,netPressurePa:net,zone:zn.zone,cpe:zn.lookup.value};
         }).sort((x,y)=>x.startM-y.startM);
         const mean=profile.reduce((s,z)=>s+z.netPressurePa*(z.endM-z.startM),0)/w;

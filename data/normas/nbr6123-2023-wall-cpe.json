@@ -1,6 +1,6 @@
 {
   "schema_version": "jpn.nbr6123-wall-coefficients/2",
-  "revision": "M41-P5-2",
+  "revision": "M41-P6-1",
   "standard": "ABNT NBR 6123",
   "edition": "2023-original",
   "errata": "not-verified",
@@ -101,7 +101,32 @@
       "a3b3": "a/b=1: igual a A2/B2; a/b>=2: Ce=-0,2; 1<a/b<2: interpolação linear.",
       "a3b3AtLargeRatio": -0.2
     },
-    "nota4NotApplied": "cpe médio (faixa hachurada, 0,2b ou h) não é aplicado: destina-se a verificação local e não é carga global de fachada."
+    "nota4NotApplied": "cpe médio (faixa hachurada, 0,2b ou h) não é aplicado: destina-se a verificação local e não é carga global de fachada.",
+    "notes": {
+      "source": "Tabela 6, p.20 (PDF p.32); imagem nítida fornecida em 14/11/2026",
+      "1": "h segue o Detalhe I da Tabela 7 (Tabela 7 não fornecida: h é declarado pelo responsável, building.heightDefinitionConfirmed).",
+      "2": "3/2<a/b<2: interpolação linear (implementada).",
+      "3": "A3/B3 a 0°: a/b=1 igual a A2/B2; a/b>=2: Ce=-0,2; 1<a/b<2 interpolação linear (implementada).",
+      "4": "cpe médio aplica-se à parte de barlavento das paredes paralelas ao vento (faixa hachurada), distância min(0,2b; h). Identificada em 6.3.2.1 como ZONA DE ALTA SUCÇÃO EXTERNA (p.44). Finalidade: critério de zona para Cpi de abertura dominante; não substitui os coeficientes das zonas na carga global.",
+      "5": "Ca: Figura 4 (baixa turbulência) ou Figura 5 (alta turbulência), seção 6.1.3. Arrasto global não é calculado (bloqueado)."
+    },
+    "cpeMedio": {
+      "H1": {
+        "lo": -0.9,
+        "hi": -1.0
+      },
+      "H2": {
+        "lo": -1.1,
+        "hi": -1.1
+      },
+      "H3": {
+        "lo": -1.2,
+        "hi": -1.2
+      },
+      "source": "Tabela 6, coluna cpe médio; conferido na cópia nítida (6 valores)",
+      "use": "classificação de zona de alta sucção e verificações locais; nunca substitui Cpe de zona"
+    },
+    "highSuctionStrip": "comprimento a partir da aresta de barlavento das paredes paralelas = min(0,2b; h) (Nota 4)"
   },
   "internalPressure": {
     "item": "6.3.2.1 a) e b)",
@@ -118,15 +143,117 @@
         0
       ],
       "rule": "considerar o valor mais nocivo: ambos gerados como cenários exclusivos"
+    },
+    "sealed": {
+      "item": "6.3.2.2",
+      "pdfPage": 56,
+      "documentPage": 44,
+      "alternatives": [
+        -0.2,
+        0
+      ],
+      "applicability": "efetivamente estanque, janelas fixas, probabilidade desprezável de rompimento acidental: deve ser caracterizado explicitamente"
+    },
+    "dominantOpening": {
+      "item": "6.3.2.1 c) e 6.3.1",
+      "documentPages": [
+        43,
+        44
+      ],
+      "definition": "abertura dominante: área igual ou superior à área total das demais aberturas (6.3.1)",
+      "windward": {
+        "ratio": "área das aberturas na face de barlavento / área total das aberturas em todas as faces submetidas a sucções externas",
+        "rows": [
+          {
+            "ratio": 1,
+            "cpi": 0.1
+          },
+          {
+            "ratio": 1.5,
+            "cpi": 0.3
+          },
+          {
+            "ratio": 2,
+            "cpi": 0.5
+          },
+          {
+            "ratio": 3,
+            "cpi": 0.6
+          },
+          {
+            "ratio": 6,
+            "cpi": 0.8,
+            "orMore": true
+          }
+        ]
+      },
+      "leeward": "Ce da face de sotavento 'ver a Tabela 4': referência cruzada não verificável (Tabela 4 não fornecida; Ce de paredes está na Tabela 6) - BLOQUEADO",
+      "parallelOutsideHighSuction": "Ce do local da abertura nessa face (Tabela 6)",
+      "parallelInHighSuction": {
+        "ratio": "área da abertura dominante (ou das aberturas nessa zona) / área total das outras aberturas em todas as faces submetidas a sucções externas",
+        "rows": [
+          {
+            "ratio": 0.25,
+            "cpi": -0.4
+          },
+          {
+            "ratio": 0.5,
+            "cpi": -0.5
+          },
+          {
+            "ratio": 0.75,
+            "cpi": -0.6
+          },
+          {
+            "ratio": 1.0,
+            "cpi": -0.7
+          },
+          {
+            "ratio": 1.5,
+            "cpi": -0.8
+          },
+          {
+            "ratio": 3,
+            "cpi": -0.9,
+            "orMore": true
+          }
+        ]
+      },
+      "interpolation": "a norma não prescreve interpolação entre as razões tabeladas: valores intermediários são rejeitados (WIND_CPI_RATIO_NOT_TABULATED)",
+      "fallback": "quando a razão de permeabilidade não for necessária/possível: Cpi = Ce da zona da abertura dominante (0° ou 90°); em zona de alta sucção é ambíguo (Ce da zona x cpe médio) - BLOQUEADO"
+    },
+    "cylindrical": {
+      "item": "6.3.2.3",
+      "pdfPage": 56,
+      "documentPage": 44,
+      "rows": [
+        {
+          "hOverD": ">=0.3",
+          "cpi": -0.8
+        },
+        {
+          "hOverD": "<0.3",
+          "cpi": -0.5
+        }
+      ],
+      "applicability": "edificação cilíndrica circular sem aberturas nas paredes e topo aberto, campo da Tabela 13",
+      "status": "registrado como referência; fora do módulo de fachadas retangulares (BLOQUEADO)"
+    },
+    "detailedMethod": {
+      "item": "6.3.3",
+      "documentPage": 44,
+      "status": "BLOQUEADO: apenas o início (Q=K·A·ρ·V) foi fornecido; exige leitura integral, conferência dimensional e validação independente"
     }
   },
   "blocked": [
-    "abertura dominante 6.3.2.1 c)",
+    "Cpi de abertura dominante em face de sotavento (referência à Tabela 4 não verificável)",
+    "Cpi fallback Ce em zona de alta sucção (ambiguidade Ce de zona x cpe médio)",
+    "edificação cilíndrica 6.3.2.3 (fora do módulo retangular)",
     "método detalhado 6.3.3",
     "efeito de vizinhança 6.4",
-    "alta turbulência 6.1.3",
-    "frontões, platibandas e aberturas nas paredes",
-    "cpe médio (Nota 4)"
+    "alta turbulência 6.1.3 e coeficiente de arrasto Ca (Nota 5)",
+    "frontões, platibandas e paredes com aberturas físicas",
+    "cobertura"
   ],
   "unverifiedCells": [],
   "unverifiedCellsRule": "Ids LINHA/faixa/coluna que exigem confirmação do responsável técnico (coefficientConfirmations) antes do uso. Vazio após a conferência com a cópia nítida; manter o mecanismo para futuras revisões.",

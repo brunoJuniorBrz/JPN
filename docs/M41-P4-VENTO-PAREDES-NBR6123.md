@@ -41,3 +41,28 @@ detalhado 6.3.3, vizinhança 6.4, alta turbulência 6.1.3, cobertura, cpe médio
 `computedStructuralApproval=false`, `fabricationRelease=false`, `NOT_READY_BLOCKED`.
 
 **Dependências:** PR #85 → PR #93 (P4) → este PR (P5).
+
+## M41-P6 — Notas 1–5 e Cpi (p.20, 43, 44; imagens nítidas fornecidas em 14/11/2026)
+Conferência documental, **não** homologação; erratas não verificadas.
+
+| Regra | Estado |
+|---|---|
+| Nota 1 (h = Detalhe I da Tabela 7) | Tabela 7 não fornecida: `building.heightDefinitionConfirmed` obrigatório (declaração do responsável) |
+| Notas 2 e 3 | implementadas e testadas (já conferidas) |
+| Nota 4 (cpe médio) | faixa `min(0,2b; h)` = **zona de alta sucção** (6.3.2.1, p.44). Usada só como critério de zona para o Cpi de abertura dominante; **nunca** substitui o Cpe das zonas na carga global (teste); valores em `table6.cpeMedio` |
+| Nota 5 (Ca, Figuras 4/5) | arrasto global não calculado (bloqueado) |
+| 6.3.2.1 a), b) | inalterados |
+| 6.3.2.1 c) barlavento | razões 1; 1,5; 2; 3; ≥6 → +0,1; +0,3; +0,5; +0,6; +0,8. **Sem interpolação** (a norma não prescreve): razão intermediária → `WIND_CPI_RATIO_NOT_TABULATED` |
+| 6.3.2.1 c) paralela fora da alta sucção | Cpi = Ce do local (Tabela 6); abertura que cruza zonas ou a faixa é bloqueada |
+| 6.3.2.1 c) paralela em alta sucção | razões 0,25…≥3 → −0,4…−0,9 (p.44), exige áreas declaradas; sem interpolação |
+| Fallback Cpi = Ce da zona (p.44) | implementado para barlavento e paralela fora da alta sucção; em alta sucção **bloqueado** (ambíguo: Ce da zona × cpe médio) |
+| 6.3.2.1 c) sotavento | **bloqueado**: remete à "Tabela 4" (Ce de paredes está na Tabela 6); referência cruzada não verificável |
+| 6.3.2.2 estanque | −0,2 e 0 como cenários exclusivos; exige `characterization` explícita |
+| 6.3.2.3 cilíndrica (h/d≥0,3: −0,8; <0,3: −0,5) | registrada em dados; **fora** do módulo retangular (erro `WIND_CPI_CYLINDRICAL_OUT_OF_DOMAIN`) |
+| 6.3.3 método detalhado | **bloqueado** (só o início foi fornecido) |
+
+Áreas de abertura são entradas **declaradas**, não verificadas contra a geometria; paredes com aberturas físicas continuam
+bloqueadas pelo caminho de distribuição. Dominância (6.3.1): área ≥ soma das demais.
+Geometria: `WIND_PLAN_MISMATCH` rejeita dimensão em planta divergente da distância entre fachadas opostas (cenário do PR #95:
+12 m declarados × 8 m entre fachadas); PR #95 não foi editado.
+**Dependências:** #85 → #93 → #94 → este PR.
