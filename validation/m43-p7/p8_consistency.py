@@ -12,7 +12,7 @@ sys.path.insert(0, str(ROOT/"validation/m43-p7"))
 from benchmark import WORKER, requests
 from campaign import FIELDS, FLAGS, candidate_values, evaluate, execute, observables
 from network import benchmark_bases
-from physical_comparison import compare
+from physical_comparison import CRITERIA, compare
 
 
 LEVELS = {"cantilever": (8,), "sway": (4, 8), "spatial": (4, 8, 16), "torsion": (8, 16, 32)}
@@ -133,8 +133,13 @@ def main():
     for case in ("cantilever", "sway", "spatial"):
         fine = results[case]["candidates"][-1]
         assert fine["equilibrium"]["accepted"] and fine["qualified_comparison"]["all_bounds_met"], case
-    assert all(r["equilibrium"]["accepted"] for r in results["torsion"]["candidates"] if r["status"] == "diagnostic")
-    assert results["torsion"]["candidates"][-1]["status"] == "diagnostic"
+    for case in ("sway", "spatial", "torsion"):
+        result = results[case]
+        assert result["last_pair"] == list(LEVELS[case][-2:]), case
+        assert result["last_pair_relative_change"] <= CRITERIA["refinement_relative"], case
+    arm = results["torsion"]
+    assert all(r["status"] == "diagnostic" and r["equilibrium"]["accepted"] for r in arm["candidates"])
+    assert all(v["bounds_met"] for v in arm["continuum_only"].values())
 
 
 if __name__ == "__main__":
