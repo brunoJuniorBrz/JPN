@@ -1,4 +1,5 @@
 import type { Project } from "./models";
+import { newSpatialPreparation } from "./spatial-preparation";
 import type { z } from "zod";
 import { prepareMixedInput, type MixedContract } from "./mixed-adapter";
 import { loadedMixedRequestSchema, loadedMixedRequestV3Schema, localAxesConvention, emptyLoading, needsSelfWeightOverlapReview, selfWeightOverlapReviewBasis } from "./structural-loading";
@@ -14,7 +15,7 @@ import { verifyEngineeringCombinations } from "./engineering-combinations";
 import {auditEngineeringCombinationCoverage} from "./engineering-combination-coverage";
 /** `contract: "z-up-v3"` emits jpn.mixed3d/3 with the reviewed Z-up local axes (C1). The default keeps /2 untouched. */
 async function adaptLoadedMixedInternal(project:Project,contract:MixedContract){
-  const loading=project.workspace.spatialPreparation?.loading??(contract==="z-up-v3"&&project.workspace.spatialPreparation?emptyLoading():undefined);
+  const loading=project.workspace.spatialPreparation?.loading??(contract==="z-up-v3"?emptyLoading():undefined);
   if(!loading)throw new Error("Declare carregamentos físicos.");
   if(project.workspace.spatialPreparation?.roofRegions)throw Error("COMPOSED_ROOF_PRELIMINARY: regiões compostas ainda não analisáveis.");
   if(project.workspace.physicalStructure&&loading.wind)assertGeneratedPhysicalStructure(project,"vento em fachadas/estrutura declarada exige caminho de transmissão normativo validado");
@@ -29,7 +30,7 @@ async function adaptLoadedMixedInternal(project:Project,contract:MixedContract){
   if(loading.facadeTraction&&loading.wind)
     throw Error("FACADE_WIND_CONFLICT: modelos de vento incompatíveis no mesmo projeto; revise hipóteses.");
   const roof_load_path=loading.roofArea.length?(project.workspace.physicalStructure?distributeDeclaredRoofActions(project,loading.roofArea,loading.roofDistribution):distributeRoofActions(project,loading.roofArea,loading.roofDistribution)):null;
-  const draft=project.workspace.spatialPreparation!;
+  const draft=project.workspace.spatialPreparation??newSpatialPreparation(project);
   const wind_load_path=loading.wind?distributeWindActions(project,loading.wind):null;
   const facade_traction_path=loading.facadeTraction?
     distributeDeclaredFacadeTractions(project,loading.facadeTraction):null;

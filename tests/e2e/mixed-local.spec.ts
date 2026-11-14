@@ -1,3 +1,4 @@
+import { declareAxes } from "./axes";
 import { openEngineeringTool } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
@@ -36,7 +37,7 @@ for (const width of [375, 1440]) test(`fluxo misto real, rastreabilidade 3D e in
   await openEngineeringTool(page, "Análise Estrutural Experimental");
   const panel = page.getByTestId("mixed-workspace");
   await expect(panel.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1", { timeout: 20000 });
-  await panel.getByRole("button", { name: "Executar análise mista local" }).click();
+  await declareAxes(panel);await panel.getByRole("button", { name: "Executar análise mista local" }).click();
   await expect(panel.getByRole("alert")).toContainText(/ELEMENT_KIND|PROPERTIES|SUPPORTS/);
   const before = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
   await panel.getByRole("button", { name: "Abrir exemplo misto independente" }).click();
@@ -46,7 +47,7 @@ for (const width of [375, 1440]) test(`fluxo misto real, rastreabilidade 3D e in
   await expect(panel.getByLabel(/ · UX/)).toHaveValue("fixed");
   await panel.getByRole("button", { name: "3. Cargas e combinações" }).click();
   await expect(panel.getByLabel("Fonte e hipótese de TESTE")).not.toBeEmpty();
-  await panel.getByRole("button", { name: "Executar análise mista local" }).click();
+  await declareAxes(panel);await panel.getByRole("button", { name: "Executar análise mista local" }).click();
   await expect(panel.getByTestId("mixed-results")).toContainText("132 nós · 207 peças · 243 segmentos · 36 axiais", { timeout: 30000 });
   const entries = panel.getByLabel("Peça na análise mista");
   // Obtain an axial original ID from the real export, never a hardcoded renderer index.
@@ -86,7 +87,7 @@ for (const width of [375, 1440]) test(`fluxo misto real, rastreabilidade 3D e in
       try { await route.fulfill({ response }); } catch {} finally { finished(); }
     });
     await panel.getByRole("button", { name: "Preparação mista", exact: true }).click();
-    await panel.getByRole("button", { name: "Executar análise mista local" }).click(); await responseReady;
+    await declareAxes(panel);await panel.getByRole("button", { name: "Executar análise mista local" }).click(); await responseReady;
     await panel.getByLabel("Fonte do material / fabricante").fill("Mudança enquanto a resposta real estava em trânsito"); release(); await done;
     await panel.getByRole("button", { name: "Resultados 3D", exact: true }).click();
     await expect(panel.getByTestId("mixed-no-results")).toBeVisible(); await expect(panel.getByTestId("mixed-results")).toHaveCount(0);
