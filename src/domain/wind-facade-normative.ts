@@ -4,6 +4,7 @@ import {calculateWindSpeed,windSpeedInputSchema} from "./wind-speed";
 import {declaredFacadeTractionSchema,declaredFacadeTractionSignature} from "./declared-facade-traction";
 import type {DeclaredFacadeTraction} from "./declared-facade-traction";
 import type {Project} from "./models";
+import {WIND_PROVENANCE} from "./normative-provenance";
 import {facadeOrientationSchema,toFacadeLocal,fromFacadeLocal} from "./physical-facades";
 import type {FacadeOrientation} from "./physical-facades";
 import {assertDominant,classifyOpeningSpan,solveDetailedCpi,highSuctionDominantCpi,highSuctionStripM,sealedCpiAlternatives,windwardDominantCpi} from "./wind-internal-pressure";
@@ -287,7 +288,7 @@ export function buildNormativeFacadeTraction(project:Project,raw:unknown){
   const traction=declaredFacadeTractionSchema.parse({
     schema_version:"jpn.declared-facade-traction/1",normativeValidation:"pending-engineer-review",
     physicalSignature:declaredFacadeTractionSignature(project),cases});
-  return {traction,trace,speed,usedCells:[...used].sort(),
+  return {traction,trace,speed,usedCells:[...used].sort(),normativeStatus:"PROVISIONAL" as const,provenance:WIND_PROVENANCE,
     domain:"paredes de planta retangular (barlavento, sotavento e paralelas com zonas); cobertura impermeável; Cpi 6.3.2.1 a)/b)",
     blocked:table.blocked,computedStructuralApproval:false as const,fabricationRelease:false as const,
     releaseGate:"NOT_READY_BLOCKED" as const,errataVerified:false as const};
