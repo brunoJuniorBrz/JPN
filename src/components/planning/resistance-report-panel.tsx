@@ -22,11 +22,21 @@ function ConcurrentRow({row}:{row:DemandRow}){
 export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExport,project,onChange,executions=[],onComputed}:{report:ResistanceReport;selectedPiece:string;onSelectPiece:(id:string)=>void;onExport:()=>void;project:Project;onChange:(patch:Partial<Project>)=>void;executions?:MemberExecution[];onComputed?:(r:MemberExecution)=>void}){
   const [component,setComponent]=useState<DemandComponent>("nN");
   const data=report.pieces.find(p=>p.pieceId===selectedPiece),demands=report.demands.pieces.find(p=>p.pieceId===selectedPiece);
+  const coverage=report.engineeringCombinationCoverage;
   const rows=demands?new Map(demands.samples.map(s=>[s.id,s])):null;
   return <section className="notice" data-testid="resistance-report" aria-label="Solicitações e preparação resistente">
     <h4>Solicitações e preparação resistente — M23 parcial</h4>
     <p data-testid="engine-release-gate"><strong>MOTOR NÃO PRONTO — BLOQUEADO</strong>. Análise, critérios declarados, resistência normativa, revisão profissional e fabricação são estados separados.</p>
     <details><summary>Bloqueios da cadeia estrutural completa</summary><ul>{report.releaseGate.blocked.map(x=><li key={x.id}>{x.reason}</li>)}</ul></details>
+    {coverage&&<details>
+      <summary>Cobertura ELU/ELS dos casos declarados</summary>
+      <p>Fatores normativos pendentes de validação.</p>
+      {coverage.allCasesCoveredForULSAndSLS&&<p>Todos os casos cadastrados participam de ELU e ELS.</p>}
+      {coverage.missingULS.length>0&&<p>Casos sem participação em ELU: {coverage.missingULS.join(", ")}.</p>}
+      {coverage.missingSLS.length>0&&<p>Casos sem participação em ELS: {coverage.missingSLS.join(", ")}.</p>}
+      {coverage.duplicateVectors.length>0&&<ul>{coverage.duplicateVectors.map(({first,duplicate})=>
+        <li key={first+"/"+duplicate}>{first} e {duplicate} têm a mesma finalidade e os mesmos fatores.</li>)}</ul>}
+    </details>}
     <p>Estrutura NÃO APROVADA PARA FABRICAÇÃO. Procedimentos resistentes parciais disponíveis no controle Ue/MRD, com cálculo Python e relatório separado. A peça inteira permanece incompleta. A tabela básica abaixo contém solicitações, sem aprovação resistente.</p>
     <p>Máximos/mínimos apenas nas estações amostradas; os esforços de cada linha são simultâneos na mesma combinação e posição. N positivo = tração; negativo = compressão. Forças em N e momentos em N·m, nos eixos locais do solver.</p>
     <Field label="Componente dos extremos amostrados"><Select value={component} onChange={e=>setComponent(e.target.value as DemandComponent)}>{demandComponents.map(k=><option key={k} value={k}>{labels[k]}</option>)}</Select></Field>
