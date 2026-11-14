@@ -52,6 +52,9 @@ def main():
     parser.add_argument("--opensees-python", type=Path, required=True)
     parser.add_argument("--out", type=Path, default=ROOT/".tools/m43-p8/campaign")
     args = parser.parse_args()
+    # Linux venv executables often symlink to the base interpreter. Keep the
+    # venv path so Python still discovers its isolated OpenSees installation.
+    opensees_python = args.opensees_python.absolute()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     frozen = ROOT/"validation/m43-p6/reference-v2-evidence.json"
@@ -89,7 +92,7 @@ def main():
 
         for n in NATIVE_LEVELS.get(case, ()):
             worker = ROOT/"validation/m43-p6/reference_v2/worker.py"
-            row = execute([str(args.opensees_python.resolve()), "-I", str(worker)],
+            row = execute([str(opensees_python), "-I", str(worker)],
                           dict(method="native", model=model, bases=benchmark_bases(model),
                                subdivisions=n, test_tolerance=1e-14))
             (out/f"{case}-opensees-{n}.json").write_text(json.dumps(row, allow_nan=False), encoding="utf-8")
@@ -137,6 +140,10 @@ def main():
         result = results[case]
         assert result["last_pair"] == list(LEVELS[case][-2:]), case
         assert result["last_pair_relative_change"] <= CRITERIA["refinement_relative"], case
+    for case, levels in NATIVE_LEVELS.items():
+        native = results[case]["native_reference"]
+        assert [r["subdivisions"] for r in native] == list(levels), case
+        assert all(r["status"] == "diagnostic" for r in native), case
     arm = results["torsion"]
     assert all(r["status"] == "diagnostic" and r["equilibrium"]["accepted"] for r in arm["candidates"])
     assert all(v["bounds_met"] for v in arm["continuum_only"].values())
