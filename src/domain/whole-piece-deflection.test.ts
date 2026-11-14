@@ -21,7 +21,10 @@ it("raízes de grau sete, translação rígida e invariância da flecha vetorial
   // Seven independent roots, including a very close pair, without a sampling grid.
   const roots=[.08,.21,.4,.4001,.63,.79,.94];let polynomial=[1];for(const r of roots){const p=Array(polynomial.length+1).fill(0);polynomial.forEach((x,i)=>{p[i]-=x*r;p[i+1]+=x;});polynomial=p;}
   const found=polynomialRoots01(polynomial);expect(found).toHaveLength(7);found.forEach((r,i)=>expect(r).toBeCloseTo(roots[i],7));
-  const f=await fixture("cantilever",true,37,false,2,true),c=await extractContinuousDemands(f.prepared,f.result,f.trace),a=await extractWholePieceDeflections(c);
+  await expect(fixture("cantilever",true,37,false,2,true)).rejects.toMatchObject({
+    status:2,stdout:expect.stringContaining('"code":"AXIS_CONVENTION_AMBIGUOUS"'),
+  });
+  const f=await fixture("cantilever",true,37,false,2,"xz"),c=await extractContinuousDemands(f.prepared,f.result,f.trace),a=await extractWholePieceDeflections(c);
   const altered=structuredClone(c);for(const p of altered.pieces)for(const field of p.fields)if(field.displacementPolynomials)for(let j=0;j<3;j++)field.displacementPolynomials[j][0]+=field.globalToLocal[j][0]*.125;
   const {reportSha256,...body}=altered;void reportSha256;altered.reportSha256=await mixedInputHash(body);const b=await extractWholePieceDeflections(altered);
   expect(a.pieces[0].combinations[0].rows.find(r=>r.id===a.pieces[0].combinations[0].maximumNorm)!.normM).toBeCloseTo(b.pieces[0].combinations[0].rows.find(r=>r.id===b.pieces[0].combinations[0].maximumNorm)!.normM,12);
