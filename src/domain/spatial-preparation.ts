@@ -13,6 +13,7 @@ import { spatialContacts } from "./spatial-readiness";
 import { connectivityDeclarationSchema } from "./spatial-connectivity";
 import { roofRegionsSchema } from "./roof-regions";
 import { engineeringCombinationsSchema } from "./engineering-combinations";
+import { localAxesReviewSchema } from "./local-axes-schema";
 import { connectionsSchema } from "./connections";
 import { declaredServiceCriterionSchema } from "./declared-service";
 import { memberDesignDeclarationSchema } from "./coldformed-design";
@@ -56,6 +57,7 @@ export const spatialPreparationSchema = z.object({
   roofRegions:roofRegionsSchema.optional(),
   physicalRoofFaces:physicalRoofFacesSchema.optional(),
   physicalFacades:physicalFacadesSchema.optional(),
+  localAxes:localAxesReviewSchema.optional(),
   resistance: z.array(resistancePreparationSchema).max(5000).optional(),
   engineeringCombinations: engineeringCombinationsSchema.optional(),
   connections: connectionsSchema.optional(),

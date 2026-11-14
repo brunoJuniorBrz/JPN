@@ -58,6 +58,12 @@ REVIEWED_AMENDMENTS = {
     # M44-P1: NBR 14762 audit amendments (reviewed; was 477462c)
     "engine/tests/test_coldformed_design.py": "3ffd991d47f070b881c9024ea69b61154d7172c4",
     "src/domain/declared-facade-mixed-real.test.ts": "a3df819018a8b38e864f72bdda5fd26ba1fa2acd",
+    # C1/#107 (reviewed by the project owner's C1 work): tests updated for the /3 contract and the refused ambiguous legacy axes.
+    "engine/tests/test_vercel_mixed_http.py": "0d3b5475368fcbe41160af025ce9deae00ba20ef",
+    "src/domain/continuous-demands.test.ts": "b63c2411b4aec5a217ef49ad5b00281f4b2df8f4",
+    "src/domain/whole-piece-deflection.test.ts": "751c665f3266cc52772a69ebeaf4ed99415128fe",
+    "src/infrastructure/analysis/remote-mixed-runner.test.ts": "def70dcd3f98a3fc63c25de5630095d7d50a15f3",
+    "src/domain/test-support/continuous-fixture.ts": "aa1251dfd582a4ec00354d6e84c8bd94e83d2d8c",
 }
 
 TREES = {}

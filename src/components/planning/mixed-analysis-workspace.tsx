@@ -19,8 +19,12 @@ import { loadedMixedReferenceProject } from "@/domain/examples/loaded-mixed-proj
 import { adaptMixedProject } from "@/domain/mixed-adapter";
 import { mixedStations, verifyMixedResult } from "@/domain/mixed-analysis";
 import { anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
-import { adaptLoadedMixedProject } from "@/domain/loaded-mixed-adapter";
+import { adaptLoadedMixedProject, adaptLoadedMixedProjectV3 } from "@/domain/loaded-mixed-adapter";
+import { AxisReviewPendingError } from "@/domain/local-axes-review";
+import { projectFrameAxes, withReviewedIsotropicAxes } from "@/domain/current-mixed-adapter";
+import { isLoadedResult } from "@/domain/structural-loading";
 import { StructuralLoadsPanel } from "./structural-loads-panel";
+import { LocalAxesPanel } from "./local-axes-panel";
 import { inspectConnectivity } from "@/domain/spatial-connectivity";
 import { newSpatialPreparation } from "@/domain/spatial-preparation";
 import { Field, Input, Select } from "@/components/ui";
@@ -30,12 +34,14 @@ import { Structure3D } from "./structure-3d";
 import { PhysicalLineView } from "./physical-line-view";
 import { MathematicalComparison } from "@/components/demonstration/mathematical-comparison";
 
-type Prepared = Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>>;
+type Prepared = Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProjectV3>>;
 type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; jointActions: JointActionTrace | null;designExecutions?:MemberExecution[] };
 const show = (v: number) => v === 0 ? "0" : v.toExponential(5);
 export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=false }: { project: Project; onChange: (patch: Partial<Project>) => void; demoPresentation?:boolean }) {
   const [example, setExample] = useState<Project | null>(null), [pane, setPane] = useState(demoPresentation?"results":"prepare");
-  const active = example ?? project, draft = active.workspace.spatialPreparation ?? newSpatialPreparation(active);
+  // Built-in synthetic examples have isotropic sections: their roll is declared (and reviewed) here. User projects never get a default roll.
+  const active = useMemo(() => example ? withReviewedIsotropicAxes(example) : project, [example, project]), draft = active.workspace.spatialPreparation ?? newSpatialPreparation(active);
+  const axes = useMemo(() => { try { return projectFrameAxes(active); } catch { return { framePieceIds: [] as string[], allPieceIds: [] as string[], pending: [], signature: "" }; } }, [active]);
   const signature = structureSignature(active), identity = JSON.stringify([example ? "example" : "work", active.id, signature, draft]);
   const model = useMemo(() => resolvePhysicalStructure(active).model, [active]);
   const [restored,setRestored]=useState(false);
@@ -96,7 +102,8 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     setBusyIdentity(identity); setError(""); setSession(null);setRestored(false);
     const timeout = setTimeout(() => controller.abort(), 33000);
     try {
-      const prepared = await (draft.loading ? adaptLoadedMixedProject(active) : adaptMixedProject(active)); if (controller.signal.aborted || ticket.current.value !== mine) return;
+      // C1: the UI emits jpn.mixed3d/3 with the REVIEWED Z-up local axes; frame pieces without a reviewed roll stop here (visible pendency).
+      const prepared = await adaptLoadedMixedProjectV3(active); if (controller.signal.aborted || ticket.current.value !== mine) return;
       const response = await fetch("/api/experimental/mixed3d", { method: "POST", headers: { "Content-Type": "application/json", ...(includeConnections?{"X-JPN-Joint-Actions":"1"}:{}) }, body: JSON.stringify(prepared.request), signal: controller.signal });
       const out = await response.json(); if (!response.ok) throw new Error(`${out.error?.code ?? response.status}: ${out.error?.message ?? "Análise recusada."}`);
       if (out.status !== "completed" || !((out.schema_version==="jpn.local-mixed/1"&&out.execution?.local_only===true)||(out.schema_version==="jpn.remote-mixed/1"&&out.execution?.local_only===false&&out.execution?.transport==="remote"))) throw new Error("Origem de execução incompatível.");
@@ -111,7 +118,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       if(controller.signal.aborted||ticket.current.value!==mine)return;
       if(!prepared.request.nodes.some(n=>n.id===connectionNodeId))setConnectionNodeId(prepared.request.nodes[0].id);
       setSession({ identity, prepared, result: parsed, execution: out.execution, resistance, resistanceError, connections, connectionError, jointActions }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
-    } catch (e) { if (ticket.current.value === mine) setError(controller.signal.aborted ? "Execução cancelada ou prazo excedido; nenhum resultado publicado." : (e as Error).message); }
+    } catch (e) { if (ticket.current.value === mine) setError(controller.signal.aborted ? "Execução cancelada ou prazo excedido; nenhum resultado publicado." : e instanceof AxisReviewPendingError ? `Giro por peça pendente: ${e.pending.map(p => p.pieceId).join(", ")}. Declare e revise os giros no painel “Eixos locais” antes de calcular.` : (e as Error).message); }
     finally { clearTimeout(timeout); if (ticket.current.value === mine) setBusyIdentity(null); }
   }
   function exportJSON(value: unknown, name: string) { downloadText(JSON.stringify(value, null, 2), name); }
@@ -146,6 +153,8 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     {!demoPresentation&&<nav className="physical-prep-tabs" aria-label="Fluxo misto"><button className="button secondary" aria-pressed={pane === "prepare"} onClick={() => setPane("prepare")}>Preparação mista</button><button className="button secondary" aria-pressed={pane === "results"} onClick={() => setPane("results")}>Resultados 3D</button></nav>}
     {pane === "prepare" && <>
       <SpatialPreparationPanel key={example ? "example" : "work"} project={active} onChange={edit} mixed />
+      <LocalAxesPanel framePieceIds={axes.framePieceIds} pending={axes.pending} review={draft.localAxes} readOnly={!!example}
+        onDeclare={members => edit({ workspace: { ...active.workspace, spatialPreparation: { ...draft, localAxes: { version: 1, convention: "jpn-z-up/1", geometrySignature: axes.signature, members } } } })} />
       <StructuralLoadsPanel project={active} onChange={edit} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setNodeId("");setPane("results");}}/>
       <details className="technical-details"><summary>Conectividade física e segmentação</summary>
         <p>Conectar junta significa compartilhar translações e somente as rotações previstas pelo tipo e liberações declarados. Barras contínuas mantêm continuidade nos cortes internos. Contatos independentes exigem outro modelo e são recusados.</p>
@@ -179,8 +188,8 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       </div>}
       {current && result && !demoPresentation && <div data-testid="mixed-results">
         <p>{current.prepared.request.nodes.length} nós · {new Set(current.prepared.mapping.members.map(m => m.originalId)).size} peças · {current.prepared.request.members.length} segmentos · {current.prepared.request.members.filter(m => m.kind === "axial").length} axiais.</p>
-        {current.result.schema_version==="jpn.mixed3d-result/2" && <p data-testid="loaded-result-trace">{current.result.loading.self_weight ? `Peso próprio declarado: ${show(current.result.loading.self_weight.total_mass_kg)} kg · caso ${current.result.loading.self_weight.case}.` : "Peso próprio desativado."} {current.result.loading.member_loads.length} cargas distribuídas físicas; sem duplicação automática.</p>}
-        {current.result.schema_version==="jpn.mixed3d-result/2"&&<ul data-testid="declared-load-trace">{current.result.loading.member_loads.map(l=><li key={l.id}>{l.id}: peça {current.prepared.mapping.members.find(m=>m.id===l.member)?.originalId} → segmento {l.member} · {l.case} · {l.coordinate_system} · {l.force_per_length_n_m.join("; ")} N/m · {l.source} ({l.revision})</li>)}</ul>}
+        {isLoadedResult(current.result) && <p data-testid="loaded-result-trace">{current.result.loading.self_weight ? `Peso próprio declarado: ${show(current.result.loading.self_weight.total_mass_kg)} kg · caso ${current.result.loading.self_weight.case}.` : "Peso próprio desativado."} {current.result.loading.member_loads.length} cargas distribuídas físicas; sem duplicação automática.</p>}
+        {isLoadedResult(current.result)&&<ul data-testid="declared-load-trace">{current.result.loading.member_loads.map(l=><li key={l.id}>{l.id}: peça {current.prepared.mapping.members.find(m=>m.id===l.member)?.originalId} → segmento {l.member} · {l.case} · {l.coordinate_system} · {l.force_per_length_n_m.join("; ")} N/m · {l.source} ({l.revision})</li>)}</ul>}
         {"roof_load_path" in current.prepared && current.prepared.roof_load_path && <p data-testid="roof-result-trace">{current.prepared.roof_load_path.actions.length} ação por área distribuída; áreas, resultantes e momentos globais conservados. A transferência até os apoios foi calculada pelo solver.</p>}
         {"wind_load_path" in current.prepared && current.prepared.wind_load_path && <p data-testid="wind-result-trace">{current.prepared.wind_load_path.cases.length} casos de vento zonal transmitidos às terças e ao Python; forças e momentos conservados. Combinações declaradas, validação normativa pendente.</p>}
         <Field label="Combinação mista"><Select value={selectedCombo ?? ""} onChange={e => setCombo(e.target.value)}>{Object.keys(current.result.combinations).map(id => <option key={id}>{id}</option>)}</Select></Field>

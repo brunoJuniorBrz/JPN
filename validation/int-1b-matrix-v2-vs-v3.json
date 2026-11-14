@@ -1,0 +1,495 @@
+{
+ "isotropic_v2": {
+  "schema": "jpn.mixed3d/2",
+  "maxVerticalM": 0,
+  "equilibrium": 1.0097103364668626e-16,
+  "rows": [
+   {
+    "piece": "P1",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.0011553894450874935,
+    "my": 471.08791974004134,
+    "vz": 471.0879197400416,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P1",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.006903666780278189,
+    "my": 2814.8379197400413,
+    "vz": 2814.837919740042,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P2",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.002310778890174987,
+    "my": 942.1758394800827,
+    "vz": 942.1758394800833,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P2",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.013807333560556379,
+    "my": 5629.675839480083,
+    "vz": 5629.675839480084,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P3",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.0011553894450874935,
+    "my": 471.08791974004134,
+    "vz": 471.0879197400416,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P3",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.006903666780278189,
+    "my": 2814.8379197400413,
+    "vz": 2814.837919740042,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "TC1",
+    "combination": "U-N01",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC1",
+    "combination": "U-N02",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC2",
+    "combination": "U-N01",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC2",
+    "combination": "U-N02",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   }
+  ]
+ },
+ "isotropic_v3": {
+  "schema": "jpn.mixed3d/3",
+  "maxVerticalM": 0,
+  "equilibrium": 1.0097103364668626e-16,
+  "rows": [
+   {
+    "piece": "P1",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.0011553894450874935,
+    "my": 471.08791974004134,
+    "vz": 471.0879197400416,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P1",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.006903666780278189,
+    "my": 2814.8379197400413,
+    "vz": 2814.837919740042,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P2",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.002310778890174987,
+    "my": 942.1758394800827,
+    "vz": 942.1758394800833,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P2",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.013807333560556379,
+    "my": 5629.675839480083,
+    "vz": 5629.675839480084,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P3",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.0011553894450874935,
+    "my": 471.08791974004134,
+    "vz": 471.0879197400416,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P3",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.006903666780278189,
+    "my": 2814.8379197400413,
+    "vz": 2814.837919740042,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "TC1",
+    "combination": "U-N01",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC1",
+    "combination": "U-N02",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC2",
+    "combination": "U-N01",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC2",
+    "combination": "U-N02",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   }
+  ]
+ },
+ "anisotropic_v2": {
+  "schema": "jpn.mixed3d/2",
+  "maxVerticalM": 0,
+  "equilibrium": 1.0097103364668626e-16,
+  "rows": [
+   {
+    "piece": "P1",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.0011553894450874935,
+    "my": 471.08791974004134,
+    "vz": 471.0879197400416,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P1",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.006903666780278189,
+    "my": 2814.8379197400413,
+    "vz": 2814.837919740042,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P2",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.002310778890174987,
+    "my": 942.1758394800827,
+    "vz": 942.1758394800833,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P2",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.013807333560556379,
+    "my": 5629.675839480083,
+    "vz": 5629.675839480084,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P3",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.0011553894450874935,
+    "my": 471.08791974004134,
+    "vz": 471.0879197400416,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P3",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.006903666780278189,
+    "my": 2814.8379197400413,
+    "vz": 2814.837919740042,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "TC1",
+    "combination": "U-N01",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC1",
+    "combination": "U-N02",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC2",
+    "combination": "U-N01",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC2",
+    "combination": "U-N02",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   }
+  ]
+ },
+ "anisotropic_v3": {
+  "schema": "jpn.mixed3d/3",
+  "maxVerticalM": 0,
+  "equilibrium": 1.0097103364668626e-16,
+  "rows": [
+   {
+    "piece": "P1",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.0011553894450874935,
+    "my": 471.08791974004134,
+    "vz": 471.0879197400416,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P1",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.006903666780278189,
+    "my": 2814.8379197400413,
+    "vz": 2814.837919740042,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P2",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.002310778890174987,
+    "my": 942.1758394800827,
+    "vz": 942.1758394800833,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P2",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.013807333560556379,
+    "my": 5629.675839480083,
+    "vz": 5629.675839480084,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P3",
+    "combination": "U-N01",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.0011553894450874935,
+    "my": 471.08791974004134,
+    "vz": 471.0879197400416,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "P3",
+    "combination": "U-N02",
+    "status": "CONDITIONAL",
+    "maxUtilization": 0.006903666780278189,
+    "my": 2814.8379197400413,
+    "vz": 2814.837919740042,
+    "checks": [
+     "my",
+     "shear_z"
+    ]
+   },
+   {
+    "piece": "TC1",
+    "combination": "U-N01",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC1",
+    "combination": "U-N02",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC2",
+    "combination": "U-N01",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   },
+   {
+    "piece": "TC2",
+    "combination": "U-N02",
+    "status": "no-demand",
+    "maxUtilization": null,
+    "my": 0,
+    "vz": 0,
+    "checks": [
+     "no-demand"
+    ]
+   }
+  ]
+ },
+ "note": "Em ambos os casos /2 e /3 coincidem: todas as barras deste modelo têm deslocamento de referência nulo (terças horizontais ao longo de Y, banzos ao longo de X), logo a guarda da C1 não recusa o /2 e o /3 reproduz o mesmo valor."
+}

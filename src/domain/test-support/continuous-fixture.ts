@@ -5,13 +5,14 @@ import { mixedInputHash } from "../mixed-analysis";
 import { anyMixedRequestSchema } from "../structural-loading";
 import type { DemandInput } from "../member-demands";
 const source="Independent analytical first-order control; not normative",free=[false,false,false,false,false,false];
-export async function fixture(mode="propped",segmented=false,rotation=0,global=false,version=2,inclined=false){
+export async function fixture(mode="propped",segmented=false,rotation=0,global=false,version=2,inclined:boolean|"xz"=false){
   const R=[[1,0,0],[0,Math.cos(rotation*Math.PI/180),Math.sin(rotation*Math.PI/180)],[0,-Math.sin(rotation*Math.PI/180),Math.cos(rotation*Math.PI/180)]];
   const q=[40,-100,-70],globalQ=q.map((_,i)=>R.reduce((s,r,j)=>s+r[i]*q[j],0));
   const nodes=[{id:"A",x_m:0,y_m:0,z_m:0},{id:"B",x_m:4,y_m:0,z_m:0},{id:"D",x_m:0,y_m:1,z_m:0},...(segmented?[{id:"CUT",x_m:1.3,y_m:0,z_m:0}]:[])];
   const frames=(segmented?[["F1","A","CUT"],["F2","CUT","B"]]:[["F","A","B"]]).map(([id,start,end])=>({id,start,end,kind:"frame",material:"M",section:"S",rotation_deg:rotation,release_start:free,release_end:mode==="released"?[false,false,false,false,true,true]:free}));
-  if(inclined)for(const n of nodes){const x=n.x_m,y=n.y_m;n.x_m=(2*x-3*y)/Math.sqrt(29);n.y_m=(3*x+2*y)/Math.sqrt(29);n.z_m=4*x/Math.sqrt(29);}
-  const direction=inclined?[2,3,4].map(v=>v/Math.sqrt(29)):[1,0,0];
+  if(inclined===true)for(const n of nodes){const x=n.x_m,y=n.y_m;n.x_m=(2*x-3*y)/Math.sqrt(29);n.y_m=(3*x+2*y)/Math.sqrt(29);n.z_m=4*x/Math.sqrt(29);}
+  if(inclined==="xz")for(const n of nodes){const x=n.x_m;n.x_m=3*x/5;n.z_m=4*x/5;}
+  const direction=inclined==="xz"?[3/5,0,4/5]:inclined?[2,3,4].map(v=>v/Math.sqrt(29)):[1,0,0];
   const request=anyMixedRequestSchema.parse({schema_version:`jpn.mixed3d/${version}`,units:"SI",theory:"linear-elastic-frame-axial",project:{id:"M26",revision:"1",source},nodes,
     members:[...frames,{id:"AX",kind:"axial",start:"A",end:"D",e_pa:200e9,area_m2:.001,source,revision:"1"}],materials:[{id:"M",e_pa:200e9,g_pa:200e9/2.6,nu:.3,source,revision:"1"}],sections:[{id:"S",area_m2:.01,iy_m4:2e-5,iz_m4:1e-5,j_m4:1e-5,source,revision:"1"}],
     supports:[{node:"A",restrained:mode==="simple"?[true,true,true,true,false,false]:[true,true,true,true,true,true]},{node:"D",restrained:[true,true,true,false,false,false]},...(mode!=="cantilever"?[{node:"B",restrained:mode==="released"?[true,true,true,true,true,true]:[false,true,true,false,false,false]}]:[])],
