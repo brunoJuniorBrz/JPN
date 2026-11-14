@@ -23,14 +23,18 @@ Pressão por trechos é transmitida por vãos simplesmente apoiados entre pilare
 (reações `∫p·(L−u)/L` e `∫p·u/L`). Isso conserva exatamente força **e** momento; para pressão uniforme coincide com o
 cálculo tributário anterior. O perfil exige cobertura contígua da largura e `netPressurePa` igual à média ponderada.
 
-## Verificação contra a digitalização (limite real)
-O PDF é uma digitalização de baixa resolução. **Os dígitos finais 3, 6, 8 e 9 não são distinguíveis com segurança**
-(mesmo a 400 dpi); 0, 1, 2, 4, 5 e 7 são legíveis. Em consequência, qualquer célula da Tabela 6 cujo valor termina em
-3/6/8/9 é **bloqueada** (`WIND_COEFFICIENT_UNCONFIRMED`) até o responsável técnico confirmar o valor na norma impressa
-em `coefficientConfirmations` (id `LINHA/faixa/coluna`, por exemplo `H2/hi/D`); valor divergente do transcrito bloqueia com
-`WIND_COEFFICIENT_CONFIRMATION_MISMATCH`. A transcrição é consistente com a estrutura da tabela (colunas espelhadas,
-cpe médio legível), mas isso não a certifica. Erratas da edição **não verificadas**. Os valores de Cpi (p.43) estão em
-página nítida e foram lidos sem ambiguidade.
+## Verificação da Tabela 6 (14/11/2026)
+A digitalização local do PDF era de baixa resolução (dígitos 3/6/8/9 ilegíveis). Foi fornecida uma **cópia nítida** da
+mesma tabela (página 32 de 107). Conferência célula a célula contra `data/normas/nbr6123-2023-wall-cpe.json`:
+**54 de 54 valores coincidem, 0 alterações** (48 células Cpe = 6 linhas × 8 colunas A1B1, A2B2, C, D, A, B, C1D1, C2D2,
+mais os 6 valores de cpe médio, não usados). Os rótulos geométricos das figuras (`b/3 ou a/4`, `menor que 2h`;
+`2h ou b/2`) também conferem. Resultado: nenhuma célula está marcada como não verificada (`unverifiedCells` vazio).
+
+Permanece **pendente a revisão normativa profissional**: a cópia nítida não é exemplar oficial certificado, erratas não
+foram verificadas, e a captura não mostra as Notas 1–5 nem a p.43 (Cpi; Nota 3 e Cpi seguem da leitura da página original,
+nítida nesses trechos). O portão `coefficientConfirmations` (erros `WIND_COEFFICIENT_UNCONFIRMED` /
+`WIND_COEFFICIENT_CONFIRMATION_MISMATCH`) permanece implementado e testado para qualquer célula futuramente listada em
+`unverifiedCells`.
 
 **Bloqueado (não presumido):** frontões/platibandas e paredes com aberturas, abertura dominante (6.3.2.1 c), método
 detalhado 6.3.3, vizinhança 6.4, alta turbulência 6.1.3, cobertura, cpe médio (Nota 4, verificação local).
