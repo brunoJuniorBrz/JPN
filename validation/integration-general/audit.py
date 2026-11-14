@@ -51,7 +51,10 @@ def ancestor(a, b):
 # Reviewed post-PR83 amendments to frozen files, pinned by Git blob. Any other
 # change, or any further edit to these files, still fails until re-reviewed.
 # PR #85 (M41): facade loads duplicated under unrelated IDs are rejected.
+# PR M41-P5: piecewise facade pressure profile (simple-support transmission).
 REVIEWED_AMENDMENTS = {
+    "src/domain/declared-facade-traction-contract.ts": "d735af78acc47b75f7c210e2798d9461a64d06f5",
+    "src/domain/declared-facade-traction.ts": "b5c9f38aa83922a913967a1bb902997095151a7f",
     "src/domain/facade-solver-load-audit.ts": "9f8e2ac7bc79b4b79cad56ee5d57a730b93f0da2",
     "src/domain/declared-facade-mixed-real.test.ts": "3ecafd27b9fe38c78f437c841f3394d1cd115622",
 }
