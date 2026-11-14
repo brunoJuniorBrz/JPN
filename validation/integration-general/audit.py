@@ -56,6 +56,8 @@ def ancestor(a, b):
 # PR #92 (M54): rejects facade loads duplicated under a disguised ID.
 REVIEWED_AMENDMENTS = {
     "src/domain/declared-facade-mixed-real.test.ts": "a3df819018a8b38e864f72bdda5fd26ba1fa2acd",
+    # #107 (C1): the HTTP transport test also asserts the /3 contract and the jpn-z-up/1 request hash.
+    "engine/tests/test_vercel_mixed_http.py": "0d3b5475368fcbe41160af025ce9deae00ba20ef",
 }
 
 TREES = {}
