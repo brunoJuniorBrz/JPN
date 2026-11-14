@@ -842,7 +842,7 @@
         {
           "path": "src/domain/facade-solver-load-audit.ts",
           "source_blob": "7861d1f7f172e06eb9293d1c4967eca21d8cae4b",
-          "candidate_blob": "9f8e2ac7bc79b4b79cad56ee5d57a730b93f0da2",
+          "candidate_blob": "d0928f9795454eb74f8d757eee2e86a33221eed2",
           "identical_git_blob": false
         },
         {
@@ -1519,7 +1519,7 @@
         {
           "path": "src/domain/facade-solver-load-audit.ts",
           "source_blob": "7861d1f7f172e06eb9293d1c4967eca21d8cae4b",
-          "candidate_blob": "9f8e2ac7bc79b4b79cad56ee5d57a730b93f0da2",
+          "candidate_blob": "d0928f9795454eb74f8d757eee2e86a33221eed2",
           "identical_git_blob": false
         },
         {
