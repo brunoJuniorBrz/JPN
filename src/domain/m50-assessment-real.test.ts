@@ -71,7 +71,8 @@ it("executes existing Ue compression, flexure, shear and concurrent interaction 
     expect(bending.resistance).toBeCloseTo(properties.wy_m3*fy/1.1,6);
     expect(vz.resistance).toBeCloseTo(.6*fy*.09*.002/1.1,6);
     expect(compression.status).toBe("CONDITIONAL");expect(bending.status).toBe("CONDITIONAL");
-    expect(checks.find(c=>c.id==="bending-shear-9.8.4")!.status).toBe("BLOCKED");
+    // M44-P1: 9.8.4 (no transverse stiffeners) is now computed with the Annex C MRd (8.4.1c, C.1); it stays CONDITIONAL on the declared inputs, never PASS.
+    const interaction984=checks.find(c=>c.id==="bending-shear-9.8.4")!;expect(interaction984.status).toBe("CONDITIONAL");expect(interaction984.status==="BLOCKED"?"":(interaction984 as {clauses:string[]}).clauses).toContain("9.8.4");
     expect(checks.find(c=>c.id==="unsupported-tNm")!.status).toBe("BLOCKED");
     expect(checks.find(c=>c.id==="combined-9.9")!.status).toBe("CONDITIONAL");
     expect(checks.find(c=>c.id==="compression-slenderness")!.status).toBe("FAIL");
