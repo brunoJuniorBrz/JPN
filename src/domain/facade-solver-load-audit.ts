@@ -44,6 +44,19 @@ export function auditFacadeSolverLoads(
     physicalPieces=new Map(physical.pieces.map(p=>[p.id,p])),
     solverNodes=new Map(request.nodes.map(n=>[n.id,[n.x_m,n.y_m,n.z_m] as V])),
     solverMembers=new Map(request.members.map(m=>[m.id,m]));
+  const facadeCases=new Set(trace.cases.map(c=>c.caseId));
+  const facadeLoads=new Map<string,Request["member_loads"][number]>();
+  for(const load of request.member_loads){
+    if(!facadeCases.has(load.case)&&!load.id.startsWith("FACADE:"))continue;
+    if(facadeLoads.has(load.id))
+      fail("FACADE_AUDIT_UNTRACED_LOAD",load.id+" é uma carga duplicada");
+    facadeLoads.set(load.id,load);
+  }
+  const nodal=request.nodal_loads.find(load=>facadeCases.has(load.case));
+  if(nodal)
+    fail("FACADE_AUDIT_UNTRACED_LOAD",nodal.case+" contém carga nodal no nó "+nodal.node);
+  if(request.self_weight&&facadeCases.has(request.self_weight.case))
+    fail("FACADE_AUDIT_UNTRACED_LOAD",request.self_weight.case+" contém peso próprio");
   const used=new Set<string>();
   const auditedCases=trace.cases.map(c=>{
     const auditedZones=c.zones.map(zone=>{
@@ -77,7 +90,7 @@ export function auditFacadeSolverLoads(
             fail("FACADE_AUDIT_SEGMENT_LENGTH",member.id+" tem intervalo físico incompatível");
           const key="FACADE:"+c.caseId+":"+zone.facadeId+":"+member.id;
           if(used.has(key))fail("FACADE_AUDIT_DUPLICATE_SEGMENT",key);
-          const actual=request.member_loads.find(load=>load.id===key);
+          const actual=facadeLoads.get(key);
           if(!actual||actual.case!==c.caseId||actual.member!==member.id||
             actual.coordinate_system!=="global"||
             actual.source!==zone.source||actual.revision!==zone.revision||
@@ -106,19 +119,12 @@ export function auditFacadeSolverLoads(
     });
     return {caseId:c.caseId,facades:auditedZones};
   });
-  // An extra load can duplicate facade pressure without using the FACADE: ID
-  // prefix. Match the declared case, member and provenance as well: otherwise
-  // the audit would approve the expected loads while the solver receives an
-  // additional, unaccounted force on the very same physical column.
-  const facadeProvenance=new Set(trace.cases.flatMap(c=>c.zones.flatMap(z=>
-    z.contributions.flatMap(contribution=>mapping.members
-      .filter(member=>member.originalId===contribution.pieceId)
-      .map(member=>JSON.stringify([c.caseId,member.id,z.source,z.revision]))))));
-  const rogue=request.member_loads.find(l=>
-    (l.id.startsWith("FACADE:")||
-      facadeProvenance.has(JSON.stringify([l.case,l.member,l.source,l.revision])))&&
-    !used.has(l.id));
-  if(rogue)fail("FACADE_AUDIT_UNTRACED_LOAD",rogue.id+" não corresponde à fachada física revisada");
+  // Every facade case is exclusive in the loaded adapter. Account for every
+  // request load in those cases, regardless of its ID, member or provenance.
+  for(const id of facadeLoads.keys()){
+    if(!used.has(id))
+      fail("FACADE_AUDIT_UNTRACED_LOAD",id+" não corresponde à fachada física revisada");
+  }
   return {schema_version:"jpn.facade-solver-load-audit/1" as const,
     cases:auditedCases,physicalSource:trace.source,verified:true as const,
     normativeWindValidated:false as const,
