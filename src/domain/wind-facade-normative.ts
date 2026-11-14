@@ -6,7 +6,7 @@ import type {DeclaredFacadeTraction} from "./declared-facade-traction";
 import type {Project} from "./models";
 import {facadeOrientationSchema,toFacadeLocal,fromFacadeLocal} from "./physical-facades";
 import type {FacadeOrientation} from "./physical-facades";
-import {assertDominant,classifyOpeningSpan,highSuctionDominantCpi,highSuctionStripM,sealedCpiAlternatives,windwardDominantCpi} from "./wind-internal-pressure";
+import {assertDominant,classifyOpeningSpan,solveDetailedCpi,highSuctionDominantCpi,highSuctionStripM,sealedCpiAlternatives,windwardDominantCpi} from "./wind-internal-pressure";
 
 /** M41-P4/P5: NBR 6123:2023 Tabela 6 (all wall zones) + 6.3.2.1 a)/b)
  * internal pressure -> net pressure per physical facade, emitted as the
@@ -37,7 +37,17 @@ const internalSchema=z.discriminatedUnion("rule",[
     permeabilityRatioIndeterminate:z.string().trim().min(20).max(1000),
     location:z.discriminatedUnion("wall",[z.object({wall:z.literal("windward")}).strict(),
       z.object({wall:z.literal("parallel"),spanFromWindwardEdgeM:span}).strict()])}).strict(),
-  z.object({rule:z.enum(["dominant-opening-leeward","cylindrical-open-top","detailed-flow-balance"])}).strict(),
+  z.object({rule:z.literal("dominant-opening-leeward"),...dominantBase,
+    /** 6.3.2.1 c) cites "Tabela 4", which in this edition is the S3 table; the engineer confirms the
+     * intended reference is the leeward wall Ce of Tabela 6 (D / B). */
+    leewardTableReferenceResolved:z.literal(true)}).strict(),
+  z.object({rule:z.literal("detailed-flow-balance"),
+    openings:z.array(z.object({id,areaM2:area,ce:z.discriminatedUnion("from",[
+      z.object({from:z.literal("windward")}).strict(),z.object({from:z.literal("leeward")}).strict(),
+      z.object({from:z.literal("parallel"),spanFromWindwardEdgeM:span}).strict(),
+      z.object({from:z.literal("declared"),value:z.number().finite().min(-5).max(5),source:z.string().trim().min(10).max(500)}).strict()])
+    }).strict()).min(2).max(40)}).strict(),
+  z.object({rule:z.literal("cylindrical-open-top")}).strict(),
 ]);
 type Internal=z.infer<typeof internalSchema>;
 export const normativeWallWindSchema=z.object({
@@ -50,6 +60,8 @@ export const normativeWallWindSchema=z.object({
     roofImpermeable:z.literal(true),
     /** Tabela 6 Nota 1: h follows Detalhe I of Tabela 7 (not supplied here) - declared by the engineer. */
     heightDefinitionConfirmed:z.literal(true),
+    /** Detalhe I (Tabela 7): h is measured from the ground to the eave; overhang must be <= 0.1 b. */
+    eaveOverhangM:z.number().finite().min(0).max(100).default(0),
   }).strict(),
   speed:windSpeedInputSchema,
   /** Engineer's confirmation, from the printed standard, of every unverified Table 6 cell used. */
@@ -132,7 +144,7 @@ export function cpeMedioCoefficient(aOverB:number,hOverB:number){
   return aOverB<=1.5?m.lo:aOverB>=2?m.hi:lerp(m.lo,m.hi,(aOverB-1.5)/.5);
 }
 type Scenario={cpi:number;basis:string;cells:CoefficientLookup["cells"]};
-type Ctx={windAxis:"X"|"Y";alpha:0|90;a:number;b:number;h:number;wLook:CoefficientLookup;zones:ParallelZone[]};
+type Ctx={windAxis:"X"|"Y";alpha:0|90;a:number;b:number;h:number;wLook:CoefficientLookup;lLook:CoefficientLookup;zones:ParallelZone[]};
 function parallelCe(sp:[number,number],ctx:Ctx){
   const wallM=ctx.alpha===0?ctx.a:ctx.b,cls=classifyOpeningSpan(sp,wallM,highSuctionStripM(ctx.b,ctx.h));
   const zone=ctx.zones.find(z=>sp[0]>=z.startM-1e-9&&sp[1]<=z.endM+1e-9);
@@ -174,11 +186,28 @@ function internalScenarios(ip:Internal,ctx:Ctx):Scenario[]{
       return [{cpi:zone.lookup.value,basis:"6.3.2.1 c) Ce de "+zone.zone+" (razão indeterminada)",cells:zone.lookup.cells}];
     }
     case "dominant-opening-leeward":
-      return fail("WIND_CPI_LEEWARD_DOMINANT_BLOCKED","a norma remete à Tabela 4 para Ce de sotavento; referência cruzada não verificável");
+      assertDominant(ip.dominantOpeningAreaM2,ip.otherOpeningsTotalAreaM2);
+      return [{cpi:ctx.lLook.value,basis:"6.3.2.1 c) sotavento: Ce da parede de sotavento (Tabela 6; remissão 'Tabela 4' = S3 é referência desatualizada)",cells:ctx.lLook.cells}];
     case "cylindrical-open-top":
       return fail("WIND_CPI_CYLINDRICAL_OUT_OF_DOMAIN","6.3.2.3 pertence a edificações cilíndricas, fora do módulo retangular");
-    case "detailed-flow-balance":
-      return fail("WIND_CPI_DETAILED_METHOD_BLOCKED","6.3.3 exige leitura integral e validação independente");
+    case "detailed-flow-balance":{
+      const cells:CoefficientLookup["cells"]=[];
+      const items=ip.openings.map(o=>{
+        let ce:number;
+        if(o.ce.from==="windward"){ce=ctx.wLook.value;cells.push(...ctx.wLook.cells);}
+        else if(o.ce.from==="leeward"){ce=ctx.lLook.value;cells.push(...ctx.lLook.cells);}
+        else if(o.ce.from==="declared")ce=o.ce.value;
+        else{
+          const {cls,zone}=parallelCe(o.ce.spanFromWindwardEdgeM,ctx);
+          if(cls==="high-suction")return fail("WIND_CPI_DETAILED_HIGH_SUCTION","Ce* na faixa de alta sucção: declare o valor médio na periferia (from: declared)");
+          if(!zone)return fail("WIND_CPI_OPENING_STRADDLES_ZONE","abertura cruza zonas da Tabela 6: declare Ce* médio");
+          ce=zone.lookup.value;cells.push(...zone.lookup.cells);
+        }
+        return {areaM2:o.areaM2,ce};
+      });
+      const sol=solveDetailedCpi(items);
+      return [{cpi:sol.cpi,basis:"6.3.3 equilíbrio de vazões, "+items.length+" aberturas, Cpi="+sol.cpi.toFixed(6)+", resíduo "+sol.residual.toExponential(1),cells}];
+    }
   }
 }
 const f=(v:number)=>(v>0?"+":"")+v.toFixed(2).replace(/\.?0+$/,"");
@@ -187,6 +216,7 @@ const f=(v:number)=>(v>0?"+":"")+v.toFixed(2).replace(/\.?0+$/,"");
 export function buildNormativeFacadeTraction(project:Project,raw:unknown){
   const input=normativeWallWindSchema.parse(raw),{building:b}=input;
   if(b.shortSideM>b.longSideM)fail("WIND_PLAN","b deve ser a menor dimensão (a>=b)");
+  if(b.eaveOverhangM>0.1*b.shortSideM+1e-9)fail("WIND_EAVE_OVERHANG","beiral > 0,1 b fora do Detalhe I da Tabela 7");
   if(input.speed.heightM!==b.heightM)
     fail("WIND_SPEED_HEIGHT","q é avaliada na altura h da edificação; speed.heightM deve ser igual a h");
   const faces=project.workspace.spatialPreparation?.physicalFacades?.facades;
@@ -210,7 +240,7 @@ export function buildNormativeFacadeTraction(project:Project,raw:unknown){
     const windAxis=axis(c.windFrom),alpha:0|90=windAxis===b.longAxis?0:90,
       wLook=table6Coefficient(alpha===0?"C":"A",aOverB,hOverB),lLook=table6Coefficient(alpha===0?"D":"B",aOverB,hOverB),
       zonesPar=parallelWallZones(alpha,b.longSideM,b.shortSideM,b.heightM),
-      scenarios=internalScenarios(c.internalPressure,{windAxis,alpha,a:b.longSideM,b:b.shortSideM,h:b.heightM,wLook,zones:zonesPar});
+      scenarios=internalScenarios(c.internalPressure,{windAxis,alpha,a:b.longSideM,b:b.shortSideM,h:b.heightM,wLook,lLook,zones:zonesPar});
     for(const sc of scenarios){
       const cpi=sc.cpi;need({cells:sc.cells} as CoefficientLookup);
       const caseId=scenarios.length>1?c.id+"-CPI"+(cpi<0?"N":"P")+Math.abs(cpi*10):c.id;

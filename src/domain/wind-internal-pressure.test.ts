@@ -1,6 +1,6 @@
 import {expect,it} from "vitest";
 import {buildingProject} from "./test-support/m41-building-fixture";
-import {assertDominant,classifyOpeningSpan,highSuctionDominantCpi,highSuctionStripM,sealedCpiAlternatives,windwardDominantCpi}
+import {assertDominant,classifyOpeningSpan,highSuctionDominantCpi,highSuctionStripM,sealedCpiAlternatives,solveDetailedCpi,windwardDominantCpi}
   from "./wind-internal-pressure";
 import {buildNormativeFacadeTraction,cpeMedioCoefficient} from "./wind-facade-normative";
 import {distributeDeclaredFacadeTractions} from "./declared-facade-traction";
@@ -101,10 +101,55 @@ it("fallback Cpi=Ce da zona: barlavento e parede paralela fora da alta sucção;
   expect(()=>run(fb({wall:"parallel",spanFromWindwardEdgeM:[.2,1]}))).toThrow("WIND_CPI_FALLBACK_HIGH_SUCTION_AMBIGUOUS");
   expect(()=>run({...fb({wall:"windward"}),permeabilityRatioIndeterminate:"curto"})).toThrow();
 });
-it("domínios bloqueados: sotavento (Tabela 4), cilíndrica e método detalhado",()=>{
-  expect(()=>run({rule:"dominant-opening-leeward"})).toThrow("WIND_CPI_LEEWARD_DOMINANT_BLOCKED");
+it("sotavento: 'Tabela 4' é a tabela de S3 (referência desatualizada); usa o Ce da parede de sotavento com confirmação",()=>{
+  const lee={rule:"dominant-opening-leeward",...dom,leewardTableReferenceResolved:true};
+  const r=run(lee).r;
+  expect(net(r,0,"EAST")).toBeCloseTo(Q*(.7+.3),8);   // Cpi = Ce(D) = -0,3
+  expect(net(r,0,"WEST")).toBeCloseTo(0,6);
+  expect(()=>run({rule:"dominant-opening-leeward",...dom})).toThrow();
+  expect(()=>run({...lee,dominantOpeningAreaM2:1})).toThrow("WIND_CPI_NOT_DOMINANT");
+});
+it("domínio cilíndrico (6.3.2.3) permanece fora do módulo retangular",()=>{
   expect(()=>run({rule:"cylindrical-open-top"})).toThrow("WIND_CPI_CYLINDRICAL_OUT_OF_DOMAIN");
-  expect(()=>run({rule:"detailed-flow-balance"})).toThrow("WIND_CPI_DETAILED_METHOD_BLOCKED");
+});
+it("6.3.3 equilíbrio de vazões: soluções analíticas independentes",()=>{
+  // two openings: A1*sqrt(Ce1-Ci)=A2*sqrt(Ci-Ce2) -> Ci=(A1^2 Ce1 + A2^2 Ce2)/(A1^2+A2^2)
+  for(const [a1,c1,a2,c2] of [[1,.7,1,-.3],[3,.7,1,-.3],[2,.8,5,-.6],[1,-.4,4,-.9]]){
+    const exp=(a1*a1*c1+a2*a2*c2)/(a1*a1+a2*a2);
+    expect(solveDetailedCpi([{areaM2:a1,ce:c1},{areaM2:a2,ce:c2}]).cpi).toBeCloseTo(exp,10);
+  }
+  expect(solveDetailedCpi([{areaM2:1,ce:.7},{areaM2:1,ce:-.3}]).cpi).toBeCloseTo(.2,12);   // coincide com 6.3.2.1 a)
+  // three openings: independent residual and monotonic dependence on a windward area
+  const three=[{areaM2:2,ce:.7},{areaM2:1,ce:-.3},{areaM2:1.5,ce:-.9}],sol=solveDetailedCpi(three);
+  const g=(ci:number)=>three.reduce((t,o)=>t+o.areaM2*Math.sign(o.ce-ci)*Math.sqrt(Math.abs(o.ce-ci)),0);
+  expect(Math.abs(g(sol.cpi))).toBeLessThan(1e-9);
+  expect(sol.cpi).toBeGreaterThan(-.9);expect(sol.cpi).toBeLessThan(.7);
+  expect(solveDetailedCpi([{areaM2:4,ce:.7},{areaM2:1,ce:-.3},{areaM2:1.5,ce:-.9}]).cpi).toBeGreaterThan(sol.cpi);
+  expect(solveDetailedCpi([{areaM2:1,ce:-.3},{areaM2:2,ce:-.3}]).cpi).toBeCloseTo(-.3,12);   // equal Ce
+  expect(()=>solveDetailedCpi([{areaM2:1,ce:.7}])).toThrow("WIND_CPI_DETAILED_INPUT");
+  expect(()=>solveDetailedCpi([{areaM2:0,ce:.7},{areaM2:1,ce:-.3}])).toThrow("WIND_CPI_DETAILED_INPUT");
+});
+it("6.3.3 integrado: aberturas em barlavento/sotavento reproduzem 6.3.2.1 a) e entradas Ce* declaradas são rastreadas",()=>{
+  const det=(openings:object[])=>({rule:"detailed-flow-balance",openings});
+  const w={id:"OW",areaM2:2,ce:{from:"windward"}},l={id:"OL",areaM2:2,ce:{from:"leeward"}};
+  const {r}=run(det([w,l]));
+  expect(net(r,0,"EAST")).toBeCloseTo(Q*(.7-.2),8);     // Ce(C)=+0,7, Ce(D)=-0,3 -> Cpi=+0,2
+  expect(net(r,0,"WEST")).toBeCloseTo(Q*(-.3-.2),8);
+  const r2=run(det([{...w,areaM2:6},{...l,areaM2:2}])).r;   // Ci=(36*.7+4*-.3)/40=0,6
+  expect(net(r2,0,"EAST")).toBeCloseTo(Q*(.7-.6),8);
+  const r3=run(det([w,{id:"OP",areaM2:2,ce:{from:"parallel",spanFromWindwardEdgeM:[4,5]}}])).r;   // Ce(A2B2)=-0,4
+  expect(net(r3,0,"EAST")).toBeCloseTo(Q*(.7-.15),8);          // Ci=(0,7-0,4)/2=0,15
+  expect(()=>run(det([w,{id:"OP",areaM2:2,ce:{from:"parallel",spanFromWindwardEdgeM:[.2,1]}}]))).toThrow("WIND_CPI_DETAILED_HIGH_SUCTION");
+  expect(()=>run(det([w,{id:"OP",areaM2:2,ce:{from:"parallel",spanFromWindwardEdgeM:[2.5,3.5]}}]))).toThrow("WIND_CPI_OPENING_STRADDLES_ZONE");
+  const roof={id:"OR",areaM2:1,ce:{from:"declared",value:-1.0,source:"Ce* médio na periferia, de ensaio de túnel de vento"}};
+  expect(net(run(det([w,roof])).r,0,"EAST")).toBeCloseTo(Q*(.7-(4*.7+1*-1)/5),8);   // Ci=(A1^2 Ce1+A2^2 Ce2)/(A1^2+A2^2)=0,36
+  expect(()=>run(det([w,{...roof,ce:{from:"declared",value:-1,source:"curto"}}]))).toThrow();
+  expect(()=>run(det([w]))).toThrow();
+});
+it("Tabela 7 Detalhe I: beiral <= 0,1 b",()=>{
+  const ok={rule:"four-faces-equally-permeable"};
+  expect(()=>run(ok,"+X",{...building,eaveOverhangM:.6})).not.toThrow();
+  expect(()=>run(ok,"+X",{...building,eaveOverhangM:.7})).toThrow("WIND_EAVE_OVERHANG");
 });
 it("Nota 1 e geometria: h declarado (Tabela 7) e 12 m declarados contra fachadas a 8 m são rejeitados",()=>{
   const ok={rule:"four-faces-equally-permeable"};

@@ -33,3 +33,18 @@ export function classifyOpeningSpan(span:[number,number],wallLengthM:number,stri
   if(d0>=stripM-1e-9)return "outside" as const;
   return fail("WIND_CPI_OPENING_STRADDLES_ZONE","abertura cruza a borda da zona de alta sucção ("+stripM+" m): dividir ou declarar separadamente");
 }
+
+/** 6.3.3: internal pressure by flow balance. sum_j A_j * sgn(Ce_j - Ci) * sqrt(|Ce_j - Ci|) = 0
+ * (K constant, rho cancels; Ce_j are mean external coefficients at the opening periphery).
+ * The left side is strictly decreasing in Ci, so the root in [min Ce, max Ce] is unique. */
+export function solveDetailedCpi(openings:{areaM2:number;ce:number}[]){
+  if(openings.length<2)fail("WIND_CPI_DETAILED_INPUT","o equilíbrio de vazões exige ao menos duas aberturas");
+  if(openings.some(o=>!(o.areaM2>0)||!Number.isFinite(o.ce)))fail("WIND_CPI_DETAILED_INPUT","área positiva e Ce finito são obrigatórios");
+  const f=(ci:number)=>openings.reduce((s,o)=>s+o.areaM2*Math.sign(o.ce-ci)*Math.sqrt(Math.abs(o.ce-ci)),0);
+  let lo=Math.min(...openings.map(o=>o.ce)),hi=Math.max(...openings.map(o=>o.ce));
+  if(hi-lo<1e-12)return {cpi:lo,residual:0,iterations:0};
+  let it=0;
+  for(;it<200&&hi-lo>1e-14;it++){const mid=(lo+hi)/2;if(f(mid)>0)lo=mid;else hi=mid;}
+  const cpi=(lo+hi)/2;
+  return {cpi,residual:f(cpi),iterations:it};
+}

@@ -66,3 +66,15 @@ bloqueadas pelo caminho de distribuição. Dominância (6.3.1): área ≥ soma d
 Geometria: `WIND_PLAN_MISMATCH` rejeita dimensão em planta divergente da distância entre fachadas opostas (cenário do PR #95:
 12 m declarados × 8 m entre fachadas); PR #95 não foi editado.
 **Dependências:** #85 → #93 → #94 → este PR.
+
+## M41-P7 — terceira cópia (camada de texto), sotavento e método detalhado
+- **Verificação independente:** a terceira cópia da norma (107 páginas, com camada de texto) confirma **54/54** valores da Tabela 6
+  (0 diferenças), as Notas 1–5, os Cpi de 6.3.2.1 a)/b)/c), a tabela de alta sucção (p.44), 6.3.2.2 e 6.3.2.3. Revisão profissional e erratas permanecem pendentes.
+- **"Tabela 4" (sotavento):** na edição 2023 a Tabela 4 é a de S3 (p.17): a remissão é desatualizada. Adota-se o Ce da parede de sotavento (Tabela 6, D/B) com `leewardTableReferenceResolved: true` (confirmação do responsável).
+- **Nota 1 / Tabela 7 Detalhe I:** h = solo até o beiral, beiral ≤ 0,1 b (`eaveOverhangM`; `WIND_EAVE_OVERHANG`).
+- **6.3.3 método detalhado (agora completo no texto, p.44–45):** `Σ A_j·sinal(Ce*_j−Ci*)·√|Ce*_j−Ci*| = 0`, resolvido por bisecção
+  (raiz única). Validação independente: solução fechada de duas aberturas `Ci=(A1²Ce1+A2²Ce2)/(A1²+A2²)`, resíduo com três aberturas,
+  monotonicidade, e coincidência com 6.3.2.1 a) (+0,2) para aberturas iguais em Ce=+0,7/−0,3. Ce* por abertura: barlavento, sotavento,
+  zona paralela única (Ce da zona) ou **valor declarado com fonte**; faixa de alta sucção e aberturas que cruzam zonas exigem valor declarado.
+- **Continuam bloqueados:** fallback Cpi=Ce em alta sucção (ambíguo), cilíndrica, vizinhança 6.4, alta turbulência/Ca, coberturas e frontões.
+**Dependências:** #85 → #93 → #94 → #96 → este PR.
