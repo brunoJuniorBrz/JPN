@@ -1,3 +1,4 @@
+import { MAX_CASES, MAX_COMBINATIONS } from "./analysis-limits";
 import { z } from "zod";
 
 const n = z.number().finite(), id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/).refine(v => !["constructor", "prototype"].includes(v));
@@ -12,9 +13,9 @@ export const spatialRequestSchema = z.object({
   sections: z.array(z.object({ id, area_m2: n.min(1e-16).max(1000), iy_m4: n.min(1e-16).max(1000), iz_m4: n.min(1e-16).max(1000), j_m4: n.min(1e-16).max(1000), source, revision: source }).strict()).min(1).max(50),
   members: z.array(z.object({ id, start: id, end: id, kind: z.literal("frame"), material: id, section: id, rotation_deg: n.min(-360).max(360), release_start: flags, release_end: flags }).strict()).min(1).max(600),
   supports: z.array(z.object({ node: id, restrained: flags }).strict()).max(250),
-  cases: z.array(z.object({ id, source }).strict()).min(1).max(10),
+  cases: z.array(z.object({ id, source }).strict()).min(1).max(MAX_CASES),
   nodal_loads: z.array(z.object({ node: id, case: id, fx_n: signed, fy_n: signed, fz_n: signed, mx_nm: signed, my_nm: signed, mz_nm: signed }).strict()).max(500),
-  combinations: z.array(z.object({ id, factors: z.record(id, n.min(-100).max(100)) }).strict()).min(1).max(10),
+  combinations: z.array(z.object({ id, factors: z.record(id, n.min(-100).max(100)) }).strict()).min(1).max(MAX_COMBINATIONS),
 }).strict().superRefine((v, ctx) => {
   const issue = (message: string) => ctx.addIssue({ code: "custom", message });
   for (const collection of [v.nodes, v.members, v.materials, v.sections, v.cases, v.combinations]) if (new Set(collection.map(x => x.id)).size !== collection.length) issue("IDs repetidos.");

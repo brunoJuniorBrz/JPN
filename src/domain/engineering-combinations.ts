@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_CASES, MAX_COMBINATIONS } from "./analysis-limits";
 
 export const engineeringId = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/);
 export const engineeringSource = z.string().min(1).max(1000).refine(s => !!s.trim());
@@ -13,15 +14,15 @@ export const engineeringCombinationsSchema = z.object({
   actions: z.array(z.object({ caseId: engineeringId,
     category: z.enum(["permanent", "variable", "wind"]),
     exclusiveGroup: engineeringId.nullable(), reference: engineeringReferenceSchema,
-  }).strict()).min(1).max(10),
+  }).strict()).min(1).max(MAX_CASES),
   combinations: z.array(z.object({ id: engineeringId,
     purpose: z.enum(["ULS", "SLS-characteristic", "SLS-frequent", "SLS-quasi-permanent"]),
     hypothesis: engineeringSource, reference: engineeringReferenceSchema,
     terms: z.array(z.object({ caseId: engineeringId,
       gamma: scalar.min(0).max(100), psi: scalar.min(0).max(1),
       reference: engineeringReferenceSchema,
-    }).strict()).min(1).max(10),
-  }).strict()).min(1).max(10),
+    }).strict()).min(1).max(MAX_CASES),
+  }).strict()).min(1).max(MAX_COMBINATIONS),
 }).strict();
 export type EngineeringCombinations = z.infer<typeof engineeringCombinationsSchema>;
 

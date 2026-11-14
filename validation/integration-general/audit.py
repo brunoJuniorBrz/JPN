@@ -55,6 +55,8 @@ def ancestor(a, b):
 # Reviewed amendments to protected tests, pinned by Git blob.
 # PR #92 (M54): rejects facade loads duplicated under a disguised ID.
 REVIEWED_AMENDMENTS = {
+    # INT-1c/M44: m34ab (cap 10 lifted) and M50 (9.8.4 computed) tests updated, reviewed
+    "src/domain/m34ab-declared.test.ts": "093f11fe3277226097c79a82b7afd9daf1315127",
     # M44-P1: NBR 14762 audit amendments (reviewed; was 477462c)
     "engine/tests/test_coldformed_design.py": "3ffd991d47f070b881c9024ea69b61154d7172c4",
     "src/domain/declared-facade-mixed-real.test.ts": "a3df819018a8b38e864f72bdda5fd26ba1fa2acd",

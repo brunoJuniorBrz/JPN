@@ -1,4 +1,5 @@
 import {z} from "zod";
+import {MAX_COMBINATIONS} from "./analysis-limits";
 import data from "../../data/normas/nbr8681-2025-combinations.json" with {type:"json"};
 import type {Project} from "./models";
 import {applyEngineeringCombinations} from "./apply-engineering-combinations";
@@ -21,8 +22,8 @@ export const nbr8681DeclarationSchema=z.object({
   families:z.array(family).min(1).max(6),
   special:z.object({caseId:id,veryShortDuration:z.boolean()}).strict().optional(),
   exceptional:z.object({caseId:id,reducedPsi:z.boolean()}).strict().optional(),
-  /** The engineering contract and the mixed3d solver accept at most 10 combinations per run: split families into separate runs. */
-  maxCombinations:z.number().int().min(1).max(10).default(10),
+  /** Upper bound of generated combinations. The analysis contract derives its own limit from the 2 MB single-envelope result budget (analysis-limits). */
+  maxCombinations:z.number().int().min(1).max(MAX_COMBINATIONS).default(MAX_COMBINATIONS),
   actions:z.array(z.discriminatedUnion("nature",[
     z.object({nature:z.literal("permanent"),caseId:id,permanentType:z.enum([...permTypes,"prestress","settlement-shrinkage"]).optional()}).strict(),
     z.object({nature:z.literal("variable"),caseId:id,variableType:z.enum(varTypes),psiRow:z.enum(psiRows),exclusiveGroup:id.nullable(),

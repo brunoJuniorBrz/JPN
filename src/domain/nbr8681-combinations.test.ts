@@ -132,7 +132,7 @@ it("rejeita configurações incompletas, ambíguas ou fora do domínio",()=>{
 it("integra ao motor: combinações físicas, cobertura ELU/ELS e rastreabilidade pelo caminho existente",()=>{
   const A=[perm("G"),live("Q"),wind("W1")],p=buildingProject(["G","Q","W1"]),d=decl({permanentSets:["unfavorable"]},A);
   const {project,generated}=applyNbr8681Combinations(p,d);
-  expect(generated.trace).toHaveLength(10);            // limite do contrato/solver: 10 combinações por execução
+  expect(generated.trace).toHaveLength(10);            // 3 ações × 4 famílias = 10 combinações (o contrato não tem mais teto fixo de 10)
   const sp=project.workspace.spatialPreparation!;
   expect(sp.combinations.map(c=>c.id)).toEqual(generated.trace.map(c=>c.id));
   for(const c of generated.trace)expect(sp.combinations.find(x=>x.id===c.id)!.factors).toEqual(Object.fromEntries(
@@ -144,8 +144,10 @@ it("integra ao motor: combinações físicas, cobertura ELU/ELS e rastreabilidad
   expect(cov.normativeFactorsVerified).toBe(false);
   expect(cov.releaseGate).toBe("NOT_READY_BLOCKED");
   expect(()=>applyNbr8681Combinations(p,{...d,actions:[perm("G")]})).toThrow("M42_CASE_COVERAGE");
-  // more than 10 combinations in one run is blocked with an actionable message (split the families)
-  expect(()=>generateNbr8681Combinations(decl({permanentSets:["unfavorable"]}),["G","Q","W1","W2"])).toThrow("M42_COMBINATION_LIMIT");
+  // INT-1c: the contract no longer caps at 10; four wind alternatives generate far more than 10 combinations in one run
+  const big=generateNbr8681Combinations(decl({permanentSets:["unfavorable"]}),["G","Q","W1","W2"]);
+  expect(big.trace.length).toBeGreaterThan(10);
+  expect(big.trace.length).toBeLessThanOrEqual(256);
 });
 
 const speed={schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:10,heightM:4,heightReference:"model-base-z0",

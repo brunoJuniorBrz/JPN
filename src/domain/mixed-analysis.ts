@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { canonicalSpatialInput, spatialRequestSchema } from "./spatial-analysis";
+import { combinationBudgetIssue } from "./analysis-limits";
 
 const n = z.number().finite(), id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/).refine(v => !["constructor", "prototype"].includes(v));
 const source = z.string().min(1).max(1000).refine(v => !!v.trim());
@@ -14,6 +15,7 @@ export const mixedRequestObject = z.object({
 }).strict();
 export function validateMixedReferences(v: Omit<z.infer<typeof mixedRequestObject>, "schema_version">, ctx: z.RefinementCtx, distributedCases: string[] = []) {
   const issue = (message: string) => ctx.addIssue({ code: "custom", message });
+  if (!("member_loads" in v)) { const budget = combinationBudgetIssue(v); if (budget) issue(budget); }
   for (const values of [v.nodes, v.members, v.materials, v.sections, v.cases, v.combinations]) if (new Set(values.map(x => x.id)).size !== values.length) issue("IDs duplicados.");
   const nodes = new Set(v.nodes.map(x => x.id)), cases = new Set(v.cases.map(c => c.id)), frameNodes = new Set<string>(), edges = new Set<string>();
   // Frame-only, truss-only and genuinely mixed topologies share a single
