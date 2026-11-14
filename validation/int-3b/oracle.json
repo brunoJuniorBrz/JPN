@@ -1,0 +1,114 @@
+{
+  "schema_version": "jpn.int-3b-oracle/1",
+  "opensees": "3.8.0",
+  "criteria": {
+    "amplification_relative": 0.01,
+    "geometric_tangent_relative": 1e-06,
+    "beam_elastic_tangent_relative": 0.01,
+    "beam_geometric_tangent_relative": 0.01,
+    "probe_refinement_n_m": 1.0,
+    "axial_force_relative": 1e-08,
+    "positive_restoring_tangent_required": true
+  },
+  "geometry": {
+    "length_m": 4.0,
+    "area_m2": 0.01,
+    "e_pa": 200000000000.0,
+    "analytical_beam_iy_m4": 1e-05,
+    "axial_elements": 2,
+    "transverse_probe_force_n": 1.0
+  },
+  "euler_beam": {
+    "critical_load_n": 1233700.55013617,
+    "applied_compression_n": 925275.4126021274,
+    "critical_load_ratio": 0.75,
+    "elastic_modal_tangent_n_m": 1522017.0474062879,
+    "projected_kg_n_m": -1141512.785554716,
+    "amplification": 4.0,
+    "linear_modal_displacement_m": 6.570228642997975e-07,
+    "loaded_modal_displacement_m": 2.62809145719919e-06
+  },
+  "corot_truss": {
+    "unloaded": {
+      "straight": {
+        "midpoint_reaction_n": 0.0,
+        "axial_forces_n": [
+          0.0,
+          0.0
+        ],
+        "shortened_length_m": 4.0
+      },
+      "levels": [
+        {
+          "step_m": 1e-05,
+          "positive_reaction_n": 2.500000206819678e-07,
+          "negative_reaction_n": -2.500000206819678e-07,
+          "tangent_n_m": 0.025000002068196775
+        },
+        {
+          "step_m": 5e-06,
+          "positive_reaction_n": 3.124833725100201e-08,
+          "negative_reaction_n": -3.124833725100201e-08,
+          "tangent_n_m": 0.006249667450200402
+        }
+      ],
+      "tangent_n_m": 0.006249667450200402,
+      "refinement_change_n_m": 0.018750334617996373
+    },
+    "loaded": {
+      "straight": {
+        "midpoint_reaction_n": 0.0,
+        "axial_forces_n": [
+          -925275.4126021223,
+          -925275.4126021223
+        ],
+        "shortened_length_m": 3.9981494491747958
+      },
+      "levels": [
+        {
+          "step_m": 1e-05,
+          "positive_reaction_n": -9.257036529937327,
+          "negative_reaction_n": 9.257036529937327,
+          "tangent_n_m": -925703.6529937326
+        },
+        {
+          "step_m": 5e-06,
+          "positive_reaction_n": -4.628518358849371,
+          "negative_reaction_n": 4.628518358849371,
+          "tangent_n_m": -925703.6717698742
+        }
+      ],
+      "tangent_n_m": -925703.6717698742,
+      "refinement_change_n_m": 0.018776141572743654
+    },
+    "measured_kg_n_m": -925703.6780195417,
+    "expected_piecewise_linear_kg_n_m": -925703.678028445,
+    "truss_kg_relative_error": 9.617862062327731e-12,
+    "beam_kg_relative_error": 0.1890553572996576,
+    "transverse_load_unloaded": {
+      "return_code": -3,
+      "status": "refused"
+    },
+    "transverse_load_loaded": {
+      "return_code": 0,
+      "status": "converged",
+      "midpoint_displacement_m": -1.0802592921847785e-06
+    },
+    "physical_amplification": null
+  },
+  "checks": {
+    "compression_realized": true,
+    "tangent_probe_refined": true,
+    "truss_kg_matches_piecewise_linear_expression": true,
+    "beam_elastic_tangent_matches": false,
+    "beam_geometric_tangent_matches": false,
+    "positive_restoring_tangent": false,
+    "beam_amplification_matches": false
+  },
+  "passed": false,
+  "planar_portal": "not-run",
+  "spatial_portal": "not-run",
+  "computedStructuralApproval": false,
+  "fabricationRelease": false,
+  "releaseGate": "NOT_READY_BLOCKED"
+}
