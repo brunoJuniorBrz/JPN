@@ -1,0 +1,74 @@
+{
+  "schema_version": "jpn.nbr8681-data/1",
+  "revision": "M42-1",
+  "standard": "ABNT NBR 8681",
+  "edition": "2025 (segunda edição, 24.09.2025)",
+  "errata": "not-verified",
+  "source": "Captura de tela do Studocu fornecida pelo usuário (19 páginas, texto nítido); conferência documental, não homologação",
+  "verification": {
+    "date": "2026-11-14",
+    "method": "Leitura das imagens a 130 dpi e das Tabelas 1, 2, 4, 6 ampliadas a 200 dpi; todas as células legíveis, nenhuma ambiguidade encontrada",
+    "tablesChecked": ["Tabela 1", "Tabela 2", "Tabela 3", "Tabela 4", "Tabela 5", "Tabela 6", "5.1.3.1", "5.1.3.2", "5.1.3.3", "5.1.4.1-5.1.4.4", "5.1.5.2-5.1.5.4", "4.3.3.1-4.3.3.3"],
+    "notChecked": ["Tabela 7 (fadiga) não usada", "páginas de definições (itens 1-4.2) apenas lidas parcialmente", "erratas"],
+    "professionalReview": "pending"
+  },
+  "formulas": {
+    "ulsNormal": {"clause": "5.1.3.1", "text": "Fd = soma(gamma_gi*FGi,k) + gamma_q1*FQ1,k + soma_j>=2(gamma_qj*psi0j*FQj,k)", "note": "em casos específicos, dois conjuntos: permanentes desfavoráveis e favoráveis"},
+    "ulsSpecial": {"clause": "5.1.3.2", "text": "Fd = soma(gamma_gi*FGi,k) + gamma_q1*FQ1,k + soma_j>=2(gamma_qj*psi0j,ef*FQj,k)", "note": "psi0,ef = psi0, exceto ação especial de tempo de atuação muito curto: psi0,ef = psi2"},
+    "ulsExceptional": {"clause": "5.1.3.3", "text": "Fd = soma(gamma_gi*FGi,k) + gamma_q,exc*FQ,exc + soma_j>=1(gamma_qj*psi0j,ef*FQj,k)", "gammaQExc": 1.0},
+    "slsQuasiPermanent": {"clause": "5.1.5.2", "text": "Fd,ser = soma(FGi,k) + soma(psi2j*FQj,k)"},
+    "slsFrequent": {"clause": "5.1.5.3", "text": "Fd,ser = soma(FGi,k) + psi1*FQ1,k + soma_j>=2(psi2j*FQj,k)"},
+    "slsRare": {"clause": "5.1.5.4", "text": "Fd,ser = soma(FGi,k) + FQ1,k + soma_j>=2(psi1j*FQj,k)", "engineLabel": "SLS-characteristic"}
+  },
+  "table1": {
+    "title": "Tabela 1 - Ações permanentes diretas consideradas separadamente (p.14)",
+    "types": {
+      "steel-and-equipment": {"label": "Peso próprio de estruturas de aço e equipamentos", "normal": [1.25, 1.0], "special": [1.15, 1.0], "exceptional": [1.10, 1.0]},
+      "prefab-wood-industrialized": {"label": "Peso próprio de estruturas pré-moldadas, de madeira e elementos construtivos industrializados (a)", "normal": [1.30, 1.0], "special": [1.20, 1.0], "exceptional": [1.15, 1.0]},
+      "cast-in-place": {"label": "Peso próprio de estruturas moldadas no local", "normal": [1.35, 1.0], "special": [1.25, 1.0], "exceptional": [1.15, 1.0]},
+      "industrialized-with-in-situ-additions": {"label": "Elementos construtivos industrializados com adições in loco (b)", "normal": [1.40, 1.0], "special": [1.30, 1.0], "exceptional": [1.20, 1.0]},
+      "construction-elements-general": {"label": "Elementos construtivos em geral (c)", "normal": [1.50, 1.0], "special": [1.40, 1.0], "exceptional": [1.30, 1.0]}
+    },
+    "format": "[desfavorável, favorável]"
+  },
+  "table2": {
+    "title": "Tabela 2 - Ações permanentes diretas agrupadas (p.14)",
+    "normal": [1.35, 1.0], "special": [1.25, 1.0], "exceptional": [1.15, 1.0], "format": "[desfavorável, favorável]"
+  },
+  "table3": {
+    "title": "Tabela 3 - Protensão, efeitos de recalques de apoio e de retração dos materiais (p.15)",
+    "prestress": {"normal": [1.20, 0.90], "special": [1.20, 0.90], "exceptional": [1.20, 0.90]},
+    "settlement-shrinkage": {"normal": [1.20, 0.0], "special": [1.20, 0.0], "exceptional": [0.0, 0.0]},
+    "format": "[desfavorável, favorável]"
+  },
+  "table4": {
+    "title": "Tabela 4 - Ações variáveis consideradas separadamente (p.15)",
+    "types": {
+      "truncated": {"label": "Ações truncadas (a)", "normal": 1.2, "special": 1.1, "exceptional": 1.0},
+      "temperature-atmospheric": {"label": "Efeitos de temperatura devidos à variação térmica da atmosfera", "normal": 1.2, "special": 1.0, "exceptional": 1.0},
+      "wind": {"label": "Ação do vento", "normal": 1.4, "special": 1.2, "exceptional": 1.0},
+      "other-and-equipment-temperature": {"label": "Demais ações e efeitos de temperatura gerados por equipamentos", "normal": 1.5, "special": 1.3, "exceptional": 1.0}
+    }
+  },
+  "table5": {"title": "Tabela 5 - Ações variáveis consideradas conjuntamente (p.16)", "normal": 1.5, "special": 1.3, "exceptional": 1.0,
+    "note": "aplica-se a todas as ações variáveis; exige permanentes diretas também conjuntas (Tabela 2); recalques/retração (Tabela 3) e temperatura (Tabela 4) podem ser separados"},
+  "gammaQExceptional": 1.0,
+  "table6": {
+    "title": "Tabela 6 - Fatores de combinação (psi0) e de redução (psi1, psi2) (p.16-17)",
+    "rows": {
+      "buildings-no-predominance": {"label": "Cargas de utilização de edifícios: locais sem predominância de pesos/equipamentos fixos por longos períodos nem elevadas concentrações de pessoas (a: edificações residenciais, de acesso restrito)", "psi": [0.5, 0.4, 0.3]},
+      "buildings-predominance": {"label": "Cargas de utilização de edifícios: locais com predominância de pesos/equipamentos fixos por longos períodos ou elevadas concentrações de pessoas (b: comerciais, escritórios, acesso público)", "psi": [0.7, 0.6, 0.4]},
+      "libraries-archives-warehouses-workshops-garages-roofs": {"label": "Bibliotecas, arquivos, depósitos, oficinas, garagens e coberturas", "psi": [0.8, 0.7, 0.6]},
+      "wind": {"label": "Vento: pressão dinâmica do vento nas estruturas em geral", "psi": [0.6, 0.3, 0.0]},
+      "temperature": {"label": "Temperatura: variações uniformes em relação à média anual local", "psi": [0.6, 0.5, 0.3]},
+      "silos-and-reservoirs": {"label": "Silos e reservatórios (nota d)", "psi": [1.0, 1.0, 1.0]}
+    },
+    "format": "[psi0, psi1, psi2]",
+    "noteC": "Para combinações excepcionais em que a ação transitória excepcional seja o fogo, psi2 pode ser reduzido multiplicando-o por 0,7",
+    "registeredNotEnabled": {
+      "pedestrian-footbridges": [0.6, 0.4, 0.3], "road-bridges": [0.7, 0.5, 0.3], "railway-bridges": [1.0, 1.0, 0.6], "crane-runway-beams": [1.0, 0.8, 0.5],
+      "reason": "cargas móveis de pontes e pontes rolantes fora do domínio de edificações do JPN"
+    }
+  },
+  "notApplied": ["coeficientes de ajuste gamma_n (5.3.3) e de importância I (5.3.4): a norma não fixa valores gerais", "gamma_f1*gamma_f3 por não linearidade geométrica (5.3.2.1): exige norma específica", "fadiga (5.1.5/Tabela 7)", "perda de equilíbrio como corpo rígido (5.1.7): coeficientes gamma_gs/gamma_gn exigem justificativa", "efeitos favoráveis de ações variáveis por esforço: conjuntos por subconjunto de acompanhantes apenas"]
+}

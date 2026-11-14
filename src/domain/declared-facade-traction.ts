@@ -1,11 +1,12 @@
 import {declaredFacadeTractionSchema} from "./declared-facade-traction-contract";
 export {declaredFacadeTractionSchema} from "./declared-facade-traction-contract";
 export type {DeclaredFacadeTraction} from "./declared-facade-traction-contract";
+import type {DeclaredFacadeTraction} from "./declared-facade-traction-contract";
 import type {Project} from "./models";
 import {structureSignature} from "./calculations/project-basis";
 import {resolvePhysicalStructure} from "./physical-structure";
 import {auditPhysicalFacadeEnvelope} from "./physical-facade-envelope";
-import {toFacadeLocal,facadeOutwardNormal} from "./physical-facades";
+import {toFacadeLocal,fromFacadeLocal,facadeOutwardNormal} from "./physical-facades";
 
 type V=[number,number,number];
 const add=(a:V,b:V)=>{for(let i=0;i<3;i++)a[i]+=b[i];};
@@ -13,6 +14,18 @@ const mul=(a:V,x:number):V=>[a[0]*x,a[1]*x,a[2]*x];
 const cross=(a:V,b:V):V=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
 const near=(a:number,b:number)=>Math.abs(a-b)<=1e-7*Math.max(1,Math.abs(a),Math.abs(b));
 function fail(code:string,message:string):never{throw Error(code+": "+message);}
+type Profile=NonNullable<DeclaredFacadeTraction["cases"][number]["zones"][number]["profile"]>;
+/** Integrals over [c0,c1] (m) of p and p*(u-c0), p piecewise constant. */
+function spanIntegrals(profile:Profile,c0:number,c1:number){
+  let i0=0,i1=0;
+  for(const s of profile){
+    const a=Math.max(s.startM,c0),b=Math.min(s.endM,c1);
+    if(b<=a)continue;
+    i0+=s.netPressurePa*(b-a);
+    i1+=s.netPressurePa*((b-c0)**2-(a-c0)**2)/2;
+  }
+  return [i0,i1] as const;
+}
 /** Bind an external pressure scenario to exact physical facade geometry.
  * This is only mechanical transmission of a supplied pressure; Cp/Cpi,
  * incident wind factors and compliance with ABNT are NEVER inferred. */
@@ -81,10 +94,31 @@ export function distributeDeclaredFacadeTractions(project:Project,raw:unknown){
         !near(columns.at(-1)!.at,uvals[1])||
         columns.some((col,i)=>i>0&&col.at-columns[i-1].at<=1e-7))
         fail("FACADE_COLUMN_BOUNDARIES",f.id+" exige pilares físicos distintos nas duas bordas");
-      const traction=mul(facadeOutwardNormal(f.outward),-z.netPressurePa),
-        expectedForceN=mul(traction,expectedAreaM2),
-        expectedMomentNm=cross(mul(audit.centroidMm,.001),expectedForceN),
-        distributedForceN:V=[0,0,0],distributedMomentNm:V=[0,0,0];
+      const prof=z.profile;
+      if(prof){
+        let cursor=0,integral=0;
+        for(const seg of prof){
+          if(!near(seg.startM,cursor)||seg.endM<=seg.startM)
+            fail("FACADE_PROFILE_COVERAGE",f.id+" perfil deve ser contíguo, crescente e iniciar em 0");
+          integral+=seg.netPressurePa*(seg.endM-seg.startM);cursor=seg.endM;
+        }
+        if(!near(cursor,widthM))fail("FACADE_PROFILE_COVERAGE",f.id+" perfil deve cobrir exatamente a largura da parede");
+        if(Math.abs(integral/widthM-z.netPressurePa)>1e-9*Math.max(1,Math.abs(z.netPressurePa)))
+          fail("FACADE_PROFILE_MEAN",f.id+" netPressurePa deve ser a média ponderada do perfil");
+      }
+      const unit=mul(facadeOutwardNormal(f.outward),-1),
+        traction=mul(facadeOutwardNormal(f.outward),-z.netPressurePa),
+        expectedForceN=mul(traction,expectedAreaM2);
+      let expectedMomentNm:V=cross(mul(audit.centroidMm,.001),expectedForceN);
+      if(prof){
+        const planeMm=f.outer[0][f.outward.endsWith("X")?0:1];
+        expectedMomentNm=[0,0,0];
+        for(const seg of prof){
+          const centroid=fromFacadeLocal(f.outward,planeMm,[uvals[0]+(seg.startM+seg.endM)*500,(zvals[0]+zvals[1])/2]);
+          add(expectedMomentNm,cross(mul(centroid,.001),mul(unit,seg.netPressurePa*(seg.endM-seg.startM)*heightM)));
+        }
+      }
+      const distributedForceN:V=[0,0,0],distributedMomentNm:V=[0,0,0];
       let distributedAreaM2=0;
       const contributions=columns.map((col,i)=>{
         const left=i?(columns[i-1].at+col.at)/2:uvals[0],
@@ -92,8 +126,16 @@ export function distributeDeclaredFacadeTractions(project:Project,raw:unknown){
           tributaryWidthM=(right-left)/1000;
         if(tributaryWidthM<=0||!near(col.lengthM,heightM))
           fail("FACADE_TRIBUTARY_UNSUPPORTED",col.pieceId+" possui altura/tributação inválida");
-        const forcePerLengthNM=mul(traction,tributaryWidthM),
-          forceN=mul(forcePerLengthNM,col.lengthM),
+        let forcePerLengthNM=mul(traction,tributaryWidthM);
+        if(prof){
+          const here=(col.at-uvals[0])/1000;
+          let lambda=0;
+          if(i>0){const c0=(columns[i-1].at-uvals[0])/1000,[,i1]=spanIntegrals(prof,c0,here);lambda+=i1/(here-c0);}
+          if(i+1<columns.length){const c1=(columns[i+1].at-uvals[0])/1000,[i0,i1]=spanIntegrals(prof,here,c1),L=c1-here;
+            lambda+=i0-i1/L;}
+          forcePerLengthNM=mul(unit,lambda);
+        }
+        const forceN=mul(forcePerLengthNM,col.lengthM),
           momentNm=cross(col.midpoint,forceN);
         add(distributedForceN,forceN);
         add(distributedMomentNm,momentNm);
