@@ -167,7 +167,7 @@ def analyze_coldformed_design(raw,*,_computed_modes=()):
         if capacity is None:return blocked(key, 'Required capacity/elastic critical data missing.')
         ratio = demand/capacity
         dependencies=[]
-        if key in ('compression','my_positive','my_negative','mz_positive','mz_negative','combined-9.9'):
+        if key in ('compression','my_positive','my_negative','mz_positive','mz_negative','combined-9.9','bending-shear-9.8.4'):
             dependencies.append('cFSM eigenvalues were computed in explicit modal spaces and a finite half-wave domain; completeness beyond that domain and complete physical-mode applicability are not certified.' if key in _computed_modes else 'Elastic critical values/mode minima are externally declared, not computationally verified by this execution.')
         if key in ('tension','combined-9.9') and tension:
             dependencies.append('Net areas/Ct or the all-elements-welded hypothesis are externally declared; complete member-hole/cutout/weld geometry is not verified.')
@@ -208,7 +208,32 @@ def analyze_coldformed_design(raw,*,_computed_modes=()):
     for key in ('vyN', 'tNm'):
         if any(abs(p['forces'][key]) > eps[key] for p in extrema[key]):blocked('unsupported-'+key, 'Minor-axis shear/warping torsion procedure is not implemented.')
     if any(abs(p['forces']['vzN']) > eps['vzN'] for p in extrema['vzN']) and any(abs(p['forces']['myNm']) > eps['myNm'] for p in extrema['myNm']):
-        blocked('bending-shear-9.8.4', '9.8.4 requires the 9.8.2.1 effective-section capacity; it is not silently replaced by an Annex C capacity.')
+        # 9.8.4, bars WITHOUT transverse web stiffeners: (MSd/MRd)^2 + (VSd/VRd)^2 <= 1,0 at the SAME section.
+        # MRd may come from Annex C (MRD): 8.4.1(c) and C.1 allow it in place of 9.8.2; VRd from 9.8.3.
+        shear_cap = capacities.get('shear_z')
+        if not web['unstiffened_single_web']:
+            blocked('bending-shear-9.8.4', 'The web-with-transverse-stiffeners expression of 9.8.4 (0,6 M/MRd + V/VRd <= 1,3) also requires the 9.5 stiffener conditions and is not implemented.')
+        elif shear_cap is None:
+            blocked('bending-shear-9.8.4', 'Shear capacity (9.8.3) missing.')
+        else:
+            pairs, missing_moment = [], False
+            for f in fields:
+                pm, pv = f['forces']['myNm'], f['forces']['vzN']
+                cuts = sorted(set([0., 1., *roots(pm)]))
+                for left, right in zip(cuts, cuts[1:]):
+                    sign_key = 'my_positive' if evaluate(pm, (left+right)/2) >= 0 else 'my_negative'
+                    cap = capacities.get(sign_key)
+                    if cap is None:
+                        if max(abs(x) for x in pm) > eps['myNm']:missing_moment = True
+                        continue
+                    pa, pb = np.array(pm)/cap['design'], np.array(pv)/shear_cap['design']
+                    q = np.polynomial.polynomial.polyadd(np.polynomial.polynomial.polymul(pa, pa), np.polynomial.polynomial.polymul(pb, pb))
+                    for u in [left, right, *[u for u in roots(np.polynomial.polynomial.polyder(q)) if left < u < right]]:
+                        pairs.append((evaluate(q, u), point(f, u)))
+            if missing_moment:blocked('bending-shear-9.8.4', 'Bending capacity for one concomitant sign is missing.')
+            else:
+                ratio, p = max(pairs, key=lambda x:x[0])
+                emit('bending-shear-9.8.4', ratio, 1., p, ['9.8.4', '8.4.1(c)', 'C.1', '9.8.3', 'C.4'])
     # 9.9: N must be constant along the ORIGINAL member. Recover simultaneous
     # vectors at extrema of the actual piecewise interaction, never an envelope.
     if not constant_n:
@@ -231,10 +256,14 @@ def analyze_coldformed_design(raw,*,_computed_modes=()):
         if missing:blocked('combined-9.9','One or more concomitant sign/axis capacities missing.')
         else:
             ratio,p=max(governing,key=lambda p:p[0]);emit('combined-9.9',ratio,1.,p,['9.9'])
-    # Compression geometric slenderness limit from 9.7.4; separate from lambda0.
+    # Geometric slenderness KL/r from the declared effective lengths (separate from lambda0).
+    geometric = max(s['effective_length_y_m']/math.sqrt(s['iy_m4']/s['area_m2']), s['effective_length_z_m']/math.sqrt(s['iz_m4']/s['area_m2']))
     if any(p['forces']['nN'] < -eps['nN'] for p in extrema['nN']):
-        geometric=max(s['effective_length_y_m']/math.sqrt(s['iy_m4']/s['area_m2']), s['effective_length_z_m']/math.sqrt(s['iz_m4']/s['area_m2']))
-        emit('compression-slenderness',geometric,200.,None,['9.7.4'])
+        emit('compression-slenderness',geometric,200.,None,['9.7.4'])   # 9.7.4: KL/r <= 200 (mandatory)
+    if any(p['forces']['nN'] > eps['nN'] for p in extrema['nN']):
+        if geometric <= 300.:emit('tension-slenderness',geometric,300.,None,['9.6.3'])
+        else:checks.append(dict(id='tension-slenderness',status='CONDITIONAL',demand=geometric,resistance=300.,utilization=geometric/300.,governing=None,
+            clauses=['9.6.3'],conditional_dependencies=['9.6.3 only RECOMMENDS L/r <= 300 for tension bars; the declared effective lengths are used as the unbraced lengths.']))
     if not checks:blocked('no-demand','No nonzero design demand in this combination.')
     if any(not math.isfinite(x['design']) or x['design']<=0 for x in capacities.values()):fail('NUMERICAL_FAILURE','Nonpositive/nonfinite resistance.')
     return dict(schema_version='jpn.coldformed-design-result/2', units='SI', input_sha256=input_hash(raw),

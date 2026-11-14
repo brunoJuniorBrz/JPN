@@ -99,7 +99,8 @@ def test_missing_invalid_or_stale_model_not_approved(mutation):
 def test_missing_modes_torsion_variable_axial_force_and_shear_interaction_block():
     p=member();p['critical']['compression']=None;p['fields'][0]['forces'].update(tNm=[1],nN=[-10000,20],vzN=[10])
     r=analyze_coldformed_design(p);ids={c['id'] for c in r['checks'] if c['status']=='BLOCKED'}
-    assert {'compression','unsupported-tNm','combined-9.9','bending-shear-9.8.4'}<=ids
+    assert {'compression','unsupported-tNm','combined-9.9'}<=ids
+    assert 'bending-shear-9.8.4' not in ids   # computed since the audit against NBR 14762:2010 8.4.1(c)/C.1/9.8.4
     assert not r['member_all_limit_states_verified'] and not r['approved_for_fabrication']
 
 
@@ -123,3 +124,90 @@ def test_arbitrarily_high_declared_critical_values_never_become_independent_pass
     assert out['status']=='CONDITIONAL-EXTERNAL-INPUTS'
     assert all(c['status']=='CONDITIONAL' for c in out['checks'] if c['id']in ('compression','my_positive','combined-9.9'))
     assert not out['computed_structural_approval']
+
+
+# ---- Audit of NBR 14762:2010 (equations read from the supplied standard) -------------------------------
+# member(): W*fy = 1e-4*100e6 = 10000 N.m ; critical loads 1e12 => lambda ~ 0 => MRk = 10000, MRd = 10000/1,10.
+# Web h=0,1 m, t=2 mm: h/t=50 <= 1,08*sqrt(5E/fy)=108 => VRd = 0,6 fy h t / 1,10 = 12000/1,10.
+MRD, VRD = 10000/1.1, 12000/1.1
+
+
+def check(r, key):
+    return next(c for c in r['checks'] if c['id'] == key)
+
+
+def test_9_8_4_interaction_computed_with_annex_c_moment_and_9_8_3_shear():
+    raw = member(); f = raw['fields'][0]['forces']
+    f.update(nN=[0], myNm=[0, 4000], vzN=[3000])
+    c = check(analyze_coldformed_design(raw), 'bending-shear-9.8.4')
+    expected = (4000/MRD)**2 + (3000/VRD)**2          # 0,1936 + 0,075625, maximum at the end of the member
+    assert c['utilization'] == pytest.approx(expected, rel=1e-12) and expected == pytest.approx(.269225)
+    assert c['governing']['position_m'] == pytest.approx(2.) and c['status'] == 'CONDITIONAL'
+    assert '8.4.1(c)' in c['clauses'] and '9.8.4' in c['clauses']
+    assert c['conditional_dependencies']
+    # a failing combination
+    f.update(myNm=[0, 9000], vzN=[9000])
+    assert check(analyze_coldformed_design(raw), 'bending-shear-9.8.4')['status'] == 'FAIL'
+
+
+def test_9_8_4_uses_the_capacity_of_the_sign_of_the_moment():
+    raw = member(); f = raw['fields'][0]['forces']
+    raw['critical']['my_negative'] = triplet(20000, 1e12, 1e12)       # lambda0 = sqrt(10000/20000)
+    f.update(nN=[0], myNm=[0, -4000], vzN=[3000])
+    mrd = 1.11*(1-.278*.5)*10000/1.1                                 # C.4.1 branch 0,6 < lambda0 < 1,336
+    c = check(analyze_coldformed_design(raw), 'bending-shear-9.8.4')
+    assert c['utilization'] == pytest.approx((4000/mrd)**2 + (3000/VRD)**2, rel=1e-12)
+    raw['critical']['my_negative'] = None                            # missing concomitant capacity => BLOCKED, never zero
+    r = analyze_coldformed_design(raw)
+    assert check(r, 'bending-shear-9.8.4')['status'] == 'BLOCKED'
+
+
+def test_9_8_4_true_maximum_inside_the_member_not_sum_of_component_maxima():
+    import numpy as np
+    raw = member(); f = raw['fields'][0]['forces']
+    f.update(nN=[0], myNm=[0, 8000, -8000], vzN=[4000, -8000])        # M peak 2000 at u=0,5 ; V = 4000(1-2u)
+    c = check(analyze_coldformed_design(raw), 'bending-shear-9.8.4')
+    u = np.linspace(0, 1, 400001)
+    grid = ((8000*u*(1-u))/MRD)**2 + ((4000*(1-2*u))/VRD)**2          # independent dense-grid oracle
+    assert c['utilization'] == pytest.approx(grid.max(), rel=1e-9)
+    assert c['utilization'] < (2000/MRD)**2 + (4000/VRD)**2           # not the union of separate maxima
+
+
+def test_9_8_4_with_transverse_stiffeners_stays_blocked():
+    raw = member(); raw['web']['unstiffened_single_web'] = False
+    raw['fields'][0]['forces'].update(nN=[0], myNm=[0, 4000], vzN=[3000])
+    c = check(analyze_coldformed_design(raw), 'bending-shear-9.8.4')
+    assert c['status'] == 'BLOCKED' and '9.5' in c['reason']
+
+
+def test_9_6_3_tension_slenderness_is_a_recommendation_not_a_failure():
+    raw = member(); raw['fields'][0]['forces'].update(nN=[5000], myNm=[0], vzN=[0])
+    c = check(analyze_coldformed_design(raw), 'tension-slenderness')
+    # r_y = sqrt(1e-5/1e-3) = 0,1 ; r_z = sqrt(2e-6/1e-3) = 0,044721 ; L = 2 m
+    assert c['utilization'] == pytest.approx(2/math.sqrt(2e-6/1e-3)/300, rel=1e-12) and c['status'] == 'PASS'
+    assert c['clauses'] == ['9.6.3']
+    raw['section']['effective_length_z_m'] = 20.
+    c = check(analyze_coldformed_design(raw), 'tension-slenderness')
+    assert c['utilization'] == pytest.approx(20/math.sqrt(2e-6/1e-3)/300, rel=1e-12)
+    assert c['utilization'] > 1
+    assert c['status'] == 'CONDITIONAL' and 'RECOMMENDS' in c['conditional_dependencies'][0]
+
+
+def test_9_7_4_compression_slenderness_limit_200_is_mandatory():
+    raw = member(); raw['section']['effective_length_z_m'] = 20.
+    c = check(analyze_coldformed_design(raw), 'compression-slenderness')
+    assert c['utilization'] == pytest.approx(20/math.sqrt(2e-6/1e-3)/200, rel=1e-12) and c['status'] == 'FAIL'
+
+
+def test_annex_c_equations_match_the_standard_text_at_branch_boundaries():
+    # C.4.1: lambda0 = 0,6 and 1,336 are continuous within the published 3-digit rounding; C.3.1 at 1,5.
+    my = 10000.
+    # lambda0 = 0,6 -> Wfy ; 0,6 < lambda0 < 1,336 -> 1,11(1-0,278 l0^2) Wfy ; lambda0 >= 1,336 -> Wfy/l0^2 (= Me)
+    for l0, expected in [(.5, my), (.6, my), (1.0, 1.11*(1-.278)*my), (1.3359, 1.11*(1-.278*1.3359**2)*my), (1.336, my/1.336**2)]:
+        r = bending_mrd(my, triplet(my/l0**2, 1e15, 1e15))
+        assert r['modes']['global_'] == pytest.approx(expected, rel=1e-12)
+    assert bending_mrd(my, triplet(my/1.4**2, 1e15, 1e15))['modes']['global_'] == pytest.approx(my/1.4**2)   # >= 1,336: Me
+    # C.4.3 and C.3.3 published constants (0,673 / 0,22 and 0,561 / 0,25 with exponent 1,2)
+    ld = 1.5
+    assert bending_mrd(my, triplet(1e15, 1e15, my/ld**2))['modes']['distortional'] == pytest.approx((1-.22/ld)*my/ld, rel=1e-12)
+    assert compression_mrd(1e5, triplet(1e15, 1e15, 1e5/ld**2))['modes']['distortional'] == pytest.approx((1-.25/ld**1.2)*1e5/ld**1.2, rel=1e-12)
