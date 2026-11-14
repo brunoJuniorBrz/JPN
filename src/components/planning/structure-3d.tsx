@@ -7,10 +7,14 @@ import type { RoofParameters } from "@/domain/project-details";
 import { initialPresentationOptions, presentationEnvelope, type PresentationOptions, type WallLayout, type RoofColor, type RoofFinish } from "./presentation-scene";
 import { drawPresentationAnnotations, presentationDimensions, dimensionLabels } from "./presentation-capture";
 import { resolveSection } from "@/domain/profile-section";
-import { fitIsometricCamera } from "./camera-fit";
 import { scenePoint } from "./profile-geometry";
 import { calculateNodeMeasurement, nextMeasurementNode } from "./node-measurement";
 import { buildProfileScene, pieceIdFromHit, viewerQuality, type ViewerMode } from "./profile-scene";
+import { createCameraRig, createStudioStage } from "./studio-stage";
+import { sectionAxes, sectionAxisLabels, sectionPlane, steelFinishes, steelFinishLabels, viewPose, type Projection, type SectionCut, type SteelFinish, type StudioView } from "./studio-view";
+
+const TRANSITION_MS = 420;
+const metres = (mm: number, digits = 3) => (mm / 1000).toLocaleString("pt-BR", { maximumFractionDigits: digits });
 
 export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, selectedNodeId, onSelectNode, inspectNodes=false }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
@@ -43,12 +47,23 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const selectedPiece = model.pieces.find(piece => piece.id === selected);
   const selectedPieceHidden = !!selectedPiece && !visibleRoles.includes(selectedPiece.role);
   const applyVisibility = useRef<(visible: readonly PieceRole[], isolated: string | null) => void>(() => {});
-  const cameraView = useRef<(view: "iso" | "top" | "front" | "side") => void>(() => {});
+  const cameraView = useRef<(view: StudioView) => void>(() => {});
   // Opening the viewer always starts with solid profiles, regardless of the mode last used.
   const [mode, setMode] = useState<ViewerMode | "finished">("profiles");
   const changeMode = useRef<(mode: ViewerMode | "finished") => void>(() => {});
   const focus = useRef<(id: string) => void>(() => {});
   const colorize = useRef<(colors?: Record<string, number>) => void>(() => {});
+  // Studio tools. All of them are view state: nothing is persisted or sent to the engine.
+  const [projection, setProjection] = useState<Projection>("perspective");
+  const [finish, setFinish] = useState<SteelFinish>("painted");
+  const [ghost, setGhost] = useState(false);
+  const [cut, setCut] = useState<SectionCut | null>(null);
+  const cutPosition = useRef<HTMLElement>(null), cutRange = useRef<HTMLSpanElement>(null);
+  const applyProjection = useRef<(value: Projection) => void>(() => {});
+  const applyFinish = useRef<(value: SteelFinish) => void>(() => {});
+  const applyGhost = useRef<(value: boolean) => void>(() => {});
+  const applySection = useRef<(value: SectionCut | null) => void>(() => {});
+  const stats = useRef<HTMLSpanElement>(null);
   useEffect(() => { select.current = onSelect; }, [onSelect]);
   useEffect(() => {
     const container = host.current!;
@@ -58,39 +73,46 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     if (!context) { const timer = setTimeout(() => setFailure("3D indisponível neste dispositivo. Use as vistas 2D acima."), 0); return () => clearTimeout(timer); }
     try { renderer = new THREE.WebGLRenderer({ canvas, context, antialias: true, alpha: false, powerPreference: "default" }); }
     catch { const timer = setTimeout(() => setFailure("3D indisponível neste dispositivo. Use as vistas 2D acima."), 0); return () => clearTimeout(timer); }
-    renderer.setClearColor(0xf6f8f2); container.appendChild(renderer.domElement);
+    renderer.setClearColor(0xeef1ee); container.appendChild(renderer.domElement);
     renderer.domElement.setAttribute("aria-label", "Modelo 3D da estrutura"); renderer.domElement.setAttribute("role", "img");
-    const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(40, 1, .01, 100000);
-    renderer.shadowMap.enabled = !quality.low;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    const controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = false;
+    const scene = new THREE.Scene();
+    // Shadows cost one extra on-demand pass. Keep them unless the device is
+    // limited AND the model is large.
+    const shadows = !(quality.low && model.pieces.length > 600);
+    const stage = createStudioStage(renderer, scene, { shadows, shadowMapSize: quality.low ? 1024 : 2048, environmentSize: quality.low ? 64 : 128 });
+    const reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const duration = reducedMotion ? 0 : TRANSITION_MS;
     const profiles = buildProfileScene(model, quality.segments); scene.add(profiles.root);
-    const ambient = new THREE.HemisphereLight(0xffffff, 0x9aa797, 2); scene.add(ambient);
-    const sun = new THREE.DirectionalLight(0xffffff, 2.5); sun.position.set(5, 12, 8); scene.add(sun);
-    sun.castShadow = false; sun.shadow.mapSize.set(quality.low ? 512 : 1024, quality.low ? 512 : 1024); sun.shadow.bias = -0.0002;
     canvas.dataset.quality = quality.low ? "reduced" : "standard";
+    canvas.dataset.shadows = shadows ? "on" : "off"; canvas.dataset.environment = "pending";
     canvas.dataset.solidCount = String(profiles.solidCount); canvas.dataset.fallbackCount = String(profiles.fallbackCount);
-    canvas.dataset.framing = "whole-structure";
+    canvas.dataset.framing = "whole-structure"; canvas.dataset.projection = "perspective";
+    canvas.dataset.finish = "painted"; canvas.dataset.ghost = "false"; canvas.dataset.sectionAxis = "";
     const resources: (THREE.BufferGeometry | THREE.Material)[] = [];
     const bounds = profiles.bounds, center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
     const span = Math.max(size.x, size.y, size.z, 1), gridStep = gridSpacingM;
-    sun.position.copy(center).add(new THREE.Vector3(span*.5,span*.95,span*.5));
-    sun.target.position.copy(center); scene.add(sun.target);
-    const shadowRange=Math.max(span,20);
-    sun.shadow.camera.left=-shadowRange;sun.shadow.camera.right=shadowRange;
-    sun.shadow.camera.top=shadowRange;sun.shadow.camera.bottom=-shadowRange;
-    sun.shadow.camera.near=1;sun.shadow.camera.far=span*4+20;sun.shadow.camera.updateProjectionMatrix();
-    const grid = new THREE.GridHelper(gridStep * 20, 20, 0xaab6a0, 0xdce2d5); grid.position.set(center.x, 0, center.z); scene.add(grid);
-    resources.push(grid.geometry, ...(Array.isArray(grid.material) ? grid.material : [grid.material]));
-    const render = () => { renderer.render(scene,camera); canvas.dataset.drawCalls = String(renderer.info.render.calls); canvas.dataset.triangles = String(renderer.info.render.triangles); if (environment) { const sources = environment.status(); canvas.dataset.carSource = sources.carSource; canvas.dataset.personSource = sources.personSource; } };
-    const nodeGeometry=new THREE.SphereGeometry(span/150,8,6),nodeMaterial=new THREE.MeshBasicMaterial({depthTest:false,transparent:true,opacity:.9});
+    const grid = new THREE.GridHelper(gridStep * 20, 20, 0x9aa79c, 0xd3dad2); grid.position.set(center.x, 0, center.z); scene.add(grid);
+    const gridMaterials = Array.isArray(grid.material) ? grid.material : [grid.material];
+    for (const m of gridMaterials) { m.transparent = true; m.opacity = .7; m.depthWrite = false; }
+    resources.push(grid.geometry, ...gridMaterials);
+    let disposed = false, environment: PresentationHandle | null = null;
+    const rig = createCameraRig(1, () => { controls.target.copy(rig.target); controls.update(); render(); });
+    const controls = new OrbitControls(rig.active(), renderer.domElement); controls.enableDamping = false;
+    function render() {
+      if (disposed) return;
+      renderer.render(scene, rig.active());
+      canvas.dataset.drawCalls = String(renderer.info.render.calls); canvas.dataset.triangles = String(renderer.info.render.triangles);
+      if (stats.current) stats.current.textContent = `${renderer.info.render.calls} chamadas · ${renderer.info.render.triangles.toLocaleString("pt-BR")} triângulos`;
+      if (environment) { const sources = environment.status(); canvas.dataset.carSource = sources.carSource; canvas.dataset.personSource = sources.personSource; }
+    }
+    const nodeGeometry=new THREE.SphereGeometry(span/150,8,6),nodeMaterial=new THREE.MeshBasicMaterial({depthTest:false,transparent:true,opacity:.9,toneMapped:false});
     const nodeMarkers=new THREE.InstancedMesh(nodeGeometry,nodeMaterial,model.nodes.length);nodeMarkers.renderOrder=10;nodeMarkers.visible=false;scene.add(nodeMarkers);resources.push(nodeGeometry,nodeMaterial);
     const nodeMatrix=new THREE.Matrix4();model.nodes.forEach((n,i)=>{nodeMatrix.makeTranslation(scenePoint(n).x,scenePoint(n).y,scenePoint(n).z);nodeMarkers.setMatrixAt(i,nodeMatrix);nodeMarkers.setColorAt(i,new THREE.Color(0x8262b5));});
     nodeMarkers.instanceMatrix.needsUpdate=true;
     // Visual-only measuring overlay; points come from real model node IDs, in mm.
     const measureGeometry = new THREE.BufferGeometry();
     measureGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(6), 3));
-    const measureMaterial = new THREE.LineBasicMaterial({ color: 0xd34a32, depthTest: false, depthWrite: false });
+    const measureMaterial = new THREE.LineBasicMaterial({ color: 0xd34a32, depthTest: false, depthWrite: false, toneMapped: false });
     const measureLine = new THREE.Line(measureGeometry, measureMaterial);
     measureLine.visible = false; measureLine.renderOrder = 12; scene.add(measureLine);
     resources.push(measureGeometry, measureMaterial);
@@ -119,45 +141,77 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       canvas.dataset.measurementLengthMm=value?String(value.lengthMm):"";
       render();
     };
-    colorize.current = colors => { profiles.setColors(colors); canvas.dataset.analysisMode = colors ? "experimental" : "none"; render(); };
-    let framingBounds = bounds, activeMode: ViewerMode | "finished" = "profiles", disposed = false;
+    colorize.current = colors => { profiles.setColors(colors); stage.setNeutral(!!colors); canvas.dataset.analysisMode = colors ? "experimental" : "none"; render(); };
+    let framingBounds = bounds, activeMode: ViewerMode | "finished" = "profiles";
     let cameraFramed = false;
     type PresentationHandle = ReturnType<typeof import("./presentation-scene")["createPresentationScene"]>;
-    let environment: PresentationHandle | null = null;
     const presentationBounds = envelope ? new THREE.Box3().setFromPoints([
       new THREE.Vector3(-3,0,3),new THREE.Vector3(envelope.widthM+3,envelope.highHeightM+1,-envelope.lengthM-3),
     ]) : bounds;
-    const fitFull = () => {
-      framingBounds = activeMode === "finished" ? bounds.clone().union(presentationBounds) : bounds;
+    const wholeBounds = () => activeMode === "finished" ? bounds.clone().union(presentationBounds) : bounds;
+    const lightScene = () => stage.frame(wholeBounds(), Math.min(0, bounds.min.y), activeMode !== "finished");
+    const goTo = (view: StudioView, target: THREE.Box3, animate: boolean) => {
+      const camera = rig.perspective;
+      rig.moveTo(viewPose(target, view, camera.aspect, camera.fov), animate && cameraFramed ? duration : 0);
+      cameraFramed = true; canvas.dataset.cameraView = view;
+    };
+    const fitFull = (animate = true) => {
+      framingBounds = wholeBounds();
       canvas.dataset.framing = "whole-structure";
-      camera.up.set(0, 1, 0);
-      controls.target.copy(fitIsometricCamera(camera, framingBounds));
-      cameraFramed = true; canvas.dataset.cameraView = "iso";
-      controls.update(); render();
+      goTo("iso", framingBounds, animate);
     };
     cameraView.current = view => {
-      if (view === "iso") { fitFull(); return; }
-      framingBounds = activeMode === "finished" ? bounds.clone().union(presentationBounds) : bounds;
-      // Aligned perspective inspection views; dimensioned 2D remains the drawing authority.
-      const center = framingBounds.getCenter(new THREE.Vector3());
-      const radius = Math.max(framingBounds.getBoundingSphere(new THREE.Sphere()).radius, .5);
-      const halfV = THREE.MathUtils.degToRad(camera.fov) / 2;
-      const halfH = Math.atan(Math.tan(halfV) * camera.aspect);
-      const distance = 1.12 * radius / Math.sin(Math.min(halfV, halfH));
-      const direction = view === "top" ? new THREE.Vector3(0, 1, 0)
-        : view === "front" ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(1, 0, 0);
-      camera.up.set(0, 1, 0);
-      if (view === "top") camera.up.set(0, 0, -1);
-      controls.target.copy(center);
-      camera.position.copy(center).addScaledVector(direction, distance);
-      camera.lookAt(center); cameraFramed = true;
-      canvas.dataset.framing = "whole-structure"; canvas.dataset.cameraView = view;
-      controls.update(); render();
+      framingBounds = wholeBounds();
+      canvas.dataset.framing = "whole-structure";
+      goTo(view, framingBounds, true);
+    };
+    applyProjection.current = value => {
+      rig.setProjection(value); controls.object = rig.active(); controls.update();
+      canvas.dataset.projection = value; render();
+    };
+    applyFinish.current = value => { profiles.setFinish(value); canvas.dataset.finish = value; render(); };
+    applyGhost.current = value => { profiles.setGhost(value); canvas.dataset.ghost = profiles.ghostActive() ? "true" : "false"; render(); };
+    // View-only section cut: a renderer clipping plane plus a thin outline.
+    const cutGeometry = new THREE.BufferGeometry(), cutMaterial = new THREE.LineBasicMaterial({ color: 0xd34a32, toneMapped: false });
+    const cutOutline = new THREE.LineLoop(cutGeometry, cutMaterial); cutOutline.visible = false; cutOutline.renderOrder = 11; scene.add(cutOutline);
+    resources.push(cutGeometry, cutMaterial);
+    let activePlane: THREE.Plane | null = null;
+    // Shadow maps ignore renderer-level planes; clip the bar materials too so a
+    // removed half never leaves a shadow behind.
+    renderer.localClippingEnabled = true;
+    const clipMaterials = (plane: THREE.Plane | null) => {
+      for (const material of [profiles.material, profiles.focusMesh.material as THREE.Material]) {
+        const had = !!material.clippingPlanes?.length;
+        material.clippingPlanes = plane ? [plane] : null; material.clipShadows = !!plane;
+        if (had !== !!plane) material.needsUpdate = true;
+      }
+    };
+    applySection.current = value => {
+      if (!value || activeMode === "finished") {
+        activePlane = null; renderer.clippingPlanes = []; clipMaterials(null); cutOutline.visible = false;
+        canvas.dataset.sectionAxis = ""; canvas.dataset.sectionPositionMm = ""; render(); return;
+      }
+      const result = sectionPlane(bounds, value), pad = span * .04, p = result.positionMm / 1000;
+      activePlane = result.plane; renderer.clippingPlanes = [activePlane]; clipMaterials(activePlane);
+      const lo = bounds.min.clone().addScalar(-pad), hi = bounds.max.clone().addScalar(pad);
+      // Keep the outline a hair inside the kept side so the plane never clips it.
+      const inside = activePlane.normal.clone().multiplyScalar(.002);
+      const corners = value.axis === "x" ? [[p, lo.y, lo.z], [p, hi.y, lo.z], [p, hi.y, hi.z], [p, lo.y, hi.z]]
+        : value.axis === "y" ? [[lo.x, lo.y, -p], [hi.x, lo.y, -p], [hi.x, hi.y, -p], [lo.x, hi.y, -p]]
+        : [[lo.x, p, lo.z], [hi.x, p, lo.z], [hi.x, p, hi.z], [lo.x, p, hi.z]];
+      cutGeometry.setFromPoints(corners.map(([x, y, z]) => new THREE.Vector3(x, y, z).add(inside))); cutGeometry.computeBoundingSphere();
+      cutOutline.visible = true;
+      canvas.dataset.sectionAxis = value.axis; canvas.dataset.sectionPositionMm = String(Math.round(result.positionMm)); canvas.dataset.sectionFlipped = String(value.flipped);
+      // The readout shows the exact plane position used by the renderer.
+      if (cutPosition.current) cutPosition.current.textContent = `${metres(result.positionMm)} m`;
+      if (cutRange.current) cutRange.current.textContent = ` (de ${metres(result.rangeMm[0])} m a ${metres(result.rangeMm[1])} m)`;
+      render();
     };
     applyVisibility.current = (visible, isolated) => {
       profiles.setVisibility(new Set(visible), isolated);
       canvas.dataset.visibleRoles = visible.join(",");
       canvas.dataset.isolatedPiece = isolated ?? "";
+      canvas.dataset.ghost = profiles.ghostActive() ? "true" : "false";
       render();
     };
     changeMode.current = value => {
@@ -165,23 +219,22 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       activeMode = value;
       profiles.setMode(value === "finished" ? "profiles" : value);
       grid.visible = value !== "finished";
-      sun.castShadow = value === "finished" && !quality.low;
-      // Keep the original technical lighting unchanged; tone down the client
-      // presentation lights to preserve roof pigments and concrete shading.
-      sun.intensity = value === "finished" ? 1.65 : 2.5;
-      ambient.intensity = value === "finished" ? 1.15 : 2;
-      canvas.dataset.mode = value;
+      if (value === "finished") { activePlane = null; renderer.clippingPlanes = []; clipMaterials(null); cutOutline.visible = false; canvas.dataset.sectionAxis = ""; }
+      canvas.dataset.mode = value; canvas.dataset.ghost = profiles.ghostActive() ? "true" : "false";
       if(environment) environment.root.visible = value === "finished";
+      lightScene();
       if(value === "finished" && envelope && !environment) {
         void import("./presentation-scene").then(({createPresentationScene}) => {
           if(disposed || activeMode !== "finished" || environment) return;
-          environment = createPresentationScene(envelope,optionsRef.current,render);
+          // Rest the visual sheeting above the purlins instead of through them.
+          const lift = Math.max(0, profiles.purlinTopOffsetM() - .035 + .006);
+          environment = createPresentationScene(envelope,optionsRef.current,render,lift);
           scene.add(environment.root);
-          canvas.dataset.contextLoaded = "true";
-          fitFull();
+          canvas.dataset.contextLoaded = "true"; canvas.dataset.roofRelief = "procedural";
+          fitFull(false);
         }).catch(()=>{if(!disposed)setPictureError("O ambiente 3D não pôde ser carregado. Retorne aos Perfis 3D.");});
       }
-      if(value === "finished" || previousMode === "finished") { fitFull(); resize(); } else render();
+      if(value === "finished" || previousMode === "finished") { fitFull(false); resize(); } else render();
     };
     applyOptions.current = options => { environment?.update(options);render(); };
     capture.current = () => {
@@ -202,16 +255,17 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
         setPictureError("");
       } catch { setPictureError("Falha ao exportar a imagem neste navegador."); }
     };
-    reset.current = fitFull;
+    reset.current = () => fitFull(true);
     focus.current = id => {
       const item = profiles.instances.get(id), piece = model.pieces.find(p => p.id === id);
       if (!piece) return;
       let pieceBounds: THREE.Box3;
       if (item) { const matrix = new THREE.Matrix4(); item.mesh.getMatrixAt(item.index, matrix); pieceBounds = item.mesh.geometry.boundingBox!.clone().applyMatrix4(matrix); }
       else { const points = model.nodes.filter(n => n.id === piece.start || n.id === piece.end).map(n => new THREE.Vector3(n.x / 1000, n.z / 1000, -n.y / 1000)); pieceBounds = new THREE.Box3().setFromPoints(points); }
-      framingBounds = pieceBounds; canvas.dataset.framing = "selected-piece"; controls.target.copy(fitIsometricCamera(camera, pieceBounds)); controls.update(); render();
+      framingBounds = pieceBounds; canvas.dataset.framing = "selected-piece";
+      goTo("iso", pieceBounds, true);
     };
-    highlight.current = id => { profiles.highlight(id); canvas.dataset.selectedPiece = id; render(); };
+    highlight.current = id => { profiles.highlight(id); canvas.dataset.selectedPiece = id; canvas.dataset.ghost = profiles.ghostActive() ? "true" : "false"; render(); };
     const resize = () => {
       const width = Math.max(container.clientWidth, 1), height = Math.max(container.clientHeight, 1);
       // iPhone/WebKit may report only a few CPU cores. Keep fine pixels even when
@@ -220,23 +274,21 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       const ratio = Math.max(1, Math.min(window.devicePixelRatio || 1, activeMode === "finished" ? 2 : quality.pixelRatio, Math.sqrt(pixelBudget / (width * height))));
       renderer.setPixelRatio(ratio); canvas.dataset.pixelRatio = ratio.toFixed(2);
       renderer.setSize(width, height);
-      camera.aspect = width / height; camera.updateProjectionMatrix();
+      rig.setAspect(width / height);
       // Preserve camera pose and zoom after viewport/orientation changes.
-      if (!cameraFramed) {
-        camera.up.set(0, 1, 0);
-        controls.target.copy(fitIsometricCamera(camera, framingBounds));
-        cameraFramed = true; canvas.dataset.cameraView = "iso";
-      }
+      if (!cameraFramed) { lightScene(); goTo("iso", framingBounds, false); }
       controls.update(); render();
     };
-    const observer = new ResizeObserver(resize); observer.observe(container); controls.addEventListener("change", render);
+    const follow = () => { rig.target.copy(controls.target); render(); };
+    const observer = new ResizeObserver(resize); observer.observe(container); controls.addEventListener("change", follow);
     const raycaster = new THREE.Raycaster(); raycaster.params.Line = { threshold: span / 180 };
     let startX = 0, startY = 0;
-    const down = (e: PointerEvent) => { startX = e.clientX; startY = e.clientY; };
+    const down = (e: PointerEvent) => { startX = e.clientX; startY = e.clientY; rig.cancel(); };
+    const wheel = () => rig.cancel();
     const up = (e: PointerEvent) => {
       if (Math.hypot(e.clientX - startX, e.clientY - startY) > 5) return;
       const rect = renderer.domElement.getBoundingClientRect();
-      raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), camera);
+      raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), rig.active());
       if (activeMode === "finished") return;
       if((nodePicking.current||measurePicking.current)&&nodeMarkers.visible){
         const nodeHit=raycaster.intersectObject(nodeMarkers,false)[0];
@@ -247,18 +299,30 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
           return;
         }}
       }
-      const hit = raycaster.intersectObjects(profiles.targets(), false)[0];
+      // Never pick what the section cut has removed from view.
+      const hit = raycaster.intersectObjects(profiles.targets(), false).find(h => !activePlane || activePlane.distanceToPoint(h.point) >= 0);
       const id = hit ? pieceIdFromHit(hit) : null; if (id) { canvas.dataset.pickedPiece = id; select.current(id); }
     };
-    const lost = (e: Event) => { e.preventDefault(); setFailure("O dispositivo perdeu o contexto gráfico. As vistas 2D continuam disponíveis."); };
+    const lost = (e: Event) => { e.preventDefault(); rig.cancel(); setFailure("O dispositivo perdeu o contexto gráfico. As vistas 2D continuam disponíveis."); };
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("webglcontextlost", lost);
+    renderer.domElement.addEventListener("wheel", wheel, { passive: true });
     resize();
-    return () => { disposed = true; environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", render); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); sun.shadow.dispose();renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; };
+    // Reflections arrive after the first frame so opening never waits for them.
+    const environmentTimer = window.setTimeout(() => {
+      if (disposed) return;
+      canvas.dataset.environment = stage.loadEnvironment() ? "procedural" : "none";
+      canvas.dataset.environmentMs = stage.environmentMs().toFixed(0); render();
+    }, 60);
+    return () => { disposed = true; window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
   }, [model, gridSpacingM, envelope, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
   useEffect(() => { colorize.current(analysisColors); }, [analysisColors, model]);
+  useEffect(() => { applyProjection.current(projection); }, [projection, model]);
+  useEffect(() => { applyFinish.current(finish); }, [finish, model]);
+  useEffect(() => { applyGhost.current(ghost && mode !== "finished"); }, [ghost, mode, model, selected]);
+  useEffect(() => { applySection.current(mode === "finished" ? null : cut); }, [cut, mode, model]);
   useEffect(()=>{nodeTools.current(inspectNodes&&mode!=="finished",selectedNodeId??"",measuring&&mode!=="finished",measuredNodes);},[inspectNodes,selectedNodeId,mode,model,measuring,measuredNodes]);
   useEffect(() => {
     applyVisibility.current(mode === "finished" ? roles : visibleRoles, mode === "finished" ? null : activeIsolation);
@@ -272,10 +336,11 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     return () => { document.body.style.overflow = previousOverflow; document.removeEventListener("keydown", onKeyDown); };
   }, [expanded]);
   const fallbackCount = model.pieces.filter(p => !resolveSection(p.profile).section).length;
-  return <div className={expanded ? "structure-viewer structure-viewer--expanded" : "structure-viewer"}>
+  const technical = !failure && mode !== "finished";
+  return <div className={expanded ? "structure-viewer structure-viewer--expanded studio" : "structure-viewer studio"}>
     {expanded && <div className="structure-viewer-heading"><strong>Apresentação da estrutura · 3D</strong><button type="button" className="button secondary" onClick={() => setExpanded(false)}>Fechar tela cheia</button></div>}
     {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).filter(([value]) => !analysisColors || value !== "finished").map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
-    {!failure && mode !== "finished" && <div className={toolsCollapsed ? "inspection-tools inspection-tools--collapsed" : "inspection-tools"} aria-label="Ferramentas de inspeção 3D">
+    {technical && <div className={toolsCollapsed ? "inspection-tools inspection-tools--collapsed" : "inspection-tools"} aria-label="Ferramentas de inspeção 3D">
       <button type="button" className="inspection-collapse" aria-expanded={!toolsCollapsed} onClick={() => setToolsCollapsed(value => !value)}>{toolsCollapsed ? "Mostrar ferramentas" : "Recolher ferramentas"}</button>
       {!toolsCollapsed && <>
       <details className="inspection-layers">
@@ -298,12 +363,22 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       <button type="button" className="button secondary" aria-pressed={measuring} onClick={() => {
         setMeasuring(value => !value); setMeasurementSelection({model,ids:[]});
       }}>{measuring ? "Encerrar medição" : "Medir entre nós"}</button>
-      <div className="inspection-view-buttons" role="group" aria-label="Orientação da câmera 3D">
-        <button type="button" onClick={() => cameraView.current("top")}>Superior</button>
-        <button type="button" onClick={() => cameraView.current("front")}>Frontal</button>
-        <button type="button" onClick={() => cameraView.current("side")}>Lateral</button>
-      </div>
+      <button type="button" className="button secondary" aria-pressed={!!cut} onClick={() => setCut(value => value ? null : { axis: "y", fraction: .5, flipped: false })}>{cut ? "Encerrar corte" : "Corte 3D"}</button>
+      <button type="button" className="button secondary" aria-pressed={ghost} disabled={mode === "structural"} title="Deixa as outras peças translúcidas quando há uma peça selecionada" onClick={() => setGhost(value => !value)}>{ghost ? "Raio-X ligado" : "Raio-X da seleção"}</button>
+      <label className="studio-field">Acabamento do aço (visual)
+        <select className="input" value={finish} disabled={!!analysisColors} onChange={e => setFinish(e.target.value as SteelFinish)}>{steelFinishes.map(value => <option key={value} value={value}>{steelFinishLabels[value]}</option>)}</select>
+      </label>
       </>}
+      {cut && <div className="inspection-measurement studio-section" role="group" aria-label="Plano de corte 3D" data-testid="3d-section">
+        <label>Eixo do corte
+          <select className="input" aria-label="Eixo do corte" value={cut.axis} onChange={e => setCut({ ...cut, axis: e.target.value as SectionCut["axis"] })}>{sectionAxes.map(axis => <option key={axis} value={axis}>{sectionAxisLabels[axis]}</option>)}</select>
+        </label>
+        <label>Posição do corte <strong ref={cutPosition} data-testid="3d-section-position" />
+          <input type="range" aria-label="Posição do corte" min="0" max="1" step="0.01" value={cut.fraction} onChange={e => setCut({ ...cut, fraction: Number(e.target.value) })}/>
+        </label>
+        <label className="studio-check"><input type="checkbox" checked={cut.flipped} onChange={e => setCut({ ...cut, flipped: e.target.checked })}/>Inverter lado visível</label>
+        <small>Corte apenas visual, em coordenadas do projeto<span ref={cutRange} />. A geometria e os dados da estrutura não são alterados.</small>
+      </div>}
       {measuring && <div className="inspection-measurement" role="status" aria-live="polite" data-testid="3d-measurement">
         <label>Nó inicial
           <select className="input" aria-label="Nó inicial da medição" value={measuredNodes[0]??""} onChange={event =>
@@ -333,23 +408,34 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     </div>}
     <div className="presentation-viewport">
       <div ref={host} className="structure-3d" hidden={!!failure} />
+      {!failure && <div className="studio-camera" aria-label="Câmera do Studio 3D">
+        <div className="inspection-view-buttons" role="group" aria-label="Orientação da câmera 3D">
+          <button type="button" aria-label="Vista isométrica" title="Vista isométrica" onClick={() => cameraView.current("iso")}>Iso</button>
+          <button type="button" onClick={() => cameraView.current("top")}>Superior</button>
+          <button type="button" onClick={() => cameraView.current("front")}>Frontal</button>
+          <button type="button" onClick={() => cameraView.current("side")}>Lateral</button>
+        </div>
+        <button type="button" className="studio-projection" aria-pressed={projection === "orthographic"} title="Alterna entre perspectiva e projeção ortográfica real" onClick={() => setProjection(value => value === "perspective" ? "orthographic" : "perspective")}>{projection === "orthographic" ? "Ortográfica" : "Perspectiva"}</button>
+      </div>}
+      {!failure && <span ref={stats} className="studio-stats" aria-hidden="true" />}
       {!failure && mode === "finished" && envelope && <div className="presentation-hud" aria-label="Cotas do pré-projeto">
         <span className="presentation-label">JPN · PRÉ-PROJETO VISUAL · NÃO DIMENSIONADO</span>
         {presentationOptions.showDimensions && <div className="presentation-dimensions">{dimensions.map(label=><span key={label}>{label}</span>)}</div>}
       </div>}
+      {technical && selectedPiece && <aside className="inspection-selected-piece" data-testid="inspection-selected-piece" aria-label="Detalhes da peça selecionada">
+        <div className="inspection-selected-description">
+          <span className="inspection-selected-kicker">INSPEÇÃO VISUAL · NÃO DIMENSIONADO</span>
+          <strong>{selectedPiece.id} · {roleLabels[selectedPiece.role]}</strong>
+          <span>{(selectedPiece.lengthMm / 1000).toLocaleString("pt-BR", {maximumFractionDigits: 3})} m · {selectedPiece.profile.section || selectedPiece.profile.name || "Seção não informada"}</span>
+          <span className="studio-piece-meta">Nós {selectedPiece.start} → {selectedPiece.end}{selectedPiece.massKg !== null ? ` · ${selectedPiece.massKg.toLocaleString("pt-BR", {maximumFractionDigits: 1})} kg (massa cadastrada)` : ""}</span>
+          {selectedPieceHidden && <span className="inspection-selected-hidden">Esta categoria está oculta nas camadas.</span>}
+        </div>
+        <div className="inspection-selected-actions">
+          {selectedPieceHidden ? <button type="button" onClick={() => {setVisibleRoles(current => roles.filter(role => role === selectedPiece.role || current.includes(role)));setIsolatedId(null);}}>Mostrar categoria</button> : <button type="button" onClick={() => focus.current(selectedPiece.id)}>Aproximar</button>}
+          <button type="button" onClick={() => {setIsolatedId(null);onSelect("");}}>Limpar seleção</button>
+        </div>
+      </aside>}
     </div>
-    {!failure && mode !== "finished" && selectedPiece && <aside className="inspection-selected-piece" data-testid="inspection-selected-piece" aria-label="Detalhes da peça selecionada">
-      <div className="inspection-selected-description">
-        <span className="inspection-selected-kicker">INSPEÇÃO VISUAL · NÃO DIMENSIONADO</span>
-        <strong>{selectedPiece.id} · {roleLabels[selectedPiece.role]}</strong>
-        <span>{(selectedPiece.lengthMm / 1000).toLocaleString("pt-BR", {maximumFractionDigits: 3})} m · {selectedPiece.profile.section || selectedPiece.profile.name || "Seção não informada"}</span>
-        {selectedPieceHidden && <span className="inspection-selected-hidden">Esta categoria está oculta nas camadas.</span>}
-      </div>
-      <div className="inspection-selected-actions">
-        {selectedPieceHidden ? <button type="button" onClick={() => {setVisibleRoles(current => roles.filter(role => role === selectedPiece.role || current.includes(role)));setIsolatedId(null);}}>Mostrar categoria</button> : <button type="button" onClick={() => focus.current(selectedPiece.id)}>Aproximar</button>}
-        <button type="button" onClick={() => {setIsolatedId(null);onSelect("");}}>Limpar seleção</button>
-      </div>
-    </aside>}
     {!failure && mode === "finished" && <section className="presentation-controls" aria-label="Personalizar apresentação da obra">
       <div className="presentation-controls-head"><strong>Personalizar visualização</strong><span>Elementos cenográficos, sem alteração do orçamento ou da estrutura</span></div>
       <div className="presentation-settings">
@@ -360,13 +446,14 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       </div>
       <div className="presentation-toggles">
         {([["showPerson","Pessoa (1,70 m)"],["showCar","Carro (4,50 m)"],["showDimensions","Exibir cotas"]] as const).map(([key,label])=><label key={key}><input type="checkbox" checked={presentationOptions[key]} onChange={e=>setPresentationOptions(o=>({...o,[key]:e.target.checked}))}/>{label}</label>)}
+        <button type="button" className="button secondary studio-xray" aria-pressed={presentationOptions.roofOpacity <= .35} onClick={() => setPresentationOptions(o => ({ ...o, roofOpacity: o.roofOpacity <= .35 ? 1 : .3 }))}>{presentationOptions.roofOpacity <= .35 ? "Telhado opaco" : "Ver estrutura sob o telhado"}</button>
       </div>
-      <p className="field-hint">Telha, paredes, veículo e pessoa são ilustrativos e não compõem a lista de materiais. Mude para Perfis 3D para selecionar ou editar peças.</p>
+      <p className="field-hint">Telha, relevo das nervuras, beiral, cumeeira, paredes, veículo e pessoa são ilustrativos e não compõem a lista de materiais. Mude para Perfis 3D para selecionar ou editar peças.</p>
     </section>}
     {failure ? <p role="status" className="notice">{failure}</p> : <>
       <div className="actions structure-viewer-tools"><button type="button" className="button" onClick={() => setExpanded(v => !v)}>{expanded ? "Sair da tela cheia" : "Tela cheia"}</button><button className="button secondary" type="button" onClick={() => reset.current()}>Isométrica · ajustar 3D</button><button className="button secondary" type="button" disabled={!selected || mode === "finished"} onClick={() => focus.current(selected)}>Focar peça selecionada</button>{mode === "finished" && <button type="button" className="button" onClick={() => capture.current()}>Salvar imagem PNG</button>}</div>
       {pictureError && <p role="alert" className="field-error">{pictureError}</p>}
-      <p className="drawing-help">Arraste para girar; dois dedos para ampliar/deslocar. Grade: {gridSpacingM.toLocaleString("pt-BR")} m por célula. Cores por categoria. Nitidez de imagem adaptativa com limite de pixels para preservar o desempenho. Use a seleção de peças para acesso por teclado.</p>
+      <p className="drawing-help">Arraste para girar; dois dedos para ampliar/deslocar. Grade: {gridSpacingM.toLocaleString("pt-BR")} m por célula. Cores por categoria; acabamento, sombras e reflexos são apenas visuais. Nitidez de imagem adaptativa com limite de pixels para preservar o desempenho. Use a seleção de peças para acesso por teclado.</p>
     </>}
   </div>;
 }

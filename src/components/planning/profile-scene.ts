@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { resolveSection } from "@/domain/profile-section";
 import { roles, type StructureModel, type StructurePiece, type PieceRole } from "@/domain/structure";
 import { createSectionGeometry, pieceMatrix, scenePoint, sectionKey } from "./profile-geometry";
+import { finishedRoleColor, steelFinishMaterial, type SteelFinish } from "./studio-view";
 
 export const viewerModes = ["structural", "profiles", "mixed"] as const;
 export type ViewerMode = typeof viewerModes[number];
@@ -14,6 +15,7 @@ export function viewerQuality(count: number, hardwareConcurrency = 8, deviceMemo
   return { low, segments: low ? 16 : 32, pixelRatio: low ? 2 : 2.25 };
 }
 export const roleColors = { column: 0x8f672b, topChord: 0x265c40, bottomChord: 0x42815c, web: 0x64734d, purlin: 0x357989 };
+const SELECTED = 0xff9b36;
 export function pieceIdFromHit(hit: Pick<THREE.Intersection, "object" | "instanceId" | "index">): string | null {
   const ids = hit.object.userData.ids as string[] | undefined;
   if (!ids) return null;
@@ -42,19 +44,29 @@ export function buildProfileScene(model: StructureModel, segments = 32) {
     if (!batches.has(key)) batches.set(key, { geometry: cache.get(key)!, pieces: [] });
     batches.get(key)!.pieces.push(piece);
   }
-  const material = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: .28, roughness: .65 }); resources.add(material);
+  // One shared PBR material for every bar; colour is per instance.
+  let finish: SteelFinish = "painted", analysisColors: Record<string, number> | undefined, ghost = false;
+  const initial = steelFinishMaterial[finish];
+  const material = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: initial.metalness, roughness: initial.roughness, envMapIntensity: initial.envMapIntensity }); resources.add(material);
+  const baseColor = (piece: StructurePiece) => analysisColors?.[piece.id] !== undefined
+    ? new THREE.Color(analysisColors[piece.id]) : finishedRoleColor(roleColors[piece.role], finish);
   for (const { geometry, pieces } of batches.values()) {
     const mesh = new THREE.InstancedMesh(geometry, material, pieces.length); mesh.userData.ids = pieces.map(p => p.id);
     pieces.forEach((piece, index) => {
-      const color = new THREE.Color(roleColors[piece.role]);
+      const color = baseColor(piece);
       const matrix = pieceMatrix(nodes.get(piece.start)!, nodes.get(piece.end)!, piece.profile.visualSection?.rollDeg);
       mesh.setMatrixAt(index, matrix);
       originalMatrices.set(piece.id, matrix);
       mesh.setColorAt(index, color); instances.set(piece.id, { mesh, index, color });
     });
     mesh.instanceMatrix.needsUpdate = true; mesh.instanceColor!.needsUpdate = true;
+    mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.computeBoundingBox(); mesh.computeBoundingSphere(); solids.add(mesh); resources.add(mesh);
   }
+  // Opaque copy of the selected bar, drawn only while the others are ghosted.
+  const focusMaterial = new THREE.MeshStandardMaterial({ color: SELECTED, metalness: .35, roughness: .45, emissive: 0x7a3a05, emissiveIntensity: .35 }); resources.add(focusMaterial);
+  const emptyGeometry = new THREE.BufferGeometry(); resources.add(emptyGeometry);
+  const focusMesh = new THREE.Mesh(emptyGeometry, focusMaterial); focusMesh.visible = false; focusMesh.matrixAutoUpdate = false; focusMesh.renderOrder = 3; focusMesh.castShadow = true;
   const lineTargets: THREE.LineSegments[] = [];
   for (const role of roles) for (const fallback of [false, true]) {
     const pieces = model.pieces.filter(p => p.role === role && simplified.has(p.id) === fallback && nodes.has(p.start) && nodes.has(p.end));
@@ -66,6 +78,7 @@ export function buildProfileScene(model: StructureModel, segments = 32) {
   }
   const markerGeometry = new THREE.BufferGeometry(), markerMaterial = new THREE.LineBasicMaterial({ color: 0xf15c17, depthTest: false });
   const marker = new THREE.Line(markerGeometry, markerMaterial); marker.visible = false; marker.renderOrder = 10; root.add(marker); resources.add(markerGeometry); resources.add(markerMaterial);
+  root.add(focusMesh); // after the marker: existing code addresses root.children by index
   const bounds = new THREE.Box3().setFromPoints([...nodes.values()]);
   solids.children.forEach(mesh => bounds.union((mesh as THREE.InstancedMesh).boundingBox!));
   let currentMode: ViewerMode = "structural", selected = "", disposed = false;
@@ -73,6 +86,18 @@ export function buildProfileScene(model: StructureModel, segments = 32) {
   const pieceVisible = (id: string) => {
     const piece = piecesById.get(id);
     return !!piece && visibleRoles.has(piece.role) && (!isolatedId || isolatedId === id);
+  };
+  // Contextual transparency: every bar except the selected one becomes a ghost.
+  // Rendering state only; matrices, IDs and the model are untouched.
+  const refreshGhost = () => {
+    const item = instances.get(selected), active = ghost && !!item && currentMode !== "structural" && pieceVisible(selected);
+    if (material.transparent !== active) { material.transparent = active; material.needsUpdate = true; }
+    material.opacity = active ? .14 : 1; material.depthWrite = !active;
+    focusMesh.visible = active;
+    focusMesh.geometry = active && item ? item.mesh.geometry : emptyGeometry;
+    if (active) { focusMesh.matrix.copy(originalMatrices.get(selected)!); focusMesh.matrixWorldNeedsUpdate = true; }
+    for (const mesh of solids.children as THREE.InstancedMesh[]) mesh.castShadow = !active;
+    if (active) for (const line of lineTargets) (line.material as THREE.LineBasicMaterial).opacity = .18;
   };
   let lastVisibilityKey = "";
   const refreshVisibility = () => {
@@ -100,14 +125,22 @@ export function buildProfileScene(model: StructureModel, segments = 32) {
       material.opacity = currentMode === "structural" ? 1 : .8;
     }
     marker.visible = pieceVisible(selected);
+    refreshGhost();
   };
   const setMode = (mode: ViewerMode) => {
     currentMode = mode; solids.visible = mode !== "structural";
     refreshVisibility();
   };
+  const paint = () => {
+    for (const piece of model.pieces) {
+      const item = instances.get(piece.id); if (!item) continue;
+      item.color.copy(baseColor(piece));
+      item.mesh.setColorAt(item.index, piece.id === selected ? new THREE.Color(SELECTED) : item.color); item.mesh.instanceColor!.needsUpdate = true;
+    }
+  };
   setMode(currentMode);
   return {
-    root, bounds, warnings, cache, instances,
+    root, bounds, warnings, cache, instances, material, focusMesh,
     solidCount: instances.size, fallbackCount: simplified.size,
     setMode,
     setVisibility: (rolesToShow: ReadonlySet<PieceRole>, onlyId: string | null = null) => {
@@ -116,26 +149,36 @@ export function buildProfileScene(model: StructureModel, segments = 32) {
       refreshVisibility();
     },
     setColors: (colors?: Record<string, number>) => {
-      for (const piece of model.pieces) {
-        const item = instances.get(piece.id);
-        if (item) { item.color.setHex(colors?.[piece.id] ?? roleColors[piece.role]); item.mesh.setColorAt(item.index, item.color); item.mesh.instanceColor!.needsUpdate = true; }
-      }
+      analysisColors = colors; paint();
       for (const line of lineTargets) {
         const ids = line.userData.ids as string[], values: number[] = [];
         for (const id of ids) { const piece = piecesById.get(id)!; const color = new THREE.Color(colors?.[id] ?? roleColors[piece.role]); values.push(color.r, color.g, color.b, color.r, color.g, color.b); }
         line.geometry.setAttribute("color", new THREE.Float32BufferAttribute(values, 3));
         const mat = line.material as THREE.LineBasicMaterial; mat.color.setHex(0xffffff); mat.vertexColors = true; mat.needsUpdate = true;
       }
-      const item = instances.get(selected); if (item) { item.mesh.setColorAt(item.index, new THREE.Color(0xff9b36)); item.mesh.instanceColor!.needsUpdate = true; }
     },
+    /** Rendering finish only. Colours supplied by an analysis always win. */
+    setFinish: (value: SteelFinish) => {
+      finish = value; const spec = steelFinishMaterial[value];
+      material.metalness = spec.metalness; material.roughness = spec.roughness; material.envMapIntensity = spec.envMapIntensity;
+      paint();
+    },
+    finish: () => finish,
+    setGhost: (enabled: boolean) => { ghost = enabled; refreshVisibility(); },
+    ghostActive: () => focusMesh.visible,
+    /** Largest purlin half-size (m), so a visual roof can rest above the bars. */
+    purlinTopOffsetM: () => Math.max(0, ...model.pieces.filter(p => p.role === "purlin").map(p => {
+      const s = resolveSection(p.profile).section; return s ? Math.max(s.height, s.width) / 2000 : 0;
+    })),
     targets: () => [...(currentMode === "structural" ? [] : solids.children), ...lineTargets.filter(line => line.visible)],
     highlight: (id: string) => {
       const old = instances.get(selected); if (old) { old.mesh.setColorAt(old.index, old.color); old.mesh.instanceColor!.needsUpdate = true; }
       selected = id; const item = instances.get(id);
-      if (item) { item.mesh.setColorAt(item.index, new THREE.Color(0xff9b36)); item.mesh.instanceColor!.needsUpdate = true; }
+      if (item) { item.mesh.setColorAt(item.index, new THREE.Color(SELECTED)); item.mesh.instanceColor!.needsUpdate = true; }
       const piece = piecesById.get(id); marker.visible = pieceVisible(id);
       if (piece) { markerGeometry.setFromPoints([nodes.get(piece.start)!, nodes.get(piece.end)!]); markerGeometry.computeBoundingSphere(); }
+      refreshVisibility();
     },
-    dispose: () => { if (disposed) return; disposed = true; resources.forEach(r => r.dispose()); root.clear(); cache.clear(); instances.clear(); originalMatrices.clear(); },
+    dispose: () => { if (disposed) return; disposed = true; focusMesh.geometry = emptyGeometry; resources.forEach(r => r.dispose()); root.clear(); cache.clear(); instances.clear(); originalMatrices.clear(); },
   };
 }

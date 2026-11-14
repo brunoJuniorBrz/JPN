@@ -31,7 +31,10 @@ function GeneratedTakeoffSummary({ project, onConfigureProfile, onEditStructure,
   activeSection?: ResultSection; onSectionChange?: (section: ResultSection) => void;
   onResolvePending?: (target: PendingTarget) => void;
 }) {
-  const result = useMemo(() => generateStructure(project), [project]); const { model } = result;
+  // generateStructure reads only category, roof, planning and guidedSupport.
+  // Preparation edits must not replace the model and rebuild the hidden WebGL scene.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const result = useMemo(() => generateStructure(project), [project.category, project.roof, project.planning, project.workspace.guidedSupport]); const { model } = result;
   const grouped = useMemo(() => model ? groupMaterialsForDisplay(model.groups) : [], [model]);
   const pending = useMemo(() => summarizePending(result.pending), [result.pending]);
   const { data, saveProject, flush } = useData();
