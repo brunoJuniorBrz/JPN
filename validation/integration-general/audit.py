@@ -50,9 +50,9 @@ def ancestor(a, b):
 
 # Reviewed post-PR83 amendments to frozen files, pinned by Git blob. Any other
 # change, or any further edit to these files, still fails until re-reviewed.
-# PR #85 (M41): facade loads duplicated under unrelated IDs are rejected.
+# M41: PR #85 provenance guard, extended by PR #95 to audit exclusive facade cases.
 REVIEWED_AMENDMENTS = {
-    "src/domain/facade-solver-load-audit.ts": "9f8e2ac7bc79b4b79cad56ee5d57a730b93f0da2",
+    "src/domain/facade-solver-load-audit.ts": "d0928f9795454eb74f8d757eee2e86a33221eed2",
     "src/domain/declared-facade-mixed-real.test.ts": "3ecafd27b9fe38c78f437c841f3394d1cd115622",
 }
 
