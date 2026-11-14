@@ -3,7 +3,7 @@ on:
   push:
     branches: [research/m43-p7-compiled-spatial-kernel]
   pull_request:
-    paths: ['experiments/m43_p7/**', 'validation/m43-p7/**', '.github/workflows/m43-p7.yml']
+    paths: ['experiments/m43_p6/element.py', 'experiments/m43_p7/**', 'validation/m43-p7/**', '.github/workflows/m43-p7.yml']
 jobs:
   compiled-kernel:
     strategy:
@@ -29,10 +29,19 @@ jobs:
       - run: python -m pytest experiments/m43_p6 experiments/m43_p7 engine/tests/test_p4_mechanics.py -q
       - run: python validation/m43-p7/benchmark.py --meshes 2 3 4 6 8 --repeat 2
       - run: python validation/m43-p7/spatial_convergence.py --meshes 2 3 4 6 8 16 --python-reference 6 8
+      - run: python -m venv .tools/opensees
+      - name: Compare the original P8 models against the independent reference
+        shell: bash
+        run: |
+          reference=.tools/opensees/bin/python
+          if [[ "$RUNNER_OS" == Windows ]]; then reference=.tools/opensees/Scripts/python.exe; fi
+          "$reference" -m pip install --require-hashes -r validation/m43-p2/requirements-opensees.lock
+          python validation/m43-p7/p8_consistency.py --opensees-python "$reference"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: m43-p7-${{ matrix.os }}
           path: |
             .tools/m43-p7/
+            .tools/m43-p8/campaign/
             validation/m43-p7/*.json
