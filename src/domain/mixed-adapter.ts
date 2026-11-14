@@ -88,7 +88,9 @@ export async function prepareMixedInput(project: Project, loaded = false, contra
   const framePhysical=review.geometry.pieces.filter(p=>mixedPieceKind(p,draft)==="frame").map(p=>resolveMemberPhysical(p,draft));
   const materials=[...new Map(framePhysical.map(p=>[p.materialId,p])).values()].map(({materialId:id,properties:p})=>({id,e_pa:spatialSI.modulus(p.eGpa!),g_pa:spatialSI.modulus(p.gGpa!),nu:p.nu!,source:`${p.steelGrade}; ${p.materialSource}`,revision:p.materialRevision}));
   const sections=[...new Map(framePhysical.map(p=>[p.sectionId,p])).values()].map(({sectionId:id,properties:p})=>({id,area_m2:spatialSI.area(p.areaCm2!),iy_m4:spatialSI.inertia(p.iyCm4!),iz_m4:spatialSI.inertia(p.izCm4!),j_m4:spatialSI.inertia(p.jCm4!),source:p.sectionSource,revision:p.sectionRevision}));
-  const revision = await mixedInputHash({ geometry: mapping.geometrySignature, preparation: draft });
+  // The resistance standard per piece selects the verification procedure only; it is not part of the analysed model (INT-1d).
+  const { resistanceStandards: _unused, ...analysedDraft } = draft; void _unused;
+  const revision = await mixedInputHash({ geometry: mapping.geometrySignature, preparation: analysedDraft });
   const request = { schema_version: "jpn.mixed3d/1", units: "SI", theory: "linear-elastic-frame-axial",
     project: { id: project.id, revision, source: `JPN adaptador misto/${contract === "z-up-v3" ? "3 (eixos jpn-z-up/1); " : "1; "}${project.workspace.physicalStructure?"origem jpn.declared-structure/1; ":""}declarações ${revision}; experimental, sem aprovação normativa` },
     nodes: mapping.nodes.map(n => ({ id: n.id, x_m: spatialSI.metres(n.x), y_m: spatialSI.metres(n.y), z_m: spatialSI.metres(n.z) })), members,

@@ -22,6 +22,9 @@ def main():
         if raw.get('schema_version')=='jpn.verified-coldformed-batch/1':
             from jpn_structural.verified_design_batch import analyze_verified_batch
             result=analyze_verified_batch(raw)
+        elif raw.get('schema_version')=='jpn.steel-i-design/1':
+            from jpn_structural.steel_i_design import analyze_steel_i_design
+            result=analyze_steel_i_design(raw)
         elif raw.get('schema_version')=='jpn.verified-coldformed/1':
             from jpn_structural.coldformed_geometry import analyze_verified_coldformed
             result=analyze_verified_coldformed(raw)

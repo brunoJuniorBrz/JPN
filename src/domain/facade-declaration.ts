@@ -1,7 +1,7 @@
 import {z} from "zod";
 import type {Project} from "./models";
 import {spatialPreparationSchema} from "./spatial-preparation";
-import {physicalFacadesSchema,fromFacadeLocal,facadeOrientationSchema} from "./physical-facades";
+import {physicalFacadesSchema,fromFacadeLocal,toFacadeLocal,facadeOrientationSchema} from "./physical-facades";
 import {declaredFacadeTractionSchema} from "./declared-facade-traction-contract";
 import {declaredFacadeTractionSignature} from "./declared-facade-traction";
 import {emptyLoading} from "./structural-loading";
@@ -70,4 +70,13 @@ export function applyNbr6123WallWind(project:Project,raw:unknown):{project:Proje
   const loading={...(d.loading??emptyLoading()),facadeTraction:generated.traction};delete loading.overlapReview;
   const next=reparse(project,{cases:[...d.cases,...newCases],loading});
   return {project:recordProvenance(next,WIND_PROVENANCE),generated};
+}
+
+/** Back to the editor's rectangular input (the editor only creates rectangles; anything else is refused, never approximated). */
+export function facadeInputOf(f:NonNullable<Project["workspace"]["spatialPreparation"]>["physicalFacades"] extends infer P?P extends {facades:infer F}?F extends readonly (infer X)[]?X:never:never:never):RectangularFacadeInput{
+  const loc=f.outer.slice(0,-1).map(p=>toFacadeLocal(f.outward,p)),us=loc.map(p=>p[0]),zs=loc.map(p=>p[1]),axis=f.outward.endsWith("X")?0:1;
+  if(f.openings.length||f.outer.length!==5||new Set(loc.map(p=>JSON.stringify(p))).size!==4||new Set(us).size!==2||new Set(zs).size!==2)
+    throw Error("FACADE_NOT_RECTANGULAR: "+f.id+" não é um painel retangular sem aberturas; o editor não aproxima geometrias.");
+  return {id:f.id,outward:f.outward,planeMm:f.outer[0][axis],uMinMm:Math.min(...us),uMaxMm:Math.max(...us),zMinMm:Math.min(...zs),zMaxMm:Math.max(...zs),
+    supportPieceIds:[...f.supportPieceIds],enclosure:f.enclosure,enclosureSource:f.enclosureSource,source:f.source,revision:f.revision};
 }
