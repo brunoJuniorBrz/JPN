@@ -25,7 +25,9 @@ export const nbr8681DeclarationSchema=z.object({
   maxCombinations:z.number().int().min(1).max(10).default(10),
   actions:z.array(z.discriminatedUnion("nature",[
     z.object({nature:z.literal("permanent"),caseId:id,permanentType:z.enum([...permTypes,"prestress","settlement-shrinkage"]).optional()}).strict(),
-    z.object({nature:z.literal("variable"),caseId:id,variableType:z.enum(varTypes),psiRow:z.enum(psiRows),exclusiveGroup:id.nullable()}).strict(),
+    z.object({nature:z.literal("variable"),caseId:id,variableType:z.enum(varTypes),psiRow:z.enum(psiRows),exclusiveGroup:id.nullable(),
+      /** NBR 6120:2019 6.4: concentrated 1 kN acts isolated from every other variable action (ULS only, as sole variable). */
+      isolated:z.boolean().default(false)}).strict(),
   ])).min(1).max(16),
 }).strict();
 export type Nbr8681Declaration=z.infer<typeof nbr8681DeclarationSchema>;
@@ -57,7 +59,7 @@ type Slot={group:string|null;alts:string[]};
 function slotsOf(d:Nbr8681Declaration):Slot[]{
   const out:Slot[]=[],byGroup=new Map<string,Slot>();
   for(const a of d.actions){
-    if(a.nature!=="variable")continue;
+    if(a.nature!=="variable"||a.isolated)continue;
     if(a.exclusiveGroup===null){out.push({group:null,alts:[a.caseId]});continue;}
     const s=byGroup.get(a.exclusiveGroup)??{group:a.exclusiveGroup,alts:[]};
     if(!byGroup.has(a.exclusiveGroup)){byGroup.set(a.exclusiveGroup,s);out.push(s);}
@@ -125,7 +127,8 @@ export function generateNbr8681Combinations(raw:unknown,existingCaseIds:string[]
       }
       const veryShort=kind==="special"?!!d.special?.veryShortDuration:kind==="exceptional"?!!d.exceptional?.reducedPsi:false;
       const principals=kind==="normal"?[null,...variables.map(v=>v.caseId)]:[specialId!];
-      for(const set of d.permanentSets)for(const pr of principals)for(const sel of selections(slots,pr,true)){
+      const isolated=new Set(variables.filter(v=>v.isolated).map(v=>v.caseId));
+      for(const set of d.permanentSets)for(const pr of principals)for(const sel of (pr&&isolated.has(pr)?[new Map<string,"principal"|"accompanying">([[pr,"principal"]])]:selections(slots,pr,true))){
         const terms:Term[]=[...permTerms(kind,set)];
         for(const v of variables){
           const role=sel.get(v.caseId),psi=psiOf(v.psiRow);
@@ -140,7 +143,7 @@ export function generateNbr8681Combinations(raw:unknown,existingCaseIds:string[]
           "ELU "+kind+"; permanentes "+set+"; principal "+(pr??"nenhuma")+"; acompanhantes "+[...sel].filter(([,r])=>r==="accompanying").map(([c])=>c).join(",")+" (psi0"+(kind==="normal"?"":"ef")+")",pr,terms);
       }
     }else{
-      const principals=fam==="sls-quasi-permanent"?[null]:variables.map(v=>v.caseId);
+      const principals=fam==="sls-quasi-permanent"?[null]:variables.filter(v=>!v.isolated).map(v=>v.caseId);
       for(const pr of principals)for(const sel of selections(slots,pr,false)){
         const terms:Term[]=permanentFactors(d,"normal").map(p=>({caseId:p.caseId,role:"permanent",gamma:1,psi:1,table:"5.1.5 (gamma=1,0)"}));
         for(const v of variables){
