@@ -19,7 +19,25 @@ KEYS = ('schema_version units theory project nodes members materials sections su
 BASIS_TOLERANCE = 1e-9
 
 
+SOLUTION_MODES = ('linear-superposition', 'per-combination')
+
+
 def analyze_mixed3d_v3(raw, *, _joint_actions=None):
+    """`solution_mode` (optional, /3 only; absent = 'linear-superposition', hashes of existing /3 requests unchanged):
+    'linear-superposition' solves once and superposes the load cases per combination; 'per-combination' solves every
+    combination as its own model. In this LINEAR engine both give the same numbers (tested); the second exists so the
+    contract already carries the mode that the future second-order analysis (M43) needs, where superposition is invalid."""
+    mode = raw.get('solution_mode', 'linear-superposition') if type(raw) is dict else None
+    if type(raw) is dict and 'solution_mode' in raw:
+        if mode not in SOLUTION_MODES:
+            fail('UNSUPPORTED_SOLUTION_MODE', f"solution_mode deve ser um de {', '.join(SOLUTION_MODES)}.")
+        if mode == 'per-combination':
+            return _per_combination(raw, _joint_actions)
+        raw_core = {k: v for k, v in raw.items() if k != 'solution_mode'}
+        result = analyze_mixed3d_v3(raw_core, _joint_actions=_joint_actions)
+        result['input_sha256'] = input_hash(raw)
+        result['solution_mode'] = mode
+        return result
     obj(raw, KEYS, 'modelo mixed3d/3')
     if raw['schema_version'] != 'jpn.mixed3d/3':
         fail('UNSUPPORTED_MODEL', 'Exigido jpn.mixed3d/3.')
@@ -62,3 +80,33 @@ def analyze_mixed3d_v3(raw, *, _joint_actions=None):
         _joint_actions.update(sidecar)
         _joint_actions['input_sha256'] = digest
     return result
+
+
+def _per_combination(raw, joint_actions):
+    """One independent linear analysis per combination, merged into one result under the hash of the FULL request."""
+    core = {k: v for k, v in raw.items() if k != 'solution_mode'}
+    obj(core, KEYS, 'modelo mixed3d/3')
+    merged = None
+    sidecars = []
+    for combination in core['combinations']:
+        single = deepcopy(core)
+        single['combinations'] = [combination]
+        side = {} if joint_actions is not None else None
+        part = analyze_mixed3d_v3(single, _joint_actions=side)
+        if merged is None:
+            merged = part
+        else:
+            merged['combinations'].update(part['combinations'])
+            merged['diagnostics']['elapsed_seconds'] += part['diagnostics']['elapsed_seconds']
+            merged['diagnostics']['scaled_condition'] = max(merged['diagnostics']['scaled_condition'], part['diagnostics']['scaled_condition'])
+        sidecars.append(side)
+    digest = input_hash(raw)
+    merged['input_sha256'] = digest
+    merged['solution_mode'] = 'per-combination'
+    merged['assumptions'].append("solution_mode='per-combination': cada combinação foi resolvida como modelo próprio (análise linear: mesmos números da superposição).")
+    if joint_actions is not None and sidecars and sidecars[0] is not None:
+        joint_actions.update(sidecars[0])
+        for side in sidecars[1:]:
+            joint_actions['combinations'].update(side['combinations'])
+        joint_actions['input_sha256'] = digest
+    return merged

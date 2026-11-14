@@ -14,6 +14,7 @@ import { connectivityDeclarationSchema } from "./spatial-connectivity";
 import { roofRegionsSchema } from "./roof-regions";
 import { engineeringCombinationsSchema } from "./engineering-combinations";
 import { localAxesReviewSchema } from "./local-axes-schema";
+import { MAX_CASES, MAX_COMBINATIONS } from "./analysis-limits";
 import { connectionsSchema } from "./connections";
 import { declaredServiceCriterionSchema } from "./declared-service";
 import { memberDesignDeclarationSchema } from "./coldformed-design";
@@ -47,9 +48,9 @@ export const spatialPreparationSchema = z.object({
   physicalRestraints: physicalRestraintsSchema.optional(),
   elasticLtbStudies: elasticLtbStudiesSchema.optional(),
   memberConnections: z.array(z.object({ pieceId: z.string().min(1).max(100), start: z.enum(["inherit", ...connectionChoices]), end: z.enum(["inherit", ...connectionChoices]) }).strict()).max(5000),
-  cases: z.array(z.object({ id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/), source: meaningful }).strict()).max(10),
+  cases: z.array(z.object({ id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/), source: meaningful }).strict()).max(MAX_CASES),
   loads: z.array(loadSchema).max(500),
-  combinations: z.array(z.object({ id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/), factors: z.record(z.string().max(40), z.number().finite().min(-100).max(100).nullable()) }).strict()).max(10),
+  combinations: z.array(z.object({ id: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/), factors: z.record(z.string().max(40), z.number().finite().min(-100).max(100).nullable()) }).strict()).max(MAX_COMBINATIONS),
   connectionsReview: meaningful, lateralSystem: meaningful, loadPathReview: meaningful,
   connectivity: connectivityDeclarationSchema.optional(),
   memberKinds: z.array(z.object({ pieceId: z.string().min(1).max(100), kind: z.enum(["frame", "axial"]) }).strict()).max(5000).optional(),

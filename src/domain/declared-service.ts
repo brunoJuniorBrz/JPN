@@ -1,8 +1,9 @@
+import { MAX_COMBINATIONS } from "./analysis-limits";
 import { z } from "zod";
 import type { WholePieceDeflections } from "./whole-piece-deflection";
 const text=z.string().trim().min(1).max(1000);
 export const declaredServiceCriterionSchema=z.object({schema_version:z.literal("jpn.declared-service-criterion/1"),id:z.string().min(1).max(80),pieceId:z.string().min(1).max(100),
-  combinations:z.array(z.string().min(1).max(40)).min(1).max(10),quantity:z.enum(["global-x","global-y","global-z","vector-norm"]),reference:z.literal("original-piece-end-chord"),limitM:z.number().finite().positive().max(1000),source:text,revision:text,responsible:text,
+  combinations:z.array(z.string().min(1).max(40)).min(1).max(MAX_COMBINATIONS),quantity:z.enum(["global-x","global-y","global-z","vector-norm"]),reference:z.literal("original-piece-end-chord"),limitM:z.number().finite().positive().max(1000),source:text,revision:text,responsible:text,
 }).strict().superRefine((v,c)=>{if(new Set(v.combinations).size!==v.combinations.length)c.addIssue({code:"custom",message:"Combinação duplicada"});});
 export type DeclaredServiceCriterion=z.infer<typeof declaredServiceCriterionSchema>;
 /** Engineer-declared kinematic criterion, NOT a normative SLS certification. */

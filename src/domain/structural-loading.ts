@@ -1,3 +1,4 @@
+import { MAX_CASES, combinationBudgetIssue } from "./analysis-limits";
 import { z } from "zod";
 import { mixedRequestObject, mixedResultSchema, validateMixedReferences } from "./mixed-analysis";
 import { canonicalSpatialInput } from "./spatial-analysis";
@@ -10,7 +11,7 @@ export const densitySchema=z.object({ kgM3:n.positive().max(100000),source,revis
 export const loadingDraftSchema=z.object({version:z.literal(1),
   selfWeight:z.object({caseId:id,gravity:vec,axialLumping:z.literal("half-to-end-nodes")}).strict().nullable(),
   uniform:z.array(z.object({id,pieceId:id,caseId:id,coordinates:z.enum(["global","local"]),knM:vec,source,revision:source}).strict()).max(320),
-  roofArea:z.array(z.object({caseId:id,knM2:n.nonnegative(),projection:z.enum(["horizontal","roof-surface"]),direction:vec,source,revision:source,loadPath:source}).strict()).max(10),
+  roofArea:z.array(z.object({caseId:id,knM2:n.nonnegative(),projection:z.enum(["horizontal","roof-surface"]),direction:vec,source,revision:source,loadPath:source}).strict()).max(MAX_CASES),
   roofDistribution:roofDistributionSchema.optional(),
   wind:windDeclarationSchema.optional(),
   facadeTraction:declaredFacadeTractionSchema.optional(),
@@ -50,6 +51,7 @@ const loadedMixedObject=mixedRequestObject.extend({schema_version:z.literal("jpn
 type LoadedMixedShape=Omit<z.infer<typeof loadedMixedObject>,"schema_version">;
 const refineLoadedMixed=(v:LoadedMixedShape,ctx:z.RefinementCtx)=>{
   const issue=(message:string)=>ctx.addIssue({code:"custom",message});
+  const budget=combinationBudgetIssue(v);if(budget)issue(budget);
   validateMixedReferences(v,ctx,[...v.member_loads.map(l=>l.case),...(v.self_weight?[v.self_weight.case]:[])]);
   if(new Set(v.member_loads.map(l=>l.id)).size!==v.member_loads.length)issue("IDs de cargas uniformes duplicados.");
   for(const l of v.member_loads)if(!v.cases.some(c=>c.id===l.case)||!v.members.some(m=>m.id===l.member&&m.kind==="frame"))issue("Carga uniforme exige caso e pórtico existentes; axial não recebe flexão.");
@@ -60,7 +62,10 @@ const refineLoadedMixed=(v:LoadedMixedShape,ctx:z.RefinementCtx)=>{
 export const loadedMixedRequestSchema=loadedMixedObject.superRefine(refineLoadedMixed);
 /** C1: /3 = every /2 field and rule + the explicit Z-up local-axes reference. /1 and /2 keep their own schemas and hashes. */
 export const localAxesConvention="jpn-z-up/1" as const;
-export const loadedMixedRequestV3Schema=loadedMixedObject.extend({schema_version:z.literal("jpn.mixed3d/3"),local_axes:z.literal(localAxesConvention)}).strict().superRefine(refineLoadedMixed);
+export const solutionModes=["linear-superposition","per-combination"] as const;
+export const loadedMixedRequestV3Schema=loadedMixedObject.extend({schema_version:z.literal("jpn.mixed3d/3"),local_axes:z.literal(localAxesConvention),
+  /** Optional; absent = linear superposition and the hash of existing /3 requests is unchanged. */
+  solution_mode:z.enum(solutionModes).optional()}).strict().superRefine(refineLoadedMixed);
 const legacyCombo=mixedResultSchema.shape.combinations.valueType;
 const axial=legacyCombo.shape.members.valueType.options[0], frame=legacyCombo.shape.members.valueType.options[1];
 export const loadedMixedResultSchema=mixedResultSchema.extend({schema_version:z.literal("jpn.mixed3d-result/2"),solver:mixedResultSchema.shape.solver.extend({adapter:z.literal("jpn-mixed3d/2")}),
@@ -68,7 +73,7 @@ export const loadedMixedResultSchema=mixedResultSchema.extend({schema_version:z.
   loading:z.object({member_loads:z.array(uniformSchema).max(640),self_weight:z.object({case:id,gravity_m_s2:vec,axial_lumping:z.literal("half-to-end-nodes"),total_mass_kg:n.nonnegative(),members:z.array(z.object({member:id,mass_kg:n.nonnegative(),force_n:vec,density:z.object({member:id,kg_m3:n.positive(),source,revision:source}).strict(),representation:z.enum(["consistent-frame-udl","half-to-end-nodes"])}).strict()).max(320)}).strict().nullable()}).strict(),
 });
 const axesRow=z.object({declared_rotation_deg:n,reference_offset_deg:n,solver_rotation_deg:n,global_to_local:z.array(z.array(n).length(3)).length(3)}).strict();
-export const loadedMixedResultV3Schema=loadedMixedResultSchema.extend({schema_version:z.literal("jpn.mixed3d-result/3"),
+export const loadedMixedResultV3Schema=loadedMixedResultSchema.extend({schema_version:z.literal("jpn.mixed3d-result/3"),solution_mode:z.enum(solutionModes).optional(),
   solver:mixedResultSchema.shape.solver.extend({adapter:z.literal("jpn-mixed3d/3")}),
   local_axes:z.object({convention:z.literal(localAxesConvention),members:z.record(id,axesRow)}).strict()});
 export const anyMixedRequestSchema=z.union([mixedRequestObject.superRefine((v,c)=>validateMixedReferences(v,c)),loadedMixedRequestSchema,loadedMixedRequestV3Schema]);
