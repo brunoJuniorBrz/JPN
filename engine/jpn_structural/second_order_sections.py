@@ -14,7 +14,7 @@ def section_polynomial(element, answer, displacement):
     actions = answer["net_end_actions"]
     if element["kind"] == "axial":
         return None, np.array([[answer["axial_n"], 0., 0., 0., 0., 0.]])
-    q = displacement[element["dofs"]].reshape(2, 6)
+    q = answer.get("section_q",displacement[element["dofs"]]).reshape(2, 6)
     a, b = element["coordinates"]
     chord = b-a+q[1, :3]-q[0, :3]
     axis = answer["current_basis"][0]

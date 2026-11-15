@@ -12,6 +12,7 @@ from .model import AnalysisError
 from . import second_order_mesh as mesh
 from .second_order_mixed import assemble, physical_model, solve_combination
 from .second_order_sections import peak_efforts, recover_members
+from .second_order_releases import prepare_releases
 
 KEY_LOADS = ("fx_n","fy_n","fz_n","mx_nm","my_nm","mz_nm")
 
@@ -43,14 +44,17 @@ def solve_mesh(elements, coordinates, fixed, loads, initial_subdivisions):
         except AnalysisError as error:
             raise AnalysisError(error.code,str(error),combination_id=controlling) from error
         levels.append(subdivisions)
-        reference = assemble(segments,np.zeros(6*len(x)),None)
+        segments,restraints,projection = prepare_releases(segments,restraints)
+        reference = assemble(segments,np.zeros(len(restraints)),None)
+        reference_cache = {}
         states,metrics = {},{}
         for name,(nodal,uniform) in loads.items():
             weights = {e["id"]:uniform[e["parent"]]/subdivisions for e in segments
                        if e["parent"] in uniform}
             try:
-                state = solve_combination(segments,x,restraints,np.pad(nodal,(0,6*len(x)-physical_dofs)),
-                                          initial=reference,uniform=weights)
+                state = solve_combination(segments,x,restraints,np.pad(nodal,(0,len(restraints)-physical_dofs)),
+                                          initial=reference,uniform=weights,projection=projection,
+                                          reference_cache=reference_cache)
                 amp,measure = amplification(state["u"][:physical_dofs].reshape(-1,6),
                                             state["linear"][:physical_dofs].reshape(-1,6))
                 metrics[name] = amp,peak_efforts(segments,state["rows"],state["u"])
@@ -126,7 +130,7 @@ def analyze_second_order_v3(raw,joint_actions):
     segments,states,final_mesh,levels = solve_mesh(elements,x,fixed,loads,subdivisions)
     results = {}
     for name,(state,amp,measure) in states.items():
-        u,support = (state[k].reshape(-1,6) for k in ("u","reactions"))
+        u,support = (state[k][:6*len(x)].reshape(-1,6) for k in ("u","reactions"))
         try:
             members = recover_members(segments,state["rows"],state["u"],final_mesh)
         except AnalysisError as error:

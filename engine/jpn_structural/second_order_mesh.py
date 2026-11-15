@@ -32,9 +32,14 @@ def refine(elements, coordinates, fixed, subdivisions):
             nodes.append(a+(i/subdivisions)*(b-a))
         chain.append(element["dofs"][6]//6)
         for i, (j, k) in enumerate(zip(chain, chain[1:])):
+            releases = element["releases"].copy()
+            if i:
+                releases[:3] = False
+            if i < subdivisions-1:
+                releases[3:] = False
             segments.append(dict(element, id=(parent, i), parent=parent, part=i,
                                  dofs=np.r_[6*j:6*j+6, 6*k:6*k+6],
-                                 coordinates=np.array([nodes[j], nodes[k]])))
+                                 coordinates=np.array([nodes[j], nodes[k]]), releases=releases))
     return segments, np.array(nodes), np.pad(fixed, (0, 6*(len(nodes)-len(coordinates))))
 
 
