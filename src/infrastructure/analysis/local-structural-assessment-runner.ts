@@ -7,6 +7,7 @@ import {localMixedEnabled,localMixedLimits,runLocalMixed} from "./local-mixed-ru
 import {runLocalSection} from "./local-section-runner";
 import {runRemoteMixed,remoteMixedEnabled,remoteMixedLimits} from "./remote-mixed-runner";
 import {runRemoteSection} from "./remote-section-runner";
+import {assessmentCompressedInputBytes} from "./assessment-delivery";
 import {SolverFailure} from "./runner";
 import {prepareElasticLtb,evaluateElasticLtb,type ElasticLtbAttempt} from "@/domain/elastic-ltb";
 import type {z} from "zod";
@@ -14,17 +15,17 @@ import type {sectionAnalysisResultSchema} from "@/domain/section-analysis";
 
 /** Reuses the capped workers sequentially, with the SAME 20 s budget for the
  * complete orchestration. No background solver, parallel worker or UI route. */
-export async function runLocalStructuralAssessment(payload:string,signal?:AbortSignal){
+export async function runLocalStructuralAssessment(payload:string,signal?:AbortSignal,allowGzip=false){
   if(!localMixedEnabled())throw new SolverFailure("LOCAL_ONLY","Configured local structural executor required");
-  return runAssessment(payload,signal,false);
+  return runAssessment(payload,signal,false,allowGzip);
 }
 
-export async function runRemoteStructuralAssessment(payload:string,signal?:AbortSignal){
+export async function runRemoteStructuralAssessment(payload:string,signal?:AbortSignal,allowGzip=false){
   if(!remoteMixedEnabled())throw new SolverFailure("REMOTE_DISABLED","Configured remote structural executor required");
-  return runAssessment(payload,signal,true);
+  return runAssessment(payload,signal,true,allowGzip);
 }
 
-async function runAssessment(payload:string,signal:AbortSignal|undefined,remote:boolean){
+async function runAssessment(payload:string,signal:AbortSignal|undefined,remote:boolean,allowGzip:boolean){
   const limits=remote?remoteMixedLimits:localMixedLimits;
   const mixed=remote?runRemoteMixed:runLocalMixed;
   if(Buffer.byteLength(payload)>limits.inputBytes)throw new SolverFailure("INPUT_LIMIT","Input exceeds 500 kB");
@@ -86,7 +87,8 @@ async function runAssessment(payload:string,signal:AbortSignal|undefined,remote:
     phase="assessment-binding";
     const result=await finishStructuralAssessment(project,prepared,records,attempts,resistanceBatch,lateralTorsional);
     requireActive();
-    if(Buffer.byteLength(JSON.stringify(result))>limits.outputBytes)throw new SolverFailure("OUTPUT_LIMIT","Integrated response exceeds 2 MB");
+    if(Buffer.byteLength(JSON.stringify(result))>(allowGzip?assessmentCompressedInputBytes:limits.outputBytes))
+      throw new SolverFailure("OUTPUT_LIMIT","Integrated response exceeds the delivery budget");
     return result;
   }catch(e){if(expired)throw new SolverFailure("TIMEOUT",`Integrated assessment exceeded its ${limits.milliseconds/1000} s budget at ${phase}`);throw e;}
   finally{clearTimeout(timer);signal?.removeEventListener("abort",cancel);}
