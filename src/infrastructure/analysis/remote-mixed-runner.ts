@@ -77,7 +77,7 @@ export async function requestRemoteEngine<T>(path:"/health"|"/api/analyze-mixed"
         const code=raw?.error?.code;
         if(typeof code!=="string"||!/^[A-Z_]{1,80}$/.test(code))throw new SolverFailure("UNAVAILABLE","Backend indisponível.");
         const id=raw?.error?.combination_id;
-        const failure=new SolverFailure(code,"O backend recusou a consulta; nenhum resultado publicado.");
+        const failure=new SolverFailure(code,code==="SECTIONS_EXTRA_MISSING"?"O motor online não tem o extra opcional \"sections\" instalado: seção e verificação NBR 14762 estão indisponíveis nesta implantação (instale jpn-structural[sections] no engine). Nenhum resultado publicado.":"O backend recusou a consulta; nenhum resultado publicado.");
         throw typeof id==="string"&&/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/.test(id)?Object.assign(failure,{combinationId:id}):failure;
       }
       if(controller.signal.aborted)throw new SolverFailure("CANCELLED","Resposta descartada.");

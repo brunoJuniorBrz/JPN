@@ -27,5 +27,5 @@ export async function serveLocalNumerical(request:Request,kind:"section"|"design
       : kind==="steel-design" ? runLocalSection(text,request.signal,"steel-design")
       : kind==="design" ? runLocalSection(text,request.signal,"design") : runLocalSection(text,request.signal));
     return Response.json(value,{headers:{"Cache-Control":"no-store","X-JPN-Request-Sha256":createHash("sha256").update(text).digest("hex")}});
-  }catch(e){const error=e instanceof SolverFailure?e:new SolverFailure("INVALID_INPUT","Seção física inválida.");return Response.json({error:{code:error.code,message:error.message}},{status:error.code==="INPUT_LIMIT"?413:["REMOTE_UNAUTHORIZED","REMOTE_FORBIDDEN"].includes(error.code)?502:["BUSY","TIMEOUT","MEMORY_LIMIT","UNAVAILABLE","CONFIGURATION","CANCELLED"].includes(error.code)?503:422,headers:{"Cache-Control":"no-store"}});}
+  }catch(e){const error=e instanceof SolverFailure?e:new SolverFailure("INVALID_INPUT","Seção física inválida.");return Response.json({error:{code:error.code,message:error.message}},{status:error.code==="INPUT_LIMIT"?413:["REMOTE_UNAUTHORIZED","REMOTE_FORBIDDEN"].includes(error.code)?502:["BUSY","TIMEOUT","MEMORY_LIMIT","UNAVAILABLE","CONFIGURATION","CANCELLED","SECTIONS_EXTRA_MISSING"].includes(error.code)?503:422,headers:{"Cache-Control":"no-store"}});}
 }
