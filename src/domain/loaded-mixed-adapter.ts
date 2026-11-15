@@ -1,6 +1,8 @@
 import type { Project } from "./models";
-import { prepareMixedInput } from "./mixed-adapter";
-import { loadedMixedRequestSchema, needsSelfWeightOverlapReview, selfWeightOverlapReviewBasis } from "./structural-loading";
+import { newSpatialPreparation } from "./spatial-preparation";
+import type { z } from "zod";
+import { prepareMixedInput, type MixedContract } from "./mixed-adapter";
+import { loadedMixedRequestSchema, loadedMixedRequestV3Schema, localAxesConvention, emptyLoading, needsSelfWeightOverlapReview, selfWeightOverlapReviewBasis } from "./structural-loading";
 import { mixedInputHash } from "./mixed-analysis";
 import { resolvePhysicalStructure,assertGeneratedPhysicalStructure } from "./physical-structure";
 import { resolveMemberPhysical } from "./member-physical";
@@ -11,8 +13,9 @@ import {distributeDeclaredFacadeTractions} from "./declared-facade-traction";
 import {auditFacadeSolverLoads} from "./facade-solver-load-audit";
 import { verifyEngineeringCombinations } from "./engineering-combinations";
 import {auditEngineeringCombinationCoverage} from "./engineering-combination-coverage";
-export async function adaptLoadedMixedProject(project:Project){
-  const loading=project.workspace.spatialPreparation?.loading;
+/** `contract: "z-up-v3"` emits jpn.mixed3d/3 with the reviewed Z-up local axes (C1). The default keeps /2 untouched. */
+async function adaptLoadedMixedInternal(project:Project,contract:MixedContract){
+  const loading=project.workspace.spatialPreparation?.loading??(contract==="z-up-v3"?emptyLoading():undefined);
   if(!loading)throw new Error("Declare carregamentos físicos.");
   if(project.workspace.spatialPreparation?.roofRegions)throw Error("COMPOSED_ROOF_PRELIMINARY: regiões compostas ainda não analisáveis.");
   if(project.workspace.physicalStructure&&loading.wind)assertGeneratedPhysicalStructure(project,"vento em fachadas/estrutura declarada exige caminho de transmissão normativo validado");
@@ -27,7 +30,7 @@ export async function adaptLoadedMixedProject(project:Project){
   if(loading.facadeTraction&&loading.wind)
     throw Error("FACADE_WIND_CONFLICT: modelos de vento incompatíveis no mesmo projeto; revise hipóteses.");
   const roof_load_path=loading.roofArea.length?(project.workspace.physicalStructure?distributeDeclaredRoofActions(project,loading.roofArea,loading.roofDistribution):distributeRoofActions(project,loading.roofArea,loading.roofDistribution)):null;
-  const draft=project.workspace.spatialPreparation!;
+  const draft=project.workspace.spatialPreparation??newSpatialPreparation(project);
   const wind_load_path=loading.wind?distributeWindActions(project,loading.wind):null;
   const facade_traction_path=loading.facadeTraction?
     distributeDeclaredFacadeTractions(project,loading.facadeTraction):null;
@@ -55,7 +58,7 @@ export async function adaptLoadedMixedProject(project:Project){
       new Set(actions.map(a=>a.exclusiveGroup)).size!==1)
       throw Error("FACADE_WIND_COMBINATIONS_PENDING: pressão de fachada exige grupo exclusivo de vento explícito por cenário.");
   }
-  const prepared=await prepareMixedInput(project,true), pieces=new Map(resolvePhysicalStructure(project).model!.pieces.map(p=>[p.id,p]));
+  const prepared=await prepareMixedInput(project,true,contract), pieces=new Map(resolvePhysicalStructure(project).model!.pieces.map(p=>[p.id,p]));
   for(const l of loading.uniform){
     if(!pieces.has(l.pieceId))throw new Error("Carga uniforme refere peça inexistente.");
     const mapped=prepared.mapping.members.filter(m=>m.originalId===l.pieceId);
@@ -87,7 +90,19 @@ export async function adaptLoadedMixedProject(project:Project){
   const self_weight=loading.selfWeight?{case:loading.selfWeight.caseId,gravity_m_s2:loading.selfWeight.gravity,axial_lumping:loading.selfWeight.axialLumping,densities:prepared.mapping.members.map(m=>{
     const d=resolveMemberPhysical(pieces.get(m.originalId)!,draft).properties.density;if(!d)throw new Error(`${m.originalId}: densidade, fonte e revisão pendentes.`);
     return {member:m.id,kg_m3:d.kgM3,source:d.source,revision:d.revision};})}:null;
-  const request=loadedMixedRequestSchema.parse({...prepared.request,schema_version:"jpn.mixed3d/2",member_loads,self_weight});
-  const facade_solver_audit=facade_traction_path?auditFacadeSolverLoads(project,facade_traction_path,request,prepared.mapping):null;
-  return {...prepared,schema_version:"jpn.mixed-adapter/2" as const,request,roof_load_path,wind_load_path,facade_traction_path,facade_solver_audit,engineering_combinations,engineering_combination_coverage,input_sha256:await mixedInputHash(request)};
+  const request=contract==="z-up-v3"?
+    loadedMixedRequestV3Schema.parse({...prepared.request,schema_version:"jpn.mixed3d/3",local_axes:localAxesConvention,member_loads,self_weight}):
+    loadedMixedRequestSchema.parse({...prepared.request,schema_version:"jpn.mixed3d/2",member_loads,self_weight});
+  const facade_solver_audit=facade_traction_path?auditFacadeSolverLoads(project,facade_traction_path,request as unknown as Parameters<typeof auditFacadeSolverLoads>[2],prepared.mapping):null;
+  return {...prepared,schema_version:(contract==="z-up-v3"?"jpn.mixed-adapter/3":"jpn.mixed-adapter/2") as "jpn.mixed-adapter/2"|"jpn.mixed-adapter/3",request,roof_load_path,wind_load_path,facade_traction_path,facade_solver_audit,engineering_combinations,engineering_combination_coverage,input_sha256:await mixedInputHash(request)};
+}
+
+type Internal=Awaited<ReturnType<typeof adaptLoadedMixedInternal>>;
+/** Legacy /2 emission: numbers and hashes unchanged. */
+export async function adaptLoadedMixedProject(project:Project):Promise<Omit<Internal,"request"|"schema_version">&{request:z.infer<typeof loadedMixedRequestSchema>;schema_version:"jpn.mixed-adapter/2"}>{
+  return await adaptLoadedMixedInternal(project,"legacy") as never;
+}
+/** C1: emits jpn.mixed3d/3 with the REVIEWED Z-up local axes; frame pieces without a reviewed roll raise AXIS_REVIEW_PENDING. */
+export async function adaptLoadedMixedProjectV3(project:Project):Promise<Omit<Internal,"request"|"schema_version">&{request:z.infer<typeof loadedMixedRequestV3Schema>;schema_version:"jpn.mixed-adapter/3"}>{
+  return await adaptLoadedMixedInternal(project,"z-up-v3") as never;
 }

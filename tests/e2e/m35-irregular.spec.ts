@@ -1,3 +1,4 @@
+import { declareAxes } from "./axes";
 import { expect,test } from "@playwright/test";
 import { readFile,mkdir,writeFile } from "node:fs/promises";
 import { openResultTab } from "./result-tabs";
@@ -23,8 +24,8 @@ for(const width of [375,1440])test.describe(`M35 ${width}px`,()=>{
       for(const [axis,value] of [["X","0"],["Y","0"],["Z","-0.1"]])await loads.getByLabel(`Carga uniforme ${axis} (kN/m)`,{exact:true}).fill(value);
       await loads.getByLabel("Fonte da carga uniforme",{exact:true}).fill("Synthetic -100 N/m; not Tom roof loading");await loads.getByLabel("Revisão da carga uniforme",{exact:true}).fill("1");await loads.getByRole("button",{name:"Registrar carga uniforme",exact:true}).click();
     }
-    const response=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();const r=await response;expect(r.status()).toBe(200);const input=r.request().postDataJSON(),out=await r.json();
-    expect(input.schema_version).toBe("jpn.mixed3d/2");expect(input.project.id).toBe(id);expect(input.member_loads).toHaveLength(2);
+    const response=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");await declareAxes(panel);await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();const r=await response;expect(r.status()).toBe(200);const input=r.request().postDataJSON(),out=await r.json();
+    expect(input.schema_version).toBe("jpn.mixed3d/3");expect(input.project.id).toBe(id);expect(input.member_loads).toHaveLength(2);
     const q=-100,E=200e9,L=2,I1=1e-6,I2=2e-6;const independent=q/(8*E)*((L**4-1)/I1+1/I2);
     expect(out.result.combinations.Q1.nodes.B2.translation_m[2]).toBeCloseTo(independent,10);expect(out.result.combinations.Q1.nodes.B0.reaction_force_n[2]).toBeCloseTo(200,8);
     await expect(panel.getByTestId("declared-load-trace")).toContainText("F1");await expect(panel.getByTestId("declared-load-trace")).toContainText("F2");await expect(panel.getByTestId("mixed-result-state")).toContainText("Fabricação bloqueada");
@@ -41,7 +42,8 @@ for(const width of [375,1440])test.describe(`M35 ${width}px`,()=>{
     await expect.poll(async()=>page.evaluate(id=>JSON.parse(localStorage.getItem("jpn-projetos:v1")!).projects.find((p:{id:string})=>p.id===id).workspace.physicalStructure.nodes.find((n:{id:string})=>n.id==="B2").x,id)).toBe(2500);
     const changed=await page.evaluate(id=>JSON.parse(localStorage.getItem("jpn-projetos:v1")!).projects.find((p:{id:string})=>p.id===id),id);expect(calculateEstimate(changed).pending.join(" ")).toContain("Levantamento alterado");
     await openResultTab(page,"Materiais");await page.getByRole("button",{name:"Atualizar quantitativos no orçamento",exact:true}).click();await expect(page.getByTestId("declared-takeoff")).toContainText("3,5 m geométricos");
-    await mkdir("validation/m35",{recursive:true});await writeFile(`validation/m35/browser-${width}.json`,JSON.stringify({width,request:input,result:out.result,independentTipM:independent,takeoff:quantity},null,2));await page.screenshot({path:`validation/m35/declared-${width}.png`,fullPage:true});
+    // The /2 browser evidence in validation/m35 is a frozen historical golden (read by the demonstration); the /3 run writes its own runtime copy.
+    await mkdir(".tools/m35-runtime",{recursive:true});await writeFile(`.tools/m35-runtime/browser-${width}.json`,JSON.stringify({width,request:input,result:out.result,independentTipM:independent,takeoff:quantity},null,2));await page.screenshot({path:`validation/m35/declared-${width}.png`,fullPage:true});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
   });
   test("manual node/element editor, negative coordinates, cutout polygon and Tom commercial data stay independent",async({page})=>{
@@ -59,7 +61,7 @@ for(const width of [375,1440])test.describe(`M35 ${width}px`,()=>{
     await outline.getByRole("button",{name:"Fechar polígono",exact:true}).click();await expect(outline.getByTestId("roof-outline-area")).toContainText("18 m²");await outline.getByRole("button",{name:"Registrar contorno validado",exact:true}).click();
     await page.reload();const saved=await page.evaluate(id=>JSON.parse(localStorage.getItem("jpn-projetos:v1")!).projects.find((p:{id:string})=>p.id===id),id);expect(saved.workspace.physicalStructure.nodes[0].x).toBe(-1000);expect(saved.workspace.physicalStructure.pieces).toHaveLength(1);expect(saved.workspace.roofOutline.outer).toHaveLength(7);
     expect(calculateEstimate(saved).directCostCents).toBe(965129);expect(saved.estimate.materials[0].manualQuantity).toBe(6);expect(saved.estimate.materials[1].manualQuantity).toBe(20);expect(saved.workspace.spatialPreparation.supports).toEqual([]);expect(saved.workspace.spatialPreparation.loads).toEqual([]);
-    await openResultTab(page,"Engenharia");const panel=page.getByTestId("mixed-workspace");await expect(panel.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:30000});await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();await expect(panel.getByRole("alert").first()).toContainText(/SUPPORTS|PROPERTIES|PREPARATION/);await expect(panel.getByTestId("mixed-results")).toHaveCount(0);
+    await openResultTab(page,"Engenharia");const panel=page.getByTestId("mixed-workspace");await expect(panel.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:30000});await declareAxes(panel);await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();await expect(panel.getByRole("alert").first()).toContainText(/SUPPORTS|PROPERTIES|PREPARATION/);await expect(panel.getByTestId("mixed-results")).toHaveCount(0);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
   });
 });

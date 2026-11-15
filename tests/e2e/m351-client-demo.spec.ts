@@ -1,3 +1,4 @@
+import { declareAxes } from "./axes";
 import {expect,test,type Page} from "@playwright/test";
 import {readFile,mkdir,writeFile} from "node:fs/promises";
 import {newProject,emptySnapshot} from "../../src/domain/models";
@@ -42,8 +43,8 @@ for(const width of [375,1440])test(`M35.1 caso Tom, persistência, PDF e cálcul
   await page.getByText("Apoios, carregamentos e propriedades declaradas da fixture",{exact:true}).click();await expect(page.getByRole("heading",{name:"Apoios e restrições",exact:true})).toBeVisible();
   await page.screenshot({path:`validation/m351/model-${width}.png`,fullPage:true});
   await tab(page,"Engenharia");const engine=page.getByTestId("mixed-workspace");await expect(engine.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:25000});
-  const response=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");await engine.getByRole("button",{name:/Executar análise mista (local|online)/}).click();
-  const r=await response;expect(r.status()).toBe(200);const input=r.request().postDataJSON(),out=await r.json();expect(input.project.id).toBe(mathId);expect(input.schema_version).toBe("jpn.mixed3d/2");
+  await declareAxes(engine);const response=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");await engine.getByRole("button",{name:/Executar análise mista (local|online)/}).click();
+  const r=await response;expect(r.status()).toBe(200);const input=r.request().postDataJSON(),out=await r.json();expect(input.project.id).toBe(mathId);expect(input.schema_version).toBe("jpn.mixed3d/3");
   expect(input.member_loads).toHaveLength(2);expect(out.result.combinations.Q1.nodes.B2.translation_m[2]).toBeCloseTo(-.00096875,10);expect(out.result.combinations.Q1.nodes.B0.reaction_force_n[2]).toBeCloseTo(200,8);
   await expect(engine.getByTestId("live-comparison")).toBeVisible();await expect(engine.getByTestId("mixed-result-state")).toContainText("Resultado calculado");
   await engine.getByText("Ver deslocamentos, reações e esforços completos",{exact:true}).click();await expect(engine.getByRole("cell",{name:"B2 · nó livre",exact:true})).toBeVisible();await expect(engine.getByRole("heading",{name:/Esforços da peça selecionada: F1/})).toBeVisible();await engine.getByText("Ver deslocamentos, reações e esforços completos",{exact:true}).click();

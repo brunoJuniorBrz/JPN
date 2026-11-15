@@ -1,5 +1,8 @@
 import type {Project} from "./models";
-import {loadedMixedRequestSchema,loadedMixedResultSchema,verifyLoadingTrace} from "./structural-loading";
+import {loadedMixedRequestSchema,loadedMixedRequestV3Schema,loadedMixedResultSchema,loadedMixedResultV3Schema,verifyLoadingTrace} from "./structural-loading";
+import {z} from "zod";
+/** /2 and /3 carry the same loading trace; the reaction audit reads only that shared part. */
+const anyLoadedRequest=z.union([loadedMixedRequestSchema,loadedMixedRequestV3Schema]),anyLoadedResult=z.union([loadedMixedResultSchema,loadedMixedResultV3Schema]);
 import {mixedInputHash,verifyMixedResult} from "./mixed-analysis";
 import {canonicalSpatialInput} from "./spatial-analysis";
 import {resolvePhysicalStructure} from "./physical-structure";
@@ -41,8 +44,8 @@ export async function auditPhysicalRoofReactionPath(
   const draft=project.workspace.spatialPreparation;
   if(!project.workspace.physicalStructure||!draft?.physicalRoofFaces||!draft.loading)
     fail("M40_PHYSICAL_ROOF_PENDING","estrutura, pano e cargas físicas devem existir");
-  const request=loadedMixedRequestSchema.parse(rawRequest),
-    result=loadedMixedResultSchema.parse(rawResult);
+  const request=anyLoadedRequest.parse(rawRequest),
+    result=anyLoadedResult.parse(rawResult);
   if(request.project.id!==project.id)
     fail("M40_PROJECT_MISMATCH","resultado não pertence ao projeto físico declarado");
   const sha=await mixedInputHash(request);

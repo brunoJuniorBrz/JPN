@@ -58,6 +58,30 @@ REVIEWED_AMENDMENTS = {
     # M44-P1: NBR 14762 audit amendments (reviewed; was 477462c)
     "engine/tests/test_coldformed_design.py": "3ffd991d47f070b881c9024ea69b61154d7172c4",
     "src/domain/declared-facade-mixed-real.test.ts": "a3df819018a8b38e864f72bdda5fd26ba1fa2acd",
+    # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
+    "tests/e2e/mixed-local.spec.ts": "0ae03da7e799ee6e558379fb8d6db7fd65bc0983",
+    # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
+    "tests/e2e/m351-client-demo.spec.ts": "f068080fac0fc9eec31919082136348d7c7f5ee1",
+    # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
+    "tests/e2e/m35-irregular.spec.ts": "0586f731992f8cc7c384a210ef47490d8d1560c9",
+    # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
+    "tests/e2e/loaded-mixed.spec.ts": "1ba5e3a0f1bfdadda560ed862e7e3c4e05b5393c",
+    # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
+    "tests/e2e/integration-generated.spec.ts": "02be09e163f00ea74cfd714d89bc9d4bb6c3183f",
+    # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
+    "tests/e2e/integration-declared.spec.ts": "232a7dba8f230bee763763945db25854f89afdca",
+    # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
+    "tests/e2e/general-integration.spec.ts": "7bf58daedae0e19f41ee68d13809c9b071d66f81",
+    # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
+    "tests/e2e/coldformed-design.spec.ts": "de1ce15323fa15f8e6d237a105b6b0e696410c8b",
+    # C1/#107 (reviewed by the project owner's C1 work): tests updated for the /3 contract and the refused ambiguous legacy axes.
+    "engine/tests/test_vercel_mixed_http.py": "0d3b5475368fcbe41160af025ce9deae00ba20ef",
+    "src/domain/continuous-demands.test.ts": "b63c2411b4aec5a217ef49ad5b00281f4b2df8f4",
+    "src/domain/whole-piece-deflection.test.ts": "751c665f3266cc52772a69ebeaf4ed99415128fe",
+    "src/infrastructure/analysis/remote-mixed-runner.test.ts": "def70dcd3f98a3fc63c25de5630095d7d50a15f3",
+    "src/domain/test-support/continuous-fixture.ts": "aa1251dfd582a4ec00354d6e84c8bd94e83d2d8c",
+    # PR #105 (C1): continuous-demands test amended for local-axes /3
+    # PR #105 (C1): continuous-demands test amended for local-axes /3
 }
 
 TREES = {}

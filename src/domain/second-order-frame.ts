@@ -3,7 +3,7 @@ import type {Project} from "./models";
 import {adaptMixedProject} from "./mixed-adapter";
 import {adaptLoadedMixedProject} from "./loaded-mixed-adapter";
 import {mixedInputHash,mixedRequestSchema,mixedResultSchema,verifyMixedResult} from "./mixed-analysis";
-import {anyMixedRequestSchema} from "./structural-loading";
+import {anyMixedRequestSchema,isLoadedRequest} from "./structural-loading";
 import {canonicalSpatialInput} from "./spatial-analysis";
 
 const finite=z.number(),vector=z.tuple([finite,finite,finite]);
@@ -25,7 +25,7 @@ export const secondOrderRequestSchema=z.object({
   if(v.model.nodes.some(n=>!connected.has(n.id)))issue("PDELTA_ORPHAN_NODE: nó sem barra física");
   if(v.model.members.some(m=>m.kind==="frame"&&[...m.release_start,...m.release_end].some(Boolean)))
     issue("PDELTA_RELEASE_PENDING: liberações não validadas no piloto");
-  if(v.model.schema_version==="jpn.mixed3d/2"&&(v.model.member_loads.length||v.model.self_weight))
+  if(isLoadedRequest(v.model)&&(v.model.member_loads.length||v.model.self_weight))
     issue("PDELTA_DISTRIBUTED_LOAD_PENDING: manter carregamentos reais; não converter para burlar o domínio");
 });
 export type SecondOrderRequest=z.infer<typeof secondOrderRequestSchema>;

@@ -1,3 +1,4 @@
+import { declareAxes } from "./axes";
 import { expect,test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { openResultTab } from "./result-tabs";
@@ -19,7 +20,7 @@ for(const width of [390,1440])test(`projeto declarado salvo -> solver real -> re
   await expect(panel.getByTestId("mixed-scope")).toContainText("OBRA ATUAL");
   await expect(panel.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:25000});
   const response=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");
-  await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
+  await declareAxes(panel);await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
   const r=await response;expect(r.status()).toBe(200);const payload=r.request().postDataJSON(),out=await r.json();
   expect(payload.project.id).toBe(ownerId);expect(payload.nodes.find((n:{id:string})=>n.id==="B2").x_m).toBe(2);
   expect(out.result.combinations.Q1.nodes.B2.translation_m[2]).toBeCloseTo(-.0125,10);
@@ -41,7 +42,7 @@ for(const width of [390,1440])test(`projeto declarado salvo -> solver real -> re
   await expect(panel.getByRole("alert").filter({hasText:"Resultado não restaurado"})).toBeVisible();
   await expect(panel.getByRole("button",{name:"Executar análise mista local",exact:true})).toBeEnabled({timeout:25000});
   const nextResponse=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");
-  await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();const recalculated=await(await nextResponse).json();
+  await declareAxes(panel);await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();const recalculated=await(await nextResponse).json();
   expect(recalculated.result.input_sha256).not.toBe(out.result.input_sha256);
   expect(recalculated.result.combinations.Q1.nodes.B2.translation_m[2]).toBeCloseTo(-.006666666666666667,10);
   await expect(panel.getByTestId("mixed-result-state")).toContainText("Resultado calculado");

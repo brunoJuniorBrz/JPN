@@ -1,3 +1,4 @@
+import {withReviewedIsotropicAxes} from "./current-mixed-adapter";
 import physicalFixture from "./test-support/m34ab-declared.json" with {type:"json"};
 import historical from "../../validation/m35/browser-375.json" with {type:"json"};
 import tomSource from "../../validation/tom-2026/tom-commercial-source.json" with {type:"json"};
@@ -26,14 +27,16 @@ export function createMathematicalDemonstration(parentProjectId?:string):Project
   const reference=anyMixedRequestSchema.parse(historical.request);
   if(reference.schema_version!=="jpn.mixed3d/2")throw Error("Referência M35 incompatível.");
   d.loading.uniform=reference.member_loads.map(l=>({id:l.id.slice(0,l.id.lastIndexOf(":")),pieceId:l.member,caseId:l.case,coordinates:l.coordinate_system,knM:l.force_per_length_n_m.map(v=>v/1000) as [number,number,number],source:l.source,revision:l.revision}));
-  return projectSchema.parse(p);
+  // C1: this synthetic fixture has isotropic sections (checked by the helper, which throws otherwise), so its reviewed roll is 0°.
+  return projectSchema.parse(withReviewedIsotropicAxes(projectSchema.parse(p)));
 }
 
 const canonical=(value:unknown):unknown=>Array.isArray(value)?value.map(canonical):value&&typeof value==="object"?Object.fromEntries(Object.entries(value).sort(([a],[b])=>a.localeCompare(b,"en")).map(([k,v])=>[k,canonical(v)])):value;
 export function compareMathematicalReference(request:unknown,result:unknown){
   const input=anyMixedRequestSchema.parse(request),output=anyMixedResultSchema.parse(result),baseline=anyMixedRequestSchema.parse(historical.request);
   // Project identity/source are provenance; all remaining numerical input must match.
-  const withoutProject=(r:typeof input)=>{const {project:_,...rest}=r;void _;return canonical(rest);};
+  // /2 historical vs /3 live: the contract version and the explicit axes reference are not numerical input (the fixture is isotropic, roll 0°).
+  const withoutProject=(r:typeof input)=>{const {project:_,schema_version:__,...rest}=r as typeof r&{local_axes?:unknown};delete (rest as {local_axes?:unknown}).local_axes;void _;void __;return canonical(rest);};
   if(JSON.stringify(withoutProject(input))!==JSON.stringify(withoutProject(baseline)))return null;
   const tip=output.combinations.Q1.nodes.B2.translation_m[2],reaction=output.combinations.Q1.nodes.B0.reaction_force_n[2];
   return {tipM:tip,expectedTipM:-0.00096875,tipDifferenceM:tip-(-0.00096875),reactionN:reaction,expectedReactionN:200};
