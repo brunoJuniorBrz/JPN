@@ -197,6 +197,18 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
                 u,state = trial,next_state
                 break
         else:
+            # At a stalled iterate, test the residual against the force error
+            # induced by rounding each stored free coordinate to nearest.
+            # The engineering equilibrium audit below still applies in full.
+            quantum = np.abs(np.spacing(u[free]))/2
+            if projection is None:
+                roundoff = abs(tangent[np.ix_(free,free)])@quantum
+                unbalanced = abs(residual[free])
+            else:
+                roundoff = abs(projection.T@tangent[:,free])@quantum
+                unbalanced = abs(projection.T@residual)
+            if np.any((delta[free]!=0.)&(u[free]+delta[free]==u[free])) and np.all(unbalanced<=roundoff):
+                break
             fail("SECOND_ORDER_NOT_CONVERGED", "Newton search could not reduce the free residual.")
 
     motion = u[:physical_size].reshape(-1,6)

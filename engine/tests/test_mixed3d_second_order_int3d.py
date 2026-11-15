@@ -95,6 +95,14 @@ def test_unused_joint_rotation_at_released_ends_is_eliminated():
         assert combo["nodes"]["b"]["rotation_rad"] == [0.,0.,0.]
 
 
+def test_purlin_roundoff_at_mesh_16_keeps_the_physical_equilibrium_gate():
+    raw,_,_ = released_request("purlin-portal")
+    raw["mesh_initial_subdivisions"] = 4
+    answer = analyze_mixed3d_v3(raw)
+    assert answer["diagnostics"]["mesh_levels"] == [4,8,16]
+    assert answer["combinations"]["LA"]["equilibrium"]["relative_residual"] < 1e-8
+
+
 def test_banded_solution_and_stability_match_dense():
     rng = np.random.default_rng(1234)
     values = rng.uniform(.15,.45,119)

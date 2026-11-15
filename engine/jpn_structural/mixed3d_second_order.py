@@ -33,23 +33,25 @@ def amplification(second,first):
 
 def solve_mesh(elements, coordinates, fixed, loads, initial_subdivisions):
     """Resolve all combinations at each level before accepting a common mesh."""
-    subdivisions = initial_subdivisions
+    counts = mesh.frame_counts(elements,initial_subdivisions)
     old = {}
     levels = []
     physical_dofs = 6*len(coordinates)
     controlling = next(iter(loads))
     while True:
         try:
-            segments,x,restraints = mesh.refine(elements,coordinates,fixed,subdivisions)
+            segments,x,restraints = mesh.refine(elements,coordinates,fixed,counts)
         except AnalysisError as error:
             raise AnalysisError(error.code,str(error),combination_id=controlling) from error
-        levels.append(subdivisions)
+        level = max(counts.values(),default=initial_subdivisions)
+        if not levels or levels[-1]!=level:
+            levels.append(level)
         segments,restraints,projection = prepare_releases(segments,restraints)
         reference = assemble(segments,np.zeros(len(restraints)),None)
         reference_cache = {}
         states,metrics = {},{}
         for name,(nodal,uniform) in loads.items():
-            weights = {e["id"]:uniform[e["parent"]]/subdivisions for e in segments
+            weights = {e["id"]:uniform[e["parent"]]/counts[e["parent"]] for e in segments
                        if e["parent"] in uniform}
             try:
                 state = solve_combination(segments,x,restraints,np.pad(nodal,(0,len(restraints)-physical_dofs)),
@@ -61,16 +63,26 @@ def solve_mesh(elements, coordinates, fixed, loads, initial_subdivisions):
             except AnalysisError as error:
                 raise AnalysisError(error.code,f"{name}: {error}",combination_id=name) from error
             states[name] = state,amp,measure
-        if all(e["kind"]=="axial" for e in elements):
+        if not counts:
             break
-        if subdivisions >= initial_subdivisions*2**mesh.MIN_REFINEMENTS:
-            unconverged = [name for name,metric in metrics.items() if not mesh.converged(old[name],metric)]
-            if not unconverged:
+        unresolved = set(counts)
+        if level >= initial_subdivisions*2**mesh.MIN_REFINEMENTS:
+            unresolved = set()
+            for name,metric in metrics.items():
+                bars = mesh.unstable_efforts(old[name],metric,counts)
+                if bars and not unresolved:
+                    controlling = name
+                unresolved.update(bars)
+            if not unresolved:
                 break
-            controlling = unconverged[0]
-        subdivisions *= 2
+        uniform_counts = {mid:2*n for mid,n in counts.items()}
+        if (max(uniform_counts.values())<=mesh.MAX_SUBDIVISIONS
+                and mesh.node_count(coordinates,uniform_counts)<=mesh.MAX_MESH_NODES):
+            counts = uniform_counts
+        else:
+            counts = {mid:2*n if mid in unresolved else n for mid,n in counts.items()}
         old = metrics
-    final = {e["id"]:1 if e["kind"]=="axial" else subdivisions for e in elements}
+    final = {e["id"]:counts.get(e["id"],1) for e in elements}
     return segments,states,final,levels
 
 
