@@ -55,6 +55,10 @@ def ancestor(a, b):
 # Reviewed amendments to protected tests, pinned by Git blob.
 # PR #92 (M54): rejects facade loads duplicated under a disguised ID.
 REVIEWED_AMENDMENTS = {
+    # PR #105 (C1): continuous-demands test amended for local-axes /3
+    "src/domain/whole-piece-deflection.test.ts": "751c665f3266cc52772a69ebeaf4ed99415128fe",
+    # PR #105 (C1): continuous-demands test amended for local-axes /3
+    "src/domain/continuous-demands.test.ts": "b63c2411b4aec5a217ef49ad5b00281f4b2df8f4",
     "src/domain/declared-facade-mixed-real.test.ts": "a3df819018a8b38e864f72bdda5fd26ba1fa2acd",
 }
 
