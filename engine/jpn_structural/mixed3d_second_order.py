@@ -11,7 +11,7 @@ from .mixed3d_v3 import KEYS
 from .model import AnalysisError
 from . import second_order_mesh as mesh
 from .second_order_mixed import assemble, physical_model, solve_combination
-from .second_order_sections import peak_efforts
+from .second_order_sections import peak_efforts, recover_members
 
 KEY_LOADS = ("fx_n","fy_n","fz_n","mx_nm","my_nm","mz_nm")
 
@@ -64,19 +64,6 @@ def solve_mesh(elements, coordinates, fixed, loads, initial_subdivisions):
     return segments,states,final,levels
 
 
-def recover_members(segments, rows):
-    members = {}
-    for element,row in zip(segments,rows):
-        mid = element["parent"]
-        width = 3 if element["kind"]=="axial" else 6
-        actions = row["net_end_actions"].tolist()
-        if mid not in members:
-            members[mid] = dict(kind=element["kind"],axial_n=row["axial_n"],end_actions_global=actions)
-        else:
-            members[mid]["end_actions_global"][width:] = actions[width:]
-    return members
-
-
 def analyze_second_order_v3(raw,joint_actions):
     started = time.perf_counter()
     optional = " mesh_initial_subdivisions" if "mesh_initial_subdivisions" in raw else ""
@@ -127,6 +114,10 @@ def analyze_second_order_v3(raw,joint_actions):
     results = {}
     for name,(state,amp,measure) in states.items():
         u,support = (state[k].reshape(-1,6) for k in ("u","reactions"))
+        try:
+            members = recover_members(segments,state["rows"],state["u"],final_mesh)
+        except AnalysisError as error:
+            fail(error.code,f"{name}: {error}")
         results[name] = dict(
             status="converged", iterations=state["iterations"], amplification_factor=amp,
             amplification_measure=measure,
@@ -135,7 +126,7 @@ def analyze_second_order_v3(raw,joint_actions):
             nodes={n:dict(translation_m=u[i,:3].tolist(),rotation_rad=u[i,3:].tolist(),active_rotations=n in frames,
                           reaction_force_n=support[i,:3].tolist(),reaction_moment_nm=support[i,3:].tolist())
                    for n,i in index.items()},
-            members=recover_members(segments,state["rows"]),
+            members=members,
         )
     return dict(schema_version="jpn.mixed3d-result/3",status="analysis_completed_experimental",units="SI",
                 analysis_order="second-order",solution_mode="per-combination",local_axes=CONVENTION,
