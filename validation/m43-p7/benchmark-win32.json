@@ -1,0 +1,796 @@
+{
+ "platform": "Windows-10-10.0.19045-SP0",
+ "python": "3.12.16",
+ "runs": [
+  {
+   "mesh": 2,
+   "kernel": "python",
+   "repeat": 0,
+   "status": "diagnostic",
+   "elapsed_seconds": 9.74418749997858,
+   "phases": {
+    "import_seconds": 1.8465286999708042,
+    "solve_seconds": 7.678869399940595,
+    "process_seconds": 9.525706699932925,
+    "memory": {
+     "peak_commit_bytes": 155176960,
+     "peak_working_set_bytes": 111611904
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 155176960,
+    "peak_working_set_bytes": 111611904
+   }
+  },
+  {
+   "mesh": 2,
+   "kernel": "python",
+   "repeat": 1,
+   "status": "diagnostic",
+   "elapsed_seconds": 9.57193840004038,
+   "phases": {
+    "import_seconds": 1.7827513000229374,
+    "solve_seconds": 7.582297599990852,
+    "process_seconds": 9.36532839993015,
+    "memory": {
+     "peak_commit_bytes": 155627520,
+     "peak_working_set_bytes": 111927296
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 155627520,
+    "peak_working_set_bytes": 111927296
+   }
+  },
+  {
+   "mesh": 2,
+   "kernel": "compiled",
+   "repeat": 0,
+   "status": "diagnostic",
+   "elapsed_seconds": 3.26212970004417,
+   "phases": {
+    "import_seconds": 1.9177228999324143,
+    "kernel_load_seconds": 0.4171351999975741,
+    "solve_seconds": 0.5346588999964297,
+    "process_seconds": 2.869711499894038,
+    "memory": {
+     "peak_commit_bytes": 195612672,
+     "peak_working_set_bytes": 168427520
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 195612672,
+    "peak_working_set_bytes": 168427520
+   }
+  },
+  {
+   "mesh": 2,
+   "kernel": "compiled",
+   "repeat": 1,
+   "status": "diagnostic",
+   "elapsed_seconds": 3.2411000999854878,
+   "phases": {
+    "import_seconds": 1.9641461999854073,
+    "kernel_load_seconds": 0.3982933999504894,
+    "solve_seconds": 0.5145229999907315,
+    "process_seconds": 2.8771629000548273,
+    "memory": {
+     "peak_commit_bytes": 196108288,
+     "peak_working_set_bytes": 168898560
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 196108288,
+    "peak_working_set_bytes": 168898560
+   }
+  },
+  {
+   "mesh": 3,
+   "kernel": "python",
+   "repeat": 0,
+   "status": "diagnostic",
+   "elapsed_seconds": 14.079135299893096,
+   "phases": {
+    "import_seconds": 2.049577199970372,
+    "solve_seconds": 11.756246800068766,
+    "process_seconds": 13.806158099905588,
+    "memory": {
+     "peak_commit_bytes": 156069888,
+     "peak_working_set_bytes": 112656384
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 156069888,
+    "peak_working_set_bytes": 112656384
+   }
+  },
+  {
+   "mesh": 3,
+   "kernel": "python",
+   "repeat": 1,
+   "status": "diagnostic",
+   "elapsed_seconds": 14.131022899993695,
+   "phases": {
+    "import_seconds": 1.8692506999941543,
+    "solve_seconds": 12.003559699980542,
+    "process_seconds": 13.873136700014584,
+    "memory": {
+     "peak_commit_bytes": 156393472,
+     "peak_working_set_bytes": 112893952
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 156393472,
+    "peak_working_set_bytes": 112893952
+   }
+  },
+  {
+   "mesh": 3,
+   "kernel": "compiled",
+   "repeat": 0,
+   "status": "diagnostic",
+   "elapsed_seconds": 3.4459585999138653,
+   "phases": {
+    "import_seconds": 1.9248341999482363,
+    "kernel_load_seconds": 0.37964960001409054,
+    "solve_seconds": 0.8024787999456748,
+    "process_seconds": 3.107155099976808,
+    "memory": {
+     "peak_commit_bytes": 196562944,
+     "peak_working_set_bytes": 169631744
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 196562944,
+    "peak_working_set_bytes": 169631744
+   }
+  },
+  {
+   "mesh": 3,
+   "kernel": "compiled",
+   "repeat": 1,
+   "status": "diagnostic",
+   "elapsed_seconds": 3.2837356999516487,
+   "phases": {
+    "import_seconds": 1.8044751000124961,
+    "kernel_load_seconds": 0.37289190001320094,
+    "solve_seconds": 0.7804624000564218,
+    "process_seconds": 2.958022200036794,
+    "memory": {
+     "peak_commit_bytes": 196325376,
+     "peak_working_set_bytes": 169406464
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 196325376,
+    "peak_working_set_bytes": 169406464
+   }
+  },
+  {
+   "mesh": 4,
+   "kernel": "python",
+   "repeat": 0,
+   "status": "diagnostic",
+   "elapsed_seconds": 17.658445300068706,
+   "phases": {
+    "import_seconds": 1.7598124000942335,
+    "solve_seconds": 15.678627700079232,
+    "process_seconds": 17.43872099998407,
+    "memory": {
+     "peak_commit_bytes": 157474816,
+     "peak_working_set_bytes": 114176000
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 157474816,
+    "peak_working_set_bytes": 114176000
+   }
+  },
+  {
+   "mesh": 4,
+   "kernel": "python",
+   "repeat": 1,
+   "status": "diagnostic",
+   "elapsed_seconds": 17.535553899942897,
+   "phases": {
+    "import_seconds": 1.8004253000253811,
+    "solve_seconds": 15.518558000097983,
+    "process_seconds": 17.319303299998865,
+    "memory": {
+     "peak_commit_bytes": 157401088,
+     "peak_working_set_bytes": 114212864
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 157401088,
+    "peak_working_set_bytes": 114212864
+   }
+  },
+  {
+   "mesh": 4,
+   "kernel": "compiled",
+   "repeat": 0,
+   "status": "diagnostic",
+   "elapsed_seconds": 3.7206659000366926,
+   "phases": {
+    "import_seconds": 1.8367503000190482,
+    "kernel_load_seconds": 0.37895279994700104,
+    "solve_seconds": 1.1267971999477595,
+    "process_seconds": 3.3426920999772847,
+    "memory": {
+     "peak_commit_bytes": 197685248,
+     "peak_working_set_bytes": 171114496
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 197685248,
+    "peak_working_set_bytes": 171114496
+   }
+  },
+  {
+   "mesh": 4,
+   "kernel": "compiled",
+   "repeat": 1,
+   "status": "diagnostic",
+   "elapsed_seconds": 3.6590486000059173,
+   "phases": {
+    "import_seconds": 1.817160899983719,
+    "kernel_load_seconds": 0.37044510000851005,
+    "solve_seconds": 1.1373343999730423,
+    "process_seconds": 3.3251279999967664,
+    "memory": {
+     "peak_commit_bytes": 197689344,
+     "peak_working_set_bytes": 170786816
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 197689344,
+    "peak_working_set_bytes": 170786816
+   }
+  },
+  {
+   "mesh": 6,
+   "kernel": "python",
+   "repeat": 0,
+   "status": "TIMEOUT",
+   "elapsed_seconds": 20.016407000017352,
+   "phases": null,
+   "error": null,
+   "memory": null
+  },
+  {
+   "mesh": 6,
+   "kernel": "python",
+   "repeat": 1,
+   "status": "TIMEOUT",
+   "elapsed_seconds": 20.037318799993955,
+   "phases": null,
+   "error": null,
+   "memory": null
+  },
+  {
+   "mesh": 6,
+   "kernel": "compiled",
+   "repeat": 0,
+   "status": "diagnostic",
+   "elapsed_seconds": 4.754152300069109,
+   "phases": {
+    "import_seconds": 1.9102890000212938,
+    "kernel_load_seconds": 0.4083755000028759,
+    "solve_seconds": 2.0831900000339374,
+    "process_seconds": 4.402056199964136,
+    "memory": {
+     "peak_commit_bytes": 202498048,
+     "peak_working_set_bytes": 175173632
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 202498048,
+    "peak_working_set_bytes": 175173632
+   }
+  },
+  {
+   "mesh": 6,
+   "kernel": "compiled",
+   "repeat": 1,
+   "status": "diagnostic",
+   "elapsed_seconds": 4.518174499971792,
+   "phases": {
+    "import_seconds": 1.7556955999461934,
+    "kernel_load_seconds": 0.37087420001626015,
+    "solve_seconds": 2.045972299994901,
+    "process_seconds": 4.172741999966092,
+    "memory": {
+     "peak_commit_bytes": 202997760,
+     "peak_working_set_bytes": 175861760
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 202997760,
+    "peak_working_set_bytes": 175861760
+   }
+  },
+  {
+   "mesh": 8,
+   "kernel": "python",
+   "repeat": 0,
+   "status": "TIMEOUT",
+   "elapsed_seconds": 20.035481599974446,
+   "phases": null,
+   "error": null,
+   "memory": null
+  },
+  {
+   "mesh": 8,
+   "kernel": "python",
+   "repeat": 1,
+   "status": "TIMEOUT",
+   "elapsed_seconds": 20.0229793000035,
+   "phases": null,
+   "error": null,
+   "memory": null
+  },
+  {
+   "mesh": 8,
+   "kernel": "compiled",
+   "repeat": 0,
+   "status": "diagnostic",
+   "elapsed_seconds": 5.736476700054482,
+   "phases": {
+    "import_seconds": 1.780689200037159,
+    "kernel_load_seconds": 0.3699347999645397,
+    "solve_seconds": 3.2303550000069663,
+    "process_seconds": 5.38121979997959,
+    "memory": {
+     "peak_commit_bytes": 205676544,
+     "peak_working_set_bytes": 179195904
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 205676544,
+    "peak_working_set_bytes": 179195904
+   }
+  },
+  {
+   "mesh": 8,
+   "kernel": "compiled",
+   "repeat": 1,
+   "status": "diagnostic",
+   "elapsed_seconds": 5.87198910000734,
+   "phases": {
+    "import_seconds": 1.7680585000198334,
+    "kernel_load_seconds": 0.368005899945274,
+    "solve_seconds": 3.331437799963169,
+    "process_seconds": 5.467696000006981,
+    "memory": {
+     "peak_commit_bytes": 205840384,
+     "peak_working_set_bytes": 179302400
+    }
+   },
+   "error": null,
+   "memory": {
+    "peak_commit_bytes": 205840384,
+    "peak_working_set_bytes": 179302400
+   }
+  }
+ ],
+ "comparisons": [
+  {
+   "mesh": 2,
+   "structure_equal": true,
+   "discrete_differences": [],
+   "scaled_deviation": {
+    "H": 0.0,
+    "P": 0.0,
+    "e_pa": 0.0,
+    "g_pa": 0.0,
+    "nu": 0.0,
+    "rotation_deg": 0.0,
+    "fx_n": 0.0,
+    "fy_n": 0.0,
+    "fz_n": 0.0,
+    "mx_nm": 0.0,
+    "my_nm": 0.0,
+    "mz_nm": 0.0,
+    "x_m": 0.0,
+    "y_m": 0.0,
+    "z_m": 0.0,
+    "area_m2": 0.0,
+    "iy_m4": 0.0,
+    "iz_m4": 0.0,
+    "j_m4": 0.0,
+    "subdivisions": 0.0,
+    "node_count": 0.0,
+    "member_count": 0.0,
+    "start_fraction": 0.0,
+    "end_fraction": 0.0,
+    "elastic_scaled_condition": 0.0,
+    "translation_m": 4.172663435350924e-13,
+    "rotation_rad": 3.2551430790810853e-13,
+    "orientation_quaternion": 6.16181181602572e-17,
+    "reaction_force_n": 3.739165653683634e-14,
+    "reaction_moment_nm": 3.1248820806731555e-12,
+    "end_actions_global": 5.16502128841081e-14,
+    "end_actions_local": 5.165016515355196e-14,
+    "current_basis": 4.430863228405142e-16,
+    "reference_basis": 0.0,
+    "strain_energy_j": 9.364190061803355e-15,
+    "extension_m": 3.5416524383018e-15,
+    "arc_extension_m": 1.0090536080071472e-12,
+    "axial_n": 2.361101585736145e-15,
+    "torsion_nm": 1.564863423511849e-09,
+    "local_rotation_i": 1.9022632473748537e-12,
+    "local_rotation_j": 2.5701847077860037e-12,
+    "torsion_rad": 1.5648634464146385e-09,
+    "force_residual_n": 10.095794973874098,
+    "deformed_geometry_moment_residual_nm": 2.1705419766206164,
+    "force_relative_residual": 8.095794973874098,
+    "moment_relative_residual": 0.17054197662061676,
+    "step": 0.0,
+    "iterations": 0.0,
+    "newton_residual_evaluations": 0.0,
+    "line_search_force_evaluations": 0.0,
+    "linear_system_solves": 0.0,
+    "algebraic_relative_residual": 0.5049193685695522,
+    "scaled_displacement_increment": 0.0008504189321252132,
+    "scaled_internal_force_change": 3.965446998824581e-07,
+    "minimum_tangent_ratio": 1.1661945021830151e-12,
+    "maximum_tangent_ratio": 3.760946511720999e-14,
+    "scaled_tangent_condition": 5.356747281267834e-12,
+    "final_external_dead_load_potential_j": 6.6990402000508335e-15,
+    "minimum_generalized_eigenvalue": 1.2529978780033529e-12,
+    "generalized_mode": 1.3232375411910551e-11,
+    "full_assembly_evaluations": 0.0,
+    "exact_state_reuses": 0.0
+   },
+   "absolute_deviation": {
+    "H": 0.0,
+    "P": 0.0,
+    "e_pa": 0.0,
+    "g_pa": 0.0,
+    "nu": 0.0,
+    "rotation_deg": 0.0,
+    "fx_n": 0.0,
+    "fy_n": 0.0,
+    "fz_n": 0.0,
+    "mx_nm": 0.0,
+    "my_nm": 0.0,
+    "mz_nm": 0.0,
+    "x_m": 0.0,
+    "y_m": 0.0,
+    "z_m": 0.0,
+    "area_m2": 0.0,
+    "iy_m4": 0.0,
+    "iz_m4": 0.0,
+    "j_m4": 0.0,
+    "subdivisions": 0.0,
+    "node_count": 0.0,
+    "member_count": 0.0,
+    "start_fraction": 0.0,
+    "end_fraction": 0.0,
+    "elastic_scaled_condition": 0.0,
+    "translation_m": 4.807352432800727e-16,
+    "rotation_rad": 1.2323623663070713e-16,
+    "orientation_quaternion": 6.16181181602572e-17,
+    "reaction_force_n": 4.629498562280787e-09,
+    "reaction_moment_nm": 3.994273356511258e-09,
+    "end_actions_global": 6.394864748848761e-09,
+    "end_actions_local": 6.394851786994948e-09,
+    "current_basis": 4.430863228405135e-16,
+    "reference_basis": 0.0,
+    "strain_energy_j": 2.984279490192421e-13,
+    "extension_m": 2.192475300796302e-19,
+    "arc_extension_m": 1.4121627417505288e-20,
+    "axial_n": 2.923300351787006e-10,
+    "torsion_nm": 4.746166307190158e-11,
+    "local_rotation_i": 4.440892098500626e-16,
+    "local_rotation_j": 5.551115123125783e-16,
+    "torsion_rad": 6.170016289649388e-17,
+    "force_residual_n": 4.61284344055457e-09,
+    "deformed_geometry_moment_residual_nm": 2.322030923096463e-08,
+    "force_relative_residual": 1.8485900244618793e-12,
+    "moment_relative_residual": 3.6481631355556036e-13,
+    "step": 0.0,
+    "iterations": 0.0,
+    "newton_residual_evaluations": 0.0,
+    "line_search_force_evaluations": 0.0,
+    "linear_system_solves": 0.0,
+    "algebraic_relative_residual": 3.825882451447576e-14,
+    "scaled_displacement_increment": 4.445617549860837e-16,
+    "scaled_internal_force_change": 5.897669101626756e-16,
+    "minimum_tangent_ratio": 1.1571854585668007e-12,
+    "maximum_tangent_ratio": 3.774758283725532e-14,
+    "scaled_tangent_condition": 6.722075340803713e-08,
+    "final_external_dead_load_potential_j": 4.263256414560601e-13,
+    "minimum_generalized_eigenvalue": 1.155964213239713e-12,
+    "generalized_mode": 3.957012495447998e-11,
+    "full_assembly_evaluations": 0.0,
+    "exact_state_reuses": 0.0
+   }
+  },
+  {
+   "mesh": 3,
+   "structure_equal": true,
+   "discrete_differences": [],
+   "scaled_deviation": {
+    "H": 0.0,
+    "P": 0.0,
+    "e_pa": 0.0,
+    "g_pa": 0.0,
+    "nu": 0.0,
+    "rotation_deg": 0.0,
+    "fx_n": 0.0,
+    "fy_n": 0.0,
+    "fz_n": 0.0,
+    "mx_nm": 0.0,
+    "my_nm": 0.0,
+    "mz_nm": 0.0,
+    "x_m": 0.0,
+    "y_m": 0.0,
+    "z_m": 0.0,
+    "area_m2": 0.0,
+    "iy_m4": 0.0,
+    "iz_m4": 0.0,
+    "j_m4": 0.0,
+    "subdivisions": 0.0,
+    "node_count": 0.0,
+    "member_count": 0.0,
+    "start_fraction": 0.0,
+    "end_fraction": 0.0,
+    "elastic_scaled_condition": 0.0,
+    "translation_m": 4.684789244420323e-13,
+    "rotation_rad": 8.476451694107197e-13,
+    "orientation_quaternion": 1.6314532190475628e-16,
+    "reaction_force_n": 1.5682981479378322e-13,
+    "reaction_moment_nm": 9.374483705881943e-12,
+    "end_actions_global": 1.5682981479378322e-13,
+    "end_actions_local": 1.5753147081417202e-13,
+    "current_basis": 7.013161753829064e-16,
+    "reference_basis": 0.0,
+    "strain_energy_j": 1.6164357042559805e-14,
+    "extension_m": 5.695799445925237e-15,
+    "arc_extension_m": 2.1189030829736305e-12,
+    "axial_n": 3.797199664775654e-15,
+    "torsion_nm": 1.2931245004695428e-09,
+    "local_rotation_i": 3.1699491250855237e-12,
+    "local_rotation_j": 5.287208836331512e-12,
+    "torsion_rad": 1.6164056273843124e-09,
+    "force_residual_n": 1.4578139284524227,
+    "deformed_geometry_moment_residual_nm": 4.5859375,
+    "force_relative_residual": 0.5421860715475774,
+    "moment_relative_residual": 14.397367830703656,
+    "step": 0.0,
+    "iterations": 0.0,
+    "newton_residual_evaluations": 0.0,
+    "line_search_force_evaluations": 0.0,
+    "linear_system_solves": 0.0,
+    "algebraic_relative_residual": 0.39853297159496215,
+    "scaled_displacement_increment": 0.0003525564833073154,
+    "scaled_internal_force_change": 1.1791239907615515e-06,
+    "minimum_tangent_ratio": 9.608092007219227e-13,
+    "maximum_tangent_ratio": 3.140791587552656e-14,
+    "scaled_tangent_condition": 4.39524498672162e-11,
+    "final_external_dead_load_potential_j": 6.922336274309822e-15,
+    "minimum_generalized_eigenvalue": 1.512173066929128e-13,
+    "generalized_mode": 4.878499826041825e-12,
+    "full_assembly_evaluations": 0.0,
+    "exact_state_reuses": 0.0
+   },
+   "absolute_deviation": {
+    "H": 0.0,
+    "P": 0.0,
+    "e_pa": 0.0,
+    "g_pa": 0.0,
+    "nu": 0.0,
+    "rotation_deg": 0.0,
+    "fx_n": 0.0,
+    "fy_n": 0.0,
+    "fz_n": 0.0,
+    "mx_nm": 0.0,
+    "my_nm": 0.0,
+    "mz_nm": 0.0,
+    "x_m": 0.0,
+    "y_m": 0.0,
+    "z_m": 0.0,
+    "area_m2": 0.0,
+    "iy_m4": 0.0,
+    "iz_m4": 0.0,
+    "j_m4": 0.0,
+    "subdivisions": 0.0,
+    "node_count": 0.0,
+    "member_count": 0.0,
+    "start_fraction": 0.0,
+    "end_fraction": 0.0,
+    "elastic_scaled_condition": 0.0,
+    "translation_m": 5.397429465175962e-16,
+    "rotation_rad": 3.2629064380951256e-16,
+    "orientation_quaternion": 1.6314532190475628e-16,
+    "reaction_force_n": 1.941725713550113e-08,
+    "reaction_moment_nm": 1.198259269585833e-08,
+    "end_actions_global": 1.941725713550113e-08,
+    "end_actions_local": 1.9504113879520446e-08,
+    "current_basis": 7.013161752722485e-16,
+    "reference_basis": 0.0,
+    "strain_energy_j": 5.151434834260726e-13,
+    "extension_m": 2.3506735929470685e-19,
+    "arc_extension_m": 1.488801025503567e-20,
+    "axial_n": 4.701347228186492e-10,
+    "torsion_nm": 5.962122939448533e-11,
+    "local_rotation_i": 5.551386173668904e-16,
+    "local_rotation_j": 8.881784197001252e-16,
+    "torsion_rad": 6.458966524918044e-17,
+    "force_residual_n": 1.9397702999413013e-08,
+    "deformed_geometry_moment_residual_nm": 4.377761797513813e-08,
+    "force_relative_residual": 3.605366990573868e-12,
+    "moment_relative_residual": 8.753772899655477e-12,
+    "step": 0.0,
+    "iterations": 0.0,
+    "newton_residual_evaluations": 0.0,
+    "line_search_force_evaluations": 0.0,
+    "linear_system_solves": 0.0,
+    "algebraic_relative_residual": 6.28097151681679e-14,
+    "scaled_displacement_increment": 2.1685112112898949e-16,
+    "scaled_internal_force_change": 1.5333939662988795e-15,
+    "minimum_tangent_ratio": 9.53348511245622e-13,
+    "maximum_tangent_ratio": 3.1530333899354446e-14,
+    "scaled_tangent_condition": 1.2702766980510205e-06,
+    "final_external_dead_load_potential_j": 4.405364961712621e-13,
+    "minimum_generalized_eigenvalue": 1.3944401189291966e-13,
+    "generalized_mode": 1.4104273304837989e-11,
+    "full_assembly_evaluations": 0.0,
+    "exact_state_reuses": 0.0
+   }
+  },
+  {
+   "mesh": 4,
+   "structure_equal": true,
+   "discrete_differences": [],
+   "scaled_deviation": {
+    "H": 0.0,
+    "P": 0.0,
+    "e_pa": 0.0,
+    "g_pa": 0.0,
+    "nu": 0.0,
+    "rotation_deg": 0.0,
+    "fx_n": 0.0,
+    "fy_n": 0.0,
+    "fz_n": 0.0,
+    "mx_nm": 0.0,
+    "my_nm": 0.0,
+    "mz_nm": 0.0,
+    "x_m": 0.0,
+    "y_m": 0.0,
+    "z_m": 0.0,
+    "area_m2": 0.0,
+    "iy_m4": 0.0,
+    "iz_m4": 0.0,
+    "j_m4": 0.0,
+    "subdivisions": 0.0,
+    "node_count": 0.0,
+    "member_count": 0.0,
+    "start_fraction": 0.0,
+    "end_fraction": 0.0,
+    "elastic_scaled_condition": 0.0,
+    "translation_m": 3.0946416253673856e-13,
+    "rotation_rad": 8.399373992888513e-13,
+    "orientation_quaternion": 1.5899824859499923e-16,
+    "reaction_force_n": 1.93418479461793e-13,
+    "reaction_moment_nm": 9.029569065981708e-12,
+    "end_actions_global": 2.4792186340458433e-13,
+    "end_actions_local": 2.4792216128750474e-13,
+    "current_basis": 4.0072112312872927e-16,
+    "reference_basis": 0.0,
+    "strain_energy_j": 4.425688487721473e-14,
+    "extension_m": 7.178706184043313e-15,
+    "arc_extension_m": 2.4325354865237507e-12,
+    "axial_n": 4.785804130722717e-15,
+    "torsion_nm": 7.638230737755879e-10,
+    "local_rotation_i": 5.6086592983459785e-12,
+    "local_rotation_j": 4.11226854470953e-12,
+    "torsion_rad": 7.638230709699055e-10,
+    "force_residual_n": 0.3702221653114796,
+    "deformed_geometry_moment_residual_nm": 2.3631879621014296,
+    "force_relative_residual": 0.3702221653114796,
+    "moment_relative_residual": 0.36318796210142956,
+    "step": 0.0,
+    "iterations": 0.0,
+    "newton_residual_evaluations": 0.0,
+    "line_search_force_evaluations": 0.0,
+    "linear_system_solves": 0.0,
+    "algebraic_relative_residual": 0.6595844519077357,
+    "scaled_displacement_increment": 0.0005572199584689951,
+    "scaled_internal_force_change": 8.262571295727798e-07,
+    "minimum_tangent_ratio": 1.902618443804019e-12,
+    "maximum_tangent_ratio": 5.639391468357825e-14,
+    "scaled_tangent_condition": 9.430455134445454e-12,
+    "final_external_dead_load_potential_j": 7.703889231339524e-15,
+    "minimum_generalized_eigenvalue": 2.4539831083e-13,
+    "generalized_mode": 1.398050151010804e-11,
+    "full_assembly_evaluations": 0.0,
+    "exact_state_reuses": 0.0
+   },
+   "absolute_deviation": {
+    "H": 0.0,
+    "P": 0.0,
+    "e_pa": 0.0,
+    "g_pa": 0.0,
+    "nu": 0.0,
+    "rotation_deg": 0.0,
+    "fx_n": 0.0,
+    "fy_n": 0.0,
+    "fz_n": 0.0,
+    "mx_nm": 0.0,
+    "my_nm": 0.0,
+    "mz_nm": 0.0,
+    "x_m": 0.0,
+    "y_m": 0.0,
+    "z_m": 0.0,
+    "area_m2": 0.0,
+    "iy_m4": 0.0,
+    "iz_m4": 0.0,
+    "j_m4": 0.0,
+    "subdivisions": 0.0,
+    "node_count": 0.0,
+    "member_count": 0.0,
+    "start_fraction": 0.0,
+    "end_fraction": 0.0,
+    "elastic_scaled_condition": 0.0,
+    "translation_m": 3.5653988442185813e-16,
+    "rotation_rad": 3.1799649718999845e-16,
+    "orientation_quaternion": 1.5899824859499923e-16,
+    "reaction_force_n": 2.3947336558194365e-08,
+    "reaction_moment_nm": 1.1541715139173903e-08,
+    "end_actions_global": 3.069545536499296e-08,
+    "end_actions_local": 3.069547243033516e-08,
+    "current_basis": 4.0072112295064244e-16,
+    "reference_basis": 0.0,
+    "strain_energy_j": 1.4104273304837989e-12,
+    "extension_m": 2.222005648664445e-19,
+    "arc_extension_m": 9.042738456429699e-21,
+    "axial_n": 5.92534840637704e-10,
+    "torsion_nm": 4.7006409181760134e-11,
+    "local_rotation_i": 7.771561172376096e-16,
+    "local_rotation_j": 5.551115123125783e-16,
+    "torsion_rad": 3.055416585591222e-17,
+    "force_residual_n": 2.6295765565009788e-09,
+    "deformed_geometry_moment_residual_nm": 1.0741268852143548e-07,
+    "force_relative_residual": 1.3141312126441674e-12,
+    "moment_relative_residual": 3.300896559921201e-12,
+    "step": 0.0,
+    "iterations": 0.0,
+    "newton_residual_evaluations": 0.0,
+    "line_search_force_evaluations": 0.0,
+    "linear_system_solves": 0.0,
+    "algebraic_relative_residual": 2.0733993199676957e-13,
+    "scaled_displacement_increment": 3.4059843518190377e-16,
+    "scaled_internal_force_change": 9.43627056136204e-16,
+    "minimum_tangent_ratio": 1.887823231072616e-12,
+    "maximum_tangent_ratio": 5.6621374255882984e-14,
+    "scaled_tangent_condition": 4.973262548446655e-07,
+    "final_external_dead_load_potential_j": 4.902744876744691e-13,
+    "minimum_generalized_eigenvalue": 2.262634524186069e-13,
+    "generalized_mode": 4.170708223227848e-11,
+    "full_assembly_evaluations": 0.0,
+    "exact_state_reuses": 0.0
+   }
+  }
+ ],
+ "computed_structural_approval": false,
+ "fabrication_release": false,
+ "release_gate": "NOT_READY_BLOCKED"
+}

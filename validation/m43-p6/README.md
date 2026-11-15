@@ -1,0 +1,80 @@
+# M43-P6 — piloto isolado de consistência espacial
+
+Continuação no mesmo PR: [curvatura material, ablação, resultados e pendências](CONTINUACAO.md).
+Os resultados abaixo registram a primeira etapa; a continuação mantém esse histórico.
+
+Base `main` 4301ab20fdb02898a9d0a03d25d8ab23d39321c4, ancestral dos PRs
+80–83. Não modifica arquivos do motor, C1/C2/M51 ou frontend. Nenhum endpoint.
+Fontes P4 são conferidos pelos hashes LF congelados na P5 antes da execução.
+
+Diagnóstico inicial comprovado pela P5:
+- sway: refinamento dos esforços 0,00937857 > 1e-4, mesmo com movimentos
+  convergindo; não é justificado alterar tolerância ou declarar erro de Newton.
+- spatial: tentativa refinada TIMEOUT em 20 s. Isso não prova não convergência.
+  A busca linear calcula Hessianas completas descartadas a cada tentativa.
+- torsion: critérios de refinamento passam, mas orientações físicas e a
+  referência independente continuam divergentes. A referência OpenSees mais
+  fina também falha no equilíbrio. Não atribuir uma causa constitutiva sem prova.
+
+Piloto: comprimento de arco da linha central Hermite em três dimensões,
+calculado por oito pontos de Gauss; inclinações obtidas dos diretores rotacionados,
+e comprimento da corda deformada. Corrige duas aproximações cinemáticas do
+alongamento axial P4 (ângulos como inclinações e comprimento inicial no excesso
+de arco). A lei de flexão/torção permanece uma aproximação a validar.
+Esse funcional é diferenciado em primeira ordem na busca linear e em segunda
+ordem na tangente de Newton. Recuperação, SO(3), estabilidade e todos os
+critérios históricos permanecem intactos. Saída própria
+`jpn.m43-p6-experimental/1`; nenhum contrato histórico é substituído.
+Derivadas são comparadas com AD de segunda ordem e diferenças centrais;
+equilíbrio físico, conjugação de momentos, movimento rígido finito, extensão,
+torção analítica e perda de positividade da tangente são testados.
+
+Campanha: `python validation/m43-p6/reproduce.py`. Usa as referências físicas
+OpenSees/SO(3) e Kirchhoff arquivadas na P5, com hashes e incertezas originais;
+não afirma novas execuções OpenSees. Não alterar referências para favorecer o
+piloto. Resultados completos em `.tools/m43-p6/evidence.json`/artefatos da CI.
+O relatório distingue execução, critérios físicos e aprovação (sempre bloqueada).
+Falhas/TIMEOUT permanecem explícitos. CI verde desta campanha significa que a
+auditoria executou, não que os três benchmarks foram resolvidos.
+Ela exige preservar o balanço previamente demonstrado contra ambos os oráculos.
+
+## Resultado local e limites do diagnóstico
+
+`local-evidence.json` contém o resumo com hashes de fontes/critérios/referências.
+13 testes P6 e 12 regressões mecânicas P4 passaram. Na última campanha:
+- cantilever: critérios independentes OpenSees/Kirchhoff e refinamento passaram;
+- sway: erro relativo de refinamento de esforços 0,00936942, ainda > 1e-4;
+- spatial: TIMEOUT em 20 s; numa tentativa anterior executou em 18,697 s e
+  apresentou erro de refinamento dos esforços 0,00216243. Não declarar corrigido
+  o custo total, nem confundir TIMEOUT com divergência matemática de Newton;
+- torsion: refinamento passou, comparação física estrita falhou. Tentativas
+  anteriores foram recusadas por equilíbrio físico; esse resultado também é
+  preservado neste registro. A ordenação algébrica equivalente do integrando
+  alterou o caminho de arredondamento, sem alterar qualquer critério.
+
+A P5 identifica o componente angular Y em T0/ARM como governante: erro de
+aproximadamente 4,659e-10 rad contra piso ~1e-10, tanto para OpenSees quanto
+Kirchhoff. As duas referências concordam melhor que o candidato; não é válido
+culpar somente DOFs rotacionais aditivos ou a referência OpenSees. A causa
+constitutiva/discreta restante não foi demonstrada; composição do twist material,
+interpolação dos diretores e recuperação devem ser investigadas em conjunto.
+O funcional de comprimento corrigido não elimina essa divergência.
+
+Esta entrega NÃO conclui os três benchmarks nem homologa a formulação espacial.
+Próxima prioridade: equilíbrio torsional próximo de componentes nulas e medida
+de twist compatível com a curvatura material Kirchhoff, seguida de refinamento
+de esforços dos pórticos. Exigir validação independente antes de substituir a
+lei de energia; não corrigir forças a posteriori nem ajustar referências.
+
+Reprodução: `python -m pytest experiments/m43_p6 -q`.
+Execução isolada: `python -I experiments/m43_p6/worker.py`, entrada P4 no stdin,
+supervisionada por processo pai com 20 s. Memória 768 MiB e bytes 500 kB/2 MB.
+Não é um novo contrato de produção nem uma reformulação constitutiva validada.
+
+Integração futura exige revisão C1 da matriz global→local real, preservação do
+giro físico, comparação por matrizes SO(3), momentos físicos via Jacobiana
+esquerda e repetição dos três critérios pendentes. O piloto recusa alteração
+dos fontes históricos; atualização da base exige revisão explícita desses hashes.
+
+`computed_structural_approval=false`, `fabrication_release=false`,
+`release_gate=NOT_READY_BLOCKED`. Convergência não equivale a segurança.

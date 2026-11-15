@@ -106,7 +106,17 @@ export function auditFacadeSolverLoads(
     });
     return {caseId:c.caseId,facades:auditedZones};
   });
-  const rogue=request.member_loads.find(l=>l.id.startsWith("FACADE:")&&!used.has(l.id));
+  // Detect a duplicated facade action even when its ID does not use FACADE:.
+  // Match only the reviewed case/member/source/revision tuple, so unrelated
+  // declared actions on the same physical column remain independently auditable.
+  const facadeProvenance=new Set(trace.cases.flatMap(c=>c.zones.flatMap(z=>
+    z.contributions.flatMap(contribution=>mapping.members
+      .filter(member=>member.originalId===contribution.pieceId)
+      .map(member=>JSON.stringify([c.caseId,member.id,z.source,z.revision]))))));
+  const rogue=request.member_loads.find(l=>
+    (l.id.startsWith("FACADE:")||
+      facadeProvenance.has(JSON.stringify([l.case,l.member,l.source,l.revision])))&&
+    !used.has(l.id));
   if(rogue)fail("FACADE_AUDIT_UNTRACED_LOAD",rogue.id+" não corresponde à fachada física revisada");
   return {schema_version:"jpn.facade-solver-load-audit/1" as const,
     cases:auditedCases,physicalSource:trace.source,verified:true as const,

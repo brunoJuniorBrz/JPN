@@ -4,6 +4,8 @@
   "git": {
     "deploymentEnabled": {
       "main": false,
+      "feat/m51-elastic-lateral-torsional": false,
+      "feat/m50-structural-restraints-assessment": false,
       "feat/m49-beam-purlin-load-path": false,
       "integration/jpn-general-candidate": false,
       "feat/m351-client-demonstration": false,
@@ -27,7 +29,8 @@
       "feat/m32-numerics-mixed-second-order": false,
       "feat/m33a-normative-wind-combinations": false,
       "feat/m34ab-flexible-physical-model": false,
-      "feat/m35-irregular-structures-loads-takeoff": false
+      "feat/m35-irregular-structures-loads-takeoff": false,
+      "research/m43-p6-spatial-consistency": false
     }
   },
   "functions": {
