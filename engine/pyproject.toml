@@ -19,6 +19,11 @@ include = ["jpn_structural*"]
 [tool.vercel]
 entrypoint = "app:app"
 
+[tool.uv.sources]
+# PyPI's Linux wheel requires glibc 2.39. Build the same released revision
+# on older Linux builders, including Vercel, without changing solver versions.
+cytriangle = { git = "https://github.com/m-clare/cytriangle.git", rev = "a475925cdd355bcdc72a732dc2ec1b601a26d648", marker = "sys_platform == 'linux'" }
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
