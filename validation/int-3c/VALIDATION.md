@@ -17,7 +17,11 @@ As cinco estações mantêm as posições no comprimento inicial da barra.
 N, Vy, Vz, T, My e Mz vêm do equilíbrio do corte na linha deformada.
 A base local direita, do segmento da estação, acompanha o vetor de
 esforços. O extrator de demandas lê essas amostras e preserva os bloqueios
-de liberação. No balanço com 75% de Pcr, M2 foi 1.375,318 N·m contra
+de liberação. O fechamento de cada trecho é normalizado pelas próprias
+ações. Para a barra montada, a escala considera também as forças
+transmitidas pelos nós extremos, inclusive quando uma barra descarregada
+termina em um nó submetido a esforços elevados.
+No balanço com 75% de Pcr, M2 foi 1.375,318 N·m contra
 1.376,540 N·m da referência M1·tan(λ)/λ, com M1 = 400 N·m e λ = L√(P/EI).
 O resíduo relativo da barra foi 2,88e−12. A amplificação de momento e a
 amplificação da resposta nodal são grandezas distintas.

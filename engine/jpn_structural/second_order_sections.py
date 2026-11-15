@@ -59,8 +59,15 @@ def peak_efforts(elements, rows, displacement):
 def recover_members(elements, rows, displacement, subdivisions):
     """Report original-member actions and the five standard design stations."""
     groups = {}
+    joint_force = np.zeros(len(displacement)//6)
+    joint_moment = np.zeros_like(joint_force)
     for element, row in zip(elements, rows):
         groups.setdefault(element["parent"], []).append((element, row))
+        actions = row["net_end_actions"].reshape(2,-1)
+        nodes = element["dofs"].reshape(2,-1)[:,0]//6
+        joint_force[nodes] += np.linalg.norm(actions[:,:3],axis=1)
+        if element["kind"] == "frame":
+            joint_moment[nodes] += np.linalg.norm(actions[:,3:],axis=1)
     members = {}
     for mid, group in groups.items():
         first, last = group[0][1], group[-1][1]
@@ -103,7 +110,13 @@ def recover_members(elements, rows, displacement, subdivisions):
             if np.linalg.norm(residual[:3])+np.linalg.norm(residual[3:])/segment_length > EQUILIBRIUM_RELATIVE*max(1.,local_scale):
                 fail("SECOND_ORDER_MEMBER_EQUILIBRIUM",f"{mid}: section wrench does not close at the j end.")
             polynomials.append((element,row,path,coeff))
-        relative = max(np.linalg.norm(force),np.linalg.norm(moment)/length)/max(1.,scale)
+        # An unloaded member can join heavily loaded members. Its endpoint
+        # mismatch inherits the Newton residual of those joints. Normalize
+        # the assembled member check by the local joint force scale, while
+        # keeping the independent child free-body checks scaled by own actions.
+        ends = [start["dofs"][0]//6,end["dofs"][6]//6]
+        joint_scale = np.max(joint_force[ends]+joint_moment[ends]/length)
+        relative = max(np.linalg.norm(force),np.linalg.norm(moment)/length)/max(1.,scale,joint_scale)
         if relative >= EQUILIBRIUM_RELATIVE:
             fail("SECOND_ORDER_MEMBER_EQUILIBRIUM",f"{mid}: deformed member equilibrium exceeds 1e-8.")
         n = subdivisions[mid]
