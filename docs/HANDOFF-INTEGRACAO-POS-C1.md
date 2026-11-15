@@ -126,3 +126,22 @@ Com commits fora da main, mas já classificados como equivalentes em `audit.py` 
 - **Pilha #101 → #102 → #103 ainda empilhada sobre #99.** Rebase sobre `prep/m41-m42-rebased-on-main` pendente; conflito esperado só em `validation/integration-general/audit.py` (emendas revisadas do M44-P1 em `477462c` precisam ser portadas para o `audit.py` da `main`, não descartadas).
 - **CI da `main`** continua vermelha até o patch da seção 0.
 - **19 PRs contidos na `main`** (seção 5) continuam abertos.
+
+## 7. Plano pós-INT-1 (decidido em 15/11/2026, 15h38)
+
+Regra geral: PRs pequenos, um assunto cada, agentes em paralelo em arquivos diferentes. Pilhas já escritas são testadas pelo topo (uma CI) e mescladas em sequência; trabalho novo nunca é juntado num PR único.
+
+Ordem:
+
+1. **Correções pós-INT-1** (Claude Code). Issue "Pós-INT-1: correções de cobertura":
+   1. `member-combination-matrix.ts:46` — exigir `tension-slenderness` na matriz; ausência não pode passar despercebida.
+   2. `analysis-limits.ts` (40 casos) × `nbr8681-combinations.ts` (16 ações) — confirmar recusa visível acima de 16; nunca corte silencioso.
+   3. `OUTPUT_LIMIT` da avaliação M50/M51 acima de ~60 combinações — resolvido na INT-2.
+2. **Segunda ordem na main** — pilha do Codex #115 → #117 → #118 → #119. Atualizar só o #119 com a main, uma CI, mesclar os 4 em sequência; conferir `git diff <sha-#119-verde> origin/main` vazio.
+3. **INT-1f — Studio Fable no fluxo** (Claude Code): `Structure3D` também para obras com `physicalStructure`; ligar `studio-result-overlay.ts` (deformada, esforços, reações, verificação) ao resultado `/3` com conferência de `input_sha256`; investigar `studio-next.spec.ts:23`.
+4. **Segunda ordem na UI** (após 2 e 3): emissão pela UI + indicador de deslocabilidade escolhendo linear × segunda ordem.
+5. **INT-2 — motor online** (Codex, em paralelo a 3): backend Python publicado com autenticação, rotas remotas de design/section/structural-assessment, fila assíncrona acima de 28 s, compressão acima de 2 MB, persistência em servidor. Segredos na Vercel configurados pelo dono do projeto.
+
+Depois: INT-4 (ELS, Cb por trecho, alma esbelta) → INT-5 (apoios e ligações, começando pelo arrancamento em parede existente) → INT-6 (unificação normativa, remover PROVISIONAL) → INT-7 (validação com o memorial independente A/B/C).
+
+Papéis: Claude Code = normas + UI; Codex = motor + infraestrutura; ChatGPT = conferência de CI, merges com ok do dono, revisão cruzada e memoriais independentes.
