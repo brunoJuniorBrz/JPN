@@ -82,6 +82,8 @@ REVIEWED_AMENDMENTS = {
     "src/domain/whole-piece-deflection.test.ts": "751c665f3266cc52772a69ebeaf4ed99415128fe",
     "src/infrastructure/analysis/remote-mixed-runner.test.ts": "def70dcd3f98a3fc63c25de5630095d7d50a15f3",
     "src/domain/test-support/continuous-fixture.ts": "aa1251dfd582a4ec00354d6e84c8bd94e83d2d8c",
+    # PR #105 (C1): continuous-demands test amended for local-axes /3
+    # PR #105 (C1): continuous-demands test amended for local-axes /3
 }
 
 TREES = {}

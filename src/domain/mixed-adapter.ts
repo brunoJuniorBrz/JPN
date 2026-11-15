@@ -8,9 +8,9 @@ import { mixedInputHash, mixedRequestSchema } from "./mixed-analysis";
 import { spatialSI } from "./spatial-analysis";
 import { verifyEngineeringCombinations } from "./engineering-combinations";
 import { reviewSupportInterfaces } from "./support-interface";
-import { reviewPhysicalRestraints } from "./physical-restraints";
 import { AxisReviewPendingError, localAxesPendency } from "./local-axes-review";
 export type MixedContract = "legacy" | "z-up-v3";
+import { reviewPhysicalRestraints } from "./physical-restraints";
 
 export function mixedPieceKind(piece: PhysicalPiece, draft: SpatialPreparation) {
   return draft.memberKinds?.find(m => m.pieceId === piece.id)?.kind ?? draft.groups[piece.role]?.elementKind;
