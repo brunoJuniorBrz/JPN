@@ -32,9 +32,9 @@ it("campo de esforços: parábola e reta exatas a partir das estações; cúbica
 });
 it("verificações exigidas pela demanda: sinais, interações e componentes sem procedimento",()=>{
   expect(requiredChecks([F({nN:-5,myNm:3})]).sort()).toEqual(["combined-9.9","compression","compression-slenderness","my_positive"]);
-  expect(requiredChecks([F({nN:5,myNm:-3,vzN:2})]).sort()).toEqual(["bending-shear-9.8.4","combined-9.9","my_negative","shear_z","tension"]);
+  expect(requiredChecks([F({nN:5,myNm:-3,vzN:2})]).sort()).toEqual(["bending-shear-9.8.4","combined-9.9","my_negative","shear_z","tension","tension-slenderness"]);
   expect(requiredChecks([F({myNm:3}),F({myNm:-3})]).sort()).toEqual(["my_negative","my_positive"]);
-  expect(requiredChecks([F({nN:-1e-12,myNm:3e-12}),F({nN:1000})])).toEqual(["tension"]);      // round-off is not demand
+  expect(requiredChecks([F({nN:-1e-12,myNm:3e-12}),F({nN:1000})])).toEqual(["tension","tension-slenderness"]);      // round-off is not demand
   expect(requiredChecks([F({tNm:1,vyN:2})]).sort()).toEqual(["unsupported-tNm","unsupported-vyN"]);
 });
 it("registro normativo contém 9.6.3 e 9.8.4 e a tabela de procedimentos os mapeia",()=>{
@@ -179,3 +179,22 @@ it("NBR 6120 + NBR 8681 + PyNite + NBR 14762: relatório por peça e combinaçã
   expect(p2.map(r=>r.executedChecks.some(c=>c.id==="bending-shear-9.8.4"))).toEqual([true,true]);   // newly unblocked 9.8.4
   expect(p2[1].maxUtilization!).toBeGreaterThan(p2[0].maxUtilization!);                              // principal SC governs
 },240000);
+
+it("pós-INT-1: tração exige tension-slenderness; sem essa verificação a linha fica unsupported (pendência visível), nunca PASS — NBR 14762 e NBR 8800",()=>{
+  const g=generateNbr8681Combinations(decl(["uls-normal"]),["G","Q"]);
+  const uls=g.trace.filter(c=>c.purpose==="ULS").map(c=>c.id);
+  const demands={pieces:[{pieceId:"T",samples:uls.map(combinationId=>({pieceId:"T",combinationId,segmentId:"S",originalPositionM:0,forces:F({nN:1000})}))}]};
+  const ok=(id:string):DesignExecution["checks"][number]=>({id,status:"PASS",demand:1,resistance:2,utilization:.5,clauses:["x"]});
+  for(const standard of ["NBR14762","NBR8800"] as const){
+    const run=(checks:DesignExecution["checks"])=>buildMemberCombinationMatrix({engineeringCombinations:g.engineeringCombinations,demands,pieceStandards:{T:standard},
+      executions:[{pieceId:"T",combinationId:uls[0],checks}]});
+    expect(requiredChecks([F({nN:1000})],standard).sort()).toEqual(["tension","tension-slenderness"]);
+    const without=run([ok("tension")]).rows[0];
+    expect(without.status).toBe("unsupported");expect(without.missingChecks).toEqual(["tension-slenderness"]);
+    expect(without.reason).toContain("tension-slenderness");
+    const withBoth=run([ok("tension"),ok("tension-slenderness")]).rows[0];
+    expect(withBoth.status).toBe("PASS");expect(withBoth.missingChecks).toEqual([]);   // the row alone; the matrix never approves the member
+    expect(run([ok("tension"),ok("tension-slenderness")]).computedStructuralApproval).toBe(false);
+    expect(run([ok("tension"),ok("tension-slenderness")]).status).toBe("unsupported");   // other ULS combinations without execution stay pending
+  }
+});
