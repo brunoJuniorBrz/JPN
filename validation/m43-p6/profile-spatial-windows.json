@@ -1,0 +1,4992 @@
+{
+  "platform": "Windows-10-10.0.19045-SP0",
+  "input_sha256": "58ee0c911cc49feb2f1e9d48bf1b91c3ceb8bdda7f411db7fd6a0f73aac10592",
+  "profile_overhead_included": true,
+  "rows": [
+    {
+      "mesh": 2,
+      "status": "diagnostic",
+      "wall_seconds": 16.056403400027193,
+      "partial": false,
+      "memory": {
+        "elapsed": 15.727066999999806,
+        "peak_working_set_bytes": 103833600,
+        "peak_commit_bytes": 152100864
+      },
+      "functions": [
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 27,
+          "function": "snapshot",
+          "calls": 12,
+          "self_seconds": 0.0004108,
+          "cumulative_seconds": 16.9199838
+        },
+        {
+          "file": "experiments/m43_p6/worker.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 9.45e-05,
+          "cumulative_seconds": 15.6710965
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 92,
+          "function": "energy_state",
+          "calls": 992,
+          "self_seconds": 0.0911638,
+          "cumulative_seconds": 12.665144900000001
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 54,
+          "function": "element",
+          "calls": 512,
+          "self_seconds": 0.006782300000000001,
+          "cumulative_seconds": 11.378762100000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 140,
+          "function": "element_response",
+          "calls": 512,
+          "self_seconds": 0.042012600000000004,
+          "cumulative_seconds": 10.1893667
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 62,
+          "function": "assemble",
+          "calls": 32,
+          "self_seconds": 0.011581000000000001,
+          "cumulative_seconds": 7.299529700000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 33,
+          "function": "__mul__",
+          "calls": 379652,
+          "self_seconds": 3.4080828000000003,
+          "cumulative_seconds": 6.7853203
+        },
+        {
+          "file": "experiments/m43_p6/material_curvature.py",
+          "line": 9,
+          "function": "energy",
+          "calls": 992,
+          "self_seconds": 0.37395340000000005,
+          "cumulative_seconds": 6.600931500000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 43,
+          "function": "multiply",
+          "calls": 18944,
+          "self_seconds": 0.18158090000000002,
+          "cumulative_seconds": 3.6328421000000004
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 42,
+          "function": "trial_assemble",
+          "calls": 30,
+          "self_seconds": 0.0123283,
+          "cumulative_seconds": 2.835849
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 76,
+          "function": "rotate",
+          "calls": 6496,
+          "self_seconds": 0.0299437,
+          "cumulative_seconds": 2.3099472000000003
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0001376,
+          "cumulative_seconds": 2.2079514000000002
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 74,
+          "function": "single_mesh_study",
+          "calls": 1,
+          "self_seconds": 7.510000000000001e-05,
+          "cumulative_seconds": 2.1917143
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 41,
+          "function": "__truediv__",
+          "calls": 49616,
+          "self_seconds": 0.0816309,
+          "cumulative_seconds": 1.9768014
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 14,
+          "function": "peak_memory",
+          "calls": 12,
+          "self_seconds": 0.012416700000000001,
+          "cumulative_seconds": 1.9200786
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 10,
+          "function": "extension",
+          "calls": 992,
+          "self_seconds": 0.0786703,
+          "cumulative_seconds": 1.8368999000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 32,
+          "function": "cross",
+          "calls": 19936,
+          "self_seconds": 0.0919567,
+          "cumulative_seconds": 1.4400502000000002
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 29,
+          "function": "dot",
+          "calls": 29856,
+          "self_seconds": 0.0390457,
+          "cumulative_seconds": 1.434304
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 14,
+          "function": "__mul__",
+          "calls": 355620,
+          "self_seconds": 1.1115877,
+          "cumulative_seconds": 1.2844692
+        },
+        {
+          "file": "experiments/m43_p6/newton.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.2600000000000001e-05,
+          "cumulative_seconds": 1.1234032
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.68e-05,
+          "cumulative_seconds": 1.1220590000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 29,
+          "function": "<genexpr>",
+          "calls": 122400,
+          "self_seconds": 0.06726230000000001,
+          "cumulative_seconds": 1.0936658000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 47,
+          "function": "__pow__",
+          "calls": 58268,
+          "self_seconds": 0.5652952,
+          "cumulative_seconds": 0.9834405
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.47e-05,
+          "cumulative_seconds": 0.8601545
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 131,
+          "function": "run_mesh",
+          "calls": 1,
+          "self_seconds": 0.0007134,
+          "cumulative_seconds": 0.8401886000000001
+        },
+        {
+          "file": "experiments/m43_p6/newton.py",
+          "line": 30,
+          "function": "newton",
+          "calls": 1,
+          "self_seconds": 0.0006387000000000001,
+          "cumulative_seconds": 0.8361547
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 17,
+          "function": "__add__",
+          "calls": 249248,
+          "self_seconds": 0.5715266,
+          "cumulative_seconds": 0.7025696
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 64,
+          "function": "logarithm",
+          "calls": 1984,
+          "self_seconds": 0.025387000000000003,
+          "cumulative_seconds": 0.5292501000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 51,
+          "function": "exponential",
+          "calls": 1984,
+          "self_seconds": 0.025562400000000002,
+          "cumulative_seconds": 0.5272891000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 36,
+          "function": "unit",
+          "calls": 1984,
+          "self_seconds": 0.013059000000000001,
+          "cumulative_seconds": 0.46691790000000005
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 8,
+          "function": "__add__",
+          "calls": 233472,
+          "self_seconds": 0.3431791,
+          "cumulative_seconds": 0.4517237
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 27,
+          "function": "__sub__",
+          "calls": 58836,
+          "self_seconds": 0.0993591,
+          "cumulative_seconds": 0.4428416
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 19,
+          "function": "__truediv__",
+          "calls": 46416,
+          "self_seconds": 0.057619500000000004,
+          "cumulative_seconds": 0.3574003
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 14,
+          "function": "__init__",
+          "calls": 782392,
+          "self_seconds": 0.32188140000000004,
+          "cumulative_seconds": 0.32262850000000004
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 12,
+          "function": "__sub__",
+          "calls": 55092,
+          "self_seconds": 0.055120800000000005,
+          "cumulative_seconds": 0.2580528
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 7,
+          "function": "__init__",
+          "calls": 732984,
+          "self_seconds": 0.2209762,
+          "cumulative_seconds": 0.2209762
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 24,
+          "function": "__neg__",
+          "calls": 78796,
+          "self_seconds": 0.1784376,
+          "cumulative_seconds": 0.2047576
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 17,
+          "function": "__pow__",
+          "calls": 54684,
+          "self_seconds": 0.130614,
+          "cumulative_seconds": 0.14740640000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/__init__.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0002233,
+          "cumulative_seconds": 0.127058
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 11,
+          "function": "__neg__",
+          "calls": 73740,
+          "self_seconds": 0.0951502,
+          "cumulative_seconds": 0.1171698
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 24,
+          "function": "cos",
+          "calls": 8968,
+          "self_seconds": 0.008579400000000001,
+          "cumulative_seconds": 0.1169604
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 23,
+          "function": "sin",
+          "calls": 8968,
+          "self_seconds": 0.007764200000000001,
+          "cumulative_seconds": 0.1100537
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 70,
+          "function": "cos",
+          "calls": 4624,
+          "self_seconds": 0.0458681,
+          "cumulative_seconds": 0.0886103
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 65,
+          "function": "sin",
+          "calls": 4624,
+          "self_seconds": 0.0426655,
+          "cumulative_seconds": 0.0840076
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 25,
+          "function": "atan2",
+          "calls": 2056,
+          "self_seconds": 0.0029338000000000003,
+          "cumulative_seconds": 0.0698971
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 75,
+          "function": "atan2",
+          "calls": 1060,
+          "self_seconds": 0.027249500000000003,
+          "cumulative_seconds": 0.0570581
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 30,
+          "function": "__rsub__",
+          "calls": 9208,
+          "self_seconds": 0.011098700000000001,
+          "cumulative_seconds": 0.0527392
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 110,
+          "function": "audit_tangent",
+          "calls": 40,
+          "self_seconds": 0.008389200000000001,
+          "cumulative_seconds": 0.0516268
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 80,
+          "function": "left_jacobian",
+          "calls": 1024,
+          "self_seconds": 0.0248261,
+          "cumulative_seconds": 0.0515803
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 48,
+          "function": "conjugate",
+          "calls": 8480,
+          "self_seconds": 0.010080500000000001,
+          "cumulative_seconds": 0.050693
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 970,
+          "function": "eigvalsh",
+          "calls": 81,
+          "self_seconds": 0.0002729,
+          "cumulative_seconds": 0.0382517
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 23,
+          "function": "variables",
+          "calls": 480,
+          "self_seconds": 0.0113734,
+          "cumulative_seconds": 0.0377911
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 311,
+          "function": "eigh",
+          "calls": 82,
+          "self_seconds": 0.031799600000000004,
+          "cumulative_seconds": 0.036387
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 13,
+          "function": "__rsub__",
+          "calls": 8568,
+          "self_seconds": 0.008197300000000001,
+          "cumulative_seconds": 0.0338363
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 14,
+          "function": "<genexpr>",
+          "calls": 2976,
+          "self_seconds": 0.0017294,
+          "cumulative_seconds": 0.033253000000000005
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_basic.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0001128,
+          "cumulative_seconds": 0.0290125
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 60,
+          "function": "variables",
+          "calls": 512,
+          "self_seconds": 0.013910500000000001,
+          "cumulative_seconds": 0.0272767
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 44,
+          "function": "__rtruediv__",
+          "calls": 988,
+          "self_seconds": 0.0017782000000000002,
+          "cumulative_seconds": 0.024875500000000002
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 22,
+          "function": "value",
+          "calls": 31648,
+          "self_seconds": 0.0149651,
+          "cumulative_seconds": 0.0233621
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 25,
+          "function": "cos",
+          "calls": 4356,
+          "self_seconds": 0.012462500000000001,
+          "cumulative_seconds": 0.0178186
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 24,
+          "function": "sin",
+          "calls": 4356,
+          "self_seconds": 0.011644700000000001,
+          "cumulative_seconds": 0.0162794
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_basic.py",
+          "line": 57,
+          "function": "solve",
+          "calls": 60,
+          "self_seconds": 0.0018038000000000002,
+          "cumulative_seconds": 0.014113100000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 9.680000000000001e-05,
+          "cumulative_seconds": 0.013848500000000001
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.66e-05,
+          "cumulative_seconds": 0.013440800000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_matfuncs.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 9.300000000000001e-05,
+          "cumulative_seconds": 0.0125164
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 123,
+          "function": "<genexpr>",
+          "calls": 6944,
+          "self_seconds": 0.0049817,
+          "cumulative_seconds": 0.0099798
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 151,
+          "function": "<genexpr>",
+          "calls": 2048,
+          "self_seconds": 0.0038839,
+          "cumulative_seconds": 0.0096418
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 26,
+          "function": "atan2",
+          "calls": 996,
+          "self_seconds": 0.007495600000000001,
+          "cumulative_seconds": 0.0091397
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 24,
+          "function": "validate_request",
+          "calls": 1,
+          "self_seconds": 2.4100000000000003e-05,
+          "cumulative_seconds": 0.0088359
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7700000000000002e-05,
+          "cumulative_seconds": 0.0080835
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 20,
+          "function": "__rtruediv__",
+          "calls": 924,
+          "self_seconds": 0.0012175,
+          "cumulative_seconds": 0.007555300000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_qz.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.49e-05,
+          "cumulative_seconds": 0.0053778
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 189,
+          "function": "equilibrium",
+          "calls": 2,
+          "self_seconds": 0.0005994,
+          "cumulative_seconds": 0.0050968
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_svd.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.18e-05,
+          "cumulative_seconds": 0.0038789000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_solvers.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.61e-05,
+          "cumulative_seconds": 0.0036899000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_special_matrices.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.71e-05,
+          "cumulative_seconds": 0.0033646
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.00035200000000000005,
+          "cumulative_seconds": 0.0031369
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 21,
+          "function": "private",
+          "calls": 1,
+          "self_seconds": 6.300000000000001e-06,
+          "cumulative_seconds": 0.0030102
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_schur.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.24e-05,
+          "cumulative_seconds": 0.0029802
+        },
+        {
+          "file": "experiments/m43_p6/newton.py",
+          "line": 10,
+          "function": "physical_equilibrium",
+          "calls": 1,
+          "self_seconds": 0.00019840000000000002,
+          "cumulative_seconds": 0.0028084
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_procrustes.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.8e-05,
+          "cumulative_seconds": 0.0025896
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_qr.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.15e-05,
+          "cumulative_seconds": 0.0025232
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 36,
+          "function": "recorded_equilibrium",
+          "calls": 1,
+          "self_seconds": 6e-06,
+          "cumulative_seconds": 0.0025221
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_expm_frechet.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.84e-05,
+          "cumulative_seconds": 0.0023057
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_sketches.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.76e-05,
+          "cumulative_seconds": 0.0020914
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 7.04e-05,
+          "cumulative_seconds": 0.0019420000000000001
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.57e-05,
+          "cumulative_seconds": 0.0019379000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_ldl.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.04e-05,
+          "cumulative_seconds": 0.0016686000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_cholesky.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.92e-05,
+          "cumulative_seconds": 0.0016158000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_lu.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.71e-05,
+          "cumulative_seconds": 0.0016076
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_polar.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.1700000000000001e-05,
+          "cumulative_seconds": 0.0011688
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1161,
+          "function": "_ensure_dtype_cdsz",
+          "calls": 60,
+          "self_seconds": 0.00044780000000000004,
+          "cumulative_seconds": 0.0010708
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1067,
+          "function": "_compute_lwork",
+          "calls": 42,
+          "self_seconds": 0.00045690000000000005,
+          "cumulative_seconds": 0.0008771
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1139,
+          "function": "_normalize_lapack_dtype",
+          "calls": 60,
+          "self_seconds": 0.00011960000000000001,
+          "cumulative_seconds": 0.0005965
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 289,
+          "function": "find_best_blas_type",
+          "calls": 63,
+          "self_seconds": 0.0004173,
+          "cumulative_seconds": 0.0005162000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 403,
+          "function": "getter",
+          "calls": 82,
+          "self_seconds": 0.00024690000000000004,
+          "cumulative_seconds": 0.0004759
+        },
+        {
+          "file": "experiments/m43_p6/__init__.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.6800000000000002e-05,
+          "cumulative_seconds": 0.00042710000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1097,
+          "function": "<genexpr>",
+          "calls": 123,
+          "self_seconds": 0.000133,
+          "cumulative_seconds": 0.00034460000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_cossin.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.62e-05,
+          "cumulative_seconds": 0.00029570000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1101,
+          "function": "_check_work_float",
+          "calls": 83,
+          "self_seconds": 0.0002142,
+          "cumulative_seconds": 0.0002142
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1173,
+          "function": "<genexpr>",
+          "calls": 180,
+          "self_seconds": 9.88e-05,
+          "cumulative_seconds": 0.0001772
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 187,
+          "function": "<genexpr>",
+          "calls": 88,
+          "self_seconds": 9.32e-05,
+          "cumulative_seconds": 0.00014330000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 951,
+          "function": "get_lapack_funcs",
+          "calls": 3,
+          "self_seconds": 1.6000000000000003e-05,
+          "cumulative_seconds": 0.00011980000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 356,
+          "function": "_get_funcs",
+          "calls": 3,
+          "self_seconds": 5.3e-05,
+          "cumulative_seconds": 0.00010300000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1176,
+          "function": "_ensure_aligned_and_native",
+          "calls": 120,
+          "self_seconds": 9.04e-05,
+          "cumulative_seconds": 9.04e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 932,
+          "function": "backtickrepl",
+          "calls": 48,
+          "self_seconds": 4.41e-05,
+          "cumulative_seconds": 7.43e-05
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 56,
+          "function": "value",
+          "calls": 96,
+          "self_seconds": 4.88e-05,
+          "cumulative_seconds": 7.120000000000001e-05
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 17,
+          "function": "Counters",
+          "calls": 12,
+          "self_seconds": 5.5e-05,
+          "cumulative_seconds": 5.5e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 184,
+          "function": "_datacopied",
+          "calls": 123,
+          "self_seconds": 3.8400000000000005e-05,
+          "cumulative_seconds": 3.8400000000000005e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 396,
+          "function": "_memoize_get_funcs",
+          "calls": 2,
+          "self_seconds": 1.13e-05,
+          "cumulative_seconds": 3.8100000000000005e-05
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 6.200000000000001e-06,
+          "cumulative_seconds": 3.09e-05
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.000000000000001e-06,
+          "cumulative_seconds": 2.6200000000000003e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/special_matrices.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.1700000000000001e-05,
+          "cumulative_seconds": 1.1700000000000001e-05
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 47,
+          "function": "<genexpr>",
+          "calls": 25,
+          "self_seconds": 7.9e-06,
+          "cumulative_seconds": 7.9e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 49,
+          "function": "<genexpr>",
+          "calls": 5,
+          "self_seconds": 5.4e-06,
+          "cumulative_seconds": 7.8e-06
+        },
+        {
+          "file": "experiments/m43_p6/material_curvature.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 5.1e-06,
+          "cumulative_seconds": 6.8e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 39,
+          "function": "<genexpr>",
+          "calls": 7,
+          "self_seconds": 6.300000000000001e-06,
+          "cumulative_seconds": 6.300000000000001e-06
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 5,
+          "function": "Dual",
+          "calls": 1,
+          "self_seconds": 4.5e-06,
+          "cumulative_seconds": 4.5e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_lu.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.1000000000000006e-06,
+          "cumulative_seconds": 4.1000000000000006e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_qr.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.9e-06,
+          "cumulative_seconds": 3.9e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.6000000000000003e-06,
+          "cumulative_seconds": 3.6000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/basic.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.5000000000000004e-06,
+          "cumulative_seconds": 3.5000000000000004e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/misc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.2000000000000003e-06,
+          "cumulative_seconds": 3.2000000000000003e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 45,
+          "function": "<genexpr>",
+          "calls": 9,
+          "self_seconds": 3.1000000000000004e-06,
+          "cumulative_seconds": 3.1000000000000004e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_svd.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.9e-06,
+          "cumulative_seconds": 2.9e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_cholesky.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.8000000000000003e-06,
+          "cumulative_seconds": 2.8000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_schur.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.8000000000000003e-06,
+          "cumulative_seconds": 2.8000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/matfuncs.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7e-06,
+          "cumulative_seconds": 2.7e-06
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 10,
+          "function": "Jet",
+          "calls": 1,
+          "self_seconds": 2.6e-06,
+          "cumulative_seconds": 2.6e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 530,
+          "function": "<genexpr>",
+          "calls": 3,
+          "self_seconds": 2.3e-06,
+          "cumulative_seconds": 2.3e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 11,
+          "function": "LinAlgWarning",
+          "calls": 1,
+          "self_seconds": 7.000000000000001e-07,
+          "cumulative_seconds": 7.000000000000001e-07
+        }
+      ]
+    },
+    {
+      "mesh": 3,
+      "status": "TIMEOUT",
+      "wall_seconds": 20.119777499930933,
+      "partial": true,
+      "memory": {
+        "elapsed": 18.8653049999848,
+        "peak_working_set_bytes": 104099840,
+        "peak_commit_bytes": 153161728
+      },
+      "functions": [
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 92,
+          "function": "energy_state",
+          "calls": 1136,
+          "self_seconds": 0.12847160000000002,
+          "cumulative_seconds": 15.784473900000002
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 54,
+          "function": "element",
+          "calls": 584,
+          "self_seconds": 0.0119138,
+          "cumulative_seconds": 14.6079564
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 27,
+          "function": "snapshot",
+          "calls": 14,
+          "self_seconds": 0.0101242,
+          "cumulative_seconds": 13.2944604
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 140,
+          "function": "element_response",
+          "calls": 584,
+          "self_seconds": 0.057145600000000005,
+          "cumulative_seconds": 12.270866600000002
+        },
+        {
+          "file": "experiments/m43_p6/material_curvature.py",
+          "line": 9,
+          "function": "energy",
+          "calls": 1136,
+          "self_seconds": 0.46137480000000003,
+          "cumulative_seconds": 8.2213353
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 62,
+          "function": "assemble",
+          "calls": 24,
+          "self_seconds": 0.0150638,
+          "cumulative_seconds": 8.1792282
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 33,
+          "function": "__mul__",
+          "calls": 434597,
+          "self_seconds": 4.0909258,
+          "cumulative_seconds": 8.0908385
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 42,
+          "function": "trial_assemble",
+          "calls": 23,
+          "self_seconds": 0.0179604,
+          "cumulative_seconds": 5.557017500000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 43,
+          "function": "multiply",
+          "calls": 21680,
+          "self_seconds": 0.2341776,
+          "cumulative_seconds": 4.448349
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 14,
+          "function": "peak_memory",
+          "calls": 14,
+          "self_seconds": 0.043539,
+          "cumulative_seconds": 2.8928615
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 76,
+          "function": "rotate",
+          "calls": 7432,
+          "self_seconds": 0.0401925,
+          "cumulative_seconds": 2.8742415
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 41,
+          "function": "__truediv__",
+          "calls": 57071,
+          "self_seconds": 0.1067955,
+          "cumulative_seconds": 2.4274154
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.00013440000000000001,
+          "cumulative_seconds": 2.1874069
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 10,
+          "function": "extension",
+          "calls": 1136,
+          "self_seconds": 0.09712900000000001,
+          "cumulative_seconds": 2.1380878
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 29,
+          "function": "dot",
+          "calls": 34176,
+          "self_seconds": 0.057594900000000004,
+          "cumulative_seconds": 1.7778351000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 32,
+          "function": "cross",
+          "calls": 22816,
+          "self_seconds": 0.10687340000000001,
+          "cumulative_seconds": 1.7495814
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 14,
+          "function": "__mul__",
+          "calls": 410340,
+          "self_seconds": 1.3817851,
+          "cumulative_seconds": 1.6653301
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 29,
+          "function": "<genexpr>",
+          "calls": 140112,
+          "self_seconds": 0.0798604,
+          "cumulative_seconds": 1.3516671
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 47,
+          "function": "__pow__",
+          "calls": 66294,
+          "self_seconds": 0.6486786,
+          "cumulative_seconds": 1.1681748
+        },
+        {
+          "file": "experiments/m43_p6/newton.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.32e-05,
+          "cumulative_seconds": 1.1510187
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.61e-05,
+          "cumulative_seconds": 1.1498322
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 17,
+          "function": "__add__",
+          "calls": 285254,
+          "self_seconds": 0.6921484,
+          "cumulative_seconds": 0.8759522000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.8100000000000005e-05,
+          "cumulative_seconds": 0.8268735
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 64,
+          "function": "logarithm",
+          "calls": 2272,
+          "self_seconds": 0.033187100000000004,
+          "cumulative_seconds": 0.6849394000000001
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 8,
+          "function": "__add__",
+          "calls": 269328,
+          "self_seconds": 0.42417920000000003,
+          "cumulative_seconds": 0.6212289000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 51,
+          "function": "exponential",
+          "calls": 2272,
+          "self_seconds": 0.032333600000000004,
+          "cumulative_seconds": 0.5804403
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 36,
+          "function": "unit",
+          "calls": 2272,
+          "self_seconds": 0.0162004,
+          "cumulative_seconds": 0.5750124000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 27,
+          "function": "__sub__",
+          "calls": 67442,
+          "self_seconds": 0.0901272,
+          "cumulative_seconds": 0.5271389000000001
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 19,
+          "function": "__truediv__",
+          "calls": 53796,
+          "self_seconds": 0.06935580000000001,
+          "cumulative_seconds": 0.48582840000000005
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 14,
+          "function": "__init__",
+          "calls": 895051,
+          "self_seconds": 0.3848169,
+          "cumulative_seconds": 0.4028565
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 7,
+          "function": "__init__",
+          "calls": 845268,
+          "self_seconds": 0.3663323,
+          "cumulative_seconds": 0.39048740000000004
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 12,
+          "function": "__sub__",
+          "calls": 63648,
+          "self_seconds": 0.0926599,
+          "cumulative_seconds": 0.37098230000000004
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 24,
+          "function": "__neg__",
+          "calls": 90500,
+          "self_seconds": 0.2257076,
+          "cumulative_seconds": 0.2622506
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 17,
+          "function": "__pow__",
+          "calls": 62760,
+          "self_seconds": 0.1727311,
+          "cumulative_seconds": 0.2145187
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 24,
+          "function": "cos",
+          "calls": 9999,
+          "self_seconds": 0.011364500000000001,
+          "cumulative_seconds": 0.1605076
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 11,
+          "function": "__neg__",
+          "calls": 85344,
+          "self_seconds": 0.1143591,
+          "cumulative_seconds": 0.14038240000000002
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 23,
+          "function": "sin",
+          "calls": 9999,
+          "self_seconds": 0.0096258,
+          "cumulative_seconds": 0.13333620000000002
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 70,
+          "function": "cos",
+          "calls": 5115,
+          "self_seconds": 0.0679153,
+          "cumulative_seconds": 0.1253526
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/__init__.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0002478,
+          "cumulative_seconds": 0.12157010000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 65,
+          "function": "sin",
+          "calls": 5115,
+          "self_seconds": 0.0510713,
+          "cumulative_seconds": 0.1017615
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 80,
+          "function": "left_jacobian",
+          "calls": 1168,
+          "self_seconds": 0.0336466,
+          "cumulative_seconds": 0.08826350000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 25,
+          "function": "atan2",
+          "calls": 2272,
+          "self_seconds": 0.0049397,
+          "cumulative_seconds": 0.0853878
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 110,
+          "function": "audit_tangent",
+          "calls": 30,
+          "self_seconds": 0.0124592,
+          "cumulative_seconds": 0.0836321
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 970,
+          "function": "eigvalsh",
+          "calls": 61,
+          "self_seconds": 0.0002476,
+          "cumulative_seconds": 0.0703792
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 30,
+          "function": "__rsub__",
+          "calls": 10794,
+          "self_seconds": 0.0136424,
+          "cumulative_seconds": 0.068938
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 311,
+          "function": "eigh",
+          "calls": 61,
+          "self_seconds": 0.06356,
+          "cumulative_seconds": 0.0682273
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 75,
+          "function": "atan2",
+          "calls": 1168,
+          "self_seconds": 0.0331395,
+          "cumulative_seconds": 0.0673246
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 48,
+          "function": "conjugate",
+          "calls": 9704,
+          "self_seconds": 0.012365000000000001,
+          "cumulative_seconds": 0.0606094
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 23,
+          "function": "variables",
+          "calls": 552,
+          "self_seconds": 0.014820100000000001,
+          "cumulative_seconds": 0.0486446
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 13,
+          "function": "__rsub__",
+          "calls": 10104,
+          "self_seconds": 0.009956300000000001,
+          "cumulative_seconds": 0.0409539
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 14,
+          "function": "<genexpr>",
+          "calls": 3408,
+          "self_seconds": 0.0020592,
+          "cumulative_seconds": 0.039375400000000005
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 60,
+          "function": "variables",
+          "calls": 584,
+          "self_seconds": 0.016781400000000002,
+          "cumulative_seconds": 0.0331225
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 44,
+          "function": "__rtruediv__",
+          "calls": 1168,
+          "self_seconds": 0.0023176,
+          "cumulative_seconds": 0.031858700000000004
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 22,
+          "function": "value",
+          "calls": 36184,
+          "self_seconds": 0.0179067,
+          "cumulative_seconds": 0.028325600000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_basic.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 9.1e-05,
+          "cumulative_seconds": 0.0265102
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 25,
+          "function": "cos",
+          "calls": 4884,
+          "self_seconds": 0.015021900000000001,
+          "cumulative_seconds": 0.021518000000000002
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 24,
+          "function": "sin",
+          "calls": 4884,
+          "self_seconds": 0.0141671,
+          "cumulative_seconds": 0.019613600000000002
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 20,
+          "function": "__rtruediv__",
+          "calls": 1104,
+          "self_seconds": 0.0014960000000000002,
+          "cumulative_seconds": 0.019013500000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_basic.py",
+          "line": 57,
+          "function": "solve",
+          "calls": 46,
+          "self_seconds": 0.0015991,
+          "cumulative_seconds": 0.0165975
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 151,
+          "function": "<genexpr>",
+          "calls": 2336,
+          "self_seconds": 0.0050805,
+          "cumulative_seconds": 0.0128874
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 26,
+          "function": "atan2",
+          "calls": 1104,
+          "self_seconds": 0.0102623,
+          "cumulative_seconds": 0.012244600000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 8.98e-05,
+          "cumulative_seconds": 0.0122257
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_matfuncs.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 8.92e-05,
+          "cumulative_seconds": 0.0120941
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 123,
+          "function": "<genexpr>",
+          "calls": 7952,
+          "self_seconds": 0.005926000000000001,
+          "cumulative_seconds": 0.011884800000000001
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.48e-05,
+          "cumulative_seconds": 0.011816400000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.9500000000000002e-05,
+          "cumulative_seconds": 0.008777
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 24,
+          "function": "validate_request",
+          "calls": 1,
+          "self_seconds": 2.2000000000000003e-05,
+          "cumulative_seconds": 0.008585800000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_solvers.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.92e-05,
+          "cumulative_seconds": 0.0048605
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_svd.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.9500000000000005e-05,
+          "cumulative_seconds": 0.0040077
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_qz.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7000000000000002e-05,
+          "cumulative_seconds": 0.0038801
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_special_matrices.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.77e-05,
+          "cumulative_seconds": 0.0035496000000000004
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0003615,
+          "cumulative_seconds": 0.0033456000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_schur.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.66e-05,
+          "cumulative_seconds": 0.0029270000000000003
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 21,
+          "function": "private",
+          "calls": 1,
+          "self_seconds": 5.1e-06,
+          "cumulative_seconds": 0.0028881
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_procrustes.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.19e-05,
+          "cumulative_seconds": 0.0027138
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_qr.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.97e-05,
+          "cumulative_seconds": 0.0024915000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_expm_frechet.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.91e-05,
+          "cumulative_seconds": 0.0022278000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 8.900000000000001e-05,
+          "cumulative_seconds": 0.0021427
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_sketches.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.83e-05,
+          "cumulative_seconds": 0.0020864
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.36e-05,
+          "cumulative_seconds": 0.0019415
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_ldl.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.1000000000000002e-05,
+          "cumulative_seconds": 0.0016633000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_cholesky.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.9900000000000002e-05,
+          "cumulative_seconds": 0.0016343000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_lu.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.82e-05,
+          "cumulative_seconds": 0.0015961
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_polar.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 6.560000000000001e-05,
+          "cumulative_seconds": 0.0012618
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1161,
+          "function": "_ensure_dtype_cdsz",
+          "calls": 46,
+          "self_seconds": 0.0004177,
+          "cumulative_seconds": 0.0009766
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1067,
+          "function": "_compute_lwork",
+          "calls": 31,
+          "self_seconds": 0.0003774,
+          "cumulative_seconds": 0.000738
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1139,
+          "function": "_normalize_lapack_dtype",
+          "calls": 46,
+          "self_seconds": 0.00011030000000000001,
+          "cumulative_seconds": 0.0005498
+        },
+        {
+          "file": "experiments/m43_p6/__init__.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.1300000000000003e-05,
+          "cumulative_seconds": 0.0005017
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 289,
+          "function": "find_best_blas_type",
+          "calls": 48,
+          "self_seconds": 0.00038340000000000005,
+          "cumulative_seconds": 0.000464
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 403,
+          "function": "getter",
+          "calls": 61,
+          "self_seconds": 0.00021710000000000002,
+          "cumulative_seconds": 0.0003886
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1097,
+          "function": "<genexpr>",
+          "calls": 93,
+          "self_seconds": 0.00012240000000000002,
+          "cumulative_seconds": 0.0003035
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_cossin.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.6000000000000003e-05,
+          "cumulative_seconds": 0.00029340000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1101,
+          "function": "_check_work_float",
+          "calls": 62,
+          "self_seconds": 0.0001811,
+          "cumulative_seconds": 0.0001811
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1173,
+          "function": "<genexpr>",
+          "calls": 138,
+          "self_seconds": 7.91e-05,
+          "cumulative_seconds": 0.0001476
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 951,
+          "function": "get_lapack_funcs",
+          "calls": 2,
+          "self_seconds": 1.25e-05,
+          "cumulative_seconds": 8.05e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1176,
+          "function": "_ensure_aligned_and_native",
+          "calls": 92,
+          "self_seconds": 7.52e-05,
+          "cumulative_seconds": 7.52e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 932,
+          "function": "backtickrepl",
+          "calls": 48,
+          "self_seconds": 4.2800000000000004e-05,
+          "cumulative_seconds": 7.010000000000001e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 356,
+          "function": "_get_funcs",
+          "calls": 2,
+          "self_seconds": 3.62e-05,
+          "cumulative_seconds": 6.75e-05
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 17,
+          "function": "Counters",
+          "calls": 14,
+          "self_seconds": 6.42e-05,
+          "cumulative_seconds": 6.42e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 396,
+          "function": "_memoize_get_funcs",
+          "calls": 2,
+          "self_seconds": 1.4200000000000001e-05,
+          "cumulative_seconds": 4.2900000000000006e-05
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.000000000000001e-06,
+          "cumulative_seconds": 3.43e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 184,
+          "function": "_datacopied",
+          "calls": 91,
+          "self_seconds": 3.3600000000000004e-05,
+          "cumulative_seconds": 3.3600000000000004e-05
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 5.7000000000000005e-06,
+          "cumulative_seconds": 3.2200000000000003e-05
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 47,
+          "function": "<genexpr>",
+          "calls": 25,
+          "self_seconds": 9.800000000000001e-06,
+          "cumulative_seconds": 9.800000000000001e-06
+        },
+        {
+          "file": "experiments/m43_p6/material_curvature.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 6.4000000000000006e-06,
+          "cumulative_seconds": 8.3e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 49,
+          "function": "<genexpr>",
+          "calls": 5,
+          "self_seconds": 5.1e-06,
+          "cumulative_seconds": 7.7e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 39,
+          "function": "<genexpr>",
+          "calls": 7,
+          "self_seconds": 5.7000000000000005e-06,
+          "cumulative_seconds": 5.7000000000000005e-06
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 5,
+          "function": "Dual",
+          "calls": 1,
+          "self_seconds": 4.4e-06,
+          "cumulative_seconds": 4.4e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_cholesky.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.6000000000000003e-06,
+          "cumulative_seconds": 3.6000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.5000000000000004e-06,
+          "cumulative_seconds": 3.5000000000000004e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_qr.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.3e-06,
+          "cumulative_seconds": 3.3e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_schur.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.3e-06,
+          "cumulative_seconds": 3.3e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_svd.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.2000000000000003e-06,
+          "cumulative_seconds": 3.2000000000000003e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 45,
+          "function": "<genexpr>",
+          "calls": 9,
+          "self_seconds": 3.1000000000000004e-06,
+          "cumulative_seconds": 3.1000000000000004e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_lu.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3e-06,
+          "cumulative_seconds": 3e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/special_matrices.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3e-06,
+          "cumulative_seconds": 3e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/misc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.9e-06,
+          "cumulative_seconds": 2.9e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/basic.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.8000000000000003e-06,
+          "cumulative_seconds": 2.8000000000000003e-06
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 10,
+          "function": "Jet",
+          "calls": 1,
+          "self_seconds": 2.8000000000000003e-06,
+          "cumulative_seconds": 2.8000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/matfuncs.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7e-06,
+          "cumulative_seconds": 2.7e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 11,
+          "function": "LinAlgWarning",
+          "calls": 1,
+          "self_seconds": 7.000000000000001e-07,
+          "cumulative_seconds": 7.000000000000001e-07
+        }
+      ]
+    },
+    {
+      "mesh": 4,
+      "status": "TIMEOUT",
+      "wall_seconds": 20.11789619992487,
+      "partial": true,
+      "memory": {
+        "elapsed": 18.945739699993283,
+        "peak_working_set_bytes": 106131456,
+        "peak_commit_bytes": 155320320
+      },
+      "functions": [
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 92,
+          "function": "energy_state",
+          "calls": 1145,
+          "self_seconds": 0.1261417,
+          "cumulative_seconds": 15.908230000000001
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 54,
+          "function": "element",
+          "calls": 601,
+          "self_seconds": 0.011465000000000001,
+          "cumulative_seconds": 15.1931527
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 140,
+          "function": "element_response",
+          "calls": 601,
+          "self_seconds": 0.052670100000000004,
+          "cumulative_seconds": 12.1472736
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 27,
+          "function": "snapshot",
+          "calls": 14,
+          "self_seconds": 0.00040540000000000004,
+          "cumulative_seconds": 10.697912800000001
+        },
+        {
+          "file": "experiments/m43_p6/material_curvature.py",
+          "line": 9,
+          "function": "energy",
+          "calls": 1145,
+          "self_seconds": 0.4531026,
+          "cumulative_seconds": 8.015363
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 33,
+          "function": "__mul__",
+          "calls": 448373,
+          "self_seconds": 4.1179417,
+          "cumulative_seconds": 8.005628
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 62,
+          "function": "assemble",
+          "calls": 18,
+          "self_seconds": 0.0123254,
+          "cumulative_seconds": 7.1658577
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 42,
+          "function": "trial_assemble",
+          "calls": 17,
+          "self_seconds": 0.016236900000000002,
+          "cumulative_seconds": 6.9196973
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 43,
+          "function": "multiply",
+          "calls": 21931,
+          "self_seconds": 0.2166732,
+          "cumulative_seconds": 4.4348567
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 76,
+          "function": "rotate",
+          "calls": 7529,
+          "self_seconds": 0.036434400000000006,
+          "cumulative_seconds": 2.8881721000000002
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 41,
+          "function": "__truediv__",
+          "calls": 59079,
+          "self_seconds": 0.1002503,
+          "cumulative_seconds": 2.3419096
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.00015780000000000001,
+          "cumulative_seconds": 2.2767625000000002
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 10,
+          "function": "extension",
+          "calls": 1145,
+          "self_seconds": 0.0915929,
+          "cumulative_seconds": 2.2025314000000003
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 29,
+          "function": "dot",
+          "calls": 34533,
+          "self_seconds": 0.0539581,
+          "cumulative_seconds": 1.8714538
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 32,
+          "function": "cross",
+          "calls": 23077,
+          "self_seconds": 0.1067477,
+          "cumulative_seconds": 1.7640739
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 14,
+          "function": "__mul__",
+          "calls": 405304,
+          "self_seconds": 1.3514375,
+          "cumulative_seconds": 1.6467709000000001
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 14,
+          "function": "peak_memory",
+          "calls": 14,
+          "self_seconds": 0.0014357,
+          "cumulative_seconds": 1.5708813000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 29,
+          "function": "<genexpr>",
+          "calls": 141570,
+          "self_seconds": 0.09453160000000001,
+          "cumulative_seconds": 1.3463659000000001
+        },
+        {
+          "file": "experiments/m43_p6/newton.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.25e-05,
+          "cumulative_seconds": 1.1967219
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.5500000000000003e-05,
+          "cumulative_seconds": 1.1953616
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 47,
+          "function": "__pow__",
+          "calls": 68028,
+          "self_seconds": 0.6310871,
+          "cumulative_seconds": 1.1300639000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 17,
+          "function": "__add__",
+          "calls": 294321,
+          "self_seconds": 0.7457604000000001,
+          "cumulative_seconds": 0.9718171000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.04e-05,
+          "cumulative_seconds": 0.8004075
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 64,
+          "function": "logarithm",
+          "calls": 2290,
+          "self_seconds": 0.036488,
+          "cumulative_seconds": 0.6985229000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 51,
+          "function": "exponential",
+          "calls": 2292,
+          "self_seconds": 0.0326868,
+          "cumulative_seconds": 0.6327606
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 8,
+          "function": "__add__",
+          "calls": 266032,
+          "self_seconds": 0.4103986,
+          "cumulative_seconds": 0.5872922
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 36,
+          "function": "unit",
+          "calls": 2292,
+          "self_seconds": 0.0156341,
+          "cumulative_seconds": 0.5659272000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 27,
+          "function": "__sub__",
+          "calls": 69652,
+          "self_seconds": 0.0919118,
+          "cumulative_seconds": 0.5096611
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 14,
+          "function": "__init__",
+          "calls": 923067,
+          "self_seconds": 0.42131260000000004,
+          "cumulative_seconds": 0.43511330000000004
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 19,
+          "function": "__truediv__",
+          "calls": 53320,
+          "self_seconds": 0.07200820000000001,
+          "cumulative_seconds": 0.42413860000000003
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 7,
+          "function": "__init__",
+          "calls": 834536,
+          "self_seconds": 0.34917750000000003,
+          "cumulative_seconds": 0.3776335
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 12,
+          "function": "__sub__",
+          "calls": 62928,
+          "self_seconds": 0.0652047,
+          "cumulative_seconds": 0.3035696
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 24,
+          "function": "__neg__",
+          "calls": 93607,
+          "self_seconds": 0.2189288,
+          "cumulative_seconds": 0.250712
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 17,
+          "function": "__pow__",
+          "calls": 61648,
+          "self_seconds": 0.1523911,
+          "cumulative_seconds": 0.17141320000000002
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 24,
+          "function": "cos",
+          "calls": 9868,
+          "self_seconds": 0.010014200000000001,
+          "cumulative_seconds": 0.1621525
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 11,
+          "function": "__neg__",
+          "calls": 84512,
+          "self_seconds": 0.11250260000000001,
+          "cumulative_seconds": 0.13778700000000002
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 23,
+          "function": "sin",
+          "calls": 9868,
+          "self_seconds": 0.0087133,
+          "cumulative_seconds": 0.12410130000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 70,
+          "function": "cos",
+          "calls": 5156,
+          "self_seconds": 0.0543372,
+          "cumulative_seconds": 0.12054970000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/__init__.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0002119,
+          "cumulative_seconds": 0.11718460000000001
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 110,
+          "function": "audit_tangent",
+          "calls": 22,
+          "self_seconds": 0.0165374,
+          "cumulative_seconds": 0.11160500000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 65,
+          "function": "sin",
+          "calls": 5156,
+          "self_seconds": 0.0490845,
+          "cumulative_seconds": 0.0947188
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 970,
+          "function": "eigvalsh",
+          "calls": 45,
+          "self_seconds": 0.00017240000000000002,
+          "cumulative_seconds": 0.0933612
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 311,
+          "function": "eigh",
+          "calls": 45,
+          "self_seconds": 0.0882613,
+          "cumulative_seconds": 0.0919055
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 25,
+          "function": "atan2",
+          "calls": 2290,
+          "self_seconds": 0.0048718,
+          "cumulative_seconds": 0.0851071
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 30,
+          "function": "__rsub__",
+          "calls": 11328,
+          "self_seconds": 0.015018400000000001,
+          "cumulative_seconds": 0.08474780000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 75,
+          "function": "atan2",
+          "calls": 1202,
+          "self_seconds": 0.0333863,
+          "cumulative_seconds": 0.06802430000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 80,
+          "function": "left_jacobian",
+          "calls": 1202,
+          "self_seconds": 0.031129800000000003,
+          "cumulative_seconds": 0.0673384
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 48,
+          "function": "conjugate",
+          "calls": 9820,
+          "self_seconds": 0.01208,
+          "cumulative_seconds": 0.059852600000000006
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 23,
+          "function": "variables",
+          "calls": 544,
+          "self_seconds": 0.0135352,
+          "cumulative_seconds": 0.050276100000000004
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 13,
+          "function": "__rsub__",
+          "calls": 10160,
+          "self_seconds": 0.0098189,
+          "cumulative_seconds": 0.0407007
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 14,
+          "function": "<genexpr>",
+          "calls": 3435,
+          "self_seconds": 0.0020411,
+          "cumulative_seconds": 0.039242400000000004
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 60,
+          "function": "variables",
+          "calls": 602,
+          "self_seconds": 0.0167923,
+          "cumulative_seconds": 0.033767000000000005
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 44,
+          "function": "__rtruediv__",
+          "calls": 1202,
+          "self_seconds": 0.0022044,
+          "cumulative_seconds": 0.0316084
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 22,
+          "function": "value",
+          "calls": 36788,
+          "self_seconds": 0.0190413,
+          "cumulative_seconds": 0.029305200000000003
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 123,
+          "function": "<genexpr>",
+          "calls": 8015,
+          "self_seconds": 0.0056795000000000005,
+          "cumulative_seconds": 0.0266667
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_basic.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 8.08e-05,
+          "cumulative_seconds": 0.0242592
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 25,
+          "function": "cos",
+          "calls": 4712,
+          "self_seconds": 0.013647600000000001,
+          "cumulative_seconds": 0.0196606
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 24,
+          "function": "sin",
+          "calls": 4712,
+          "self_seconds": 0.0131754,
+          "cumulative_seconds": 0.0181947
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_basic.py",
+          "line": 57,
+          "function": "solve",
+          "calls": 34,
+          "self_seconds": 0.0011644000000000001,
+          "cumulative_seconds": 0.0176146
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 151,
+          "function": "<genexpr>",
+          "calls": 2404,
+          "self_seconds": 0.0048247,
+          "cumulative_seconds": 0.011935300000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_matfuncs.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 8.400000000000001e-05,
+          "cumulative_seconds": 0.0119171
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 24,
+          "function": "validate_request",
+          "calls": 1,
+          "self_seconds": 3.8400000000000005e-05,
+          "cumulative_seconds": 0.011857900000000001
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.6000000000000003e-05,
+          "cumulative_seconds": 0.011756200000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 6.64e-05,
+          "cumulative_seconds": 0.0112362
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 26,
+          "function": "atan2",
+          "calls": 1088,
+          "self_seconds": 0.008757000000000001,
+          "cumulative_seconds": 0.0106578
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 20,
+          "function": "__rtruediv__",
+          "calls": 1088,
+          "self_seconds": 0.001525,
+          "cumulative_seconds": 0.0094219
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.48e-05,
+          "cumulative_seconds": 0.008530600000000001
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 21,
+          "function": "private",
+          "calls": 1,
+          "self_seconds": 6.8e-06,
+          "cumulative_seconds": 0.0041026000000000005
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_qz.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.83e-05,
+          "cumulative_seconds": 0.0038231000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_svd.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.29e-05,
+          "cumulative_seconds": 0.0036141000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_solvers.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.3100000000000004e-05,
+          "cumulative_seconds": 0.0034890000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0003525,
+          "cumulative_seconds": 0.0032381000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_special_matrices.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.54e-05,
+          "cumulative_seconds": 0.0032317
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_schur.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.35e-05,
+          "cumulative_seconds": 0.0029324000000000004
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_procrustes.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.1000000000000002e-05,
+          "cumulative_seconds": 0.0028807000000000004
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_sketches.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.02e-05,
+          "cumulative_seconds": 0.0028305
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.44e-05,
+          "cumulative_seconds": 0.0027677
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_qr.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.2000000000000005e-05,
+          "cumulative_seconds": 0.0025545000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_expm_frechet.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.8500000000000002e-05,
+          "cumulative_seconds": 0.0022175000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 7.71e-05,
+          "cumulative_seconds": 0.0019698000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_ldl.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.73e-05,
+          "cumulative_seconds": 0.0016247000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_lu.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.23e-05,
+          "cumulative_seconds": 0.0014745000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_cholesky.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.36e-05,
+          "cumulative_seconds": 0.0014744
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_polar.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.1000000000000001e-05,
+          "cumulative_seconds": 0.0011182
+        },
+        {
+          "file": "experiments/m43_p6/__init__.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 7.730000000000001e-05,
+          "cumulative_seconds": 0.0009226000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1161,
+          "function": "_ensure_dtype_cdsz",
+          "calls": 34,
+          "self_seconds": 0.00030700000000000004,
+          "cumulative_seconds": 0.0006807
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1067,
+          "function": "_compute_lwork",
+          "calls": 23,
+          "self_seconds": 0.0002944,
+          "cumulative_seconds": 0.0005566000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1139,
+          "function": "_normalize_lapack_dtype",
+          "calls": 34,
+          "self_seconds": 7.010000000000001e-05,
+          "cumulative_seconds": 0.000357
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 403,
+          "function": "getter",
+          "calls": 45,
+          "self_seconds": 0.0001549,
+          "cumulative_seconds": 0.000317
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 289,
+          "function": "find_best_blas_type",
+          "calls": 36,
+          "self_seconds": 0.00024680000000000004,
+          "cumulative_seconds": 0.0003145
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_cossin.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.5e-05,
+          "cumulative_seconds": 0.00030000000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1097,
+          "function": "<genexpr>",
+          "calls": 69,
+          "self_seconds": 9.05e-05,
+          "cumulative_seconds": 0.0002197
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1101,
+          "function": "_check_work_float",
+          "calls": 46,
+          "self_seconds": 0.0001292,
+          "cumulative_seconds": 0.0001292
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1173,
+          "function": "<genexpr>",
+          "calls": 102,
+          "self_seconds": 5.78e-05,
+          "cumulative_seconds": 0.00010360000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 951,
+          "function": "get_lapack_funcs",
+          "calls": 2,
+          "self_seconds": 1.48e-05,
+          "cumulative_seconds": 9.71e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 356,
+          "function": "_get_funcs",
+          "calls": 2,
+          "self_seconds": 4.8100000000000004e-05,
+          "cumulative_seconds": 8.19e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 932,
+          "function": "backtickrepl",
+          "calls": 48,
+          "self_seconds": 4.24e-05,
+          "cumulative_seconds": 6.98e-05
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 17,
+          "function": "Counters",
+          "calls": 14,
+          "self_seconds": 6.340000000000001e-05,
+          "cumulative_seconds": 6.340000000000001e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1176,
+          "function": "_ensure_aligned_and_native",
+          "calls": 68,
+          "self_seconds": 5.6000000000000006e-05,
+          "cumulative_seconds": 5.6000000000000006e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 396,
+          "function": "_memoize_get_funcs",
+          "calls": 2,
+          "self_seconds": 1.2800000000000001e-05,
+          "cumulative_seconds": 4.0300000000000004e-05
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.7e-06,
+          "cumulative_seconds": 3.26e-05
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.2000000000000004e-06,
+          "cumulative_seconds": 2.5e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 184,
+          "function": "_datacopied",
+          "calls": 67,
+          "self_seconds": 2.4200000000000002e-05,
+          "cumulative_seconds": 2.4200000000000002e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_qr.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 9.800000000000001e-06,
+          "cumulative_seconds": 9.800000000000001e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 47,
+          "function": "<genexpr>",
+          "calls": 25,
+          "self_seconds": 9.4e-06,
+          "cumulative_seconds": 9.4e-06
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 10,
+          "function": "Jet",
+          "calls": 1,
+          "self_seconds": 8.3e-06,
+          "cumulative_seconds": 8.3e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 49,
+          "function": "<genexpr>",
+          "calls": 5,
+          "self_seconds": 5.9e-06,
+          "cumulative_seconds": 8.1e-06
+        },
+        {
+          "file": "experiments/m43_p6/material_curvature.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 5.2e-06,
+          "cumulative_seconds": 6.8e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 39,
+          "function": "<genexpr>",
+          "calls": 7,
+          "self_seconds": 6.8e-06,
+          "cumulative_seconds": 6.8e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 45,
+          "function": "<genexpr>",
+          "calls": 9,
+          "self_seconds": 4.4e-06,
+          "cumulative_seconds": 4.4e-06
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 5,
+          "function": "Dual",
+          "calls": 1,
+          "self_seconds": 4.3e-06,
+          "cumulative_seconds": 4.3e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.3e-06,
+          "cumulative_seconds": 3.3e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/basic.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.2000000000000003e-06,
+          "cumulative_seconds": 3.2000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_cholesky.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.1000000000000004e-06,
+          "cumulative_seconds": 3.1000000000000004e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/misc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.1000000000000004e-06,
+          "cumulative_seconds": 3.1000000000000004e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/matfuncs.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.1000000000000004e-06,
+          "cumulative_seconds": 3.1000000000000004e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_svd.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.8000000000000003e-06,
+          "cumulative_seconds": 2.8000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/special_matrices.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.8000000000000003e-06,
+          "cumulative_seconds": 2.8000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_lu.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7e-06,
+          "cumulative_seconds": 2.7e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_schur.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7e-06,
+          "cumulative_seconds": 2.7e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 11,
+          "function": "LinAlgWarning",
+          "calls": 1,
+          "self_seconds": 7.000000000000001e-07,
+          "cumulative_seconds": 7.000000000000001e-07
+        }
+      ]
+    },
+    {
+      "mesh": 6,
+      "status": "TIMEOUT",
+      "wall_seconds": 20.097965600085445,
+      "partial": true,
+      "memory": {
+        "elapsed": 19.833545199944638,
+        "peak_working_set_bytes": 108437504,
+        "peak_commit_bytes": 157073408
+      },
+      "functions": [
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 54,
+          "function": "element",
+          "calls": 596,
+          "self_seconds": 0.015106900000000001,
+          "cumulative_seconds": 17.4678048
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 92,
+          "function": "energy_state",
+          "calls": 1124,
+          "self_seconds": 0.1257443,
+          "cumulative_seconds": 16.8071676
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 140,
+          "function": "element_response",
+          "calls": 596,
+          "self_seconds": 0.060754300000000004,
+          "cumulative_seconds": 12.700477600000001
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 27,
+          "function": "snapshot",
+          "calls": 15,
+          "self_seconds": 0.0076051,
+          "cumulative_seconds": 9.4976035
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 33,
+          "function": "__mul__",
+          "calls": 446723,
+          "self_seconds": 4.2213069,
+          "cumulative_seconds": 8.3865532
+        },
+        {
+          "file": "experiments/m43_p6/material_curvature.py",
+          "line": 9,
+          "function": "energy",
+          "calls": 1124,
+          "self_seconds": 0.4511893,
+          "cumulative_seconds": 8.2113751
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 62,
+          "function": "assemble",
+          "calls": 12,
+          "self_seconds": 0.009775500000000001,
+          "cumulative_seconds": 5.615170900000001
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 42,
+          "function": "trial_assemble",
+          "calls": 11,
+          "self_seconds": 0.0234297,
+          "cumulative_seconds": 4.8003139
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 43,
+          "function": "multiply",
+          "calls": 21560,
+          "self_seconds": 0.25640640000000003,
+          "cumulative_seconds": 4.480608500000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 76,
+          "function": "rotate",
+          "calls": 7408,
+          "self_seconds": 0.041239000000000005,
+          "cumulative_seconds": 2.865962
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 41,
+          "function": "__truediv__",
+          "calls": 59309,
+          "self_seconds": 0.1025162,
+          "cumulative_seconds": 2.3207247
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 10,
+          "function": "extension",
+          "calls": 1124,
+          "self_seconds": 0.15616480000000002,
+          "cumulative_seconds": 2.1788879000000003
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.00013340000000000002,
+          "cumulative_seconds": 2.099031
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 29,
+          "function": "dot",
+          "calls": 33924,
+          "self_seconds": 0.0519116,
+          "cumulative_seconds": 1.7647920000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 32,
+          "function": "cross",
+          "calls": 22684,
+          "self_seconds": 0.1111459,
+          "cumulative_seconds": 1.7436104000000001
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 14,
+          "function": "__mul__",
+          "calls": 395520,
+          "self_seconds": 1.3512113000000001,
+          "cumulative_seconds": 1.5989007000000002
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 14,
+          "function": "peak_memory",
+          "calls": 15,
+          "self_seconds": 0.0031613,
+          "cumulative_seconds": 1.370409
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 29,
+          "function": "<genexpr>",
+          "calls": 139068,
+          "self_seconds": 0.088577,
+          "cumulative_seconds": 1.3371358
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 47,
+          "function": "__pow__",
+          "calls": 66946,
+          "self_seconds": 0.6423646000000001,
+          "cumulative_seconds": 1.1423604
+        },
+        {
+          "file": "experiments/m43_p6/newton.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.15e-05,
+          "cumulative_seconds": 1.0766456
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.3e-05,
+          "cumulative_seconds": 1.0755074
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 17,
+          "function": "__add__",
+          "calls": 293246,
+          "self_seconds": 0.7058095000000001,
+          "cumulative_seconds": 0.8917685000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.27e-05,
+          "cumulative_seconds": 0.8090949000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 64,
+          "function": "logarithm",
+          "calls": 2248,
+          "self_seconds": 0.0325342,
+          "cumulative_seconds": 0.7629692
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 51,
+          "function": "exponential",
+          "calls": 2248,
+          "self_seconds": 0.060088100000000005,
+          "cumulative_seconds": 0.6981635
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 8,
+          "function": "__add__",
+          "calls": 259632,
+          "self_seconds": 0.46083500000000005,
+          "cumulative_seconds": 0.6294251000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 36,
+          "function": "unit",
+          "calls": 2248,
+          "self_seconds": 0.0168974,
+          "cumulative_seconds": 0.6065279
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 27,
+          "function": "__sub__",
+          "calls": 69538,
+          "self_seconds": 0.0980588,
+          "cumulative_seconds": 0.5407344000000001
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 19,
+          "function": "__truediv__",
+          "calls": 52464,
+          "self_seconds": 0.06762040000000001,
+          "cumulative_seconds": 0.44864250000000006
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 14,
+          "function": "__init__",
+          "calls": 918769,
+          "self_seconds": 0.41244470000000005,
+          "cumulative_seconds": 0.4245957
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 12,
+          "function": "__sub__",
+          "calls": 61552,
+          "self_seconds": 0.0679573,
+          "cumulative_seconds": 0.3975128
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 7,
+          "function": "__init__",
+          "calls": 813552,
+          "self_seconds": 0.3068191,
+          "cumulative_seconds": 0.3357891
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 24,
+          "function": "__neg__",
+          "calls": 93780,
+          "self_seconds": 0.2391502,
+          "cumulative_seconds": 0.280972
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 110,
+          "function": "audit_tangent",
+          "calls": 14,
+          "self_seconds": 0.029060600000000002,
+          "cumulative_seconds": 0.1978713
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 80,
+          "function": "left_jacobian",
+          "calls": 1192,
+          "self_seconds": 0.0340467,
+          "cumulative_seconds": 0.1890879
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 17,
+          "function": "__pow__",
+          "calls": 59360,
+          "self_seconds": 0.15310290000000001,
+          "cumulative_seconds": 0.1881797
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 970,
+          "function": "eigvalsh",
+          "calls": 29,
+          "self_seconds": 0.0001772,
+          "cumulative_seconds": 0.16927640000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 311,
+          "function": "eigh",
+          "calls": 29,
+          "self_seconds": 0.16398320000000002,
+          "cumulative_seconds": 0.1679988
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 11,
+          "function": "__neg__",
+          "calls": 82976,
+          "self_seconds": 0.1412011,
+          "cumulative_seconds": 0.16637490000000002
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 24,
+          "function": "cos",
+          "calls": 9201,
+          "self_seconds": 0.0115136,
+          "cumulative_seconds": 0.1395916
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 23,
+          "function": "sin",
+          "calls": 9201,
+          "self_seconds": 0.009077400000000001,
+          "cumulative_seconds": 0.12606710000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/__init__.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0001986,
+          "cumulative_seconds": 0.11705620000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 70,
+          "function": "cos",
+          "calls": 4865,
+          "self_seconds": 0.054225600000000006,
+          "cumulative_seconds": 0.1057574
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 65,
+          "function": "sin",
+          "calls": 4865,
+          "self_seconds": 0.0533008,
+          "cumulative_seconds": 0.09782510000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 25,
+          "function": "atan2",
+          "calls": 2248,
+          "self_seconds": 0.0039183,
+          "cumulative_seconds": 0.08230520000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 30,
+          "function": "__rsub__",
+          "calls": 11726,
+          "self_seconds": 0.014683300000000002,
+          "cumulative_seconds": 0.0691817
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 75,
+          "function": "atan2",
+          "calls": 1192,
+          "self_seconds": 0.0318726,
+          "cumulative_seconds": 0.0664146
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 48,
+          "function": "conjugate",
+          "calls": 9656,
+          "self_seconds": 0.0119512,
+          "cumulative_seconds": 0.06085430000000001
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 23,
+          "function": "variables",
+          "calls": 528,
+          "self_seconds": 0.0152741,
+          "cumulative_seconds": 0.0555987
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 13,
+          "function": "__rsub__",
+          "calls": 10336,
+          "self_seconds": 0.010261900000000001,
+          "cumulative_seconds": 0.042195
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 14,
+          "function": "<genexpr>",
+          "calls": 3372,
+          "self_seconds": 0.0023120000000000003,
+          "cumulative_seconds": 0.0393979
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_basic.py",
+          "line": 57,
+          "function": "solve",
+          "calls": 22,
+          "self_seconds": 0.0013483,
+          "cumulative_seconds": 0.0380044
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 60,
+          "function": "variables",
+          "calls": 596,
+          "self_seconds": 0.0179914,
+          "cumulative_seconds": 0.035768600000000005
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 44,
+          "function": "__rtruediv__",
+          "calls": 1192,
+          "self_seconds": 0.0023302,
+          "cumulative_seconds": 0.0322811
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 22,
+          "function": "value",
+          "calls": 36256,
+          "self_seconds": 0.0205703,
+          "cumulative_seconds": 0.031155500000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_basic.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 7.790000000000001e-05,
+          "cumulative_seconds": 0.025231100000000003
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 25,
+          "function": "cos",
+          "calls": 4336,
+          "self_seconds": 0.014463700000000001,
+          "cumulative_seconds": 0.0202296
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 24,
+          "function": "sin",
+          "calls": 4336,
+          "self_seconds": 0.0121773,
+          "cumulative_seconds": 0.017082
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 151,
+          "function": "<genexpr>",
+          "calls": 2384,
+          "self_seconds": 0.0053100000000000005,
+          "cumulative_seconds": 0.0132867
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_matfuncs.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 8.48e-05,
+          "cumulative_seconds": 0.0119837
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.6100000000000002e-05,
+          "cumulative_seconds": 0.0119824
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 7.2e-05,
+          "cumulative_seconds": 0.0117017
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 123,
+          "function": "<genexpr>",
+          "calls": 7868,
+          "self_seconds": 0.0058117,
+          "cumulative_seconds": 0.0115145
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 26,
+          "function": "atan2",
+          "calls": 1056,
+          "self_seconds": 0.009227800000000001,
+          "cumulative_seconds": 0.011118600000000001
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 20,
+          "function": "__rtruediv__",
+          "calls": 1056,
+          "self_seconds": 0.0015198000000000002,
+          "cumulative_seconds": 0.009393100000000001
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 24,
+          "function": "validate_request",
+          "calls": 1,
+          "self_seconds": 2.1700000000000002e-05,
+          "cumulative_seconds": 0.0087372
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.46e-05,
+          "cumulative_seconds": 0.0086624
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_qz.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.4500000000000003e-05,
+          "cumulative_seconds": 0.0038522
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_svd.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.71e-05,
+          "cumulative_seconds": 0.0037271
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_special_matrices.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.65e-05,
+          "cumulative_seconds": 0.0033499000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_solvers.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.8e-05,
+          "cumulative_seconds": 0.0031983000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.00035800000000000003,
+          "cumulative_seconds": 0.0031157000000000003
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 21,
+          "function": "private",
+          "calls": 1,
+          "self_seconds": 5e-06,
+          "cumulative_seconds": 0.0030037
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_schur.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.09e-05,
+          "cumulative_seconds": 0.0028683000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_procrustes.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.8200000000000002e-05,
+          "cumulative_seconds": 0.0025619
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_qr.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.51e-05,
+          "cumulative_seconds": 0.0024644000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_expm_frechet.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.77e-05,
+          "cumulative_seconds": 0.0022022
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 7.87e-05,
+          "cumulative_seconds": 0.0021747000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_sketches.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.6000000000000003e-05,
+          "cumulative_seconds": 0.0020118000000000002
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.5200000000000003e-05,
+          "cumulative_seconds": 0.001998
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_ldl.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.97e-05,
+          "cumulative_seconds": 0.0016446000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_lu.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.6700000000000002e-05,
+          "cumulative_seconds": 0.0015867000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_cholesky.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.47e-05,
+          "cumulative_seconds": 0.0015756000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_polar.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.18e-05,
+          "cumulative_seconds": 0.0011687000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1161,
+          "function": "_ensure_dtype_cdsz",
+          "calls": 22,
+          "self_seconds": 0.00028710000000000004,
+          "cumulative_seconds": 0.0005916000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1067,
+          "function": "_compute_lwork",
+          "calls": 15,
+          "self_seconds": 0.0002526,
+          "cumulative_seconds": 0.00045410000000000003
+        },
+        {
+          "file": "experiments/m43_p6/__init__.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.65e-05,
+          "cumulative_seconds": 0.00040580000000000005
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1139,
+          "function": "_normalize_lapack_dtype",
+          "calls": 22,
+          "self_seconds": 5.89e-05,
+          "cumulative_seconds": 0.0004021
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 289,
+          "function": "find_best_blas_type",
+          "calls": 24,
+          "self_seconds": 0.00032470000000000003,
+          "cumulative_seconds": 0.0003706
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_cossin.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.5700000000000002e-05,
+          "cumulative_seconds": 0.0002929
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 403,
+          "function": "getter",
+          "calls": 29,
+          "self_seconds": 0.0001243,
+          "cumulative_seconds": 0.0002539
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1097,
+          "function": "<genexpr>",
+          "calls": 45,
+          "self_seconds": 6.31e-05,
+          "cumulative_seconds": 0.0001664
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1101,
+          "function": "_check_work_float",
+          "calls": 30,
+          "self_seconds": 0.0001033,
+          "cumulative_seconds": 0.0001033
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1173,
+          "function": "<genexpr>",
+          "calls": 66,
+          "self_seconds": 4.6e-05,
+          "cumulative_seconds": 8.64e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 951,
+          "function": "get_lapack_funcs",
+          "calls": 2,
+          "self_seconds": 1.3300000000000001e-05,
+          "cumulative_seconds": 8.54e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 356,
+          "function": "_get_funcs",
+          "calls": 2,
+          "self_seconds": 3.8100000000000005e-05,
+          "cumulative_seconds": 7.16e-05
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 17,
+          "function": "Counters",
+          "calls": 15,
+          "self_seconds": 7.060000000000001e-05,
+          "cumulative_seconds": 7.060000000000001e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 932,
+          "function": "backtickrepl",
+          "calls": 48,
+          "self_seconds": 4.0900000000000005e-05,
+          "cumulative_seconds": 6.86e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1176,
+          "function": "_ensure_aligned_and_native",
+          "calls": 44,
+          "self_seconds": 6.050000000000001e-05,
+          "cumulative_seconds": 6.050000000000001e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 396,
+          "function": "_memoize_get_funcs",
+          "calls": 2,
+          "self_seconds": 1.25e-05,
+          "cumulative_seconds": 3.74e-05
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.7e-06,
+          "cumulative_seconds": 3.32e-05
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.9e-06,
+          "cumulative_seconds": 2.47e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 184,
+          "function": "_datacopied",
+          "calls": 43,
+          "self_seconds": 1.52e-05,
+          "cumulative_seconds": 1.52e-05
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 47,
+          "function": "<genexpr>",
+          "calls": 25,
+          "self_seconds": 8.400000000000001e-06,
+          "cumulative_seconds": 8.400000000000001e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 49,
+          "function": "<genexpr>",
+          "calls": 5,
+          "self_seconds": 5.500000000000001e-06,
+          "cumulative_seconds": 7.7e-06
+        },
+        {
+          "file": "experiments/m43_p6/material_curvature.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.9000000000000005e-06,
+          "cumulative_seconds": 6.900000000000001e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_qr.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 6.7e-06,
+          "cumulative_seconds": 6.7e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 39,
+          "function": "<genexpr>",
+          "calls": 7,
+          "self_seconds": 5.7000000000000005e-06,
+          "cumulative_seconds": 5.7000000000000005e-06
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 5,
+          "function": "Dual",
+          "calls": 1,
+          "self_seconds": 4.1000000000000006e-06,
+          "cumulative_seconds": 4.1000000000000006e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 45,
+          "function": "<genexpr>",
+          "calls": 9,
+          "self_seconds": 3.4e-06,
+          "cumulative_seconds": 3.4e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.1000000000000004e-06,
+          "cumulative_seconds": 3.1000000000000004e-06
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 10,
+          "function": "Jet",
+          "calls": 1,
+          "self_seconds": 3.1000000000000004e-06,
+          "cumulative_seconds": 3.1000000000000004e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/basic.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3e-06,
+          "cumulative_seconds": 3e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_schur.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.8000000000000003e-06,
+          "cumulative_seconds": 2.8000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/special_matrices.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.8000000000000003e-06,
+          "cumulative_seconds": 2.8000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_lu.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7e-06,
+          "cumulative_seconds": 2.7e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/misc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7e-06,
+          "cumulative_seconds": 2.7e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/matfuncs.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7e-06,
+          "cumulative_seconds": 2.7e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_cholesky.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.6e-06,
+          "cumulative_seconds": 2.6e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_svd.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.6e-06,
+          "cumulative_seconds": 2.6e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 11,
+          "function": "LinAlgWarning",
+          "calls": 1,
+          "self_seconds": 6.000000000000001e-07,
+          "cumulative_seconds": 6.000000000000001e-07
+        }
+      ]
+    },
+    {
+      "mesh": 8,
+      "status": "TIMEOUT",
+      "wall_seconds": 20.128334200009704,
+      "partial": true,
+      "memory": {
+        "elapsed": 19.564633999951184,
+        "peak_working_set_bytes": 114667520,
+        "peak_commit_bytes": 162963456
+      },
+      "functions": [
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 92,
+          "function": "energy_state",
+          "calls": 1077,
+          "self_seconds": 0.11037150000000001,
+          "cumulative_seconds": 15.164091
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 54,
+          "function": "element",
+          "calls": 576,
+          "self_seconds": 0.0133944,
+          "cumulative_seconds": 15.053004900000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 140,
+          "function": "element_response",
+          "calls": 576,
+          "self_seconds": 0.058191200000000005,
+          "cumulative_seconds": 12.1139509
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 33,
+          "function": "__mul__",
+          "calls": 432360,
+          "self_seconds": 4.0222968,
+          "cumulative_seconds": 7.958148700000001
+        },
+        {
+          "file": "experiments/m43_p6/material_curvature.py",
+          "line": 9,
+          "function": "energy",
+          "calls": 1077,
+          "self_seconds": 0.4318151,
+          "cumulative_seconds": 7.8519243
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 27,
+          "function": "snapshot",
+          "calls": 15,
+          "self_seconds": 0.0048406000000000005,
+          "cumulative_seconds": 5.694475300000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 43,
+          "function": "multiply",
+          "calls": 20704,
+          "self_seconds": 0.21780110000000003,
+          "cumulative_seconds": 4.2510439
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 62,
+          "function": "assemble",
+          "calls": 9,
+          "self_seconds": 0.007857000000000001,
+          "cumulative_seconds": 4.1215057
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 42,
+          "function": "trial_assemble",
+          "calls": 7,
+          "self_seconds": 0.0151918,
+          "cumulative_seconds": 3.7253321
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 76,
+          "function": "rotate",
+          "calls": 7118,
+          "self_seconds": 0.035209000000000004,
+          "cumulative_seconds": 2.7302376
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0001533,
+          "cumulative_seconds": 2.3670898
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 41,
+          "function": "__truediv__",
+          "calls": 57528,
+          "self_seconds": 0.09954210000000001,
+          "cumulative_seconds": 2.3309076
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 10,
+          "function": "extension",
+          "calls": 1078,
+          "self_seconds": 0.09313160000000001,
+          "cumulative_seconds": 2.0861165
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 32,
+          "function": "cross",
+          "calls": 21782,
+          "self_seconds": 0.1014164,
+          "cumulative_seconds": 1.6879364000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 29,
+          "function": "dot",
+          "calls": 32562,
+          "self_seconds": 0.0460056,
+          "cumulative_seconds": 1.6833118
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 14,
+          "function": "__mul__",
+          "calls": 376464,
+          "self_seconds": 1.2154431,
+          "cumulative_seconds": 1.4029618000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 29,
+          "function": "<genexpr>",
+          "calls": 133482,
+          "self_seconds": 0.07734060000000001,
+          "cumulative_seconds": 1.2567702
+        },
+        {
+          "file": "experiments/m43_p6/newton.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.4200000000000001e-05,
+          "cumulative_seconds": 1.2349148
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7600000000000003e-05,
+          "cumulative_seconds": 1.2337351
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 47,
+          "function": "__pow__",
+          "calls": 64560,
+          "self_seconds": 0.6154672,
+          "cumulative_seconds": 1.1654149
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 17,
+          "function": "__add__",
+          "calls": 283824,
+          "self_seconds": 0.7704742,
+          "cumulative_seconds": 0.9493216000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.8100000000000005e-05,
+          "cumulative_seconds": 0.8911119000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 51,
+          "function": "exponential",
+          "calls": 2156,
+          "self_seconds": 0.0354813,
+          "cumulative_seconds": 0.6351445
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 64,
+          "function": "logarithm",
+          "calls": 2156,
+          "self_seconds": 0.030093500000000002,
+          "cumulative_seconds": 0.630484
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 8,
+          "function": "__add__",
+          "calls": 247143,
+          "self_seconds": 0.42788620000000005,
+          "cumulative_seconds": 0.5670678
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 36,
+          "function": "unit",
+          "calls": 2156,
+          "self_seconds": 0.015504500000000001,
+          "cumulative_seconds": 0.5559619
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 27,
+          "function": "__sub__",
+          "calls": 67344,
+          "self_seconds": 0.1004086,
+          "cumulative_seconds": 0.5317765
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 19,
+          "function": "__truediv__",
+          "calls": 50038,
+          "self_seconds": 0.062105,
+          "cumulative_seconds": 0.38683500000000004
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 14,
+          "function": "__init__",
+          "calls": 888984,
+          "self_seconds": 0.35397890000000004,
+          "cumulative_seconds": 0.3582938
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 14,
+          "function": "peak_memory",
+          "calls": 15,
+          "self_seconds": 0.0069321,
+          "cumulative_seconds": 0.32754550000000004
+        },
+        {
+          "file": "engine/jpn_structural/corotational_planar.py",
+          "line": 110,
+          "function": "audit_tangent",
+          "calls": 10,
+          "self_seconds": 0.049758800000000006,
+          "cumulative_seconds": 0.3167278
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 12,
+          "function": "__sub__",
+          "calls": 58624,
+          "self_seconds": 0.0639374,
+          "cumulative_seconds": 0.31402820000000004
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 970,
+          "function": "eigvalsh",
+          "calls": 21,
+          "self_seconds": 0.0001564,
+          "cumulative_seconds": 0.2771185
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 7,
+          "function": "__init__",
+          "calls": 774165,
+          "self_seconds": 0.26465110000000003,
+          "cumulative_seconds": 0.2690537
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 24,
+          "function": "__neg__",
+          "calls": 90912,
+          "self_seconds": 0.2186625,
+          "cumulative_seconds": 0.2598569
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 311,
+          "function": "eigh",
+          "calls": 21,
+          "self_seconds": 0.23526640000000001,
+          "cumulative_seconds": 0.23972090000000001
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 17,
+          "function": "__pow__",
+          "calls": 56303,
+          "self_seconds": 0.1405627,
+          "cumulative_seconds": 0.1586371
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 11,
+          "function": "__neg__",
+          "calls": 79105,
+          "self_seconds": 0.10512980000000001,
+          "cumulative_seconds": 0.1490325
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/__init__.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0002399,
+          "cumulative_seconds": 0.12417090000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 24,
+          "function": "cos",
+          "calls": 8693,
+          "self_seconds": 0.009639400000000001,
+          "cumulative_seconds": 0.12318280000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 23,
+          "function": "sin",
+          "calls": 8693,
+          "self_seconds": 0.0080573,
+          "cumulative_seconds": 0.1137607
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 30,
+          "function": "__rsub__",
+          "calls": 11472,
+          "self_seconds": 0.056332,
+          "cumulative_seconds": 0.1085957
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 70,
+          "function": "cos",
+          "calls": 4632,
+          "self_seconds": 0.048964,
+          "cumulative_seconds": 0.09295110000000001
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 65,
+          "function": "sin",
+          "calls": 4632,
+          "self_seconds": 0.0448041,
+          "cumulative_seconds": 0.08793870000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 25,
+          "function": "atan2",
+          "calls": 2156,
+          "self_seconds": 0.0035431000000000004,
+          "cumulative_seconds": 0.0789441
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 80,
+          "function": "left_jacobian",
+          "calls": 1152,
+          "self_seconds": 0.0320005,
+          "cumulative_seconds": 0.0683836
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 75,
+          "function": "atan2",
+          "calls": 1152,
+          "self_seconds": 0.0313062,
+          "cumulative_seconds": 0.06435300000000001
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 48,
+          "function": "conjugate",
+          "calls": 9274,
+          "self_seconds": 0.0117275,
+          "cumulative_seconds": 0.05898370000000001
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 13,
+          "function": "__rsub__",
+          "calls": 9939,
+          "self_seconds": 0.0099869,
+          "cumulative_seconds": 0.058738000000000005
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_basic.py",
+          "line": 57,
+          "function": "solve",
+          "calls": 16,
+          "self_seconds": 0.0008438,
+          "cumulative_seconds": 0.0439763
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 23,
+          "function": "variables",
+          "calls": 502,
+          "self_seconds": 0.0131105,
+          "cumulative_seconds": 0.043167300000000006
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 14,
+          "function": "<genexpr>",
+          "calls": 3234,
+          "self_seconds": 0.0019157000000000002,
+          "cumulative_seconds": 0.0385187
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 60,
+          "function": "variables",
+          "calls": 576,
+          "self_seconds": 0.0175826,
+          "cumulative_seconds": 0.0354809
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 44,
+          "function": "__rtruediv__",
+          "calls": 1152,
+          "self_seconds": 0.0022131,
+          "cumulative_seconds": 0.030866300000000003
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 22,
+          "function": "value",
+          "calls": 34882,
+          "self_seconds": 0.016839700000000003,
+          "cumulative_seconds": 0.0274314
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_basic.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 7.97e-05,
+          "cumulative_seconds": 0.0257345
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 25,
+          "function": "cos",
+          "calls": 4061,
+          "self_seconds": 0.0133375,
+          "cumulative_seconds": 0.0186371
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 24,
+          "function": "sin",
+          "calls": 4061,
+          "self_seconds": 0.0110661,
+          "cumulative_seconds": 0.015466500000000001
+        },
+        {
+          "file": "experiments/m43_p6/arc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.94e-05,
+          "cumulative_seconds": 0.0141279
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 151,
+          "function": "<genexpr>",
+          "calls": 2304,
+          "self_seconds": 0.005092500000000001,
+          "cumulative_seconds": 0.0128439
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_matfuncs.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.0001017,
+          "cumulative_seconds": 0.012705600000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 6.790000000000001e-05,
+          "cumulative_seconds": 0.0117467
+        },
+        {
+          "file": "experiments/m43_p6/element.py",
+          "line": 123,
+          "function": "<genexpr>",
+          "calls": 7546,
+          "self_seconds": 0.0055475,
+          "cumulative_seconds": 0.0110919
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 26,
+          "function": "atan2",
+          "calls": 1004,
+          "self_seconds": 0.0085067,
+          "cumulative_seconds": 0.0102302
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 24,
+          "function": "validate_request",
+          "calls": 1,
+          "self_seconds": 2.6900000000000003e-05,
+          "cumulative_seconds": 0.009475
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 20,
+          "function": "__rtruediv__",
+          "calls": 1004,
+          "self_seconds": 0.0015162,
+          "cumulative_seconds": 0.008752900000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3e-05,
+          "cumulative_seconds": 0.0082176
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_svd.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.5400000000000006e-05,
+          "cumulative_seconds": 0.0039381
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_qz.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.6900000000000003e-05,
+          "cumulative_seconds": 0.0038726000000000003
+        },
+        {
+          "file": "experiments/m43_p6/pilot.py",
+          "line": 21,
+          "function": "private",
+          "calls": 1,
+          "self_seconds": 6.7e-06,
+          "cumulative_seconds": 0.0034693000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_special_matrices.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.8100000000000004e-05,
+          "cumulative_seconds": 0.0034483
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_solvers.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 5.22e-05,
+          "cumulative_seconds": 0.0033980000000000004
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 0.000378,
+          "cumulative_seconds": 0.0032194000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_schur.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.4200000000000005e-05,
+          "cumulative_seconds": 0.0029558
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_procrustes.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.0600000000000003e-05,
+          "cumulative_seconds": 0.0026346
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_qr.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.79e-05,
+          "cumulative_seconds": 0.0024743
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.96e-05,
+          "cumulative_seconds": 0.0022796
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_expm_frechet.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.23e-05,
+          "cumulative_seconds": 0.0022386000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_sketches.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.2100000000000002e-05,
+          "cumulative_seconds": 0.0021771
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 8.32e-05,
+          "cumulative_seconds": 0.0020428
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_ldl.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.6200000000000003e-05,
+          "cumulative_seconds": 0.0019185
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_cholesky.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.32e-05,
+          "cumulative_seconds": 0.0016164
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_lu.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.7000000000000002e-05,
+          "cumulative_seconds": 0.0015924000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_polar.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.6400000000000002e-05,
+          "cumulative_seconds": 0.0013019000000000001
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1161,
+          "function": "_ensure_dtype_cdsz",
+          "calls": 16,
+          "self_seconds": 0.00022740000000000003,
+          "cumulative_seconds": 0.0004462
+        },
+        {
+          "file": "experiments/m43_p6/__init__.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 1.9900000000000003e-05,
+          "cumulative_seconds": 0.00043610000000000003
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_decomp_cossin.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 2.2700000000000003e-05,
+          "cumulative_seconds": 0.0003886
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1067,
+          "function": "_compute_lwork",
+          "calls": 11,
+          "self_seconds": 0.0001977,
+          "cumulative_seconds": 0.0003524
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 403,
+          "function": "getter",
+          "calls": 21,
+          "self_seconds": 9.16e-05,
+          "cumulative_seconds": 0.00021730000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1139,
+          "function": "_normalize_lapack_dtype",
+          "calls": 16,
+          "self_seconds": 4.2900000000000006e-05,
+          "cumulative_seconds": 0.00021
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 289,
+          "function": "find_best_blas_type",
+          "calls": 18,
+          "self_seconds": 0.00016350000000000002,
+          "cumulative_seconds": 0.00019610000000000002
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1097,
+          "function": "<genexpr>",
+          "calls": 33,
+          "self_seconds": 5.05e-05,
+          "cumulative_seconds": 0.0001276
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 951,
+          "function": "get_lapack_funcs",
+          "calls": 2,
+          "self_seconds": 1.4000000000000001e-05,
+          "cumulative_seconds": 9.340000000000001e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 356,
+          "function": "_get_funcs",
+          "calls": 2,
+          "self_seconds": 4.2600000000000005e-05,
+          "cumulative_seconds": 7.88e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1101,
+          "function": "_check_work_float",
+          "calls": 22,
+          "self_seconds": 7.71e-05,
+          "cumulative_seconds": 7.71e-05
+        },
+        {
+          "file": "experiments/m43_p6/profile_worker.py",
+          "line": 17,
+          "function": "Counters",
+          "calls": 15,
+          "self_seconds": 7.32e-05,
+          "cumulative_seconds": 7.32e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 932,
+          "function": "backtickrepl",
+          "calls": 48,
+          "self_seconds": 4.2000000000000004e-05,
+          "cumulative_seconds": 6.8e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1173,
+          "function": "<genexpr>",
+          "calls": 48,
+          "self_seconds": 3.04e-05,
+          "cumulative_seconds": 6.15e-05
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 7.100000000000001e-06,
+          "cumulative_seconds": 4.4800000000000005e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/blas.py",
+          "line": 396,
+          "function": "_memoize_get_funcs",
+          "calls": 2,
+          "self_seconds": 1.1900000000000001e-05,
+          "cumulative_seconds": 3.97e-05
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 5.1e-06,
+          "cumulative_seconds": 3.46e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/lapack.py",
+          "line": 1176,
+          "function": "_ensure_aligned_and_native",
+          "calls": 32,
+          "self_seconds": 3.0600000000000005e-05,
+          "cumulative_seconds": 3.0600000000000005e-05
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 184,
+          "function": "_datacopied",
+          "calls": 31,
+          "self_seconds": 1.27e-05,
+          "cumulative_seconds": 1.27e-05
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 47,
+          "function": "<genexpr>",
+          "calls": 25,
+          "self_seconds": 1.09e-05,
+          "cumulative_seconds": 1.09e-05
+        },
+        {
+          "file": "experiments/m43_p6/material_curvature.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 6.8e-06,
+          "cumulative_seconds": 8.900000000000001e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 49,
+          "function": "<genexpr>",
+          "calls": 5,
+          "self_seconds": 5.500000000000001e-06,
+          "cumulative_seconds": 7.5e-06
+        },
+        {
+          "file": "engine/jpn_structural/second_jet.py",
+          "line": 10,
+          "function": "Jet",
+          "calls": 1,
+          "self_seconds": 7.000000000000001e-06,
+          "cumulative_seconds": 7.000000000000001e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 39,
+          "function": "<genexpr>",
+          "calls": 7,
+          "self_seconds": 6.300000000000001e-06,
+          "cumulative_seconds": 6.300000000000001e-06
+        },
+        {
+          "file": "experiments/m43_p6/dual.py",
+          "line": 5,
+          "function": "Dual",
+          "calls": 1,
+          "self_seconds": 4.3e-06,
+          "cumulative_seconds": 4.3e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_qr.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.3e-06,
+          "cumulative_seconds": 4.3e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 4.1000000000000006e-06,
+          "cumulative_seconds": 4.1000000000000006e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_cholesky.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.8e-06,
+          "cumulative_seconds": 3.8e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_schur.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.8e-06,
+          "cumulative_seconds": 3.8e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/matfuncs.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.7e-06,
+          "cumulative_seconds": 3.7e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_lu.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.6000000000000003e-06,
+          "cumulative_seconds": 3.6000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/decomp_svd.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.6000000000000003e-06,
+          "cumulative_seconds": 3.6000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/basic.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.6000000000000003e-06,
+          "cumulative_seconds": 3.6000000000000003e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/special_matrices.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.5000000000000004e-06,
+          "cumulative_seconds": 3.5000000000000004e-06
+        },
+        {
+          "file": "engine/jpn_structural/p4_frame.py",
+          "line": 45,
+          "function": "<genexpr>",
+          "calls": 9,
+          "self_seconds": 3.5000000000000004e-06,
+          "cumulative_seconds": 3.5000000000000004e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/misc.py",
+          "line": 1,
+          "function": "<module>",
+          "calls": 1,
+          "self_seconds": 3.4e-06,
+          "cumulative_seconds": 3.4e-06
+        },
+        {
+          "file": "C:/Users/Usuario/Desktop/jpn-missao31/.venv/Lib/site-packages/scipy/linalg/_misc.py",
+          "line": 11,
+          "function": "LinAlgWarning",
+          "calls": 1,
+          "self_seconds": 6.000000000000001e-07,
+          "cumulative_seconds": 6.000000000000001e-07
+        }
+      ]
+    }
+  ]
+}

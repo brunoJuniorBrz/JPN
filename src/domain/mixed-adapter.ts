@@ -10,6 +10,7 @@ import { verifyEngineeringCombinations } from "./engineering-combinations";
 import { reviewSupportInterfaces } from "./support-interface";
 import { AxisReviewPendingError, localAxesPendency } from "./local-axes-review";
 export type MixedContract = "legacy" | "z-up-v3";
+import { reviewPhysicalRestraints } from "./physical-restraints";
 
 export function mixedPieceKind(piece: PhysicalPiece, draft: SpatialPreparation) {
   return draft.memberKinds?.find(m => m.pieceId === piece.id)?.kind ?? draft.groups[piece.role]?.elementKind;
@@ -24,6 +25,7 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
   if (!common.geometry || !draft.connectivity) add("CONNECTIVITY_PENDING", "Revise e registre a conectividade física.");
   else { try { mapping = discretizeGeometry(common.geometry, draft.connectivity, structureSignature(project)); } catch (e) { add(e instanceof ConnectivityError ? e.code : "CONNECTIVITY", (e as Error).message); } }
   for(const issue of reviewSupportInterfaces(project,draft,common.geometry))add(issue.code,issue.message);
+  for(const issue of reviewPhysicalRestraints(project,draft))add(issue.code,issue.message);
   const pieces = common.geometry?.pieces ?? [];
   if (new Set(draft.supports.map(s => s.nodeId)).size !== draft.supports.length) add("DUPLICATE_SUPPORT", "Declarações de apoio duplicadas.");
   if (new Set(draft.memberKinds?.map(m => m.pieceId)).size !== (draft.memberKinds?.length ?? 0)) add("DUPLICATE_KIND", "Tipos físicos duplicados por peça.");
