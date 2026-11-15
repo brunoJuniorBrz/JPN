@@ -18,8 +18,10 @@ from scipy.linalg import eigvalsh
 from .frame3d_model import input_hash, obj, number, text, flags, fail
 from .model import AnalysisError
 
+from .analysis_limits import MAX_CASES, MAX_COMBINATIONS, combination_limit  # noqa: E402
+
 LIMITS = dict(nodes=150, members=320, materials=50, sections=50,
-              supports=150, cases=10, nodal_loads=500, combinations=10)
+              supports=150, cases=MAX_CASES, nodal_loads=500, combinations=MAX_COMBINATIONS)
 
 
 def validate_mixed3d(data, *, distributed_cases=()):
@@ -34,6 +36,13 @@ def validate_mixed3d(data, *, distributed_cases=()):
         collection = data[field]
         if type(collection) is not list or len(collection) > limit:
             fail('INPUT_LIMIT', f'{field}: limite de {limit} registros.')
+    # Combinations are limited by the single-envelope result size (output cap), not by a fixed count.
+    frames = sum(1 for m in data['members'] if type(m) is dict and m.get('kind') == 'frame')
+    allowed = combination_limit(len(data['nodes']), frames, len(data['members'])-frames,
+                                len(data.get('member_loads') or []), len((data.get('self_weight') or {}).get('densities') or []))
+    if len(data['combinations']) > allowed:
+        fail('INPUT_LIMIT', f"combinations: {len(data['combinations'])} excedem o limite derivado de {allowed} para este modelo "
+             "(o resultado único deve caber no limite de saída de 2 MB); reduza o modelo ou o número de combinações.")
     for field in ('nodes', 'members', 'materials', 'sections', 'cases', 'combinations'):
         values = data[field]
         names = []

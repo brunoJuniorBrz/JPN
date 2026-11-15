@@ -1,4 +1,5 @@
 import {z} from "zod";
+import {MAX_CASES} from "./analysis-limits";
 /** Data-only contract. This module MUST NOT depend on structural geometry,
  * project model or adapters: structural-loading imports it at runtime. */
 const evidence=z.string().trim().min(5).max(1000);
@@ -20,7 +21,7 @@ export const declaredFacadeTractionSchema=z.object({
         netPressurePa:z.number().finite().min(-1e6).max(1e6)}).strict()).min(2).max(8).optional(),
       source:evidence,revision:evidence,calculationBasis:evidence,
     }).strict()).min(1).max(32),
-  }).strict()).min(1).max(10),
+  }).strict()).min(1).max(MAX_CASES),
 }).strict();
 export type DeclaredFacadeTraction=z.infer<typeof declaredFacadeTractionSchema>;
 

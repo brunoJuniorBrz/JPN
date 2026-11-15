@@ -144,7 +144,7 @@ it.each(["duplicate-node","duplicate-member","missing-node","zero-length","orpha
   if(kind==="duplicate-assignment")cat.assignments.push({...cat.assignments[0]});
   if(kind==="connectivity")d.connectivity!.junctions=[];
   if(kind==="cases")d.cases=Array.from({length:11},(_,i)=>({id:`Q${i}`,source:"Explicit test"}));
-  if(kind==="combinations")d.combinations=Array.from({length:11},(_,i)=>({id:`C${i}`,factors:{Q:1}}));
+  if(kind==="combinations")d.combinations=Array.from({length:257},(_,i)=>({id:`C${i}`,factors:{Q:1}}));
   // Explicitly rebind edited geometry so geometric adversaries reach connectivity validation.
   d.geometrySignature=structureSignature(p);d.connectivity!.geometrySignature=d.geometrySignature;
   await expect(adaptMixedProject(p)).rejects.toThrow();expect(generator.generateStructure).not.toHaveBeenCalled();
