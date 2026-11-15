@@ -3,6 +3,19 @@
 Estado: o **contrato** está pronto e testado (`src/domain/server-projects.ts`); falta escolher **login** e **banco**.
 Nada foi criado fora do repositório: nenhuma conta, nenhum serviço, nenhum segredo.
 
+## Decisão atual: operador único, sem provedor externo (implementado)
+- Acesso: o mesmo operador que já aciona o engine (`JPN_MIXED_ACCESS_USER`/`JPN_MIXED_ACCESS_PASSWORD`, Basic + origem exata) ou, em desenvolvimento, o executor local.
+  O dono do projeto é derivado no servidor (`operator:<usuário>`); o cliente nunca escolhe o dono.
+- Armazenamento: `FileProjectStore`, arquivos JSON versionados em `JPN_PROJECTS_DIR` (padrão `.data/projects`, ignorado pelo git):
+  `<hash do dono>/<projeto>/v000001.json`. Cada versão é criada de forma atômica e exclusiva (duas gravações da mesma versão: só uma vence, a outra é `VERSION_CONFLICT`),
+  nunca é reescrita, e a leitura confere o `payloadSha256` (adulteração em disco = `HASH_MISMATCH`).
+- API: `GET /api/projects` (lista), `GET /api/projects/<id>[?version=N]`, `PUT /api/projects/<id>` com `{project, expectedVersion, snapshotVersion}` (409 em conflito).
+- Tela: Backup → "Projetos no servidor (operador único)": enviar projetos do navegador (migração sem alterar dados nem números), ver a lista e baixar os projetos do servidor como backup.
+- Onde funciona: servidor com disco durável (máquina local, VM, contêiner com volume). **O sistema de arquivos das funções da Vercel é efêmero**: em produção na Vercel,
+  esta persistência NÃO é durável; é preciso um adaptador durável para a mesma porta `ProjectStore` (a proposta abaixo continua válida). Defina `JPN_PROJECTS_DIR` num volume persistente.
+
+A proposta abaixo (Supabase, alternativas Neon + Auth.js / Clerk) fica documentada para quando houver mais de um usuário ou deploy na Vercel.
+
 ## O que já está implementado (independe da escolha)
 - `ServerProjectRecord`: projeto + dono + **versão** (1, 2, 3…, nunca sobrescrita) + `parentVersion` + `payloadSha256` (hash canônico, floats em bits).
 - `ProjectStore` (porta): `list`, `get`, `history`, `save(expectedVersion)`. Versão desatualizada = `VERSION_CONFLICT`; outro usuário = `FORBIDDEN`/`NOT_FOUND`.

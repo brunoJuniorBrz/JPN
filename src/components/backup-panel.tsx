@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { Download, Upload, HardDrive, FileJson } from "lucide-react";
 import { useData } from "@/components/data-provider";
+import { ServerProjectsPanel } from "@/components/server-projects-panel";
 import { MAX_BACKUP_BYTES, parseBackup, serializeBackup } from "@/infrastructure/persistence/local";
 import { downloadText } from "@/lib/format";
 import type { Backup } from "@/domain/models";
@@ -16,5 +17,6 @@ export function BackupPanel() {
     finally { setBusy(false); }
   }} /><p className="field-hint">JSON versionado · Até 5 MB<br />Importações adicionam cópias com novos IDs. Projetos existentes e configurações locais são preservados.</p>
     {backup && <div className="import-preview"><strong>Backup válido para importação</strong><p>{backup.data.projects.length} projetos e {backup.data.materials.length} materiais serão adicionados como cópias.</p><div className="actions"><button className="button" onClick={() => { const result = importBackup(backup); if (result) { setMessage(`Importação concluída: ${result.projects} projetos e ${result.materials} materiais adicionados.`); setBackup(null); } }}>Adicionar cópias</button><button className="button secondary" onClick={() => setBackup(null)}>Cancelar</button></div></div>}{error && <p className="field-error" role="alert">{error}</p>}{message && <p className="success-message" role="status">{message}</p>}<div className="backup-tip"><strong>Crie uma rotina de backup</strong><p>Limpar os dados do navegador ou usar modo privado pode apagar seus cadastros. Exporte antes de trocar de dispositivo.</p></div>
+    <ServerProjectsPanel />
   </section>;
 }
