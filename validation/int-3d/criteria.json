@@ -1,0 +1,9 @@
+{
+  "reference": "OpenSees 3.8.0, elasticBeamColumn with Corotational transformation and explicit end-node constraints",
+  "amplification_relative": 0.01,
+  "moment_relative": 0.01,
+  "released_moment_relative": 1e-8,
+  "released_moment_floor_nm": 1e-6,
+  "numerical_equivalence_relative_and_absolute": 1e-10,
+  "http_deadline_seconds": 20
+}

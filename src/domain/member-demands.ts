@@ -1,12 +1,14 @@
 import { mixedInputHash, mixedStations, verifyMixedResult } from "./mixed-analysis";
-import { anyMixedRequestSchema, anyMixedResultSchema, verifyLoadingTrace } from "./structural-loading";
+import { anyMixedRequestSchema, anyMixedResultSchema, secondOrderMixedRequestSchema, secondOrderMixedResultSchema,
+  verifyLoadingTrace, verifySecondOrderDemandTrace } from "./structural-loading";
 import type { discretizeGeometry } from "./spatial-connectivity";
 
 export type DemandInput = {request:unknown;input_sha256:string;preparation_sha256:string;mapping:ReturnType<typeof discretizeGeometry>};
 export type DemandForces = {nN:number;vyN:number|null;vzN:number|null;tNm:number|null;myNm:number|null;mzNm:number|null};
 export type DemandRow = {id:string;pieceId:string;segmentId:string;combinationId:string;kind:"frame"|"axial";
   stationIndex:number;segmentPositionM:number;originalPositionM:number;originalFraction:number;
-  forces:DemandForces;translationLocalM:[number,number,number]|null};
+  forces:DemandForces;translationLocalM:[number,number,number]|null;
+  stationGlobalToLocal?:[[number,number,number],[number,number,number],[number,number,number]]};
 export type DemandComponent = keyof DemandForces;
 export const demandComponents:DemandComponent[] = ["nN","vyN","vzN","tNm","myNm","mzNm"];
 function fail(s:string):never{throw new Error(`DEMAND_TRACE_INVALID: ${s}`);}
@@ -15,11 +17,20 @@ const near=(a:number,b:number)=>Number.isFinite(a)&&Number.isFinite(b)&&Math.abs
 /** Signed, concurrent SAMPLE demands. No interaction of separately enveloped
  * maxima, no extrema search between samples, no resistance or second solver. */
 export async function extractMemberDemands(prepared:DemandInput,value:unknown){
-  const request=anyMixedRequestSchema.parse(prepared.request),result=anyMixedResultSchema.parse(value);
+  const secondOrder=typeof prepared.request==="object" && prepared.request!==null && "analysis_order" in prepared.request;
+  const {request,result}=secondOrder ? (() => {
+    const request=secondOrderMixedRequestSchema.parse(prepared.request),result=secondOrderMixedResultSchema.parse(value);
+    verifySecondOrderDemandTrace(request,result);
+    return {request,result};
+  })() : (() => {
+    const request=anyMixedRequestSchema.parse(prepared.request),result=anyMixedResultSchema.parse(value);
+    verifyLoadingTrace(request,result);
+    return {request,result};
+  })();
   const hash=await mixedInputHash(request);
   if(!/^[a-f0-9]{64}$/.test(prepared.preparation_sha256))fail("assinatura de preparação ausente ou inválida.");
   if(hash!==prepared.input_sha256||result.schema_version!==request.schema_version.replace("mixed3d/","mixed3d-result/"))fail("versão/hash da entrada incompatível.");
-  verifyMixedResult(request,result,hash);verifyLoadingTrace(request,result);
+  verifyMixedResult(request,result,hash);
   const map=prepared.mapping;
   if(map.schema_version!=="jpn.geometry-physical-map/1"||map.units!=="mm"||map.members.length!==request.members.length||new Set(map.members.map(m=>m.id)).size!==map.members.length)fail("mapeamento de segmentos incompleto ou repetido.");
   if(map.nodes.length!==request.nodes.length||new Set(map.nodes.map(n=>n.id)).size!==map.nodes.length||map.nodes.some(n=>{
@@ -57,7 +68,8 @@ export async function extractMemberDemands(prepared:DemandInput,value:unknown){
         samples.push({id:JSON.stringify([pieceId,segment.id,combination.id,i]),pieceId,segmentId:segment.id,combinationId:combination.id,kind:response.kind,stationIndex:i,
           segmentPositionM:s.x_m,originalPositionM:segment.t0*lengthM+s.x_m,originalFraction:segment.t0+fraction*(segment.t1-segment.t0),
           forces:{nN:s.n_n,vyN:s.vy_n,vzN:s.vz_n,tNm:s.t_nm,myNm:s.my_nm,mzNm:s.mz_nm},
-          translationLocalM:"translation_local_m" in s?s.translation_local_m??null:null});
+          translationLocalM:"translation_local_m" in s?s.translation_local_m??null:null,
+          ...("station_global_to_local" in response?{stationGlobalToLocal:response.station_global_to_local[i]}:{})});
       }
       // Rotations are global NODAL results, never fabricated at inner stations.
       kinematics.push({segmentId:segment.id,combinationId:combination.id,
@@ -72,13 +84,15 @@ export async function extractMemberDemands(prepared:DemandInput,value:unknown){
       return [component,{minimum:min.id,maximum:max.id,absolute:absolute.id}];
     })) as Record<DemandComponent,{minimum:string;maximum:string;absolute:string}|null>;
     return {pieceId,kind:physical.kind,lengthM,
-      axes:physical.kind==="frame"?{system:"PyNiteFEA local xyz" as const,rotationDeg:physical.rotation_deg,materialId:physical.material,sectionId:physical.section}:null,
+      axes:physical.kind==="frame"?{system:secondOrder?"JPN M43 local xyz" as const:"PyNiteFEA local xyz" as const,
+        rotationDeg:physical.rotation_deg,materialId:physical.material,sectionId:physical.section}:null,
       segments,samples,critical,kinematics};
   });
   return {schema_version:"jpn.member-demands/1" as const,units:"SI" as const,approvedForFabrication:false as const,
     binding:{project:request.project,inputSha256:hash,preparationSha256:prepared.preparation_sha256,resultSha256:await mixedInputHash(result),solver:result.solver},
     conventions:{normal:"positivo tração; negativo compressão",frame:"esforços locais, ações do trecho final sobre o inicial; mesma convenção do motor JPN/PyNite",position:"metros desde o início orientado do segmento/peça original",nodalKinematics:"translações e rotações globais nos nós; rotações ausentes no interior não interpoladas"},
     sampling:{frameStationsPerSegment:5,axialStationsPerSegment:2,continuousExtremaLocated:false as const,
-      limitations:["Máximos/mínimos apenas nas estações disponíveis; não são extremos contínuos garantidos.","Cada extremo aponta para um vetor concomitante de esforços de uma única estação e combinação.","Eixos globais internos do pórtico não são retornados pelo contrato misto; nenhuma matriz de rotação foi reconstruída. Giro e extremos físicos são preservados."]},pieces};
+      limitations:["Máximos/mínimos apenas nas estações disponíveis; não são extremos contínuos garantidos.","Cada extremo aponta para um vetor concomitante de esforços de uma única estação e combinação.",
+        secondOrder?"A base local deformada de cada estação acompanha o vetor de esforços.":"Eixos globais internos do pórtico não são retornados pelo contrato misto; nenhuma matriz de rotação foi reconstruída. Giro e extremos físicos são preservados."]},pieces};
 }
 export type MemberDemands=Awaited<ReturnType<typeof extractMemberDemands>>;

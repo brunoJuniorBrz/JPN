@@ -1,0 +1,521 @@
+{
+  "seconds": 11.575300400000287,
+  "combinations": 42,
+  "accepted": false,
+  "refusal": {
+    "code": "SECOND_ORDER_MESH_NOT_CONVERGED",
+    "combination_id": "U-N01",
+    "message": "Refinement exceeds 1 subdivisions."
+  },
+  "stages_s": {
+    "frame_ad": 7.548811599994224,
+    "uniform_ad": 3.2622594000145,
+    "linear_algebra": 0.05781640000623156,
+    "peak_efforts": 0.48851159999958327
+  },
+  "samples": [
+    {
+      "combination": "U-N01",
+      "nodes": 16,
+      "solve_s": 0.23783359999970344,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.1772458999976152,
+        "uniform_ad": 0.04202929999883054,
+        "linear_algebra": 0.0018935000002784363
+      }
+    },
+    {
+      "combination": "U-N02",
+      "nodes": 16,
+      "solve_s": 0.22195229999988442,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17685950000168305,
+        "uniform_ad": 0.041007599999829836,
+        "linear_algebra": 0.0012741999994432263,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N03",
+      "nodes": 16,
+      "solve_s": 0.2783636000003753,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17517010000028677,
+        "uniform_ad": 0.08436890000029962,
+        "linear_algebra": 0.0015473000003112247,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N04",
+      "nodes": 16,
+      "solve_s": 0.2701956999999311,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.18171689999871887,
+        "uniform_ad": 0.08337070000425228,
+        "linear_algebra": 0.0013500000004569301,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N05",
+      "nodes": 16,
+      "solve_s": 0.26394159999972544,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17541939999864553,
+        "uniform_ad": 0.08335739999802172,
+        "linear_algebra": 0.0012983000005988288,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N06",
+      "nodes": 16,
+      "solve_s": 0.26760009999998147,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17858180000121138,
+        "uniform_ad": 0.08384040000191817,
+        "linear_algebra": 0.0013305000002219458,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N07",
+      "nodes": 16,
+      "solve_s": 0.26693939999995564,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17730369999981122,
+        "uniform_ad": 0.0843630999997913,
+        "linear_algebra": 0.001441100000647566,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N08",
+      "nodes": 16,
+      "solve_s": 0.2647990000000391,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17612040000085472,
+        "uniform_ad": 0.08363400000234833,
+        "linear_algebra": 0.0013058000004093628,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N09",
+      "nodes": 16,
+      "solve_s": 0.26820020000013756,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17828089999966323,
+        "uniform_ad": 0.0848610999992161,
+        "linear_algebra": 0.0013330000006135378,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N10",
+      "nodes": 16,
+      "solve_s": 0.27198470000030284,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.18176219999941168,
+        "uniform_ad": 0.08510640000031344,
+        "linear_algebra": 0.0013134999999238062,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N11",
+      "nodes": 16,
+      "solve_s": 0.2644793000004029,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17607570000018313,
+        "uniform_ad": 0.08319049999681738,
+        "linear_algebra": 0.0013201000001572538,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N12",
+      "nodes": 16,
+      "solve_s": 0.263500699999895,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17633530000193787,
+        "uniform_ad": 0.08208420000073602,
+        "linear_algebra": 0.0013235000001259323,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N13",
+      "nodes": 16,
+      "solve_s": 0.2680835000001025,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.1791747000020223,
+        "uniform_ad": 0.08374709999770857,
+        "linear_algebra": 0.0013193000008868694,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N14",
+      "nodes": 16,
+      "solve_s": 0.2650859999998829,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17831940000178292,
+        "uniform_ad": 0.08155029999898034,
+        "linear_algebra": 0.0012841999996453524,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N15",
+      "nodes": 16,
+      "solve_s": 0.2222781999998915,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17725360000076762,
+        "uniform_ad": 0.040989700000864104,
+        "linear_algebra": 0.0012507000001278357,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N16",
+      "nodes": 16,
+      "solve_s": 0.22359559999995327,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17866339999955017,
+        "uniform_ad": 0.040688199999749486,
+        "linear_algebra": 0.0014417000002140412,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N17",
+      "nodes": 16,
+      "solve_s": 0.26824900000019625,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.18014709999988554,
+        "uniform_ad": 0.0829596000003221,
+        "linear_algebra": 0.0013365999998313782,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N18",
+      "nodes": 16,
+      "solve_s": 0.2643659000000298,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.1770642999986194,
+        "uniform_ad": 0.08219480000434487,
+        "linear_algebra": 0.0013030999998591142,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N19",
+      "nodes": 16,
+      "solve_s": 0.26390730000002804,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17661689999795271,
+        "uniform_ad": 0.08199020000074597,
+        "linear_algebra": 0.0012850000002799788,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N20",
+      "nodes": 16,
+      "solve_s": 0.26639669999985927,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17752689999997529,
+        "uniform_ad": 0.08364600000140854,
+        "linear_algebra": 0.0014140999992378056,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N21",
+      "nodes": 16,
+      "solve_s": 0.26534380000020974,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17825179999999818,
+        "uniform_ad": 0.08201430000008259,
+        "linear_algebra": 0.0013052999997853476,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N22",
+      "nodes": 16,
+      "solve_s": 0.2640150999995967,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17650229999981093,
+        "uniform_ad": 0.08246969999800058,
+        "linear_algebra": 0.0013002000000597036,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N23",
+      "nodes": 16,
+      "solve_s": 0.28026439999985087,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.18576490000123158,
+        "uniform_ad": 0.08863829999927475,
+        "linear_algebra": 0.001505700000507204,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N24",
+      "nodes": 16,
+      "solve_s": 0.2714697999999771,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.18075910000061413,
+        "uniform_ad": 0.08544070000380088,
+        "linear_algebra": 0.0013278000001264445,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N25",
+      "nodes": 16,
+      "solve_s": 0.2661794999999074,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.1774362000005567,
+        "uniform_ad": 0.08363949999829856,
+        "linear_algebra": 0.0013188000002628542,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N26",
+      "nodes": 16,
+      "solve_s": 0.26921319999974,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17821149999963382,
+        "uniform_ad": 0.08578270000043631,
+        "linear_algebra": 0.00134040000011737,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N27",
+      "nodes": 16,
+      "solve_s": 0.2682432000001427,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.18056209999986095,
+        "uniform_ad": 0.08237250000229324,
+        "linear_algebra": 0.001420399999460642,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N28",
+      "nodes": 16,
+      "solve_s": 0.2656275999997888,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17598669999870253,
+        "uniform_ad": 0.08439560000078927,
+        "linear_algebra": 0.0013196000004427333,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-QP01",
+      "nodes": 16,
+      "solve_s": 0.2214681999998902,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17632159999902797,
+        "uniform_ad": 0.04079390000015337,
+        "linear_algebra": 0.0014353999999912048,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-FQ01",
+      "nodes": 16,
+      "solve_s": 0.22258430000010776,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.1777857000010954,
+        "uniform_ad": 0.04043460000139021,
+        "linear_algebra": 0.0013704000002690009,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-FQ02",
+      "nodes": 16,
+      "solve_s": 0.2627886000000217,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17411280000169427,
+        "uniform_ad": 0.08329990000038379,
+        "linear_algebra": 0.0014404000003196415,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-FQ03",
+      "nodes": 16,
+      "solve_s": 0.2681072000000313,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.1787274999969668,
+        "uniform_ad": 0.08381539999891174,
+        "linear_algebra": 0.0014691000001221255,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-FQ04",
+      "nodes": 16,
+      "solve_s": 0.26828310000018973,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17740979999871342,
+        "uniform_ad": 0.08539839999912147,
+        "linear_algebra": 0.001423000000158936,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-FQ05",
+      "nodes": 16,
+      "solve_s": 0.2762397999999848,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.18318289999933768,
+        "uniform_ad": 0.08736909999834097,
+        "linear_algebra": 0.0015094000000317465,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-RA01",
+      "nodes": 16,
+      "solve_s": 0.26641739999968195,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.1778412999988177,
+        "uniform_ad": 0.08333869999842136,
+        "linear_algebra": 0.001351500000055239,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-RA02",
+      "nodes": 16,
+      "solve_s": 0.26989240000011705,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.18038109999815788,
+        "uniform_ad": 0.08404570000220701,
+        "linear_algebra": 0.001473400000577385,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-RA03",
+      "nodes": 16,
+      "solve_s": 0.27477159999989453,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.18571299999939583,
+        "uniform_ad": 0.0836094000023877,
+        "linear_algebra": 0.0013735999996242754,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-RA04",
+      "nodes": 16,
+      "solve_s": 0.2687212000000727,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.1803777000000082,
+        "uniform_ad": 0.08300560000134283,
+        "linear_algebra": 0.0013291000004755915,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-RA05",
+      "nodes": 16,
+      "solve_s": 0.2637690000001385,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17484980000017458,
+        "uniform_ad": 0.08367760000146518,
+        "linear_algebra": 0.0013673000003109337,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-RA06",
+      "nodes": 16,
+      "solve_s": 0.2657788999999866,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17797719999907713,
+        "uniform_ad": 0.08253760000070542,
+        "linear_algebra": 0.0013298000003487687,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-RA07",
+      "nodes": 16,
+      "solve_s": 0.26410340000029464,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17504579999877024,
+        "uniform_ad": 0.0837479999995594,
+        "linear_algebra": 0.0014070000001993321,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "S-RA08",
+      "nodes": 16,
+      "solve_s": 0.2661250999999538,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17752940000127637,
+        "uniform_ad": 0.08345270000063465,
+        "linear_algebra": 0.0013332999997146544,
+        "peak_efforts": 0.0
+      }
+    }
+  ]
+}

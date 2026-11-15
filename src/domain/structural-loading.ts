@@ -68,8 +68,9 @@ export const loadedMixedRequestV3Schema=loadedMixedObject.extend({schema_version
   solution_mode:z.enum(solutionModes).optional()}).strict().superRefine(refineLoadedMixed);
 const legacyCombo=mixedResultSchema.shape.combinations.valueType;
 const axial=legacyCombo.shape.members.valueType.options[0], frame=legacyCombo.shape.members.valueType.options[1];
+const designStation=z.object({x_m:n,n_n:n,vy_n:n,vz_n:n,t_nm:n,my_nm:n,mz_nm:n,translation_local_m:vec}).strict();
 export const loadedMixedResultSchema=mixedResultSchema.extend({schema_version:z.literal("jpn.mixed3d-result/2"),solver:mixedResultSchema.shape.solver.extend({adapter:z.literal("jpn-mixed3d/2")}),
-  combinations:z.record(id,legacyCombo.extend({members:z.record(id,z.discriminatedUnion("kind",[axial,frame.extend({stations:z.array(z.object({x_m:n,n_n:n,vy_n:n,vz_n:n,t_nm:n,my_nm:n,mz_nm:n,translation_local_m:vec}).strict()).length(5)})]))})),
+  combinations:z.record(id,legacyCombo.extend({members:z.record(id,z.discriminatedUnion("kind",[axial,frame.extend({stations:z.array(designStation).length(5)})]))})),
   loading:z.object({member_loads:z.array(uniformSchema).max(640),self_weight:z.object({case:id,gravity_m_s2:vec,axial_lumping:z.literal("half-to-end-nodes"),total_mass_kg:n.nonnegative(),members:z.array(z.object({member:id,mass_kg:n.nonnegative(),force_n:vec,density:z.object({member:id,kg_m3:n.positive(),source,revision:source}).strict(),representation:z.enum(["consistent-frame-udl","half-to-end-nodes"])}).strict()).max(320)}).strict().nullable()}).strict(),
 });
 const axesRow=z.object({declared_rotation_deg:n,reference_offset_deg:n,solver_rotation_deg:n,global_to_local:z.array(z.array(n).length(3)).length(3)}).strict();
@@ -78,12 +79,63 @@ export const loadedMixedResultV3Schema=loadedMixedResultSchema.extend({schema_ve
   local_axes:z.object({convention:z.literal(localAxesConvention),members:z.record(id,axesRow)}).strict()});
 export const anyMixedRequestSchema=z.union([mixedRequestObject.superRefine((v,c)=>validateMixedReferences(v,c)),loadedMixedRequestSchema,loadedMixedRequestV3Schema]);
 export const anyMixedResultSchema=z.union([mixedResultSchema,loadedMixedResultSchema,loadedMixedResultV3Schema]);
+
+export const secondOrderMixedRequestSchema=loadedMixedObject.extend({
+  schema_version:z.literal("jpn.mixed3d/3"),local_axes:z.literal(localAxesConvention),
+  analysis_order:z.literal("second-order"),solution_mode:z.literal("per-combination"),
+  mesh_initial_subdivisions:z.union([z.literal(1),z.literal(2),z.literal(4)]).optional(),
+}).strict().superRefine(refineLoadedMixed);
+const subdivisions=z.union([z.literal(1),z.literal(2),z.literal(4),z.literal(8),z.literal(16),z.literal(32)]);
+const memberEquilibrium=n.min(0).lt(1e-8);
+export const secondOrderMixedResultSchema=loadedMixedResultSchema.omit({assumptions:true}).extend({
+  schema_version:z.literal("jpn.mixed3d-result/3"),local_axes:z.literal(localAxesConvention),
+  analysis_order:z.literal("second-order"),solution_mode:z.literal("per-combination"),
+  mesh_subdivisions:z.record(id,subdivisions),
+  solver:z.object({name:z.literal("JPN M43"),adapter:z.literal("jpn-mixed3d/3"),method:z.literal("corotational-newton")}).strict(),
+  diagnostics:z.object({elapsed_seconds:n.nonnegative(),mesh_levels:z.array(subdivisions).min(1).max(6)}).strict(),
+  computedStructuralApproval:z.literal(false),fabricationRelease:z.literal(false),releaseGate:z.literal("NOT_READY_BLOCKED"),
+  combinations:z.record(id,legacyCombo.extend({
+    status:z.literal("converged"),iterations:n.int().min(0).max(30),amplification_factor:n.nonnegative(),
+    amplification_measure:z.enum(["translation","rotation","zero-response"]),
+    members:z.record(id,z.discriminatedUnion("kind",[
+      axial.extend({end_actions_global:z.array(n).length(6),equilibrium_relative:memberEquilibrium}),
+      frame.extend({stations:z.array(designStation).length(5),end_actions_global:z.array(n).length(12),
+        station_global_to_local:z.array(z.tuple([vec,vec,vec])).length(5),equilibrium_relative:memberEquilibrium}),
+    ])),
+  })),
+}).strict();
+type SecondOrderRequest=z.infer<typeof secondOrderMixedRequestSchema>;
+type SecondOrderResult=z.infer<typeof secondOrderMixedResultSchema>;
+export function verifySecondOrderDemandTrace(request:SecondOrderRequest,result:SecondOrderResult){
+  verifyDeclaredLoadTrace(request,result);
+  const levels=result.diagnostics.mesh_levels;
+  const frames=request.members.filter(m=>m.kind==="frame");
+  if(levels[0] !== (request.mesh_initial_subdivisions ?? 1) ||
+    (frames.length>0 && levels.length<3) || levels.some((v,i)=>i>0 && v!==2*levels[i-1]) ||
+    Object.keys(result.mesh_subdivisions).length!==request.members.length ||
+    (frames.length>0 && Math.max(...frames.map(m=>result.mesh_subdivisions[m.id]))!==levels.at(-1)) ||
+    request.members.some(m=>m.kind==="axial"?result.mesh_subdivisions[m.id]!==1:
+      !levels.slice(2).includes(result.mesh_subdivisions[m.id])))
+    throw new Error("MESH_TRACE: malha aceita incompatível.");
+  for(const combo of Object.values(result.combinations))for(const member of Object.values(combo.members)){
+    if(member.kind!=="frame")continue;
+    for(const [x,y,z] of member.station_global_to_local){
+      const cross=[x[1]*y[2]-x[2]*y[1],x[2]*y[0]-x[0]*y[2],x[0]*y[1]-x[1]*y[0]];
+      const dot=(a:number[],b:number[])=>a.reduce((total,v,i)=>total+v*b[i],0);
+      if([x,y,z].some(v=>Math.abs(dot(v,v)-1)>1e-9) || Math.abs(dot(x,y))>1e-9 ||
+        cross.some((v,i)=>Math.abs(v-z[i])>1e-9))throw new Error("AXES_TRACE: base deformada inválida na estação.");
+    }
+  }
+}
 /** Requests/results that carry the declared-loading trace (/2 and /3). */
 export const isLoadedRequest=(r:{schema_version:string}):r is z.infer<typeof loadedMixedRequestSchema>|z.infer<typeof loadedMixedRequestV3Schema>=>r.schema_version==="jpn.mixed3d/2"||r.schema_version==="jpn.mixed3d/3";
 export const isLoadedResult=(r:{schema_version:string}):r is z.infer<typeof loadedMixedResultSchema>|z.infer<typeof loadedMixedResultV3Schema>=>r.schema_version==="jpn.mixed3d-result/2"||r.schema_version==="jpn.mixed3d-result/3";
 export function verifyLoadingTrace(request:z.infer<typeof anyMixedRequestSchema>,result:z.infer<typeof anyMixedResultSchema>){
   if(!isLoadedRequest(request)||!isLoadedResult(result))return;
   if(request.schema_version==="jpn.mixed3d/3"&&result.schema_version==="jpn.mixed3d-result/3")verifyAxesTrace(request,result);
+  verifyDeclaredLoadTrace(request,result);
+}
+function verifyDeclaredLoadTrace(request:LoadedMixedShape,result:Pick<z.infer<typeof loadedMixedResultSchema>,"loading">){
   const equal=(a:unknown,b:unknown)=>canonicalSpatialInput(a)===canonicalSpatialInput(b),sw=request.self_weight,trace=result.loading.self_weight;
   if(!equal(request.member_loads,result.loading.member_loads)||!!sw!==!!trace)throw new Error("Rastreabilidade das cargas incompatível.");
   if(sw&&trace){

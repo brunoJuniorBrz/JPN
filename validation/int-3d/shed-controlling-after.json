@@ -1,0 +1,77 @@
+{
+  "seconds": 26.727567700000236,
+  "combinations": 1,
+  "accepted": false,
+  "refusal": {
+    "code": "SECOND_ORDER_MESH_NOT_CONVERGED",
+    "combination_id": "U-N01",
+    "message": "Refinement exceeds 384 nodes."
+  },
+  "stages_s": {
+    "frame_ad": 19.578340499996102,
+    "uniform_ad": 4.009533600003579,
+    "linear_algebra": 1.9215690999999424,
+    "peak_efforts": 0.3441812999994909
+  },
+  "samples": [
+    {
+      "combination": "U-N01",
+      "nodes": 16,
+      "solve_s": 0.24000299999988783,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17904670000052647,
+        "uniform_ad": 0.042481799999677605,
+        "linear_algebra": 0.0018772000003082212
+      }
+    },
+    {
+      "combination": "U-N01",
+      "nodes": 32,
+      "solve_s": 0.6295044000003145,
+      "iterations": 4,
+      "stages_s": {
+        "frame_ad": 0.47234440000147515,
+        "uniform_ad": 0.1101053000002139,
+        "linear_algebra": 0.011738500000774366,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N01",
+      "nodes": 64,
+      "solve_s": 1.8879382000000078,
+      "iterations": 5,
+      "stages_s": {
+        "frame_ad": 1.4219828000018424,
+        "uniform_ad": 0.3269616000034148,
+        "linear_algebra": 0.060079899999891495,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N01",
+      "nodes": 128,
+      "solve_s": 5.724600700000337,
+      "iterations": 6,
+      "stages_s": {
+        "frame_ad": 4.272851999999148,
+        "uniform_ad": 0.9634575000081895,
+        "linear_algebra": 0.29420349999963946,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N01",
+      "nodes": 256,
+      "solve_s": 15.92849060000026,
+      "iterations": 7,
+      "stages_s": {
+        "frame_ad": 11.310386399996332,
+        "uniform_ad": 2.566527399992083,
+        "linear_algebra": 1.5536699999993289,
+        "peak_efforts": 0.0
+      }
+    }
+  ]
+}

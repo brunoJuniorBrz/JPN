@@ -1,0 +1,55 @@
+{
+  "planar": [
+    {
+      "ratio": 0.4,
+      "amplification": 1.1886116611835496,
+      "reference_amplification": 1.188239665151206,
+      "max_displacement_error_m": 2.232134357351818e-10,
+      "max_displacement_bound_usage": 0.022321343573518178,
+      "kg_relative_error": 2.148447564026929e-08,
+      "equilibrium": 3.720391143992637e-15,
+      "iterations": 3
+    },
+    {
+      "ratio": 0.75,
+      "amplification": 1.4452458712316192,
+      "reference_amplification": 1.4440918882372715,
+      "max_displacement_error_m": 6.924419714696597e-10,
+      "max_displacement_bound_usage": 0.06924419714696596,
+      "kg_relative_error": 3.5548272258025786e-08,
+      "equilibrium": 4.200230977680758e-15,
+      "iterations": 3
+    }
+  ],
+  "spatial": [
+    {
+      "ratio": 0.4,
+      "amplification": 1.483517932115613,
+      "reference_amplification": 1.4821229606013147,
+      "max_displacement_error_m": 1.5412972635795991e-09,
+      "max_displacement_bound_usage": 0.12147592413594448,
+      "kg_relative_error": 3.3809719638821366e-08,
+      "equilibrium": 8.036755206317436e-15,
+      "iterations": 3
+    },
+    {
+      "ratio": 0.75,
+      "amplification": 3.2631087841246216,
+      "reference_amplification": 3.24768417601628,
+      "max_displacement_error_m": 1.571759841346961e-08,
+      "max_displacement_bound_usage": 0.6593374489378498,
+      "kg_relative_error": 6.879471106391549e-08,
+      "equilibrium": 6.967699488855129e-15,
+      "iterations": 3
+    }
+  ],
+  "mesh_8_spatial_75_percent": {
+    "passed": false,
+    "max_displacement_bound_usage": 2.6716540945150267,
+    "max_displacement_error_m": 6.37057406e-08
+  },
+  "spring_amplification": {
+    "0.4": 1.666755567418637,
+    "0.75": 4.001801081249724
+  }
+}

@@ -7,9 +7,10 @@ import math
 
 
 class AnalysisError(ValueError):
-    def __init__(self, code: str, message: str):
+    def __init__(self, code: str, message: str, *, combination_id: str | None = None):
         super().__init__(message)
         self.code = code
+        self.combination_id = combination_id
 
 
 @dataclass(frozen=True)

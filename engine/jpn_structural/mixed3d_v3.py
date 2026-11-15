@@ -1,9 +1,8 @@
 """jpn.mixed3d/3: the /2 loading contract with an explicit Z-up axis reference.
 
-Same linear solver, loads, limits and equilibrium gates as /2. The only
-difference is the meaning of `rotation_deg`: it is measured from the JPN
-reference of local_axes.py, not from PyNite's Y-up branches. /1 and /2 are
-left numerically untouched.
+Linear analysis preserves the /2 solver and declares roll from the JPN
+reference. Experimental second order requires an explicit opt-in and uses
+a separate result path. Legacy inputs and hashes are preserved.
 """
 from copy import deepcopy
 
@@ -25,8 +24,12 @@ SOLUTION_MODES = ('linear-superposition', 'per-combination')
 def analyze_mixed3d_v3(raw, *, _joint_actions=None):
     """`solution_mode` (optional, /3 only; absent = 'linear-superposition', hashes of existing /3 requests unchanged):
     'linear-superposition' solves once and superposes the load cases per combination; 'per-combination' solves every
-    combination as its own model. In this LINEAR engine both give the same numbers (tested); the second exists so the
-    contract already carries the mode that the future second-order analysis (M43) needs, where superposition is invalid."""
+    combination as its own model. In this LINEAR engine both give the same numbers (tested); second order requires the latter and uses the M43 mixed core."""
+    if type(raw) is dict and 'analysis_order' in raw:
+        if raw['analysis_order'] != 'second-order' or raw.get('solution_mode') != 'per-combination':
+            fail('UNSUPPORTED_ANALYSIS_ORDER', "Second-order analysis requires solution_mode='per-combination'.")
+        from .mixed3d_second_order import analyze_second_order_v3
+        return analyze_second_order_v3(raw,_joint_actions)
     mode = raw.get('solution_mode', 'linear-superposition') if type(raw) is dict else None
     if type(raw) is dict and 'solution_mode' in raw:
         if mode not in SOLUTION_MODES:

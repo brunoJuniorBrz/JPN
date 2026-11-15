@@ -1,0 +1,85 @@
+{
+  "seconds": 44.852399700000205,
+  "combinations": 1,
+  "accepted": true,
+  "refusal": null,
+  "stages_s": {
+    "frame_ad": 35.635678799967536,
+    "uniform_ad": 3.109125900003164,
+    "linear_algebra": 4.452705900002911,
+    "peak_efforts": 0.572819600000912
+  },
+  "samples": [
+    {
+      "combination": "U-N01",
+      "nodes": 16,
+      "solve_s": 0.20309980000001815,
+      "iterations": 3,
+      "stages_s": {
+        "frame_ad": 0.17653710000286083,
+        "uniform_ad": 0.0174325999996654,
+        "linear_algebra": 0.0018157000004066504
+      }
+    },
+    {
+      "combination": "U-N01",
+      "nodes": 32,
+      "solve_s": 0.5369150999995327,
+      "iterations": 4,
+      "stages_s": {
+        "frame_ad": 0.47012489999451645,
+        "uniform_ad": 0.04124750000119093,
+        "linear_algebra": 0.01079589999972086,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N01",
+      "nodes": 64,
+      "solve_s": 1.6364202999993722,
+      "iterations": 5,
+      "stages_s": {
+        "frame_ad": 1.4150180999959048,
+        "uniform_ad": 0.12646759999915957,
+        "linear_algebra": 0.059237600000415114,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N01",
+      "nodes": 128,
+      "solve_s": 5.07480730000043,
+      "iterations": 6,
+      "stages_s": {
+        "frame_ad": 4.30440660000113,
+        "uniform_ad": 0.37641330000224116,
+        "linear_algebra": 0.29218630000013945,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N01",
+      "nodes": 256,
+      "solve_s": 14.365052600000126,
+      "iterations": 7,
+      "stages_s": {
+        "frame_ad": 11.46574999997938,
+        "uniform_ad": 1.016684099973645,
+        "linear_algebra": 1.5695166999994399,
+        "peak_efforts": 0.0
+      }
+    },
+    {
+      "combination": "U-N01",
+      "nodes": 320,
+      "solve_s": 19.129439700000148,
+      "iterations": 7,
+      "stages_s": {
+        "frame_ad": 14.613372900002105,
+        "uniform_ad": 1.530880800027262,
+        "linear_algebra": 2.5191537000027893,
+        "peak_efforts": 0.0
+      }
+    }
+  ]
+}
