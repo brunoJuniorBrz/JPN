@@ -95,6 +95,14 @@ def test_unused_joint_rotation_at_released_ends_is_eliminated():
         assert combo["nodes"]["b"]["rotation_rad"] == [0.,0.,0.]
 
 
+def test_purlin_roundoff_at_mesh_16_keeps_the_physical_equilibrium_gate():
+    raw,_,_ = released_request("purlin-portal")
+    raw["mesh_initial_subdivisions"] = 4
+    answer = analyze_mixed3d_v3(raw)
+    assert answer["diagnostics"]["mesh_levels"] == [4,8,16]
+    assert answer["combinations"]["LA"]["equilibrium"]["relative_residual"] < 1e-11
+
+
 def test_banded_solution_and_stability_match_dense():
     rng = np.random.default_rng(1234)
     values = rng.uniform(.15,.45,119)
@@ -132,6 +140,20 @@ def test_optimized_results_match_uncached_dense_with_releases_and_distributed_lo
     for result in (actual,expected):
         del result["diagnostics"]["elapsed_seconds"]
 
+    tol = CRITERIA["numerical_equivalence_relative_and_absolute"]
+    positions = np.array([[n[k] for k in ("x_m","y_m","z_m")] for n in raw["nodes"]])
+    span = np.max(np.ptp(positions,axis=0))
+    for name,reference in expected["combinations"].items():
+        candidate = actual["combinations"][name]
+        # Compare cancellation residuals relative to the actual wrench
+        # scale. Compare all physical actions directly below.
+        force_scale = max(1.,sum(np.linalg.norm(n["reaction_force_n"]) for n in reference["nodes"].values()))
+        for combo in (reference,candidate):
+            assert combo["equilibrium"]["relative_residual"] < 1e-8
+        for key,scale in (("force_n",force_scale),("moment_nm",force_scale*span)):
+            a,b = (np.asarray(c["equilibrium"].pop(key)) for c in (candidate,reference))
+            assert np.linalg.norm(a-b,np.inf)/scale <= tol, f"{name}/{key}"
+
     def compare(new,old):
         if type(old) is dict:
             assert new.keys() == old.keys()
@@ -142,7 +164,6 @@ def test_optimized_results_match_uncached_dense_with_releases_and_distributed_lo
             for a,b in zip(new,old):
                 compare(a,b)
         elif type(old) is float:
-            tol = CRITERIA["numerical_equivalence_relative_and_absolute"]
             assert new == pytest.approx(old,rel=tol,abs=tol)
         else:
             assert new == old

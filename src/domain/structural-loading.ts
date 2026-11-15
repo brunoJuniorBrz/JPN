@@ -113,7 +113,9 @@ export function verifySecondOrderDemandTrace(request:SecondOrderRequest,result:S
   if(levels[0] !== (request.mesh_initial_subdivisions ?? 1) ||
     (frames.length>0 && levels.length<3) || levels.some((v,i)=>i>0 && v!==2*levels[i-1]) ||
     Object.keys(result.mesh_subdivisions).length!==request.members.length ||
-    request.members.some(m=>result.mesh_subdivisions[m.id] !== (m.kind==="axial"?1:levels.at(-1))))
+    (frames.length>0 && Math.max(...frames.map(m=>result.mesh_subdivisions[m.id]))!==levels.at(-1)) ||
+    request.members.some(m=>m.kind==="axial"?result.mesh_subdivisions[m.id]!==1:
+      !levels.slice(2).includes(result.mesh_subdivisions[m.id])))
     throw new Error("MESH_TRACE: malha aceita incompatível.");
   for(const combo of Object.values(result.combinations))for(const member of Object.values(combo.members)){
     if(member.kind!=="frame")continue;
