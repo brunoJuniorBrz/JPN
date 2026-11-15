@@ -99,9 +99,10 @@ def test_euler_buckling_is_for_the_flexural_member():
     assert actual == pytest.approx(1.,rel=EULER_TOL)
 
 
-def portal_geometry(spatial):
+def portal_geometry(spatial, mesh=None):
     fixture = references.fixture
-    case = fixture.geometry(spatial,ORACLE["portals"]["spatial" if spatial else "planar"]["mesh"])
+    mesh = ORACLE["portals"]["spatial" if spatial else "planar"]["mesh"] if mesh is None else mesh
+    case = fixture.geometry(spatial,mesh)
     A,Iy,Iz,J = fixture.FRAME
     source = "INT-3a physical benchmark"
     members = [dict(id=n,start=a,end=b,kind="frame",material="M",section="S",rotation_deg=0.,

@@ -9,7 +9,9 @@ from .mixed3d import validate_mixed3d
 from .mixed3d_loads import compile_loaded_mixed3d
 from .mixed3d_v3 import KEYS
 from .model import AnalysisError
+from . import second_order_mesh as mesh
 from .second_order_mixed import assemble, physical_model, solve_combination
+from .second_order_sections import peak_efforts, recover_members
 
 KEY_LOADS = ("fx_n","fy_n","fz_n","mx_nm","my_nm","mz_nm")
 
@@ -28,23 +30,74 @@ def amplification(second,first):
     fail("SECOND_ORDER_NOT_CONVERGED","Cannot normalize amplification for a zero first-order response.")
 
 
+def solve_mesh(elements, coordinates, fixed, loads, initial_subdivisions):
+    """Resolve all combinations at each level before accepting a common mesh."""
+    subdivisions = initial_subdivisions
+    old = {}
+    levels = []
+    physical_dofs = 6*len(coordinates)
+    controlling = next(iter(loads))
+    while True:
+        try:
+            segments,x,restraints = mesh.refine(elements,coordinates,fixed,subdivisions)
+        except AnalysisError as error:
+            raise AnalysisError(error.code,str(error),combination_id=controlling) from error
+        levels.append(subdivisions)
+        reference = assemble(segments,np.zeros(6*len(x)),None)
+        states,metrics = {},{}
+        for name,(nodal,uniform) in loads.items():
+            weights = {e["id"]:uniform[e["parent"]]/subdivisions for e in segments
+                       if e["parent"] in uniform}
+            try:
+                state = solve_combination(segments,x,restraints,np.pad(nodal,(0,6*len(x)-physical_dofs)),
+                                          initial=reference,uniform=weights)
+                amp,measure = amplification(state["u"][:physical_dofs].reshape(-1,6),
+                                            state["linear"][:physical_dofs].reshape(-1,6))
+                metrics[name] = amp,peak_efforts(segments,state["rows"],state["u"])
+            except AnalysisError as error:
+                raise AnalysisError(error.code,f"{name}: {error}",combination_id=name) from error
+            states[name] = state,amp,measure
+        if all(e["kind"]=="axial" for e in elements):
+            break
+        if subdivisions >= initial_subdivisions*2**mesh.MIN_REFINEMENTS:
+            unconverged = [name for name,metric in metrics.items() if not mesh.converged(old[name],metric)]
+            if not unconverged:
+                break
+            controlling = unconverged[0]
+        subdivisions *= 2
+        old = metrics
+    final = {e["id"]:1 if e["kind"]=="axial" else subdivisions for e in elements}
+    return segments,states,final,levels
+
+
 def analyze_second_order_v3(raw,joint_actions):
     started = time.perf_counter()
-    obj(raw,KEYS+" analysis_order solution_mode","second-order mixed model")
+    if "nodal_springs" in raw or "springs" in raw:
+        fail("SECOND_ORDER_UNSUPPORTED_SPRING","Nodal springs are outside the second-order /3 contract.")
+    optional = " mesh_initial_subdivisions" if "mesh_initial_subdivisions" in raw else ""
+    obj(raw,KEYS+" analysis_order solution_mode"+optional,"second-order mixed model")
+    subdivisions = raw.get("mesh_initial_subdivisions",mesh.INITIAL_SUBDIVISIONS)
+    if type(subdivisions) is not int or subdivisions not in (1,2,4):
+        fail("INVALID_INPUT","mesh_initial_subdivisions must be 1, 2 or 4.")
     if raw["schema_version"] != "jpn.mixed3d/3":
         fail("UNSUPPORTED_MODEL","Second order requires jpn.mixed3d/3.")
     if raw["local_axes"] != CONVENTION:
         fail("AXIS_CONVENTION_REQUIRED","Explicit jpn-z-up/1 reference required.")
     if joint_actions is not None:
         fail("SECOND_ORDER_UNSUPPORTED_TRACE","The linear joint-action contract is unavailable in second order.")
-    linear_input = {k:v for k,v in raw.items() if k not in ("analysis_order","solution_mode","local_axes")}
+    linear_input = {k:v for k,v in raw.items()
+                    if k not in ("analysis_order","solution_mode","local_axes","mesh_initial_subdivisions")}
     linear_input["schema_version"] = "jpn.mixed3d/2"
-    data,loading = compile_loaded_mixed3d(linear_input)
+    try:
+        data,loading = compile_loaded_mixed3d(linear_input)
+    except AnalysisError as error:
+        if error.code == "UNSUPPORTED_RELEASE":
+            fail("SECOND_ORDER_UNSUPPORTED_RELEASE",str(error))
+        raise
     cases = {l["case"] for l in loading["frame_loads"]}
     _,points,frames,supports = validate_mixed3d(data,distributed_cases=cases)
     elements,x,fixed,index = physical_model(data,points,frames,supports)
     by_id = {r["id"]:r for r in elements}
-    reference = assemble(elements,np.zeros(6*len(x)),None)
     nodal = {c["id"]:np.zeros((len(x),6)) for c in data["cases"]}
     for row in data["nodal_loads"]:
         nodal[row["case"]][index[row["node"]]] += np.array([row[k] for k in KEY_LOADS])
@@ -58,9 +111,7 @@ def analyze_second_order_v3(raw,joint_actions):
         weights = distributed[row["case"]]
         weights[member["id"]] = weights.get(member["id"],np.zeros(3))+w*np.linalg.norm(b-a)
 
-    results = {}
-    # Build the entire response privately. A refusal names the combination and
-    # propagates to the worker as a pure error envelope.
+    loads = {}
     for combo in data["combinations"]:
         name = combo["id"]
         load = np.zeros((len(x),6))
@@ -71,13 +122,15 @@ def analyze_second_order_v3(raw,joint_actions):
             load += factor*nodal[cid]
             for mid,value in distributed[cid].items():
                 uniform[mid] = uniform.get(mid,np.zeros(3))+factor*value
+        loads[name] = load.ravel(),{mid:v for mid,v in uniform.items() if np.any(v)}
+    segments,states,final_mesh,levels = solve_mesh(elements,x,fixed,loads,subdivisions)
+    results = {}
+    for name,(state,amp,measure) in states.items():
+        u,support = (state[k].reshape(-1,6) for k in ("u","reactions"))
         try:
-            state = solve_combination(elements,x,fixed,load.ravel(),initial=reference,
-                                      uniform={mid:v for mid,v in uniform.items() if np.any(v)})
-            u,support = (state[k].reshape(-1,6) for k in ("u","reactions"))
-            amp,measure = amplification(u,state["linear"].reshape(-1,6))
+            members = recover_members(segments,state["rows"],state["u"],final_mesh)
         except AnalysisError as error:
-            fail(error.code,f"{name}: {error}")
+            raise AnalysisError(error.code,f"{name}: {error}",combination_id=name) from error
         results[name] = dict(
             status="converged", iterations=state["iterations"], amplification_factor=amp,
             amplification_measure=measure,
@@ -86,13 +139,12 @@ def analyze_second_order_v3(raw,joint_actions):
             nodes={n:dict(translation_m=u[i,:3].tolist(),rotation_rad=u[i,3:].tolist(),active_rotations=n in frames,
                           reaction_force_n=support[i,:3].tolist(),reaction_moment_nm=support[i,3:].tolist())
                    for n,i in index.items()},
-            members={element["id"]:dict(kind=element["kind"],axial_n=row["axial_n"],
-                                       end_actions_global=row["net_end_actions"].tolist())
-                     for element,row in zip(elements,state["rows"])},
+            members=members,
         )
     return dict(schema_version="jpn.mixed3d-result/3",status="analysis_completed_experimental",units="SI",
                 analysis_order="second-order",solution_mode="per-combination",local_axes=CONVENTION,
                 project=raw["project"],input_sha256=input_hash(raw),combinations=results,
+                mesh_subdivisions=final_mesh,loading=loading["trace"],
                 solver=dict(name="JPN M43",adapter="jpn-mixed3d/3",method="corotational-newton"),
-                diagnostics=dict(elapsed_seconds=time.perf_counter()-started),
+                diagnostics=dict(elapsed_seconds=time.perf_counter()-started,mesh_levels=levels),
                 computedStructuralApproval=False,fabricationRelease=False,releaseGate="NOT_READY_BLOCKED")
