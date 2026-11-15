@@ -1,4 +1,6 @@
 """Research mixed corotational assembly with M43 frames and true axial bars."""
+from math import fsum
+
 import numpy as np
 
 from .frame3d_model import fail
@@ -64,29 +66,46 @@ def dead_uniform_action(row, q, force, *, centroid=None):
                 force=force,center=center)
 
 
-def assemble(elements, u, spring, uniform=None):
+def _section_displacement(u, low, dofs, end):
+    q = u[dofs]
+    # Both potentials are invariant in their derivatives under a common
+    # translation. Evaluate the chord from the high and low differences.
+    for i in range(3):
+        q[end+i] = fsum((q[end+i],-q[i],low[dofs[end+i]],-low[dofs[i]]))
+    q[:3] = 0.
+    return q
+
+
+def assemble(elements, u, spring, uniform=None, *, low=None):
     force = spring@u if spring is not None else np.zeros(len(u))
+    if spring is not None and low is not None:
+        force += spring@low
     tangent = spring.copy() if spring is not None else np.zeros((len(u),len(u)))
     frame_rows,frame_q,hinges = [],[],{}
     for i,row in enumerate(elements):
         if row["kind"]=="frame":
-            q = u[row.get("assembly_dofs",row["dofs"])]
+            dofs = row.get("assembly_dofs",row["dofs"])
+            q = u[dofs] if low is None else _section_displacement(u,low,dofs,6)
             if row.get("hinges"):
                 q,jacobian,curvature = section_coordinates(row,q)
-                hinges[i] = (q,jacobian,curvature)
+                hinges[i] = (jacobian,curvature)
             frame_rows.append(row)
             frame_q.append(q)
-    responses = iter(frame_responses(frame_rows,frame_q)) if frame_rows else iter(())
+    responses = iter(zip(frame_responses(frame_rows,frame_q),frame_q)) if frame_rows else iter(())
     rows = []
     for i,row in enumerate(elements):
         dofs = row.get("assembly_dofs",row["dofs"])
         x = row["coordinates"]
         if row["kind"] == "axial":
-            answer = axial_response(x,u[dofs],row["ea"])
+            q = u[dofs] if low is None else _section_displacement(u,low,dofs,3)
+            answer = axial_response(x,q,row["ea"])
         else:
-            answer = next(responses)
+            answer,section = next(responses)
+            if low is not None:
+                answer["section_q"] = section
+                answer["translation_origin"] = u[dofs[:3]]+low[dofs[:3]]
             if i in hinges:
-                section,jacobian,curvature = hinges[i]
+                jacobian,curvature = hinges[i]
                 answer["force"],answer["tangent"] = pullback(jacobian,curvature,answer["force"],answer["tangent"])
                 answer.update(section_q=section,release_derivatives=(jacobian,curvature))
         force[dofs] += answer["force"]
@@ -106,13 +125,15 @@ def apply_uniform(elements, u, uniform, state, centroids=None):
             continue
         dofs = row.get("assembly_dofs",row["dofs"])
         answer = rows[i]
-        section = answer["section_q"] if row.get("hinges") else u[dofs]
+        section = answer["section_q"] if "section_q" in answer else u[dofs]
         if centroids is None:
             action = dead_uniform_action(row,section,value)
         else:
             if i not in centroids:
                 centroids[i] = uniform_centroid(row,section)
             action = dead_uniform_action(row,section,value,centroid=centroids[i])
+        if "translation_origin" in answer:
+            action["center"] += answer["translation_origin"]
         if row.get("hinges"):
             action["generalized"],action["tangent"] = pullback(
                 *answer["release_derivatives"],action["generalized"],action["tangent"])
@@ -120,6 +141,12 @@ def apply_uniform(elements, u, uniform, state, centroids=None):
         force[dofs] -= action["generalized"]
         tangent[np.ix_(dofs,dofs)] -= action["tangent"]
     return force,tangent,rows
+
+
+def _sum_with_roundoff(a,b):
+    summed = a+b
+    part = summed-a
+    return summed,(a-(summed-part))+(b-part)
 
 
 def _solve(matrix, force, free, *, reference=False, cache=None):
@@ -168,6 +195,25 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
     rhs = load-state[0]
     denominator = max(1.,norm(rhs))
     linear,_ = solve(elastic[1],rhs,reference=True)
+    low = None
+    def search(delta, residual_norm, correction):
+        for exponent in range(9):
+            step = delta*(2.**-exponent)
+            if correction is None:
+                trial,tail = u+step,None
+            else:
+                trial,roundoff = _sum_with_roundoff(u,step)
+                trial,tail = _sum_with_roundoff(trial,correction+roundoff)
+            try:
+                trial_state = assemble(elements,trial,spring,uniform,low=tail)
+            except AnalysisError as error:
+                if error.code.startswith("SPATIAL_") or error.code=="SECOND_ORDER_NOT_CONVERGED":
+                    continue
+                raise
+            if norm(trial_state[0]-load) < residual_norm:
+                return trial,trial_state,tail
+        return None
+
     for iteration in range(MAX_ITERATIONS+1):
         internal,tangent,rows = state
         residual = internal-load
@@ -177,36 +223,30 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
             break
         if iteration == MAX_ITERATIONS:
             fail("SECOND_ORDER_NOT_CONVERGED", "Newton iteration limit reached.")
-        for exponent in range(9):
-            trial = u+delta*(2.**-exponent)
-            try:
-                next_state = assemble(elements,trial,spring,uniform)
-            except AnalysisError as error:
-                if error.code.startswith("SPATIAL_") or error.code=="SECOND_ORDER_NOT_CONVERGED":
-                    continue
-                raise
-            if norm(next_state[0]-load) < relative_norm:
-                u,state = trial,next_state
+        advancing = search(delta,relative_norm,low)
+        if advancing is None and low is None and np.any((delta[free]!=0.)&(u[free]+delta[free]==u[free])):
+            # Re-evaluate the same iterate before applying the correction.
+            # Otherwise the Newton direction would include the rounding
+            # error of the original chord calculation.
+            low = np.zeros_like(u)
+            state = assemble(elements,u,spring,uniform,low=low)
+            residual = state[0]-load
+            delta,condition = solve(state[1],-residual)
+            relative_norm = norm(residual)
+            if relative_norm<=NEWTON_RELATIVE*denominator:
+                internal,tangent,rows = state
                 break
-        else:
-            # At a stalled iterate, test the residual against the force error
-            # induced by rounding each stored free coordinate to nearest.
-            # The engineering equilibrium audit below still applies in full.
-            quantum = np.abs(np.spacing(u[free]))/2
-            if projection is None:
-                roundoff = abs(tangent[np.ix_(free,free)])@quantum
-                unbalanced = abs(residual[free])
-            else:
-                roundoff = abs(projection.T@tangent[:,free])@quantum
-                unbalanced = abs(projection.T@residual)
-            if np.any((delta[free]!=0.)&(u[free]+delta[free]==u[free])) and np.all(unbalanced<=roundoff):
-                break
+            advancing = search(delta,relative_norm,low)
+        if advancing is None:
             fail("SECOND_ORDER_NOT_CONVERGED", "Newton search could not reduce the free residual.")
+        u,state,low = advancing
 
     motion = u[:physical_size].reshape(-1,6)
     if np.max(np.linalg.norm(motion[:,:3],axis=1))/span > .01 or np.max(np.linalg.norm(motion[:,3:],axis=1)) > .05:
         fail("SECOND_ORDER_NOT_CONVERGED", "Motion exceeds the corotational research domain.")
     spring_force = spring@u if spring is not None else np.zeros(len(u))
+    if spring is not None and low is not None:
+        spring_force += spring@low
     physical = spring_force.copy()
     line_loads = []
     for element,row in zip(elements,rows):
