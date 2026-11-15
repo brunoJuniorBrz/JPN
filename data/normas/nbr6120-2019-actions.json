@@ -1,0 +1,93 @@
+{
+  "schema_version": "jpn.nbr6120-data/1",
+  "revision": "M42-P2-1",
+  "standard": "ABNT NBR 6120",
+  "edition": "2019 (segunda edição, 30.09.2019)",
+  "emendaOrErrata": "not-verified: o exemplar fornecido é a edição original 2019; emendas posteriores não foram conferidas",
+  "source": "PDF escaneado (66 páginas, TOAZ.INFO) fornecido pelo usuário; páginas do documento = páginas do PDF - 6",
+  "verification": {
+    "date": "2026-11-14",
+    "method": "Leitura das imagens a 100-120 dpi; todas as células e fórmulas usadas estavam legíveis",
+    "pages": {"table1": "p.8-10 (PDF 14-16)", "table5": "p.13 (PDF 19)", "table6": "p.13 (PDF 19)", "table8": "p.14 (PDF 20)", "section6_4": "p.29-30 (PDF 35-36)"},
+    "professionalReview": "pending"
+  },
+  "permanent": {
+    "table1": {
+      "clause": "5.3, Tabela 1 (p.9)",
+      "steel": {"minKnM3": 77, "maxKnM3": 78.5, "meanKnM3": 77.8},
+      "aluminium": {"knM3": 28},
+      "rule": "5.2: peso próprio com dimensões nominais e valor médio do peso específico; 5.1: valores mínimos na falta de determinação experimental"
+    },
+    "table5Telhas": {
+      "clause": "5.4, Tabela 5 (p.13)",
+      "basis": "kN/m² na superfície INCLINADA, incluindo superposição, fixações e absorção de água",
+      "items": {
+        "ceramic-general": {"label": "Telha cerâmica em geral (exceto germânica e colonial)", "knM2": 0.45},
+        "ceramic-germanic-colonial": {"label": "Telha cerâmica tipo germânica ou colonial", "knM2": 0.60},
+        "fibrocement-corrugated-4mm": {"label": "Telha de fibrocimento ondulada, espessura 4 mm", "knM2": 0.14},
+        "fibrocement-corrugated-5mm": {"label": "Telha de fibrocimento ondulada, espessura 5 mm", "knM2": 0.16},
+        "fibrocement-corrugated-6mm": {"label": "Telha de fibrocimento ondulada, espessura 6 mm", "knM2": 0.18},
+        "fibrocement-corrugated-8mm": {"label": "Telha de fibrocimento ondulada, espessura 8 mm", "knM2": 0.24},
+        "fibrocement-modular-8mm": {"label": "Telha de fibrocimento modulada, espessura 8 mm", "knM2": 0.26},
+        "fibrocement-channel-8mm": {"label": "Telha de fibrocimento tipo canalete, espessura 8 mm", "knM2": 0.25},
+        "aluminium-0.6mm": {"label": "Telha de alumínio, espessura 0,6 mm", "knM2": 0.025},
+        "aluminium-0.8mm": {"label": "Telha de alumínio, espessura 0,8 mm", "knM2": 0.035},
+        "plastic-general": {"label": "Telha plástica em geral (exceto colonial)", "knM2": 0.05},
+        "plastic-colonial": {"label": "Telha plástica tipo colonial", "knM2": 0.15},
+        "steel-0.5mm": {"label": "Telha de aço ondulada ou trapezoidal, espessura 0,5 mm", "knM2": 0.06},
+        "steel-0.8mm": {"label": "Telha de aço ondulada ou trapezoidal, espessura 0,8 mm", "knM2": 0.10},
+        "steel-1.25mm": {"label": "Telha de aço ondulada ou trapezoidal, espessura 1,25 mm", "knM2": 0.14},
+        "glass": {"label": "Telha de vidro", "knM2": 0.45}
+      }
+    },
+    "table8Ceilings": {
+      "clause": "5.4, Tabela 8 (p.14)",
+      "basis": "kN/m² em planta (forro/instalação)",
+      "items": {
+        "ceiling-mineral-fibre": {"label": "Forro de fibra mineral, inclui estrutura de suporte", "knM2": 0.10},
+        "ceiling-plasterboard": {"label": "Forro de gesso acartonado, inclui estrutura de suporte", "knM2": 0.25},
+        "ceiling-plaster-tiles": {"label": "Forro de gesso em placas, inclui estrutura de suporte", "knM2": 0.15},
+        "ceiling-pvc": {"label": "Forro de PVC, inclui estrutura de suporte", "knM2": 0.10},
+        "ceiling-aluminium-tiles": {"label": "Forro de placas de alumínio, inclui estrutura de suporte", "knM2": 0.10},
+        "duct-ventilation-uninsulated": {"label": "Dutos de ventilação, sem isolamento térmico", "knM2": 0.20},
+        "duct-air-conditioning-insulated": {"label": "Dutos de ar-condicionado, com isolamento térmico", "knM2": 0.30},
+        "sprinkler-up-to-65mm": {"label": "Rede de chuveiros automáticos (sprinkler) com diâmetro nominal até 65 mm", "knM2": 0.10},
+        "sprinkler-up-to-80mm": {"label": "Rede de chuveiros automáticos (sprinkler) com diâmetro nominal até 80 mm", "knM2": 0.15}
+      },
+      "note": "5.4: forros e instalações de instalação incerta podem ser tratados como ações variáveis em casos específicos"
+    },
+    "table6TelhadosRegisteredNotEnabled": {
+      "clause": "Tabela 6 (p.13)",
+      "reason": "peso na superfície horizontal INCLUINDO a estrutura de suporte (tesouras, terças, caibros, ripas): duplicaria o peso próprio já modelado; bloqueado"
+    },
+    "excludedFromVariable": "6.4: pesos de instalações, forros, isolamentos, redes, painéis fotovoltaicos/aquecimento solar etc. são cargas permanentes (seção 5), não parte da carga variável de cobertura"
+  },
+  "variable": {
+    "roof": {
+      "clause": "6.4 e Figura 2 (p.29-30)",
+      "scope": "coberturas e telhados em geral, acessíveis apenas para manutenção",
+      "projection": "horizontal",
+      "minSlopePercent": 1,
+      "notRecommendedBelowPercent": 2,
+      "formula": "q = 0,50*alpha, 0,25 <= q <= 0,50 kN/m²; alpha = 1,0 para 1%<i<=2% (Figura 2: i=1% incluído); 2,0-0,5*i para 2%<i<3%; 0,5 para i>=3%",
+      "slopeDefinition": "i = inclinação entre a cumeeira e a extremidade mais baixa, em %",
+      "drainageOption": "carga de 0,25 kN/m² se houver drenagem suficiente e rigidez adequada, com verificação do Anexo D (empoçamento); i>=5% dispensa a verificação",
+      "tensionedMembraneKnM2": 0.25,
+      "annexD": "Anexo D (p.58) não implementado: verificação de empoçamento é declarada, não calculada"
+    },
+    "concentrated": {
+      "clause": "6.4 (p.30)",
+      "valueKn": 1.0,
+      "applies": "todo elemento isolado de cobertura (ripas, terças, banzos superiores) na posição mais desfavorável, além do carregamento permanente",
+      "isolated": "atua isolada das demais forças variáveis",
+      "positionNote": "a posição mais desfavorável é declarada; envelope de posições não é calculado"
+    },
+    "ceilingLiveLoad": "6.4: havendo forro sob a cobertura, aplicar a carga variável de forro da Tabela 10 (não habilitada neste módulo)",
+    "snowDustSpecial": "neve, granizo e acúmulo de pó: cargas adicionais caso a caso (não habilitadas)"
+  },
+  "psiRowFor8681": {
+    "row": "libraries-archives-warehouses-workshops-garages-roofs",
+    "note": "a linha da Tabela 6 da NBR 8681:2025 'Bibliotecas, arquivos, depósitos, oficinas, garagens e coberturas' cita explicitamente coberturas"
+  },
+  "blocked": ["Tabela 6 (telhados com estrutura)", "Tabela 10 (cargas de utilização e forros)", "cargas de neve/granizo/pó", "empoçamento progressivo (Anexo D)", "envelope de posições da carga concentrada", "coberturas tensionadas e lajes de cobertura (Tabela 10)", "pontes rolantes (Anexo C) e demais ações da seção 6.6-6.12", "variação de carga por face com inclinações diferentes"]
+}
