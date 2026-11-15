@@ -1,3 +1,4 @@
+import { declareAxes } from "./axes";
 import { openEngineeringTool } from "./result-tabs";
 import { expect,test,type Locator,type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";

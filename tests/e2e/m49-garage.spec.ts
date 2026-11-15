@@ -1,3 +1,4 @@
+import { declareAxes } from "./axes";
 import {expect,test} from "@playwright/test";
 import {mkdir,readFile,writeFile} from "node:fs/promises";
 import {m49GarageProject} from "../../src/domain/test-support/m49-garage-project";
@@ -30,7 +31,7 @@ test("M49: garagem sem tesoura, ligação à flexão declarada na interface -> P
   await panel.getByLabel("Ligação da extremidade inicial",{exact:true}).selectOption("bending-pinned");
   await page.getByRole("button",{name:"Salvar levantamento",exact:true}).click();
   const response=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");
-  await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
+  await declareAxes(panel);await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
   const http=await response;expect(http.status()).toBe(200);
   const request=http.request().postDataJSON(),out=await http.json(),result=out.result;
   expect(request.project.id).toBe(ownerId);expect(request.members).toHaveLength(7);

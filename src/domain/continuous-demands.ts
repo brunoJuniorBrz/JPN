@@ -1,5 +1,5 @@
 import { extractMemberDemands,type DemandInput,type DemandForces,demandComponents } from "./member-demands";
-import { anyMixedRequestSchema,anyMixedResultSchema } from "./structural-loading";
+import { anyMixedRequestSchema,anyMixedResultSchema,isLoadedRequest,isLoadedResult } from "./structural-loading";
 import { verifyJointActionTrace,type V3 } from "./member-end-actions";
 import { mixedInputHash } from "./mixed-analysis";
 
@@ -35,9 +35,9 @@ export async function extractContinuousDemands(prepared:DemandInput,value:unknow
       const m=request.members.find(m=>m.id===segment.id)!,response=result.combinations[combo.id].members[m.id],L=response.length_m;
       const q:V3=[0,0,0],R=trace.members[m.id].global_to_local;
       const addLoad=(v:V3,coordinates:"local"|"global",factor:number)=>{const local=coordinates==="local"?v:R.map(row=>row.reduce((s,x,i)=>s+x*v[i],0));local.forEach((x,i)=>q[i]+=x*factor);};
-      if(request.schema_version==="jpn.mixed3d/2"){
+      if(isLoadedRequest(request)){
         for(const l of request.member_loads)if(l.member===m.id)addLoad(l.force_per_length_n_m,l.coordinate_system,combo.factors[l.case]??0);
-        if(result.schema_version==="jpn.mixed3d-result/2"&&result.loading.self_weight){const sw=result.loading.self_weight,w=sw.members.find(w=>w.member===m.id);if(w?.representation==="consistent-frame-udl")addLoad(w.force_n.map(x=>x/L) as V3,"global",combo.factors[sw.case]??0);}
+        if(isLoadedResult(result)&&result.loading.self_weight){const sw=result.loading.self_weight,w=sw.members.find(w=>w.member===m.id);if(w?.representation==="consistent-frame-udl")addLoad(w.force_n.map(x=>x/L) as V3,"global",combo.factors[sw.case]??0);}
       }
       const a=response.kind==="frame"?response.end_actions_local:null;
       const forcePolynomials:Record<keyof DemandForces,number[]|null>=a?{nN:[-a[0],-q[0]*L],vyN:[-a[1],-q[1]*L],vzN:[-a[2],-q[2]*L],tNm:[-a[3]],myNm:[-a[4],-a[2]*L,-q[2]*L*L/2],mzNm:[-a[5],a[1]*L,q[1]*L*L/2]}:{nN:[response.kind==="axial"?response.axial_n:NaN],vyN:null,vzN:null,tNm:null,myNm:null,mzNm:null};
