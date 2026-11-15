@@ -37,8 +37,32 @@ disponível no executor local, com recusa explícita no remoto. A avaliação
 integrada usa o mesmo orquestrador de evidências do app.
 
 Em respostas POST bem-sucedidas, compare `X-JPN-Request-Sha256` e os
-hashes de entrada do solver. Recibos de execução continuam vinculados
-aos resultados que realmente ocorreram. Tempos e hashes derivados do
-resultado podem variar entre execuções. Repetições locais do mesmo
-Ue também apresentaram variação de cerca de 6,5e−8 mm⁴ em J,
-aproximadamente 1,1e−10 em termos relativos.
+hashes de entrada do solver. No ensaio local ↔ WSGI real do #122, a maior
+diferença relativa entre grandezas físicas do M50/Ue foi **1,14252e−10**
+em `geometry_audit.computed_properties.j_m4`. O remoto retornou
+5,706047484690789e−10 m⁴ e o local 5,706047484038863e−10 m⁴.
+A diferença absoluta de 6,51926e−20 m⁴ também apareceu entre execuções
+locais do Ue. O diagnóstico `differences.j_m4.absolute_difference`
+teve o maior delta relativo bruto, **2,59116e−4**, por comparar
+resíduos em torno de 2,52e−16 m⁴.
+
+O teste exige erro relativo de até **1e−9** para os números físicos,
+com piso absoluto de 1e−21 nas unidades do campo. A comparação usa
+o maior módulo dos dois valores como denominador. Para diagnósticos de
+subtração, os pisos absolutos são 1e−9 para `refinement.relativeChanges`
+e 1e−18 m⁴ para `differences.j_m4.absolute_difference`. Esses limites
+se aplicam ao teste de paridade do INT-2.
+
+O `assessmentSha256` muda por vincular o conteúdo completo. Já
+`analysisInputSha256` permanece idêntico entre local e remoto, assim
+como `input_sha256` para uma requisição de solver idêntica. O
+`calculation_input_sha256` ficou idêntico no design direto com os
+mesmos bytes. No M50 integrado, o `calculationInputSha256` variou
+porque os pedidos de design vinculam o resultado da análise de origem.
+O `analysisResultSha256` inclui o tempo da execução e pode variar.
+
+A conferência do Studio do #123, SHA `39af706`, aceitou o overlay
+de momento dos resultados remotos do M50 em /2 e /3 lineares e
+recusou um hash de entrada obsoleto. O ensaio chamou os validadores
+do Studio sobre respostas WSGI reais. O parser do Studio desse SHA
+abrange os resultados lineares.

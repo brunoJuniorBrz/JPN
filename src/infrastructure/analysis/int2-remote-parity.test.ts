@@ -54,6 +54,8 @@ function withoutTiming(value:unknown):unknown{
 
 const derivedHashes=new Set(["analysisResultSha256","assessmentSha256","reportSha256","resultSha256",
   "calculation_input_sha256","calculationInputSha256","priorAssessmentSha256","continuousReportSha256","baseReportSha256"]);
+// INT-2-VERCEL.md records the field-specific floors and measured differences.
+const m50ParityTolerance={relative:1e-9,absolute:1e-21,refinementRatios:1e-9,jDifferenceM4:1e-18} as const;
 
 function comparisonDifferences(actual:unknown,expected:unknown,calculationHashes=new Map<string,string>(),path="",differences:string[]=[]){
   if(actual===expected)return differences;
@@ -74,9 +76,9 @@ function comparisonDifferences(actual:unknown,expected:unknown,calculationHashes
     // These two reported diagnostics subtract nearby numbers. The Ue mesh
     // repeatability is measured on the properties themselves, above this
     // loss of relative precision in the small difference.
-    const absolute=path.includes("/geometry_audit/refinement/relativeChanges/")?1e-9:
-      path.endsWith("/geometry_audit/differences/j_m4/absolute_difference")?1e-18:1e-21;
-    if(Math.abs(actual-expected)>Math.max(absolute,1e-9*Math.abs(actual),1e-9*Math.abs(expected)))
+    const absolute=path.includes("/geometry_audit/refinement/relativeChanges/")?m50ParityTolerance.refinementRatios:
+      path.endsWith("/geometry_audit/differences/j_m4/absolute_difference")?m50ParityTolerance.jDifferenceM4:m50ParityTolerance.absolute;
+    if(Math.abs(actual-expected)>Math.max(absolute,m50ParityTolerance.relative*Math.max(Math.abs(actual),Math.abs(expected))))
       differences.push(`${path}: ${actual} vs ${expected}`);
   }else{
     differences.push(`${path}: ${String(actual)} vs ${String(expected)}`);
