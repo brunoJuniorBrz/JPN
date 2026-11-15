@@ -2,6 +2,7 @@ import path from "node:path";
 import { projectSchema, type Project } from "@/domain/models";
 import { ProjectStoreError, type ProjectStore, type ServerProjectRecord } from "@/domain/server-projects";
 import { FileProjectStore, PROJECT_ID } from "@/infrastructure/persistence/file-project-store";
+import { BlobProjectStore, vercelBlobPort } from "@/infrastructure/persistence/blob-project-store";
 import { remoteMixedAccess, remoteMixedEnabled } from "@/infrastructure/analysis/remote-mixed-runner";
 import { MAX_BACKUP_BYTES } from "@/infrastructure/persistence/local";
 
@@ -12,7 +13,15 @@ const noStore = { "Cache-Control": "no-store" };
 export const projectsRoot = () => path.resolve(process.env.JPN_PROJECTS_DIR || ".data/projects");
 let injected: ProjectStore | null = null;
 export const useProjectStore = (store: ProjectStore | null) => { injected = store; };
-const store = (): ProjectStore => injected ?? new FileProjectStore(projectsRoot());
+/** Backend choice. Production = Vercel Blob (`BLOB_READ_WRITE_TOKEN`, created by the project owner). Local disk only for development/tests
+ * (or `JPN_PROJECTS_BACKEND=file`). Without either, the API refuses (503 PROJECTS_STORAGE_UNCONFIGURED) instead of silently using an ephemeral disk. */
+const store = (): ProjectStore => {
+  if (injected) return injected;
+  const forced = process.env.JPN_PROJECTS_BACKEND;
+  if (forced === "file" || (forced !== "blob" && !process.env.BLOB_READ_WRITE_TOKEN && ["development", "test"].includes(process.env.NODE_ENV ?? ""))) return new FileProjectStore(projectsRoot());
+  if (process.env.BLOB_READ_WRITE_TOKEN) return new BlobProjectStore(vercelBlobPort(process.env.BLOB_READ_WRITE_TOKEN));
+  throw new ProjectStoreError("UNCONFIGURED", "Armazenamento de projetos não configurado: crie o Blob store privado e defina BLOB_READ_WRITE_TOKEN (o disco local é só para desenvolvimento).");
+};
 
 function reply(body: unknown, status = 200, headers: HeadersInit = noStore) { return Response.json(body, { status, headers }); }
 function fail(code: string, message: string, status: number, headers: HeadersInit = noStore) { return reply({ error: { code, message } }, status, headers); }
@@ -34,7 +43,7 @@ export function operatorOf(request: Request, post = false): { owner: string } | 
   return fail("PROJECTS_DISABLED", "Projetos no servidor exigem o acesso de operador (JPN_MIXED_REMOTE_ENABLED) ou o executor local de desenvolvimento.", 403);
 }
 function failure(e: unknown) {
-  if (e instanceof ProjectStoreError) return fail(e.code, e.message.replace(/^[A-Z_]+: /, ""), e.code === "VERSION_CONFLICT" ? 409 : e.code === "NOT_FOUND" ? 404 : e.code === "FORBIDDEN" ? 403 : 500);
+  if (e instanceof ProjectStoreError) return fail(e.code === "UNCONFIGURED" ? "PROJECTS_STORAGE_UNCONFIGURED" : e.code, e.message.replace(/^[A-Z_]+: /, ""), e.code === "VERSION_CONFLICT" ? 409 : e.code === "NOT_FOUND" ? 404 : e.code === "FORBIDDEN" ? 403 : e.code === "UNCONFIGURED" ? 503 : 500);
   return fail("UNAVAILABLE", "Armazenamento de projetos indisponível.", 503);
 }
 const summary = (r: ServerProjectRecord) => ({ projectId: r.projectId, version: r.version, parentVersion: r.parentVersion, savedAt: r.savedAt, payloadSha256: r.payloadSha256, snapshotVersion: r.snapshotVersion, name: r.payload.name });

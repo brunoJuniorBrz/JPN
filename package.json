@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@tarikjabiri/dxf": "2.10.0",
+    "@vercel/blob": "2.9.0",
     "exceljs": "^4.4.0",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.9",

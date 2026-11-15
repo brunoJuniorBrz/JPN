@@ -17,7 +17,7 @@ export interface ServerProjectRecord {
   payload: Project;
 }
 export class ProjectStoreError extends Error {
-  constructor(readonly code: "VERSION_CONFLICT" | "NOT_FOUND" | "FORBIDDEN" | "HASH_MISMATCH", message: string) { super(`${code}: ${message}`); }
+  constructor(readonly code: "VERSION_CONFLICT" | "NOT_FOUND" | "FORBIDDEN" | "HASH_MISMATCH" | "UNCONFIGURED", message: string) { super(`${code}: ${message}`); }
 }
 export interface ProjectStore {
   list(ownerId: string): Promise<ServerProjectRecord[]>;                     // latest version of each project

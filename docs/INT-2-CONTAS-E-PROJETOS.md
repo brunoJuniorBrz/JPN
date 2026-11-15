@@ -6,13 +6,20 @@ Nada foi criado fora do repositório: nenhuma conta, nenhum serviço, nenhum seg
 ## Decisão atual: operador único, sem provedor externo (implementado)
 - Acesso: o mesmo operador que já aciona o engine (`JPN_MIXED_ACCESS_USER`/`JPN_MIXED_ACCESS_PASSWORD`, Basic + origem exata) ou, em desenvolvimento, o executor local.
   O dono do projeto é derivado no servidor (`operator:<usuário>`); o cliente nunca escolhe o dono.
-- Armazenamento: `FileProjectStore`, arquivos JSON versionados em `JPN_PROJECTS_DIR` (padrão `.data/projects`, ignorado pelo git):
-  `<hash do dono>/<projeto>/v000001.json`. Cada versão é criada de forma atômica e exclusiva (duas gravações da mesma versão: só uma vence, a outra é `VERSION_CONFLICT`),
-  nunca é reescrita, e a leitura confere o `payloadSha256` (adulteração em disco = `HASH_MISMATCH`).
+- Armazenamento (produção): **Vercel Blob privado** (`BlobProjectStore`). Cada versão é um blob `projects/<hash do dono>/<projeto>/v000001.json` criado com
+  `allowOverwrite:false`: versão existente nunca é reescrita, duas gravações da mesma versão têm um só vencedor (a outra recebe **409 `VERSION_CONFLICT`**, mesmo com listagem atrasada),
+  e toda leitura confere o `payloadSha256` (adulteração = `HASH_MISMATCH`). Detecção do conflito: o SDK recusa a criação com erro "already exists"; confirme no primeiro uso real
+  (prévia) que a mensagem do SDK continua assim — o teste cobre o contrato com um Blob simulado, não o serviço real.
+- Armazenamento (desenvolvimento): `FileProjectStore` em disco (`JPN_PROJECTS_DIR`, padrão `.data/projects`), usado só quando `NODE_ENV` é `development`/`test` e não há token do Blob
+  (ou com `JPN_PROJECTS_BACKEND=file`). **Em produção sem `BLOB_READ_WRITE_TOKEN` a API recusa (503 `PROJECTS_STORAGE_UNCONFIGURED`)**; nunca usa o disco efêmero da Vercel.
 - API: `GET /api/projects` (lista), `GET /api/projects/<id>[?version=N]`, `PUT /api/projects/<id>` com `{project, expectedVersion, snapshotVersion}` (409 em conflito).
 - Tela: Backup → "Projetos no servidor (operador único)": enviar projetos do navegador (migração sem alterar dados nem números), ver a lista e baixar os projetos do servidor como backup.
-- Onde funciona: servidor com disco durável (máquina local, VM, contêiner com volume). **O sistema de arquivos das funções da Vercel é efêmero**: em produção na Vercel,
-  esta persistência NÃO é durável; é preciso um adaptador durável para a mesma porta `ProjectStore` (a proposta abaixo continua válida). Defina `JPN_PROJECTS_DIR` num volume persistente.
+
+### O que você cria na Vercel (não foi criado)
+1. No projeto `jpn` (o app, não o engine): **Storage → Create → Blob**, acesso **Private**; conecte o store ao projeto nos ambientes Production e Preview.
+2. A conexão cria a variável **`BLOB_READ_WRITE_TOKEN`** (marque como Sensitive). É a única variável nova; as de operador (`JPN_MIXED_ACCESS_USER`, `JPN_MIXED_ACCESS_PASSWORD`,
+   `JPN_MIXED_APP_ORIGIN`, `JPN_MIXED_REMOTE_ENABLED=1`) já são as do `docs/INT-2-VERCEL.md`.
+3. Redeploy. Verificação: Backup → "Enviar projetos deste navegador ao servidor" deve responder com a contagem; sem o token a tela mostra `PROJECTS_STORAGE_UNCONFIGURED`.
 
 A proposta abaixo (Supabase, alternativas Neon + Auth.js / Clerk) fica documentada para quando houver mais de um usuário ou deploy na Vercel.
 
