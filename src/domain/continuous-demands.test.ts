@@ -27,7 +27,10 @@ it("legacy v1 mantém esforços contínuos nodais e deslocamentos unsupported; c
   const v=await fixture();v.result.combinations.POS.members.F.stations[1].mz_nm+=10;await expect(extractContinuousDemands(v.prepared,v.result,v.trace)).rejects.toThrow(/CONTINUOUS_FIELD_MISMATCH/);
 },20000);
 it("balanço espacial inclinado, seção girada 37° e vetor concomitante em posições não amostradas",async()=>{
-  const f=await fixture("cantilever",false,37,false,2,true),r=await extractContinuousDemands(f.prepared,f.result,f.trace),p=r.pieces.find(p=>p.pieceId==="BEAM")!;
+  await expect(fixture("cantilever",false,37,false,2,true)).rejects.toMatchObject({
+    status:2,stdout:expect.stringContaining('"code":"AXIS_CONVENTION_AMBIGUOUS"'),
+  });
+  const f=await fixture("cantilever",false,37,false,2,"xz"),r=await extractContinuousDemands(f.prepared,f.result,f.trace),p=r.pieces.find(p=>p.pieceId==="BEAM")!;
   for(const field of p.fields){const factor=field.combinationId==="POS"?1:-2;for(const x of [.37,1.41,3.19]){const u=x/4;expect(polynomial(field.forcePolynomials.nN!,u)).toBeCloseTo((1234+40*(4-x))*factor,6);expect(polynomial(field.forcePolynomials.tNm!,u)).toBeCloseTo(20*factor,6);expect(polynomial(field.forcePolynomials.mzNm!,u)).toBeCloseTo(-100*factor*(4-x)**2/2,6);expect(polynomial(field.forcePolynomials.myNm!,u)).toBeCloseTo(70*factor*(4-x)**2/2,6);expect(polynomial(field.displacementPolynomials![1],u)).toBeCloseTo(-100*factor*x*x*(6*16-16*x+x*x)/(24*200e9*1e-5),11);}}
 },20000);
 

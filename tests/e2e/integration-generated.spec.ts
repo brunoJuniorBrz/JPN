@@ -1,3 +1,4 @@
+import { declareAxes } from "./axes";
 import {expect,test} from "@playwright/test";
 import {readFile} from "node:fs/promises";
 import {openEngineeringTool,openResultTab} from "./result-tabs";
@@ -19,7 +20,7 @@ test("backup de projeto gerado -> cópia salva -> solver real sem substituir por
   await expect(panel.getByTestId("mixed-scope")).toContainText("OBRA ATUAL");
   await expect(panel.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:25000});
   const response=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");
-  await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
+  await declareAxes(panel);await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
   const r=await response;expect(r.status()).toBe(200);const input=r.request().postDataJSON(),out=await r.json();
   expect(input.project.id).toBe(ownerId);expect(input.nodes).toEqual(golden.request.nodes);expect(input.members).toEqual(golden.request.members);
   for(const [combo,result] of Object.entries(golden.result.combinations) as [string,{nodes:Record<string,{translation_m:number[]}>}][]){

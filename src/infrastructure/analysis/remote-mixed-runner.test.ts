@@ -80,6 +80,7 @@ it("flag não autentica usuário; autenticação e origem são verificadas antes
 it("rota remota permite resultado validado e health sem vazar segredos",async()=>{
   const fetch=vi.spyOn(globalThis,"fetch").mockResolvedValue(json(response()));const r=await POST(routeRequest(true));expect(r.status).toBe(200);expect((await r.json()).execution.local_only).toBe(false);
   fetch.mockResolvedValue(json({schema_version:"jpn.http-mixed/1",status:"ready",contracts:["jpn.mixed3d/1","jpn.mixed3d/2"],dependencies:{python:"3.12",PyNiteFEA:"3.2.1",numpy:"real",scipy:"real"},execution}));expect((await GET(routeRequest())).status).toBe(200);
+  fetch.mockResolvedValue(json({schema_version:"jpn.http-mixed/1",status:"ready",contracts:["jpn.mixed3d/1","jpn.mixed3d/2","jpn.mixed3d/3"],dependencies:{python:"3.12",PyNiteFEA:"3.2.1",numpy:"real",scipy:"real"},execution}));expect((await GET(routeRequest())).status).toBe(200);
 });
 it("modo remoto é opt-in, exige HTTPS/credenciais e nunca cai em local",async()=>{
   const fetch=vi.spyOn(globalThis,"fetch");vi.stubEnv("JPN_MIXED_REMOTE_ENABLED","");await expect(runRemoteMixed(body())).rejects.toMatchObject({code:"REMOTE_DISABLED"});

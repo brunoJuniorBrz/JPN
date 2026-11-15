@@ -1,8 +1,7 @@
 import type { Project } from "./models";
 import { resolvePhysicalStructure } from "./physical-structure";
 import { resolveMemberPhysical } from "./member-physical";
-import { adaptMixedProject } from "./mixed-adapter";
-import { adaptLoadedMixedProject } from "./loaded-mixed-adapter";
+import { adaptMixedForVersion,requestVersionOf } from "./current-mixed-adapter";
 import { canonicalSpatialInput } from "./spatial-analysis";
 import { mixedInputHash } from "./mixed-analysis";
 import { anyMixedResultSchema } from "./structural-loading";
@@ -39,7 +38,7 @@ export function axialMeanStressMPa(normalN:number,areaCm2:number|null){
 /** Engineering blockers and idealized controls, NEVER an implementation of
  * unavailable ABNT clauses. States cannot be promoted by supplying a string. */
 export async function buildResistanceReport(project:Project,prepared:DemandInput,value:unknown,jointTrace?:unknown){
-  const current=await (project.workspace.spatialPreparation?.loading?adaptLoadedMixedProject(project):adaptMixedProject(project));
+  const current=await adaptMixedForVersion(project,requestVersionOf(prepared.request));
   if(current.input_sha256!==prepared.input_sha256||current.preparation_sha256!==prepared.preparation_sha256||canonicalSpatialInput(current.mapping)!==canonicalSpatialInput(prepared.mapping))
     throw new Error("STALE_RESISTANCE_ANALYSIS: projeto/discretização/declarações diferem da análise; execute novamente.");
   const demands=await extractMemberDemands(prepared,value),draft=project.workspace.spatialPreparation!,model=resolvePhysicalStructure(project).model!;

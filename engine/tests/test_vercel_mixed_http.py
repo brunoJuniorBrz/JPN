@@ -178,6 +178,18 @@ def test_real_http_mixed_v1_matches_independent_closed_form_and_both_hashes(serv
     assert result['schema_version']=='jpn.mixed3d-result/1'
 
 
+def test_real_http_mixed_v3_announces_and_binds_explicit_axes(server):
+    status, health, _ = request(server+'/health')
+    assert status == 200 and 'jpn.mixed3d/3' in health['contracts']
+    payload = dict(weight(beam()), schema_version='jpn.mixed3d/3', local_axes='jpn-z-up/1')
+    status, body, _ = request(server+'/api/analyze-mixed', payload)
+    assert status == 200, body
+    result = body['result']
+    assert result['schema_version'] == 'jpn.mixed3d-result/3'
+    assert result['input_sha256'] == input_hash(payload)
+    assert result['local_axes']['convention'] == payload['local_axes']
+
+
 def test_real_http_mixed_v2_weight_and_udl_match_mass_and_beam_references(server):
     payload=weight(beam());status,body,_=request(server+'/api/analyze-mixed',payload)
     assert status==200,body
