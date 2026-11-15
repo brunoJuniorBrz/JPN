@@ -1,0 +1,88 @@
+[
+  {
+    "subdivisions": 1,
+    "nodes": 16,
+    "residual": 3.965301411627749e-16,
+    "iterations": 3
+  },
+  {
+    "subdivisions": 2,
+    "nodes": 32,
+    "residual": 2.820484983652084e-16,
+    "iterations": 4,
+    "controlling_change": {
+      "member": "TOP0",
+      "component": "n_n",
+      "before": 345.1210444075903,
+      "after": 2652.812227624378,
+      "bound_ratio": 43.48698881327963
+    }
+  },
+  {
+    "subdivisions": 4,
+    "nodes": 64,
+    "residual": 2.739110687468299e-15,
+    "iterations": 5,
+    "controlling_change": {
+      "member": "TOP0",
+      "component": "mz_nm",
+      "before": 1.1781329465573571,
+      "after": 1.3805613654668891,
+      "bound_ratio": 5.382127449461743
+    },
+    "linearized_critical_load_factors": [
+      8.365682732474284,
+      8.3656826822034
+    ],
+    "loaded_minimum_generalized_eigenvalue": 0.8999306560050446
+  },
+  {
+    "subdivisions": 8,
+    "nodes": 128,
+    "residual": 2.0622566088974025e-14,
+    "iterations": 6,
+    "controlling_change": {
+      "member": "TOP4",
+      "component": "vy_n",
+      "before": 1.5067838368125912,
+      "after": 1.5967122194357155,
+      "bound_ratio": 2.144509432184417
+    },
+    "linearized_critical_load_factors": [
+      7.761246611636342,
+      7.761246568776585
+    ],
+    "loaded_minimum_generalized_eigenvalue": 0.8959470035958044
+  },
+  {
+    "subdivisions": 16,
+    "nodes": 256,
+    "residual": 2.578191380720731e-13,
+    "iterations": 7,
+    "controlling_change": {
+      "member": "TOP4",
+      "component": "vy_n",
+      "before": 1.5967122194357155,
+      "after": 1.6412827691547276,
+      "bound_ratio": 1.0407441362031398
+    },
+    "linearized_critical_load_factors": [
+      7.3355311694122864,
+      7.335531130701383
+    ],
+    "loaded_minimum_generalized_eigenvalue": 0.8910241645187107
+  },
+  {
+    "subdivisions": 32,
+    "nodes": 512,
+    "residual": 4.1912845200709564e-12,
+    "iterations": 7,
+    "controlling_change": {
+      "member": "TOP5",
+      "component": "vy_n",
+      "before": 1.6412827691547143,
+      "after": 1.6634807728314616,
+      "bound_ratio": 0.5130159684223954
+    }
+  }
+]

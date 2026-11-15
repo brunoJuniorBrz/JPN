@@ -1,0 +1,840 @@
+{
+  "schema_version": "jpn.int-3a-benchmark/1",
+  "units": "SI",
+  "pynitefea": "3.2.1",
+  "criteria": {
+    "relative_component": 0.01,
+    "absolute_floor": {
+      "translations": 1e-06,
+      "forces": 1.0,
+      "moments": 1.0,
+      "amplification": 0.0001
+    },
+    "brace_kg_relative_operator_error": 1e-08,
+    "mesh_relative_component": 0.005,
+    "all_declared_releases_must_be_representable": true,
+    "reference_braces_must_be_compressed": true,
+    "both_cases_required": true
+  },
+  "releases": {
+    "both_ends_spherical": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true
+    ],
+    "one_end_torsion_release": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true
+    ]
+  },
+  "cases": {
+    "planar_portal": {
+      "passed": false,
+      "reference_mesh_change": {
+        "passed": true,
+        "metrics": {
+          "translations_m": {
+            "max_absolute_error": 4.130676878696298e-09,
+            "max_bound_utilization": 0.0033857614205308945
+          },
+          "reaction_force_n": {
+            "max_absolute_error": 0.1604505196592072,
+            "max_bound_utilization": 0.02503984168646776
+          },
+          "reaction_moment_nm": {
+            "max_absolute_error": 0.34802829222485343,
+            "max_bound_utilization": 0.0353633011207573
+          },
+          "brace_force_n": {
+            "max_absolute_error": 0.37247964712878456,
+            "max_bound_utilization": 0.0026130460605383876
+          },
+          "amplification": {
+            "max_absolute_error": 1.6213915043250537e-05,
+            "max_bound_utilization": 0.0032397874960489077
+          }
+        }
+      },
+      "reference_compression": true,
+      "required_brace_kg_passed": false,
+      "runs": [
+        {
+          "frame_subdivisions": 4,
+          "opensees": {
+            "version": "3.8.0",
+            "status": "completed",
+            "translations": {
+              "a": [
+                -0.00024399870151609954,
+                0.0,
+                -8.300327184239692e-05
+              ],
+              "b": [
+                -0.00024509273908323296,
+                0.0,
+                -6.916742877029254e-05
+              ]
+            },
+            "reactions": {
+              "A": [
+                23900.809253994423,
+                0.0,
+                127776.76163961174,
+                0.0,
+                1968.650088308733,
+                0.0
+              ],
+              "B": [
+                1099.1907460080295,
+                0.0,
+                92223.23836039005,
+                0.0,
+                1976.540328762374,
+                0.0
+              ]
+            },
+            "brace_forces": {
+              "X": -28508.85686413562
+            },
+            "amplification": 1.000908387653687
+          },
+          "pynite": {
+            "both_ends_spherical": {
+              "status": "refused",
+              "error": "LinAlgError",
+              "message": "Singular matrix",
+              "released_elastic_subblock": {
+                "X": {
+                  "rank": 5,
+                  "size": 6
+                }
+              },
+              "geometric_tangent": {
+                "X": null
+              }
+            },
+            "one_end_torsion_release": {
+              "status": "completed",
+              "translations": {
+                "a": [
+                  -0.00024401483782810358,
+                  0.0,
+                  -8.300552592262757e-05
+                ],
+                "b": [
+                  -0.00024510870656813865,
+                  0.0,
+                  -6.916889293772045e-05
+                ]
+              },
+              "reactions": {
+                "A": [
+                  23900.947547262702,
+                  0.0,
+                  127776.93564198192,
+                  0.0,
+                  1968.2665703958278,
+                  0.0
+                ],
+                "B": [
+                  1099.0516768651196,
+                  0.0,
+                  92223.0642121827,
+                  0.0,
+                  1976.2309682966861,
+                  0.0
+                ]
+              },
+              "brace_forces": {
+                "X": -28509.241365238457
+              },
+              "amplification": 1.0009735955812298,
+              "released_elastic_subblock": {
+                "X": {
+                  "rank": 5,
+                  "size": 5
+                }
+              },
+              "geometric_tangent": {
+                "X": {
+                  "relative_error": 1.0,
+                  "axial_projection_n_m": -2000.0,
+                  "expected_axial_projection_n_m": 0.0
+                }
+              },
+              "comparison_to_opensees": {
+                "passed": true,
+                "metrics": {
+                  "translations_m": {
+                    "max_absolute_error": 1.6136312004037118e-08,
+                    "max_bound_utilization": 0.006613277818190524
+                  },
+                  "reaction_force_n": {
+                    "max_absolute_error": 0.1741482073557563,
+                    "max_bound_utilization": 0.012651957216246366
+                  },
+                  "reaction_moment_nm": {
+                    "max_absolute_error": 0.38351791290529036,
+                    "max_bound_utilization": 0.019481263591884453
+                  },
+                  "brace_force_n": {
+                    "max_absolute_error": 0.3845011028352019,
+                    "max_bound_utilization": 0.0013487075425984809
+                  },
+                  "amplification": {
+                    "max_absolute_error": 6.520792754272087e-05,
+                    "max_bound_utilization": 0.006514874722508841
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "frame_subdivisions": 8,
+          "opensees": {
+            "version": "3.8.0",
+            "status": "completed",
+            "translations": {
+              "a": [
+                -0.00024400283219297824,
+                0.0,
+                -8.30032245518364e-05
+              ],
+              "b": [
+                -0.00024509670938950497,
+                0.0,
+                -6.91673084324028e-05
+              ]
+            },
+            "reactions": {
+              "A": [
+                23900.94685452561,
+                0.0,
+                127776.92209009192,
+                0.0,
+                1968.3020600165082,
+                0.0
+              ],
+              "B": [
+                1099.0531454241973,
+                0.0,
+                92223.0779098704,
+                0.0,
+                1976.2474262564026,
+                0.0
+              ]
+            },
+            "brace_forces": {
+              "X": -28509.22934378275
+            },
+            "amplification": 1.0009246015687303
+          },
+          "pynite": {
+            "both_ends_spherical": {
+              "status": "completed",
+              "translations": {
+                "a": [
+                  -0.00024401483813691558,
+                  0.0,
+                  -8.300552591913704e-05
+                ],
+                "b": [
+                  -0.0002451087068641156,
+                  0.0,
+                  -6.916889292871629e-05
+                ]
+              },
+              "reactions": {
+                "A": [
+                  23900.947626143516,
+                  0.0,
+                  127776.93565398705,
+                  0.0,
+                  1968.2665551481655,
+                  0.0
+                ],
+                "B": [
+                  1099.0514514661954,
+                  0.0,
+                  92223.0642001777,
+                  0.0,
+                  1976.2309083536024,
+                  0.0
+                ]
+              },
+              "brace_forces": {
+                "X": -28509.241393001306
+              },
+              "amplification": 1.000973596789942,
+              "released_elastic_subblock": {
+                "X": {
+                  "rank": 5,
+                  "size": 6
+                }
+              },
+              "geometric_tangent": {
+                "X": null
+              },
+              "comparison_to_opensees": {
+                "passed": true,
+                "metrics": {
+                  "translations_m": {
+                    "max_absolute_error": 1.2005943937344566e-08,
+                    "max_bound_utilization": 0.004920411713848158
+                  },
+                  "reaction_force_n": {
+                    "max_absolute_error": 0.013709692691918463,
+                    "max_bound_utilization": 0.00015412885254040737
+                  },
+                  "reaction_moment_nm": {
+                    "max_absolute_error": 0.03550486834274125,
+                    "max_bound_utilization": 0.0018038323011481004
+                  },
+                  "brace_force_n": {
+                    "max_absolute_error": 0.012049218556057895,
+                    "max_bound_utilization": 4.2264273126293995e-05
+                  },
+                  "amplification": {
+                    "max_absolute_error": 4.899522121171174e-05,
+                    "max_bound_utilization": 0.004894996200005719
+                  }
+                }
+              }
+            },
+            "one_end_torsion_release": {
+              "status": "completed",
+              "translations": {
+                "a": [
+                  -0.00024401483813691558,
+                  0.0,
+                  -8.300552591913704e-05
+                ],
+                "b": [
+                  -0.0002451087068641156,
+                  0.0,
+                  -6.916889292871629e-05
+                ]
+              },
+              "reactions": {
+                "A": [
+                  23900.947626143516,
+                  0.0,
+                  127776.93565398705,
+                  0.0,
+                  1968.2665551481655,
+                  0.0
+                ],
+                "B": [
+                  1099.0514514661954,
+                  0.0,
+                  92223.0642001777,
+                  0.0,
+                  1976.2309083536024,
+                  0.0
+                ]
+              },
+              "brace_forces": {
+                "X": -28509.241393001306
+              },
+              "amplification": 1.000973596789942,
+              "released_elastic_subblock": {
+                "X": {
+                  "rank": 5,
+                  "size": 5
+                }
+              },
+              "geometric_tangent": {
+                "X": {
+                  "relative_error": 1.0,
+                  "axial_projection_n_m": -2000.0,
+                  "expected_axial_projection_n_m": 0.0
+                }
+              },
+              "comparison_to_opensees": {
+                "passed": true,
+                "metrics": {
+                  "translations_m": {
+                    "max_absolute_error": 1.2005943937344566e-08,
+                    "max_bound_utilization": 0.004920411713848158
+                  },
+                  "reaction_force_n": {
+                    "max_absolute_error": 0.013709692691918463,
+                    "max_bound_utilization": 0.00015412885254040737
+                  },
+                  "reaction_moment_nm": {
+                    "max_absolute_error": 0.03550486834274125,
+                    "max_bound_utilization": 0.0018038323011481004
+                  },
+                  "brace_force_n": {
+                    "max_absolute_error": 0.012049218556057895,
+                    "max_bound_utilization": 4.2264273126293995e-05
+                  },
+                  "amplification": {
+                    "max_absolute_error": 4.899522121171174e-05,
+                    "max_bound_utilization": 0.004894996200005719
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "spatial_portal": {
+      "passed": false,
+      "reference_mesh_change": {
+        "passed": true,
+        "metrics": {
+          "translations_m": {
+            "max_absolute_error": 7.225116984040103e-08,
+            "max_bound_utilization": 0.041760709167039826
+          },
+          "reaction_force_n": {
+            "max_absolute_error": 0.41765021528408397,
+            "max_bound_utilization": 0.02706093108709606
+          },
+          "reaction_moment_nm": {
+            "max_absolute_error": 0.4043660314655426,
+            "max_bound_utilization": 0.03381892423952104
+          },
+          "brace_force_n": {
+            "max_absolute_error": 0.6548516395778279,
+            "max_bound_utilization": 0.00421173699320802
+          },
+          "amplification": {
+            "max_absolute_error": 0.00010821986202413925,
+            "max_bound_utilization": 0.02151372873964952
+          }
+        }
+      },
+      "reference_compression": true,
+      "required_brace_kg_passed": false,
+      "runs": [
+        {
+          "frame_subdivisions": 4,
+          "opensees": {
+            "version": "3.8.0",
+            "status": "completed",
+            "translations": {
+              "a": [
+                -0.00027251232271916073,
+                -0.00016209426773111828,
+                -8.360344524474245e-05
+              ],
+              "b": [
+                -0.0002725765354276583,
+                -0.00016748684623424858,
+                -6.845816536999684e-05
+              ],
+              "c": [
+                -0.0006291285487232308,
+                -0.00016870642538536294,
+                -6.811876619067418e-05
+              ],
+              "d": [
+                -0.0006251389590508231,
+                -0.00016209476713521827,
+                -8.326986228063823e-05
+              ]
+            },
+            "reactions": {
+              "A": [
+                26069.803472914642,
+                798.3156059975236,
+                130129.31555278845,
+                -1380.5690150336961,
+                2170.341605895366,
+                -99.54733048468977
+              ],
+              "B": [
+                1191.521534605965,
+                17569.52044667881,
+                108019.17981878895,
+                -1428.0929001065472,
+                2170.650479981221,
+                -101.09737959547085
+              ],
+              "C": [
+                2878.396703732224,
+                832.9244474745802,
+                90825.02158756557,
+                -1436.9045720297354,
+                5130.331538863682,
+                -100.78977865776498
+              ],
+              "D": [
+                2860.2782887427866,
+                799.2394998463861,
+                111026.48304085096,
+                -1380.4332581271506,
+                5101.264063001072,
+                -99.23955290022593
+              ]
+            },
+            "brace_forces": {
+              "X": -31095.856665288582,
+              "Y": -23675.83786604768
+            },
+            "amplification": 1.0059457592856393
+          },
+          "pynite": {
+            "both_ends_spherical": {
+              "status": "refused",
+              "error": "LinAlgError",
+              "message": "Singular matrix",
+              "released_elastic_subblock": {
+                "X": {
+                  "rank": 5,
+                  "size": 6
+                },
+                "Y": {
+                  "rank": 5,
+                  "size": 6
+                }
+              },
+              "geometric_tangent": {
+                "X": null,
+                "Y": null
+              }
+            },
+            "one_end_torsion_release": {
+              "status": "completed",
+              "translations": {
+                "a": [
+                  -0.000272530047198027,
+                  -0.00016214037170464568,
+                  -8.360578027363002e-05
+                ],
+                "b": [
+                  -0.0002725939942462589,
+                  -0.00016743851106344477,
+                  -6.845925762054473e-05
+                ],
+                "c": [
+                  -0.0006292418886681084,
+                  -0.0001686578259234311,
+                  -6.81199814471003e-05
+                ],
+                "d": [
+                  -0.0006252523387408108,
+                  -0.0001621408690552103,
+                  -8.327215527117976e-05
+                ]
+              },
+              "reactions": {
+                "A": [
+                  26070.112185829246,
+                  798.361268638968,
+                  130129.69527153662,
+                  -1380.5980455244653,
+                  2169.910074930563,
+                  -99.57085121916994
+                ],
+                "B": [
+                  1191.3663815415666,
+                  17569.831338937456,
+                  108019.26634767762,
+                  -1427.364248743665,
+                  2170.308335933562,
+                  -101.12382194000952
+                ],
+                "C": [
+                  2878.3633671951065,
+                  832.521088186221,
+                  90824.57955974602,
+                  -1436.1736196985341,
+                  5130.129291726356,
+                  -100.8177183547099
+                ],
+                "D": [
+                  2860.156242254059,
+                  799.2852385914648,
+                  111026.45847186477,
+                  -1380.4635024701233,
+                  5100.849441954281,
+                  -99.26456786815683
+                ]
+              },
+              "brace_forces": {
+                "X": -31096.478177651043,
+                "Y": -23676.84634155209
+              },
+              "amplification": 1.0060953934947876,
+              "released_elastic_subblock": {
+                "X": {
+                  "rank": 5,
+                  "size": 5
+                },
+                "Y": {
+                  "rank": 5,
+                  "size": 5
+                }
+              },
+              "geometric_tangent": {
+                "X": {
+                  "relative_error": 1.0,
+                  "axial_projection_n_m": -2000.0,
+                  "expected_axial_projection_n_m": 0.0
+                },
+                "Y": {
+                  "relative_error": 1.0000000000000002,
+                  "axial_projection_n_m": -2357.0226039551585,
+                  "expected_axial_projection_n_m": 0.0
+                }
+              },
+              "comparison_to_opensees": {
+                "passed": true,
+                "metrics": {
+                  "translations_m": {
+                    "max_absolute_error": 1.1337968998761157e-07,
+                    "max_bound_utilization": 0.02885908469266433
+                  },
+                  "reaction_force_n": {
+                    "max_absolute_error": 0.44202781954663806,
+                    "max_bound_utilization": 0.04842687588077953
+                  },
+                  "reaction_moment_nm": {
+                    "max_absolute_error": 0.7309523312012516,
+                    "max_bound_utilization": 0.05102268646723077
+                  },
+                  "brace_force_n": {
+                    "max_absolute_error": 1.0084755044081248,
+                    "max_bound_utilization": 0.004259513475779999
+                  },
+                  "amplification": {
+                    "max_absolute_error": 0.00014963420914826386,
+                    "max_bound_utilization": 0.01487497787699059
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "frame_subdivisions": 8,
+          "opensees": {
+            "version": "3.8.0",
+            "status": "completed",
+            "translations": {
+              "a": [
+                -0.00027251964932973574,
+                -0.00016213602844028532,
+                -8.360346377391542e-05
+              ],
+              "b": [
+                -0.00027258358663545084,
+                -0.00016748810919718204,
+                -6.845785915348807e-05
+              ],
+              "c": [
+                -0.0006292007667174687,
+                -0.00016870765782693616,
+                -6.811875801523003e-05
+              ],
+              "d": [
+                -0.0006252112102206636,
+                -0.0001621365262217269,
+                -8.326979930907465e-05
+              ]
+            },
+            "reactions": {
+              "A": [
+                26070.162111643687,
+                798.385170042437,
+                130129.73320300374,
+                -1380.6534006463526,
+                2169.9746748497137,
+                -99.57218858755945
+              ],
+              "B": [
+                1191.382304460648,
+                17569.493515236252,
+                108018.85703119481,
+                -1427.8708222102616,
+                2170.350120345795,
+                -101.12211998131464
+              ],
+              "C": [
+                2878.3206562177106,
+                832.8117641657872,
+                90825.01068697336,
+                -1436.6818701029304,
+                5130.08578893152,
+                -100.81550868056385
+              ],
+              "D": [
+                2860.1349276881415,
+                799.3095504860196,
+                111026.39907876619,
+                -1380.5186214281582,
+                5100.859696969606,
+                -99.26539177052307
+              ]
+            },
+            "brace_forces": {
+              "X": -31096.51151692816,
+              "Y": -23675.958775978954
+            },
+            "amplification": 1.0060539791476635
+          },
+          "pynite": {
+            "both_ends_spherical": {
+              "status": "refused",
+              "error": "LinAlgError",
+              "message": "Singular matrix",
+              "released_elastic_subblock": {
+                "X": {
+                  "rank": 5,
+                  "size": 6
+                },
+                "Y": {
+                  "rank": 5,
+                  "size": 6
+                }
+              },
+              "geometric_tangent": {
+                "X": null,
+                "Y": null
+              }
+            },
+            "one_end_torsion_release": {
+              "status": "completed",
+              "translations": {
+                "a": [
+                  -0.0002725300477397871,
+                  -0.00016214037497731855,
+                  -8.360578027494533e-05
+                ],
+                "b": [
+                  -0.00027259399476669546,
+                  -0.00016743851113752286,
+                  -6.84592575984324e-05
+                ],
+                "c": [
+                  -0.0006292418939677296,
+                  -0.00016865782599560927,
+                  -6.811998144662138e-05
+                ],
+                "d": [
+                  -0.0006252523440454672,
+                  -0.00016214087232784935,
+                  -8.327215526688617e-05
+                ]
+              },
+              "reactions": {
+                "A": [
+                  26070.112495215515,
+                  798.3614521922592,
+                  130129.6953023116,
+                  -1380.5980843656255,
+                  2169.910097627497,
+                  -99.57085308846706
+                ],
+                "B": [
+                  1191.3659012211845,
+                  17569.83103059437,
+                  108019.26632326562,
+                  -1427.3641769897429,
+                  2170.3082283100366,
+                  -101.12382381552479
+                ],
+                "C": [
+                  2878.362718024131,
+                  832.5209011280562,
+                  90824.57955910754,
+                  -1436.1735714474628,
+                  5130.1291591601275,
+                  -100.8177202359391
+                ],
+                "D": [
+                  2860.1564712199033,
+                  799.2853085982301,
+                  111026.45846614041,
+                  -1380.4635203579735,
+                  5100.849450627731,
+                  -99.26456974309467
+                ]
+              },
+              "brace_forces": {
+                "X": -31096.478226015854,
+                "Y": -23676.84634872145
+              },
+              "amplification": 1.0060954014292776,
+              "released_elastic_subblock": {
+                "X": {
+                  "rank": 5,
+                  "size": 5
+                },
+                "Y": {
+                  "rank": 5,
+                  "size": 5
+                }
+              },
+              "geometric_tangent": {
+                "X": {
+                  "relative_error": 1.0,
+                  "axial_projection_n_m": -2000.0,
+                  "expected_axial_projection_n_m": 0.0
+                },
+                "Y": {
+                  "relative_error": 1.0000000000000002,
+                  "axial_projection_n_m": -2357.0226039551585,
+                  "expected_axial_projection_n_m": 0.0
+                }
+              },
+              "comparison_to_opensees": {
+                "passed": true,
+                "metrics": {
+                  "translations_m": {
+                    "max_absolute_error": 4.983183132689531e-08,
+                    "max_bound_utilization": 0.029612884100799215
+                  },
+                  "reaction_force_n": {
+                    "max_absolute_error": 0.4311278658133233,
+                    "max_bound_utilization": 0.03492542375675576
+                  },
+                  "reaction_moment_nm": {
+                    "max_absolute_error": 0.5082986554675699,
+                    "max_bound_utilization": 0.035482566954795756
+                  },
+                  "brace_force_n": {
+                    "max_absolute_error": 0.8875727424965589,
+                    "max_bound_utilization": 0.0037488354786166817
+                  },
+                  "amplification": {
+                    "max_absolute_error": 4.142228161407857e-05,
+                    "max_bound_utilization": 0.004117302100347721
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "passed": false,
+  "computedStructuralApproval": false,
+  "fabricationRelease": false,
+  "releaseGate": "NOT_READY_BLOCKED"
+}

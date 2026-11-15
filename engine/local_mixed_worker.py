@@ -129,7 +129,10 @@ def main():
     except MemoryError:
         return dict(status='error', error=dict(code='MEMORY_LIMIT', message='Limite de memória do processo atingido; nenhum resultado publicado.'))
     except (ValueError, TypeError, RecursionError, OverflowError, UnicodeError) as exc:
-        return dict(status='error', error=dict(code=getattr(exc, 'code', 'INVALID_INPUT'), message=str(exc)[:2000]))
+        error = dict(code=getattr(exc, 'code', 'INVALID_INPUT'), message=str(exc)[:2000])
+        if combination_id := getattr(exc, 'combination_id', None):
+            error['combination_id'] = combination_id
+        return dict(status='error', error=error)
     except (RuntimeError, ImportError, OSError) as exc:
         allowed = {'MEMORY_LIMIT_UNAVAILABLE', 'DEPENDENCY_VERSION', 'INPUT_LIMIT'}
         code = str(exc) if str(exc) in allowed else 'UNAVAILABLE'

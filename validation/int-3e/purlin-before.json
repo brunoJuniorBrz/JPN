@@ -1,0 +1,21 @@
+[
+  {
+    "subdivisions": 4,
+    "iterations": 3,
+    "residual": 1.3375349408997419e-12
+  },
+  {
+    "subdivisions": 8,
+    "iterations": 3,
+    "residual": 4.621857699782312e-12
+  },
+  {
+    "subdivisions": 16,
+    "relative_norm_n": 2.3078178832239138e-09,
+    "target_n": 1.7906423428479512e-09,
+    "max_flex_correction": 1.6692239866921e-20,
+    "condition": 12129205.054144733,
+    "rounded_free_increments": 129,
+    "refusal": "SECOND_ORDER_NOT_CONVERGED"
+  }
+]
