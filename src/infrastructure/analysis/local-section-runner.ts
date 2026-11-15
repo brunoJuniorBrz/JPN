@@ -5,8 +5,8 @@ import { localMixedEnabled,localMixedLimits } from "./local-mixed-runner";
 import { SolverFailure } from "./runner";
 import { terminateWorker } from "./worker-process";
 import { sectionAnalysisRequestSchema,sectionAnalysisResultSchema } from "@/domain/section-analysis";
-import { mixedInputHash } from "@/domain/mixed-analysis";
-import { verifiedColdformedRequestSchema,coldformedDesignResultSchema,requireCurrentBucklingNumerics,verifiedColdformedBatchRequestSchema,verifiedColdformedBatchResultSchema } from "@/domain/coldformed-design";
+import { verifiedColdformedRequestSchema,coldformedDesignResultSchema,verifiedColdformedBatchRequestSchema,verifiedColdformedBatchResultSchema } from "@/domain/coldformed-design";
+import { verifySectionBinding } from "./section-result-binding";
 const envelope=z.object({schema_version:z.literal("jpn.local-section/1"),status:z.literal("completed"),execution:z.object({memory_limit_bytes:z.literal(localMixedLimits.memoryBytes),memory_kind:z.enum(["windows-job-process-commit","linux-address-space"]),local_only:z.literal(true)}).strict(),result:sectionAnalysisResultSchema}).strict();
 const designEnvelope=envelope.extend({result:coldformedDesignResultSchema.required({geometry_audit:true,calculation_input_sha256:true})});
 const batchEnvelope=envelope.extend({result:verifiedColdformedBatchResultSchema});
@@ -30,8 +30,7 @@ export async function runLocalSection(payload:string,signal?:AbortSignal,kind:"s
       if(automatic&&!process.env.JPN_SECTION_FSM_PYTHON_EXECUTABLE)return reject(new SolverFailure("UNAVAILABLE","Configure o perfil isolado requirements-sections-fsm.lock em JPN_SECTION_FSM_PYTHON_EXECUTABLE. O solver principal não será alterado."));
       const executable=(automatic?process.env.JPN_SECTION_FSM_PYTHON_EXECUTABLE:process.env.JPN_SECTION_PYTHON_EXECUTABLE)||process.env.JPN_PYTHON_EXECUTABLE||path.resolve(process.platform==="win32"?".venv/Scripts/python.exe":".venv/bin/python");
       const symmetricI=kind==="section"&&"geometry"in input&&input.geometry.shape==="i";
-      const worker=symmetricI?"scripts/section-i-worker.py":"engine/section_worker.py";
-      const child=spawn(executable,["-I","-X","utf8",path.resolve(worker)],{windowsHide:true,stdio:["pipe","pipe","pipe"],env:{...process.env,OPENBLAS_NUM_THREADS:"1",OMP_NUM_THREADS:"1",MKL_NUM_THREADS:"1"}});
+      const child=spawn(executable,["-I","-X","utf8",path.resolve("engine/section_worker.py"),...(symmetricI?["--symmetric-i"]:[])],{windowsHide:true,stdio:["pipe","pipe","pipe"],env:{...process.env,OPENBLAS_NUM_THREADS:"1",OMP_NUM_THREADS:"1",MKL_NUM_THREADS:"1"}});
       const chunks:Buffer[]=[];let bytes=0,stderr=0,settled=false,failure:SolverFailure|null=null,cleanup:ReturnType<typeof setTimeout>|undefined;
       const finish=(value?:unknown,error?:Error)=>{if(settled)return;settled=true;clearTimeout(timer);clearTimeout(cleanup);signal?.removeEventListener("abort",cancel);if(error)reject(error);else resolve(value);};
       const stop=(code:string,message:string)=>{if(settled||failure)return;failure=new SolverFailure(code,message);terminateWorker(child);cleanup=setTimeout(()=>{gate.disabled=true;finish(undefined,new SolverFailure("CLEANUP_FAILURE","Sem confirmação de encerramento; executor bloqueado."));},1500);};
@@ -43,17 +42,8 @@ export async function runLocalSection(payload:string,signal?:AbortSignal,kind:"s
       child.on("close",code=>{if(failure)return finish(undefined,failure);try{const x=JSON.parse(Buffer.concat(chunks).toString("utf8"));if(code!==0||x.status!=="completed")return finish(undefined,new SolverFailure(x.error?.code??"SECTION_UNAVAILABLE",x.error?.message??"Seção recusada."));finish(x);}catch{finish(undefined,new SolverFailure("INVALID_RESPONSE","Resposta de seção inválida."));}});
       signal?.addEventListener("abort",cancel,{once:true});if(signal?.aborted)cancel();else child.stdin.end(payload);
     });
-    const out=kind==="steel-design"?(steelEnvelope.parse(raw) as never):kind==="design-batch"?batchEnvelope.parse(raw):kind==="design"?designEnvelope.parse(raw):envelope.parse(raw);if(out.result.input_sha256!==await mixedInputHash(input))throw new SolverFailure("HASH_MISMATCH","Cálculo não corresponde à entrada física.");
-    if(kind==="design")requireCurrentBucklingNumerics(verifiedColdformedRequestSchema.parse(input),coldformedDesignResultSchema.parse(out.result));
-    if(kind==="design-batch"){
-      const batch=verifiedColdformedBatchRequestSchema.parse(input),response=verifiedColdformedBatchResultSchema.parse(out.result);
-      if(response.results.length!==batch.requests.length||response.geometry_evaluations+response.geometry_reuses!==batch.requests.length)throw new SolverFailure("INVALID_RESPONSE","Incomplete verified batch");
-      for(let i=0;i<batch.requests.length;i++){
-        const request=batch.requests[i],result=response.results[i];
-        if(result.input_sha256!==await mixedInputHash(request)||result.piece_id!==request.design.piece_id||result.combination_id!==request.design.combination_id)throw new SolverFailure("HASH_MISMATCH","Batch member result does not match its physical request");
-        requireCurrentBucklingNumerics(request,result);
-      }
-    }
+    const out=kind==="steel-design"?steelEnvelope.parse(raw):kind==="design-batch"?batchEnvelope.parse(raw):kind==="design"?designEnvelope.parse(raw):envelope.parse(raw);
+    await verifySectionBinding(kind,input,out.result);
     return out;
   }finally{gate.active--;}
 }

@@ -26,6 +26,14 @@ WORKER = Path(__file__).resolve().with_name('local_mixed_worker.py')
 VERCEL_VENV = Path('/tmp/_vc_deps')
 CONTRACTS = ('jpn.mixed3d/1', 'jpn.mixed3d/2', 'jpn.mixed3d/3')
 PURLIN_CONTRACT = 'jpn.purlin/1'
+SECTION_WORKER = WORKER.with_name('section_worker.py')
+NUMERICAL_ROUTES = {
+    '/api/analyze-section': {'jpn.section-analysis/1': 'jpn.section-analysis-result/2'},
+    '/api/analyze-design': {
+        'jpn.verified-coldformed/1': 'jpn.coldformed-design-result/2',
+        'jpn.verified-coldformed-batch/1': 'jpn.verified-coldformed-batch-result/1',
+    },
+}
 _slot = threading.BoundedSemaphore(1)  # Per instance, not a distributed quota.
 _disabled = False
 
@@ -92,7 +100,7 @@ def _worker_python():
     return str(python)
 
 
-def _worker(payload, health=False, joint_actions=False, purlin=False):
+def _worker(payload, health=False, joint_actions=False, purlin=False, section=False, symmetric_i=False):
     """Bound both pipes while running; wait for exit before releasing capacity."""
     global _disabled
     if _disabled:
@@ -116,7 +124,9 @@ def _worker(payload, health=False, joint_actions=False, purlin=False):
             logging.info('jpn_worker_visibility parent_packages=%s pythonpath_present=%s runtime_venv=%s',
                 all(importlib.util.find_spec(name) is not None for name in ('Pynite', 'scipy', 'numpy')),
                 bool(os.environ.get('PYTHONPATH')), python != sys.executable)
-        process = subprocess.Popen([python, '-I', '-X', 'utf8', str(WORKER), *(['--health'] if health else []), *(['--joint-actions'] if joint_actions else []), *(['--purlin'] if purlin else [])],
+        executable = SECTION_WORKER if section else WORKER
+        options = (['--health'] if health else []) + (['--joint-actions'] if joint_actions else []) + (['--purlin'] if purlin else []) + (['--symmetric-i'] if symmetric_i else [])
+        process = subprocess.Popen([python, '-I', '-X', 'utf8', str(executable), *options],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             cwd=str(WORKER.parent), env={**os.environ, 'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'})
         def abort(code):
@@ -201,7 +211,8 @@ def _worker(payload, health=False, joint_actions=False, purlin=False):
             raise TransportError(code, 'Structural worker refused the request; no result published.', status,
                                  combination_id=combination_id)
         execution = output.get('execution', {})
-        if output.get('schema_version') != ('jpn.local-purlin/1' if purlin else 'jpn.local-mixed/1') or execution.get('memory_limit_bytes') != MEMORY_BYTES or execution.get('memory_kind') not in ('windows-job-process-commit', 'linux-address-space'):
+        expected = 'jpn.local-section/1' if section else 'jpn.local-purlin/1' if purlin else 'jpn.local-mixed/1'
+        if output.get('schema_version') != expected or execution.get('memory_limit_bytes') != MEMORY_BYTES or execution.get('memory_kind') not in ('windows-job-process-commit', 'linux-address-space'):
             raise TransportError('INVALID_RESPONSE', 'Protected execution was not confirmed.', 503)
         return output
     except OSError:
@@ -228,6 +239,38 @@ def _execution(output):
                 concurrency_per_instance=1, isolation='subprocess')
 
 
+def _numerical(path, payload, request, environ):
+    contract = request.get('schema_version') if isinstance(request, dict) else None
+    expected = NUMERICAL_ROUTES[path].get(contract) if isinstance(contract, str) else None
+    if expected is None:
+        raise TransportError('UNSUPPORTED_MODEL', 'Contract is unavailable on this endpoint.')
+    if environ.get('HTTP_X_JPN_JOINT_ACTIONS'):
+        raise TransportError('INVALID_INPUT', 'Connection traces are unavailable on this endpoint.')
+    if path == '/api/analyze-design':
+        requests = request.get('requests') if contract == 'jpn.verified-coldformed-batch/1' else [request]
+        if not isinstance(requests, list) or not 1 <= len(requests) <= 4 or any(not isinstance(r, dict) for r in requests):
+            raise TransportError('INVALID_INPUT', 'Invalid design batch.')
+        for item in requests:
+            design = item.get('design')
+            study = design.get('study') if isinstance(design, dict) else None
+            if isinstance(study, dict) and study.get('minimum_search') == 'computed-cfsm-ss':
+                raise TransportError('UNAVAILABLE', 'The isolated automatic cFSM profile is unavailable on this deployment.', 503)
+    geometry = request.get('geometry')
+    symmetric_i = path == '/api/analyze-section' and isinstance(geometry, dict) and geometry.get('shape') == 'i'
+    output = _worker(payload, section=True, symmetric_i=symmetric_i)
+    result = output.get('result')
+    if (output.get('status') != 'completed' or not isinstance(result, dict) or
+            result.get('schema_version') != expected or
+            not isinstance(result.get('input_sha256'), str) or
+            not re.fullmatch(r'[a-f0-9]{64}', result['input_sha256'])):
+        raise TransportError('INVALID_RESPONSE', 'Unverified numerical response.', 503)
+    flags = ('normativeResistanceVerified', 'effectivePropertiesComputed', 'approvedForFabrication') if path == '/api/analyze-section' else ('computed_structural_approval', 'approved_for_fabrication')
+    if any(result.get(key) is not False for key in flags):
+        raise TransportError('INVALID_RESPONSE', 'Numerical release flags are invalid.', 503)
+    return dict(schema_version='jpn.http-numerical/1', request_sha256=hashlib.sha256(payload).hexdigest(),
+                result=result, execution=_execution(output))
+
+
 def _handle(environ):
     token = os.environ.get('JPN_ANALYSIS_TOKEN', '')
     if not token.strip():
@@ -242,7 +285,7 @@ def _handle(environ):
             raise TransportError('DEPENDENCY_VERSION', 'Required runtime was not confirmed.', 503)
         return dict(schema_version='jpn.http-mixed/1', status='ready', contracts=list(CONTRACTS),
                     dependencies=output['dependencies'], execution=_execution(output))
-    if path not in ('/health', '/api/analyze-mixed', '/api/analyze-purlin'):
+    if path not in ('/health', '/api/analyze-mixed', '/api/analyze-purlin', *NUMERICAL_ROUTES):
         raise TransportError('NOT_FOUND', 'Unknown endpoint.', 404)
     if path == '/health' or method != 'POST':
         raise TransportError('METHOD_NOT_ALLOWED', 'Method not supported.', 405)
@@ -266,6 +309,8 @@ def _handle(environ):
         request = _decode(payload)
     except (ValueError, UnicodeError, RecursionError):
         raise TransportError('INVALID_INPUT', 'Send finite JSON without duplicate keys.')
+    if path in NUMERICAL_ROUTES:
+        return _numerical(path, payload, request, environ)
     if path == '/api/analyze-purlin':
         if not isinstance(request, dict) or request.get('schema_version') != PURLIN_CONTRACT:
             raise TransportError('UNSUPPORTED_MODEL', 'Only jpn.purlin/1 is accepted.')

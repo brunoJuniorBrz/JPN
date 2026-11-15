@@ -25,3 +25,20 @@ Armazene o Bearer, a senha e o segredo opcional como Sensitive.
 As rotas do engine exigem Bearer antes de disparar o worker, inclusive
 `GET /health`. `POST /api/analyze-mixed` é a rota de cálculo. O opt-in
 `JPN_PURLIN_REMOTE_ENABLED` fica desativado para este recorte.
+
+### Consultas remotas
+
+As mesmas variáveis habilitam `section`, `design`,
+`structural-assessment` e mixed3d /3 com
+`analysis_order: "second-order"` e `solution_mode: "per-combination"`.
+O engine instala o perfil de seções com os mesmos pins numéricos do
+perfil local. O perfil automático isolado `computed-cfsm-ss` continua
+disponível no executor local, com recusa explícita no remoto. A avaliação
+integrada usa o mesmo orquestrador de evidências do app.
+
+Em respostas POST bem-sucedidas, compare `X-JPN-Request-Sha256` e os
+hashes de entrada do solver. Recibos de execução continuam vinculados
+aos resultados que realmente ocorreram. Tempos e hashes derivados do
+resultado podem variar entre execuções. Repetições locais do mesmo
+Ue também apresentaram variação de cerca de 6,5e−8 mm⁴ em J,
+aproximadamente 1,1e−10 em termos relativos.
