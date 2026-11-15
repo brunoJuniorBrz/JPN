@@ -56,7 +56,7 @@ def ancestor(a, b):
 # PR #92 (M54): rejects facade loads duplicated under a disguised ID.
 REVIEWED_AMENDMENTS = {
     # INT-2.1 / PR121: engine main and INT-2 previews only, behind WSGI authentication.
-    "engine/vercel.json": "7856c0962fd88ec6829e8ce42f58e3e3fa694535",
+    "engine/vercel.json": "8860257b4da32d947368e91ddd0d2e89e87d3242",   # INT-2: installCommand installs the sections extra (supersedes the previous pin; guard flags unchanged)
     # INT-1c/M44: m34ab (cap 10 lifted) and M50 (9.8.4 computed) tests updated, reviewed
     "src/domain/m34ab-declared.test.ts": "093f11fe3277226097c79a82b7afd9daf1315127",
     # M44-P1: NBR 14762 audit amendments (reviewed; was 477462c)
