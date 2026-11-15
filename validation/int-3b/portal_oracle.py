@@ -75,7 +75,12 @@ def native(case, compression, perturbation, matrix):
     ops.constraints("Plain")
     ops.numberer("Plain")
     ops.system("FullGeneral")
-    ops.test("NormDispIncr", 1e-11, 40)
+    # Near the bifurcation the displacement correction is ill-conditioned.
+    # For a tangent probe, check force equilibrium and the known straight pose.
+    if matrix:
+        ops.test("NormUnbalance", 1e-10*max(1e6,compression), 40)
+    else:
+        ops.test("NormDispIncr", 1e-11, 40)
     ops.algorithm("Newton")
     ops.integrator("LoadControl", .1)
     ops.analysis("Static")
@@ -96,10 +101,15 @@ def native(case, compression, perturbation, matrix):
         result["braces"][n] = {"force_n":normal, "length_m":length, "direction":unit,
             "kg_block_n_m":[[normal/length*(float(i==j)-unit[i]*unit[j]) for j in range(3)] for i in range(3)]}
     if matrix:
+        for n,(x,y,z) in case["nodes"].items():
+            expected = (0.,0.,-z*compression/(fixture.E*fixture.FRAME[0]))
+            if dist(motion[n],expected) > 1e-6:
+                raise RuntimeError("Tangent calibration departed from the straight equilibrium path")
         ops.wipeAnalysis()
         ops.constraints("Plain")
         ops.numberer("Plain")
         ops.system("FullGeneral")
+        ops.algorithm("Linear")
         ops.integrator("GimmeMCK", 0., 0., 1., 0.)
         ops.analysis("Transient")
         if ops.analyze(1, 0.):
@@ -117,12 +127,12 @@ def child(interpreter, case, compression, perturbation=0., matrix=False):
     return json.loads(done.stdout)
 
 
-def oracle(interpreter, spatial):
+def oracle(interpreter, spatial, mesh):
     import numpy as np
     from scipy.linalg import eigvalsh
     from scipy.optimize import brentq
 
-    case = fixture.geometry(spatial, MESH)
+    case = fixture.geometry(spatial, mesh)
     initial = child(interpreter, case, 0., matrix=True)
     dofs = int(len(initial["tangent"])**.5)
     k0 = np.array(initial["tangent"]).reshape(dofs,dofs)
@@ -153,12 +163,13 @@ def oracle(interpreter, spatial):
                          tangent_margin=margin(compression),preload=preload,result=solved,
                          incremental_translation_m=increment,
                          amplification=float(norm(increment)/norm(unstressed["translation_m"]))))
-    return dict(mesh=MESH, critical_compression_per_column_n=critical,
+    return dict(mesh=mesh, critical_compression_per_column_n=critical,
                 unloaded_probe=unstressed,cases=rows)
 
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--mesh", type=int, choices=(8,16), default=MESH)
     parser.add_argument("--native", action="store_true")
     parser.add_argument("--opensees-python", type=Path)
     parser.add_argument("--output", type=Path, default=ROOT/"oracle.json")
@@ -170,7 +181,9 @@ def main():
     if not report["spring_truss"]["passed"]:
         raise ValueError("The spring + truss oracle gate must pass first")
     report["portal_criteria"] = CRITERIA
-    report["portals"] = {name:oracle(args.opensees_python, spatial)
+    if args.mesh != MESH and "portals" in report:
+        report["portals_mesh_8"] = report["portals"]
+    report["portals"] = {name:oracle(args.opensees_python, spatial, args.mesh)
                          for name,spatial in (("planar",False),("spatial",True))}
     args.output.write_text(json.dumps(report,indent=2,allow_nan=False)+"\n",encoding="utf-8")
     for case in report["portals"].values():
