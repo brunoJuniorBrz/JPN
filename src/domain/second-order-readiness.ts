@@ -4,7 +4,7 @@
  */
 type V=[number,number,number];
 type StabilityRequest={
-  schema_version:"jpn.mixed3d/1"|"jpn.mixed3d/2";
+  schema_version:"jpn.mixed3d/1"|"jpn.mixed3d/2"|"jpn.mixed3d/3";
   theory:"linear-elastic-frame-axial";
   project:{id:string;revision:string};
   nodes:readonly {id:string;x_m:number;y_m:number;z_m:number}[];
@@ -12,7 +12,7 @@ type StabilityRequest={
   combinations:readonly {id:string}[];
 };
 type StabilityResult={
-  schema_version:"jpn.mixed3d-result/1"|"jpn.mixed3d-result/2";
+  schema_version:"jpn.mixed3d-result/1"|"jpn.mixed3d-result/2"|"jpn.mixed3d-result/3";
   project:{id:string;revision:string};
   combinations:Record<string,{
     nodes:Record<string,{translation_m:V}>;
@@ -29,8 +29,7 @@ function fail(code:string,message:string):never{throw Error(code+": "+message);}
 export function auditSecondOrderReadiness(
   request:StabilityRequest,result:StabilityResult
 ){
-  const expectedVersion=request.schema_version==="jpn.mixed3d/2"?
-    "jpn.mixed3d-result/2":"jpn.mixed3d-result/1";
+  const expectedVersion=request.schema_version.replace("mixed3d/","mixed3d-result/");
   if(result.schema_version!==expectedVersion||
     request.project.id!==result.project.id||
     request.project.revision!==result.project.revision)
