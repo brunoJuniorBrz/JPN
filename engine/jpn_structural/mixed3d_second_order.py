@@ -69,7 +69,7 @@ def solve_mesh(elements, coordinates, fixed, loads, initial_subdivisions):
         if level >= initial_subdivisions*2**mesh.MIN_REFINEMENTS:
             unresolved = set()
             for name,metric in metrics.items():
-                bars = mesh.unstable_efforts(old[name],metric,counts)
+                bars = mesh.unconverged_members(old[name],metric,counts)
                 if bars and not unresolved:
                     controlling = name
                 unresolved.update(bars)

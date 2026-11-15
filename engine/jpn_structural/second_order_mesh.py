@@ -53,7 +53,7 @@ def refine(elements, coordinates, fixed, subdivisions):
     return segments, np.array(nodes), np.pad(fixed, (0, 6*(len(nodes)-len(coordinates))))
 
 
-def unstable_efforts(previous, current, all_frames):
+def unconverged_members(previous, current, all_frames):
     """Identify the unresolved bars using the preregistered effort and amplitude bounds."""
     amp, peaks = current
     old_amp, old_peaks = previous

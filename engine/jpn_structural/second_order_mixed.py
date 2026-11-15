@@ -4,9 +4,9 @@ import numpy as np
 from .frame3d_model import fail
 from .mixed_initial_stress import axial_geometric, stable_solve
 from .model import AnalysisError
-from .spatial_corotational import dot, element_response, exponential, left_jacobian, rotate
-from .second_jet import variables
+from .spatial_corotational import element_response, left_jacobian
 from .second_order_releases import pullback, section_coordinates
+from .second_order_uniform import uniform_centroid
 from . import second_order_system as system
 
 NEWTON_RELATIVE = 1e-11
@@ -50,53 +50,45 @@ def frame_response(row, q):
     return result
 
 
-def uniform_centroid(row, q):
-    """Dead UDL per initial length, integrated over the cubic centerline.
-
-    Its centroid is the midpoint plus L/12 times the difference of end
-    slopes. Differentiating the load potential yields consistent nodal
-    actions and an external tangent; no dead nodal couple is substituted.
-    """
-    a,b = row["coordinates"]
-    v = variables(q)
-    chord = [float(b[i]-a[i])+v[6+i]-v[i] for i in range(3)]
-    length = dot(chord,chord)**.5
-    axis = [c/length for c in chord]
-    di,dj = [rotate(exponential(v[k:k+3]),[float(c) for c in row["basis"][0]]) for k in (3,9)]
-    ni,nj = dot(di,axis),dot(dj,axis)
-    if min(ni.v,nj.v) <= 0.:
-        fail("SECOND_ORDER_NOT_CONVERGED", "Distributed load reached a singular centerline slope.")
-    # Relative to start reference position, to avoid a large constant energy.
-    center = [(float(b[i]-a[i])+v[i]+v[6+i])/2+length*(di[i]/ni-dj[i]/nj)/12 for i in range(3)]
-    return center
+def frame_responses(rows, coordinates):
+    return [frame_response(row,q) for row,q in zip(rows,coordinates)]
 
 
 def dead_uniform_action(row, q, force, *, centroid=None):
-    center = uniform_centroid(row,q) if centroid is None else centroid
-    work = dot(center,[float(f) for f in force])
-    physical = work.g.copy()
+    center,jacobian,hessian = uniform_centroid(row,q) if centroid is None else centroid
+    generalized = force@jacobian
+    physical = generalized.copy()
     for k in (3,9):
         physical[k:k+3] = np.linalg.solve(left_jacobian(q[k:k+3]).T,physical[k:k+3])
-    return dict(generalized=work.g,tangent=work.h,physical=physical,
-                force=force,center=row["coordinates"][0]+np.array([c.v for c in center]))
+    return dict(generalized=generalized,tangent=np.einsum("i,ijk->jk",force,hessian),physical=physical,
+                force=force,center=center)
 
 
 def assemble(elements, u, spring, uniform=None):
     force = spring@u if spring is not None else np.zeros(len(u))
     tangent = spring.copy() if spring is not None else np.zeros((len(u),len(u)))
+    frame_rows,frame_q,hinges = [],[],{}
+    for i,row in enumerate(elements):
+        if row["kind"]=="frame":
+            q = u[row.get("assembly_dofs",row["dofs"])]
+            if row.get("hinges"):
+                q,jacobian,curvature = section_coordinates(row,q)
+                hinges[i] = (q,jacobian,curvature)
+            frame_rows.append(row)
+            frame_q.append(q)
+    responses = iter(frame_responses(frame_rows,frame_q)) if frame_rows else iter(())
     rows = []
-    for row in elements:
+    for i,row in enumerate(elements):
         dofs = row.get("assembly_dofs",row["dofs"])
         x = row["coordinates"]
         if row["kind"] == "axial":
             answer = axial_response(x,u[dofs],row["ea"])
-        elif row.get("hinges"):
-            section,jacobian,curvature = section_coordinates(row,u[dofs])
-            answer = frame_response(row,section)
-            answer["force"],answer["tangent"] = pullback(jacobian,curvature,answer["force"],answer["tangent"])
-            answer.update(section_q=section,release_derivatives=(jacobian,curvature))
         else:
-            answer = frame_response(row,u[dofs])
+            answer = next(responses)
+            if i in hinges:
+                section,jacobian,curvature = hinges[i]
+                answer["force"],answer["tangent"] = pullback(jacobian,curvature,answer["force"],answer["tangent"])
+                answer.update(section_q=section,release_derivatives=(jacobian,curvature))
         force[dofs] += answer["force"]
         tangent[np.ix_(dofs,dofs)] += answer["tangent"]
         rows.append(answer)
