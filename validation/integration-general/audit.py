@@ -84,6 +84,9 @@ REVIEWED_AMENDMENTS = {
     "src/domain/test-support/continuous-fixture.ts": "aa1251dfd582a4ec00354d6e84c8bd94e83d2d8c",
     # PR #105 (C1): continuous-demands test amended for local-axes /3
     # PR #105 (C1): continuous-demands test amended for local-axes /3
+    # INT-2.3: preserve the authenticated deployment map and allow the queued worker budget.
+    "engine/vercel.json": "f732f53a99f2f7161ee52fb2b3b83217260923bf",
+    "engine/tests/test_vercel_mixed_http.py": "a967c7b3fae6e3c598b5fc8de287efbb74a852fd",
 }
 
 TREES = {}
