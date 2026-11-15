@@ -66,3 +66,34 @@ de momento dos resultados remotos do M50 em /2 e /3 lineares e
 recusou um hash de entrada obsoleto. O ensaio chamou os validadores
 do Studio sobre respostas WSGI reais. O parser do Studio desse SHA
 abrange os resultados lineares.
+
+## Extra opcional `sections` e tamanho do pacote Python
+
+`sectionproperties`, `cytriangle` e `shapely` saíram das dependências obrigatórias de `jpn-structural` e viraram o extra
+`jpn-structural[sections]` (`engine/pyproject.toml`). Motivo: o job `structural` do CI instala só o lock de validação e roda `pip check`;
+dependências obrigatórias não instaladas o reprovavam. As rotas que precisam do extra
+(`jpn.section-analysis/1` fora do caso I simétrico, `jpn.verified-coldformed/1` e `-batch/1`) **recusam** com `SECTIONS_EXTRA_MISSING`
+(HTTP 503, sem resultado) quando ele falta; o app repassa o código com mensagem clara. O projeto I/H fechado (`steel-design`) e o mixed3d
+não dependem do extra.
+
+### Tamanho medido (wheels Linux x86_64, CPython 3.12, fechamento transitivo, conteúdo descompactado)
+| Instalação | Pacotes | Descompactado | Wheels (compactado) |
+|---|---|---|---|
+| Base (`numpy`, `scipy`, `PyNiteFEA` + dependências) | 15 | **250,5 MB** | 78,1 MB |
+| Base + extra `sections` | 40 | **300,1 MB** | 92,6 MB |
+| Diferença do extra | +25 | +49,6 MB | +14,5 MB |
+
+Maiores itens da base: scipy 111,9 MB, numpy 56,4 MB, matplotlib 25,0 MB, fonttools 23,1 MB, pillow 20,4 MB (estes três vêm do `PyNiteFEA`).
+O extra puxa dependências pesadas e desnecessárias em tempo de execução (ipython/ipywidgets/jedi, rich, psutil: cerca de 40 MB).
+
+### Comparação com o limite de função da Vercel
+- O limite clássico de função é de **250 MB descompactados**: a **base já está no limite (250,5 MB)**; com o extra passa de 300 MB.
+- A Vercel documenta um limite maior para funções Python (500 MB descompactados, a confirmar no painel/documentação vigentes): nesse caso a base cabe com folga
+  e a base + extra (300,1 MB) também cabe.
+- Não foi feito deploy: o tamanho final depende do que o builder da Vercel exclui/deduplica. Medição feita com `pip download --platform manylinux…` e soma
+  de `ZipInfo.file_size`; não inclui o código do engine (pequeno) nem o interpretador.
+
+### Como instalar o extra no deploy do engine (decisão do dono)
+Por padrão o deploy do engine **não** instala o extra (as rotas de seção/NBR 14762 respondem `SECTIONS_EXTRA_MISSING`). Para habilitá-las, defina no projeto
+`jpn-structural` da Vercel o **Install Command** `uv sync --frozen --extra sections` (ou equivalente) e confira o tamanho do deploy. Redução possível,
+não aplicada: excluir `matplotlib`/`fonttools`/`pillow` (não usados pelo solver) com `excludeFiles` em `engine/vercel.json`, e restringir as dependências do extra.
