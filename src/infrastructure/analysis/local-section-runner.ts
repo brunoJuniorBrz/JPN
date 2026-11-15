@@ -10,15 +10,20 @@ import { verifiedColdformedRequestSchema,coldformedDesignResultSchema,requireCur
 const envelope=z.object({schema_version:z.literal("jpn.local-section/1"),status:z.literal("completed"),execution:z.object({memory_limit_bytes:z.literal(localMixedLimits.memoryBytes),memory_kind:z.enum(["windows-job-process-commit","linux-address-space"]),local_only:z.literal(true)}).strict(),result:sectionAnalysisResultSchema}).strict();
 const designEnvelope=envelope.extend({result:coldformedDesignResultSchema.required({geometry_audit:true,calculation_input_sha256:true})});
 const batchEnvelope=envelope.extend({result:verifiedColdformedBatchResultSchema});
+/** INT-1d: NBR 8800 I/H member design (engine/jpn_structural/steel_i_design.py) through the same capped worker. */
+const steelRequestSchema=z.object({schema_version:z.literal("jpn.steel-i-design/1")}).passthrough();
+const steelEnvelope=envelope.extend({result:z.object({schema_version:z.literal("jpn.steel-i-design-result/1"),input_sha256:z.string().regex(/^[a-f0-9]{64}$/),piece_id:z.string(),combination_id:z.string(),checks:z.array(z.record(z.string(),z.unknown())),status:z.string(),computed_structural_approval:z.literal(false),approved_for_fabrication:z.literal(false)}).passthrough()});
 export function runLocalSection(payload:string,signal?:AbortSignal):Promise<z.infer<typeof envelope>>;
 export function runLocalSection(payload:string,signal:AbortSignal|undefined,kind:"design"):Promise<z.infer<typeof designEnvelope>>;
 export function runLocalSection(payload:string,signal:AbortSignal|undefined,kind:"design-batch"):Promise<z.infer<typeof batchEnvelope>>;
-export async function runLocalSection(payload:string,signal?:AbortSignal,kind:"section"|"design"|"design-batch"="section"){
+export function runLocalSection(payload:string,signal:AbortSignal|undefined,kind:"steel-design"):Promise<z.infer<typeof steelEnvelope>>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- overload implementation; each public signature is precisely typed above
+export async function runLocalSection(payload:string,signal?:AbortSignal,kind:"section"|"design"|"design-batch"|"steel-design"="section"):Promise<any>{
   if(!localMixedEnabled())throw new SolverFailure("LOCAL_ONLY","Módulo de seções disponível no executor local configurado, sem publicação remota nesta campanha.");
   const globals=globalThis as typeof globalThis&{__jpnLocalMixedGate?:{active:number;disabled:boolean}},gate=globals.__jpnLocalMixedGate??={active:0,disabled:false};
   if(gate.disabled)throw new SolverFailure("CLEANUP_FAILURE","Executor bloqueado após falha de limpeza.");
   if(Buffer.byteLength(payload)>localMixedLimits.inputBytes)throw new SolverFailure("INPUT_LIMIT","Entrada excede 500 kB.");
-  const input=kind==="design-batch"?verifiedColdformedBatchRequestSchema.parse(JSON.parse(payload)):kind==="design"?verifiedColdformedRequestSchema.parse(JSON.parse(payload)):sectionAnalysisRequestSchema.parse(JSON.parse(payload));if(gate.active>=1)throw new SolverFailure("BUSY","Outro cálculo está em execução.");gate.active++;
+  const input=kind==="steel-design"?(steelRequestSchema.parse(JSON.parse(payload)) as never):kind==="design-batch"?verifiedColdformedBatchRequestSchema.parse(JSON.parse(payload)):kind==="design"?verifiedColdformedRequestSchema.parse(JSON.parse(payload)):sectionAnalysisRequestSchema.parse(JSON.parse(payload));if(gate.active>=1)throw new SolverFailure("BUSY","Outro cálculo está em execução.");gate.active++;
   try{
     const raw=await new Promise<unknown>((resolve,reject)=>{
       const automatic="requests"in input?input.requests.some(r=>r.design.study.minimum_search==="computed-cfsm-ss"):kind==="design"&&"design"in input&&input.design.study.minimum_search==="computed-cfsm-ss";
@@ -38,7 +43,7 @@ export async function runLocalSection(payload:string,signal?:AbortSignal,kind:"s
       child.on("close",code=>{if(failure)return finish(undefined,failure);try{const x=JSON.parse(Buffer.concat(chunks).toString("utf8"));if(code!==0||x.status!=="completed")return finish(undefined,new SolverFailure(x.error?.code??"SECTION_UNAVAILABLE",x.error?.message??"Seção recusada."));finish(x);}catch{finish(undefined,new SolverFailure("INVALID_RESPONSE","Resposta de seção inválida."));}});
       signal?.addEventListener("abort",cancel,{once:true});if(signal?.aborted)cancel();else child.stdin.end(payload);
     });
-    const out=kind==="design-batch"?batchEnvelope.parse(raw):kind==="design"?designEnvelope.parse(raw):envelope.parse(raw);if(out.result.input_sha256!==await mixedInputHash(input))throw new SolverFailure("HASH_MISMATCH","Cálculo não corresponde à entrada física.");
+    const out=kind==="steel-design"?(steelEnvelope.parse(raw) as never):kind==="design-batch"?batchEnvelope.parse(raw):kind==="design"?designEnvelope.parse(raw):envelope.parse(raw);if(out.result.input_sha256!==await mixedInputHash(input))throw new SolverFailure("HASH_MISMATCH","Cálculo não corresponde à entrada física.");
     if(kind==="design")requireCurrentBucklingNumerics(verifiedColdformedRequestSchema.parse(input),coldformedDesignResultSchema.parse(out.result));
     if(kind==="design-batch"){
       const batch=verifiedColdformedBatchRequestSchema.parse(input),response=verifiedColdformedBatchResultSchema.parse(out.result);

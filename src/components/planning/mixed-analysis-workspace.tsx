@@ -25,6 +25,9 @@ import { projectFrameAxes, withReviewedIsotropicAxes } from "@/domain/current-mi
 import { isLoadedResult } from "@/domain/structural-loading";
 import { StructuralLoadsPanel } from "./structural-loads-panel";
 import { LocalAxesPanel } from "./local-axes-panel";
+import { NormativeIntegrationPanel } from "./normative-integration-panel";
+import { AssessmentPanel, MemberStandardsPanel } from "./member-standards-panel";
+import { provisionalNotices } from "@/domain/normative-provenance";
 import { inspectConnectivity } from "@/domain/spatial-connectivity";
 import { newSpatialPreparation } from "@/domain/spatial-preparation";
 import { Field, Input, Select } from "@/components/ui";
@@ -35,7 +38,7 @@ import { PhysicalLineView } from "./physical-line-view";
 import { MathematicalComparison } from "@/components/demonstration/mathematical-comparison";
 
 type Prepared = Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProjectV3>>;
-type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; jointActions: JointActionTrace | null;designExecutions?:MemberExecution[] };
+type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; assessment?: unknown; assessmentError?: string; jointActions: JointActionTrace | null;designExecutions?:MemberExecution[] };
 const show = (v: number) => v === 0 ? "0" : v.toExponential(5);
 export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=false }: { project: Project; onChange: (patch: Partial<Project>) => void; demoPresentation?:boolean }) {
   const [example, setExample] = useState<Project | null>(null), [pane, setPane] = useState(demoPresentation?"results":"prepare");
@@ -46,7 +49,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     try { return withReviewedIsotropicAxes(example); } catch { return example; }   // anisotropic example: the roll becomes a visible pendency
   }, [example, project]), draft = active.workspace.spatialPreparation ?? newSpatialPreparation(active);
   const axes = useMemo(() => { try { return projectFrameAxes(active); } catch { return { framePieceIds: [] as string[], allPieceIds: [] as string[], pending: [], signature: "" }; } }, [active]);
-  const signature = structureSignature(active), identity = JSON.stringify([example ? "example" : "work", active.id, signature, draft]);
+  const signature = structureSignature(active), identity = JSON.stringify([example ? "example" : "work", active.id, signature, { ...draft, resistanceStandards: undefined }]);
   const model = useMemo(() => resolvePhysicalStructure(active).model, [active]);
   const [restored,setRestored]=useState(false);
   const connectivity = useMemo(() => { try { return model ? { inspected: inspectConnectivity(model), error: "" } : { error: "Geometria incompleta." }; } catch (e) { return { error: (e as Error).message }; } }, [model]);
@@ -81,6 +84,8 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     return () => controller.abort();
   }, [healthRevision,demoPresentation]);
   function invalidate(clear=true) { ticket.current.value++; request.current?.abort(); if(clear)setSession(null); setBusyIdentity(null); setError(""); }
+  // The resistance standard per piece only selects WHICH procedure verifies a piece; it does not change the analysed model, so results stay valid.
+  function editStandards(patch: Partial<Project>) { if (example) setExample({ ...example, ...patch }); else onChange(patch); }
   function edit(patch: Partial<Project>) { invalidate(false); if (example) setExample({ ...example, ...patch }); else onChange(patch); }
   function switchScope(next: Project | null) { invalidate(); setExample(next); setPane("prepare"); setPieceId(""); setSegmentId(""); setConfirm(false); setSource(""); }
   const current = session?.identity === identity ? session : null;
@@ -117,11 +122,15 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       let resistance: ResistanceReport | null = null, resistanceError = "";
       try { resistance = await buildResistanceReport(active, prepared, parsed,includeConnections?out.joint_actions:undefined); } catch(e) { resistanceError = (e as Error).message; }
       if (controller.signal.aborted || ticket.current.value !== mine) return;
+      // INT-1d: the M50/M51 structural assessment (local executor) runs after the resistance report and its outcome is shown; a failure never hides the analysis.
+      let assessment: unknown = null, assessmentError = "";
+      if (executionMode === "local") { try { const ar = await fetch("/api/experimental/structural-assessment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ schema_version: "jpn.structural-assessment/1", project: active }), signal: controller.signal }); const aj = await ar.json(); if (!ar.ok) throw new Error(`${aj.error?.code ?? ar.status}: ${aj.error?.message ?? "avaliação recusada"}`); assessment = aj; } catch (e) { assessmentError = (e as Error).message; } }
+      if (controller.signal.aborted || ticket.current.value !== mine) return;
       let connections: ConnectionReport | null = null, connectionError = "", jointActions: JointActionTrace | null = null;
       if(includeConnections){try{jointActions=jointActionTraceSchema.parse(out.joint_actions);connections=await buildConnectionReport(active,prepared,parsed,jointActions);}catch(e){connectionError=(e as Error).message;}}
       if(controller.signal.aborted||ticket.current.value!==mine)return;
       if(!prepared.request.nodes.some(n=>n.id===connectionNodeId))setConnectionNodeId(prepared.request.nodes[0].id);
-      setSession({ identity, prepared, result: parsed, execution: out.execution, resistance, resistanceError, connections, connectionError, jointActions }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
+      setSession({ identity, prepared, result: parsed, execution: out.execution, resistance, resistanceError, connections, connectionError, jointActions, assessment, assessmentError }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
     } catch (e) { if (ticket.current.value === mine) setError(controller.signal.aborted ? "Execução cancelada ou prazo excedido; nenhum resultado publicado." : e instanceof AxisReviewPendingError ? `Giro por peça pendente: ${e.pending.map(p => p.pieceId).join(", ")}. Declare e revise os giros no painel “Eixos locais” antes de calcular.` : (e as Error).message); }
     finally { clearTimeout(timeout); if (ticket.current.value === mine) setBusyIdentity(null); }
   }
@@ -157,6 +166,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     {!demoPresentation&&<nav className="physical-prep-tabs" aria-label="Fluxo misto"><button className="button secondary" aria-pressed={pane === "prepare"} onClick={() => setPane("prepare")}>Preparação mista</button><button className="button secondary" aria-pressed={pane === "results"} onClick={() => setPane("results")}>Resultados 3D</button></nav>}
     {pane === "prepare" && <>
       <SpatialPreparationPanel key={example ? "example" : "work"} project={active} onChange={edit} mixed />
+      <NormativeIntegrationPanel project={active} onChange={next => edit({ workspace: next.workspace })} />
       <LocalAxesPanel framePieceIds={axes.framePieceIds} pending={axes.pending} review={draft.localAxes} readOnly={false}
         onDeclare={members => edit({ workspace: { ...active.workspace, spatialPreparation: { ...draft, localAxes: { version: 1, convention: "jpn-z-up/1", geometrySignature: axes.signature, members } } } })} />
       <StructuralLoadsPanel project={active} onChange={edit} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setNodeId("");setPane("results");}}/>
@@ -191,6 +201,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
         <div className="actions"><button className="button secondary" onClick={()=>exportJSON(current.prepared,"jpn-misto-entradas-rastreabilidade.json")}>Exportar entradas mistas</button><button className="button secondary" onClick={()=>exportJSON({prepared:current.prepared,result:current.result,execution:current.execution},"jpn-misto-resultados-rastreabilidade.json")}>Exportar resultados mistos</button></div>
       </div>}
       {current && result && !demoPresentation && <div data-testid="mixed-results">
+        {provisionalNotices(draft.normativeProvenance).map(n => <p key={n} role="note" className="notice" data-testid="result-provisional-notice"><strong>{n}</strong></p>)}
         <p>{current.prepared.request.nodes.length} nós · {new Set(current.prepared.mapping.members.map(m => m.originalId)).size} peças · {current.prepared.request.members.length} segmentos · {current.prepared.request.members.filter(m => m.kind === "axial").length} axiais.</p>
         {isLoadedResult(current.result) && <p data-testid="loaded-result-trace">{current.result.loading.self_weight ? `Peso próprio declarado: ${show(current.result.loading.self_weight.total_mass_kg)} kg · caso ${current.result.loading.self_weight.case}.` : "Peso próprio desativado."} {current.result.loading.member_loads.length} cargas distribuídas físicas; sem duplicação automática.</p>}
         {isLoadedResult(current.result)&&<ul data-testid="declared-load-trace">{current.result.loading.member_loads.map(l=><li key={l.id}>{l.id}: peça {current.prepared.mapping.members.find(m=>m.id===l.member)?.originalId} → segmento {l.member} · {l.case} · {l.coordinate_system} · {l.force_per_length_n_m.join("; ")} N/m · {l.source} ({l.revision})</li>)}</ul>}
@@ -209,6 +220,8 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
         <p>Equilíbrio global: resíduo relativo {show(result.equilibrium.relative_residual)}; forças XYZ (N) {result.equilibrium.force_n.map(show).join("; ")}; momentos XYZ (N·m) {result.equilibrium.moment_nm.map(show).join("; ")}. O motor também verifica equilíbrio nodal antes de publicar.</p>
         <p>{current.result.diagnostics.free_dofs} graus livres · condição escalada {show(current.result.diagnostics.scaled_condition)} · {show(current.result.diagnostics.elapsed_seconds)} s.</p>
         {current.resistanceError && <p role="alert" data-testid="resistance-blocked">Relatório resistente bloqueado: {current.resistanceError}</p>}
+        {!demoPresentation && <AssessmentPanel assessment={current.assessment} error={current.assessmentError} />}
+        {!demoPresentation && <MemberStandardsPanel project={active} resistance={current.resistance} onChange={next => editStandards({ workspace: next.workspace })} />}
         {!demoPresentation&&current.resistance && <ResistanceReportPanel project={active} onChange={edit} report={current.resistance} executions={current.designExecutions??[]} onComputed={r=>setSession(previous=>previous?.identity===identity?{...previous,designExecutions:[...(previous.designExecutions??[]).filter(x=>x.result.piece_id!==r.result.piece_id||x.result.combination_id!==r.result.combination_id),r]}:previous)} selectedPiece={selectedPiece} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setNodeId("");}} onExport={()=>void exportResistance()}/>}
         <details><summary>Hipóteses e limites do cálculo</summary><ul>{current.result.assumptions.map(a => <li key={a}>{a}</li>)}</ul><p>Geometria original preservada. Deformada gráfica ainda não implementada. Juntas esféricas nas duas extremidades de pórticos e contatos independentes permanecem recusados.</p></details>
         <div className="actions"><button className="button secondary" onClick={() => exportJSON(current.prepared, "jpn-misto-entradas-rastreabilidade.json")}>Exportar entradas mistas</button><button className="button secondary" onClick={() => exportJSON({ prepared: current.prepared, result: current.result, execution: current.execution }, "jpn-misto-resultados-rastreabilidade.json")}>Exportar resultados mistos</button></div>
