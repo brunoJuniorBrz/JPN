@@ -7,6 +7,7 @@ from .model import AnalysisError
 from .spatial_corotational import dot, element_response, exponential, left_jacobian, rotate
 from .second_jet import variables
 from .second_order_releases import pullback, section_coordinates
+from . import second_order_system as system
 
 NEWTON_RELATIVE = 1e-11
 EQUILIBRIUM_RELATIVE = 1e-8
@@ -49,7 +50,7 @@ def frame_response(row, q):
     return result
 
 
-def dead_uniform_action(row, q, force):
+def uniform_centroid(row, q):
     """Dead UDL per initial length, integrated over the cubic centerline.
 
     Its centroid is the midpoint plus L/12 times the difference of end
@@ -67,12 +68,17 @@ def dead_uniform_action(row, q, force):
         fail("SECOND_ORDER_NOT_CONVERGED", "Distributed load reached a singular centerline slope.")
     # Relative to start reference position, to avoid a large constant energy.
     center = [(float(b[i]-a[i])+v[i]+v[6+i])/2+length*(di[i]/ni-dj[i]/nj)/12 for i in range(3)]
+    return center
+
+
+def dead_uniform_action(row, q, force, *, centroid=None):
+    center = uniform_centroid(row,q) if centroid is None else centroid
     work = dot(center,[float(f) for f in force])
     physical = work.g.copy()
     for k in (3,9):
         physical[k:k+3] = np.linalg.solve(left_jacobian(q[k:k+3]).T,physical[k:k+3])
     return dict(generalized=work.g,tangent=work.h,physical=physical,
-                force=force,center=a+np.array([c.v for c in center]))
+                force=force,center=row["coordinates"][0]+np.array([c.v for c in center]))
 
 
 def assemble(elements, u, spring, uniform=None):
@@ -98,7 +104,7 @@ def assemble(elements, u, spring, uniform=None):
     return apply_uniform(elements,u,uniform,state) if uniform else state
 
 
-def apply_uniform(elements, u, uniform, state):
+def apply_uniform(elements, u, uniform, state, centroids=None):
     # The undeformed material response is shared, but loads and their
     # tangent are evaluated independently for each combination.
     force,tangent,rows = state[0].copy(),state[1].copy(),list(state[2])
@@ -108,20 +114,30 @@ def apply_uniform(elements, u, uniform, state):
             continue
         dofs = row.get("assembly_dofs",row["dofs"])
         answer = rows[i]
+        section = answer["section_q"] if row.get("hinges") else u[dofs]
+        if centroids is None:
+            action = dead_uniform_action(row,section,value)
+        else:
+            if i not in centroids:
+                centroids[i] = uniform_centroid(row,section)
+            action = dead_uniform_action(row,section,value,centroid=centroids[i])
         if row.get("hinges"):
-            action = dead_uniform_action(row,answer["section_q"],value)
             action["generalized"],action["tangent"] = pullback(
                 *answer["release_derivatives"],action["generalized"],action["tangent"])
-        else:
-            action = dead_uniform_action(row,u[dofs],value)
         rows[i] = {**rows[i],"uniform_action":action}
         force[dofs] -= action["generalized"]
         tangent[np.ix_(dofs,dofs)] -= action["tangent"]
     return force,tangent,rows
 
 
-def _solve(matrix, force, free, *, reference=False):
+def _solve(matrix, force, free, *, reference=False, cache=None):
     try:
+        if reference and cache is not None:
+            if "factor" not in cache:
+                cache["factor"] = system.factor_system(matrix,free)
+            return cache["factor"](force)
+        if len(free)>=system.BAND_THRESHOLD:
+            return system.factor_system(matrix,free)(force)
         return stable_solve(matrix,force,free)
     except AnalysisError as error:
         if error.code == "UNSTABLE":
@@ -133,7 +149,8 @@ def _solve(matrix, force, free, *, reference=False):
         raise
 
 
-def solve_combination(elements, coordinates, fixed, load, *, spring=None, initial=None, uniform=None, projection=None):
+def solve_combination(elements, coordinates, fixed, load, *, spring=None, initial=None, uniform=None, projection=None,
+                      reference_cache=None):
     """Dead nodal forces. The optional elastic spring is for the research fixture."""
     span = max(1e-5,float(np.ptp(coordinates,axis=0).max()))
     physical_size = 6*len(coordinates)
@@ -148,13 +165,14 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
         return float(np.linalg.norm(residual[free]/units[free]))
     def solve(matrix, rhs, *, reference=False):
         if projection is None:
-            return _solve(matrix,rhs,free,reference=reference)
+            return _solve(matrix,rhs,free,reference=reference,cache=reference_cache)
         values,condition = _solve(projection.T@matrix@projection,projection.T@rhs,
-                                  np.arange(projection.shape[1]),reference=reference)
+                                  np.arange(projection.shape[1]),reference=reference,cache=reference_cache)
         return projection@values,condition
     u = np.zeros(len(load))
     elastic = assemble(elements,u,spring) if initial is None else initial
-    state = apply_uniform(elements,u,uniform,elastic) if uniform else elastic
+    centroids = reference_cache.setdefault("centroids",{}) if reference_cache is not None else None
+    state = apply_uniform(elements,u,uniform,elastic,centroids) if uniform else elastic
     rhs = load-state[0]
     denominator = max(1.,norm(rhs))
     linear,_ = solve(elastic[1],rhs,reference=True)

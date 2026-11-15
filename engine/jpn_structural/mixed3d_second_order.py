@@ -46,13 +46,15 @@ def solve_mesh(elements, coordinates, fixed, loads, initial_subdivisions):
         levels.append(subdivisions)
         segments,restraints,projection = prepare_releases(segments,restraints)
         reference = assemble(segments,np.zeros(len(restraints)),None)
+        reference_cache = {}
         states,metrics = {},{}
         for name,(nodal,uniform) in loads.items():
             weights = {e["id"]:uniform[e["parent"]]/subdivisions for e in segments
                        if e["parent"] in uniform}
             try:
                 state = solve_combination(segments,x,restraints,np.pad(nodal,(0,len(restraints)-physical_dofs)),
-                                          initial=reference,uniform=weights,projection=projection)
+                                          initial=reference,uniform=weights,projection=projection,
+                                          reference_cache=reference_cache)
                 amp,measure = amplification(state["u"][:physical_dofs].reshape(-1,6),
                                             state["linear"][:physical_dofs].reshape(-1,6))
                 metrics[name] = amp,peak_efforts(segments,state["rows"],state["u"])

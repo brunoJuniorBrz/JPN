@@ -6,7 +6,11 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from jpn_structural import mixed3d_second_order as mixed
+from jpn_structural import second_order_system as system
+from jpn_structural.mixed_initial_stress import stable_solve
 from jpn_structural.mixed3d_v3 import analyze_mixed3d_v3
+from jpn_structural.model import AnalysisError
 from jpn_structural.second_order_mixed import assemble, physical_model
 from jpn_structural.second_order_releases import prepare_releases
 
@@ -89,3 +93,58 @@ def test_unused_joint_rotation_at_released_ends_is_eliminated():
     for combo in result["combinations"].values():
         assert combo["nodes"]["a"]["rotation_rad"][1:] == [0.,0.]
         assert combo["nodes"]["b"]["rotation_rad"] == [0.,0.,0.]
+
+
+def test_banded_solution_and_stability_match_dense():
+    rng = np.random.default_rng(1234)
+    values = rng.uniform(.15,.45,119)
+    k = np.diag(np.full(120,2.))+np.diag(values,1)+np.diag(values,-1)
+    order = rng.permutation(120)
+    k = k[np.ix_(order,order)]
+    force = rng.normal(size=120)
+    free = np.arange(120)
+    tolerance = CRITERIA["numerical_equivalence_relative_and_absolute"]
+    actual,condition = system.factor_system(k,free)(force)
+    expected,reference_condition = stable_solve(k,force,free)
+    np.testing.assert_allclose(actual,expected,rtol=tolerance,atol=tolerance)
+    assert condition == pytest.approx(reference_condition,rel=tolerance)
+    k[0,1] = k[1,0] = 4.
+    for method in (system.factor_system,lambda m,i: stable_solve(m,force,i)):
+        with pytest.raises(AnalysisError) as error:
+            method(k,free)
+        assert error.value.code == "UNSTABLE"
+
+
+def test_optimized_results_match_uncached_dense_with_releases_and_distributed_load(monkeypatch):
+    raw,_,_ = released_request("purlin-portal")
+    raw["member_loads"] = [dict(id="W",member="P2",case="NL",coordinate_system="global",
+                               force_per_length_n_m=[.2,-.4,-1.],source="equivalence",revision="1")]
+    original = mixed.solve_combination
+    actual = analyze_mixed3d_v3(raw)
+    monkeypatch.setattr(system,"BAND_THRESHOLD",np.inf)
+
+    def uncached(*args,**kwargs):
+        kwargs.pop("reference_cache")
+        return original(*args,**kwargs)
+
+    monkeypatch.setattr(mixed,"solve_combination",uncached)
+    expected = analyze_mixed3d_v3(raw)
+    for result in (actual,expected):
+        del result["diagnostics"]["elapsed_seconds"]
+
+    def compare(new,old):
+        if type(old) is dict:
+            assert new.keys() == old.keys()
+            for key in old:
+                compare(new[key],old[key])
+        elif type(old) is list:
+            assert len(new) == len(old)
+            for a,b in zip(new,old):
+                compare(a,b)
+        elif type(old) is float:
+            tol = CRITERIA["numerical_equivalence_relative_and_absolute"]
+            assert new == pytest.approx(old,rel=tol,abs=tol)
+        else:
+            assert new == old
+
+    compare(actual,expected)
