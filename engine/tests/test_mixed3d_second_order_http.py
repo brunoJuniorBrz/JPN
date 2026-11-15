@@ -28,7 +28,7 @@ def test_http_refuses_unsupported_restraints_explicitly(server,spring,code):
     if spring:
         raw["nodal_springs"] = [dict(node="top",kx_n_m=1000.)]
     else:
-        raw["members"][0]["release_end"][-1] = True
+        raw["members"][0]["release_end"][2] = True
     status,body,_ = request(server+"/api/analyze-mixed",raw)
     assert status == 422 and set(body) == {"error"}
     assert body["error"]["code"] == code

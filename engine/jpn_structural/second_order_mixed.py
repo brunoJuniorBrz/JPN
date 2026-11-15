@@ -6,6 +6,7 @@ from .mixed_initial_stress import axial_geometric, stable_solve
 from .model import AnalysisError
 from .spatial_corotational import dot, element_response, exponential, left_jacobian, rotate
 from .second_jet import variables
+from .second_order_releases import pullback, section_coordinates
 
 NEWTON_RELATIVE = 1e-11
 EQUILIBRIUM_RELATIVE = 1e-8
@@ -79,10 +80,15 @@ def assemble(elements, u, spring, uniform=None):
     tangent = spring.copy() if spring is not None else np.zeros((len(u),len(u)))
     rows = []
     for row in elements:
-        dofs = row["dofs"]
+        dofs = row.get("assembly_dofs",row["dofs"])
         x = row["coordinates"]
         if row["kind"] == "axial":
             answer = axial_response(x,u[dofs],row["ea"])
+        elif row.get("hinges"):
+            section,jacobian,curvature = section_coordinates(row,u[dofs])
+            answer = frame_response(row,section)
+            answer["force"],answer["tangent"] = pullback(jacobian,curvature,answer["force"],answer["tangent"])
+            answer.update(section_q=section,release_derivatives=(jacobian,curvature))
         else:
             answer = frame_response(row,u[dofs])
         force[dofs] += answer["force"]
@@ -100,8 +106,14 @@ def apply_uniform(elements, u, uniform, state):
         value = uniform.get(row["id"])
         if value is None:
             continue
-        dofs = row["dofs"]
-        action = dead_uniform_action(row,u[dofs],value)
+        dofs = row.get("assembly_dofs",row["dofs"])
+        answer = rows[i]
+        if row.get("hinges"):
+            action = dead_uniform_action(row,answer["section_q"],value)
+            action["generalized"],action["tangent"] = pullback(
+                *answer["release_derivatives"],action["generalized"],action["tangent"])
+        else:
+            action = dead_uniform_action(row,u[dofs],value)
         rows[i] = {**rows[i],"uniform_action":action}
         force[dofs] -= action["generalized"]
         tangent[np.ix_(dofs,dofs)] -= action["tangent"]
@@ -121,25 +133,35 @@ def _solve(matrix, force, free, *, reference=False):
         raise
 
 
-def solve_combination(elements, coordinates, fixed, load, *, spring=None, initial=None, uniform=None):
+def solve_combination(elements, coordinates, fixed, load, *, spring=None, initial=None, uniform=None, projection=None):
     """Dead nodal forces. The optional elastic spring is for the research fixture."""
     span = max(1e-5,float(np.ptp(coordinates,axis=0).max()))
-    if np.any(load.reshape(-1,6)[:,3:]):
+    physical_size = 6*len(coordinates)
+    if np.any(load[:physical_size].reshape(-1,6)[:,3:]):
         fail("SECOND_ORDER_UNSUPPORTED_LOAD", "General dead couples lack a scalar SO(3) potential.")
     free = np.flatnonzero(~fixed)
-    units = np.tile([1.,1.,1.,span,span,span],len(coordinates))
+    units = np.r_[np.tile([1.,1.,1.,span,span,span],len(coordinates)),
+                  np.full(len(load)-physical_size,span)]
     def norm(residual):
+        if projection is not None:
+            return float(np.linalg.norm(projection.T@(residual/units)))
         return float(np.linalg.norm(residual[free]/units[free]))
+    def solve(matrix, rhs, *, reference=False):
+        if projection is None:
+            return _solve(matrix,rhs,free,reference=reference)
+        values,condition = _solve(projection.T@matrix@projection,projection.T@rhs,
+                                  np.arange(projection.shape[1]),reference=reference)
+        return projection@values,condition
     u = np.zeros(len(load))
     elastic = assemble(elements,u,spring) if initial is None else initial
     state = apply_uniform(elements,u,uniform,elastic) if uniform else elastic
     rhs = load-state[0]
     denominator = max(1.,norm(rhs))
-    linear,_ = _solve(elastic[1],rhs,free,reference=True)
+    linear,_ = solve(elastic[1],rhs,reference=True)
     for iteration in range(MAX_ITERATIONS+1):
         internal,tangent,rows = state
         residual = internal-load
-        delta,condition = _solve(tangent,-residual,free)
+        delta,condition = solve(tangent,-residual)
         relative_norm = norm(residual)
         if relative_norm <= NEWTON_RELATIVE*denominator:
             break
@@ -159,7 +181,7 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
         else:
             fail("SECOND_ORDER_NOT_CONVERGED", "Newton search could not reduce the free residual.")
 
-    motion = u.reshape(-1,6)
+    motion = u[:physical_size].reshape(-1,6)
     if np.max(np.linalg.norm(motion[:,:3],axis=1))/span > .01 or np.max(np.linalg.norm(motion[:,3:],axis=1)) > .05:
         fail("SECOND_ORDER_NOT_CONVERGED", "Motion exceeds the corotational research domain.")
     spring_force = spring@u if spring is not None else np.zeros(len(u))
@@ -173,8 +195,8 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
         row["net_end_actions"] = net
         physical[element["dofs"]] += net
     support = np.where(fixed,physical-load,0.)
-    wrenches = (load+support-spring_force).reshape(-1,6)
-    locations = coordinates-coordinates[0]+u.reshape(-1,6)[:,:3]
+    wrenches = (load+support-spring_force)[:physical_size].reshape(-1,6)
+    locations = coordinates-coordinates[0]+motion[:,:3]
     force = np.sum(wrenches[:,:3],axis=0)
     moment = np.sum(wrenches[:,3:]+np.cross(locations,wrenches[:,:3]),axis=0)
     scale = max(1.,float(np.sum(np.linalg.norm(wrenches[:,:3],axis=1)
@@ -184,6 +206,9 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
         force += total
         moment += np.cross(action["center"]-coordinates[0],total)
         scale += float(np.linalg.norm(total))
+    # Include the declared-free hinge torque residual from the differentiated
+    # potential. There are no physical nodal reactions at hinge coordinates.
+    physical[physical_size:] = internal[physical_size:]
     relative = max(norm(physical-load)/denominator,float(np.linalg.norm(force))/scale,
                    float(np.linalg.norm(moment))/(scale*span))
     if relative > EQUILIBRIUM_RELATIVE:
@@ -214,12 +239,11 @@ def physical_model(data, points, frame_nodes, supports):
         if axial:
             row["ea"] = member["e_pa"]*member["area_m2"]
         else:
-            if any(member["release_start"]+member["release_end"]):
-                fail("SECOND_ORDER_UNSUPPORTED_RELEASE", "Frame releases require validated nonlinear condensation.")
             mat,sec = materials[member["material"]],sections[member["section"]]
             E = mat["e_pa"]
             row.update(ea=E*sec["area_m2"],eiy=E*sec["iy_m4"],eiz=E*sec["iz_m4"],
                        gj=mat["g_pa"]*sec["j_m4"],
+                       releases=np.array(member["release_start"][3:]+member["release_end"][3:]),
                        basis=rolled(reference_basis(*x,member["id"]),member["rotation_deg"]))
         elements.append(row)
     return elements,coordinates,fixed.ravel(),index
