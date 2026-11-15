@@ -63,5 +63,5 @@ export function overlayColors(overlay:ResultOverlay){
     const r=Math.round(64+t*(214-64)),g=Math.round(t<.5?107+t*2*(150-107):150-(t-.5)*2*(150-60)),b=Math.round(145*(1-t)+40*t);
     colors[p.pieceId]=(r<<16)|(Math.max(0,Math.min(255,g))<<8)|b;
   }
-  return {colors,min,max,units:overlay.units};
+  return {colors,min,max,valueMax:v.length?Math.max(...v):0,units:overlay.units};
 }

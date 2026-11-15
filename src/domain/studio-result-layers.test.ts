@@ -62,5 +62,6 @@ it("deformada: coordenadas de cena (x, z, -y) em metros; escala 0 reproduz a geo
 it("rampa de cores: menor valor azul, maior vermelho; verificação mantém 1,0 como limite", () => {
   const c = overlayColors(buildResultOverlay("axial", input()));
   expect(c.colors.P1).not.toBe(c.colors.P2); expect(c.max).toBe(7); expect(c.min).toBe(5);
-  expect(overlayColors(buildResultOverlay("verification", { ...input(), utilizationByPiece: { P1: 0.3 } })).max).toBe(1);
+  expect(overlayColors(buildResultOverlay("verification", { ...input(), utilizationByPiece: { P1: 0.3 } })).max).toBe(1);   // colour ramp ceiling
+  expect(overlayColors(buildResultOverlay("verification", { ...input(), utilizationByPiece: { P1: 0.3 } })).valueMax).toBe(0.3);   // the legend shows the real value
 });
