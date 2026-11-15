@@ -93,7 +93,10 @@ O extra puxa dependências pesadas e desnecessárias em tempo de execução (ipy
 - Não foi feito deploy: o tamanho final depende do que o builder da Vercel exclui/deduplica. Medição feita com `pip download --platform manylinux…` e soma
   de `ZipInfo.file_size`; não inclui o código do engine (pequeno) nem o interpretador.
 
-### Como instalar o extra no deploy do engine (decisão do dono)
-Por padrão o deploy do engine **não** instala o extra (as rotas de seção/NBR 14762 respondem `SECTIONS_EXTRA_MISSING`). Para habilitá-las, defina no projeto
-`jpn-structural` da Vercel o **Install Command** `uv sync --frozen --extra sections` (ou equivalente) e confira o tamanho do deploy. Redução possível,
-não aplicada: excluir `matplotlib`/`fonttools`/`pillow` (não usados pelo solver) com `excludeFiles` em `engine/vercel.json`, e restringir as dependências do extra.
+### Instalação do extra no deploy do engine (configurado)
+Limite confirmado pelo dono do projeto: funções Python na Vercel aceitam **500 MB descompactados**; base + extra (300,1 MB) cabe.
+`engine/vercel.json` define `"installCommand": "uv sync --extra sections"`, que instala as dependências obrigatórias **e** o extra `sections`
+(sem `--frozen`: o engine não tem `uv.lock`; as versões estão fixadas por igualdade em `pyproject.toml` e o `cytriangle` por revisão git).
+Verificação no primeiro deploy (prévia `codex/int-2-*`): chame `POST /api/analyze-section` com a seção retangular de exemplo; resposta 200 = extra instalado,
+503 `SECTIONS_EXTRA_MISSING` = a Vercel ignorou o comando (então configure o mesmo Install Command no painel do projeto `jpn-structural`).
+Se o tamanho do deploy for um problema, a redução possível (não aplicada) é excluir `matplotlib`/`fonttools`/`pillow` com `excludeFiles`.
