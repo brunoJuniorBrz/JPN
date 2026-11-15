@@ -36,8 +36,12 @@ def solve_mesh(elements, coordinates, fixed, loads, initial_subdivisions):
     old = {}
     levels = []
     physical_dofs = 6*len(coordinates)
+    controlling = next(iter(loads))
     while True:
-        segments,x,restraints = mesh.refine(elements,coordinates,fixed,subdivisions)
+        try:
+            segments,x,restraints = mesh.refine(elements,coordinates,fixed,subdivisions)
+        except AnalysisError as error:
+            raise AnalysisError(error.code,str(error),combination_id=controlling) from error
         levels.append(subdivisions)
         reference = assemble(segments,np.zeros(6*len(x)),None)
         states,metrics = {},{}
@@ -51,13 +55,15 @@ def solve_mesh(elements, coordinates, fixed, loads, initial_subdivisions):
                                             state["linear"][:physical_dofs].reshape(-1,6))
                 metrics[name] = amp,peak_efforts(segments,state["rows"],state["u"])
             except AnalysisError as error:
-                fail(error.code,f"{name}: {error}")
+                raise AnalysisError(error.code,f"{name}: {error}",combination_id=name) from error
             states[name] = state,amp,measure
         if all(e["kind"]=="axial" for e in elements):
             break
-        if subdivisions >= initial_subdivisions*2**mesh.MIN_REFINEMENTS and all(
-                mesh.converged(old[name],metric) for name,metric in metrics.items()):
-            break
+        if subdivisions >= initial_subdivisions*2**mesh.MIN_REFINEMENTS:
+            unconverged = [name for name,metric in metrics.items() if not mesh.converged(old[name],metric)]
+            if not unconverged:
+                break
+            controlling = unconverged[0]
         subdivisions *= 2
         old = metrics
     final = {e["id"]:1 if e["kind"]=="axial" else subdivisions for e in elements}
@@ -66,6 +72,8 @@ def solve_mesh(elements, coordinates, fixed, loads, initial_subdivisions):
 
 def analyze_second_order_v3(raw,joint_actions):
     started = time.perf_counter()
+    if "nodal_springs" in raw or "springs" in raw:
+        fail("SECOND_ORDER_UNSUPPORTED_SPRING","Nodal springs are outside the second-order /3 contract.")
     optional = " mesh_initial_subdivisions" if "mesh_initial_subdivisions" in raw else ""
     obj(raw,KEYS+" analysis_order solution_mode"+optional,"second-order mixed model")
     subdivisions = raw.get("mesh_initial_subdivisions",mesh.INITIAL_SUBDIVISIONS)
@@ -80,7 +88,12 @@ def analyze_second_order_v3(raw,joint_actions):
     linear_input = {k:v for k,v in raw.items()
                     if k not in ("analysis_order","solution_mode","local_axes","mesh_initial_subdivisions")}
     linear_input["schema_version"] = "jpn.mixed3d/2"
-    data,loading = compile_loaded_mixed3d(linear_input)
+    try:
+        data,loading = compile_loaded_mixed3d(linear_input)
+    except AnalysisError as error:
+        if error.code == "UNSUPPORTED_RELEASE":
+            fail("SECOND_ORDER_UNSUPPORTED_RELEASE",str(error))
+        raise
     cases = {l["case"] for l in loading["frame_loads"]}
     _,points,frames,supports = validate_mixed3d(data,distributed_cases=cases)
     elements,x,fixed,index = physical_model(data,points,frames,supports)
@@ -117,7 +130,7 @@ def analyze_second_order_v3(raw,joint_actions):
         try:
             members = recover_members(segments,state["rows"],state["u"],final_mesh)
         except AnalysisError as error:
-            fail(error.code,f"{name}: {error}")
+            raise AnalysisError(error.code,f"{name}: {error}",combination_id=name) from error
         results[name] = dict(
             status="converged", iterations=state["iterations"], amplification_factor=amp,
             amplification_measure=measure,
@@ -131,7 +144,7 @@ def analyze_second_order_v3(raw,joint_actions):
     return dict(schema_version="jpn.mixed3d-result/3",status="analysis_completed_experimental",units="SI",
                 analysis_order="second-order",solution_mode="per-combination",local_axes=CONVENTION,
                 project=raw["project"],input_sha256=input_hash(raw),combinations=results,
-                mesh_subdivisions=final_mesh,
+                mesh_subdivisions=final_mesh,loading=loading["trace"],
                 solver=dict(name="JPN M43",adapter="jpn-mixed3d/3",method="corotational-newton"),
                 diagnostics=dict(elapsed_seconds=time.perf_counter()-started,mesh_levels=levels),
                 computedStructuralApproval=False,fabricationRelease=False,releaseGate="NOT_READY_BLOCKED")

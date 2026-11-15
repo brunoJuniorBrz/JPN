@@ -31,8 +31,9 @@ _disabled = False
 
 
 class TransportError(Exception):
-    def __init__(self, code, message, status=422):
+    def __init__(self, code, message, status=422, *, combination_id=None):
         self.code, self.message, self.status = code, message, status
+        self.combination_id = combination_id
 
 
 def _unique(pairs):
@@ -178,7 +179,7 @@ def _worker(payload, health=False, joint_actions=False, purlin=False):
         if not isinstance(output, dict):
             raise TransportError('INVALID_RESPONSE', 'Invalid worker envelope.', 503)
         if process.returncode != 0 or output.get('status') == 'error':
-            error = output.get('error', {})
+            error = output.get('error')
             if isinstance(error, dict):
                 diagnostic = error.get('diagnostic') or {}
                 if not isinstance(diagnostic, dict):
@@ -188,11 +189,17 @@ def _worker(payload, health=False, joint_actions=False, purlin=False):
                     str(diagnostic.get('phase', 'not-reported'))[:40],
                     str(diagnostic.get('exception', 'not-reported'))[:40],
                     str(diagnostic.get('missing_module', 'none'))[:40], process.returncode)
+            else:
+                error = {}
             code = error.get('code', 'SERVICE_FAILURE')
             if not isinstance(code, str) or not re.fullmatch(r'[A-Z_]{1,80}', code):
                 code = 'SERVICE_FAILURE'
             status = 503 if code in ('MEMORY_LIMIT', 'MEMORY_LIMIT_UNAVAILABLE', 'DEPENDENCY_VERSION', 'UNAVAILABLE') else 422
-            raise TransportError(code, 'Structural worker refused the request; no result published.', status)
+            combination_id = error.get('combination_id')
+            if not isinstance(combination_id, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}', combination_id):
+                combination_id = None
+            raise TransportError(code, 'Structural worker refused the request; no result published.', status,
+                                 combination_id=combination_id)
         execution = output.get('execution', {})
         if output.get('schema_version') != ('jpn.local-purlin/1' if purlin else 'jpn.local-mixed/1') or execution.get('memory_limit_bytes') != MEMORY_BYTES or execution.get('memory_kind') not in ('windows-job-process-commit', 'linux-address-space'):
             raise TransportError('INVALID_RESPONSE', 'Protected execution was not confirmed.', 503)
@@ -312,6 +319,8 @@ def app(environ, start_response):
         if exc.status >= 500:
             logging.warning('jpn_mixed_backend_failure code=%s status=%d', exc.code, exc.status)
         status, body = exc.status, dict(error=dict(code=exc.code, message=exc.message))
+        if exc.combination_id is not None:
+            body['error']['combination_id'] = exc.combination_id
     except Exception as exc:
         logging.error('jpn_mixed_backend_unexpected exception_type=%s', type(exc).__name__)
         status, body = 503, dict(error=dict(code='SERVICE_FAILURE', message='Request failed; no result published.'))
