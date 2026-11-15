@@ -181,7 +181,8 @@ def main():
     if not report["spring_truss"]["passed"]:
         raise ValueError("The spring + truss oracle gate must pass first")
     report["portal_criteria"] = CRITERIA
-    if args.mesh != MESH and "portals" in report:
+    if (args.mesh != MESH and "portals" in report
+            and all(row["mesh"] == MESH for row in report["portals"].values())):
         report["portals_mesh_8"] = report["portals"]
     report["portals"] = {name:oracle(args.opensees_python, spatial, args.mesh)
                          for name,spatial in (("planar",False),("spatial",True))}

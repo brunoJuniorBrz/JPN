@@ -4,7 +4,8 @@ import numpy as np
 from .frame3d_model import fail
 from .mixed_initial_stress import axial_geometric, stable_solve
 from .model import AnalysisError
-from .spatial_corotational import element_response
+from .spatial_corotational import dot, element_response, exponential, left_jacobian, rotate
+from .second_jet import variables
 
 NEWTON_RELATIVE = 1e-11
 EQUILIBRIUM_RELATIVE = 1e-8
@@ -47,7 +48,33 @@ def frame_response(row, q):
     return result
 
 
-def assemble(elements, u, spring):
+def dead_uniform_action(row, q, force):
+    """Dead UDL per initial length, integrated over the cubic centerline.
+
+    Its centroid is the midpoint plus L/12 times the difference of end
+    slopes. Differentiating the load potential yields consistent nodal
+    actions and an external tangent; no dead nodal couple is substituted.
+    """
+    a,b = row["coordinates"]
+    v = variables(q)
+    chord = [float(b[i]-a[i])+v[6+i]-v[i] for i in range(3)]
+    length = dot(chord,chord)**.5
+    axis = [c/length for c in chord]
+    di,dj = [rotate(exponential(v[k:k+3]),[float(c) for c in row["basis"][0]]) for k in (3,9)]
+    ni,nj = dot(di,axis),dot(dj,axis)
+    if min(ni.v,nj.v) <= 0.:
+        fail("SECOND_ORDER_NOT_CONVERGED", "Distributed load reached a singular centerline slope.")
+    # Relative to start reference position, to avoid a large constant energy.
+    center = [(float(b[i]-a[i])+v[i]+v[6+i])/2+length*(di[i]/ni-dj[i]/nj)/12 for i in range(3)]
+    work = dot(center,[float(f) for f in force])
+    physical = work.g.copy()
+    for k in (3,9):
+        physical[k:k+3] = np.linalg.solve(left_jacobian(q[k:k+3]).T,physical[k:k+3])
+    return dict(generalized=work.g,tangent=work.h,physical=physical,
+                force=force,center=a+np.array([c.v for c in center]))
+
+
+def assemble(elements, u, spring, uniform=None):
     force = spring@u if spring is not None else np.zeros(len(u))
     tangent = spring.copy() if spring is not None else np.zeros((len(u),len(u)))
     rows = []
@@ -61,21 +88,40 @@ def assemble(elements, u, spring):
         force[dofs] += answer["force"]
         tangent[np.ix_(dofs,dofs)] += answer["tangent"]
         rows.append(answer)
+    state = (force,tangent,rows)
+    return apply_uniform(elements,u,uniform,state) if uniform else state
+
+
+def apply_uniform(elements, u, uniform, state):
+    # The undeformed material response is shared, but loads and their
+    # tangent are evaluated independently for each combination.
+    force,tangent,rows = state[0].copy(),state[1].copy(),list(state[2])
+    for i,row in enumerate(elements):
+        value = uniform.get(row["id"])
+        if value is None:
+            continue
+        dofs = row["dofs"]
+        action = dead_uniform_action(row,u[dofs],value)
+        rows[i] = {**rows[i],"uniform_action":action}
+        force[dofs] -= action["generalized"]
+        tangent[np.ix_(dofs,dofs)] -= action["tangent"]
     return force,tangent,rows
 
 
-def _solve(matrix, force, free):
+def _solve(matrix, force, free, *, reference=False):
     try:
         return stable_solve(matrix,force,free)
     except AnalysisError as error:
         if error.code == "UNSTABLE":
+            if reference:
+                fail("SECOND_ORDER_NOT_CONVERGED", "The unloaded model has a mechanism.")
             fail("SECOND_ORDER_BEYOND_CRITICAL", "The reduced tangent lost positive definiteness.")
         if error.code == "ILL_CONDITIONED":
             fail("SECOND_ORDER_NOT_CONVERGED", "The reduced tangent is ill-conditioned.")
         raise
 
 
-def solve_combination(elements, coordinates, fixed, load, *, spring=None, initial=None):
+def solve_combination(elements, coordinates, fixed, load, *, spring=None, initial=None, uniform=None):
     """Dead nodal forces. The optional elastic spring is for the research fixture."""
     span = max(1e-5,float(np.ptp(coordinates,axis=0).max()))
     if np.any(load.reshape(-1,6)[:,3:]):
@@ -84,10 +130,12 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
     units = np.tile([1.,1.,1.,span,span,span],len(coordinates))
     def norm(residual):
         return float(np.linalg.norm(residual[free]/units[free]))
-    denominator = max(1.,norm(load))
     u = np.zeros(len(load))
-    state = assemble(elements,u,spring) if initial is None else initial
-    linear,_ = _solve(state[1],load,free)
+    elastic = assemble(elements,u,spring) if initial is None else initial
+    state = apply_uniform(elements,u,uniform,elastic) if uniform else elastic
+    rhs = load-state[0]
+    denominator = max(1.,norm(rhs))
+    linear,_ = _solve(elastic[1],rhs,free,reference=True)
     for iteration in range(MAX_ITERATIONS+1):
         internal,tangent,rows = state
         residual = internal-load
@@ -100,7 +148,7 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
         for exponent in range(9):
             trial = u+delta*(2.**-exponent)
             try:
-                next_state = assemble(elements,trial,spring)
+                next_state = assemble(elements,trial,spring,uniform)
             except AnalysisError as error:
                 if error.code.startswith("SPATIAL_") or error.code=="SECOND_ORDER_NOT_CONVERGED":
                     continue
@@ -111,10 +159,19 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
         else:
             fail("SECOND_ORDER_NOT_CONVERGED", "Newton search could not reduce the free residual.")
 
+    motion = u.reshape(-1,6)
+    if np.max(np.linalg.norm(motion[:,:3],axis=1))/span > .01 or np.max(np.linalg.norm(motion[:,3:],axis=1)) > .05:
+        fail("SECOND_ORDER_NOT_CONVERGED", "Motion exceeds the corotational research domain.")
     spring_force = spring@u if spring is not None else np.zeros(len(u))
     physical = spring_force.copy()
+    line_loads = []
     for element,row in zip(elements,rows):
-        physical[element["dofs"]] += row["physical_end_actions"]
+        net = row["physical_end_actions"].copy()
+        if action := row.get("uniform_action"):
+            net -= action["physical"]
+            line_loads.append(action)
+        row["net_end_actions"] = net
+        physical[element["dofs"]] += net
     support = np.where(fixed,physical-load,0.)
     wrenches = (load+support-spring_force).reshape(-1,6)
     locations = coordinates-coordinates[0]+u.reshape(-1,6)[:,:3]
@@ -122,6 +179,11 @@ def solve_combination(elements, coordinates, fixed, load, *, spring=None, initia
     moment = np.sum(wrenches[:,3:]+np.cross(locations,wrenches[:,:3]),axis=0)
     scale = max(1.,float(np.sum(np.linalg.norm(wrenches[:,:3],axis=1)
                                +np.linalg.norm(wrenches[:,3:],axis=1)/span)))
+    for action in line_loads:
+        total = action["force"]
+        force += total
+        moment += np.cross(action["center"]-coordinates[0],total)
+        scale += float(np.linalg.norm(total))
     relative = max(norm(physical-load)/denominator,float(np.linalg.norm(force))/scale,
                    float(np.linalg.norm(moment))/(scale*span))
     if relative > EQUILIBRIUM_RELATIVE:
