@@ -211,11 +211,13 @@ def _worker(payload, health=False, joint_actions=False, purlin=False, section=Fa
             code = error.get('code', 'SERVICE_FAILURE')
             if not isinstance(code, str) or not re.fullmatch(r'[A-Z_]{1,80}', code):
                 code = 'SERVICE_FAILURE'
-            status = 503 if code in ('MEMORY_LIMIT', 'MEMORY_LIMIT_UNAVAILABLE', 'DEPENDENCY_VERSION', 'UNAVAILABLE') else 422
+            status = 503 if code in ('MEMORY_LIMIT', 'MEMORY_LIMIT_UNAVAILABLE', 'DEPENDENCY_VERSION', 'UNAVAILABLE', 'SECTIONS_EXTRA_MISSING') else 422
             combination_id = error.get('combination_id')
             if not isinstance(combination_id, str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}', combination_id):
                 combination_id = None
-            raise TransportError(code, 'Structural worker refused the request; no result published.', status,
+            message = ('Optional engine extra "sections" is not installed on this deployment; install jpn-structural[sections]. No result was computed.'
+                       if code == 'SECTIONS_EXTRA_MISSING' else 'Structural worker refused the request; no result published.')
+            raise TransportError(code, message, status,
                                  combination_id=combination_id)
         execution = output.get('execution', {})
         expected = 'jpn.local-section/1' if section else 'jpn.local-purlin/1' if purlin else 'jpn.local-mixed/1'

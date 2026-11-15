@@ -26,6 +26,8 @@ def main():
         if len(data)>500000:raise ValueError('INPUT_LIMIT')
         def invalid(value):raise ValueError('Nonfinite JSON: '+value)
         raw=json.loads(data.decode('utf8'),object_pairs_hook=_unique_object,parse_constant=invalid)
+        from jpn_structural.optional_extras import require_sections_extra
+        require_sections_extra(raw.get('schema_version'),'--symmetric-i' in sys.argv)
         if raw.get('schema_version')=='jpn.verified-coldformed-batch/1':
             from jpn_structural.verified_design_batch import analyze_verified_batch
             result=analyze_verified_batch(raw)
