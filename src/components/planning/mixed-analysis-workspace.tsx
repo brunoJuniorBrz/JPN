@@ -111,8 +111,10 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
   }, [current, result]);
   // INT-1f: Studio view + traced result layers. A layer is drawn ONLY if reviewResultOverlay accepts it for the current input hash.
   const [viewerMode, setViewerMode] = useState<"studio" | "simple">("studio"), [layerKind, setLayerKind] = useState<ResultOverlayKind | "none">("none"), [scaleInput, setScaleInput] = useState("");
-  const [resultHash, setResultHash] = useState(""), [matrixState, setMatrixState] = useState<{ identity: string; matrix: ReturnType<typeof buildMemberCombinationMatrix> } | null>(null);
-  useEffect(() => { let live = true; setResultHash(""); if (current) void mixedInputHash(current.result).then(h => { if (live) setResultHash(h); }); return () => { live = false; }; }, [current]);
+  const [hashed, setHashed] = useState<{ result: unknown; hash: string } | null>(null), [matrixState, setMatrixState] = useState<{ identity: string; matrix: ReturnType<typeof buildMemberCombinationMatrix> } | null>(null);
+  // The hash is stored WITH the result it belongs to; a different (or no) result yields "" without any synchronous reset.
+  useEffect(() => { let live = true; if (current) void mixedInputHash(current.result).then(h => { if (live) setHashed({ result: current.result, hash: h }); }); return () => { live = false; }; }, [current]);
+  const resultHash = current && hashed?.result === current.result ? hashed.hash : "";
   const studioModel = useMemo(() => model && active.workspace.physicalStructure ? studioModelFromPhysical(model) : null, [model, active]);
   const layer = useMemo(() => {
     if (!current || !result || !selectedCombo || !resultHash || layerKind === "none" || !model) return null;
