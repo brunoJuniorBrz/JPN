@@ -25,6 +25,21 @@ representabilidade na estagnação usando `|K|·ulp(u)/2` no espaço livre.
 O limite de equilíbrio físico de 1e−8 permanece. A regressão volta a
 aprovar a sequência 4 → 8 → 16.
 
+Na CI Linux do SHA `8ec4387`, o caso leve voltou a estagnar. A cota
+de arredondamento anterior, observada no Windows, não era suficiente
+para estabilizar o passo entre plataformas. A busca agora retém a
+parte perdida da soma dos incrementos e reavalia o comprimento da
+corda por diferenças de translação compensadas. A convergência exige
+o resíduo original de Newton, com limite relativo de 1e−11, e a
+auditoria física de 1e−8 continua independente.
+
+No teste denso × banda, a CI Linux registrou resultantes de
+−6,98e−10 e −4,66e−10 após o cancelamento de forças de grande
+magnitude. A comparação usa 1e−10 relativo à escala de forças
+transmitidas pelos apoios e, para momentos, a essa escala vezes o
+vão. O teste mantém a conferência direta das grandezas físicas e
+confirma o limite de equilíbrio de cada execução.
+
 Os JSONs `*-before.json` registram a versão anterior. O script
 `diagnose.py` usa o mesmo modelo e só amplia o teto para medir a
 referência uniforme, sem publicar resultado pelo worker.
