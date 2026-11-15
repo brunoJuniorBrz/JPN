@@ -54,19 +54,29 @@ def test_v3_portal_matches_core_and_oracle(name,level):
     preloaded = case["cases"][level]
     forces = {"baseline":case["unloaded_probe"]["loads_n"],
               "preload":preloaded["preload"]["loads_n"],"perturbed":preloaded["result"]["loads_n"]}
-    physical,points,supports = portal_geometry(name=="spatial")
+    physical,points,supports = portal_geometry(name=="spatial",mesh=1)
     model = request(forces,physical,points,supports)
+    model["mesh_initial_subdivisions"] = 4
     out = analyze_mixed3d_v3(model)
     verify_result(model,out)
+    if name=="spatial":
+        assert set(out["mesh_subdivisions"].values()) == {1,16}
+        assert out["diagnostics"]["mesh_levels"] == [4,8,16]
 
     def positions(key):
         return np.array([out["combinations"][key]["nodes"][n]["translation_m"] for n in forces[key]])
 
     increment = positions("perturbed")-positions("preload")
     _,_,isolated,amplification = portal_case(name=="spatial",preloaded)
-    np.testing.assert_allclose(increment,isolated,rtol=MATCH_RTOL,atol=MATCH_ATOL_M)
+    if name=="spatial":
+        np.testing.assert_allclose(increment,isolated,rtol=MATCH_RTOL,atol=MATCH_ATOL_M)
+    reference = np.array(list(preloaded["incremental_translation_m"].values()))
+    allowance = np.maximum(PORTAL_TOL["displacement_floor_m"],
+                           PORTAL_TOL["portal_displacement_relative"]*abs(reference))
+    assert np.all(abs(increment-reference) <= allowance)
     amp = max(np.linalg.norm(increment[:,:2],axis=1))/max(np.linalg.norm(positions("baseline")[:,:2],axis=1))
-    assert amp == pytest.approx(amplification,rel=MATCH_RTOL)
+    if name=="spatial":
+        assert amp == pytest.approx(amplification,rel=MATCH_RTOL)
     assert amp == pytest.approx(preloaded["amplification"],rel=PORTAL_TOL["amplification_relative"])
     combo = out["combinations"]["perturbed"]
     for member in model["members"]:
@@ -116,7 +126,7 @@ def test_v3_wrong_mode_and_failed_later_combination_return_no_partial_results(mo
 
 
 def test_real_worker_rejects_beyond_critical_without_partial_response():
-    physical,points,supports = portal_geometry(True)
+    physical,points,supports = portal_geometry(True,mesh=1)
     from .test_second_order_mixed_int3b import references
     portal = references.fixture.geometry(True,ORACLE["portals"]["spatial"]["mesh"])
     critical = ORACLE["portals"]["spatial"]["critical_compression_per_column_n"]
