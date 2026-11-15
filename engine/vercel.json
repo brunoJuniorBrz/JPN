@@ -1,6 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "python",
+  "installCommand": "uv sync --extra sections",
   "git": {
     "deploymentEnabled": {
       "**": false,
