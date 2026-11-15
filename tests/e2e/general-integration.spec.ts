@@ -1,3 +1,4 @@
+import { declareAxes } from "./axes";
 import {expect,test} from "@playwright/test";
 import {mkdir,readFile,writeFile} from "node:fs/promises";
 import {generalIntegrationProject} from "../../src/domain/test-support/general-integration-project";
@@ -52,10 +53,10 @@ for(const width of [390,1440])test(`integração geral: obra/superfície/apoios/
   expect(saved.workspace.spatialPreparation.supportInterfaces).toHaveLength(4);
   expect(saved.workspace.spatialPreparation.physicalRoofFaces.faces[0].id).toBe("ROOF");
   const response=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");
-  await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
+  await declareAxes(panel);await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
   const http=await response;expect(http.status()).toBe(200);
   const request=http.request().postDataJSON(),out=await http.json(),result=out.result;
-  expect(request.project.id).toBe(ownerId);expect(request.schema_version).toBe("jpn.mixed3d/2");
+  expect(request.project.id).toBe(ownerId);expect(request.schema_version).toBe("jpn.mixed3d/3");
   expect(request.nodes).toHaveLength(6);expect(request.members).toHaveLength(6);expect(request.supports).toHaveLength(4);
   expect(request.nodal_loads).toHaveLength(0);expect(request.member_loads).toHaveLength(4);
   expect(result.input_sha256).toBe(await mixedInputHash(request));
@@ -78,7 +79,7 @@ for(const width of [390,1440])test(`integração geral: obra/superfície/apoios/
   await panel.getByLabel("Seção S1 · revisão",{exact:true}).fill("2");
   await expect(panel.getByTestId("mixed-stale")).toBeVisible();
   const response2=page.waitForResponse(r=>r.url().endsWith("/api/experimental/mixed3d")&&r.request().method()==="POST");
-  await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
+  await declareAxes(panel);await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
   const out2=await(await response2).json();
   expect(out2.result.input_sha256).not.toBe(result.input_sha256);
   expect(out2.result.combinations.ELASTIC.nodes.AM.translation_m[2]).toBeCloseTo(expected/2,10);

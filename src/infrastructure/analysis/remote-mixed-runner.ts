@@ -8,7 +8,7 @@ import { SolverFailure } from "./runner";
 export const remoteMixedLimits = { inputBytes:500000, outputBytes:2000000, milliseconds:28000 } as const;
 const execution=z.object({memory_limit_bytes:z.literal(805306368),memory_kind:z.enum(["linux-address-space","windows-job-process-commit"]),timeout_seconds:z.literal(20),concurrency_per_instance:z.literal(1),isolation:z.literal("subprocess")}).strict();
 const envelope=z.object({schema_version:z.literal("jpn.http-mixed/1"),request_sha256:z.string().regex(/^[a-f0-9]{64}$/),execution,result:anyMixedResultSchema,joint_actions:jointActionTraceSchema.optional()}).strict();
-const health=z.object({schema_version:z.literal("jpn.http-mixed/1"),status:z.literal("ready"),contracts:z.array(z.enum(["jpn.mixed3d/1","jpn.mixed3d/2"])).length(2),dependencies:z.object({python:z.literal("3.12"),PyNiteFEA:z.literal("3.2.1"),numpy:z.string(),scipy:z.string()}).strict(),execution}).strict();
+const health=z.object({schema_version:z.literal("jpn.http-mixed/1"),status:z.literal("ready"),contracts:z.array(z.enum(["jpn.mixed3d/1","jpn.mixed3d/2","jpn.mixed3d/3"])).min(2).max(3),dependencies:z.object({python:z.literal("3.12"),PyNiteFEA:z.literal("3.2.1"),numpy:z.string(),scipy:z.string()}).strict(),execution}).strict();
 const globals=globalThis as typeof globalThis & {__jpnRemoteMixedGate?:{active:number}};
 const gate=globals.__jpnRemoteMixedGate??={active:0};
 export function remoteMixedEnabled(){return process.env.JPN_MIXED_REMOTE_ENABLED==="1";}
@@ -73,7 +73,7 @@ export async function runRemoteMixed(payload:string,mode:"health"|"analysis"|"co
       if(!response.ok){const code=raw?.error?.code;if(typeof code!=="string"||!/^[A-Z_]{1,80}$/.test(code))throw new SolverFailure("UNAVAILABLE","Backend indisponível.");throw new SolverFailure(code,"O backend recusou a consulta; nenhum resultado publicado.");}
       if(controller.signal.aborted)throw new SolverFailure("CANCELLED","Resposta descartada.");
       if(mode==="health"){
-        const h=health.parse(raw);if(new Set(h.contracts).size!==2)throw new Error();
+        const h=health.parse(raw);if(new Set(h.contracts).size!==h.contracts.length||!h.contracts.includes("jpn.mixed3d/1")||!h.contracts.includes("jpn.mixed3d/2"))throw new Error();
         return {schema_version:"jpn.remote-mixed/1" as const,status:"ready" as const,dependencies:h.dependencies,execution:{...h.execution,transport:"remote" as const,local_only:false as const}};
       }
       const out=envelope.parse(raw);
