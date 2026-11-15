@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import type { RoofParameters } from "@/domain/project-details";
 import type { Planning } from "@/domain/structure";
+import { ridgeCapGeometry, roofReliefGeometry } from "./roof-relief";
+import { roofSurface } from "./studio-view";
 
 export type WallLayout = "none" | "rear" | "sides" | "three" | "closed";
 export type RoofColor = "graphite" | "silver" | "white" | "terracotta";
@@ -42,31 +44,6 @@ export function roofElevation(e: PresentationEnvelope, xM: number, yM: number) {
   return e.lowHeightM + e.riseM * (e.typology === "gable" ? 1 - Math.abs(2 * u - 1) : e.positive ? 1 - u : u);
 }
 const scenePoint = (xM: number, yM: number, heightM: number) => new THREE.Vector3(xM, heightM, -yM);
-function roofingTexture(finish: RoofFinish, color: RoofColor) {
-  const canvas = document.createElement("canvas"); canvas.width = 512; canvas.height = 512;
-  const ctx = canvas.getContext("2d");
-  if (ctx) {
-    ctx.fillStyle = roofColors[color]; ctx.fillRect(0, 0, 512, 512);
-    const ribs = finish === "sandwich" ? 3 : finish === "standing" ? 2 : 6;
-    const width = 512 / ribs;
-    for (let i = 0; i < ribs; i++) {
-      const x = i * width;
-      ctx.fillStyle = color === "white" ? "rgba(75,85,95,.13)" : "rgba(0,0,0,.16)";
-      ctx.fillRect(x + 3, 0, finish === "standing" ? 8 : 5, 512);
-      ctx.fillStyle = "rgba(255,255,255,.17)";
-      ctx.fillRect(x + 10, 0, 3, 512);
-      if (finish === "trapezoidal") {
-        ctx.fillStyle = "rgba(255,255,255,.05)"; ctx.fillRect(x + width * .45, 0, width * .21, 512);
-      }
-    }
-  }
-  const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 4;
-  return texture;
-}
-
 export function roofPlaneCorners(e: PresentationEnvelope) {
   const span = e.acrossWidth ? e.widthM : e.lengthM;
   const longitudinalStart = -(e.overhangStartM), longitudinalEnd = (e.acrossWidth ? e.lengthM : e.widthM) + e.overhangEndM;
@@ -78,17 +55,6 @@ export function roofPlaneCorners(e: PresentationEnvelope) {
     };
     return [point(u0, longitudinalStart), point(u1, longitudinalStart), point(u1, longitudinalEnd), point(u0, longitudinalEnd)] as const;
   });
-}
-function roofGeometry(corners: readonly THREE.Vector3[]) {
-  const [a,b,c,d] = corners;
-  const transverse = a.distanceTo(b), longitudinal = b.distanceTo(c);
-  const g = new THREE.BufferGeometry();
-  g.setAttribute("position", new THREE.Float32BufferAttribute([...a.toArray(), ...b.toArray(), ...c.toArray(), ...a.toArray(), ...c.toArray(), ...d.toArray()],3));
-  // Repeat each stylized tile panel every ~0.75m across and ~5m along the slope.
-  const sx = transverse / .75, sy = longitudinal / 5;
-  g.setAttribute("uv", new THREE.Float32BufferAttribute([0,0,sx,0,sx,sy,0,0,sx,sy,0,sy],2));
-  g.computeVertexNormals();
-  return g;
 }
 function makeFallbackFigure() {
   const root = new THREE.Group(), skin = new THREE.MeshStandardMaterial({ color: 0xbe8661 }), coat = new THREE.MeshStandardMaterial({ color: 0xc97b32 }), dark = new THREE.MeshStandardMaterial({color: 0x344356});
@@ -107,16 +73,16 @@ function makeFallbackCar() {
   for (const x of [-.97,.97]) for (const z of [-1.45,1.45]) {const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.34,.34,.18,10),rubber);wheel.rotation.z=Math.PI/2;wheel.position.set(x,.4,z);root.add(wheel);}
   return root;
 }
-export function createPresentationScene(envelope: PresentationEnvelope, initial: PresentationOptions, invalidate: () => void) {
+export function createPresentationScene(envelope: PresentationEnvelope, initial: PresentationOptions, invalidate: () => void, roofLiftM = 0) {
   const root = new THREE.Group(), fixed = new THREE.Group(), walls = new THREE.Group(), roofMeshes: THREE.Mesh[] = [], resources = new Set<{dispose():void}>();
   root.add(fixed, walls);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(envelope.widthM+6,envelope.lengthM+6),
-    new THREE.MeshStandardMaterial({color:0xc8c9c3,roughness:1}));
+    new THREE.MeshStandardMaterial({color:0xa9aca6,roughness:.95,metalness:0,envMapIntensity:.15}));
   floor.rotation.x = -Math.PI/2; floor.position.set(envelope.widthM/2,-.024,-envelope.lengthM/2);
   floor.receiveShadow = true; fixed.add(floor);resources.add(floor.geometry);resources.add(floor.material as THREE.Material);
   const addWall = (width: number,height:number,depth:number,x:number,z:number)=>{
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(width,height,depth),new THREE.MeshStandardMaterial({color:0xe0dfd6,roughness:1}));
-    mesh.position.set(x,height/2,z);mesh.receiveShadow=true;walls.add(mesh);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(width,height,depth),new THREE.MeshStandardMaterial({color:0xcfccc2,roughness:.95,metalness:0,envMapIntensity:.15}));
+    mesh.position.set(x,height/2,z);mesh.receiveShadow=true;mesh.castShadow=true;walls.add(mesh);
     resources.add(mesh.geometry);resources.add(mesh.material as THREE.Material);
   };
   const wallHeight = Math.max(1.7,Math.min(envelope.lowHeightM-.15,6));
@@ -126,12 +92,29 @@ export function createPresentationScene(envelope: PresentationEnvelope, initial:
   addWall(.16,wallHeight,envelope.lengthM,envelope.widthM,-envelope.lengthM/2);
   addWall(envelope.widthM,wallHeight,.16,envelope.widthM/2,0);
   const roofBase=roofPlaneCorners(envelope);
-  let roofMaterial:THREE.MeshStandardMaterial|null=null, roofMap:THREE.Texture|null=null;
-  for(const corners of roofBase){
-    const geometry=roofGeometry(corners);
-    const mesh=new THREE.Mesh(geometry,new THREE.MeshStandardMaterial({side:THREE.DoubleSide,roughness:.72,metalness:.12}));
-    mesh.receiveShadow=true; mesh.castShadow=true; fixed.add(mesh);roofMeshes.push(mesh);resources.add(geometry);resources.add(mesh.material as THREE.Material);
+  // One shared PBR sheet material; relief is real geometry (see roof-relief.ts).
+  const roofMaterial=new THREE.MeshStandardMaterial({side:THREE.DoubleSide,roughness:.5,metalness:.55,envMapIntensity:.9});
+  resources.add(roofMaterial);
+  let roofStyle="";
+  for(let i=0;i<roofBase.length;i++){
+    const mesh=new THREE.Mesh(new THREE.BufferGeometry(),roofMaterial);
+    mesh.receiveShadow=true; mesh.castShadow=true; fixed.add(mesh);roofMeshes.push(mesh);
   }
+  const ridgeCap=new THREE.Mesh(new THREE.BufferGeometry(),roofMaterial);
+  ridgeCap.castShadow=true;ridgeCap.visible=false;fixed.add(ridgeCap);
+  const rebuildRoof=(finish:RoofFinish)=>{
+    // Each roof mesh owns exactly one geometry. Dispose the old buffer once,
+    // then replace it; never also dispose an overlapping inventory of buffers.
+    roofBase.forEach((corners,i)=>{
+      const old=roofMeshes[i].geometry;
+      roofMeshes[i].geometry=roofReliefGeometry(corners,finish,roofLiftM);
+      old.dispose();
+    });
+    const cap=roofBase.length===2?ridgeCapGeometry(roofBase[0],roofBase[1],finish,roofLiftM):null;
+    const oldCap=ridgeCap.geometry;
+    ridgeCap.geometry=cap??new THREE.BufferGeometry();ridgeCap.visible=!!cap;
+    oldCap.dispose();
+  };
   let car: THREE.Group|null=null, person: THREE.Group|null=null, disposed=false, loadToken=0, opts=initial;
   let carSource:"pending"|"gltf"|"fallback"="pending", personSource:"pending"|"gltf"|"fallback"="pending";
   const disposeLoaded=(group:THREE.Group)=>group.traverse(object=>{
@@ -172,15 +155,14 @@ export function createPresentationScene(envelope: PresentationEnvelope, initial:
     opts=next;
     const mask=next.walls==="none"?[]:next.walls==="rear"?[0]:next.walls==="sides"?[1,2]:next.walls==="three"?[0,1,2]:[0,1,2,3];
     walls.children.forEach((child,i)=>{child.visible=mask.includes(i);});
-    if(!roofMap||roofMaterial?.userData.style!==`${next.roofFinish}/${next.roofColor}`){
-      roofMap?.dispose();roofMap=roofingTexture(next.roofFinish,next.roofColor);
-      for(const mesh of roofMeshes){
-        const m=mesh.material as THREE.MeshStandardMaterial;
-        m.map=roofMap;m.color.set("#ffffff");m.userData.style=`${next.roofFinish}/${next.roofColor}`;m.needsUpdate=true;
-      }
-      roofMaterial=roofMeshes[0].material as THREE.MeshStandardMaterial;
-    }
-    for(const mesh of roofMeshes){const m=mesh.material as THREE.MeshStandardMaterial;m.opacity=next.roofOpacity;m.transparent=next.roofOpacity<1;m.depthWrite=next.roofOpacity>=1;m.needsUpdate=true;}
+    if(roofStyle!==next.roofFinish){rebuildRoof(next.roofFinish);roofStyle=next.roofFinish;}
+    const surface=roofSurface[next.roofColor];
+    roofMaterial.color.set(roofColors[next.roofColor]);roofMaterial.metalness=surface.metalness;roofMaterial.roughness=surface.roughness;
+    const translucent=next.roofOpacity<1;
+    if(roofMaterial.transparent!==translucent){roofMaterial.transparent=translucent;roofMaterial.needsUpdate=true;}
+    roofMaterial.opacity=next.roofOpacity;roofMaterial.depthWrite=!translucent;
+    // A see-through roof must not hide the bars under its own shadow.
+    for(const mesh of [...roofMeshes,ridgeCap])mesh.castShadow=next.roofOpacity>=.6;
     if(car)car.visible=next.showCar;
     if(person)person.visible=next.showPerson;
     invalidate();
@@ -189,7 +171,10 @@ export function createPresentationScene(envelope: PresentationEnvelope, initial:
   // GLB and GLTFLoader are downloaded only for the first activation of Acabado.
   void loadReferences();
   return {root,update,dispose:()=>{
+    if(disposed)return;
     disposed=true;loadToken++;if(car)disposeLoaded(car);if(person)disposeLoaded(person);
-    roofMap?.dispose();resources.forEach(resource=>resource.dispose());root.clear();
-  },status:()=>({loadedCar:!!car,loadedPerson:!!person,carSource,personSource})};
+    for(const mesh of roofMeshes)mesh.geometry.dispose();
+    ridgeCap.geometry.dispose();
+    resources.forEach(resource=>resource.dispose());root.clear();
+  },status:()=>({loadedCar:!!car,loadedPerson:!!person,carSource,personSource}),roofMeshes,roofMaterial};
 }

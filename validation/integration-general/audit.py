@@ -52,6 +52,16 @@ def ancestor(a, b):
     return subprocess.run([GIT, "merge-base", "--is-ancestor", a, b], cwd=ROOT, capture_output=True).returncode == 0
 
 
+# Reviewed amendments to protected tests, pinned by Git blob.
+# PR #92 (M54): rejects facade loads duplicated under a disguised ID.
+REVIEWED_AMENDMENTS = {
+    # PR #105 (C1): continuous-demands test amended for local-axes /3
+    "src/domain/whole-piece-deflection.test.ts": "751c665f3266cc52772a69ebeaf4ed99415128fe",
+    # PR #105 (C1): continuous-demands test amended for local-axes /3
+    "src/domain/continuous-demands.test.ts": "b63c2411b4aec5a217ef49ad5b00281f4b2df8f4",
+    "src/domain/declared-facade-mixed-real.test.ts": "a3df819018a8b38e864f72bdda5fd26ba1fa2acd",
+}
+
 TREES = {}
 
 
@@ -78,7 +88,7 @@ def verify_guards(snapshot):
     for path in protected:
         if path == "validation/integration-general/audit.py":
             continue  # This runner evolves; the original stays in INTEGRATED_SHA.
-        assert current.get(path) == historic[path], "Historical test/evidence drift: " + path
+        assert current.get(path) in (historic[path], REVIEWED_AMENDMENTS.get(path)), "Historical test/evidence drift: " + path
     for path in (ROOT/"vercel.json", ROOT/"engine/vercel.json"):
         flags = json.loads(path.read_text(encoding="utf-8"))["git"]["deploymentEnabled"]
         assert flags["main"] is False and flags[BRANCH] is False, "Deployment guard changed"
