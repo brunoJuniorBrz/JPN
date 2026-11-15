@@ -19,7 +19,7 @@ test("M50 real Next.js -> Python: finite restraint, continuous resistance and up
   expect(result.resistanceBatch).toEqual({geometryEvaluations:1,geometryReuses:2});
   expect(result.report.executionRecords).toHaveLength(3);
   expect(result.checks.filter((c:{failureMode:string})=>c.failureMode==="shear_z")).toHaveLength(3);
-  expect(result.checks.find((c:{failureMode:string})=>c.failureMode==="bending-shear-9.8.4").check.status).toBe("BLOCKED");
+  expect(result.checks.find((c:{failureMode:string})=>c.failureMode==="bending-shear-9.8.4").check.status).toBe("CONDITIONAL");
   const brace=result.restraints.items.find((r:{declaration:{id:string}})=>r.declaration.id==="C0-BRACE");
   expect(brace.stiffnessRepresentation).toBe("existing-finite-axial-stiffness");
   expect(brace.combinations[0].demand).toBeCloseTo(5.32866273795,7);

@@ -1,5 +1,5 @@
 import {structuralAssessmentRequestSchema,prepareStructuralAssessment,finishStructuralAssessment,type ResistanceAttempt} from "@/domain/structural-assessment";
-import {adaptLoadedMixedProject} from "@/domain/loaded-mixed-adapter";
+import {adaptLoadedMixedProject,adaptLoadedMixedProjectV3} from "@/domain/loaded-mixed-adapter";
 import {adaptMixedProject} from "@/domain/mixed-adapter";
 import {prepareColdformedDesign} from "@/domain/coldformed-design";
 import type {MemberExecution} from "@/domain/resistance-assessment";
@@ -27,7 +27,8 @@ export async function runLocalStructuralAssessment(payload:string,signal?:AbortS
   const requireActive=()=>{if(controller.signal.aborted||signal?.aborted)throw new SolverFailure(expired?"TIMEOUT":"CANCELLED","Integrated assessment cancelled or exceeded its 20 s budget");};
   try{
     requireActive();
-    const adapted=await(project.workspace.spatialPreparation?.loading?adaptLoadedMixedProject(project):adaptMixedProject(project));
+    // C1: projects with reviewed Z-up axes are analysed in /3; legacy projects keep the legacy adapters (and the worker's ambiguity guard).
+    const adapted=await(project.workspace.spatialPreparation?.localAxes?adaptLoadedMixedProjectV3(project):project.workspace.spatialPreparation?.loading?adaptLoadedMixedProject(project):adaptMixedProject(project));
     phase="linear-worker";
     const analysis=await runLocalMixed(JSON.stringify(adapted.request),"connections",controller.signal);
     if(analysis.status!=="completed"||!analysis.joint_actions)throw new SolverFailure("INVALID_RESPONSE","Actual member end actions required");

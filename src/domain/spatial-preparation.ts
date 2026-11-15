@@ -14,6 +14,8 @@ import { connectivityDeclarationSchema } from "./spatial-connectivity";
 import { roofRegionsSchema } from "./roof-regions";
 import { engineeringCombinationsSchema } from "./engineering-combinations";
 import { localAxesReviewSchema } from "./local-axes-schema";
+import { normativeProvenanceSchema } from "./normative-provenance";
+import { resistanceStandardsSchema } from "./resistance-standards-schema";
 import { MAX_CASES, MAX_COMBINATIONS } from "./analysis-limits";
 import { connectionsSchema } from "./connections";
 import { declaredServiceCriterionSchema } from "./declared-service";
@@ -59,6 +61,8 @@ export const spatialPreparationSchema = z.object({
   physicalRoofFaces:physicalRoofFacesSchema.optional(),
   physicalFacades:physicalFacadesSchema.optional(),
   localAxes:localAxesReviewSchema.optional(),
+  normativeProvenance:z.array(normativeProvenanceSchema).max(10).optional(),
+  resistanceStandards:resistanceStandardsSchema.optional(),
   resistance: z.array(resistancePreparationSchema).max(5000).optional(),
   engineeringCombinations: engineeringCombinationsSchema.optional(),
   connections: connectionsSchema.optional(),

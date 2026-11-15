@@ -5,6 +5,7 @@ import { adaptMixedForVersion,requestVersionOf } from "./current-mixed-adapter";
 import { canonicalSpatialInput } from "./spatial-analysis";
 import { mixedInputHash } from "./mixed-analysis";
 import { anyMixedResultSchema } from "./structural-loading";
+import { provisionalNotices } from "./normative-provenance";
 import { assessSupportReactions } from "./support-interface";
 import { auditPhysicalRoofReactionPath,isDeclaredRoofTrace } from "./physical-reaction-path";
 import { auditSecondOrderReadiness } from "./second-order-readiness";
@@ -106,7 +107,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
   const report={schema_version:"jpn.resistance-report/2" as const,status:"partial-demands-and-preparation" as const,
     approvedForFabrication:false as const,structureStatus:"NOT_APPROVED_FOR_FABRICATION" as const,
     normativeProceduresImplemented:[...availableNormativeProcedures],procedureRegistry:normativeProcedureRegistry,binding,physicalInput:current.request,
-    engineeringCombinations:draft.engineeringCombinations??null,demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
+    engineeringCombinations:draft.engineeringCombinations??null,...(draft.normativeProvenance?.length?{normativeStatus:"PROVISIONAL" as const,normativeNotices:provisionalNotices(draft.normativeProvenance),normativeProvenance:draft.normativeProvenance}:{}),demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
     supportAudits:assessSupportReactions(draft.supportInterfaces??[],anyMixedResultSchema.parse(value)),
     ...(roofReactionAudit?{physicalRoofReactionAudit:roofReactionAudit}:{}),
     secondOrderAudit,
