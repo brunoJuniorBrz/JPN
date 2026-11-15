@@ -1,0 +1,54 @@
+{
+  "purlin_mismatches": [
+    {
+      "path": "/combinations/NL/equilibrium/force_n/2",
+      "candidate": 0.0,
+      "reference": -4.656612873077393e-10,
+      "absolute_error": 4.656612873077393e-10
+    },
+    {
+      "path": "/combinations/NL/equilibrium/moment_nm/1",
+      "candidate": 5.698413629851018e-08,
+      "reference": 5.744979758581792e-08,
+      "absolute_error": 4.656612873077393e-10
+    }
+  ],
+  "purlin_initial_4": {
+    "code": "SECOND_ORDER_NOT_CONVERGED",
+    "combination": "LA"
+  },
+  "u_n01": {
+    "seconds": 12.56909640000049,
+    "mesh": {
+      "C0_0": 16,
+      "C6000_0": 16,
+      "C12000_0": 16,
+      "C12000_3000": 16,
+      "C12000_6000": 16,
+      "C6000_6000": 16,
+      "C0_6000": 16,
+      "C0_3000": 16,
+      "TOP0": 32,
+      "TOP1": 32,
+      "TOP2": 16,
+      "TOP3": 16,
+      "TOP4": 32,
+      "TOP5": 32,
+      "TOP6": 16,
+      "TOP7": 16
+    },
+    "convergence": {
+      "relative_residual": 2.591487239585762e-12,
+      "force_n": [
+        1.3599787962448318e-11,
+        1.3435287707063176e-12,
+        4.256435204297304e-10
+      ],
+      "moment_nm": [
+        1.146196026979851e-09,
+        -2.8994910781832183e-09,
+        1.4017587091075256e-10
+      ]
+    }
+  }
+}

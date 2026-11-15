@@ -14,7 +14,7 @@ def vector(value, label, limit):
     for v in value: number(v,-limit,limit,label)
 
 
-def analyze_loaded_mixed3d(raw, *, _joint_actions=None):
+def compile_loaded_mixed3d(raw):
     obj(raw,'schema_version units theory project nodes members materials sections supports cases nodal_loads combinations member_loads self_weight','modelo carregado')
     if raw['schema_version']!='jpn.mixed3d/2': fail('UNSUPPORTED_MODEL','Exigido jpn.mixed3d/2.')
     data=deepcopy(raw); data['schema_version']='jpn.mixed3d/1'
@@ -70,4 +70,9 @@ def analyze_loaded_mixed3d(raw, *, _joint_actions=None):
     for l in data['nodal_loads']:
         key=(l['node'],l['case']); totals.setdefault(key,np.zeros(6)); totals[key]+=np.array([l[k] for k in keys])
     data['nodal_loads']=[dict(node=n,case=c,**dict(zip(keys,map(float,value)))) for (n,c),value in totals.items()]
-    return analyze_mixed3d(data,_loading=dict(original=deepcopy(raw),frame_loads=frame_loads,trace=trace),_joint_actions=_joint_actions)
+    return data,dict(original=deepcopy(raw),frame_loads=frame_loads,trace=trace)
+
+
+def analyze_loaded_mixed3d(raw, *, _joint_actions=None):
+    data,loading = compile_loaded_mixed3d(raw)
+    return analyze_mixed3d(data,_loading=loading,_joint_actions=_joint_actions)

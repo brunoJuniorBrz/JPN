@@ -1,0 +1,7 @@
+{
+  "absolute_and_relative_equivalence": 1e-10,
+  "http_deadline_seconds": 20,
+  "critical_derivative_load_steps": [0.01, 0.005],
+  "diagnostic_shed_meshes": [1, 2, 4, 8, 16, 32],
+  "diagnostic_purlin_meshes": [4, 8, 16]
+}
