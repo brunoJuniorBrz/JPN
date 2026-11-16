@@ -96,12 +96,30 @@ for (const width of [390, 1440]) test(`jornada completa pela interface: galpão 
   // --- resistência + avaliação (visíveis, nunca aprovação)
   await expect(p.getByTestId("resistance-report")).toBeVisible({ timeout: 30000 });
   await expect(p.getByTestId("assessment-panel")).toBeVisible({ timeout: 60000 });
+  // --- Studio 3D: deformada do resultado /3 (camada rastreada pelo hash de entrada)
+  const studio = p.getByTestId("mixed-viewer").getByRole("img", { name: "Modelo 3D da estrutura" });
+  await expect(studio).toBeVisible({ timeout: 30000 });
+  await p.getByTestId("studio-layer-kind").selectOption("deformed-shape");
+  await expect(p.getByTestId("studio-layer-legend")).toContainText("Imagem de resultados, não é aprovação estrutural", { timeout: 30000 });
+  await expect(p.getByTestId("studio-layer-refused")).toHaveCount(0);
+  await expect(studio).toHaveAttribute("data-deformed", "on", { timeout: 30000 });
+  await p.getByTestId("mixed-viewer").screenshot({ path: `validation/int-1f-capturas/deformada-${width}.png` });
+  await p.getByTestId("studio-layer-kind").selectOption("bending-moment");
+  await expect(p.getByTestId("studio-layer-legend")).toContainText("kN·m", { timeout: 30000 });
+  await p.getByTestId("mixed-viewer").screenshot({ path: `validation/int-1f-capturas/momento-${width}.png` });
+  await p.getByTestId("studio-layer-kind").selectOption("deformed-shape");
+  await p.getByRole("button", { name: "Vista simples", exact: true }).click();
+  await expect(p.getByTestId("mixed-viewer").locator("[data-piece-id]").first()).toBeVisible();   // simple view stays available
+  await p.getByRole("button", { name: "Studio 3D", exact: true }).click();
   // --- norma por peça: NBR 8800 nos anéis (a escolha não invalida o resultado) e matriz
   const standards = p.getByTestId("member-standards");
   for (let i = 0; i < 8; i++) await standards.getByLabel(`Norma da peça TOP${i}`, { exact: true }).selectOption("NBR8800");
   await expect(p.getByTestId("mixed-results")).toBeVisible();   // selecting the standard does not invalidate the analysis
   await p.getByTestId("member-standards").getByRole("button", { name: "Verificar peças NBR 8800 (matriz ELU)", exact: true }).click();
   const matrix = p.getByTestId("steel-matrix"); await expect(matrix).toBeVisible({ timeout: 120000 });
+  await p.getByTestId("studio-layer-kind").selectOption("verification");   // utilization of the NBR 8800 matrix, same combination, same input hash
+  await expect(p.getByTestId("studio-layer-legend")).toContainText("utilização", { timeout: 30000 });
+  await p.getByTestId("mixed-viewer").screenshot({ path: `validation/int-1f-capturas/verificacao-nbr8800-${width}.png` });
   await expect(matrix).toContainText("NBR8800"); await expect(matrix).toContainText("Não é aprovação estrutural");
   // --- relatório
   const wait = page.waitForEvent("download"); await p.getByRole("button", { name: "Exportar relatório resistente preliminar", exact: true }).click();

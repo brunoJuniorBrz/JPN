@@ -8,7 +8,7 @@ import { buildMemberCombinationMatrix, type DesignExecution, type ResistanceStan
 
 /** INT-1d: choose NBR 14762 (cold-formed) or NBR 8800 (I/H) PER PIECE; run the NBR 8800 member checks for every
  * NBR 8681 ULS combination and show the piece x combination matrix. Missing data = `unsupported`, never PASS. */
-export function MemberStandardsPanel({ project, onChange, resistance }: { project: Project; onChange: (next: Project) => void; resistance: ResistanceReport | null }) {
+export function MemberStandardsPanel({ project, onChange, resistance, onMatrix }: { project: Project; onChange: (next: Project) => void; resistance: ResistanceReport | null; onMatrix?: (matrix: ReturnType<typeof buildMemberCombinationMatrix> | null) => void }) {
   const draft = project.workspace.spatialPreparation;
   const [busy, setBusy] = useState(false), [error, setError] = useState("");
   const [matrix, setMatrix] = useState<ReturnType<typeof buildMemberCombinationMatrix> | null>(null), [blocked, setBlocked] = useState<{ pieceId: string; reason: string }[]>([]);
@@ -16,7 +16,7 @@ export function MemberStandardsPanel({ project, onChange, resistance }: { projec
   const set = (pieceId: string, standard: ResistanceStandard) => {
     const rest = (draft?.resistanceStandards ?? []).filter(s => s.pieceId !== pieceId);
     onChange({ ...project, workspace: { ...project.workspace, spatialPreparation: { ...draft!, resistanceStandards: standard === "NBR14762" ? rest : [...rest, { pieceId, standard }] } } });
-    setMatrix(null);
+    setMatrix(null); onMatrix?.(null);
   };
   async function verify() {
     if (!resistance || !draft?.engineeringCombinations) { setError("Gere as combinações NBR 8681 e calcule antes."); return; }
@@ -32,7 +32,8 @@ export function MemberStandardsPanel({ project, onChange, resistance }: { projec
         executions.push({ pieceId: r.pieceId, combinationId: r.combinationId, checks: out.result.checks });
       }
       const pieceStandards = Object.fromEntries(resistance.demands.pieces.map(p => [p.pieceId, standardOf(project, p.pieceId)]));
-      setMatrix(buildMemberCombinationMatrix({ engineeringCombinations: draft.engineeringCombinations, demands: resistance.demands as never, executions, pieceStandards }));
+      const built_ = buildMemberCombinationMatrix({ engineeringCombinations: draft.engineeringCombinations, demands: resistance.demands as never, executions, pieceStandards });
+      setMatrix(built_); onMatrix?.(built_);
     } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   }
   if (!draft || !pieceIds.length) return null;
