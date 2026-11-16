@@ -77,7 +77,8 @@ for (const width of [390, 1440]) test(`jornada completa pela interface: galpão 
   await gen.getByRole("checkbox", { name: "Família sls-quasi-permanent" }).uncheck(); await gen.getByRole("checkbox", { name: "Família sls-frequent" }).uncheck();
   await gen.getByRole("button", { name: "Gerar combinações NBR 8681", exact: true }).click();
   await expect(panel.getByTestId("normative-error")).toHaveCount(0);
-  await expect(panel.getByTestId("provisional-notices")).toContainText("NBR 8681");
+  await expect(panel.getByTestId("normative-status")).toContainText("Combinações NBR 8681 geradas (fonte única conferida).");
+  await expect(panel.getByTestId("provisional-notices")).not.toContainText("NBR 8681");
   // --- confirmação de duplicidade (ações automáticas + manuais), depois de gerar as combinações (a revisão amarra a configuração atual)
   await p.getByTestId("structural-loads").evaluate(el => { (el as HTMLDetailsElement).open = true; });
   if (await p.getByTestId("self-weight-overlap-review").isVisible()) {
