@@ -11,7 +11,7 @@
   },
   "functions": {
     "app.py": {
-      "maxDuration": 800,
+      "maxDuration": 300,
       "excludeFiles": "{tests/**,examples/**,validation-results/**,**/__pycache__/**,**/*.pyc,benchmark_*.py,audit_*.py,validate.py,Dockerfile,.dockerignore}"
     }
   }
