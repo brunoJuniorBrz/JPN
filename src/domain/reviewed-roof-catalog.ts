@@ -17,6 +17,12 @@ const monoCe=z.object({positiveHigh:c,positiveLow:c,negativeHigh:c,negativeLow:c
 const gableBands=z.object({hOverBUpToHalf:gableCe,hOverBUpToThreeHalves:gableCe,hOverBUpToSix:gableCe}).strict();
 /** Roof slopes with reviewed rows. No interpolation in theta: Tables 7 and 8 do not prescribe one. */
 export const reviewedRoofSlopesDeg={gable:[10,15,45],mono:[10,15,30]} as const;
+/** Table 7 Note 3 (also Table 8 Note 1): Ce of I/J at alpha=0 from the F/H (H/L) value. a/b=1: same value;
+ * a/b>=2: -0.2; linear in between. Ready for N14 alpha=0, which stays blocked until the F/H-I/J limit is answered. */
+export function note3IJCoefficient(fh:number,aOverB:number){
+  if(!(aOverB>=1))throw Error("REVIEWED_ROOF_DOMAIN: a/b < 1 (b must be the smaller side)");
+  return aOverB>=2?-.2:fh+(-.2-fh)*(aOverB-1);
+}
 export function gableBand(hOverB:number){return hOverB<=.5?"hOverBUpToHalf" as const:hOverB<=1.5?"hOverBUpToThreeHalves" as const:"hOverBUpToSix" as const;}
 /** Only the small selected extract belongs in licensed PRIVATE configuration.
  * Parsing it does not independently validate its transcription or applicability. */
@@ -40,7 +46,12 @@ export function assertReviewedRoofScope(project:Project,input:NormativeOriginInp
   const p=project.planning,r=project.roof,m=generateGeometry(r,p?.typology).model?.metrics;
   const stop=(reason:string):never=>{throw Error(`REVIEWED_ROOF_DOMAIN: ${reason}`);};
   if(!m||!p||!(p.typology==="gable"||p.typology==="mono"))return stop("geometry incomplete");
-  if(r.fall!=="width-positive"||m.widthM!==m.lengthM||p.overhangStartM!==0||p.overhangEndM!==0)return stop("only square plan, width-positive fall, no overhangs");
+  // N14: rectangular plan with b = width (smaller side, across the slope) and a = length (along the ridge), a >= b.
+  if(r.fall!=="width-positive"||m.widthM>m.lengthM||p.overhangStartM!==0||p.overhangEndM!==0)return stop("width-positive fall, b=width <= a=length, no overhangs");
+  const aOverB=m.lengthM/m.widthM;
+  // Table 7, alpha=0: the figure dimensions E/G (x) but not where F/H ends and I/J begins; with a/b>1 Note 3
+  // makes I/J differ from F/H, so that limit is required. Open question to the engineer (N14); no assumed value.
+  if(p.typology==="gable"&&aOverB!==1&&input.incidencesDeg.includes(0))return stop("TABLE7_FH_IJ_LIMIT_UNDEFINED: a/b>1 com vento a 0° exige o limite F/H-I/J, não cotado na figura da Tabela 7 (pergunta ao Tom, N14)");
   const angle=Math.atan(r.slopePercent!/100)*180/Math.PI;
   const slopeDeg=reviewedRoofSlopesDeg[p.typology].find(t=>Math.abs(angle-t)<=64*Number.EPSILON*t);
   if(slopeDeg===undefined)return stop("exact tabulated slope only (gable 10/15/45, mono 10/15/30); no interpolation");
@@ -52,7 +63,7 @@ export function assertReviewedRoofScope(project:Project,input:NormativeOriginInp
   if(o.classification!=="airtight-fixed-windows"||o.dominantFace!=="none"||o.permeabilityPercent!==0||o.faceAreasM2.some(a=>a!==0))return stop("airtight fixed windows required; dominant/permeable openings unsupported");
   const volume=m.widthM*m.lengthM*(m.lowHeightM+m.riseM/2);
   if(Math.abs(o.volumeM3-volume)>1e-10*Math.max(1,volume))return stop("single internal volume differs from geometry");
-  return {...m,slopeDeg,hOverB};
+  return {...m,slopeDeg,hOverB,aOverB};
 }
 
 /** Convert a bounded private extract into the existing versioned contracts.
@@ -69,14 +80,14 @@ export function buildReviewedRoofCatalog(project:Project,input:NormativeOriginIn
   if(!gable&&!mono)throw Error(`REVIEWED_ROOF_EXTRACT_ROW_MISSING: extract has no Table ${typology==="gable"?7:8} row for theta=${theta}${typology==="gable"?` (${band})`:""}`);
   const bandLabel={hOverBUpToHalf:"h/b<=1/2",hOverBUpToThreeHalves:"1/2<h/b<=3/2",hOverBUpToSix:"3/2<h/b<=6"}[band];
   const ws=(item:string):NormativeWindData["rows"][number]["source"]=>({standard:"ABNT NBR 6123",edition:NBR6123_EDITION,errata:NBR6123_ERRATA,
-    item,domain:"Primary roof Ce; square plan; gable 10/15 (h/b<=6) or 45 (h/b<=0.5), mono 10/15/30 (h/b<2); exact theta row; airtight 6.3.2.2; all declared restrictions",
+    item,domain:"Primary roof Ce; rectangular plan a>=b (gable alpha=0 only for a/b=1); gable 10/15 (h/b<=6) or 45 (h/b<=0.5), mono 10/15/30 (h/b<2); exact theta row; airtight 6.3.2.2; all declared restrictions",
     transcriber:v.transcriber,documentSha256:v.windDocumentSha256});
   const fs=(item:string):NormativeFactorsData["source"]=>({standard:"ABNT NBR 8681",edition:"2025",errata:"not-assessed",
     item,domain:"Normal ULS; rare/frequent/quasi-permanent SLS; individual direct G, roof use Q, atomic exclusive wind patterns",
     transcriber:v.transcriber,documentSha256:v.combinationsDocumentSha256});
   const openingValues={enclosure:input.openings.enclosure,classification:input.openings.classification,dominantFace:input.openings.dominantFace,
     faceAreasM2:input.openings.faceAreasM2,permeabilityPercent:input.openings.permeabilityPercent,volumeM3:input.openings.volumeM3};
-  const source=ws(typology==="gable"?`6.1.1; Table 7, theta${theta}, ${bandLabel}, note3 (a/b=1: I=F, J=H)`:`6.1.1; Table 8, theta${theta}, h/b<2`);
+  const source=ws(typology==="gable"?`6.1.1; Table 7, theta${theta}, ${bandLabel}, a/b=${m.aOverB}${m.aOverB===1?", note3 (a/b=1: I=F, J=H)":", alpha=90 only"}`:`6.1.1; Table 8, theta${theta}, h/b<2`);
   const wind:NormativeWindData={schema_version:"jpn.normative-wind-data/1",origin:v.origin,revision:v.revision,rows:input.incidencesDeg.map(incidenceDeg=>{
     const zones:NormativeWindData["rows"][number]["zones"]=[];
     const zone=(id:string,region:number,boundsFraction:[number,number,number,number],value:number)=>zones.push({id,region,kind:"interior",boundsFraction,cpe:{value,source}});

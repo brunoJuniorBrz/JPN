@@ -7,10 +7,10 @@ import type { NormativeOriginInput } from "../normative-origin";
 import { correctedWindDocumentSha256,combinationsDocumentSha256,type ReviewedExtract } from "../reviewed-roof-catalog";
 
 /** Default: gable 45°, mono 30°, eaves 3 m. N2 passes slopeDeg 10/15 and other eaves heights. */
-export function reviewedRoofProject(typology:"mono"|"gable",options:{slopeDeg?:number;lowHeightM?:number}={}){
-  const p=windReferenceProject(),d=p.workspace.spatialPreparation!,low=options.lowHeightM??3;
+export function reviewedRoofProject(typology:"mono"|"gable",options:{slopeDeg?:number;lowHeightM?:number;lengthM?:number}={}){
+  const p=windReferenceProject(),d=p.workspace.spatialPreparation!,low=options.lowHeightM??3,length=options.lengthM??6;
   const slopePercent=options.slopeDeg===undefined?(typology==="gable"?100:100/Math.sqrt(3)):Math.tan(options.slopeDeg*Math.PI/180)*100;
-  Object.assign(p.roof,{widthM:6,lengthM:6,lowHeightM:low,slopePercent,fall:"width-positive",supports:[]});
+  Object.assign(p.roof,{widthM:6,lengthM:length,lowHeightM:low,slopePercent,fall:"width-positive",supports:[]});
   Object.assign(p.planning!,{typology,frameSpacingM:2,purlinSpacingM:1.5,panels:4,overhangStartM:0,overhangEndM:0});
   const model=generateStructure(p).model!;
   d.geometrySignature=structureSignature(p);
@@ -32,7 +32,7 @@ export function reviewedRoofProject(typology:"mono"|"gable",options:{slopeDeg?:n
   const input:NormativeOriginInput={speed:{schema_version:"jpn.wind-speed/1",edition:"2023-corrected-2025",v0Mps:40,heightM:maxHeight,heightReference:"model-base-z0",
     topography:"flat-or-gently-undulating",roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,
     reference:{standard:"ABNT NBR 6123",edition:"2023-corrected-2025",clause:"Declared synthetic site, not isopleth selection",source:"SYNTHETIC V0",revision:"1",responsible:"Validation"}},
-    openings:{enclosure:"enclosed",classification:"airtight-fixed-windows",dominantFace:"none",faceAreasM2:[0,0,0,0,0],permeabilityPercent:0,volumeM3:36*(low+rise/2),source:"SYNTHETIC airtight envelope",revision:"1"},
+    openings:{enclosure:"enclosed",classification:"airtight-fixed-windows",dominantFace:"none",faceAreasM2:[0,0,0,0,0],permeabilityPercent:0,volumeM3:6*length*(low+rise/2),source:"SYNTHETIC airtight envelope",revision:"1"},
     reviewedRoof:{procedure:"6123-global-Ce-airtight/1",axes:"b=+X;a=+Y;alpha0=+Y;alpha90=+X;alpha270=-X",roofImpermeable:true,effectivelyAirtight:true,fixedWindows:true,
       negligibleAccidentalWindowBreakage:true,singleInternalPressure:true,noRoofProjections:true,noLanterns:true,noSeparateCeilingPressure:true,
       noNeighborAmplification:true,staticPeriodAtMostOneSecond:true,s3Group:3,source:"SYNTHETIC applicability assumptions; engineer review pending",revision:"1"},
