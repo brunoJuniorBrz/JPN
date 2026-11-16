@@ -5,9 +5,10 @@ import { assertGeneratedPhysicalStructure } from "./physical-structure";
 import { reviewedRoofScopeSchema, normativeWindDataSchema, normativeFactorsDataSchema,
   type NormativeWindData, type NormativeFactorsData } from "./normative-origin-contracts";
 import type { NormativeOriginInput } from "./normative-origin";
+import { NBR6123_DOCUMENT_SHA256,NBR6123_EDITION,NBR6123_ERRATA } from "./nbr6123-edition";
 
 // These identifiers describe the supplied documents, not permission to publish their tables.
-export const correctedWindDocumentSha256="02528d067892eb645aceec8edf56e73e85c15614d6af2c112e243fdda67a7a90";
+export const correctedWindDocumentSha256=NBR6123_DOCUMENT_SHA256;
 export const combinationsDocumentSha256="f4020c7171308ad2b9577c3618f15fad67e413ec0caed70d83f7a7a51a3d2b9c";
 const c=z.number().finite().min(-10).max(10),positive=c.positive(),psi=z.tuple([c.min(0).max(1),c.min(0).max(1),c.min(0).max(1)]);
 /** Only the small selected extract belongs in licensed PRIVATE configuration.
@@ -50,7 +51,7 @@ export function buildReviewedRoofCatalog(project:Project,input:NormativeOriginIn
   if(input.speed.s3!==v.s3Group3)throw Error("REVIEWED_ROOF_DOMAIN: S3 differs from declared group 3");
   if(input.use!=="roof-primary-8681-2025-individual"||input.windFactorClass!=="WIND")throw Error("REVIEWED_COMBINATION_USE");
   for(const a of input.actions)if(!(a.category==="permanent"&&a.exclusiveGroup===null&&["STEEL_SELF_WEIGHT","INDUSTRIALIZED_ROOF"].includes(a.factorClass)||a.category==="variable"&&a.factorClass==="ROOF_LIVE"))throw Error("REVIEWED_ACTION_CLASS: individual direct permanent and roof use only");
-  const ws=(item:string):NormativeWindData["rows"][number]["source"]=>({standard:"ABNT NBR 6123",edition:"2023-corrected-2025",errata:"08.04.2025-partial-through-48",
+  const ws=(item:string):NormativeWindData["rows"][number]["source"]=>({standard:"ABNT NBR 6123",edition:NBR6123_EDITION,errata:NBR6123_ERRATA,
     item,domain:"Primary roof Ce; square plan; gable45 h/b<=0.5 or mono30 h/b<2; airtight 6.3.2.2; all declared restrictions",
     transcriber:v.transcriber,documentSha256:v.windDocumentSha256});
   const fs=(item:string):NormativeFactorsData["source"]=>({standard:"ABNT NBR 8681",edition:"2025",errata:"not-assessed",

@@ -22,8 +22,8 @@ const FAC:RectangularFacadeInput[]=([
   {id:"NORTH",outward:"+Y",planeMm:6000,uMinMm:-12000,uMaxMm:0,zMinMm:0,zMaxMm:4000,supportPieceIds:["C0_6000","C6000_6000","C12000_6000"]},
   {id:"SOUTH",outward:"-Y",planeMm:0,uMinMm:0,uMaxMm:12000,zMinMm:0,zMaxMm:4000,supportPieceIds:["C0_0","C6000_0","C12000_0"]},
 ] as {id:string;outward:"+X"|"-X"|"+Y"|"-Y";planeMm:number;uMinMm:number;uMaxMm:number;zMinMm:number;zMaxMm:number;supportPieceIds:string[]}[]).map(f=>({...f,enclosure:"cladded" as const,enclosureSource:"Inspeção física sintética do revestimento",source:src,revision:rev}));
-const speed={schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:10,heightM:4,heightReference:"model-base-z0",topography:"flat-or-gently-undulating",
-  roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,reference:{standard:"ABNT NBR 6123",edition:"2023",clause:"5",source:"Dados sintéticos INT-1d",revision:"v1",responsible:"Responsável de referência"}};
+const speed={schema_version:"jpn.wind-speed/1",edition:"2023-corrected-2025",v0Mps:10,heightM:4,heightReference:"model-base-z0",topography:"flat-or-gently-undulating",
+  roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,reference:{standard:"ABNT NBR 6123",edition:"2023-corrected-2025",clause:"5",source:"Dados sintéticos INT-1d",revision:"v1",responsible:"Responsável de referência"}};
 
 /** The same steps the UI performs: facades -> NBR 6123 wall wind -> NBR 8681 combinations -> /3 analysis. Starting from a building WITHOUT facades. */
 function bareBuilding():Project{

@@ -6,6 +6,7 @@ import { applyNbr6123WallWind, declareFacadeTraction, facadeInputOf, setPhysical
 import { applyNbr8681Combinations } from "@/domain/nbr8681-combinations";
 import { provisionalNotices } from "@/domain/normative-provenance";
 import data8681 from "../../../data/normas/nbr8681-2025-combinations.json";
+import { NBR6123_EDITION } from "@/domain/nbr6123-edition";
 
 const num = (v: string) => (v.trim() === "" ? NaN : Number(v));
 const permTypes = Object.entries(data8681.table1.types).map(([id, t]) => ({ id, label: (t as { label: string }).label }));
@@ -91,8 +92,8 @@ export function NormativeIntegrationPanel({ project, onChange }: { project: Proj
       {["+X", "-X", "+Y", "-Y"].map(d => <label key={d} className="checkbox-label"><input type="checkbox" checked={w.dirs[d]} onChange={e => setW({ ...w, dirs: { ...w.dirs, [d]: e.target.checked } })} />Vento vindo de {d}</label>)}
       <label className="checkbox-label"><input type="checkbox" checked={w.hConfirmed} onChange={e => setW({ ...w, hConfirmed: e.target.checked })} />A altura h segue o Detalhe I da Tabela 7 (solo ao beiral, beiral ≤ 0,1 b).</label>
       <button className="button" onClick={() => run(() => {
-        const speed = { schema_version: "jpn.wind-speed/1", edition: "2023-original", v0Mps: num(w.v0), heightM: num(w.h), heightReference: "model-base-z0", topography: "flat-or-gently-undulating", roughnessTransition: "none", category: w.category, sizeClass: w.sizeClass, s3: num(w.s3),
-          reference: { standard: "ABNT NBR 6123", edition: "2023", clause: "5", source: w.speedSource, revision: w.speedRevision, responsible: w.speedResponsible } };
+        const speed = { schema_version: "jpn.wind-speed/1", edition: NBR6123_EDITION, v0Mps: num(w.v0), heightM: num(w.h), heightReference: "model-base-z0", topography: "flat-or-gently-undulating", roughnessTransition: "none", category: w.category, sizeClass: w.sizeClass, s3: num(w.s3),
+          reference: { standard: "ABNT NBR 6123", edition: NBR6123_EDITION, clause: "5", source: w.speedSource, revision: w.speedRevision, responsible: w.speedResponsible } };
         const ids = ["+X", "-X", "+Y", "-Y"].filter(d => w.dirs[d]);
         const internalPressure = w.cpi.startsWith("two") ? { rule: w.cpi, permeableAxis: w.permeableAxis } : { rule: w.cpi };
         return applyNbr6123WallWind(project, { schema_version: "jpn.nbr6123-wall-wind/2", building: { longSideM: num(w.a), shortSideM: num(w.b), heightM: num(w.h), longAxis: w.longAxis, roofImpermeable: true, heightDefinitionConfirmed: w.hConfirmed || undefined },

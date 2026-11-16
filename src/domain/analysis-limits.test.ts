@@ -29,8 +29,8 @@ it("o limite derivado do TypeScript é igual ao do motor Python (mesma regra loc
   expect(combinationLimit(132,207,36)).toBeLessThan(10);          // a very large model is bounded by the 2 MB output cap, not by a count
 });
 
-const si=(id:string)=>({schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:10,heightM:4,heightReference:"model-base-z0",topography:"flat-or-gently-undulating",
-  roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,reference:{standard:"ABNT NBR 6123",edition:"2023",clause:"5",source:"Dados sintéticos "+id,revision:"v1",responsible:"Responsável de referência"}});
+const si=(id:string)=>({schema_version:"jpn.wind-speed/1",edition:"2023-corrected-2025",v0Mps:10,heightM:4,heightReference:"model-base-z0",topography:"flat-or-gently-undulating",
+  roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,reference:{standard:"ABNT NBR 6123",edition:"2023-corrected-2025",clause:"5",source:"Dados sintéticos "+id,revision:"v1",responsible:"Responsável de referência"}});
 
 function shed():{project:Project;ids:string[]}{
   const winds=["W1","W2","W3","W4"],ids=["G","Q",...winds],p=buildingProject(ids);

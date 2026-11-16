@@ -44,7 +44,7 @@ export function buildingProject(caseIds:string[],walls:Side[]=["EAST","WEST","NO
       const o=[[w.u[0],0],[w.u[1],0],[w.u[1],H],[w.u[0],H]].map(q=>fromFacadeLocal(w.o,w.plane,q as [number,number]));
       return {id:side,kind:"wall" as const,outward:w.o,enclosure:"cladded" as const,outer:[...o,o[0]],openings:[],
         supportPieceIds:w.ids,source,revision,enclosureSource:"Inspeção física sintética do revestimento"};})});
-  const ref={standard:"ABNT NBR 6123",edition:"2023",clause:"Tabela 6; 6.3.2.1",source:"Cálculo do ensaio M41-P5",
+  const ref={standard:"ABNT NBR 6123",edition:"2023-corrected-2025",clause:"Tabela 6; 6.3.2.1",source:"Cálculo do ensaio M41-P5",
     revision:"v1",responsible:"Responsável técnico de referência não substituído pelo JPN"};
   d.engineeringCombinations={schema_version:"jpn.engineering-combinations/1",normativeValidation:"pending-engineer-review",
     actions:caseIds.map(c=>({caseId:c,category:"wind" as const,exclusiveGroup:"WIND-ALT",reference:ref})),

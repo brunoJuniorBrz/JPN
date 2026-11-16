@@ -12,6 +12,7 @@ import { normativeWindDataSchema,normativeFactorsDataSchema,normativeActionSchem
   type NormativeSource,type NormativeAction,type NormativeFactorsData,type ProcedureState } from "./normative-origin-contracts";
 import { buildReviewedRoofCatalog,assertReviewedRoofScope } from "./reviewed-roof-catalog";
 import recovered from "../../data/normas/nbr6123-2023-speed.json" with { type: "json" };
+import { NBR6123_DOCUMENT_SHA256,assertSingleNbr6123Edition } from "./nbr6123-edition";
 
 export const normativeOriginVersion="jpn.normative-origin/2";
 export const normativeOriginInputSchema=z.object({speed:windSpeedInputSchema,openings:openingsSchema,
@@ -33,7 +34,7 @@ function canonical(v:unknown):string {
 }
 async function digest(value:unknown){return [...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(canonical(value))))].map(x=>x.toString(16).padStart(2,"0")).join("");}
 async function basis(project:Project,input:unknown,files:NormativeFiles){return digest({version:normativeOriginVersion,geometry:structureSignature(project),physical:project.workspace.spatialPreparation,input,files,recovered});}
-function reference(s:NormativeSource,revision:string){return {standard:s.standard,edition:s.edition==="2023-original"?"2023":s.edition,
+function reference(s:NormativeSource,revision:string){return {standard:s.standard,edition:s.edition,
   clause:s.item,source:`${s.documentSha256}: ${s.domain}`,revision,responsible:s.transcriber};}
 function audit(procedure:string,source:unknown,inputs:unknown,coefficient:unknown,selectionRule:string,state:ProcedureState=declared):Audit{
   return {procedure,state,source,inputs,coefficient,selectionRule,calculationVersion:normativeOriginVersion};
@@ -60,7 +61,9 @@ function wind(project:Project,input:NormativeOriginInput,raw:unknown,testOnly:bo
     });
     if(matches.length!==1)fail(`WIND_DOMAIN: incidence ${incidenceDeg}: ${matches.length} linhas aplicáveis; requer seleção única exata, aberturas e domínio completos`);
     const row=matches[0];
-    if(row.source.edition==="2023-corrected-2025")assertReviewedRoofScope(project,input);
+    assertSingleNbr6123Edition([speed,row.source,...row.zones.map(z=>z.cpe.source),...row.cpiCases.map(c=>c.coefficient.source)]);
+    // Rows citing the reviewed corrected document must satisfy the reviewed roof scope (before N1 this keyed on the edition).
+    if(row.source.documentSha256===NBR6123_DOCUMENT_SHA256)assertReviewedRoofScope(project,input);
     if(new Set(row.cpiCases.map(c=>c.id)).size!==row.cpiCases.length)fail("DUPLICATE_CPI");
     return row.cpiCases.map((internal,j)=>{
       const id=`W${input.incidencesDeg.indexOf(incidenceDeg)}_${j}`;
@@ -165,9 +168,9 @@ async function generate(project:Project,value:unknown,files:NormativeFiles,testO
       }catch(e){extractValid=false;blockers.push(String(e));trace.push(audit("2025-reviewed-subset-applicability",null,input.data,null,String(e),"BLOCKED_UNSUPPORTED"));}
     }
     try{const speed=calculateWindSpeed(input.data.speed);
-      trace.push(audit("S1/S2/Vk/q-original-2023",recovered,{speed:input.data.speed},speed,"existing wind-speed/1", "SUPPORTED_VERIFIED"));
-      trace.push(audit("V0/S3/classification",input.data.speed.reference,input.data.speed,null,"declared dependencies; errata 2025 not verified"));
-    }catch(e){blockers.push(String(e));trace.push(audit("S1/S2/Vk/q-original-2023",recovered,input.data.speed,null,String(e),"BLOCKED_UNSUPPORTED"));}
+      trace.push(audit("S1/S2/Vk/q-6123-corrected-2025",recovered,{speed:input.data.speed},speed,"existing wind-speed/1", "SUPPORTED_VERIFIED"));
+      trace.push(audit("V0/S3/classification",input.data.speed.reference,input.data.speed,null,"declared dependencies; Tables 1-3 and 4.2 compared with Errata 1:2025 (no change); professional review pending"));
+    }catch(e){blockers.push(String(e));trace.push(audit("S1/S2/Vk/q-6123-corrected-2025",recovered,input.data.speed,null,String(e),"BLOCKED_UNSUPPORTED"));}
     try{if(!extractValid)fail("PRIVATE_EXTRACT_INVALID: no fallback");generatedWind=wind(project,input.data,effective.wind,testOnly,trace);}catch(e){blockers.push(String(e));trace.push(audit("Cpe/Cpi/zones",effective.wind??null,input.data,null,String(e),"BLOCKED_UNSUPPORTED"));}
     if(generatedWind){
       const actions=[...input.data.actions,...generatedWind.declaration.cases.map(c=>({caseId:c.id,category:"wind" as const,exclusiveGroup:"M33W",factorClass:input.data.windFactorClass}))];

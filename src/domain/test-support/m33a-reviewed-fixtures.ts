@@ -27,9 +27,9 @@ export function reviewedRoofProject(typology:"mono"|"gable"){
   d.loading!.roofArea=[{caseId:"G",knM2:.1,projection:"roof-surface",direction:[0,0,-1],source:"SYNTHETIC declared cladding only",revision:"1",loadPath:d.loadPathReview},
     {caseId:"Q",knM2:.25,projection:"horizontal",direction:[0,0,-1],source:"SYNTHETIC declared use magnitude",revision:"1",loadPath:d.loadPathReview}];
   const maxHeight=Math.max(...model.nodes.map(n=>n.z))/1000,rise=maxHeight-3;
-  const input:NormativeOriginInput={speed:{schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:40,heightM:maxHeight,heightReference:"model-base-z0",
+  const input:NormativeOriginInput={speed:{schema_version:"jpn.wind-speed/1",edition:"2023-corrected-2025",v0Mps:40,heightM:maxHeight,heightReference:"model-base-z0",
     topography:"flat-or-gently-undulating",roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,
-    reference:{standard:"ABNT NBR 6123",edition:"2023",clause:"Declared synthetic site, not isopleth selection",source:"SYNTHETIC V0",revision:"1",responsible:"Validation"}},
+    reference:{standard:"ABNT NBR 6123",edition:"2023-corrected-2025",clause:"Declared synthetic site, not isopleth selection",source:"SYNTHETIC V0",revision:"1",responsible:"Validation"}},
     openings:{enclosure:"enclosed",classification:"airtight-fixed-windows",dominantFace:"none",faceAreasM2:[0,0,0,0,0],permeabilityPercent:0,volumeM3:36*(3+rise/2),source:"SYNTHETIC airtight envelope",revision:"1"},
     reviewedRoof:{procedure:"6123-global-Ce-airtight/1",axes:"b=+X;a=+Y;alpha0=+Y;alpha90=+X;alpha270=-X",roofImpermeable:true,effectivelyAirtight:true,fixedWindows:true,
       negligibleAccidentalWindowBreakage:true,singleInternalPressure:true,noRoofProjections:true,noLanterns:true,noSeparateCeilingPressure:true,

@@ -7,15 +7,15 @@ import type { NormativeWindData,NormativeFactorsData,NormativeSource } from "../
 
 export function m33aFixture(project:Project,actions:NormativeOriginInput["actions"]=[],incidences=[0]){
   const origin="TEST_ONLY_NOT_NORMATIVE" as const;
-  const source=(standard:string,edition:string):NormativeSource=>({standard,edition,errata:standard.endsWith("6123")?"2025-not-verified":"TEST_ONLY_NOT_NORMATIVE",
+  const source=(standard:string,edition:string):NormativeSource=>({standard,edition,errata:standard.endsWith("6123")?"08.04.2025-partial-through-48":"TEST_ONLY_NOT_NORMATIVE",
     item:"TEST_ONLY_NOT_NORMATIVE — synthetic row, not an ABNT table",domain:"TEST_ONLY_NOT_NORMATIVE — rectangular generated roof, exact test openings and slope",
     transcriber:"TEST_ONLY_NOT_NORMATIVE",documentSha256:"0".repeat(64)});
-  const ws=source("ABNT NBR 6123","2023-original"),fs=source("ABNT NBR 8681","2025");
+  const ws=source("ABNT NBR 6123","2023-corrected-2025"),fs=source("ABNT NBR 8681","2025");
   const regions=generatedRoofRegions(project),r=regions.regions[0];
   const input:NormativeOriginInput={
-    speed:{schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:40,heightM:Math.max(...generateStructure(project).model!.nodes.map(n=>n.z))/1000,
+    speed:{schema_version:"jpn.wind-speed/1",edition:"2023-corrected-2025",v0Mps:40,heightM:Math.max(...generateStructure(project).model!.nodes.map(n=>n.z))/1000,
       heightReference:"model-base-z0",topography:"flat-or-gently-undulating",roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,
-      reference:{standard:"ABNT NBR 6123",edition:"2023",clause:"TEST_ONLY_NOT_NORMATIVE",source:origin,revision:"1",responsible:origin}},
+      reference:{standard:"ABNT NBR 6123",edition:"2023-corrected-2025",clause:"TEST_ONLY_NOT_NORMATIVE",source:origin,revision:"1",responsible:origin}},
     openings:{enclosure:"enclosed",classification:"test-enclosed",dominantFace:"none",faceAreasM2:[1,1,1,1,0],permeabilityPercent:1,volumeM3:100,source:origin,revision:"1"},
     incidencesDeg:incidences,purposes:["ULS"],use:"synthetic-rectangular-roof",windFactorClass:"WIND",actions,
   };
