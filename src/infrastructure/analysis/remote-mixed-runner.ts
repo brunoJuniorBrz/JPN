@@ -6,8 +6,8 @@ import { mixedInputHash, verifyMixedResult } from "@/domain/mixed-analysis";
 import { SolverFailure } from "./runner";
 
 export const remoteMixedLimits = { inputBytes:500000, outputBytes:2000000, milliseconds:28000 } as const;
-export const queuedEngineSeconds = 740;
-export const queuedEngineMilliseconds = 755_000;
+export const queuedEngineSeconds = 270;
+export const queuedEngineMilliseconds = 285_000;
 const queuedOutputBytes = 16_000_000;
 export function checkRemoteInputBudget(payload:string){
   if(Buffer.byteLength(payload)>remoteMixedLimits.inputBytes)throw new SolverFailure("INPUT_LIMIT","Entrada excede 500 kB.");
