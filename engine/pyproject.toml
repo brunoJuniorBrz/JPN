@@ -10,6 +10,9 @@ requires-python = ">=3.12,<3.13"
 dependencies = ["numpy==2.5.4", "scipy==1.18.1", "PyNiteFEA==3.2.1"]
 
 [project.optional-dependencies]
+# Cross-section numerics (jpn.section-analysis/1, cold-formed verified design). Optional on purpose: the base install stays small enough for the
+# Vercel function; routes that need it REFUSE with SECTIONS_EXTRA_MISSING when it is absent (see docs/INT-2-VERCEL.md).
+sections = ["sectionproperties==3.10.2", "cytriangle==3.0.2", "shapely==2.2.0"]
 validation = ["PyNiteFEA==3.2.1", "pytest==9.2.0", "ezdxf==1.4.5"]
 
 [tool.setuptools.packages.find]
@@ -18,6 +21,11 @@ include = ["jpn_structural*"]
 
 [tool.vercel]
 entrypoint = "app:app"
+
+[tool.uv.sources]
+# PyPI's Linux wheel requires glibc 2.39. Build the same released revision
+# on older Linux builders, including Vercel, without changing solver versions.
+cytriangle = { git = "https://github.com/m-clare/cytriangle.git", rev = "a475925cdd355bcdc72a732dc2ec1b601a26d648", marker = "sys_platform == 'linux'" }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

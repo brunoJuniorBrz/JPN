@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { z } from "zod";
 import { mixedInputHash, verifyMixedResult } from "@/domain/mixed-analysis";
-import { anyMixedRequestSchema, anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
+import { anyMixedRequestSchema, anyMixedResultSchema, secondOrderMixedRequestSchema, secondOrderMixedResultSchema, verifyLoadingTrace, verifySecondOrderDemandTrace } from "@/domain/structural-loading";
 import { SolverFailure } from "./runner";
 import { terminateWorker } from "./worker-process";
 
@@ -20,15 +20,11 @@ const gate = globals.__jpnLocalMixedGate ??= { active: 0, disabled: false };
 export const localMixedExecutionGate = gate;
 export function localMixedEnabled() { return process.env.NODE_ENV === "development" && process.env.JPN_LOCAL_MIXED_ENABLED === "1" && process.env.JPN_LOCAL_MIXED_ORIGIN?.startsWith("http://127.0.0.1:"); }
 
-export async function runLocalMixed(payload: string, mode: "health" | "analysis" | "connections" = "analysis", signal?: AbortSignal) {
+async function runLocalMixedWorker<T>(payload:string,mode:"health"|"analysis"|"connections",signal:AbortSignal|undefined,check:()=>void,parse:(raw:unknown)=>T|Promise<T>){
   if (!localMixedEnabled()) throw new SolverFailure("LOCAL_ONLY", "Abra o JPN com pnpm dev:structural; execução mista restrita ao desenvolvimento local.");
   if (gate.disabled) throw new SolverFailure("CLEANUP_FAILURE", "Executor bloqueado após falha de limpeza. Reinicie o ambiente local.");
   if (Buffer.byteLength(payload) > localMixedLimits.inputBytes) throw new SolverFailure("INPUT_LIMIT", "Entrada excede 500 kB.");
-  let request: ReturnType<typeof anyMixedRequestSchema.parse> | undefined;
-  if (mode !== "health") {
-    try { request = anyMixedRequestSchema.parse(JSON.parse(payload)); }
-    catch { throw new SolverFailure("INVALID_INPUT", "Modelo misto incompleto ou incompatível com o contrato SI."); }
-  }
+  check();
   if (gate.active >= localMixedLimits.concurrency) throw new SolverFailure("BUSY", "Uma análise local já está em execução. Aguarde.");
   gate.active++;
   try {
@@ -58,22 +54,50 @@ export async function runLocalMixed(payload: string, mode: "health" | "analysis"
         if (failure) return finish(undefined, failure);
         try {
           const parsed = JSON.parse(Buffer.concat(chunks).toString("utf8"));
-          if (code !== 0 || parsed.status === "error") return finish(undefined, new SolverFailure(parsed.error?.code ?? "SERVICE_FAILURE", parsed.error?.message ?? "Processo recusou a análise; nenhum resultado publicado."));
+        if (code !== 0 || parsed.status === "error") {
+          const failure=new SolverFailure(parsed.error?.code ?? "SERVICE_FAILURE",parsed.error?.message ?? "Processo recusou a análise; nenhum resultado publicado.");
+          const id=parsed.error?.combination_id;
+          return finish(undefined,typeof id==="string"&&/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$/.test(id)?Object.assign(failure,{combinationId:id}):failure);
+        }
           finish(parsed);
         } catch { finish(undefined, new SolverFailure("INVALID_RESPONSE", "Worker terminou sem resposta JSON válida; nenhum resultado publicado.")); }
       });
       signal?.addEventListener("abort", cancel, { once: true });
       if (signal?.aborted) cancel(); else child.stdin.end(mode !== "health" ? payload : ""); // Preserve raw duplicate keys for Python's strict decoder.
     });
-    if (mode === "health") return healthSchema.parse(raw);
+    return await parse(raw);
+  } catch (e) {
+    if (e instanceof SolverFailure) throw e;
+    throw new SolverFailure("INVALID_RESPONSE", "Resposta fora do contrato ou sem correspondência com as entradas.");
+  } finally { gate.active--; }
+}
+
+export async function runLocalMixed(payload: string, mode: "health" | "analysis" | "connections" = "analysis", signal?: AbortSignal) {
+  let request:ReturnType<typeof anyMixedRequestSchema.parse>|undefined;
+  return runLocalMixedWorker(payload,mode,signal,()=>{
+    if(mode==="health")return;
+    try{request=anyMixedRequestSchema.parse(JSON.parse(payload));}
+    catch{throw new SolverFailure("INVALID_INPUT","Modelo misto incompleto ou incompatível com o contrato SI.");}
+  },async raw=>{
+    if(mode==="health")return healthSchema.parse(raw);
     const output = envelopeSchema.parse(raw);
     if(output.result.schema_version!==request!.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error("Versão de resposta incompatível.");
     verifyMixedResult(request!, output.result, await mixedInputHash(request));
     verifyLoadingTrace(request!,output.result);
     if(mode==="connections"){if(!output.joint_actions)throw new SolverFailure("JOINT_TRACE_UNAVAILABLE","Executor não forneceu ações de extremidade.");verifyJointActionTrace(request!,output.result,output.joint_actions);}
     return output;
-  } catch (e) {
-    if (e instanceof SolverFailure) throw e;
-    throw new SolverFailure("INVALID_RESPONSE", "Resposta fora do contrato ou sem correspondência com as entradas.");
-  } finally { gate.active--; }
+  });
+}
+
+export async function runLocalSecondOrder(payload:string,signal?:AbortSignal){
+  let request:ReturnType<typeof secondOrderMixedRequestSchema.parse>;
+  return runLocalMixedWorker(payload,"analysis",signal,()=>{
+    try{request=secondOrderMixedRequestSchema.parse(JSON.parse(payload));}
+    catch{throw new SolverFailure("INVALID_INPUT","Modelo de segunda ordem inválido.");}
+  },async raw=>{
+    const out=envelopeSchema.omit({joint_actions:true}).extend({result:secondOrderMixedResultSchema}).parse(raw);
+    verifyMixedResult(request,out.result,await mixedInputHash(request));
+    verifySecondOrderDemandTrace(request,out.result);
+    return out;
+  });
 }

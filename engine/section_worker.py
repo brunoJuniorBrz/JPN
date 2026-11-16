@@ -1,4 +1,4 @@
-"""Optional numerical profile. Same OS cap as the structural worker; no HTTP.
+"""Numerical profile with the same OS cap as the structural worker.
 
 Run with -I. The caller must enforce the existing 20 s and 2 MB limits.
 """
@@ -14,11 +14,20 @@ def main():
     try:
         execution=memory_limit()
         if sys.version_info[:2]!=(3,12):raise RuntimeError('Python 3.12 required')
+        if '--symmetric-i' in sys.argv:
+            import scipy.sparse.linalg as sparse
+
+            def factorized(matrix):
+                return sparse.splu(matrix,permc_spec='MMD_AT_PLUS_A').solve
+
+            sparse.factorized=factorized
         from jpn_structural.__main__ import _unique_object
         data=sys.stdin.buffer.read(500001)
         if len(data)>500000:raise ValueError('INPUT_LIMIT')
         def invalid(value):raise ValueError('Nonfinite JSON: '+value)
         raw=json.loads(data.decode('utf8'),object_pairs_hook=_unique_object,parse_constant=invalid)
+        from jpn_structural.optional_extras import require_sections_extra
+        require_sections_extra(raw.get('schema_version'),'--symmetric-i' in sys.argv)
         if raw.get('schema_version')=='jpn.verified-coldformed-batch/1':
             from jpn_structural.verified_design_batch import analyze_verified_batch
             result=analyze_verified_batch(raw)

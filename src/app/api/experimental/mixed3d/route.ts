@@ -1,6 +1,7 @@
-import { localMixedEnabled, localMixedLimits, runLocalMixed } from "@/infrastructure/analysis/local-mixed-runner";
+import { createHash } from "node:crypto";
+import { localMixedEnabled, localMixedLimits, runLocalMixed, runLocalSecondOrder } from "@/infrastructure/analysis/local-mixed-runner";
 import { SolverFailure } from "@/infrastructure/analysis/runner";
-import { remoteMixedEnabled, remoteMixedAccess, runRemoteMixed } from "@/infrastructure/analysis/remote-mixed-runner";
+import { remoteMixedEnabled, remoteMixedAccess, runRemoteMixed, runRemoteSecondOrder } from "@/infrastructure/analysis/remote-mixed-runner";
 
 export const runtime = "nodejs";
 export const maxDuration = 35;
@@ -9,7 +10,7 @@ function access(request:Request,post=false){
   const error=remoteMixedAccess(request,post);
   return error?Response.json({error:{code:error.code,message:error.message}},{status:error.status,headers:{"Cache-Control":"no-store",...(error.status===401?{"WWW-Authenticate":'Basic realm="JPN experimental", charset="UTF-8"'}:{})}}):null;
 }
-function reply(value:unknown){const body=JSON.stringify(value);if(Buffer.byteLength(body)>localMixedLimits.outputBytes)throw new SolverFailure("OUTPUT_LIMIT","Resposta excede 2 MB.");return new Response(body,{headers:{"Content-Type":"application/json","Cache-Control":"no-store"}});}
+function reply(value:unknown,requestSha?:string){const body=JSON.stringify(value);if(Buffer.byteLength(body)>localMixedLimits.outputBytes)throw new SolverFailure("OUTPUT_LIMIT","Resposta excede 2 MB.");return new Response(body,{headers:{"Content-Type":"application/json","Cache-Control":"no-store",...(requestSha?{"X-JPN-Request-Sha256":requestSha}:{})}});}
 async function readInput(request:Request){
   const reader=request.body?.getReader();if(!reader)throw new SolverFailure("INVALID_INPUT","Corpo ausente.");
   let timer:ReturnType<typeof setTimeout>|undefined;
@@ -29,7 +30,7 @@ function permitted(request: Request, post = false) {
 }
 function failure(e: unknown) {
   const error = e instanceof SolverFailure ? e : new SolverFailure("INVALID_INPUT", "Requisição experimental inválida.");
-  return Response.json({ error: { code: error.code, message: error.message } }, { status: ["REMOTE_UNAUTHORIZED","REMOTE_FORBIDDEN"].includes(error.code)?502:["CONFIGURATION","BUSY", "UNAVAILABLE", "TIMEOUT", "MEMORY_LIMIT", "MEMORY_LIMIT_UNAVAILABLE", "CLEANUP_FAILURE", "CANCELLED"].includes(error.code) ? 503 : error.code === "INPUT_LIMIT" ? 413 : 422, headers: { "Cache-Control": "no-store" } });
+  return Response.json({ error: { code: error.code, message: error.message, ...("combinationId" in error?{combination_id:error.combinationId}:{}) } }, { status: ["REMOTE_UNAUTHORIZED","REMOTE_FORBIDDEN"].includes(error.code)?502:["CONFIGURATION","BUSY", "UNAVAILABLE", "TIMEOUT", "MEMORY_LIMIT", "MEMORY_LIMIT_UNAVAILABLE", "CLEANUP_FAILURE", "CANCELLED"].includes(error.code) ? 503 : error.code === "INPUT_LIMIT" ? 413 : 422, headers: { "Cache-Control": "no-store" } });
 }
 export async function GET(request: Request) {
   if(remoteMixedEnabled()){
@@ -50,6 +51,12 @@ export async function POST(request: Request) {
   try {
     const option=request.headers.get("X-JPN-Joint-Actions");if(option!==null&&option!=="1")throw new SolverFailure("INVALID_INPUT","Opção de ações de ligação inválida.");
     const mode=option==="1"?"connections":"analysis";
-    const payload=await readInput(request);return reply(await (remote?runRemoteMixed(payload,mode,request.signal):runLocalMixed(payload,mode,request.signal)));
+    const payload=await readInput(request), parsed=JSON.parse(payload);
+    const hash=createHash("sha256").update(payload).digest("hex");
+    if(parsed?.analysis_order==="second-order"){
+      if(mode==="connections")throw new SolverFailure("SECOND_ORDER_UNSUPPORTED_TRACE","Segunda ordem não fornece a rastreabilidade linear.");
+      return reply(await (remote?runRemoteSecondOrder(payload,request.signal):runLocalSecondOrder(payload,request.signal)),hash);
+    }
+    return reply(await (remote?runRemoteMixed(payload,mode,request.signal):runLocalMixed(payload,mode,request.signal)),hash);
   } catch (e) { return failure(e); }
 }
