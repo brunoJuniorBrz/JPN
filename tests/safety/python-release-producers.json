@@ -1,0 +1,48 @@
+{
+  "engine/jpn_structural/buckling_search.py": {
+    "approved_for_fabrication": 1
+  },
+  "engine/jpn_structural/coldformed_design.py": {
+    "computed_structural_approval": 1,
+    "approved_for_fabrication": 1
+  },
+  "engine/jpn_structural/corotational_planar.py": {
+    "computed_structural_approval": 1,
+    "fabrication_release": 1,
+    "release_gate": 1
+  },
+  "engine/jpn_structural/frame_pdelta.py": {
+    "approved_for_fabrication": 1
+  },
+  "engine/jpn_structural/mixed3d_second_order.py": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "engine/jpn_structural/mixed_initial_stress.py": {
+    "release_gate": 1,
+    "approved_for_fabrication": 1
+  },
+  "engine/jpn_structural/p4_frame.py": {
+    "computed_structural_approval": 1,
+    "fabrication_release": 1,
+    "release_gate": 1
+  },
+  "engine/jpn_structural/purlin.py": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "engine/jpn_structural/second_order_frame.py": {
+    "computed_structural_approval": 1,
+    "fabrication_release": 1,
+    "release_gate": 1
+  },
+  "engine/jpn_structural/steel_i_design.py": {
+    "computed_structural_approval": 1,
+    "approved_for_fabrication": 1
+  },
+  "engine/jpn_structural/verified_design_batch.py": {
+    "computed_structural_approval": 1,
+    "approved_for_fabrication": 1
+  }
+}
