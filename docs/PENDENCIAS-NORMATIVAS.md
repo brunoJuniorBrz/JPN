@@ -1,0 +1,27 @@
+# Pendências normativas do JPN (fila única)
+
+Criado em 16/11/2026. Regra de uso, para economizar contexto:
+
+- Uma missão = um item desta tabela. Leia **só a seção indicada** da norma oficial e **só os arquivos indicados** do código.
+- Não releia normas já implementadas, nem este repositório inteiro.
+- Cada item fecha com: teste de aceite passando + caso conferido contra cálculo independente + decisão de engenharia anotada para revisão do Tom.
+- Ao terminar, marque o item como `FEITO` aqui, com o PR. Se descobrir pendência nova, acrescente uma linha; não resolva fora da fila.
+- Mantidos sempre: `computedStructuralApproval=false`, `fabricationRelease=false`, `NOT_READY_BLOCKED`.
+
+Prioridade = tipo de obra do Tom primeiro: cobertura leve, perfis Ue, apoio em pilar metálico ou em parede existente.
+
+| # | Prioridade | Norma e trecho a consultar | O que falta | Onde está no código | Aceite |
+|---|---|---|---|---|---|
+| N1 | Alta | NBR 6123:2023 + Errata 2025 (folha de rosto/errata; tabelas de S2 e de Cpe/Cpi já usadas) | Uma edição só em todo o vento; hoje o JSON de velocidade e o de paredes dizem `2023-original` e o catálogo de cobertura diz `2023-corrected-2025` | `data/normas/nbr6123-2023-*.json`, `src/domain/reviewed-roof-catalog.ts`, `src/domain/wind-speed.ts` | Toda análise registra a mesma edição; teste que falha se misturar edições |
+| N2 | Alta | NBR 6123:2023, coeficientes de pressão externa de telhados de duas águas e de uma água (faixa de inclinações de galpão, ~5° a 20°) | Cpe de cobertura só existe para 45° (duas águas) e 30° (uma água) | `src/domain/reviewed-roof-catalog.ts`, `src/domain/wind-load-path.ts` | Galpão de 10° e 15° com Cpe da tabela, zonas e interpolação conferidas célula a célula |
+| N3 | Alta | NBR 8681:2025, tabelas de γ e ψ (seção de combinações ELU/ELS) | Fonte única dos fatores; o JSON do #99 cita "captura do Studocu"; reconferir contra o exemplar oficial e apagar a origem não licenciada | `data/normas/nbr8681-2025-combinations.json`, `src/domain/nbr8681-combinations.ts`, `combinationsDocumentSha256` em `reviewed-roof-catalog.ts` | Uma só fonte com SHA do exemplar; aviso PROVISIONAL some para 8681 |
+| N4 | Alta | Ancoragem: dados de fabricante (chumbador químico/mecânico) + NBR 16868 apenas para o caminho de carga na alvenaria | Verificar arrancamento por apoio em parede existente: demanda calculada × capacidade declarada da ancoragem; apoio crítico destacado | `src/domain/support-interface.ts`, `src/domain/physical-reaction-path.ts`, `support-interface-editor.tsx` | Caso B do memorial independente (arrancamento por apoio) bate dentro da tolerância |
+| N5 | Média | NBR 8800:2024, Anexo B (deslocamentos máximos) | ELS por peça: flecha × limite, por combinação de serviço | `engine/jpn_structural/steel_i_design.py`, `src/domain/member-combination-matrix.ts` | Flechas ELS-GQ e ELS-W do memorial; limite citado da tabela, não inventado |
+| N6 | Média | NBR 8800:2024, Anexo D (Cb) e 5.4.2 (comprimento destravado) | Cb por trecho entre travamentos (terças contraventadas) | `engine/jpn_structural/steel_i_design.py`, `src/domain/physical-restraints.ts` | Viga com 2 e 3 trechos travados contra cálculo à mão |
+| N7 | Média | NBR 14762:2010, itens de terças/Ue com travamento parcial (mesmo tema de N6 para formado a frio) | Comprimento destravado e Cb por trecho nas peças Ue | `engine/jpn_structural/coldformed_design.py` | Terça Ue com linha de corrente contra cálculo à mão |
+| N8 | Média | NBR 8800:2024, Anexo E (alma esbelta) | Hoje bloqueado; perfis soldados de alma fina | `engine/jpn_structural/steel_i_design.py` | Caso de alma esbelta contra cálculo à mão |
+| N9 | Revisar | NBR 14762:2010, 9.8.4 | Saiu de BLOCKED no #110; confirmar a interpretação com o Tom | `src/domain/member-combination-matrix.ts` e teste M50 | Anotação de revisão assinada pelo Tom |
+| N10 | Baixa | NBR 16868 (alvenaria) e NBR 6118 (concreto): capacidade de apoio | Capacidade da parede calculada em vez de declarada | `src/domain/support-interface.ts` | Somente após N4 |
+| N11 | Baixa | NBR 14762 (parafusos/solda) e NBR 8800 (ligações) | Ligações dentro da análise (hoje isoladas) e bases/chumbadores de pilar novo | `engine/jpn_structural/single_bolt_14762.py`, `flat_fillet_weld_14762.py` | Ligação de terça e base articulada contra cálculo à mão |
+
+Fora desta fila (não normativos): segunda ordem na tela, desempenho da segunda ordem, projeto em AutoCAD (INT-8).
