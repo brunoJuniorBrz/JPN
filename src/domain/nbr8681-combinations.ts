@@ -1,7 +1,7 @@
 import {z} from "zod";
 import {MAX_COMBINATIONS} from "./analysis-limits";
-import {COMBINATIONS_PROVENANCE} from "./normative-provenance";
-import {recordProvenance} from "./normative-provenance-apply";
+import {NBR8681_SOURCE_LABEL} from "./nbr8681-source";
+import {clearProvenance} from "./normative-provenance-apply";
 import data from "../../data/normas/nbr8681-2025-combinations.json" with {type:"json"};
 import type {Project} from "./models";
 import {applyEngineeringCombinations} from "./apply-engineering-combinations";
@@ -41,7 +41,7 @@ function fail(c:string,m:string):never{throw Error(c+": "+m);}
 type Kind="normal"|"special"|"exceptional";
 const kindOf:Record<string,Kind>={"uls-normal":"normal","uls-special":"special","uls-exceptional":"exceptional"};
 const ref=(clause:string)=>({standard:"ABNT NBR 8681",edition:"2025",clause,
-  source:"data/normas/nbr8681-2025-combinations.json (captura Studocu fornecida pelo usuário)",revision:data.revision,
+  source:"data/normas/nbr8681-2025-combinations.json — "+NBR8681_SOURCE_LABEL,revision:data.revision,
   responsible:"Revisão profissional pendente; o JPN não substitui o responsável técnico"});
 const psiOf=(row:string)=>(data.table6.rows as Record<string,{psi:number[]}>)[row].psi;
 
@@ -180,7 +180,7 @@ export function generateNbr8681Combinations(raw:unknown,existingCaseIds:string[]
     combinations:combos.map(c=>({id:c.id,purpose:c.purpose,hypothesis:c.hypothesis.slice(0,990),reference:ref(c.clause),
       terms:d.actions.map(a=>{const t=c.terms.find(x=>x.caseId===a.caseId)!;return {caseId:a.caseId,gamma:t.gamma,psi:t.psi,reference:ref(c.clause)};})})),
   });
-  return {schema_version:"jpn.nbr8681-generation/1" as const,normativeStatus:"PROVISIONAL" as const,provenance:COMBINATIONS_PROVENANCE,standard:"ABNT NBR 8681:2025",dataRevision:data.revision,
+  return {schema_version:"jpn.nbr8681-generation/1" as const,normativeStatus:"SINGLE_SOURCE_CHECKED" as const,documentSha256:data.documentSha256,standard:"ABNT NBR 8681:2025",dataRevision:data.revision,
     engineeringCombinations:engineering,trace:combos,notApplied:data.notApplied,errataVerified:false as const,
     normativeValidation:"pending-engineer-review" as const,computedStructuralApproval:false as const,
     fabricationRelease:false as const,releaseGate:"NOT_READY_BLOCKED" as const};
@@ -191,5 +191,6 @@ export function applyNbr8681Combinations(project:Project,raw:unknown){
   const draft=project.workspace.spatialPreparation;
   if(!draft)fail("M42_MODEL_PENDING","declare o modelo físico antes das combinações");
   const generated=generateNbr8681Combinations(raw,draft.cases.map(c=>c.id));
-  return {project:recordProvenance(applyEngineeringCombinations(project,generated.engineeringCombinations),COMBINATIONS_PROVENANCE),generated};
+  // N3: single checked source -> no PROVISIONAL mark for 8681; an old mark persisted in the project is removed.
+  return {project:clearProvenance(applyEngineeringCombinations(project,generated.engineeringCombinations),"combinations-nbr8681"),generated};
 }

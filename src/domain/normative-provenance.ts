@@ -15,9 +15,8 @@ export type NormativeProvenance=z.infer<typeof normativeProvenanceSchema>;
 export const WIND_PROVENANCE:NormativeProvenance={id:"wind-walls-nbr6123",normativeStatus:"PROVISIONAL",standard:"ABNT NBR 6123",edition:`${NBR6123_EDITION} (${NBR6123_LABEL})`,
   origin:"data/normas/nbr6123-2023-wall-cpe.json (Tabela 6 e 6.3.2/6.3.3) + data/normas/nbr6123-2023-speed.json",
   reason:"Edição única da NBR 6123 em todo o vento (velocidade, paredes, Cpi e cobertura), conferida contra a versão corrigida sem alteração de valores; revisão profissional e licença de publicação das tabelas pendentes."};
-export const COMBINATIONS_PROVENANCE:NormativeProvenance={id:"combinations-nbr8681",normativeStatus:"PROVISIONAL",standard:"ABNT NBR 8681",edition:"2025",
-  origin:"data/normas/nbr8681-2025-combinations.json (JSON público; o extrato SHA privado da main foi mantido sem uso)",
-  reason:"A fonte única dos fatores ELU/ELS da NBR 8681 ainda não está unificada entre o JSON público e o extrato validado por SHA."};
+/** N3: NBR 8681 left the provisional list ("combinations-nbr8681" stays in the enum only to read and clear old projects). */
+export function withoutProvenance(list:readonly NormativeProvenance[]|undefined,id:NormativeProvenance["id"]){return (list??[]).filter(x=>x.id!==id);}
 export function withProvenance(list:readonly NormativeProvenance[]|undefined,item:NormativeProvenance){
   return [...(list??[]).filter(x=>x.id!==item.id),item];
 }

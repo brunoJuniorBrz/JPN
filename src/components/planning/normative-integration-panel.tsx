@@ -102,7 +102,7 @@ export function NormativeIntegrationPanel({ project, onChange }: { project: Proj
     </section>}
 
     <section data-testid="nbr8681-generator"><h4>Combinações NBR 8681</h4>
-      <p>Fatores da NBR 8681:2025 (Tabelas 1–6), fonte atual = JSON público do repositório, <strong>PROVISÓRIA</strong>. Classifique cada caso; o vento em um único grupo exclusivo.</p>
+      <p>Fatores da NBR 8681:2025 (Tabelas 1–6), fonte única conferida célula a célula (N3); revisão profissional pendente. Classifique cada caso; o vento em um único grupo exclusivo.</p>
       {cases.map(c => <div key={c.id} className="actions"><Field label={`Natureza do caso ${c.id}`}><Select value={cls(c.id).nature} onChange={e => setK({ ...k, [c.id]: { ...cls(c.id), nature: e.target.value } })}>
         <option value="">— classificar —</option><option value="permanent">Permanente</option><option value="variable">Variável</option><option value="wind">Vento</option></Select></Field>
         {cls(c.id).nature === "permanent" && <Field label={`Tipo da ação permanente ${c.id}`}><Select value={cls(c.id).permType} onChange={e => setK({ ...k, [c.id]: { ...cls(c.id), permType: e.target.value } })}>{permTypes.map(p => <option key={p.id} value={p.id}>{p.label.slice(0, 80)}</option>)}</Select></Field>}
@@ -115,7 +115,7 @@ export function NormativeIntegrationPanel({ project, onChange }: { project: Proj
         schema_version: "jpn.nbr8681-declaration/1", permanentMode: "separate", variableMode: "separate", permanentSets: (["unfavorable", "favorable"] as const).filter(s => sets[s]), families: Object.keys(fam).filter(x => fam[x]),
         actions: cases.map(c => { const v = cls(c.id); return v.nature === "permanent" ? { nature: "permanent", caseId: c.id, permanentType: v.permType } :
           v.nature === "wind" ? { nature: "variable", caseId: c.id, variableType: "wind", psiRow: "wind", exclusiveGroup: "VENTO" } :
-          { nature: "variable", caseId: c.id, variableType: "other-and-equipment-temperature", psiRow: v.psiRow, exclusiveGroup: null }; }) }).project, "Combinações NBR 8681 geradas e registradas como PROVISÓRIAS.")}>Gerar combinações NBR 8681</button>
+          { nature: "variable", caseId: c.id, variableType: "other-and-equipment-temperature", psiRow: v.psiRow, exclusiveGroup: null }; }) }).project, "Combinações NBR 8681 geradas (fonte única conferida).")}>Gerar combinações NBR 8681</button>
     </section>
   </details>;
 }

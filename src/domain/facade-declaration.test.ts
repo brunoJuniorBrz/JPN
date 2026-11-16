@@ -69,10 +69,11 @@ it("jornada: fachadas → vento NBR 6123 nas paredes → combinações NBR 8681 
       {nature:"variable",caseId:"Q",variableType:"other-and-equipment-temperature",psiRow:"libraries-archives-warehouses-workshops-garages-roofs",exclusiveGroup:null},
       ...["W1","W2","W3","W4"].map(caseId=>({nature:"variable",caseId,variableType:"wind",psiRow:"wind",exclusiveGroup:"WIND"}))]});
   p=comb.project;
-  expect(comb.generated.normativeStatus).toBe("PROVISIONAL");
-  expect(p.workspace.spatialPreparation!.normativeProvenance!.map(x=>x.id).sort()).toEqual(["combinations-nbr8681","wind-walls-nbr6123"]);
+  // N3: NBR 8681 has a single checked source; only the NBR 6123 wind stays PROVISIONAL
+  expect(comb.generated.normativeStatus).toBe("SINGLE_SOURCE_CHECKED");
+  expect(p.workspace.spatialPreparation!.normativeProvenance!.map(x=>x.id).sort()).toEqual(["wind-walls-nbr6123"]);
   const restored=projectSchema.parse(JSON.parse(JSON.stringify(p)));                                   // persisted with the project
-  expect(restored.workspace.spatialPreparation!.normativeProvenance).toHaveLength(2);
+  expect(restored.workspace.spatialPreparation!.normativeProvenance).toHaveLength(1);
   const sp=p.workspace.spatialPreparation!;
   sp.loading!.overlapReview={confirmed:true,source:"Confirmação sintética do ensaio INT-1d: ações independentes",revision:rev,basis:selfWeightOverlapReviewBasis(sp,sp.loading!)};
   const a=projectFrameAxes(p),ready=declareLocalAxes(p,a.signature,a.framePieceIds.map(pieceId=>({pieceId,rotationDeg:0,source:"Giro revisado do ensaio INT-1d (Iy = Iz)",revision:rev})));

@@ -1,13 +1,15 @@
 {
   "schema_version": "jpn.nbr8681-data/1",
-  "revision": "M42-1",
+  "revision": "N3-1",
   "standard": "ABNT NBR 8681",
   "edition": "2025 (segunda edição, 24.09.2025)",
   "errata": "not-verified",
-  "source": "Captura de tela do Studocu fornecida pelo usuário (19 páginas, texto nítido); conferência documental, não homologação",
+  "documentSha256": "f4020c7171308ad2b9577c3618f15fad67e413ec0caed70d83f7a7a51a3d2b9c",
+  "sourceCopy": {"sha256": "f4020c7171308ad2b9577c3618f15fad67e413ec0caed70d83f7a7a51a3d2b9c", "description": "PDF da ABNT, 29 páginas, carimbo de exemplar licenciado à UFRGS; uso autorizado pelo dono do projeto em 16/11/2026 até a entrada do exemplar carimbado em seu nome, antes da liberação para trabalho"},
+  "source": "Fonte única dos fatores gamma/psi do JPN; o extrato privado da cobertura deriva destes valores (src/domain/nbr8681-source.ts)",
   "verification": {
-    "date": "2026-11-14",
-    "method": "Leitura das imagens a 130 dpi e das Tabelas 1, 2, 4, 6 ampliadas a 200 dpi; todas as células legíveis, nenhuma ambiguidade encontrada",
+    "date": "2026-11-16",
+    "method": "N3: conferência célula a célula contra a camada de texto do PDF (sourceCopy): Tabelas 1 a 6, gamma_q,exc (5.1.4.3) e notas c/d da Tabela 6; 0 diferenças. Conferência anterior (M42, 14/11/2026) por imagens do mesmo conteúdo",
     "tablesChecked": ["Tabela 1", "Tabela 2", "Tabela 3", "Tabela 4", "Tabela 5", "Tabela 6", "5.1.3.1", "5.1.3.2", "5.1.3.3", "5.1.4.1-5.1.4.4", "5.1.5.2-5.1.5.4", "4.3.3.1-4.3.3.3"],
     "notChecked": ["Tabela 7 (fadiga) não usada", "páginas de definições (itens 1-4.2) apenas lidas parcialmente", "erratas"],
     "professionalReview": "pending"

@@ -5,6 +5,7 @@ import { structureSignature } from "../calculations/project-basis";
 import { inspectConnectivity } from "../spatial-connectivity";
 import type { NormativeOriginInput } from "../normative-origin";
 import { correctedWindDocumentSha256,combinationsDocumentSha256,type ReviewedExtract } from "../reviewed-roof-catalog";
+import { reviewedRoofFactorsFrom8681 } from "../nbr8681-source";
 
 /** Default: gable 45°, mono 30°, eaves 3 m. N2 passes slopeDeg 10/15 and other eaves heights. */
 export function reviewedRoofProject(typology:"mono"|"gable",options:{slopeDeg?:number;lowHeightM?:number;lengthM?:number}={}){
@@ -47,5 +48,6 @@ export function syntheticReviewedExtract():ReviewedExtract{return {
   windDocumentSha256:correctedWindDocumentSha256,combinationsDocumentSha256:combinationsDocumentSha256,
   gable45:{crossWindward:.41,crossLeeward:-.52,parallelLeading:-.73,parallelRemainder:-.64},
   mono30:{positiveHigh:-.47,positiveLow:-.53,negativeHigh:.09,negativeLow:-.61},airtightCpi:[-.17,.03],s3Group3:1,
-  factors:{permanentSteel:1.2,permanentIndustrialized:1.3,permanentFavorable:.9,wind:1.7,roofLive:1.9,psiWind:[.11,.22,0],psiRoofLive:[.44,.55,.66]},
+  // N3: 8681 factors are no longer free in the extract; they must equal the single source (data JSON).
+  factors:reviewedRoofFactorsFrom8681(),
 };}

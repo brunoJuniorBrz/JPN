@@ -6,10 +6,11 @@ import { reviewedRoofScopeSchema, normativeWindDataSchema, normativeFactorsDataS
   type NormativeWindData, type NormativeFactorsData } from "./normative-origin-contracts";
 import type { NormativeOriginInput } from "./normative-origin";
 import { NBR6123_DOCUMENT_SHA256,NBR6123_EDITION,NBR6123_ERRATA } from "./nbr6123-edition";
+import { NBR8681_DOCUMENT_SHA256,assertSame8681Factors } from "./nbr8681-source";
 
 // These identifiers describe the supplied documents, not permission to publish their tables.
 export const correctedWindDocumentSha256=NBR6123_DOCUMENT_SHA256;
-export const combinationsDocumentSha256="f4020c7171308ad2b9577c3618f15fad67e413ec0caed70d83f7a7a51a3d2b9c";
+export const combinationsDocumentSha256=NBR8681_DOCUMENT_SHA256;
 const c=z.number().finite().min(-10).max(10),positive=c.positive(),psi=z.tuple([c.min(0).max(1),c.min(0).max(1),c.min(0).max(1)]);
 const gableCe=z.object({crossWindward:c,crossLeeward:c,parallelLeading:c,parallelRemainder:c}).strict();
 const monoCe=z.object({positiveHigh:c,positiveLow:c,negativeHigh:c,negativeLow:c}).strict();
@@ -70,6 +71,8 @@ export function assertReviewedRoofScope(project:Project,input:NormativeOriginInp
  * Ce is used for the primary global roof load, never local cpe medio. */
 export function buildReviewedRoofCatalog(project:Project,input:NormativeOriginInput,value:unknown){
   const v=reviewedExtractSchema.parse(value),m=assertReviewedRoofScope(project,input);
+  // N3: gamma/psi come from the single 8681 source; the extract copy must coincide (NBR8681_SOURCE_DIVERGENCE otherwise).
+  const f8681=assertSame8681Factors(v.factors);
   if(input.speed.s3!==v.s3Group3)throw Error("REVIEWED_ROOF_DOMAIN: S3 differs from declared group 3");
   if(input.use!=="roof-primary-8681-2025-individual"||input.windFactorClass!=="WIND")throw Error("REVIEWED_COMBINATION_USE");
   for(const a of input.actions)if(!(a.category==="permanent"&&a.exclusiveGroup===null&&["STEEL_SELF_WEIGHT","INDUSTRIALIZED_ROOF"].includes(a.factorClass)||a.category==="variable"&&a.factorClass==="ROOF_LIVE"))throw Error("REVIEWED_ACTION_CLASS: individual direct permanent and roof use only");
@@ -107,11 +110,11 @@ export function buildReviewedRoofCatalog(project:Project,input:NormativeOriginIn
   const classes=[...new Map([...input.actions,{category:"wind" as const,factorClass:"WIND"}].map(a=>[a.factorClass,a])).values()];
   const coeff=(value:number,source:NormativeFactorsData["source"])=>({value,source});
   for(const purpose of purposes)for(const a of classes){
-    const permanent=a.category==="permanent",w=a.category==="wind",ps=w?v.factors.psiWind:v.factors.psiRoofLive;
+    const permanent=a.category==="permanent",w=a.category==="wind",ps=w?f8681.psiWind:f8681.psiRoofLive;
     for(const role of permanent?["permanent"] as const:["leading","accompanying","absent"] as const)for(const effect of ["favorable","unfavorable"] as const){
       let gamma=1,reduction=1,gammaItem="5.1.2.3 (SLS unit factors)",psiItem=recipeClause[purpose];
       if(purpose==="ULS"){
-        gamma=permanent?(effect==="favorable"?v.factors.permanentFavorable:a.factorClass==="STEEL_SELF_WEIGHT"?v.factors.permanentSteel:v.factors.permanentIndustrialized):(w?v.factors.wind:v.factors.roofLive);
+        gamma=permanent?(effect==="favorable"?f8681.permanentFavorable:a.factorClass==="STEEL_SELF_WEIGHT"?f8681.permanentSteel:f8681.permanentIndustrialized):(w?f8681.wind:f8681.roofLive);
         gammaItem=permanent?"5.1.4.1; Table1 individual direct G normal":"5.1.4.2; Table4 normal";
         reduction=permanent||role==="leading"?1:ps[0];
       }else if(!permanent)reduction=purpose==="SLS-quasi-permanent"?ps[2]:purpose==="SLS-frequent"?(role==="leading"?ps[1]:ps[2]):role==="leading"?1:ps[1];
