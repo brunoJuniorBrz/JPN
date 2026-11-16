@@ -6,6 +6,8 @@ import data from "../../data/normas/nbr8681-2025-combinations.json" with {type:"
 import type {Project} from "./models";
 import {applyEngineeringCombinations} from "./apply-engineering-combinations";
 import {engineeringCombinationsSchema} from "./engineering-combinations";
+/** Generator limit (every analysis case must be classified exactly once). The analysis itself accepts more cases (MAX_CASES); above this the generator REFUSES, never truncates. */
+export const MAX_DECLARED_ACTIONS=16;
 
 /** M42-P1: NBR 8681:2025 combinations generated from the versioned data file and fed to the
  * EXISTING engineering-combinations pipeline (compile -> adapter -> PyNite). gamma_n, I and
@@ -31,7 +33,7 @@ export const nbr8681DeclarationSchema=z.object({
     z.object({nature:z.literal("variable"),caseId:id,variableType:z.enum(varTypes),psiRow:z.enum(psiRows),exclusiveGroup:id.nullable(),
       /** NBR 6120:2019 6.4: concentrated 1 kN acts isolated from every other variable action (ULS only, as sole variable). */
       isolated:z.boolean().default(false)}).strict(),
-  ])).min(1).max(16),
+  ])).min(1).max(MAX_DECLARED_ACTIONS),
 }).strict();
 export type Nbr8681Declaration=z.infer<typeof nbr8681DeclarationSchema>;
 
@@ -89,6 +91,8 @@ function selections(slots:Slot[],principal:string|null,subsets:boolean){
 }
 
 export function generateNbr8681Combinations(raw:unknown,existingCaseIds:string[]){
+  const n=Math.max(existingCaseIds.length,Array.isArray((raw as {actions?:unknown})?.actions)?(raw as {actions:unknown[]}).actions.length:0);
+  if(n>MAX_DECLARED_ACTIONS)fail("M42_TOO_MANY_ACTIONS",n+" casos/ações: o gerador NBR 8681 aceita no máximo "+MAX_DECLARED_ACTIONS+" (cada caso é classificado uma única vez). Nenhuma combinação foi gerada nem cortada; reduza ou agrupe os casos de carga.");
   const d=nbr8681DeclarationSchema.parse(raw);
   const ids=d.actions.map(a=>a.caseId);
   if(new Set(ids).size!==ids.length)fail("M42_DUPLICATE_ACTION","cada caso deve ser classificado uma única vez (evita peso próprio/cargas duplicados)");

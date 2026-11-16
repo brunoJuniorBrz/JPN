@@ -16,7 +16,7 @@ import { sectionAxes, sectionAxisLabels, sectionPlane, steelFinishes, steelFinis
 const TRANSITION_MS = 420;
 const metres = (mm: number, digits = 3) => (mm / 1000).toLocaleString("pt-BR", { maximumFractionDigits: digits });
 
-export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, selectedNodeId, onSelectNode, inspectNodes=false }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
+export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
@@ -53,6 +53,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const changeMode = useRef<(mode: ViewerMode | "finished") => void>(() => {});
   const focus = useRef<(id: string) => void>(() => {});
   const colorize = useRef<(colors?: Record<string, number>) => void>(() => {});
+  const showDeformed = useRef<(segments: { a: [number, number, number]; b: [number, number, number] }[] | null) => void>(() => {});
   // Studio tools. All of them are view state: nothing is persisted or sent to the engine.
   const [projection, setProjection] = useState<Projection>("perspective");
   const [finish, setFinish] = useState<SteelFinish>("painted");
@@ -142,6 +143,17 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       render();
     };
     colorize.current = colors => { profiles.setColors(colors); stage.setNeutral(!!colors); canvas.dataset.analysisMode = colors ? "experimental" : "none"; render(); };
+    // INT-1f: deformed axes (scene metres, y-up) as one traced line layer; replaced or removed on every change.
+    let deformedLines: THREE.LineSegments | null = null;
+    showDeformed.current = segments => {
+      if (deformedLines) { scene.remove(deformedLines); deformedLines.geometry.dispose(); (deformedLines.material as THREE.Material).dispose(); deformedLines = null; }
+      if (segments?.length) {
+        const positions = new Float32Array(segments.length * 6); segments.forEach((s, k) => positions.set([...s.a, ...s.b], k * 6));
+        const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        deformedLines = new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: 0xd9661f, depthTest: false })); deformedLines.renderOrder = 13; scene.add(deformedLines);
+      }
+      canvas.dataset.deformed = segments?.length ? "on" : "off"; render();
+    };
     let framingBounds = bounds, activeMode: ViewerMode | "finished" = "profiles";
     let cameraFramed = false;
     type PresentationHandle = ReturnType<typeof import("./presentation-scene")["createPresentationScene"]>;
@@ -313,12 +325,13 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       canvas.dataset.environment = stage.loadEnvironment() ? "procedural" : "none";
       canvas.dataset.environmentMs = stage.environmentMs().toFixed(0); render();
     }, 60);
-    return () => { disposed = true; window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
+    return () => { disposed = true; showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
   }, [model, gridSpacingM, envelope, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
   useEffect(() => { colorize.current(analysisColors); }, [analysisColors, model]);
+  useEffect(() => { showDeformed.current(deformed ?? null); }, [deformed, model]);
   useEffect(() => { applyProjection.current(projection); }, [projection, model]);
   useEffect(() => { applyFinish.current(finish); }, [finish, model]);
   useEffect(() => { applyGhost.current(ghost && mode !== "finished"); }, [ghost, mode, model, selected]);

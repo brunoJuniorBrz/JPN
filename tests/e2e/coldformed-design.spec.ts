@@ -38,6 +38,11 @@ for(const width of [375,1440])test(`seção física → PyNite real → resistê
   await expect(design.getByTestId("coldformed-design-result")).toContainText("CONDITIONAL-EXTERNAL-INPUTS",{timeout:25000});const record=await download(page,design,"Exportar cálculo resistente rastreável");
   expect(record.result.geometry_audit.library.version).toBe("3.10.2");expect(record.result.approved_for_fabrication).toBe(false);expect(record.result.member_all_limit_states_verified).toBe(false);expect(record.result.checks.find((c:{id:string})=>c.id==="tension").status).toBe("CONDITIONAL");expect(record.request.design.study.minimum_search).toBe("not-required-pure-tension");
   const assessment=await download(page,p,"Exportar relatório resistente preliminar");expect(assessment.schema_version).toBe("jpn.resistance-report/3");expect(assessment.executionRecords).toHaveLength(1);expect(assessment.procedureExecutions.find((c:{checkId:string})=>c.checkId==="tension").status).toBe("CONDITIONAL");expect(assessment.normativeProceduresImplemented).toEqual(assessment.releaseGate.implementedNormativeProcedures);expect(assessment.computedStructuralApproval).toBe(false);
+  // INT-1f: the verification layer of the Studio also shows the NBR 14762 (Ue) piece with its executed utilization.
+  await p.getByLabel("Combinação mista",{exact:true}).selectOption(combinationId);   // the layer is per combination: the one the piece was verified for
+  await p.getByTestId("studio-layer-kind").selectOption("verification");
+  await expect(p.getByTestId("studio-layer-legend")).toContainText("utilização",{timeout:30000});await expect(p.getByTestId("studio-layer-empty")).toHaveCount(0);
+  await p.getByTestId("mixed-viewer").screenshot({path:`validation/int-1f-capturas/verificacao-nbr14762-${width}.png`});
   await design.getByLabel("Revisão do estudo crítico",{exact:true}).fill("2");await expect(design.getByTestId("coldformed-design-result")).toHaveCount(0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(errors).toEqual([]);
 });
