@@ -148,8 +148,10 @@ if __name__ == '__main__':
     try:
         body = json.dumps(output, ensure_ascii=False, allow_nan=False,
                           separators=(',', ':') if '--joint-actions' in sys.argv else None).encode('utf-8')
-        if len(body) > 2000000:
-            body = b'{"status":"error","error":{"code":"OUTPUT_LIMIT","message":"Resposta excede 2 MB."}}'
+        queued = '--queued' in sys.argv
+        if len(body) > (16_000_000 if queued else 2_000_000):
+            body = (b'{"status":"error","error":{"code":"OUTPUT_LIMIT","message":"Resposta excede 16 MB."}}' if queued
+                    else b'{"status":"error","error":{"code":"OUTPUT_LIMIT","message":"Resposta excede 2 MB."}}')
             output = {'status': 'error'}
     except (ValueError, MemoryError):
         body = b'{"status":"error","error":{"code":"NUMERICAL_FAILURE","message":"Saida nao representavel; sem resultado."}}'

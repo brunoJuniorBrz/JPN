@@ -58,7 +58,7 @@ REVIEWED_AMENDMENTS = {
     # timeout explícito de 30 s no canvas 3D do CI (studio-next:32, quick-project:46)
     "tests/e2e/quick-project.spec.ts": "16614d78c2aebf3e397343b5f7738079cf4216ef",
     # INT-2.1 / PR121: engine main and INT-2 previews only, behind WSGI authentication.
-    "engine/vercel.json": "8860257b4da32d947368e91ddd0d2e89e87d3242",   # INT-2: installCommand installs the sections extra (supersedes the previous pin; guard flags unchanged)
+    "engine/vercel.json": "626eb772e28222db7ddc821dbe2601bbd8220139",   # INT-2: installCommand installs the sections extra (supersedes the previous pin; guard flags unchanged)
     # INT-1c/M44: m34ab (cap 10 lifted) and M50 (9.8.4 computed) tests updated, reviewed
     "src/domain/m34ab-declared.test.ts": "093f11fe3277226097c79a82b7afd9daf1315127",
     # M44-P1: NBR 14762 audit amendments (reviewed; was 477462c)
@@ -88,6 +88,9 @@ REVIEWED_AMENDMENTS = {
     "src/domain/test-support/continuous-fixture.ts": "aa1251dfd582a4ec00354d6e84c8bd94e83d2d8c",
     # PR #105 (C1): continuous-demands test amended for local-axes /3
     # PR #105 (C1): continuous-demands test amended for local-axes /3
+    # INT-2.3: preserve the authenticated deployment map and allow the queued worker budget.
+    "engine/vercel.json": "626eb772e28222db7ddc821dbe2601bbd8220139",
+    "engine/tests/test_vercel_mixed_http.py": "a967c7b3fae6e3c598b5fc8de287efbb74a852fd",
 }
 
 TREES = {}

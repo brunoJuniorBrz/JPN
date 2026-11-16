@@ -3,7 +3,7 @@ import { z } from "zod";
 import { sectionAnalysisRequestSchema,sectionAnalysisResultSchema } from "@/domain/section-analysis";
 import { verifiedColdformedRequestSchema,coldformedDesignResultSchema,verifiedColdformedBatchRequestSchema,
   verifiedColdformedBatchResultSchema } from "@/domain/coldformed-design";
-import { checkRemoteInputBudget, remoteEngineExecutionSchema, requestRemoteEngine } from "./remote-mixed-runner";
+import { checkRemoteInputBudget, remoteEngineExecutionSchema, remoteQueuedExecutionSchema, requestRemoteEngine } from "./remote-mixed-runner";
 import { verifySectionBinding } from "./section-result-binding";
 import { SolverFailure } from "./runner";
 
@@ -16,18 +16,18 @@ const profiles={
   "design-batch":{input:verifiedColdformedBatchRequestSchema,output:verifiedColdformedBatchResultSchema,path:"/api/analyze-design"},
 } as const;
 
-export async function runRemoteSection<K extends keyof typeof profiles>(payload:string,signal:AbortSignal|undefined,kind:K){
+export async function runRemoteSection<K extends keyof typeof profiles>(payload:string,signal:AbortSignal|undefined,kind:K,queued=false){
   checkRemoteInputBudget(payload);
   const profile=profiles[kind];
   const {data:input,success}=profile.input.safeParse(JSON.parse(payload));
   if(!success)throw new SolverFailure("INVALID_INPUT","Entrada numérica incompatível com o contrato.");
   return requestRemoteEngine(profile.path,payload,async raw=>{
-    const out=base.extend({result:profile.output}).parse(raw);
+    const out=base.extend({result:profile.output,execution:queued?remoteQueuedExecutionSchema:remoteEngineExecutionSchema}).parse(raw);
     if(out.request_sha256!==createHash("sha256").update(payload).digest("hex"))
       throw new SolverFailure("HASH_MISMATCH","Resposta remota não corresponde aos bytes enviados.");
     await verifySectionBinding(kind,input,out.result);
     return {schema_version:"jpn.remote-section/1" as const,status:"completed" as const,
       request_sha256:out.request_sha256,result:out.result as z.infer<(typeof profiles)[K]["output"]>,
       execution:{...out.execution,transport:"remote" as const,local_only:false as const}};
-  },signal);
+  },signal,false,queued);
 }

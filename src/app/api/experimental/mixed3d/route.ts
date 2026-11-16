@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { localMixedEnabled, localMixedLimits, runLocalMixed, runLocalSecondOrder } from "@/infrastructure/analysis/local-mixed-runner";
 import { SolverFailure } from "@/infrastructure/analysis/runner";
 import { remoteMixedEnabled, remoteMixedAccess, runRemoteMixed, runRemoteSecondOrder } from "@/infrastructure/analysis/remote-mixed-runner";
+import { analysisJobsEnabled, enqueueAnalysis, prefersAsync } from "@/infrastructure/analysis/analysis-jobs-http";
 
 export const runtime = "nodejs";
 export const maxDuration = 35;
@@ -55,8 +56,10 @@ export async function POST(request: Request) {
     const hash=createHash("sha256").update(payload).digest("hex");
     if(parsed?.analysis_order==="second-order"){
       if(mode==="connections")throw new SolverFailure("SECOND_ORDER_UNSUPPORTED_TRACE","Segunda ordem não fornece a rastreabilidade linear.");
+      if(remote&&(analysisJobsEnabled()||prefersAsync(request)))return await enqueueAnalysis("second-order",payload,hash);
       return reply(await (remote?runRemoteSecondOrder(payload,request.signal):runLocalSecondOrder(payload,request.signal)),hash);
     }
+    if(remote&&prefersAsync(request))return await enqueueAnalysis(mode==="connections"?mode:"mixed",payload,hash);
     return reply(await (remote?runRemoteMixed(payload,mode,request.signal):runLocalMixed(payload,mode,request.signal)),hash);
   } catch (e) { return failure(e); }
 }

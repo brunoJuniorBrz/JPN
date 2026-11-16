@@ -140,7 +140,8 @@ def test_entrypoint_import_from_engine_without_numerical_imports():
     assert 'PyNiteFEA==3.2.1' in config['project']['dependencies']
     assert (ROOT/'.python-version').read_text().strip()=='3.12'
     settings=json.loads((ROOT/'vercel.json').read_text())
-    assert settings['framework']=='python' and settings['functions']['app.py']['maxDuration']==30
+    assert settings['framework']=='python' and settings['functions']['app.py']['maxDuration']==800
+    assert http.TIMEOUT_SECONDS == 20 < http.QUEUED_SECONDS < settings['functions']['app.py']['maxDuration']
     assert 'local_mixed_worker.py' not in settings['functions']['app.py']['excludeFiles']
 
 

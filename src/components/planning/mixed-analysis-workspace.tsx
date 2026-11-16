@@ -21,6 +21,7 @@ import { mixedInputHash, mixedStations, verifyMixedResult } from "@/domain/mixed
 import { acceptOverlay, buildResultOverlay, deformedSegments, overlayColors, studioModelFromPhysical } from "@/domain/studio-result-layers";
 import { resultOverlayKinds, type ResultOverlayKind } from "./studio-result-overlay";
 import type { buildMemberCombinationMatrix } from "@/domain/member-combination-matrix";
+import { postAnalysis, type JobProgress } from "@/infrastructure/analysis/async-job-client";
 import { anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
 import { adaptLoadedMixedProject, adaptLoadedMixedProjectV3 } from "@/domain/loaded-mixed-adapter";
 import { AxisReviewPendingError } from "@/domain/local-axes-review";
@@ -63,6 +64,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
   const [executionMode,setExecutionMode]=useState<"local"|"remote">("local");
   const [busyIdentity, setBusyIdentity] = useState<string | null>(null), [error, setError] = useState("");
   const busy = busyIdentity === identity;
+  const [job, setJob] = useState<JobProgress | null>(null);
   const [session, setSession] = useState<Session | null>(null), [combo, setCombo] = useState(""), [pieceId, setPieceId] = useState(""), [segmentId, setSegmentId] = useState(""), [nodeId, setNodeId] = useState("");
   const request = useRef<AbortController | null>(null), ticket = useRef({ value: 0 });
   useEffect(() => { const state = ticket.current; state.value++; request.current?.abort(); return () => { state.value++; request.current?.abort(); }; }, [identity]);
@@ -142,12 +144,12 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
   async function execute(includeConnections=false) {
     const controller = new AbortController(), mine = ++ticket.current.value; request.current?.abort(); request.current = controller;
     setBusyIdentity(identity); setError(""); setSession(null);setRestored(false);
-    const timeout = setTimeout(() => controller.abort(), 33000);
     try {
       // C1: the UI emits jpn.mixed3d/3 with the REVIEWED Z-up local axes; frame pieces without a reviewed roll stop here (visible pendency).
       const prepared = await adaptLoadedMixedProjectV3(active); if (controller.signal.aborted || ticket.current.value !== mine) return;
-      const response = await fetch("/api/experimental/mixed3d", { method: "POST", headers: { "Content-Type": "application/json", ...(includeConnections?{"X-JPN-Joint-Actions":"1"}:{}) }, body: JSON.stringify(prepared.request), signal: controller.signal });
-      const out = await response.json(); if (!response.ok) throw new Error(`${out.error?.code ?? response.status}: ${out.error?.message ?? "Análise recusada."}`);
+      // INT-2: durable queue. A synchronous answer (local executor, or a fast remote run) comes back as before; a queued run reports pending/running and delivers the same envelope.
+      const sent = await postAnalysis("/api/experimental/mixed3d", { body: JSON.stringify(prepared.request), headers: includeConnections ? { "X-JPN-Joint-Actions": "1" } : {}, signal: controller.signal, onProgress: p => { if (ticket.current.value === mine) setJob(p); } });
+      const out = sent.out as { status?: string; schema_version?: string; execution?: { local_only?: boolean; transport?: string }; result?: unknown; joint_actions?: unknown };
       if (out.status !== "completed" || !((out.schema_version==="jpn.local-mixed/1"&&out.execution?.local_only===true)||(out.schema_version==="jpn.remote-mixed/1"&&out.execution?.local_only===false&&out.execution?.transport==="remote"))) throw new Error("Origem de execução incompatível.");
       const parsed = anyMixedResultSchema.parse(out.result); if(parsed.schema_version!==prepared.request.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error("Versão de resposta incompatível."); verifyMixedResult(prepared.request, parsed, prepared.input_sha256);
       verifyLoadingTrace(prepared.request,parsed);
@@ -165,7 +167,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       if(!prepared.request.nodes.some(n=>n.id===connectionNodeId))setConnectionNodeId(prepared.request.nodes[0].id);
       setSession({ identity, prepared, result: parsed, execution: out.execution, resistance, resistanceError, connections, connectionError, jointActions, assessment, assessmentError }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
     } catch (e) { if (ticket.current.value === mine) setError(controller.signal.aborted ? "Execução cancelada ou prazo excedido; nenhum resultado publicado." : e instanceof AxisReviewPendingError ? `Giro por peça pendente: ${e.pending.map(p => p.pieceId).join(", ")}. Declare e revise os giros no painel “Eixos locais” antes de calcular.` : (e as Error).message); }
-    finally { clearTimeout(timeout); if (ticket.current.value === mine) setBusyIdentity(null); }
+    finally { if (ticket.current.value === mine) { setBusyIdentity(null); setJob(null); } }
   }
   function exportJSON(value: unknown, name: string) { downloadText(JSON.stringify(value, null, 2), name); }
   async function restore(file:File){
@@ -214,6 +216,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       </details>
     </>}
     <div className="actions">{!demoPresentation&&<button className="button secondary" disabled={!ready||busy} onClick={()=>void execute(true)}>Calcular ações de ligações</button>}<button className="button" disabled={!ready || busy} onClick={() => void execute()}>{busy ? "Executando Python…" : `Executar análise mista ${executionMode==="remote"?"online":"local"}`}</button>{busy && <button className="button secondary" onClick={()=>invalidate()}>Cancelar execução</button>}</div>
+    {busy && job && <p role="status" data-testid="job-progress">Análise na fila durável do servidor: {job.state === "pending" ? "pendente" : job.state === "running" ? "rodando" : "pronta, baixando o resultado"} · {Math.round(job.elapsedMs / 1000)} s · consulta {job.polls} · identificador {job.job.slice(0, 24)}… (a execução continua no servidor se você fechar a página).</p>}
     {error && <p className="field-error" role="alert">{error}</p>}
     {error&&stabilityFailureExplanation(error.split(":")[0])&&<p data-testid="connection-stability-failure">{stabilityFailureExplanation(error.split(":")[0])}</p>}
     {pane === "results" && <>

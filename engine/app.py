@@ -6,6 +6,7 @@ server-side bearer token, including health. No CORS or browser credentials.
 """
 import hashlib
 import hmac
+import gzip
 import json
 import logging
 import math
@@ -21,6 +22,8 @@ INPUT_BYTES = 500000
 OUTPUT_BYTES = 2000000
 STDERR_BYTES = 16000
 TIMEOUT_SECONDS = 20
+QUEUED_SECONDS = 740
+QUEUED_OUTPUT_BYTES = 16_000_000
 MEMORY_BYTES = 768 * 1024 * 1024
 WORKER = Path(__file__).resolve().with_name('local_mixed_worker.py')
 VERCEL_VENV = Path('/tmp/_vc_deps')
@@ -100,7 +103,7 @@ def _worker_python():
     return str(python)
 
 
-def _worker(payload, health=False, joint_actions=False, purlin=False, section=False, symmetric_i=False):
+def _worker(payload, health=False, joint_actions=False, purlin=False, section=False, symmetric_i=False, *, queued=False):
     """Bound both pipes while running; wait for exit before releasing capacity."""
     global _disabled
     if _disabled:
@@ -126,6 +129,8 @@ def _worker(payload, health=False, joint_actions=False, purlin=False, section=Fa
                 bool(os.environ.get('PYTHONPATH')), python != sys.executable)
         executable = SECTION_WORKER if section else WORKER
         options = (['--health'] if health else []) + (['--joint-actions'] if joint_actions else []) + (['--purlin'] if purlin else []) + (['--symmetric-i'] if symmetric_i else [])
+        if queued and not section:
+            options.append('--queued')
         process = subprocess.Popen([python, '-I', '-X', 'utf8', str(executable), *options],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             cwd=str(WORKER.parent), env={**os.environ, 'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'})
@@ -159,14 +164,16 @@ def _worker(payload, health=False, joint_actions=False, purlin=False, section=Fa
                 # A worker rejecting a request may close stdin early. Its
                 # structured error remains authoritative after confirmed exit.
                 pass
-        for stream, limit, collect in [(process.stdout, OUTPUT_BYTES, True), (process.stderr, STDERR_BYTES, False)]:
+        for stream, limit, collect in [(process.stdout, QUEUED_OUTPUT_BYTES if queued else OUTPUT_BYTES, True),
+                                      (process.stderr, STDERR_BYTES, False)]:
             thread = threading.Thread(target=read, args=(stream, limit, collect), daemon=True)
             thread.start()
             readers.append(thread)
         writer = threading.Thread(target=write, daemon=True)
         writer.start()
         try:
-            process.wait(timeout=max(.001, TIMEOUT_SECONDS - (time.monotonic() - started)))
+            budget = QUEUED_SECONDS if queued else TIMEOUT_SECONDS
+            process.wait(timeout=max(.001, budget - (time.monotonic() - started)))
         except subprocess.TimeoutExpired:
             abort('TIMEOUT')
             try:
@@ -235,13 +242,13 @@ def _worker(payload, health=False, joint_actions=False, purlin=False, section=Fa
         _slot.release()
 
 
-def _execution(output):
+def _execution(output, queued=False):
     return dict(memory_limit_bytes=output['execution']['memory_limit_bytes'],
-                memory_kind=output['execution']['memory_kind'], timeout_seconds=TIMEOUT_SECONDS,
+                memory_kind=output['execution']['memory_kind'], timeout_seconds=QUEUED_SECONDS if queued else TIMEOUT_SECONDS,
                 concurrency_per_instance=1, isolation='subprocess')
 
 
-def _numerical(path, payload, request, environ):
+def _numerical(path, payload, request, environ, queued=False):
     contract = request.get('schema_version') if isinstance(request, dict) else None
     expected = NUMERICAL_ROUTES[path].get(contract) if isinstance(contract, str) else None
     if expected is None:
@@ -259,7 +266,7 @@ def _numerical(path, payload, request, environ):
                 raise TransportError('UNAVAILABLE', 'The isolated automatic cFSM profile is unavailable on this deployment.', 503)
     geometry = request.get('geometry')
     symmetric_i = path == '/api/analyze-section' and isinstance(geometry, dict) and geometry.get('shape') == 'i'
-    output = _worker(payload, section=True, symmetric_i=symmetric_i)
+    output = _worker(payload, section=True, symmetric_i=symmetric_i, **({'queued': True} if queued else {}))
     result = output.get('result')
     if (output.get('status') != 'completed' or not isinstance(result, dict) or
             result.get('schema_version') != expected or
@@ -270,7 +277,7 @@ def _numerical(path, payload, request, environ):
     if any(result.get(key) is not False for key in flags):
         raise TransportError('INVALID_RESPONSE', 'Numerical release flags are invalid.', 503)
     return dict(schema_version='jpn.http-numerical/1', request_sha256=hashlib.sha256(payload).hexdigest(),
-                result=result, execution=_execution(output))
+                result=result, execution=_execution(output, queued))
 
 
 def _handle(environ):
@@ -281,6 +288,10 @@ def _handle(environ):
     if len(auth) > 4096 or not hmac.compare_digest(auth.encode('utf-8'), ('Bearer ' + token).encode('utf-8')):
         raise TransportError('UNAUTHORIZED', 'Bearer authentication required.', 401)
     path, method = environ.get('PATH_INFO', ''), environ.get('REQUEST_METHOD', '')
+    profile = environ.get('HTTP_X_JPN_EXECUTION_PROFILE', '')
+    if profile and (profile != 'queued' or method != 'POST' or path not in ('/api/analyze-mixed', *NUMERICAL_ROUTES)):
+        raise TransportError('INVALID_INPUT', 'Invalid execution profile.')
+    queued = profile == 'queued'
     if path == '/health' and method == 'GET':
         output = _worker(b'', health=True)
         if output.get('status') != 'ready' or output.get('dependencies', {}).get('python') != '3.12' or output['dependencies'].get('PyNiteFEA') != '3.2.1':
@@ -312,7 +323,7 @@ def _handle(environ):
     except (ValueError, UnicodeError, RecursionError):
         raise TransportError('INVALID_INPUT', 'Send finite JSON without duplicate keys.')
     if path in NUMERICAL_ROUTES:
-        return _numerical(path, payload, request, environ)
+        return _numerical(path, payload, request, environ, queued)
     if path == '/api/analyze-purlin':
         if not isinstance(request, dict) or request.get('schema_version') != PURLIN_CONTRACT:
             raise TransportError('UNSUPPORTED_MODEL', 'Only jpn.purlin/1 is accepted.')
@@ -345,7 +356,10 @@ def _handle(environ):
     trace_header = environ.get('HTTP_X_JPN_JOINT_ACTIONS', '')
     if trace_header not in ('', '1'):
         raise TransportError('INVALID_INPUT', 'Invalid joint-action option.')
-    output = _worker(payload, joint_actions=True) if trace_header else _worker(payload)
+    options = {'joint_actions': True} if trace_header else {}
+    if queued:
+        options['queued'] = True
+    output = _worker(payload, **options)
     result = output.get('result', {})
     expected = request['schema_version'].replace('mixed3d/', 'mixed3d-result/')
     if output.get('status') != 'completed' or result.get('schema_version') != expected or result.get('status') != 'analysis_completed_experimental' or result.get('project') != request.get('project') or not re.fullmatch(r'[a-f0-9]{64}', result.get('input_sha256', '')):
@@ -353,7 +367,7 @@ def _handle(environ):
     if trace_header and output.get('joint_actions', {}).get('input_sha256') != result['input_sha256']:
         raise TransportError('INVALID_RESPONSE', 'Joint-action trace unavailable or stale.', 503)
     return dict(schema_version='jpn.http-mixed/1', request_sha256=hashlib.sha256(payload).hexdigest(),
-                result=result, execution=_execution(output), **({'joint_actions': output['joint_actions']} if trace_header else {}))
+                result=result, execution=_execution(output, queued), **({'joint_actions': output['joint_actions']} if trace_header else {}))
 
 
 def app(environ, start_response):
@@ -371,15 +385,21 @@ def app(environ, start_response):
     except Exception as exc:
         logging.error('jpn_mixed_backend_unexpected exception_type=%s', type(exc).__name__)
         status, body = 503, dict(error=dict(code='SERVICE_FAILURE', message='Request failed; no result published.'))
+    compressed = False
     try:
         encoded = json.dumps(body, allow_nan=False, ensure_ascii=False,
                              separators=(',', ':') if 'joint_actions' in body else None).encode('utf-8')
+        if status == 200 and body.get('execution', {}).get('timeout_seconds') == QUEUED_SECONDS and OUTPUT_BYTES < len(encoded) <= QUEUED_OUTPUT_BYTES:
+            encoded = gzip.compress(encoded, mtime=0)
+            compressed = len(encoded) <= OUTPUT_BYTES
         if len(encoded) > OUTPUT_BYTES:
             status, encoded = 422, b'{"error":{"code":"OUTPUT_LIMIT","message":"Response exceeds 2 MB."}}'
     except (ValueError, MemoryError):
         status, encoded = 503, b'{"error":{"code":"INVALID_RESPONSE","message":"Result is not representable."}}'
     reasons = {200:'OK', 400:'Bad Request', 401:'Unauthorized', 404:'Not Found', 405:'Method Not Allowed', 411:'Length Required', 413:'Content Too Large', 415:'Unsupported Media Type', 422:'Unprocessable Content', 503:'Service Unavailable'}
     headers = [('Content-Type', 'application/json; charset=utf-8'), ('Content-Length', str(len(encoded))), ('Cache-Control', 'no-store'), ('X-Content-Type-Options', 'nosniff')]
+    if compressed:
+        headers.append(('Content-Encoding', 'gzip'))
     if status == 401:
         headers.append(('WWW-Authenticate', 'Bearer'))
     start_response(f'{status} {reasons[status]}', headers)
