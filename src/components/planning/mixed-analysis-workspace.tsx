@@ -1,11 +1,12 @@
 "use client";
+import { prepareAnalysis, readAnalysis, isSecondOrder, solverRevision, swayDiagnostic, observedTranslationRatio, type PreparedAnalysis, type AnalysisResult, type AnalysisOrder } from "./mixed-analysis-mode";
 import { ConnectionsPanel } from "./connections-panel";
 import { buildConnectionReport, assertConnectionReportCurrent, type ConnectionReport } from "@/domain/connection-report";
 import { jointActionTraceSchema, type JointActionTrace } from "@/domain/member-end-actions";
 import { stabilityFailureExplanation } from "@/domain/connection-declaration";
 import { ResistanceReportPanel } from "./resistance-report-panel";
 import { buildResistanceReport, assertResistanceReportCurrent, type ResistanceReport } from "@/domain/resistance-report";
-import { buildResistanceAssessment,type MemberExecution } from "@/domain/resistance-assessment";
+import { buildResistanceAssessment,memberExecutionSchema,type MemberExecution } from "@/domain/resistance-assessment";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Project } from "@/domain/models";
 import { resolvePhysicalStructure } from "@/domain/physical-structure";
@@ -17,12 +18,11 @@ import { roofAreaReferenceProject } from "@/domain/examples/roof-area-project";
 import { mixedReferenceProject } from "@/domain/examples/mixed-project";
 import { loadedMixedReferenceProject } from "@/domain/examples/loaded-mixed-project";
 import { adaptMixedProject } from "@/domain/mixed-adapter";
-import { mixedInputHash, mixedStations, verifyMixedResult } from "@/domain/mixed-analysis";
+import { mixedInputHash, mixedStations } from "@/domain/mixed-analysis";
 import { acceptOverlay, buildResultOverlay, deformedSegments, overlayColors, studioModelFromPhysical } from "@/domain/studio-result-layers";
 import { resultOverlayKinds, type ResultOverlayKind } from "./studio-result-overlay";
 import type { buildMemberCombinationMatrix } from "@/domain/member-combination-matrix";
 import { postAnalysis, type JobProgress } from "@/infrastructure/analysis/async-job-client";
-import { anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
 import { adaptLoadedMixedProject, adaptLoadedMixedProjectV3 } from "@/domain/loaded-mixed-adapter";
 import { AxisReviewPendingError } from "@/domain/local-axes-review";
 import { projectFrameAxes, withReviewedIsotropicAxes } from "@/domain/current-mixed-adapter";
@@ -41,8 +41,8 @@ import { Structure3D } from "./structure-3d";
 import { PhysicalLineView } from "./physical-line-view";
 import { MathematicalComparison } from "@/components/demonstration/mathematical-comparison";
 
-type Prepared = Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProjectV3>>;
-type Session = { identity: string; prepared: Prepared; result: ReturnType<typeof anyMixedResultSchema.parse>; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; assessment?: unknown; assessmentError?: string; jointActions: JointActionTrace | null;designExecutions?:MemberExecution[] };
+type Prepared = PreparedAnalysis | Awaited<ReturnType<typeof adaptMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProject>> | Awaited<ReturnType<typeof adaptLoadedMixedProjectV3>>;
+type Session = { identity: string; prepared: Prepared; result: AnalysisResult; execution: unknown; resistance: ResistanceReport | null; resistanceError: string; connections: ConnectionReport | null; connectionError: string; assessment?: unknown; assessmentError?: string; jointActions: JointActionTrace | null;designExecutions?:MemberExecution[] };
 const show = (v: number) => v === 0 ? "0" : v.toExponential(5);
 export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=false }: { project: Project; onChange: (patch: Partial<Project>) => void; demoPresentation?:boolean }) {
   const [example, setExample] = useState<Project | null>(null), [pane, setPane] = useState(demoPresentation?"results":"prepare");
@@ -53,7 +53,8 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     try { return withReviewedIsotropicAxes(example); } catch { return example; }   // anisotropic example: the roll becomes a visible pendency
   }, [example, project]), draft = active.workspace.spatialPreparation ?? newSpatialPreparation(active);
   const axes = useMemo(() => { try { return projectFrameAxes(active); } catch { return { framePieceIds: [] as string[], allPieceIds: [] as string[], pending: [], signature: "" }; } }, [active]);
-  const signature = structureSignature(active), identity = JSON.stringify([example ? "example" : "work", active.id, signature, { ...draft, resistanceStandards: undefined }]);
+  const [analysisOrder, setAnalysisOrder] = useState<AnalysisOrder>("linear");
+  const signature = structureSignature(active), identity = JSON.stringify([analysisOrder, example ? "example" : "work", active.id, signature, { ...draft, resistanceStandards: undefined }]);
   const model = useMemo(() => resolvePhysicalStructure(active).model, [active]);
   const [restored,setRestored]=useState(false);
   const connectivity = useMemo(() => { try { return model ? { inspected: inspectConnectivity(model), error: "" } : { error: "Geometria incompleta." }; } catch (e) { return { error: (e as Error).message }; } }, [model]);
@@ -67,6 +68,31 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
   const [job, setJob] = useState<JobProgress | null>(null);
   const [session, setSession] = useState<Session | null>(null), [combo, setCombo] = useState(""), [pieceId, setPieceId] = useState(""), [segmentId, setSegmentId] = useState(""), [nodeId, setNodeId] = useState("");
   const request = useRef<AbortController | null>(null), ticket = useRef({ value: 0 });
+  const cacheAllowed=useRef(true);
+  const [cacheNotice,setCacheNotice]=useState("");
+  useEffect(()=>{
+    if(example||session||!cacheAllowed.current)return;
+    let live=true;
+    void (async()=>{
+      try{
+        const text=localStorage.getItem(`jpn-mixed-analysis:v1:${active.id}`);
+        if(!text)return;
+        const loaded=await restoreMixedAnalysis(active,text);
+        const resistance=await buildResistanceReport(active,loaded.prepared,loaded.result);
+        if(!live)return;
+        cacheAllowed.current=false;
+        const order=isSecondOrder(loaded.result)?"second-order":"linear";
+        setAnalysisOrder(order);
+        const restoredIdentity=JSON.stringify([order,"work",active.id,signature,{...draft,resistanceStandards:undefined}]);
+        setSession({identity:restoredIdentity,prepared:loaded.prepared,result:loaded.result,execution:loaded.execution,resistance,resistanceError:"",connections:null,connectionError:"",jointActions:null,
+          assessmentError:order==="second-order"?"SECOND_ORDER_ASSESSMENT_REEXECUTION_REQUIRED: reexecute a avaliação resistente para esta sessão.":undefined});
+        setRestored(true);setPane("results");setCombo(Object.keys(loaded.result.combinations)[0]);
+      }catch{
+        if(live){cacheAllowed.current=false;setCacheNotice("STALE_ANALYSIS: resultado salvo desatualizado ou inválido para o input_sha256 da obra atual. Recalcule; nenhum resultado anterior foi publicado.");}
+      }
+    })();
+    return()=>{live=false;};
+  },[active,draft,example,session,signature]);
   useEffect(() => { const state = ticket.current; state.value++; request.current?.abort(); return () => { state.value++; request.current?.abort(); }; }, [identity]);
   useEffect(() => {
     const controller = new AbortController();
@@ -91,7 +117,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
   function invalidate(clear=true) { ticket.current.value++; request.current?.abort(); if(clear)setSession(null); setBusyIdentity(null); setError(""); }
   // The resistance standard per piece only selects WHICH procedure verifies a piece; it does not change the analysed model, so results stay valid.
   function editStandards(patch: Partial<Project>) { if (example) setExample({ ...example, ...patch }); else onChange(patch); }
-  function edit(patch: Partial<Project>) { invalidate(false); if (example) setExample({ ...example, ...patch }); else onChange(patch); }
+  function edit(patch: Partial<Project>) { cacheAllowed.current=false; invalidate(false); if (example) setExample({ ...example, ...patch }); else onChange(patch); }
   function switchScope(next: Project | null) { invalidate(); setExample(next); setPane("prepare"); setPieceId(""); setSegmentId(""); setConfirm(false); setSource(""); }
   const current = session?.identity === identity ? session : null;
   const selectedCombo = current && (current.result.combinations[combo] ? combo : Object.keys(current.result.combinations)[0]);
@@ -128,7 +154,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       const u = e.result.checks.map(c => c.utilization).filter((x): x is number => x !== null && Number.isFinite(x));
       if (u.length) utilizationByPiece[e.result.piece_id] = Math.max(utilizationByPiece[e.result.piece_id] ?? 0, ...u);
     }
-    const overlay = buildResultOverlay(layerKind, { inputSha256: current.result.input_sha256, resultSha256: resultHash, combinationId: selectedCombo, solver: { name: current.result.solver.name, version: current.result.solver.version },
+    const overlay = buildResultOverlay(layerKind, { inputSha256: current.result.input_sha256, resultSha256: resultHash, combinationId: selectedCombo, solver: { name: current.result.solver.name, version: solverRevision(current.result) },
       mapped: current.prepared.mapping.members, nodes: result.nodes, members: result.members as never, utilizationByPiece });
     const verdict = acceptOverlay(overlay, model, current.prepared.input_sha256);
     if (!verdict.ok) return { refused: verdict.issues, overlay, colors: null, segments: null, legend: null, scale: 0 };
@@ -142,30 +168,46 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     return { refused: null, overlay, colors: overlay.pieces.length ? palette.colors : null, segments, legend: palette, scale };
   }, [current, result, selectedCombo, resultHash, layerKind, model, matrixState, scaleInput]);
   async function execute(includeConnections=false) {
+    cacheAllowed.current=false;
     const controller = new AbortController(), mine = ++ticket.current.value; request.current?.abort(); request.current = controller;
     setBusyIdentity(identity); setError(""); setSession(null);setRestored(false);
     try {
       // C1: the UI emits jpn.mixed3d/3 with the REVIEWED Z-up local axes; frame pieces without a reviewed roll stop here (visible pendency).
-      const prepared = await adaptLoadedMixedProjectV3(active); if (controller.signal.aborted || ticket.current.value !== mine) return;
+      const prepared = await prepareAnalysis(active, analysisOrder); if (controller.signal.aborted || ticket.current.value !== mine) return;
       // INT-2: durable queue. A synchronous answer (local executor, or a fast remote run) comes back as before; a queued run reports pending/running and delivers the same envelope.
       const sent = await postAnalysis("/api/experimental/mixed3d", { body: JSON.stringify(prepared.request), headers: includeConnections ? { "X-JPN-Joint-Actions": "1" } : {}, signal: controller.signal, onProgress: p => { if (ticket.current.value === mine) setJob(p); } });
       const out = sent.out as { status?: string; schema_version?: string; execution?: { local_only?: boolean; transport?: string }; result?: unknown; joint_actions?: unknown };
       if (out.status !== "completed" || !((out.schema_version==="jpn.local-mixed/1"&&out.execution?.local_only===true)||(out.schema_version==="jpn.remote-mixed/1"&&out.execution?.local_only===false&&out.execution?.transport==="remote"))) throw new Error("Origem de execução incompatível.");
-      const parsed = anyMixedResultSchema.parse(out.result); if(parsed.schema_version!==prepared.request.schema_version.replace("mixed3d/","mixed3d-result/"))throw new Error("Versão de resposta incompatível."); verifyMixedResult(prepared.request, parsed, prepared.input_sha256);
-      verifyLoadingTrace(prepared.request,parsed);
+      const parsed = readAnalysis(prepared, out.result);
       if (controller.signal.aborted || ticket.current.value !== mine) return;
       let resistance: ResistanceReport | null = null, resistanceError = "";
       try { resistance = await buildResistanceReport(active, prepared, parsed,includeConnections?out.joint_actions:undefined); } catch(e) { resistanceError = (e as Error).message; }
       if (controller.signal.aborted || ticket.current.value !== mine) return;
       // INT-1d: the M50/M51 structural assessment (local executor) runs after the resistance report and its outcome is shown; a failure never hides the analysis.
       let assessment: unknown = null, assessmentError = "";
-      if (executionMode === "local") { try { const ar = await fetch("/api/experimental/structural-assessment", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ schema_version: "jpn.structural-assessment/1", project: active }), signal: controller.signal }); const aj = await ar.json(); if (!ar.ok) throw new Error(`${aj.error?.code ?? ar.status}: ${aj.error?.message ?? "avaliação recusada"}`); assessment = aj; } catch (e) { assessmentError = (e as Error).message; } }
+      let designExecutions:MemberExecution[]=[];
+      try {
+        const response=await postAnalysis("/api/experimental/structural-assessment",{body:JSON.stringify({schema_version:"jpn.structural-assessment/1",project:active,
+          ...(isSecondOrder(parsed)?{analysis:{request:prepared.request,result:parsed}}:{})}),signal:controller.signal,
+          onProgress:p=>{if(ticket.current.value===mine)setJob(p);}});
+        const evaluated=response.out as {analysisInputSha256?:string;analysisResultSha256?:string};
+        if(isSecondOrder(parsed)&&(evaluated.analysisInputSha256!==prepared.input_sha256||evaluated.analysisResultSha256!==await mixedInputHash(parsed)))throw Error("SECOND_ORDER_ASSESSMENT_MISMATCH: verificação de outra entrada/resultado bloqueada.");
+        assessment=evaluated;
+        if(resistance){
+          const reported=(evaluated as {report?:{executionRecords?:unknown[]}}).report?.executionRecords??[];
+          const records=reported.map(r=>memberExecutionSchema.parse(r));
+          await buildResistanceAssessment(active,resistance,records);
+          designExecutions=records;
+        }
+      }catch(e){assessmentError=(e as Error).message;}
+
       if (controller.signal.aborted || ticket.current.value !== mine) return;
       let connections: ConnectionReport | null = null, connectionError = "", jointActions: JointActionTrace | null = null;
-      if(includeConnections){try{jointActions=jointActionTraceSchema.parse(out.joint_actions);connections=await buildConnectionReport(active,prepared,parsed,jointActions);}catch(e){connectionError=(e as Error).message;}}
+      if(includeConnections && !isSecondOrder(parsed)){try{jointActions=jointActionTraceSchema.parse(out.joint_actions);connections=await buildConnectionReport(active,prepared,parsed,jointActions);}catch(e){connectionError=(e as Error).message;}}
       if(controller.signal.aborted||ticket.current.value!==mine)return;
       if(!prepared.request.nodes.some(n=>n.id===connectionNodeId))setConnectionNodeId(prepared.request.nodes[0].id);
-      setSession({ identity, prepared, result: parsed, execution: out.execution, resistance, resistanceError, connections, connectionError, jointActions, assessment, assessmentError }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
+      if(!example){try{localStorage.setItem(`jpn-mixed-analysis:v1:${active.id}`,JSON.stringify({prepared:{request:prepared.request},result:parsed,execution:out.execution}));setCacheNotice("");}catch{setCacheNotice("ANALYSIS_CACHE_UNAVAILABLE: resultado atual válido, mas não foi salvo para reabertura.");}}
+      setSession({ identity, prepared, result: parsed, execution: { ...out.execution, analysis_order: analysisOrder, normativeSwayClassification: "pending-reviewed-NBR8800-criterion", linearSufficiency: false, computedStructuralApproval: false, fabricationRelease: false, releaseGate: "NOT_READY_BLOCKED" }, resistance, resistanceError, connections, connectionError, jointActions, assessment, assessmentError,designExecutions }); setCombo(Object.keys(parsed.combinations)[0]); setPane("results");
     } catch (e) { if (ticket.current.value === mine) setError(controller.signal.aborted ? "Execução cancelada ou prazo excedido; nenhum resultado publicado." : e instanceof AxisReviewPendingError ? `Giro por peça pendente: ${e.pending.map(p => p.pieceId).join(", ")}. Declare e revise os giros no painel “Eixos locais” antes de calcular.` : (e as Error).message); }
     finally { if (ticket.current.value === mine) { setBusyIdentity(null); setJob(null); } }
   }
@@ -177,7 +219,10 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       const loaded=await restoreMixedAnalysis(active,await file.text());
       const resistance=await buildResistanceReport(active,loaded.prepared,loaded.result);
       if(ticket.current.value!==mine)return;
-      setSession({identity,prepared:loaded.prepared,result:loaded.result,execution:loaded.execution,resistance,resistanceError:"",connections:null,connectionError:"",jointActions:null});setRestored(true);setPane("results");setCombo(Object.keys(loaded.result.combinations)[0]);
+      const order=isSecondOrder(loaded.result)?"second-order":"linear";
+      setAnalysisOrder(order);
+      const restoredIdentity=JSON.stringify([order,example?"example":"work",active.id,signature,{...draft,resistanceStandards:undefined}]);
+      setSession({identity:restoredIdentity,prepared:loaded.prepared,result:loaded.result,execution:loaded.execution,resistance,resistanceError:"",connections:null,connectionError:"",jointActions:null});setRestored(true);setPane("results");setCombo(Object.keys(loaded.result.combinations)[0]);
     }catch(e){if(ticket.current.value===mine)setError(`Resultado não restaurado: ${e instanceof Error?e.message:"arquivo inválido"}`);}
   }
   async function exportResistance(){
@@ -190,7 +235,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
   }
   return <section aria-label="Análise Estrutural Experimental" data-testid="mixed-workspace" className="mixed-workspace">
     <h3>Análise Estrutural Experimental</h3>
-    <p>Primeira ordem e elasticidade linear. Peso próprio somente quando ativado com densidades e gravidade declaradas. Sem dimensionamento resistente ou autorização para fabricar.</p>
+    <p>Elasticidade linear do material; análise geométrica linear ou de segunda ordem por combinação. Peso próprio somente quando ativado com densidades e gravidade declaradas. Sem dimensionamento resistente ou autorização para fabricar.</p>
     {!demoPresentation&&<div className="actions"><button className="button secondary" onClick={() => switchScope(mixedReferenceProject())}>Abrir exemplo misto independente</button><button className="button secondary" onClick={()=>switchScope(loadedMixedReferenceProject())}>Abrir exemplo de peso e cargas</button><button className="button secondary" onClick={()=>switchScope(roofAreaReferenceProject())}>Abrir exemplo de ações por área</button><button className="button secondary" onClick={()=>switchScope(windReferenceProject())}>Abrir exemplo de vento zonal</button>{example && <button className="button secondary" onClick={() => switchScope(null)}>Voltar à obra</button>}</div>}
     <p className="notice" data-testid="mixed-scope">{example ? "EXEMPLO SINTÉTICO INDEPENDENTE — 10 × 20 × 4 m. Pilares, banzos, terças e montantes são pórticos rígidos; 36 diagonais são axiais. 12 bases engastadas, propriedades e forças sintéticas explícitas. Não altera nem salva sua obra." : "OBRA ATUAL — somente suas declarações físicas. Dados ausentes ou modelos instáveis bloqueiam o cálculo."}</p>
     <p role="status" data-testid="mixed-health">{health}</p>
@@ -198,6 +243,11 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     {current&&<p role="status" data-testid="mixed-result-state">{restored?"Resultado restaurado de arquivo; origem numérica não comprovada nesta sessão. Execute novamente para recalcular.":"Resultado calculado pelo executor para esta revisão."} Fabricação bloqueada.</p>}
     {!demoPresentation&&<details className="technical-details"><summary>Recuperar resultado exportado</summary><p>O arquivo deve corresponder exatamente ao projeto atual, suas propriedades e revisão. Restaurar um arquivo não comprova sua origem numérica nem aprova a estrutura.</p><label>Resultado misto JSON<input type="file" accept=".json,application/json" aria-label="Restaurar resultado misto JSON" disabled={busy} onChange={e=>{const file=e.target.files?.[0];e.target.value="";if(file)void restore(file);}}/></label></details>}
     <button className="button secondary" disabled={busy} onClick={() => { setReady(false); setHealth("Verificando Python…"); setHealthRevision(v => v + 1); }}>Verificar executor {ready ? (executionMode==="remote"?"remoto":"local") : ""}</button>
+    {cacheNotice&&<p role="status" data-testid="analysis-cache-notice">{cacheNotice}</p>}
+    {!demoPresentation && <Field label="Ordem da análise"><Select value={analysisOrder} disabled={busy} onChange={e => { cacheAllowed.current=false; invalidate(); setAnalysisOrder(e.target.value as AnalysisOrder); }}><option value="linear">Linear (primeira ordem)</option><option value="second-order">Segunda ordem (por combinação)</option></Select></Field>}
+    <p className="notice" data-testid="sway-normative-pending">N12 — Deslocabilidade NBR 8800: critério e limite revisados pendentes. O resultado linear não comprova suficiência; execute segunda ordem e solicite revisão profissional. Aprovação e fabricação bloqueadas.</p>
+    {current && result && <p data-testid="observed-translation-ratio">Deslocamento nodal máximo / maior dimensão do modelo: {observedTranslationRatio(current.prepared.request.nodes, result.nodes)?.toExponential(5) ?? "indisponível"}. Indicador geométrico; não é deslocamento relativo entre pavimentos nem classificação NBR 8800.</p>}
+    {current && selectedCombo && <p data-testid="analysis-order-result">{isSecondOrder(current.result) ? "Segunda ordem · per-combination" : "Linear · suficiência normativa pendente"} · combinação {selectedCombo}{(() => { const d = swayDiagnostic(current.result, selectedCombo); return d ? ` · amplificação segunda/primeira ordem: ${show(d.ratio)} (${d.measure}); diagnóstico numérico, sem classificação normativa.` : " · amplificação indisponível: segunda ordem ainda não executada."; })()}</p>}
     {!demoPresentation&&<nav className="physical-prep-tabs" aria-label="Fluxo misto"><button className="button secondary" aria-pressed={pane === "prepare"} onClick={() => setPane("prepare")}>Preparação mista</button><button className="button secondary" aria-pressed={pane === "results"} onClick={() => setPane("results")}>Resultados 3D</button></nav>}
     {pane === "prepare" && <>
       <SpatialPreparationPanel key={example ? "example" : "work"} project={active} onChange={edit} mixed />
@@ -215,7 +265,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
         <button className="button secondary" disabled={!confirm || !source.trim() || !connectivity.inspected} onClick={() => edit({ workspace: { ...active.workspace, spatialPreparation: { ...draft, connectivity: { version: 1, geometrySignature: signature, reviewSource: source, junctions: connectivity.inspected!.junctions.map(j => ({ nodeId: j.nodeId, pieceIds: j.pieceIds, decision: "connect" })) } } } })}>Registrar conectividade revisada</button>
       </details>
     </>}
-    <div className="actions">{!demoPresentation&&<button className="button secondary" disabled={!ready||busy} onClick={()=>void execute(true)}>Calcular ações de ligações</button>}<button className="button" disabled={!ready || busy} onClick={() => void execute()}>{busy ? "Executando Python…" : `Executar análise mista ${executionMode==="remote"?"online":"local"}`}</button>{busy && <button className="button secondary" onClick={()=>invalidate()}>Cancelar execução</button>}</div>
+    <div className="actions">{!demoPresentation&&<button className="button secondary" disabled={!ready||busy||analysisOrder !== "linear"} onClick={()=>void execute(true)}>Calcular ações de ligações</button>}<button className="button" disabled={!ready || busy} onClick={() => void execute()}>{busy ? "Executando Python…" : `Executar análise mista ${executionMode==="remote"?"online":"local"}`}</button>{busy && <button className="button secondary" onClick={()=>invalidate()}>Cancelar execução</button>}</div>
     {busy && job && <p role="status" data-testid="job-progress">Análise na fila durável do servidor: {job.state === "pending" ? "pendente" : job.state === "running" ? "rodando" : "pronta, baixando o resultado"} · {Math.round(job.elapsedMs / 1000)} s · consulta {job.polls} · identificador {job.job.slice(0, 24)}… (a execução continua no servidor se você fechar a página).</p>}
     {error && <p className="field-error" role="alert">{error}</p>}
     {error&&stabilityFailureExplanation(error.split(":")[0])&&<p data-testid="connection-stability-failure">{stabilityFailureExplanation(error.split(":")[0])}</p>}
@@ -264,12 +314,12 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
         <Field label="Nó do resultado misto"><Select value={selectedNode} onChange={e => setNodeId(e.target.value)}>{current.prepared.request.nodes.map(n => <option key={n.id}>{n.id}</option>)}</Select></Field>
         {node && <ul data-testid="mixed-node"><li>Translações XYZ (mm): {node.translation_m.map(v => show(v * 1000)).join("; ")}</li><li>{node.active_rotations ? `Rotações XYZ (rad): ${node.rotation_rad.map(show).join("; ")}` : "Rotações inativas: nó exclusivamente axial, sem vínculos ou rigidez rotacional artificiais."}</li><li>{current.prepared.request.supports.some(s => s.node === selectedNode) ? "Reações no apoio" : "Resíduo nodal (não é apoio)"} XYZ (kN): {node.reaction_force_n.map(v => show(v / 1000)).join("; ")}</li><li>{node.active_rotations ? `Momentos de reação/resíduo XYZ (kN·m): ${node.reaction_moment_nm.map(v => show(v / 1000)).join("; ")}` : "Momentos de reação não aplicáveis ao nó axial."}</li></ul>}
         <p>Equilíbrio global: resíduo relativo {show(result.equilibrium.relative_residual)}; forças XYZ (N) {result.equilibrium.force_n.map(show).join("; ")}; momentos XYZ (N·m) {result.equilibrium.moment_nm.map(show).join("; ")}. O motor também verifica equilíbrio nodal antes de publicar.</p>
-        <p>{current.result.diagnostics.free_dofs} graus livres · condição escalada {show(current.result.diagnostics.scaled_condition)} · {show(current.result.diagnostics.elapsed_seconds)} s.</p>
+        <p>{("free_dofs" in current.result.diagnostics ? current.result.diagnostics.free_dofs : "?")} graus livres · condição escalada {("scaled_condition" in current.result.diagnostics ? show(current.result.diagnostics.scaled_condition) : "não fornecida")} · {show(current.result.diagnostics.elapsed_seconds)} s.</p>
         {current.resistanceError && <p role="alert" data-testid="resistance-blocked">Relatório resistente bloqueado: {current.resistanceError}</p>}
         {!demoPresentation && <AssessmentPanel assessment={current.assessment} error={current.assessmentError} />}
-        {!demoPresentation && <MemberStandardsPanel project={active} resistance={current.resistance} onMatrix={m => setMatrixState(m ? { identity: current.identity, matrix: m } : null)} onChange={next => editStandards({ workspace: next.workspace })} />}
+        {!demoPresentation && <MemberStandardsPanel key={current.resistance?.reportSha256+(current.designExecutions??[]).map(e=>e.result.input_sha256).join()} project={active} resistance={current.resistance} designExecutions={current.designExecutions} onMatrix={m => setMatrixState(m ? { identity: current.identity, matrix: m } : null)} onChange={next => editStandards({ workspace: next.workspace })} />}
         {!demoPresentation&&current.resistance && <ResistanceReportPanel project={active} onChange={edit} report={current.resistance} executions={current.designExecutions??[]} onComputed={r=>setSession(previous=>previous?.identity===identity?{...previous,designExecutions:[...(previous.designExecutions??[]).filter(x=>x.result.piece_id!==r.result.piece_id||x.result.combination_id!==r.result.combination_id),r]}:previous)} selectedPiece={selectedPiece} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setNodeId("");}} onExport={()=>void exportResistance()}/>}
-        <details><summary>Hipóteses e limites do cálculo</summary><ul>{current.result.assumptions.map(a => <li key={a}>{a}</li>)}</ul><p>Geometria original preservada. Deformada gráfica ainda não implementada. Juntas esféricas nas duas extremidades de pórticos e contatos independentes permanecem recusados.</p></details>
+        <details><summary>Hipóteses e limites do cálculo</summary><ul>{("assumptions" in current.result ? current.result.assumptions : ["Segunda ordem corrotacional experimental; convergência e refinamento verificados pelo solver. Classificação normativa de deslocabilidade pendente."]).map(a => <li key={a}>{a}</li>)}</ul><p>Geometria original preservada. Deformada disponível nas camadas do Studio com escala explícita. Juntas esféricas nas duas extremidades de pórticos e contatos independentes permanecem recusados.</p></details>
         <div className="actions"><button className="button secondary" onClick={() => exportJSON(current.prepared, "jpn-misto-entradas-rastreabilidade.json")}>Exportar entradas mistas</button><button className="button secondary" onClick={() => exportJSON({ prepared: current.prepared, result: current.result, execution: current.execution }, "jpn-misto-resultados-rastreabilidade.json")}>Exportar resultados mistos</button></div>
       </div>}
     </>}

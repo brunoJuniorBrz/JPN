@@ -5,6 +5,7 @@ import {declaredFacadeTractionSchema,declaredFacadeTractionSignature} from "./de
 import type {DeclaredFacadeTraction} from "./declared-facade-traction";
 import type {Project} from "./models";
 import {WIND_PROVENANCE} from "./normative-provenance";
+import {NBR6123_LABEL,assertSingleNbr6123Edition} from "./nbr6123-edition";
 import {facadeOrientationSchema,toFacadeLocal,fromFacadeLocal} from "./physical-facades";
 import type {FacadeOrientation} from "./physical-facades";
 import {assertDominant,classifyOpeningSpan,solveDetailedCpi,highSuctionDominantCpi,highSuctionStripM,sealedCpiAlternatives,windwardDominantCpi} from "./wind-internal-pressure";
@@ -39,8 +40,8 @@ const internalSchema=z.discriminatedUnion("rule",[
     location:z.discriminatedUnion("wall",[z.object({wall:z.literal("windward")}).strict(),
       z.object({wall:z.literal("parallel"),spanFromWindwardEdgeM:span}).strict()])}).strict(),
   z.object({rule:z.literal("dominant-opening-leeward"),...dominantBase,
-    /** 6.3.2.1 c) cites "Tabela 4", which in this edition is the S3 table; the engineer confirms the
-     * intended reference is the leeward wall Ce of Tabela 6 (D / B). */
+    /** 6.3.2.1 c): the original edition cited "Tabela 4" (S3); the corrected edition (Errata 1:2025)
+     * cites Tabela 6, the leeward wall Ce (D / B). The explicit confirmation is kept as the input contract. */
     leewardTableReferenceResolved:z.literal(true)}).strict(),
   z.object({rule:z.literal("detailed-flow-balance"),
     openings:z.array(z.object({id,areaM2:area,ce:z.discriminatedUnion("from",[
@@ -188,7 +189,7 @@ function internalScenarios(ip:Internal,ctx:Ctx):Scenario[]{
     }
     case "dominant-opening-leeward":
       assertDominant(ip.dominantOpeningAreaM2,ip.otherOpeningsTotalAreaM2);
-      return [{cpi:ctx.lLook.value,basis:"6.3.2.1 c) sotavento: Ce da parede de sotavento (Tabela 6; remissão 'Tabela 4' = S3 é referência desatualizada)",cells:ctx.lLook.cells}];
+      return [{cpi:ctx.lLook.value,basis:"6.3.2.1 c) sotavento: Ce da parede de sotavento (Tabela 6, conforme a Errata 1:2025)",cells:ctx.lLook.cells}];
     case "cylindrical-open-top":
       return fail("WIND_CPI_CYLINDRICAL_OUT_OF_DOMAIN","6.3.2.3 pertence a edificações cilíndricas, fora do módulo retangular");
     case "detailed-flow-balance":{
@@ -234,7 +235,7 @@ export function buildNormativeFacadeTraction(project:Project,raw:unknown){
     for(const c of l.cells)used.add(c.id);
     checkCellConfirmations(l.cells,confirmed);
   };
-  const speed=calculateWindSpeed(input.speed),q=speed.dynamicPressurePa;
+  const speed=calculateWindSpeed(input.speed),q=speed.dynamicPressurePa,edition=assertSingleNbr6123Edition([speed,table]);
   const aOverB=b.longSideM/b.shortSideM,hOverB=b.heightM/b.shortSideM;
   const cases:DeclaredFacadeTraction["cases"]=[],trace:unknown[]=[];
   for(const c of input.cases){
@@ -254,7 +255,7 @@ export function buildNormativeFacadeTraction(project:Project,raw:unknown){
         if(Math.abs(w-expected)>1e-3||Math.abs(h-b.heightM)>1e-3)
           fail("WIND_GEOMETRY_MISMATCH",face.id+": largura "+w+" m / altura "+h+" m divergem de a, b, h declarados");
         const base={facadeId:face.id,
-          source:"ABNT NBR 6123:2023 Tabela 6 (p.20) e 6.3.2.1 (p.43); transcrição data/normas/nbr6123-2023-wall-cpe.json",
+          source:NBR6123_LABEL+": Tabela 6 (p.20) e 6.3.2.1 (p.44); transcrição data/normas/nbr6123-2023-wall-cpe.json",
           revision:table.revision+" / "+input.speed.reference.revision};
         const basis=(txt:string)=>"p=q(Cpe-Cpi); q="+q.toFixed(3)+" Pa; "+txt+"; Cpi="+f(cpi)+" ("+sc.basis+"); positivo = para dentro";
         if(face.outward===c.windFrom||face.outward===opposite(c.windFrom)){
@@ -288,7 +289,7 @@ export function buildNormativeFacadeTraction(project:Project,raw:unknown){
   const traction=declaredFacadeTractionSchema.parse({
     schema_version:"jpn.declared-facade-traction/1",normativeValidation:"pending-engineer-review",
     physicalSignature:declaredFacadeTractionSignature(project),cases});
-  return {traction,trace,speed,usedCells:[...used].sort(),normativeStatus:"PROVISIONAL" as const,provenance:WIND_PROVENANCE,
+  return {traction,trace,speed,edition,usedCells:[...used].sort(),normativeStatus:"PROVISIONAL" as const,provenance:WIND_PROVENANCE,
     domain:"paredes de planta retangular (barlavento, sotavento e paralelas com zonas); cobertura impermeável; Cpi 6.3.2.1 a)/b)",
     blocked:table.blocked,computedStructuralApproval:false as const,fabricationRelease:false as const,
     releaseGate:"NOT_READY_BLOCKED" as const,errataVerified:false as const};

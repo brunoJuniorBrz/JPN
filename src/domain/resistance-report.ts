@@ -1,10 +1,10 @@
 import type { Project } from "./models";
 import { resolvePhysicalStructure } from "./physical-structure";
 import { resolveMemberPhysical } from "./member-physical";
-import { adaptMixedForVersion,requestVersionOf } from "./current-mixed-adapter";
+import { adaptMixedForRequest } from "./current-mixed-adapter";
 import { canonicalSpatialInput } from "./spatial-analysis";
 import { mixedInputHash } from "./mixed-analysis";
-import { anyMixedResultSchema } from "./structural-loading";
+import { anyMixedResultSchema,secondOrderMixedResultSchema } from "./structural-loading";
 import { provisionalNotices } from "./normative-provenance";
 import { assessSupportReactions } from "./support-interface";
 import { auditPhysicalRoofReactionPath,isDeclaredRoofTrace } from "./physical-reaction-path";
@@ -39,13 +39,18 @@ export function axialMeanStressMPa(normalN:number,areaCm2:number|null){
 /** Engineering blockers and idealized controls, NEVER an implementation of
  * unavailable ABNT clauses. States cannot be promoted by supplying a string. */
 export async function buildResistanceReport(project:Project,prepared:DemandInput,value:unknown,jointTrace?:unknown){
-  const current=await adaptMixedForVersion(project,requestVersionOf(prepared.request));
+  const current=await adaptMixedForRequest(project,prepared.request);
   if(current.input_sha256!==prepared.input_sha256||current.preparation_sha256!==prepared.preparation_sha256||canonicalSpatialInput(current.mapping)!==canonicalSpatialInput(prepared.mapping))
     throw new Error("STALE_RESISTANCE_ANALYSIS: projeto/discretização/declarações diferem da análise; execute novamente.");
   const demands=await extractMemberDemands(prepared,value),draft=project.workspace.spatialPreparation!,model=resolvePhysicalStructure(project).model!;
-  const secondOrderAudit=auditSecondOrderReadiness(current.request,anyMixedResultSchema.parse(value));
-  const roofReactionAudit="roof_load_path" in current&&isDeclaredRoofTrace(current.roof_load_path)?
+  const second="analysis_order" in current.request;
+  const parsed=second?secondOrderMixedResultSchema.parse(value):anyMixedResultSchema.parse(value);
+  const observed=auditSecondOrderReadiness(current.request,parsed);
+  const secondOrderAudit=second?{...observed,baselineIsLinear:false,pDeltaExecuted:true,pSmallDeltaExecuted:true,
+    blockers:["N12_PENDING: classificação normativa de deslocabilidade, imperfeições e rigidez pendentes."]}:observed;
+  const roofReactionAudit=!second&&"roof_load_path" in current&&isDeclaredRoofTrace(current.roof_load_path)?
     await auditPhysicalRoofReactionPath(project,current.request,value,current.roof_load_path,current.mapping):null;
+  if(second&&jointTrace)throw Error("SECOND_ORDER_LINEAR_TRACE_FORBIDDEN");
   const continuousDemands=jointTrace?await extractContinuousDemands(prepared,value,jointTrace):null;
   const wholePieceDeflections=continuousDemands?await extractWholePieceDeflections(continuousDemands):null;
   const serviceChecks=evaluateDeclaredService(draft.serviceCriteria??[],wholePieceDeflections,draft.engineeringCombinations?.combinations.filter(c=>c.purpose.startsWith("SLS")).map(c=>c.id)??[]);
@@ -108,7 +113,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
     approvedForFabrication:false as const,structureStatus:"NOT_APPROVED_FOR_FABRICATION" as const,
     normativeProceduresImplemented:[...availableNormativeProcedures],procedureRegistry:normativeProcedureRegistry,binding,physicalInput:current.request,
     engineeringCombinations:draft.engineeringCombinations??null,...(draft.normativeProvenance?.length?{normativeStatus:"PROVISIONAL" as const,normativeNotices:provisionalNotices(draft.normativeProvenance),normativeProvenance:draft.normativeProvenance}:{}),demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
-    supportAudits:assessSupportReactions(draft.supportInterfaces??[],anyMixedResultSchema.parse(value)),
+    supportAudits:assessSupportReactions(draft.supportInterfaces??[],parsed),
     ...(roofReactionAudit?{physicalRoofReactionAudit:roofReactionAudit}:{}),
     secondOrderAudit,
     loadProcedureExecutions:(draft.loading?.wind?.cases??[]).filter(c=>c.speedCalculation).map(c=>({caseId:c.id,procedures:["NBR6123:2023-4.2","NBR6123:2023-5.3.3"],status:"calculated-partial" as const,result:calculateWindSpeed(c.speedCalculation)})),

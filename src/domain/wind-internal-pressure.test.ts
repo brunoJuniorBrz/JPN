@@ -5,9 +5,9 @@ import {assertDominant,classifyOpeningSpan,highSuctionDominantCpi,highSuctionStr
 import {buildNormativeFacadeTraction,cpeMedioCoefficient} from "./wind-facade-normative";
 import {distributeDeclaredFacadeTractions} from "./declared-facade-traction";
 
-const speed={schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:30,heightM:4,heightReference:"model-base-z0",
+const speed={schema_version:"jpn.wind-speed/1",edition:"2023-corrected-2025",v0Mps:30,heightM:4,heightReference:"model-base-z0",
   topography:"flat-or-gently-undulating",roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,
-  reference:{standard:"ABNT NBR 6123",edition:"2023",clause:"5",source:"Dados sintéticos do ensaio",revision:"v1",responsible:"Responsável de referência"}};
+  reference:{standard:"ABNT NBR 6123",edition:"2023-corrected-2025",clause:"5",source:"Dados sintéticos do ensaio",revision:"v1",responsible:"Responsável de referência"}};
 const building={longSideM:12,shortSideM:6,heightM:4,longAxis:"X",roofImpermeable:true,heightDefinitionConfirmed:true};
 const run=(ip:object,from="+X",b:object=building,walls?:never)=>{
   const p=buildingProject(["W","W-CPIN2","W-CPIP0"]);void walls;

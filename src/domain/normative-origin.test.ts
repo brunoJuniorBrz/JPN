@@ -11,6 +11,7 @@ import { buildEngineReleaseGate } from "./engine-release-gate";
 import { generateNormativeOrigin,generateNormativeOriginTestStudy,assertNormativeOriginFresh,materializeNormativeOriginStudy,adaptNormativeOriginStudy,normativeEnvelope } from "./normative-origin";
 import { normativeWindDataSchema,normativeFactorsDataSchema } from "./normative-origin-contracts";
 import { m33aFixture } from "./test-support/m33a-fixtures";
+import { NBR6123_DOCUMENT_SHA256 } from "./nbr6123-edition";
 import { runLocalMixed } from "@/infrastructure/analysis/local-mixed-runner";
 import { generateNormativeOriginFromRepository } from "@/infrastructure/analysis/normative-origin-files";
 
@@ -26,7 +27,9 @@ it("audits recovered original data and partial REF-04/REF-01 without resolving c
   for(const row of partial.cases){const {s2}=calculateWindExposure({heightM:row.heightM,category:row.category,sizeClass:row.sizeClass});expect(Math.abs(s2-row.reportedS2)).toBeLessThan(.5*10**(-row.reportedDecimalPlaces));}
   expect(partial.cases[0].conflictingBasicSpeedsMps).toEqual([45,33]);
   const recovered=JSON.parse(readFileSync("data/normas/nbr6123-2023-speed.json","utf8"));
-  expect(recovered.documentSha256).toBe(inventory.sources.find((s:{filename:string})=>s.filename==="NBR-6123-2023.pdf").sha256);
+  // N1: values recovered from the original file, now cited against the corrected 2025 edition (no value changed).
+  expect(recovered.previousDocumentSha256).toBe(inventory.sources.find((s:{filename:string})=>s.filename==="NBR-6123-2023.pdf").sha256);
+  expect(recovered.documentSha256).toBe(NBR6123_DOCUMENT_SHA256);
   for(const category of ["I","II","III","IV","V"] as const)for(const sizeClass of ["A","B","C"] as const){
     const row=recovered.exposure.categories[category],index=["A","B","C"].indexOf(sizeClass);
     expect(calculateWindExposure({heightM:10,category,sizeClass}).s2).toBe(row.b[index]*recovered.exposure.frCategoryII[index]);

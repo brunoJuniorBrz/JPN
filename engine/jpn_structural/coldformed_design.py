@@ -97,6 +97,9 @@ def _critical(raw):
 
 
 def analyze_coldformed_design(raw,*,_computed_modes=()):
+    if isinstance(raw, dict) and "station_demands" in raw:
+        from .station_resistance import analyze_stations
+        return analyze_stations(raw, lambda r: analyze_coldformed_design(r, _computed_modes=_computed_modes), steel=False)
     obj(raw, 'schema_version units piece_id combination_id binding section study critical tension web fields', 'member design')
     if raw['schema_version'] != VERSION or raw['units'] != 'SI':fail('UNSUPPORTED_MODEL', 'Use the explicit SI cold-formed design contract.')
     for k in ('piece_id', 'combination_id'):text(raw[k], k)

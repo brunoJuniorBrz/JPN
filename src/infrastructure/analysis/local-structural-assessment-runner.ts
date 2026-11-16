@@ -1,8 +1,10 @@
-import {structuralAssessmentRequestSchema,prepareStructuralAssessment,finishStructuralAssessment,type ResistanceAttempt} from "@/domain/structural-assessment";
+import {structuralAssessmentRequestSchema,prepareStructuralAssessment,finishStructuralAssessment,finishStationAssessment,type ResistanceAttempt} from "@/domain/structural-assessment";
+import {adaptMixedForRequest} from "@/domain/current-mixed-adapter";
+import {buildResistanceReport} from "@/domain/resistance-report";
 import {adaptLoadedMixedProject,adaptLoadedMixedProjectV3} from "@/domain/loaded-mixed-adapter";
 import {adaptMixedProject} from "@/domain/mixed-adapter";
 import {prepareColdformedDesign} from "@/domain/coldformed-design";
-import type {MemberExecution} from "@/domain/resistance-assessment";
+import {memberExecutionSchema,type MemberExecution} from "@/domain/resistance-assessment";
 import {localMixedEnabled,localMixedLimits,runLocalMixed} from "./local-mixed-runner";
 import {runLocalSection} from "./local-section-runner";
 import {runRemoteMixed,remoteMixedEnabled,remoteMixedLimits,queuedEngineMilliseconds} from "./remote-mixed-runner";
@@ -30,7 +32,7 @@ async function runAssessment(payload:string,signal:AbortSignal|undefined,remote:
   const mixed=remote?runRemoteMixed:runLocalMixed;
   const milliseconds=queued?queuedEngineMilliseconds:limits.milliseconds;
   if(Buffer.byteLength(payload)>limits.inputBytes)throw new SolverFailure("INPUT_LIMIT","Input exceeds 500 kB");
-  const {project}=structuralAssessmentRequestSchema.parse(JSON.parse(payload));
+  const {project,analysis:stationAnalysis}=structuralAssessmentRequestSchema.parse(JSON.parse(payload));
   if(!project.workspace.physicalStructure)throw new SolverFailure("INVALID_INPUT","Assessment requires the declared physical model");
   const declarations=project.workspace.spatialPreparation?.memberDesign??[];
   if(declarations.length>4)throw new SolverFailure("INPUT_LIMIT","At most four explicitly selected member/combination executions per request");
@@ -42,6 +44,27 @@ async function runAssessment(payload:string,signal:AbortSignal|undefined,remote:
   const requireActive=()=>{if(controller.signal.aborted||signal?.aborted)throw new SolverFailure(expired?"TIMEOUT":"CANCELLED","Integrated assessment cancelled or exceeded its execution budget");};
   try{
     requireActive();
+    if(stationAnalysis){
+      // Rebuild the physical request/hash before checking imported station data.
+      // This branch NEVER invokes the linear mixed worker.
+      const adapted=await adaptMixedForRequest(project,stationAnalysis.request);
+      const base=await buildResistanceReport(project,adapted,stationAnalysis.result);
+      const records:MemberExecution[]=[],attempts:ResistanceAttempt[]=[],requests:Awaited<ReturnType<typeof prepareColdformedDesign>>[]=[];
+      for(const declaration of declarations){
+        requireActive();
+        try{requests.push(await prepareColdformedDesign(project,base,declaration));attempts.push({pieceId:declaration.pieceId,combinationId:declaration.combinationId,status:"executed",reason:null});}
+        catch(e){attempts.push({pieceId:declaration.pieceId,combinationId:declaration.combinationId,status:"blocked",reason:e instanceof Error?e.message:String(e)});}
+      }
+      if(requests.length){
+        const payload=JSON.stringify({schema_version:"jpn.verified-coldformed-batch/1",requests});
+        const calculated=await (remote?runRemoteSection(payload,controller.signal,"design-batch",queued):runLocalSection(payload,controller.signal,"design-batch"));
+        for(let i=0;i<requests.length;i++)records.push(memberExecutionSchema.parse({schema_version:"jpn.member-design-record/1",request:requests[i],result:calculated.result.results[i]}));
+      }
+      const result=await finishStationAssessment(project,base,records,attempts);
+      requireActive();
+      if(Buffer.byteLength(JSON.stringify(result))>(allowGzip?assessmentCompressedInputBytes:limits.outputBytes))throw new SolverFailure("OUTPUT_LIMIT","Station assessment exceeds delivery budget");
+      return result;
+    }
     // C1: projects with reviewed Z-up axes are analysed in /3; legacy projects keep the legacy adapters (and the worker's ambiguity guard).
     const adapted=await(project.workspace.spatialPreparation?.localAxes?adaptLoadedMixedProjectV3(project):project.workspace.spatialPreparation?.loading?adaptLoadedMixedProject(project):adaptMixedProject(project));
     phase="linear-worker";

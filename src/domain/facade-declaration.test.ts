@@ -22,8 +22,8 @@ const FAC:RectangularFacadeInput[]=([
   {id:"NORTH",outward:"+Y",planeMm:6000,uMinMm:-12000,uMaxMm:0,zMinMm:0,zMaxMm:4000,supportPieceIds:["C0_6000","C6000_6000","C12000_6000"]},
   {id:"SOUTH",outward:"-Y",planeMm:0,uMinMm:0,uMaxMm:12000,zMinMm:0,zMaxMm:4000,supportPieceIds:["C0_0","C6000_0","C12000_0"]},
 ] as {id:string;outward:"+X"|"-X"|"+Y"|"-Y";planeMm:number;uMinMm:number;uMaxMm:number;zMinMm:number;zMaxMm:number;supportPieceIds:string[]}[]).map(f=>({...f,enclosure:"cladded" as const,enclosureSource:"Inspeção física sintética do revestimento",source:src,revision:rev}));
-const speed={schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:10,heightM:4,heightReference:"model-base-z0",topography:"flat-or-gently-undulating",
-  roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,reference:{standard:"ABNT NBR 6123",edition:"2023",clause:"5",source:"Dados sintéticos INT-1d",revision:"v1",responsible:"Responsável de referência"}};
+const speed={schema_version:"jpn.wind-speed/1",edition:"2023-corrected-2025",v0Mps:10,heightM:4,heightReference:"model-base-z0",topography:"flat-or-gently-undulating",
+  roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,reference:{standard:"ABNT NBR 6123",edition:"2023-corrected-2025",clause:"5",source:"Dados sintéticos INT-1d",revision:"v1",responsible:"Responsável de referência"}};
 
 /** The same steps the UI performs: facades -> NBR 6123 wall wind -> NBR 8681 combinations -> /3 analysis. Starting from a building WITHOUT facades. */
 function bareBuilding():Project{
@@ -69,10 +69,11 @@ it("jornada: fachadas → vento NBR 6123 nas paredes → combinações NBR 8681 
       {nature:"variable",caseId:"Q",variableType:"other-and-equipment-temperature",psiRow:"libraries-archives-warehouses-workshops-garages-roofs",exclusiveGroup:null},
       ...["W1","W2","W3","W4"].map(caseId=>({nature:"variable",caseId,variableType:"wind",psiRow:"wind",exclusiveGroup:"WIND"}))]});
   p=comb.project;
-  expect(comb.generated.normativeStatus).toBe("PROVISIONAL");
-  expect(p.workspace.spatialPreparation!.normativeProvenance!.map(x=>x.id).sort()).toEqual(["combinations-nbr8681","wind-walls-nbr6123"]);
+  // N3: NBR 8681 has a single checked source; only the NBR 6123 wind stays PROVISIONAL
+  expect(comb.generated.normativeStatus).toBe("SINGLE_SOURCE_CHECKED");
+  expect(p.workspace.spatialPreparation!.normativeProvenance!.map(x=>x.id).sort()).toEqual(["wind-walls-nbr6123"]);
   const restored=projectSchema.parse(JSON.parse(JSON.stringify(p)));                                   // persisted with the project
-  expect(restored.workspace.spatialPreparation!.normativeProvenance).toHaveLength(2);
+  expect(restored.workspace.spatialPreparation!.normativeProvenance).toHaveLength(1);
   const sp=p.workspace.spatialPreparation!;
   sp.loading!.overlapReview={confirmed:true,source:"Confirmação sintética do ensaio INT-1d: ações independentes",revision:rev,basis:selfWeightOverlapReviewBasis(sp,sp.loading!)};
   const a=projectFrameAxes(p),ready=declareLocalAxes(p,a.signature,a.framePieceIds.map(pieceId=>({pieceId,rotationDeg:0,source:"Giro revisado do ensaio INT-1d (Iy = Iz)",revision:rev})));

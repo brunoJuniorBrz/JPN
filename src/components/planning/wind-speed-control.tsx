@@ -6,6 +6,7 @@ import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { calculateWindSpeed } from "@/domain/wind-speed";
 import { applyWindSpeed } from "@/domain/apply-wind-speed";
 import { Field,Input,Select } from "@/components/ui";
+import { NBR6123_EDITION } from "@/domain/nbr6123-edition";
 
 type Props={project:Project;onChange:(p:Partial<Project>)=>void};
 export function WindSpeedControl(props:Props){
@@ -32,7 +33,7 @@ function SpeedForm({project,onChange,wind,caseId}:Props&{wind:WindDeclaration;ca
     <label><input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)}/> Declaro terreno plano/fracamente acidentado, ausência de transição de rugosidade e base do modelo no nível geral do terreno; categoria, classe e S3 foram revisados conforme a fonte indicada.</label>
     <button type="button" className="button secondary" onClick={()=>{try{
       if(!confirmed||!s3.trim())throw Error("Confirme as condições físicas e informe S3 com sua fonte.");
-      const value={schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:wind.building.basicVelocityMS,heightM:height,heightReference:"model-base-z0",topography:"flat-or-gently-undulating",roughnessTransition:"none",category,sizeClass:size,s3:Number(s3.replace(",",".")),reference:{standard:"ABNT NBR 6123",edition:"2023",clause:"4.2; 5.2(a); 5.3.3; Tables 1-3",source,revision,responsible}};
+      const value={schema_version:"jpn.wind-speed/1",edition:NBR6123_EDITION,v0Mps:wind.building.basicVelocityMS,heightM:height,heightReference:"model-base-z0",topography:"flat-or-gently-undulating",roughnessTransition:"none",category,sizeClass:size,s3:Number(s3.replace(",",".")),reference:{standard:"ABNT NBR 6123",edition:NBR6123_EDITION,clause:"4.2; 5.2(a); 5.3.3; Tables 1-3",source,revision,responsible}};
       const changed=applyWindSpeed(project,caseId,value);onChange({workspace:changed.project.workspace});setMessage("Pressão do caso atualizada. Refaça a revisão de independência das ações e recalcule o modelo físico.");
     }catch(e){setMessage((e as Error).message);}}}>Calcular e aplicar q neste caso</button>
     {message&&<p role="status">{message}</p>}{recorded&&<p data-testid="wind-speed-result">Cálculo registrado: S1={recorded.s1}; S2={recorded.s2.toPrecision(8)}; Vk={recorded.vkMps.toPrecision(8)} m/s; q={recorded.dynamicPressurePa.toPrecision(8)} Pa. Altura efetiva={recorded.effectiveHeightM} m. Avaliação completa de vento: pendente.</p>}

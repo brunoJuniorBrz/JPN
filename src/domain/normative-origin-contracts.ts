@@ -1,15 +1,14 @@
 import { z } from "zod";
 import { engineeringId,engineeringSource } from "./engineering-combinations";
+import { NBR6123_EDITION,NBR6123_ERRATA } from "./nbr6123-edition";
 
 const n=z.number().finite();
 const range=z.tuple([n.nonnegative(),n.nonnegative()]).refine(([a,b])=>b>=a,"Invalid domain interval");
 export const normativeSourceSchema=z.object({standard:engineeringSource,edition:engineeringSource,errata:engineeringSource,
   item:engineeringSource,domain:engineeringSource,transcriber:engineeringSource,documentSha256:z.string().regex(/^[a-f0-9]{64}$/),
 }).strict();
-const source6123=z.union([
-  normativeSourceSchema.extend({standard:z.literal("ABNT NBR 6123"),edition:z.literal("2023-original"),errata:z.literal("2025-not-verified")}),
-  normativeSourceSchema.extend({standard:z.literal("ABNT NBR 6123"),edition:z.literal("2023-corrected-2025"),errata:z.literal("08.04.2025-partial-through-48")}),
-]);
+// N1: one NBR 6123 edition only; rows citing the original edition are rejected.
+const source6123=normativeSourceSchema.extend({standard:z.literal("ABNT NBR 6123"),edition:z.literal(NBR6123_EDITION),errata:z.literal(NBR6123_ERRATA)});
 const source8681=normativeSourceSchema.extend({standard:z.literal("ABNT NBR 8681"),edition:z.literal("2025")});
 const coefficient=<S extends z.ZodType>(source:S)=>z.object({value:n.min(-100).max(100),source}).strict();
 const origin=z.enum(["OWNER_TRANSCRIPTION","TEST_ONLY_NOT_NORMATIVE"]);

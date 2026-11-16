@@ -88,6 +88,10 @@ REVIEWED_AMENDMENTS = {
     "engine/vercel.json": "68e6752508b35faafd693c7df35c0470874e6d8e",
     # Deployment time budget now must respect Hobby 300 s, while retaining authenticated WSGI contract.
     "engine/tests/test_vercel_mixed_http.py": "f329dc2ce0c53dc07f8c5cb99a8d2ec76270d437",
+    # N1 / PR #129 (approved by the project owner): single NBR 6123 edition (2023-corrected-2025);
+    # edition literals and the speed-data SHA assertion updated, no numerical expectation changed.
+    "src/domain/normative-origin.test.ts": "80a2d9c9ee73462acebc9d17711d845124e66ced",
+    "src/domain/wind-speed.test.ts": "e5cf65b5ac01975374c50803a7c96b1eb3d0f65e",
 }
 
 TREES = {}

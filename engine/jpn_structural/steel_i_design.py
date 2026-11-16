@@ -219,6 +219,9 @@ def _obj_section(raw):
 
 
 def analyze_steel_i_design(raw):
+    if isinstance(raw, dict) and "station_demands" in raw:
+        from .station_resistance import analyze_stations
+        return analyze_stations(raw, analyze_steel_i_design, steel=True)
     obj(raw, 'schema_version units piece_id combination_id combination_kind binding section tension web fields', 'steel I member design')
     if raw['schema_version'] != VERSION or raw['units'] != 'SI':
         fail('UNSUPPORTED_MODEL', 'Use the explicit SI steel I/H design contract.')

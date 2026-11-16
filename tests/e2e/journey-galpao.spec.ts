@@ -69,7 +69,7 @@ for (const width of [390, 1440]) test(`jornada completa pela interface: galpão 
   await wind.getByRole("button", { name: "Vento NBR 6123 nas paredes", exact: true }).click();
   await expect(panel.getByTestId("normative-error")).toHaveCount(0);
   await expect(panel.getByTestId("provisional-notices")).toContainText("NBR 6123");
-  // --- combinações NBR 8681 (PROVISÓRIAS)
+  // --- combinações NBR 8681 (fonte única conferida no N3; sem aviso PROVISÓRIO)
   const gen = panel.getByTestId("nbr8681-generator");
   await gen.getByLabel("Natureza do caso G", { exact: true }).selectOption("permanent");
   await gen.getByLabel("Natureza do caso Q", { exact: true }).selectOption("variable");
@@ -77,7 +77,8 @@ for (const width of [390, 1440]) test(`jornada completa pela interface: galpão 
   await gen.getByRole("checkbox", { name: "Família sls-quasi-permanent" }).uncheck(); await gen.getByRole("checkbox", { name: "Família sls-frequent" }).uncheck();
   await gen.getByRole("button", { name: "Gerar combinações NBR 8681", exact: true }).click();
   await expect(panel.getByTestId("normative-error")).toHaveCount(0);
-  await expect(panel.getByTestId("provisional-notices")).toContainText("NBR 8681");
+  await expect(panel.getByTestId("normative-status")).toContainText("Combinações NBR 8681 geradas (fonte única conferida).");
+  await expect(panel.getByTestId("provisional-notices")).not.toContainText("NBR 8681");
   // --- confirmação de duplicidade (ações automáticas + manuais), depois de gerar as combinações (a revisão amarra a configuração atual)
   await p.getByTestId("structural-loads").evaluate(el => { (el as HTMLDetailsElement).open = true; });
   if (await p.getByTestId("self-weight-overlap-review").isVisible()) {
@@ -125,6 +126,6 @@ for (const width of [390, 1440]) test(`jornada completa pela interface: galpão 
   const wait = page.waitForEvent("download"); await p.getByRole("button", { name: "Exportar relatório resistente preliminar", exact: true }).click();
   const report = JSON.parse(await readFile((await (await wait).path())!, "utf8"));
   expect(report.computedStructuralApproval).toBe(false); expect(report.approvedForFabrication).toBe(false);
-  expect(report.normativeStatus).toBe("PROVISIONAL"); expect(report.normativeNotices.join(" ")).toMatch(/NBR 6123[\s\S]*NBR 8681|NBR 8681[\s\S]*NBR 6123/);
+  expect(report.normativeStatus).toBe("PROVISIONAL"); expect(report.normativeNotices.join(" ")).toMatch(/NBR 6123/); expect(report.normativeNotices.join(" ")).not.toMatch(/NBR 8681/);
   expect(errors).toEqual([]);
 });

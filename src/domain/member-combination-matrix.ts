@@ -98,7 +98,7 @@ export function buildMemberCombinationMatrix(input:{engineeringCombinations:Engi
     const utilizations=executed.map(k=>k.utilization).filter((u):u is number=>u!==null);
     return {pieceId:piece.pieceId,combinationId:c.id,status,resistanceStandard:standard,
       reason:!exec?"nenhuma verificação NBR 14762 executada para esta peça/combinação":missing.length?"verificações exigidas pela demanda ausentes: "+missing.join(", "):
-        blocked.length?"verificações bloqueadas: "+blocked.join(", "):null,
+        blocked.length?"verificações bloqueadas: "+blocked.map(id=>id+": "+(executed.find(c=>c.id===id)?.reason??"procedimento não concluído")).join("; "):null,
       combination:{purpose:c.purpose,hypothesis:c.hypothesis,reference:c.reference,
         factors:c.terms.map(t=>({caseId:t.caseId,gamma:t.gamma,psi:t.psi,factor:t.gamma*t.psi}))},
       demand:envelope,requiredChecks:required,missingChecks:missing,executedChecks:executed,

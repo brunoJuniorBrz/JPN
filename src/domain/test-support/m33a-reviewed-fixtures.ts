@@ -5,10 +5,13 @@ import { structureSignature } from "../calculations/project-basis";
 import { inspectConnectivity } from "../spatial-connectivity";
 import type { NormativeOriginInput } from "../normative-origin";
 import { correctedWindDocumentSha256,combinationsDocumentSha256,type ReviewedExtract } from "../reviewed-roof-catalog";
+import { reviewedRoofFactorsFrom8681 } from "../nbr8681-source";
 
-export function reviewedRoofProject(typology:"mono"|"gable"){
-  const p=windReferenceProject(),d=p.workspace.spatialPreparation!;
-  Object.assign(p.roof,{widthM:6,lengthM:6,lowHeightM:3,slopePercent:typology==="gable"?100:100/Math.sqrt(3),fall:"width-positive",supports:[]});
+/** Default: gable 45°, mono 30°, eaves 3 m. N2 passes slopeDeg 10/15 and other eaves heights. */
+export function reviewedRoofProject(typology:"mono"|"gable",options:{slopeDeg?:number;lowHeightM?:number;lengthM?:number}={}){
+  const p=windReferenceProject(),d=p.workspace.spatialPreparation!,low=options.lowHeightM??3,length=options.lengthM??6;
+  const slopePercent=options.slopeDeg===undefined?(typology==="gable"?100:100/Math.sqrt(3)):Math.tan(options.slopeDeg*Math.PI/180)*100;
+  Object.assign(p.roof,{widthM:6,lengthM:length,lowHeightM:low,slopePercent,fall:"width-positive",supports:[]});
   Object.assign(p.planning!,{typology,frameSpacingM:2,purlinSpacingM:1.5,panels:4,overhangStartM:0,overhangEndM:0});
   const model=generateStructure(p).model!;
   d.geometrySignature=structureSignature(p);
@@ -26,11 +29,11 @@ export function reviewedRoofProject(typology:"mono"|"gable"){
   d.loading!.roofDistribution!.geometrySignature=d.geometrySignature;
   d.loading!.roofArea=[{caseId:"G",knM2:.1,projection:"roof-surface",direction:[0,0,-1],source:"SYNTHETIC declared cladding only",revision:"1",loadPath:d.loadPathReview},
     {caseId:"Q",knM2:.25,projection:"horizontal",direction:[0,0,-1],source:"SYNTHETIC declared use magnitude",revision:"1",loadPath:d.loadPathReview}];
-  const maxHeight=Math.max(...model.nodes.map(n=>n.z))/1000,rise=maxHeight-3;
-  const input:NormativeOriginInput={speed:{schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:40,heightM:maxHeight,heightReference:"model-base-z0",
+  const maxHeight=Math.max(...model.nodes.map(n=>n.z))/1000,rise=maxHeight-low;
+  const input:NormativeOriginInput={speed:{schema_version:"jpn.wind-speed/1",edition:"2023-corrected-2025",v0Mps:40,heightM:maxHeight,heightReference:"model-base-z0",
     topography:"flat-or-gently-undulating",roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,
-    reference:{standard:"ABNT NBR 6123",edition:"2023",clause:"Declared synthetic site, not isopleth selection",source:"SYNTHETIC V0",revision:"1",responsible:"Validation"}},
-    openings:{enclosure:"enclosed",classification:"airtight-fixed-windows",dominantFace:"none",faceAreasM2:[0,0,0,0,0],permeabilityPercent:0,volumeM3:36*(3+rise/2),source:"SYNTHETIC airtight envelope",revision:"1"},
+    reference:{standard:"ABNT NBR 6123",edition:"2023-corrected-2025",clause:"Declared synthetic site, not isopleth selection",source:"SYNTHETIC V0",revision:"1",responsible:"Validation"}},
+    openings:{enclosure:"enclosed",classification:"airtight-fixed-windows",dominantFace:"none",faceAreasM2:[0,0,0,0,0],permeabilityPercent:0,volumeM3:6*length*(low+rise/2),source:"SYNTHETIC airtight envelope",revision:"1"},
     reviewedRoof:{procedure:"6123-global-Ce-airtight/1",axes:"b=+X;a=+Y;alpha0=+Y;alpha90=+X;alpha270=-X",roofImpermeable:true,effectivelyAirtight:true,fixedWindows:true,
       negligibleAccidentalWindowBreakage:true,singleInternalPressure:true,noRoofProjections:true,noLanterns:true,noSeparateCeilingPressure:true,
       noNeighborAmplification:true,staticPeriodAtMostOneSecond:true,s3Group:3,source:"SYNTHETIC applicability assumptions; engineer review pending",revision:"1"},
@@ -45,5 +48,6 @@ export function syntheticReviewedExtract():ReviewedExtract{return {
   windDocumentSha256:correctedWindDocumentSha256,combinationsDocumentSha256:combinationsDocumentSha256,
   gable45:{crossWindward:.41,crossLeeward:-.52,parallelLeading:-.73,parallelRemainder:-.64},
   mono30:{positiveHigh:-.47,positiveLow:-.53,negativeHigh:.09,negativeLow:-.61},airtightCpi:[-.17,.03],s3Group3:1,
-  factors:{permanentSteel:1.2,permanentIndustrialized:1.3,permanentFavorable:.9,wind:1.7,roofLive:1.9,psiWind:[.11,.22,0],psiRoofLive:[.44,.55,.66]},
+  // N3: 8681 factors are no longer free in the extract; they must equal the single source (data JSON).
+  factors:reviewedRoofFactorsFrom8681(),
 };}

@@ -4,8 +4,8 @@ import { applyWindSpeed } from "./apply-wind-speed";
 import { windReferenceProject } from "./examples/wind-project";
 import { generateStructure } from "./calculations/structure";
 import { distributeWindActions } from "./wind-load-path";
-const reference={standard:"ABNT NBR 6123",edition:"2023",clause:"4.2; 5.3.3",source:"Declared independent numerical control; classification reviewed separately",revision:"1",responsible:"Test"};
-const input={schema_version:"jpn.wind-speed/1",edition:"2023-original",v0Mps:40,heightM:10,heightReference:"model-base-z0",topography:"flat-or-gently-undulating",roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,reference};
+const reference={standard:"ABNT NBR 6123",edition:"2023-corrected-2025",clause:"4.2; 5.3.3",source:"Declared independent numerical control; classification reviewed separately",revision:"1",responsible:"Test"};
+const input={schema_version:"jpn.wind-speed/1",edition:"2023-corrected-2025",v0Mps:40,heightM:10,heightReference:"model-base-z0",topography:"flat-or-gently-undulating",roughnessTransition:"none",category:"II",sizeClass:"A",s3:1,reference};
 
 it("independent exact speed/pressure reference and quadratic scaling",()=>{
   const r=calculateWindSpeed(input);expect(r.s2).toBe(1);expect(r.vkMps).toBe(40);expect(r.dynamicPressurePa).toBeCloseTo(980.8,10);

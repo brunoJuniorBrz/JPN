@@ -1,7 +1,10 @@
 # M42-P1 — Combinações ELU/ELS (ABNT NBR 8681:2025)
 
-Fonte: captura do Studocu fornecida pelo usuário (19 páginas, texto nítido). **Conferência documental, não homologação**;
-erratas não verificadas; revisão profissional pendente. Dados versionados em `data/normas/nbr8681-2025-combinations.json`.
+Fonte (atualizada no N3, 16/11/2026): PDF da ABNT NBR 8681:2025, SHA-256 `f4020c71…2d9c`, com carimbo de exemplar
+licenciado à UFRGS. O uso foi autorizado pelo dono do projeto até a entrada do exemplar carimbado em seu nome, antes da liberação.
+Conferido célula a célula (Tabelas 1 a 6, 5.1.4.3), sem diferenças. **Conferência documental, não homologação**;
+erratas não verificadas; revisão profissional pendente. Fonte única: `data/normas/nbr8681-2025-combinations.json`
+(o extrato privado da cobertura deriva dele; ver `src/domain/nbr8681-source.ts`).
 
 ## O que foi verificado (imagens a 130 dpi; Tabelas 1, 2, 4 e 6 ampliadas a 200 dpi — sem ambiguidades)
 | Item | Cláusula / tabela |
