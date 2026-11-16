@@ -1,3 +1,5 @@
+import {stationResistanceDemands} from "./station-resistance";
+import type {MemberDemands} from "./member-demands";
 import type {Project} from "./models";
 import {resolveMemberPhysical} from "./member-physical";
 import {resolvePhysicalStructure} from "./physical-structure";
@@ -11,7 +13,7 @@ export const standardOf=(project:Project,pieceId:string):ResistanceStandard=>
   project.workspace.spatialPreparation?.resistanceStandards?.find(s=>s.pieceId===pieceId)?.standard??"NBR14762";
 
 type DemandForcesT=Parameters<typeof fitSegmentForceField>[0][number]["forces"];
-export type SteelDemands={binding:{inputSha256:string;resultSha256:string};pieces:{pieceId:string;lengthM:number;segments:{id:string;t0:number;lengthMm:number}[];
+export type SteelDemands={binding:{inputSha256:string;resultSha256:string;solver?:{name:string}};pieces:{pieceId:string;lengthM:number;segments:{id:string;t0:number;lengthMm:number}[];
   samples:{segmentId:string;combinationId:string;stationIndex:number;forces:DemandForcesT}[]}[]};
 export type SteelRequest={pieceId:string;combinationId:string;request:Record<string,unknown>};
 export function buildSteelIRequests(project:Project,demands:SteelDemands,ulsCombinationIds:string[],combinationKind:"normal"|"special"|"exceptional"="normal"){
@@ -34,7 +36,9 @@ export function buildSteelIRequests(project:Project,demands:SteelDemands,ulsComb
     if(missing.length){why("dados ausentes: "+missing.join(", "));continue;}
     for(const combinationId of ulsCombinationIds){
       try{
-        const fields=piece.segments.map(seg=>{
+        const second=demands.binding.solver?.name==="JPN M43";
+        const station_demands=second?stationResistanceDemands(piece as MemberDemands["pieces"][number],combinationId):undefined;
+        const fields=second?[]:piece.segments.map(seg=>{
           const rows=piece.samples.filter(s=>s.segmentId===seg.id&&s.combinationId===combinationId).sort((a,b)=>a.stationIndex-b.stationIndex);
           if(!rows.length)throw Error("sem demanda do solver para "+combinationId);
           return {segment_id:seg.id,offset_m:seg.t0*piece.lengthM,length_m:seg.lengthMm/1000,forces:fitSegmentForceField(rows.map((r,i)=>({u:i/(rows.length-1),forces:r.forces})))};
@@ -46,7 +50,7 @@ export function buildSteelIRequests(project:Project,demands:SteelDemands,ulsComb
             effective_length_x_m:decl.bucklingYM!,effective_length_y_m:decl.bucklingZM!,effective_length_z_m:decl.lateralRestraintM!,unbraced_length_m:decl.lateralRestraintM!,
             properties:null,fillet_radius_m:null,source:geo.source.slice(0,900),revision:geo.revision.slice(0,900)},
           tension:{basis:"no-holes-all-elements-connected",source:"Sem furos declarado: seção bruta (verificar com o responsável)",revision:"INT-1d"},
-          web:{transverse_stiffener_spacing_m:null},fields}});
+          ...(station_demands?{station_demands}:{}),web:{transverse_stiffener_spacing_m:null},fields}});
       }catch(e){why(combinationId+": "+(e as Error).message);}
     }
   }

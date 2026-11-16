@@ -1,3 +1,5 @@
+import {secondOrderMixedRequestSchema} from "./structural-loading";
+import {mixedInputHash} from "./mixed-analysis";
 import type {Project} from "./models";
 import {adaptMixedProject} from "./mixed-adapter";
 import {adaptLoadedMixedProject,adaptLoadedMixedProjectV3} from "./loaded-mixed-adapter";
@@ -44,4 +46,15 @@ export function withReviewedIsotropicAxes(project:Project):Project{
   if(!frames.length)return project;
   return declareLocalAxes(project,structureSignature(project),frames.map(p=>({pieceId:p.id,rotationDeg:0,
     source:"Exemplo sintético com seção isotrópica (Iy = Iz): o giro não altera a resposta",revision:"INT-1a: exemplo embutido revisado"})));
+}
+
+/** Only validated solver options are restored; all physical data is rebuilt. */
+export async function adaptMixedForRequest(project:Project,template:unknown){
+  if(template && typeof template==="object" && "analysis_order" in template){
+    const options=secondOrderMixedRequestSchema.parse(template),base=await adaptLoadedMixedProjectV3(project);
+    const request=secondOrderMixedRequestSchema.parse({...base.request,analysis_order:"second-order",solution_mode:"per-combination",
+      ...(options.mesh_initial_subdivisions?{mesh_initial_subdivisions:options.mesh_initial_subdivisions}:{})});
+    return {...base,request,input_sha256:await mixedInputHash(request)};
+  }
+  return adaptMixedForVersion(project,requestVersionOf(template));
 }
