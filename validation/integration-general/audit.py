@@ -91,6 +91,10 @@ REVIEWED_AMENDMENTS = {
     # INT-2.3: preserve the authenticated deployment map and allow the queued worker budget.
     "engine/vercel.json": "626eb772e28222db7ddc821dbe2601bbd8220139",
     "engine/tests/test_vercel_mixed_http.py": "a967c7b3fae6e3c598b5fc8de287efbb74a852fd",
+    # N1 / PR #129 (approved by the project owner): single NBR 6123 edition (2023-corrected-2025);
+    # edition literals and the speed-data SHA assertion updated, no numerical expectation changed.
+    "src/domain/normative-origin.test.ts": "80a2d9c9ee73462acebc9d17711d845124e66ced",
+    "src/domain/wind-speed.test.ts": "e5cf65b5ac01975374c50803a7c96b1eb3d0f65e",
 }
 
 TREES = {}
