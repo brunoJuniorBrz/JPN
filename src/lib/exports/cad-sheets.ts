@@ -92,16 +92,30 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date){
     const scale=[1,2,2.5,5,10].map(v=>v*power).find(v=>v>=required)!;
     const space=sheet(view,scale),at=(p:P):P=>[40+(p[0]-minX)/scale,90+(p[1]-minY)/scale];
     text(space,[18,260],view==="CORTE A-A"?`Interseção real em Y=${num(sectionY)} mm; símbolos representam eixos, não seções dimensionadas.`:`Projeção ortogonal de barras/superfícies declaradas; referência de altura Z=${num(datum)} mm.`);
+    // Bars at different depths can share a projection. Keep their labels distinct.
+    const occupied:{x:number;y:number;width:number;height:number}[]=[];
+    const pieceLabel=(anchor:P,value:string)=>{
+      const lines=clean(value).match(/.{1,70}/gu)??[""],width=Math.max(...lines.map(l=>l.length))*1.2,height=lines.length*2.8;
+      const x=Math.max(18,Math.min(400-width,anchor[0]+1));let y=anchor[1]+1;
+      for(let i=0;i<100;i++){
+        const candidate=Math.max(82+height,Math.min(250,anchor[1]+1+(i%2?-1:1)*Math.ceil(i/2)*3));
+        y=candidate;
+        if(!occupied.some(b=>x<b.x+b.width+1&&x+width+1>b.x&&y-height<b.y+1&&y+1>b.y-b.height))break;
+      }
+      occupied.push({x,y,width,height});
+      if(Math.hypot(x-anchor[0],y-anchor[1])>4)poly(space,[anchor,[x,y]],"PERFIS");
+      lines.forEach((line,i)=>text(space,[x,y-i*2.8],line,"PERFIS",1.8));
+    };
     for(const p of model.pieces){
       const a=nodes.get(p.start)!,b=nodes.get(p.end)!;
       if(view==="CORTE A-A"&&!(a.y===sectionY&&b.y===sectionY)){
         if(a.y!==b.y&&sectionY>=Math.min(a.y,b.y)&&sectionY<=Math.max(a.y,b.y)){
           const t=(sectionY-a.y)/(b.y-a.y),q=at([a.x+t*(b.x-a.x),a.z+t*(b.z-a.z)]);
-          space.addCircle(point3d(...q),.7,{layerName:"PERFIS"});text(space,[q[0]+1,q[1]+1],`${p.id}: ${profile(p.id)}`,"PERFIS",1.8);
+          space.addCircle(point3d(...q),.7,{layerName:"PERFIS"});pieceLabel(q,`${p.id}: ${profile(p.id)}`);
         }continue;
       }
       const u=at(projectPoint(view,a)),v=at(projectPoint(view,b));poly(space,[u,v],"PERFIS");
-      text(space,[(u[0]+v[0])/2+1,(u[1]+v[1])/2+1],`${p.id}: ${profile(p.id)}`,"PERFIS",1.8);
+      pieceLabel([(u[0]+v[0])/2,(u[1]+v[1])/2],`${p.id}: ${profile(p.id)}`);
     }
     for(const face of faces){
       if(view==="CORTE A-A"){

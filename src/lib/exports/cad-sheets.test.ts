@@ -19,7 +19,7 @@ function shed(){
     {id:"RIGHT",outer:[[3000,0,4000],[6000,0,3000],[6000,4000,3000],[3000,4000,4000],[3000,0,4000]],holes:[],supportPieceIds:["PC","PB"],source:"Água direita declarada",revision:"TEST-1"}]};
   return p;
 }
-type E={type:string;layer:string;text?:string;actualMeasurement?:number;block?:string;vertices?:{x:number;y:number;z?:number}[]};
+type E={type:string;layer:string;text?:string;actualMeasurement?:number;block?:string;startPoint?:{x:number;y:number};vertices?:{x:number;y:number;z?:number}[]};
 it("opens physical shed layouts, native dimensions, physical profiles and exact takeoff with an independent reader",()=>{
   const p=shed(),before=JSON.stringify(p),content=createStructureDxf(p,new Date("2026-11-16T15:00:00Z")),parsed=new DxfParser().parseSync(content)!;
   const entities=[...parsed.entities,...Object.values(parsed.blocks).flatMap(b=>b.entities??[])] as unknown as E[];
@@ -39,6 +39,10 @@ it("opens physical shed layouts, native dimensions, physical profiles and exact 
   expect(texts).toContain("BORDA/BEIRAL 3000");expect(texts).toContain("CUMEEIRA 4000");
   expect(texts).toContain("EIXOS TERÇAS 3162.278");
   expect(texts.some(t=>t.includes("PC: Ue 150×60×20×2,00"))).toBe(true);
+  const frontal=Object.values(parsed.blocks).find(b=>b.entities?.some(e=>e.type==="TEXT"&&(e as unknown as E).text==="FRONTAL"))!;
+  const labels=frontal.entities.filter(e=>e.type==="TEXT"&&e.layer==="PERFIS") as unknown as E[];
+  expect(labels).toHaveLength(p.workspace.physicalStructure!.pieces.length);
+  expect(new Set(labels.map(e=>JSON.stringify(e.startPoint))).size).toBe(labels.length);
   const takeoff=declaredTakeoff(p),pc=takeoff.pieces.find(p=>p.pieceId==="PC")!;
   expect(texts).toContain(String(Number(pc.massKg!.toFixed(3))));
   expect(texts).toContain(String(Number((pc.massKg!/4).toFixed(3))));
