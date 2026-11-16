@@ -57,6 +57,8 @@ def ancestor(a, b):
 REVIEWED_AMENDMENTS = {
     # timeout explícito de 30 s no canvas 3D do CI (studio-next:32, quick-project:46)
     "tests/e2e/quick-project.spec.ts": "16614d78c2aebf3e397343b5f7738079cf4216ef",
+    # INT-2.1 / PR121: engine main and INT-2 previews only, behind WSGI authentication.
+    "engine/vercel.json": "7856c0962fd88ec6829e8ce42f58e3e3fa694535",
     # INT-1c/M44: m34ab (cap 10 lifted) and M50 (9.8.4 computed) tests updated, reviewed
     "src/domain/m34ab-declared.test.ts": "093f11fe3277226097c79a82b7afd9daf1315127",
     # M44-P1: NBR 14762 audit amendments (reviewed; was 477462c)
@@ -117,7 +119,11 @@ def verify_guards(snapshot):
         assert current.get(path) in (historic[path], REVIEWED_AMENDMENTS.get(path)), "Historical test/evidence drift: " + path
     for path in (ROOT/"vercel.json", ROOT/"engine/vercel.json"):
         flags = json.loads(path.read_text(encoding="utf-8"))["git"]["deploymentEnabled"]
-        assert flags["main"] is False and flags[BRANCH] is False, "Deployment guard changed"
+        config = path.relative_to(ROOT).as_posix()
+        if config == "engine/vercel.json" and current.get(config) == REVIEWED_AMENDMENTS[config]:
+            assert flags == {"**": False, "main": True, "codex/int-2-*": True}, "Reviewed engine deployment guard changed"
+        else:
+            assert flags.get("main") is False and flags.get(BRANCH) is False, "Deployment guard changed: " + config
     assert "FireScreeningHint" not in (ROOT/"src/components/planning/quick-project-form.tsx").read_text(encoding="utf-8"), "Unreviewed SCI activated"
 
 
