@@ -17,7 +17,10 @@ import { roofAreaReferenceProject } from "@/domain/examples/roof-area-project";
 import { mixedReferenceProject } from "@/domain/examples/mixed-project";
 import { loadedMixedReferenceProject } from "@/domain/examples/loaded-mixed-project";
 import { adaptMixedProject } from "@/domain/mixed-adapter";
-import { mixedStations, verifyMixedResult } from "@/domain/mixed-analysis";
+import { mixedInputHash, mixedStations, verifyMixedResult } from "@/domain/mixed-analysis";
+import { acceptOverlay, buildResultOverlay, deformedSegments, overlayColors, studioModelFromPhysical } from "@/domain/studio-result-layers";
+import { resultOverlayKinds, type ResultOverlayKind } from "./studio-result-overlay";
+import type { buildMemberCombinationMatrix } from "@/domain/member-combination-matrix";
 import { postAnalysis, type JobProgress } from "@/infrastructure/analysis/async-job-client";
 import { anyMixedResultSchema, verifyLoadingTrace } from "@/domain/structural-loading";
 import { adaptLoadedMixedProject, adaptLoadedMixedProjectV3 } from "@/domain/loaded-mixed-adapter";
@@ -108,6 +111,36 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     }
     return values;
   }, [current, result]);
+  // INT-1f: Studio view + traced result layers. A layer is drawn ONLY if reviewResultOverlay accepts it for the current input hash.
+  const [viewerMode, setViewerMode] = useState<"studio" | "simple">("studio"), [layerKind, setLayerKind] = useState<ResultOverlayKind | "none">("none"), [scaleInput, setScaleInput] = useState("");
+  const [hashed, setHashed] = useState<{ result: unknown; hash: string } | null>(null), [matrixState, setMatrixState] = useState<{ identity: string; matrix: ReturnType<typeof buildMemberCombinationMatrix> } | null>(null);
+  // The hash is stored WITH the result it belongs to; a different (or no) result yields "" without any synchronous reset.
+  useEffect(() => { let live = true; if (current) void mixedInputHash(current.result).then(h => { if (live) setHashed({ result: current.result, hash: h }); }); return () => { live = false; }; }, [current]);
+  const resultHash = current && hashed?.result === current.result ? hashed.hash : "";
+  const studioModel = useMemo(() => model && active.workspace.physicalStructure ? studioModelFromPhysical(model) : null, [model, active]);
+  const layer = useMemo(() => {
+    if (!current || !result || !selectedCombo || !resultHash || layerKind === "none" || !model) return null;
+    const utilizationByPiece: Record<string, number> = {};
+    if (matrixState?.identity === current.identity) for (const r of matrixState.matrix.rows) if (r.combinationId === selectedCombo && r.maxUtilization !== null) utilizationByPiece[r.pieceId] = Math.max(utilizationByPiece[r.pieceId] ?? 0, r.maxUtilization);
+    // NBR 14762 pieces (per-piece cold-formed design control): their executed checks for THIS combination count too. Max utilization, never an approval.
+    for (const e of (current.designExecutions ?? []) as { result: { piece_id: string; combination_id: string; checks: { utilization: number | null }[] } }[]) {
+      if (e.result.combination_id !== selectedCombo) continue;
+      const u = e.result.checks.map(c => c.utilization).filter((x): x is number => x !== null && Number.isFinite(x));
+      if (u.length) utilizationByPiece[e.result.piece_id] = Math.max(utilizationByPiece[e.result.piece_id] ?? 0, ...u);
+    }
+    const overlay = buildResultOverlay(layerKind, { inputSha256: current.result.input_sha256, resultSha256: resultHash, combinationId: selectedCombo, solver: { name: current.result.solver.name, version: current.result.solver.version },
+      mapped: current.prepared.mapping.members, nodes: result.nodes, members: result.members as never, utilizationByPiece });
+    const verdict = acceptOverlay(overlay, model, current.prepared.input_sha256);
+    if (!verdict.ok) return { refused: verdict.issues, overlay, colors: null, segments: null, legend: null, scale: 0 };
+    const palette = overlayColors(overlay), req = current.prepared.request;
+    const translations = Object.fromEntries(Object.entries(result.nodes).map(([id, n]) => [id, n.translation_m as [number, number, number]]));
+    const maxDisp = Math.max(1e-12, ...Object.values(translations).map(t => Math.hypot(...t)));
+    const span = Math.max(1e-9, ...["x_m", "y_m", "z_m"].map(k => { const v = req.nodes.map(n => n[k as "x_m"]); return Math.max(...v) - Math.min(...v); }));
+    const auto = Math.min(1e5, Math.max(1, Math.round(0.08 * span / maxDisp))), manual = Number(scaleInput.replace(",", "."));
+    const scale = scaleInput.trim() && Number.isFinite(manual) && manual >= 0 ? manual : auto;
+    const segments = layerKind === "deformed-shape" ? deformedSegments({ nodes: req.nodes, members: current.prepared.mapping.members, translations, scale }) : null;
+    return { refused: null, overlay, colors: overlay.pieces.length ? palette.colors : null, segments, legend: palette, scale };
+  }, [current, result, selectedCombo, resultHash, layerKind, model, matrixState, scaleInput]);
   async function execute(includeConnections=false) {
     const controller = new AbortController(), mine = ++ticket.current.value; request.current?.abort(); request.current = controller;
     setBusyIdentity(identity); setError(""); setSession(null);setRestored(false);
@@ -190,7 +223,17 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       {!current && <p className="notice" data-testid="mixed-no-results">Sem resultado atual. Execute após revisar os dados; alterações invalidam resultados anteriores.</p>}
       <Field label="Peça na análise mista"><Select value={selectedPiece} onChange={e => { setPieceId(e.target.value); setSegmentId(""); setNodeId(""); }}>{model?.pieces.map(p => <option key={p.id} value={p.id}>{p.id} · {p.role}</option>)}</Select></Field>
       {!demoPresentation&&<label className="checkbox-label"><input type="checkbox" checked={inspectNodes} onChange={e=>setInspectNodes(e.target.checked)}/>Selecionar nós físicos no 3D</label>}
-      {model && !demoPresentation && <div data-testid="mixed-viewer">{active.workspace.physicalStructure?<PhysicalLineView analysisColors={colors} model={model} selected={selectedPiece} onSelect={id=>{setPieceId(id);setSegmentId("");}} selectedNodeId={connectionNodeId} onSelectNode={id=>{setConnectionNodeId(id);setNodeId(id);}}/>:<Structure3D inspectNodes={inspectNodes} selectedNodeId={connectionNodeId} onSelectNode={id=>{setConnectionNodeId(id);setNodeId(id);}} model={model as StructureModel} roof={active.roof} planning={active.planning} projectName={active.name} selected={selectedPiece} onSelect={id => { setPieceId(id); setSegmentId(""); setNodeId(""); }} analysisColors={colors ?? {}} />}</div>}
+      {model && !demoPresentation && <div data-testid="mixed-viewer">
+        {studioModel && <div role="group" aria-label="Tipo de vista" className="view-switch">{([["studio", "Studio 3D"], ["simple", "Vista simples"]] as const).map(([k, label]) => <button key={k} type="button" className="button secondary" aria-pressed={viewerMode === k} data-testid={"viewer-" + k} onClick={() => setViewerMode(k)}>{label}</button>)}</div>}
+        {current && <div data-testid="studio-layer-controls"><Field label="Camada de resultado (combinação selecionada)"><Select value={layerKind} data-testid="studio-layer-kind" onChange={e => setLayerKind(e.target.value as ResultOverlayKind | "none")}><option value="none">Sem camada (cores axiais)</option>{resultOverlayKinds.map(k => <option key={k} value={k}>{({ displacement: "Deslocamento", "deformed-shape": "Deformada", "bending-moment": "Momento fletor", shear: "Cortante", axial: "Axial", reaction: "Reações", verification: "Verificação (utilização)" } as Record<string, string>)[k]}</option>)}</Select></Field>
+          {layerKind === "deformed-shape" && <Field label="Fator de escala da deformada (vazio = automático)"><input className="input" inputMode="decimal" value={scaleInput} onChange={e => setScaleInput(e.target.value)} placeholder={layer && !layer.refused ? String(layer.scale) : ""} /></Field>}
+          {layer?.refused && <p className="field-error" role="alert" data-testid="studio-layer-refused">Camada recusada ({layer.refused.map(i => i.code).join(", ")}): {layer.refused[0].message}</p>}
+          {layer && !layer.refused && layer.legend && <p data-testid="studio-layer-legend">{layer.overlay.kind}: de {layer.legend.min.toLocaleString("pt-BR", { maximumFractionDigits: 3 })} a {layer.legend.valueMax.toLocaleString("pt-BR", { maximumFractionDigits: 3 })} {layer.legend.units} · combinação {layer.overlay.binding.combinationId} · {layer.overlay.binding.solver.name} {layer.overlay.binding.solver.version} · entrada {layer.overlay.binding.inputSha256.slice(0, 12)}…{layerKind === "deformed-shape" ? ` · escala ×${layer.scale}` : ""}. Imagem de resultados, não é aprovação estrutural.</p>}
+          {layer && !layer.refused && !layer.overlay.pieces.length && <p className="notice" data-testid="studio-layer-empty">{layerKind === "verification" ? "Nenhuma utilização disponível para esta combinação: execute “Verificar peças NBR 8800” antes." : "Sem valores para esta camada nesta combinação."}</p>}
+        </div>}
+        {active.workspace.physicalStructure && viewerMode === "simple" ? <PhysicalLineView analysisColors={layer?.colors ?? colors} model={model} selected={selectedPiece} onSelect={id => { setPieceId(id); setSegmentId(""); }} selectedNodeId={connectionNodeId} onSelectNode={id => { setConnectionNodeId(id); setNodeId(id); }} />
+          : <Structure3D inspectNodes={inspectNodes} selectedNodeId={connectionNodeId} onSelectNode={id => { setConnectionNodeId(id); setNodeId(id); }} model={(studioModel ?? model) as StructureModel} roof={active.roof} planning={active.planning} projectName={active.name} selected={selectedPiece} onSelect={id => { setPieceId(id); setSegmentId(""); setNodeId(""); }} analysisColors={layer?.colors ?? colors ?? {}} deformed={layer?.segments ?? null} />}
+      </div>}
       {!demoPresentation&&<p>Legenda: pórtico azul; axial em tração turquesa; compressão violeta; nulo cinza; sinais diferentes entre segmentos ocre. Seleção laranja. Cores não verificam resistência.</p>}
       {demoPresentation&&current&&result&&<div data-testid="mixed-results">
         {!restored&&<MathematicalComparison request={current.prepared.request} result={current.result} inputHash={current.prepared.input_sha256}/>}
@@ -224,7 +267,7 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
         <p>{current.result.diagnostics.free_dofs} graus livres · condição escalada {show(current.result.diagnostics.scaled_condition)} · {show(current.result.diagnostics.elapsed_seconds)} s.</p>
         {current.resistanceError && <p role="alert" data-testid="resistance-blocked">Relatório resistente bloqueado: {current.resistanceError}</p>}
         {!demoPresentation && <AssessmentPanel assessment={current.assessment} error={current.assessmentError} />}
-        {!demoPresentation && <MemberStandardsPanel project={active} resistance={current.resistance} onChange={next => editStandards({ workspace: next.workspace })} />}
+        {!demoPresentation && <MemberStandardsPanel project={active} resistance={current.resistance} onMatrix={m => setMatrixState(m ? { identity: current.identity, matrix: m } : null)} onChange={next => editStandards({ workspace: next.workspace })} />}
         {!demoPresentation&&current.resistance && <ResistanceReportPanel project={active} onChange={edit} report={current.resistance} executions={current.designExecutions??[]} onComputed={r=>setSession(previous=>previous?.identity===identity?{...previous,designExecutions:[...(previous.designExecutions??[]).filter(x=>x.result.piece_id!==r.result.piece_id||x.result.combination_id!==r.result.combination_id),r]}:previous)} selectedPiece={selectedPiece} onSelectPiece={id=>{setPieceId(id);setSegmentId("");setNodeId("");}} onExport={()=>void exportResistance()}/>}
         <details><summary>Hipóteses e limites do cálculo</summary><ul>{current.result.assumptions.map(a => <li key={a}>{a}</li>)}</ul><p>Geometria original preservada. Deformada gráfica ainda não implementada. Juntas esféricas nas duas extremidades de pórticos e contatos independentes permanecem recusados.</p></details>
         <div className="actions"><button className="button secondary" onClick={() => exportJSON(current.prepared, "jpn-misto-entradas-rastreabilidade.json")}>Exportar entradas mistas</button><button className="button secondary" onClick={() => exportJSON({ prepared: current.prepared, result: current.result, execution: current.execution }, "jpn-misto-resultados-rastreabilidade.json")}>Exportar resultados mistos</button></div>

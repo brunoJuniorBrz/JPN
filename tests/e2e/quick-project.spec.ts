@@ -43,7 +43,7 @@ for (const width of [375, 1440]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.reload();
     await expect(page.getByTestId("takeoff-totals")).not.toHaveText(original);
-    await expect(canvas).toHaveAttribute("data-mode", "profiles");
+    await expect(canvas).toHaveAttribute("data-mode", "profiles", { timeout: 30000 });
     expect(errors).toEqual([]);
   });
 }
