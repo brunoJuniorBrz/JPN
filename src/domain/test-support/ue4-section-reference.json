@@ -1,0 +1,28 @@
+{
+  "source": "Independent sectionproperties 3.10.2 geometric reference; not normative capacities",
+  "geometry": {
+    "height": 100,
+    "width": 50,
+    "lip": 15,
+    "wallThickness": 4,
+    "insideRadius": 3
+  },
+  "properties": {
+    "areaMm2": 821.650686359886,
+    "centroidYMm": 17.162119369082816,
+    "centroidZMm": 50.000000000000135,
+    "iyMm4": 1244018.9007416188,
+    "izMm4": 254702.26006261565,
+    "iyzMm4": -2.3283064365386963e-09,
+    "jMm4": 4339.135166702326,
+    "warpingMm6": 514468238.3775749,
+    "shearCenterYMm": -20.592197525845663,
+    "shearCenterZMm": 49.99997207142125,
+    "wyPositiveMm3": 24880.378014832444,
+    "wyNegativeMm3": 24880.37801483231,
+    "wzPositiveMm3": 7756.355013447823,
+    "wzNegativeMm3": 14840.956095519077,
+    "radiusYMm": 38.91077475882404,
+    "radiusZMm": 17.606490151792272
+  }
+}

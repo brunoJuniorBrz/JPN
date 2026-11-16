@@ -9,9 +9,34 @@ import {memberDesignBasis} from "./coldformed-design";
 import type {DemandInput} from "./member-demands";
 import type {coldformedDesignResultSchema} from "./coldformed-design";
 import type {ElasticLtbAttempt} from "./elastic-ltb";
+import {secondOrderMixedRequestSchema,secondOrderMixedResultSchema} from "./structural-loading";
 
-export const structuralAssessmentRequestSchema=z.object({schema_version:z.literal("jpn.structural-assessment/1"),project:projectSchema}).strict();
+export const structuralAssessmentRequestSchema=z.object({schema_version:z.literal("jpn.structural-assessment/1"),project:projectSchema,
+  analysis:z.object({request:secondOrderMixedRequestSchema,result:secondOrderMixedResultSchema}).strict().optional()}).strict();
 export type ResistanceAttempt={pieceId:string;combinationId:string;status:"executed"|"blocked";reason:string|null};
+
+/** INT-3c station checks only. No linear joint trace, inferred restraints or
+ * M51 field can complete a missing second-order procedure. */
+export async function finishStationAssessment(project:Project,base:ResistanceReport,records:MemberExecution[],attempts:ResistanceAttempt[]){
+  const report=await buildResistanceAssessment(project,base,records);
+  const lateralTorsional=(project.workspace.spatialPreparation?.elasticLtbStudies??[]).map(study=>({study,status:"BLOCKED" as const,
+    reason:"SECOND_ORDER_LTB_CONTINUOUS_FIELD_REQUIRED: M51 requer campo contínuo e condições de estabilidade compatíveis.",designResistance:null}));
+  const body={schema_version:"jpn.structural-assessment-result/1" as const,status:"partial-analysis-completed-experimental" as const,
+    analysisInputSha256:base.binding.inputSha256,analysisResultSha256:base.binding.resultSha256,report,
+    resistanceAttempts:attempts,lateralTorsional,studyBases:await Promise.all((project.workspace.spatialPreparation?.resistance??[]).map(async p=>({pieceId:p.pieceId,basisSha256:await memberDesignBasis(project,base,p.pieceId)}))),resistanceBatch:null,
+    checks:records.flatMap(record=>record.result.checks.map(check=>({pieceId:record.result.piece_id,combinationId:record.result.combination_id,
+      profile:base.pieces.find(p=>p.pieceId===record.result.piece_id)!.profileDesignation,steel:base.pieces.find(p=>p.pieceId===record.result.piece_id)!.physicalProperties.steelGrade,
+      section:record.request.design.section,computedGrossProperties:record.result.geometry_audit!.computed_properties,
+      failureMode:check.id,procedure:checkProcedures[check.id]??null,standard:record.result.standard,allMemberLimitStatesVerified:false as const,
+      formula:check.status==="BLOCKED"?null:formula(check.id,record.result.capacities[check.id]),check,calculationInputSha256:record.result.input_sha256,
+      analysisInputSha256:base.binding.inputSha256,analysisResultSha256:base.binding.resultSha256}))),
+    blocked:["SECOND_ORDER_RESTRAINT_ACTIONS_REQUIRED: auditoria M50 de contenções e ligações depende de ações contínuas não disponíveis no INT-3c.",
+      "SECOND_ORDER_CONTINUOUS_EXTREMA_PENDING: estações não certificam extremos contínuos.","SECOND_ORDER_LTB_CONTINUOUS_FIELD_REQUIRED: avaliação M51 bloqueada sem campo contínuo compatível.","N12_PENDING: deslocabilidade normativa"],
+    restraints:{schema_version:"jpn.physical-restraint-audit/1" as const,inputSha256:base.binding.inputSha256,declarationSha256:await mixedInputHash(project.workspace.spatialPreparation?.physicalRestraints??null),status:"BLOCKED",items:[],idealFlexuralReferences:[],normativeStabilityVerified:false as const,computedStructuralApproval:false as const,fabricationRelease:false as const,releaseGate:"NOT_READY_BLOCKED" as const},
+    transfers:{schema_version:"jpn.connection-transfer-demands/1" as const,inputSha256:base.binding.inputSha256,status:"BLOCKED",code:"SECOND_ORDER_JOINT_ACTIONS_REQUIRED",combinations:[] as ReturnType<typeof connectionTransferDemands>["combinations"]},
+    computedStructuralApproval:false as const,fabricationRelease:false as const,releaseGate:"NOT_READY_BLOCKED" as const};
+  return {...body,assessmentSha256:await mixedInputHash(body)};
+}
 const formula=(id:string,capacity?:z.infer<typeof coldformedDesignResultSchema>["capacities"][string])=>{
   if(id==="compression"||/m[yz]_(positive|negative)/.test(id))return "R_d = min(R_global, R_local, R_distortional) / gamma; branch equations in compression_mrd / bending_mrd";
   if(id==="shear_z")return capacity?.branch==="yield"?"V_Rd = 0.6 fy h t / gamma":capacity?.branch==="inelastic-buckling"?"V_Rd = 0.65 t^2 sqrt(5 fy E) / gamma":"V_Rd = 0.905 (5 E t^3 / h) / gamma";

@@ -1,3 +1,4 @@
+import {stationDemandsSchema,stationResistanceDemands} from "./station-resistance";
 import { z } from "zod";
 import { sectionAnalysisRequestSchema } from "./section-analysis";
 import { mixedInputHash } from "./mixed-analysis";
@@ -23,10 +24,11 @@ export const coldformedDesignRequestSchema=z.object({schema_version:z.literal("j
   section:z.object({family:z.literal("cold-formed"),shape:z.literal("u-stiffened"),area_m2:positive,fy_pa:positive,fu_pa:positive,e_pa:positive,iy_m4:positive,iz_m4:positive,wy_m3:positive,wz_m3:positive,effective_length_y_m:positive,effective_length_z_m:positive,source:text,revision:text}).strict(),
   study:memberDesignDeclarationSchema.shape.study,critical:memberDesignDeclarationSchema.shape.critical,tension:memberDesignDeclarationSchema.shape.tension,
   web:z.object({flat_height_m:positive,thickness_m:positive,unstiffened_single_web:z.boolean()}).strict(),
-  fields:z.array(z.object({segment_id:text,offset_m:n.nonnegative(),length_m:positive,forces}).strict()).min(1).max(320).superRefine((fields,ctx)=>{
+  station_demands:stationDemandsSchema.optional(),
+  fields:z.array(z.object({segment_id:text,offset_m:n.nonnegative(),length_m:positive,forces}).strict()).min(0).max(320).superRefine((fields,ctx)=>{
     if(new Set(fields.map(f=>f.forces.myNm===null?"axial":"frame")).size>1)ctx.addIssue({code:"custom",message:"INCONSISTENT_FORCE_MODEL: a peça original não pode alternar entre resultados de pórtico e axial."});
   }),
-}).strict();
+}).strict().superRefine((v,c)=>{if((v.fields.length===0)!==!!v.station_demands)c.addIssue({code:"custom",message:"Use continuous fields OR exact stations, never both/neither."});});
 const point=z.object({segment_id:text,position_m:n,segment_position_m:n,combination_id:text,forces:z.object({nN:n,vyN:n.nullable(),vzN:n.nullable(),tNm:n.nullable(),myNm:n.nullable(),mzNm:n.nullable()}).strict()}).strict();
 const check=z.discriminatedUnion("status",[
   z.object({id:text,status:z.literal("BLOCKED"),reason:text,utilization:z.null(),governing:z.null()}).strict(),
@@ -90,9 +92,11 @@ export async function prepareColdformedDesign(project:Project,report:ResistanceR
   const basis=await memberDesignBasis(project,report,declaration.pieceId);
   if(declaration.study.basis_sha256!==basis)throw Error("Estudo crítico obsoleto: revise geometria, material, contenções e padrão de carregamento e registre novamente.");
   const continuous=report.continuousDemands?.pieces.find(p=>p.pieceId===declaration.pieceId);
-  if(!continuous)throw Error("Recupere primeiro os esforços contínuos com Calcular ações de ligações.");
-  const selected=continuous.fields.filter(f=>f.combinationId===declaration.combinationId),g=d.geometry.dimensionsMm;
-  requireCommonMemberAxes(selected.map(f=>f.globalToLocal));
+  const second="analysis_order" in report.physicalInput;
+  if(!continuous&&!second)throw Error("CONTINUOUS_DEMANDS_REQUIRED: recupere os esforços contínuos de primeira ordem.");
+  const selected=continuous?.fields.filter(f=>f.combinationId===declaration.combinationId)??[],g=d.geometry.dimensionsMm;
+  if(!second)requireCommonMemberAxes(selected.map(f=>f.globalToLocal));
+  const station_demands=second?stationResistanceDemands(report.demands.pieces.find(p=>p.pieceId===declaration.pieceId)!,declaration.combinationId):undefined;
   if(declaration.tension?.basis==="full-section-all-elements-welded"){
     const joints=draft.connections?.connections.filter(c=>c.participants.some(p=>p.pieceId===declaration.pieceId))??[];
     if(joints.some(c=>c.transferGeometry?.fixing==="bolted"||c.transferGeometry?.fixing==="combined"||c.components.some(x=>x.kind==="bolts")||c.transferGeometry?.holes.some(h=>h.pieceId===declaration.pieceId)))throw Error("CONNECTION_GEOMETRY_CONTRADICTION: hipótese de seção plena soldada contradiz furação/parafusos cadastrados. Revise a ligação física; não se presume área líquida igual à bruta.");
@@ -102,6 +106,7 @@ export async function prepareColdformedDesign(project:Project,report:ResistanceR
     section:{family:d.family,shape:d.geometry.shape,area_m2:group.areaCm2!*1e-4,fy_pa:d.fyMpa!*1e6,fu_pa:d.fuMpa!*1e6,e_pa:group.eGpa!*1e9,iy_m4:group.iyCm4!*1e-8,iz_m4:group.izCm4!*1e-8,wy_m3:d.sectionProperties.wyCm3!*1e-6,wz_m3:d.sectionProperties.wzCm3!*1e-6,effective_length_y_m:d.bucklingYM,effective_length_z_m:d.bucklingZM,source:d.source,revision:d.revision},
     study:declaration.study,critical:declaration.critical,tension:declaration.tension,
     web:{flat_height_m:(g.height!-2*(g.insideRadius!+g.wallThickness!))/1000,thickness_m:g.wallThickness!/1000,unstiffened_single_web:declaration.unstiffenedSingleWeb},
+    ...(station_demands?{station_demands}:{}),
     fields:selected.map(f=>({segment_id:f.segmentId,offset_m:f.rows[0].originalPositionM,length_m:f.lengthM,forces:f.forcePolynomials})),
   });
   const resolutions=d.sectionPropertyResolutions??{},quantities={area_m2:["areaCm2",1e-4],iy_m4:["iyCm4",1e-8],iz_m4:["izCm4",1e-8],wy_m3:["wyCm3",1e-6],wz_m3:["wzCm3",1e-6],j_m4:["jCm4",1e-8]} as const;

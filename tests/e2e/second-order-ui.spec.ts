@@ -3,6 +3,28 @@ import { createHash } from "node:crypto";
 import { buildingProject } from "../../src/domain/test-support/m41-building-fixture";
 import { declareAxes } from "./axes";
 import { openResultTab } from "./result-tabs";
+import {secondOrderResistanceProject} from "../../src/domain/test-support/second-order-resistance-project";
+
+test("same declared I member: amplified second-order demands reach the NBR8800 matrix",async({page})=>{
+  test.setTimeout(120000);
+  const project=secondOrderResistanceProject(true);
+  await page.goto("/projetos/novo");
+  await page.getByText("Importar modelo estrutural declarado",{exact:true}).click();
+  await page.getByLabel("Importar modelo estrutural JSON").setInputFiles({name:"column.json",mimeType:"application/json",buffer:Buffer.from(JSON.stringify(project))});
+  await openResultTab(page,"Engenharia");
+  const panel=page.getByTestId("mixed-workspace"),utilizations:number[]=[];
+  await expect(panel.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:25000});
+  for(const order of ["linear","second-order"]){
+    await panel.getByLabel("Ordem da análise",{exact:true}).selectOption(order);
+    await panel.getByRole("button",{name:"Executar análise mista local",exact:true}).click();
+    await expect(panel.getByTestId("mixed-results")).toBeVisible({timeout:30000});
+    await panel.getByRole("button",{name:"Verificar peças NBR 8800 (matriz ELU)",exact:true}).click();
+    await expect(panel.getByTestId("steel-matrix")).toBeVisible({timeout:20000});
+    utilizations.push(Number(await panel.getByTestId("steel-matrix").locator("tbody tr").first().locator("td").nth(4).innerText()));
+    if(order==="second-order")await expect(panel.getByTestId("steel-matrix")).toContainText("SECOND_ORDER_CONTINUOUS_EXTREMA_PENDING");
+  }
+  expect(utilizations[1]).toBeGreaterThan(1.1*utilizations[0]);
+});
 
 for (const width of [390, 1440]) test(`galpão real em segunda ordem pela tela e fila em ${width}px`, async ({ page }) => {
   test.setTimeout(120000);
@@ -52,6 +74,13 @@ for (const width of [390, 1440]) test(`galpão real em segunda ordem pela tela e
     await panel.getByTestId("studio-layer-kind").selectOption(kind);
     await expect(panel.getByTestId("studio-layer-legend")).toContainText("ELS-G");
   }
+  await expect(panel.getByTestId("assessment-blocked")).toContainText("SECOND_ORDER_RESTRAINT_ACTIONS_REQUIRED");
+  // Reopening restores only after rebuilding the current input and checking its hash.
+  await page.reload();
+  await openResultTab(page, "Engenharia");
+  await expect(panel.getByTestId("mixed-result-state")).toContainText("Resultado restaurado");
+  await expect(panel.getByLabel("Ordem da análise", { exact: true })).toHaveValue("second-order");
+  await expect(panel.getByTestId("analysis-order-result")).toContainText("ELS-G");
   await panel.getByLabel("Ordem da análise", { exact: true }).selectOption("linear");
   await expect(panel.getByTestId("mixed-no-results")).toBeVisible();
   await panel.getByLabel("Ordem da análise", { exact: true }).selectOption("second-order");
@@ -66,5 +95,13 @@ for (const width of [390, 1440]) test(`galpão real em segunda ordem pela tela e
     await expect(panel.getByTestId("mixed-results")).toHaveCount(0);
     await page.unroute("**/api/experimental/mixed3d");
   }
+  await page.evaluate(() => {
+    const key="jpn-projetos:v1",snapshot=JSON.parse(localStorage.getItem(key)!);
+    snapshot.projects.at(-1).workspace.spatialPreparation.loading.uniform[0].knM[2]=-.02;
+    localStorage.setItem(key,JSON.stringify(snapshot));
+  });
+  await page.reload();await openResultTab(page,"Engenharia");
+  await expect(panel.getByTestId("analysis-cache-notice")).toContainText("STALE_ANALYSIS");
+  await expect(panel.getByTestId("mixed-results")).toHaveCount(0);
   expect(errors).toEqual([]);
 });
