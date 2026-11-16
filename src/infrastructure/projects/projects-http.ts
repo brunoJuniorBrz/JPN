@@ -18,7 +18,10 @@ export const useProjectStore = (store: ProjectStore | null) => { injected = stor
 const store = (): ProjectStore => {
   if (injected) return injected;
   const forced = process.env.JPN_PROJECTS_BACKEND;
-  if (forced === "file" || (forced !== "blob" && !process.env.BLOB_READ_WRITE_TOKEN && ["development", "test"].includes(process.env.NODE_ENV ?? ""))) return new FileProjectStore(projectsRoot());
+  const localRuntime = ["development", "test"].includes(process.env.NODE_ENV ?? "");
+  if (forced === "file" && !localRuntime)
+    throw new ProjectStoreError("UNCONFIGURED", "Armazenamento em arquivos é permitido apenas em desenvolvimento e testes.");
+  if (localRuntime && (forced === "file" || (forced !== "blob" && !process.env.BLOB_READ_WRITE_TOKEN))) return new FileProjectStore(projectsRoot());
   if (process.env.BLOB_READ_WRITE_TOKEN) return new BlobProjectStore(vercelBlobPort(process.env.BLOB_READ_WRITE_TOKEN));
   throw new ProjectStoreError("UNCONFIGURED", "Armazenamento de projetos não configurado: crie o Blob store privado e defina BLOB_READ_WRITE_TOKEN (o disco local é só para desenvolvimento).");
 };

@@ -66,6 +66,16 @@ describe("armazenamento em arquivos (operador único, sem serviço externo)", ()
 });
 
 describe("API /api/projects (operador único)", () => {
+  it("recusa disco local efêmero em produção, mesmo se JPN_PROJECTS_BACKEND=file for definido", async () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("JPN_PROJECTS_BACKEND", "file");
+    vi.stubEnv("BLOB_READ_WRITE_TOKEN", "");
+    const response = await put(showcaseProject("galpao"), 0);
+    expect(response.status).toBe(503);
+    expect((await response.json()).error.code).toBe("PROJECTS_STORAGE_UNCONFIGURED");
+    expect(await readdir(dir)).toEqual([]);
+  });
+
   it("exige o operador: sem credencial 401, com credencial grava, lista e lê; conflito 409; id divergente e projeto inválido 400", async () => {
     const p = showcaseProject("galpao");
     expect((await put(p, 0, false)).status).toBe(401);

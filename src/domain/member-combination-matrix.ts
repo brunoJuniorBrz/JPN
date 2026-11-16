@@ -43,7 +43,7 @@ export function requiredChecks(forces:DemandForces[],standard:ResistanceStandard
   const need=new Set<string>(),sign=(k:Component)=>{const v=col(k),e=eps(v);return {pos:v.some(x=>x>e),neg:v.some(x=>x<-e)};};
   const n=sign("nN"),my=sign("myNm"),mz=sign("mzNm"),vz=sign("vzN"),vy=sign("vyN"),t=sign("tNm");
   if(n.neg){need.add("compression");need.add("compression-slenderness");}
-  if(n.pos)need.add("tension");
+  if(n.pos){need.add("tension");need.add("tension-slenderness");}
   if(standard==="NBR8800"){
     if(my.pos||my.neg)need.add("my");
     if(mz.pos||mz.neg)need.add("mz");

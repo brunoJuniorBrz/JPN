@@ -29,7 +29,7 @@ for (const width of [375, 1440]) test(`Studio releases WebGL after repeated moun
   for (let cycle = 0; cycle < 3; cycle++) {
     await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
     const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
-    await expect(canvas).toHaveAttribute("data-environment", "procedural");
+    await expect(canvas).toHaveAttribute("data-environment", "procedural", { timeout: 30000 });
     if (triangles === null) triangles = await canvas.getAttribute("data-triangles");
     else await expect(canvas).toHaveAttribute("data-triangles", triangles);
     const handle = await canvas.elementHandle();

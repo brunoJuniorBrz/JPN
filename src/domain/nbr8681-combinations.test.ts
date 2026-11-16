@@ -221,3 +221,12 @@ it("NBR 8681 -> 6123 -> fachadas -> PyNite real: reações por combinação conf
   r=sls.reaction(sls.one(c=>c.purpose==="SLS-quasi-permanent").id);                           // G + 0.3 Q, vento psi2 = 0
   near(r[2],G+.3*Qk);near(r[0],0);near(r[1],0);
 },240000);
+
+it("pós-INT-1: acima de 16 casos/ações o gerador RECUSA com erro explícito (sem corte silencioso, sem alterar o projeto)",()=>{
+  const ids=[...Array(17).keys()].map(i=>"C"+i);
+  const actions=ids.map(caseId=>({nature:"permanent" as const,caseId,permanentType:"steel-and-equipment" as const}));
+  const decl={schema_version:"jpn.nbr8681-declaration/1",permanentMode:"separate",variableMode:"separate",permanentSets:["unfavorable"],families:["uls-normal"],actions};
+  expect(()=>generateNbr8681Combinations(decl,ids)).toThrow(/M42_TOO_MANY_ACTIONS.*17.*máximo 16/);
+  expect(()=>generateNbr8681Combinations({...decl,actions:actions.slice(0,16)},ids)).toThrow(/M42_TOO_MANY_ACTIONS/);   // 17 project cases, 16 declared: still refused, nothing dropped
+  expect(()=>generateNbr8681Combinations({...decl,actions:actions.slice(0,16)},ids.slice(0,16))).not.toThrow();           // exactly 16 is accepted
+});
