@@ -11,10 +11,13 @@ export type PostOptions = {
 };
 export type PostResult = { out: unknown; requestSha256: string | null; viaJob: boolean; job: string | null };
 
+export type AnalysisErrorDetail = { code?: string; message?: string; combination_id?: string };
+const serverFailure = (error: AnalysisErrorDetail | undefined, fallback: string) => failure(error?.code ?? fallback,
+  `${error?.combination_id ? `Combinação ${error.combination_id}: ` : ""}${error?.message ?? "Análise recusada; nenhum resultado parcial publicado."}`);
 const failure = (code: string, message: string) => new Error(`${code}: ${message}`);
 async function errorOf(response: Response) {
-  const body = await response.json().catch(() => ({})) as { error?: { code?: string; message?: string } };
-  return failure(body.error?.code ?? String(response.status), body.error?.message ?? "Análise recusada.");
+  const body = await response.json().catch(() => ({})) as { error?: AnalysisErrorDetail };
+  return serverFailure(body.error, String(response.status));
 }
 export async function sha256Hex(text: string) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -52,13 +55,13 @@ export async function postAnalysis(url: string, o: PostOptions): Promise<PostRes
     const poll = await doFetch(receipt.status_url, { method: "GET", headers: { Accept: "application/json" }, signal: o.signal });
     if (poll.status === 503) { if (++unavailable > 5) throw await errorOf(poll); wait = clamp(Number(poll.headers.get("Retry-After") ?? 2) * 1000, 1000, 10_000); continue; }
     unavailable = 0;
-    const body = await poll.json().catch(() => ({})) as { status?: string; result_url?: string; error?: { code?: string; message?: string }; request_sha256?: string };
+    const body = await poll.json().catch(() => ({})) as { status?: string; result_url?: string; error?: AnalysisErrorDetail; request_sha256?: string };
     if (body.request_sha256 && body.request_sha256 !== receipt.request_sha256) throw failure("JOB_RECEIPT_MISMATCH", "A fila respondeu por outra entrada.");
     if (poll.status === 202 && (body.status === "pending" || body.status === "running")) {
       o.onProgress?.({ state: body.status, job: receipt.job, polls, elapsedMs: now() - started });
       wait = clamp(Number(poll.headers.get("Retry-After") ?? 2) * 1000 || 2000, 1000, 10_000); continue;
     }
-    if (!poll.ok) throw failure(body.error?.code ?? String(poll.status), body.error?.message ?? "Análise recusada pela fila.");
+    if (!poll.ok) throw serverFailure(body.error, String(poll.status));
     if (body.status !== "ready" || !body.result_url?.startsWith("/api/experimental/jobs/")) throw failure("JOB_STATE", "Estado desconhecido da fila.");
     o.onProgress?.({ state: "ready", job: receipt.job, polls, elapsedMs: now() - started });
     const result = await doFetch(body.result_url, { method: "GET", headers: { Accept: "application/json" }, signal: o.signal });
