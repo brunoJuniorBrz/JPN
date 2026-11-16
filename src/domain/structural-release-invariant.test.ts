@@ -36,6 +36,7 @@ it.each([
   "result.computedStructuralApproval = true",
   'result["fabricationRelease"] = true',
   "return {fabricationRelease}",
+  "const schema={computed_structural_approval:z.literal(true),approved_for_fabrication:z.literal(true)}",
 ])("detects an attempted release: %s", source => {
   expect(scanReleaseContracts(source, "mutation.ts").some(o => !o.valid)).toBe(true);
 });
