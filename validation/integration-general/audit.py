@@ -78,8 +78,6 @@ REVIEWED_AMENDMENTS = {
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/coldformed-design.spec.ts": "6f3cdefe76d0c086c98e3aef674371c63c00dd52",   # INT-1f: also checks the Studio verification layer for the NBR 14762 piece (supersedes de1ce15, INT-1a)
     "src/domain/declared-facade-mixed-real.test.ts": "a3df819018a8b38e864f72bdda5fd26ba1fa2acd",
-    # C1/#107 (reviewed by the project owner's C1 work): tests updated for the /3 contract and the refused ambiguous legacy axes.
-    "engine/tests/test_vercel_mixed_http.py": "0d3b5475368fcbe41160af025ce9deae00ba20ef",
     "src/domain/continuous-demands.test.ts": "b63c2411b4aec5a217ef49ad5b00281f4b2df8f4",
     "src/domain/whole-piece-deflection.test.ts": "751c665f3266cc52772a69ebeaf4ed99415128fe",
     "src/infrastructure/analysis/remote-mixed-runner.test.ts": "def70dcd3f98a3fc63c25de5630095d7d50a15f3",
@@ -88,7 +86,8 @@ REVIEWED_AMENDMENTS = {
     # PR #105 (C1): continuous-demands test amended for local-axes /3
     # INT-2 deployment: keep authenticated main/preview guard and valid Vercel maxDuration (300s).
     "engine/vercel.json": "68e6752508b35faafd693c7df35c0470874e6d8e",
-    "engine/tests/test_vercel_mixed_http.py": "a967c7b3fae6e3c598b5fc8de287efbb74a852fd",
+    # Deployment time budget now must respect Hobby 300 s, while retaining authenticated WSGI contract.
+    "engine/tests/test_vercel_mixed_http.py": "f329dc2ce0c53dc07f8c5cb99a8d2ec76270d437",
 }
 
 TREES = {}
