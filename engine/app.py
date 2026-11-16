@@ -22,7 +22,8 @@ INPUT_BYTES = 500000
 OUTPUT_BYTES = 2000000
 STDERR_BYTES = 16000
 TIMEOUT_SECONDS = 20
-QUEUED_SECONDS = 740
+# Leave 30 s for HTTP response/cleanup before Vercel's 300 s hard limit.
+QUEUED_SECONDS = 270
 QUEUED_OUTPUT_BYTES = 16_000_000
 MEMORY_BYTES = 768 * 1024 * 1024
 WORKER = Path(__file__).resolve().with_name('local_mixed_worker.py')
