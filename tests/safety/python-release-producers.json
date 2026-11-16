@@ -1,4 +1,10 @@
 {
+  "engine/audit_member_modes.py": {
+    "approved_for_fabrication": 1
+  },
+  "engine/audit_modal_numerics.py": {
+    "approved_for_fabrication": 1
+  },
   "engine/jpn_structural/buckling_search.py": {
     "approved_for_fabrication": 1
   },
@@ -10,6 +16,9 @@
     "computed_structural_approval": 1,
     "fabrication_release": 1,
     "release_gate": 1
+  },
+  "engine/jpn_structural/elastic_strip.py": {
+    "approvedForFabrication": 1
   },
   "engine/jpn_structural/frame_pdelta.py": {
     "approved_for_fabrication": 1
@@ -36,6 +45,9 @@
     "computed_structural_approval": 1,
     "fabrication_release": 1,
     "release_gate": 1
+  },
+  "engine/jpn_structural/section_analysis.py": {
+    "approvedForFabrication": 1
   },
   "engine/jpn_structural/steel_i_design.py": {
     "computed_structural_approval": 1,

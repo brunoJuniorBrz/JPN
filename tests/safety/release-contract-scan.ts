@@ -1,7 +1,7 @@
 import ts from "typescript";
 
-const flags = new Set(["computedStructuralApproval", "fabricationRelease"]);
-const fields = new Set([...flags, "releaseGate"]);
+const flags = new Set(["computedStructuralApproval", "fabricationRelease", "computed_structural_approval", "fabrication_release", "approvedForFabrication", "approved_for_fabrication"]);
+const fields = new Set([...flags, "releaseGate", "release_gate"]);
 export type Occurrence = {field: string; line: number; valid: boolean};
 
 /** Read executable properties/assignments, not comments or substring matches. */

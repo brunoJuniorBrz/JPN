@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-FLAGS = {"computedStructuralApproval", "fabricationRelease", "computed_structural_approval", "fabrication_release", "approved_for_fabrication"}
+FLAGS = {"computedStructuralApproval", "fabricationRelease", "computed_structural_approval", "fabrication_release", "approved_for_fabrication", "approvedForFabrication"}
 GATES = {"releaseGate", "release_gate"}
 
 

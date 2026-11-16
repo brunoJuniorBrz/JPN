@@ -8,11 +8,27 @@
     "fabricationRelease": 1,
     "releaseGate": 1
   },
+  "src/domain/calculations/preproduction.ts": {
+    "approvedForFabrication": 1
+  },
   "src/domain/client-demonstration.ts": {
     "computedStructuralApproval": 1,
     "fabricationRelease": 1
   },
+  "src/domain/coldformed-design.ts": {
+    "computed_structural_approval": 2,
+    "approved_for_fabrication": 2
+  },
+  "src/domain/connection-report.ts": {
+    "approvedForFabrication": 1
+  },
+  "src/domain/continuous-demands.ts": {
+    "approvedForFabrication": 1
+  },
   "src/domain/corotational-frame.ts": {
+    "computed_structural_approval": 1,
+    "fabrication_release": 1,
+    "release_gate": 1,
     "blockedStatus": 1,
     "computedStructuralApproval": 1,
     "fabricationRelease": 1
@@ -49,10 +65,19 @@
     "fabricationRelease": 1,
     "releaseGate": 1
   },
+  "src/domain/geometric-physical-adapter.ts": {
+    "approved_for_fabrication": 1
+  },
   "src/domain/member-combination-matrix.ts": {
     "computedStructuralApproval": 1,
     "fabricationRelease": 1,
     "releaseGate": 1
+  },
+  "src/domain/member-demands.ts": {
+    "approvedForFabrication": 1
+  },
+  "src/domain/mixed-adapter.ts": {
+    "approved_for_fabrication": 1
   },
   "src/domain/nbr6120-actions.ts": {
     "computedStructuralApproval": 1,
@@ -65,10 +90,14 @@
     "releaseGate": 1
   },
   "src/domain/normative-origin.ts": {
+    "approved_for_fabrication": 1,
     "computedStructuralApproval": 4,
     "fabricationRelease": 4
   },
   "src/domain/p4-frame.ts": {
+    "computed_structural_approval": 1,
+    "fabrication_release": 1,
+    "release_gate": 1,
     "blockedStatus": 1,
     "computedStructuralApproval": 1,
     "fabricationRelease": 1
@@ -104,9 +133,11 @@
     "fabricationRelease": 1
   },
   "src/domain/resistance-assessment.ts": {
-    "computedStructuralApproval": 1
+    "computedStructuralApproval": 1,
+    "approvedForFabrication": 1
   },
   "src/domain/resistance-report.ts": {
+    "approvedForFabrication": 1,
     "releaseGate": 1
   },
   "src/domain/restore-mixed-analysis.ts": {
@@ -114,6 +145,9 @@
     "fabricationRelease": 1
   },
   "src/domain/second-order-frame.ts": {
+    "computed_structural_approval": 1,
+    "fabrication_release": 1,
+    "release_gate": 1,
     "blockedStatus": 1,
     "computedStructuralApproval": 1,
     "fabricationRelease": 1
@@ -127,6 +161,12 @@
     "computedStructuralApproval": 1,
     "fabricationRelease": 1,
     "releaseGate": 1
+  },
+  "src/domain/section-analysis.ts": {
+    "approvedForFabrication": 1
+  },
+  "src/domain/spatial-coordination.ts": {
+    "approved_for_fabrication": 1
   },
   "src/domain/structural-assessment.ts": {
     "computedStructuralApproval": 4,
@@ -142,6 +182,9 @@
     "computedStructuralApproval": 1,
     "fabricationRelease": 1
   },
+  "src/domain/whole-piece-deflection.ts": {
+    "approvedForFabrication": 1
+  },
   "src/domain/wind-facade-normative.ts": {
     "computedStructuralApproval": 1,
     "fabricationRelease": 1,
@@ -149,5 +192,9 @@
   },
   "src/domain/wind-speed.ts": {
     "computedStructuralApproval": 1
+  },
+  "src/infrastructure/analysis/local-section-runner.ts": {
+    "computed_structural_approval": 1,
+    "approved_for_fabrication": 1
   }
 }
