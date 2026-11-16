@@ -1,0 +1,153 @@
+{
+  "src/app/api/demonstration/route.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/components/planning/mixed-analysis-workspace.tsx": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/client-demonstration.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/corotational-frame.ts": {
+    "blockedStatus": 1,
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/declared-facade-traction.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/declared-roof-load-path.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/declared-takeoff.ts": {
+    "fabricationRelease": 1
+  },
+  "src/domain/elastic-ltb.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/engine-release-gate.ts": {
+    "blockedStatus": 1,
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/engineering-combination-coverage.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/facade-solver-load-audit.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/member-combination-matrix.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/nbr6120-actions.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/nbr8681-combinations.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/normative-origin.ts": {
+    "computedStructuralApproval": 4,
+    "fabricationRelease": 4
+  },
+  "src/domain/p4-frame.ts": {
+    "blockedStatus": 1,
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/physical-facade-envelope.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/physical-facades.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/physical-reaction-path.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/physical-restraints.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/physical-roof-coverage.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/physical-roof-faces.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/purlin.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/resistance-assessment.ts": {
+    "computedStructuralApproval": 1
+  },
+  "src/domain/resistance-report.ts": {
+    "releaseGate": 1
+  },
+  "src/domain/restore-mixed-analysis.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/second-order-frame.ts": {
+    "blockedStatus": 1,
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/second-order-readiness.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/secondary-fixity.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/structural-assessment.ts": {
+    "computedStructuralApproval": 4,
+    "fabricationRelease": 4,
+    "releaseGate": 4
+  },
+  "src/domain/structural-loading.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/studio-result-layers.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1
+  },
+  "src/domain/wind-facade-normative.ts": {
+    "computedStructuralApproval": 1,
+    "fabricationRelease": 1,
+    "releaseGate": 1
+  },
+  "src/domain/wind-speed.ts": {
+    "computedStructuralApproval": 1
+  }
+}
