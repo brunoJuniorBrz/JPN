@@ -53,7 +53,7 @@ test("roteiro detecta preparação obsoleta depois de alterar geometria e preser
   await page.getByLabel("Classe do aço").fill("Aço declarado, não aprovado");
   await page.getByRole("navigation",{name:"Etapas do levantamento"}).getByRole("button",{name:/Estrutura/}).click();
   await page.getByLabel("Espaçamento máximo entre tesouras (m)").fill("3");
-  await page.getByRole("navigation",{name:"Etapas do levantamento"}).getByRole("button",{name:/Resultado/}).click();
+  await page.getByRole("navigation",{name:"Etapas do levantamento"}).getByRole("button",{name:/^Materiais/}).click();
   await openEngineeringTool(page, "Roteiro estrutural");
   await expect(page.getByTestId("coordination-status")).toContainText("Geometria alterada");
   await page.locator(".spatial-overview-step").filter({hasText:"Geometria e revisão"}).getByRole("button",{name:"Revisar geometria"}).click();

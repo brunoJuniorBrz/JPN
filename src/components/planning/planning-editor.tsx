@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Box, Save } from "lucide-react";
+import { ArrowLeft, ArrowRight, Box, Lock, Save } from "lucide-react";
 import { newProject, projectSchema, type Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
 import { resolvePhysicalStructure } from "@/domain/physical-structure";
@@ -15,35 +15,46 @@ import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { transferTakeoff } from "@/domain/calculations/project-basis";
 import { useData } from "@/components/data-provider";
 import { PageHeading } from "@/components/ui";
+import { Badge } from "@/components/ui/badge";
 import { GeneralForm } from "@/components/projects/general-form";
 import { RoofForm } from "@/components/geometry/roof-form";
 import { StructureForm } from "./structure-form";
-import { TakeoffSummary, type ResultSection } from "./takeoff-summary";
-import { ProjectWorkbench } from "./project-workbench";
+import { GeneratedFiles, GeneratedMaterials, GeneratedReview, GeneratedSafetyWarning, GeneratedTotals, GeneratedViewport, useGeneratedResult, type ResultSection } from "./takeoff-summary";
+import { DeclaredEngineering, DeclaredFiles, DeclaredMaterials, DeclaredSafetyWarning, DeclaredViewport, useDeclaredModel } from "./declared-model-summary";
+import { ProjectWorkbench, type WorkbenchTool } from "./project-workbench";
+import { StudioLayout, StudioRail, studioStepFromLegacy, studioStepIndex, studioStepUrl, studioSteps, type AnalysisTool, type StudioStepId } from "./project-studio";
+import type { PendingTarget } from "./result-presentation";
 import type { PieceRole } from "@/domain/structure";
 
-const steps = ["Obra", "Medidas", "Estrutura", "Resultado"];
-export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false }: { initial?: Project; initialStep?: number; initialOpen3D?: boolean }) {
+const workbenchSection: Record<StudioStepId, ResultSection> = {
+  obra: "model", geometria: "model", estrutura: "model", cargas: "engineering", analise: "engineering",
+  verificacao: "model", materiais: "materials", arquivos: "files",
+};
+
+export function PlanningEditor({ initial, initialStep = 0, initialStudioStep, initialOpen3D = false }: { initial?: Project; initialStep?: number; initialStudioStep?: StudioStepId; initialOpen3D?: boolean }) {
   const { data, saveProject, flush, saveState, setInvalidDraft } = useData(); const router = useRouter();
   const [project, setProject] = useState(() => initial ?? newProject(data.settings));
-  const [step, setStep] = useState(initialStep), [submitted, setSubmitted] = useState(false), [message, setMessage] = useState("");
+  const [step, setStep] = useState<StudioStepId>(initialStudioStep ?? studioStepFromLegacy(initialStep));
+  const [analysisTool, setAnalysisTool] = useState<AnalysisTool>("overview");
+  const [submitted, setSubmitted] = useState(false), [message, setMessage] = useState("");
   const [profileToEdit, setProfileToEdit] = useState<PieceRole>();
   const [open3D, setOpen3D] = useState(initialOpen3D);
-  const [resultSection, setResultSection] = useState<ResultSection>("model");
   const [open3DRequest, setOpen3DRequest] = useState(0);
-  const declared=project.workspace.physicalStructure!==undefined;
-  const preview = useMemo(() => declared?{model:resolvePhysicalStructure(project).model,pending:[]}:generateStructure(project), [project,declared]);
-  const workflowSteps=declared?["Obra","Modelo declarado","Preparação física","Resultado"]:steps;
+  const declared = project.workspace.physicalStructure !== undefined;
+  const generated = useGeneratedResult(project);
+  const preview = useMemo(() => declared ? { model: resolvePhysicalStructure(project).model, pending: [] as string[] } : generateStructure(project), [project, declared]);
   const parsed = projectSchema.safeParse(project);
   const errors = parsed.success ? {} : Object.fromEntries(parsed.error.issues.map(i => [i.path[0], i.message]));
+  const stepIndex = studioStepIndex(step), stepLabel = studioSteps[stepIndex].label;
   useEffect(() => () => setInvalidDraft(false), [setInvalidDraft]);
+  useEffect(() => { document.querySelector(".studio-inspector")?.scrollTo({ top: 0 }); }, [step]);
   useEffect(() => {
-    if (step !== 3 || !open3D) return;
-    const frame = window.requestAnimationFrame(() => document.getElementById("jpn-viewer")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    if (!open3D || open3DRequest === 0) return;
+    const frame = window.requestAnimationFrame(() => document.getElementById("jpn-viewer")?.scrollIntoView({ behavior: "smooth", block: "nearest" }));
     return () => window.cancelAnimationFrame(frame);
-  }, [step, open3D]);
+  }, [open3D, open3DRequest]);
   useEffect(() => {
-    if (step !== 2 || !profileToEdit) return;
+    if (step !== "estrutura" || !profileToEdit) return;
     const frame = window.requestAnimationFrame(() =>
       document.querySelector(`[data-profile-role="${profileToEdit}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" }));
     return () => window.cancelAnimationFrame(frame);
@@ -70,40 +81,104 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
     const result = projectSchema.safeParse(next); setInvalidDraft(!initial || !result.success);
     if (initial && result.success) saveProject(result.data);
   }
-  function go(target: number, request3D = false) {
-    if (request3D) setResultSection("model");
-    setSubmitted(true); if (!parsed.success) { setStep(0); return; }
-    if (!initial) { saveProject(parsed.data); if (flush()) { setInvalidDraft(false); router.replace(`/projetos/${project.id}?fluxo=levantamento&etapa=${target}${request3D ? "&vista=3d" : ""}`); } }
-    else { setStep(target); setOpen3D(request3D); if (request3D) setOpen3DRequest(n => n + 1); setSubmitted(false); if (!request3D) window.scrollTo({ top: 0, behavior: "smooth" }); }
+  /** Troca de etapa. Projeto novo: salva e passa a usar a URL do projeto criado. */
+  function go(target: StudioStepId, request3D = false) {
+    setSubmitted(true); if (!parsed.success) { setStep("obra"); return; }
+    if (!initial) { saveProject(parsed.data); if (flush()) { setInvalidDraft(false); router.replace(`/projetos/${project.id}?fluxo=levantamento&etapa=${studioStepUrl(target)}${request3D ? "&vista=3d" : ""}`); } return; }
+    setStep(target); setSubmitted(false);
+    if (request3D) { setOpen3D(true); setOpen3DRequest(n => n + 1); }
+    else window.scrollTo({ top: 0, behavior: "smooth" });
   }
-  function save() { if (!parsed.success) { setSubmitted(true); setStep(0); return; } saveProject(parsed.data); if (flush()) setMessage("Levantamento salvo neste navegador."); }
-  function importModel(next:Project){
-    saveProject(next);if(!flush())throw Error("Não foi possível salvar o modelo importado; confira o aviso de armazenamento.");
-    setProject(next);setInvalidDraft(false);setStep(3);setResultSection("model");setOpen3D(true);
-    if(!initial)router.replace(`/projetos/${next.id}?fluxo=levantamento&etapa=3&vista=3d`);
+  function openTool(tool: WorkbenchTool) {
+    if (tool === "prepare") { go("cargas"); return; }
+    setAnalysisTool(tool); if (step !== "analise") go("analise");
   }
-  return <><Link href="/projetos" className="back-link"><ArrowLeft size={18} />Todos os projetos</Link><PageHeading eyebrow="DA MEDIDA À LISTA DE MATERIAIS" title={project.name || "Vamos começar sua obra"} description="Informe a obra, configure a geometria e veja as peças e os quantitativos." />
+  function resolvePending(target: PendingTarget) { setProfileToEdit(target.role); go(target.step === 1 ? "geometria" : "estrutura"); }
+  /** Ao saltar do visualizador para a edição, a seleção é limpa (como quando o Resultado fechava). */
+  function resetViewer() { setOpen3DRequest(n => n + 1); }
+  function editStructure() { setProfileToEdit(undefined); resetViewer(); go("estrutura"); }
+  function configureProfile(role: PieceRole) { setProfileToEdit(role); resetViewer(); go("estrutura"); }
+  function save() { if (!parsed.success) { setSubmitted(true); setStep("obra"); return; } saveProject(parsed.data); if (flush()) setMessage("Levantamento salvo neste navegador."); }
+  function importModel(next: Project) {
+    saveProject(next); if (!flush()) throw Error("Não foi possível salvar o modelo importado; confira o aviso de armazenamento.");
+    setProject(next); setInvalidDraft(false); setStep("materiais"); setOpen3D(true); setOpen3DRequest(n => n + 1);
+    if (!initial) router.replace(`/projetos/${next.id}?fluxo=levantamento&etapa=materiais&vista=3d`);
+  }
+  function open3DViewer() {
+    if (preview.model) {
+      if (!initial) { go(step, true); return; }
+      setOpen3D(true); setOpen3DRequest(n => n + 1); return;
+    }
+    setMessage(preview.pending[0] ?? "Complete as medidas e a estrutura para visualizar o modelo 3D.");
+    const roof = project.roof;
+    go(roof.widthM === null || roof.lengthM === null || roof.lowHeightM === null || roof.slopePercent === null ? "geometria" : "estrutura");
+  }
+
+  const declaredModel = declared ? <DeclaredModelParts project={project} /> : null;
+  const tool: WorkbenchTool = step === "cargas" ? "prepare" : analysisTool;
+  const workbench = <ProjectWorkbench project={project} activeSection={declared && step === "cargas" ? "model" : workbenchSection[step]} tool={tool} onToolChange={openTool} onChange={update} onEditStructure={editStructure} />;
+
+  let panel: ReactNode = null;
+  if (step === "obra") panel = <>
+    <GeneralForm project={project} onChange={update} errors={submitted || initial ? errors : {}} />
+    <div className="studio-project-tools">
+      <PhysicalModelImport project={project} onImport={importModel} />
+      <details className="technical-details"><summary>Referência comercial auditada — Tom</summary><p>Reproduz R$ 9.651,29 com 31 telhas e 107,65 m lineares, seis peças U e vinte peças Ue. Não cria tesouras, pilares, contorno ou propriedades. Reprodução de custo com margem zero; use orçamento vazio.</p><button type="button" className="button secondary" onClick={() => { try { const next = applyTomCommercial(project); update({ estimate: next.estimate }); setMessage("Orçamento comercial do Tom carregado; nenhuma estrutura real foi presumida."); } catch (e) { setMessage((e as Error).message); } }}>Carregar orçamento auditado do Tom</button></details>
+      <DeclaredStructureEditor key={project.id + JSON.stringify(project.workspace.physicalStructure)} project={project} onCommit={importModel} />
+    </div>
+  </>;
+  else if (step === "geometria") panel = declared
+    ? <><p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no centro ou importe uma nova revisão JSON na etapa Obra. Nenhuma cobertura foi gerada.</p><RoofOutlinePanel key={project.id + JSON.stringify(project.workspace.roofOutline)} project={project} onChange={update} /></>
+    : <><GuidedRoofSetup project={project} onChange={update} />{["Cobertura metálica", "Galpão", "Barracão"].includes(project.category) ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning partialOutline={project.workspace.guidedSupport?.coverage === "partial"} /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>}</>;
+  else if (step === "estrutura") panel = declared ? <SpatialPreparationPanel project={project} onChange={update} mixed /> : <StructureForm project={project} onChange={update} profileToEdit={profileToEdit} />;
+  else if (step === "cargas" && declared) panel = <div className="notice"><p>No modelo declarado, apoios, cargas e combinações ficam na preparação física da etapa Estrutura.</p><button type="button" className="button secondary" onClick={() => go("estrutura")}>Abrir preparação física</button></div>;
+  else if (step === "analise" && declared) panel = <DeclaredEngineering />;
+  else if (step === "verificacao") panel = declared
+    ? <div className="notice"><p>Os relatórios de resistência, apoios e ligações ficam nos resultados da análise estrutural. Verificações normativas incompletas · fabricação bloqueada.</p><button type="button" className="button secondary" onClick={() => go("analise")}>Abrir análise estrutural</button></div>
+    : <><GeneratedReview result={generated.result} pending={generated.pending} onResolvePending={resolvePending} /><div className="spatial-jump"><p>Resistência, apoios e ligações aparecem nos resultados da Análise Estrutural Experimental.</p><button type="button" className="button secondary" onClick={() => openTool("mixedlocal")}>Abrir análise estrutural</button></div></>;
+  else if (step === "materiais") panel = declared ? <DeclaredMaterialsPart project={project} /> : <GeneratedMaterials result={generated.result} grouped={generated.grouped} />;
+  else if (step === "arquivos") panel = declared ? <DeclaredFiles project={project} /> : <GeneratedFiles project={project} hasModel={!!generated.result.model} />;
+
+  const next = studioSteps[stepIndex + 1];
+  const pendingCount = declared ? undefined : generated.result.pending.length;
+  return <>
+    <Link href="/projetos" className="back-link"><ArrowLeft size={18} />Todos os projetos</Link>
+    <PageHeading eyebrow="DA MEDIDA À LISTA DE MATERIAIS" title={project.name || "Vamos começar sua obra"} description="Informe a obra, configure a geometria e veja as peças e os quantitativos." />
     {project.isExample && <p className="example-banner">EXEMPLO FICTÍCIO · Medidas, distribuição e perfis apenas para demonstrar o cálculo geométrico.</p>}
-    {step !== 3 && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
-    <PhysicalModelImport project={project} onImport={importModel}/>
-    <details className="technical-details"><summary>Referência comercial auditada — Tom</summary><p>Reproduz R$ 9.651,29 com 31 telhas e 107,65 m lineares, seis peças U e vinte peças Ue. Não cria tesouras, pilares, contorno ou propriedades. Reprodução de custo com margem zero; use orçamento vazio.</p><button type="button" className="button secondary" onClick={()=>{try{const next=applyTomCommercial(project);update({estimate:next.estimate});setMessage("Orçamento comercial do Tom carregado; nenhuma estrutura real foi presumida.");}catch(e){setMessage((e as Error).message);}}}>Carregar orçamento auditado do Tom</button></details>
-    <DeclaredStructureEditor key={project.id+JSON.stringify(project.workspace.physicalStructure)} project={project} onCommit={importModel}/>
-    {declared&&<RoofOutlinePanel key={project.id+JSON.stringify(project.workspace.roofOutline)} project={project} onChange={update}/>}
-    <section className="panel workflow-panel"><nav className="workflow-steps planning-steps" aria-label="Etapas do levantamento">{workflowSteps.map((label, i) => <button key={label} type="button" className={step === i ? "current" : ""} aria-current={step === i ? "step" : undefined} onClick={() => go(i)}><span>{i + 1}</span>{label}</button>)}</nav><p className="workflow-progress">Passo {step + 1} de 4 — {workflowSteps[step]}</p>
-      <div className="viewer-shortcut"><button type="button" className="button secondary" onClick={() => {
-        if (preview.model) { go(3, true); return; }
-        setMessage(preview.pending[0] ?? "Complete as medidas e a estrutura para visualizar o modelo 3D.");
-        const roof = project.roof;
-        go(roof.widthM === null || roof.lengthM === null || roof.lowHeightM === null || roof.slopePercent === null ? 1 : 2);
-      }}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button><span className="field-hint">{preview.model ? "Visualização 3D da estrutura disponível também no celular." : `Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span></div>
-      <div className="workflow-content">
-        {step === 0 && <GeneralForm project={project} onChange={update} errors={submitted || initial ? errors : {}} />}
-        {step === 1 && !declared && <GuidedRoofSetup project={project} onChange={update}/>}
-        {step === 1 && (declared?<p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no Resultado ou importe uma nova revisão JSON. Nenhuma cobertura foi gerada.</p>:["Cobertura metálica","Galpão","Barracão"].includes(project.category) ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning partialOutline={project.workspace.guidedSupport?.coverage==="partial"} /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>)}
-        {step === 2 && (declared?<SpatialPreparationPanel project={project} onChange={update} mixed/>:<StructureForm project={project} onChange={update} profileToEdit={profileToEdit} />)}
-        {step === 3 && <><TakeoffSummary project={project} activeSection={resultSection} onSectionChange={setResultSection} onResolvePending={target => { setProfileToEdit(target.role); go(target.step); }} startIn3D={open3D} open3DRequest={open3DRequest} onEditStructure={() => { setProfileToEdit(undefined); go(2); }} onConfigureProfile={role => { setProfileToEdit(role); go(2); }} /><ProjectWorkbench project={project} activeSection={resultSection} onChange={update} onEditStructure={() => { setProfileToEdit(undefined); go(2); }} /></>}
-      </div>
-      <div className="workflow-footer"><span className="field-hint">Quantitativos independentes de preços</span><div className="actions">{step > 0 && <button type="button" className="button secondary" onClick={() => go(step - 1)}><ArrowLeft size={18} />Voltar</button>}{step < 3 ? <button type="button" className="button" onClick={() => go(step + 1)}>{!initial ? "Salvar e continuar" : `Ir para ${workflowSteps[step + 1].toLowerCase()}`}<ArrowRight size={18} /></button> : <button type="button" className="button" onClick={save}><Save size={18} />Salvar levantamento</button>}</div></div>
-      <p className="editor-save-note" role="status">{message || (!initial ? "O projeto será criado ao continuar." : saveState === "pending" ? "Salvando…" : saveState === "error" ? "Confira o aviso de armazenamento." : "Alterações salvas neste navegador.")}</p>
-    </section></>;
+    {step !== "materiais" && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
+    <StudioLayout
+      rail={<StudioRail step={step} onStep={id => go(id)} tool={analysisTool} onTool={openTool} showTools={!declared} pendingCount={pendingCount} />}
+      viewportToolbar={<div className="viewer-shortcut"><button type="button" className="button secondary" onClick={open3DViewer}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button><span className="field-hint">{preview.model ? "Visualização 3D da estrutura disponível também no celular." : `Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span></div>}
+      viewport={declared ? declaredModel : <GeneratedViewport project={project} result={generated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} />}
+      inspectorTitle={step === "analise" && !declared ? `Análise · ${analysisToolLabel(analysisTool)}` : stepLabel}
+      inspector={<>
+        <p className="workflow-progress">Passo {stepIndex + 1} de {studioSteps.length} — {stepLabel}</p>
+        <div className="workflow-content">{panel}{workbench}</div>
+        <div className="workflow-footer"><span className="field-hint">Quantitativos independentes de preços</span><div className="actions">
+          {stepIndex > 0 && <button type="button" className="button secondary" onClick={() => go(studioSteps[stepIndex - 1].id)}><ArrowLeft size={18} />Voltar</button>}
+          {initial && <button type="button" className={next ? "button secondary" : "button"} onClick={save}><Save size={18} />Salvar levantamento</button>}
+          {next && <button type="button" className="button" onClick={() => go(next.id)}>{!initial ? "Salvar e continuar" : `Ir para ${next.label.toLowerCase()}`}<ArrowRight size={18} /></button>}
+        </div></div>
+        <p className="editor-save-note" role="status">{message || (!initial ? "O projeto será criado ao continuar." : saveState === "pending" ? "Salvando…" : saveState === "error" ? "Confira o aviso de armazenamento." : "Alterações salvas neste navegador.")}</p>
+      </>}
+      status={<>
+        <Badge tone="danger" icon={<Lock />} className="studio-lock">Bloqueado para fabricação</Badge>
+        {declared ? <DeclaredSafetyWarning /> : <GeneratedSafetyWarning />}
+        {!declared && <GeneratedTotals result={generated.result} />}
+      </>}
+    />
+  </>;
+}
+
+function analysisToolLabel(tool: AnalysisTool) {
+  return { overview: "Roteiro estrutural", analysis: "Análise disponível", spatial: "Análise 3D experimental", mixedlocal: "Análise Estrutural Experimental" }[tool];
+}
+
+function DeclaredModelParts({ project }: { project: Project }) {
+  const declared = useDeclaredModel(project);
+  return <DeclaredViewport project={project} declared={declared} />;
+}
+function DeclaredMaterialsPart({ project }: { project: Project }) {
+  const declared = useDeclaredModel(project);
+  return <DeclaredMaterials declared={declared} />;
 }
