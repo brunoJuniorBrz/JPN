@@ -157,8 +157,9 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
   const permanentIds=new Set(ec?.actions.filter(a=>a.category==="permanent").map(a=>a.caseId)??[]);
   const variableIds=ec?.actions.filter(a=>a.category!=="permanent").map(a=>a.caseId)??[];
   const ulsDeclarations=ec?.combinations.filter(c=>c.purpose==="ULS"&&uls.includes(c.id))??[];
+  // gamma*psi rounded: 1,5 x 0,8 = 1.2000000000000002 in floating point must match a declared 1,2.
   const factorOf=(c:typeof ulsDeclarations[number],id:string)=>{
-    const t=c.terms.find(t=>t.caseId===id);return t?t.gamma*t.psi:0;
+    const t=c.terms.find(t=>t.caseId===id);return t?Number((t.gamma*t.psi).toFixed(9)):0;
   };
   const signature=(c:typeof ulsDeclarations[number])=>JSON.stringify(variableIds.map(id=>[id,factorOf(c,id)]));
   // A minimum-permanent combination must pair with EACH actual variable-load vector.
@@ -177,6 +178,20 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
   const missingFavorableCombinationIds=requiredULS.filter(c=>!favorableSignatures.has(signature(c))).map(c=>c.id);
   const favorableSet=!validULS||!ec||permanentIds.size===0?"unverified" as const:
     favorableCombinationIds.length>0&&missingFavorableCombinationIds.length===0?"present" as const:"missing" as const;
+  // The unfavorable set is also needed per hypothesis (NBR 8681 5.1.3.1): where a permanent action itself lifts the
+  // support (e.g. G on the adjacent span of a continuous beam), 1,25 G + suction governs. A favorable-only declaration
+  // (every permanent at <= 1,0) must not pass. Per variable vector, require one combination carrying every permanent
+  // at its largest factor in that vector, with at least one of them > 1,0. (Per-action mixes, 5.1.4.1, stay with the engineer.)
+  const permanentGamma=(c:typeof ulsDeclarations[number],id:string)=>{const t=c.terms.find(t=>t.caseId===id);return t&&Math.abs(t.psi-1)<1e-12?t.gamma:null;};
+  const unfavorableCovered=(sig:string)=>{
+    const group=ulsDeclarations.filter(c=>signature(c)===sig&&[...permanentIds].every(id=>permanentGamma(c,id)!==null));
+    if(!group.length)return false;
+    const maxes=[...permanentIds].map(id=>Math.max(...group.map(c=>permanentGamma(c,id)!)));
+    return maxes.some(m=>m>1+1e-12)&&group.some(c=>[...permanentIds].every((id,i)=>permanentGamma(c,id)!>=maxes[i]-1e-12));
+  };
+  const missingUnfavorableCombinationIds=requiredULS.filter(c=>!unfavorableCovered(signature(c))).map(c=>c.id);
+  const unfavorableSet=!validULS||!ec||permanentIds.size===0?"unverified" as const:
+    missingUnfavorableCombinationIds.length===0?"present" as const:"missing" as const;
   const supports=input.interfaces.filter(f=>EXISTING.has(f.kind)).map(face=>{
     const type=face.anchorTypeId?types.get(face.anchorTypeId)??null:null;
     const capacity=(own:number|null|undefined,fromType:number|null|undefined):CapacitySource=>
@@ -220,6 +235,8 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
       ...(favorableSet==="missing"?["ANCHOR_FAVORABLE_PERMANENT_SET_MISSING: falta combinar permanentes favoráveis (γg ≤ 1,0; NBR 8681 5.1.3.1) com cada hipótese variável considerada, incluindo a sucção. Verifique ELU: "+
         [...new Set(missingFavorableCombinationIds)].join(", ")+"."]:
         favorableSet==="unverified"?["ANCHOR_FAVORABLE_PERMANENT_SET_UNVERIFIED: fatores e cobertura das combinações ELU não confirmados; o arrancamento com permanente mínimo não foi verificado."]:[]),
+      ...(unfavorableSet==="missing"?["ANCHOR_UNFAVORABLE_PERMANENT_SET_MISSING: falta combinar permanentes desfavoráveis (γg > 1,0; NBR 8681 5.1.3.1) com cada hipótese variável; se a permanente tracionar o apoio, o arrancamento fica subestimado. Verifique ELU: "+
+        [...new Set(missingUnfavorableCombinationIds)].join(", ")+"."]:[]),
       ...(pullout.demandKn!==null&&pullout.demandKn>1e-9&&(pullout.concurrentHorizontalShearKn??0)>1e-9?
         ["ANCHOR_SHEAR_INTERACTION_PENDING: tração e cisalhamento concomitantes da ELU "+pullout.governingCombinationId+
          "; interação não verificada, não aprovar apoio."]:[]),
@@ -233,7 +250,7 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
   const governing=supports.filter(s=>s.pullout.ratio!==null).sort((a,b)=>b.pullout.ratio!-a.pullout.ratio!)[0]??null;
   return {schema_version:"jpn.anchor-pullout/1" as const,combinationsConsidered:uls,
     combinationPurposeDeclared:validULS,favorablePermanentSet:favorableSet,favorableCombinationIds,
-    missingFavorableCombinationIds,supports,
+    missingFavorableCombinationIds,unfavorablePermanentSet:unfavorableSet,missingUnfavorableCombinationIds,supports,
     governingSupport:governing?{nodeId:governing.nodeId,ratio:governing.pullout.ratio,combinationId:governing.pullout.governingCombinationId}:null,
     studioStatus:Object.fromEntries(supports.map(s=>[s.nodeId,s.pullout.status==="exceeds-declared-capacity"?"exceeds":s.pullout.status==="capacity-pending"||s.issues.length?"pending":s.critical?"governing":"ok"])) as Record<string,"exceeds"|"pending"|"governing"|"ok">,
     limitations:["Capacidades declaradas pelo engenheiro (ficha do fabricante); o JPN não calcula ancoragem nem alvenaria.",

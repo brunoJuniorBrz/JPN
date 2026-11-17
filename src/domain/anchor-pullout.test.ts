@@ -16,6 +16,7 @@ const anchorTypes=anchorTypesSchema.parse([{id:"QUIM-M12",label:"Chumbador quím
 const r=(fz:number)=>({reaction_force_n:[0,0,fz] as [number,number,number],reaction_moment_nm:[0,0,0] as [number,number,number]});
 const result={combinations:{
   "ELU-W":{nodes:{N1:r(-5740),N2:r(-11480),N3:r(-5740)}},       // governing pull-out (case B)
+  "ELU-WU":{nodes:{N1:r(-4965),N2:r(-9930),N3:r(-4965)}},       // same suction with 1,25 G (unfavorable set): +0,25 G
   "ELU-G":{nodes:{N1:r(3100),N2:r(6200),N3:r(3100)}},           // compression only
   "ELS-W":{nodes:{N1:r(-9000),N2:r(-18000),N3:r(-9000)}},        // service: must NOT enter the ULS check
 }};
@@ -26,14 +27,17 @@ const engineeringCombinations={
   actions:[{caseId:"G",category:"permanent" as const,exclusiveGroup:null,reference:ref},{caseId:"W",category:"wind" as const,exclusiveGroup:null,reference:ref}],
   combinations:[
     {id:"ELU-W",purpose:"ULS" as const,hypothesis:"1,0 G + 1,4 W",reference:ref,terms:[term("G",1),term("W",1.4)]},
+    {id:"ELU-WU",purpose:"ULS" as const,hypothesis:"1,25 G + 1,4 W",reference:ref,terms:[term("G",1.25),term("W",1.4)]},
     {id:"ELU-G",purpose:"ULS" as const,hypothesis:"1,25 G",reference:ref,terms:[term("G",1.25)]},
     {id:"ELS-W",purpose:"SLS-characteristic" as const,hypothesis:"G + W",reference:ref,terms:[term("G",1),term("W",1)]},
   ]};
-const run=(interfaces=[wallA,center,wallB])=>assessAnchorPullout({interfaces,anchorTypes,ulsCombinationIds:["ELU-W","ELU-G"],result,engineeringCombinations});
+const run=(interfaces=[wallA,center,wallB])=>assessAnchorPullout({interfaces,anchorTypes,ulsCombinationIds:["ELU-W","ELU-WU","ELU-G"],result,engineeringCombinations});
 
 it("caso B: 5,740 / 11,480 kN contra 8,0 / 15,0 kN -> 0,718 e 0,765; ELU-W governa e o apoio central é crítico",()=>{
   const a=run(),by=Object.fromEntries(a.supports.map(s=>[s.nodeId,s]));
-  expect(a.combinationsConsidered).toEqual(["ELU-W","ELU-G"]);
+  expect(a.combinationsConsidered).toEqual(["ELU-W","ELU-WU","ELU-G"]);
+  expect(a.favorablePermanentSet).toBe("present");expect(a.unfavorablePermanentSet).toBe("present");
+  expect(by.N2.issues).toEqual([]);
   for(const id of ["N1","N3"]){
     expect(by[id].pullout.demandKn).toBeCloseTo(5.740,9);expect(by[id].pullout.declaredCapacity!.origin).toBe("anchor-type");
     expect(by[id].pullout.ratio!).toBeCloseTo(0.718,3);expect(by[id].pullout.status).toBe("within-declared-capacity");
@@ -170,4 +174,32 @@ it("A1: ELU ausente do resultado não pode ser descartada silenciosamente",()=>{
     result:{combinations:{"ELU-W":{nodes:{N1:r(-5740)}}}},engineeringCombinations});
   expect(a.supports[0].pullout.demandKn).toBeNull();
   expect(a.supports[0].issues.join()).toMatch(/Resultados ausentes: ELU-AUSENTE/);
+});
+
+it("A1: só o conjunto favorável (γg ≤ 1,0 em todas) não passa; HC-C com os dois conjuntos tem ambos presentes",()=>{
+  expect(hc(["unfavorable","favorable"]).unfavorablePermanentSet).toBe("present");
+  expect(hc(["unfavorable"]).unfavorablePermanentSet).toBe("present");
+  const a=hc(["favorable"]),s=a.supports[0];
+  expect(a.favorablePermanentSet).toBe("present");expect(a.unfavorablePermanentSet).toBe("missing");
+  expect(a.missingUnfavorableCombinationIds.length).toBeGreaterThan(0);
+  expect(s.issues.join()).toMatch(/ANCHOR_UNFAVORABLE_PERMANENT_SET_MISSING/);expect(a.studioStatus.N1).toBe("pending");
+});
+
+it("A1: assinatura γ·ψ arredondada: 1,5 x 0,8 (=1.2000000000000002) casa com 1,2 declarado",()=>{
+  expect(1.5*0.8).not.toBe(1.2);
+  const ec={actions:[{caseId:"G",category:"permanent" as const,exclusiveGroup:null,reference:ref},
+      {caseId:"Q",category:"variable" as const,exclusiveGroup:null,reference:ref},{caseId:"W",category:"wind" as const,exclusiveGroup:null,reference:ref}],
+    combinations:[
+      {id:"U",purpose:"ULS" as const,hypothesis:"1,25 G + 1,4 W + 1,5·0,8 Q",reference:ref,terms:[term("G",1.25),term("W",1.4),{...term("Q",1.5),psi:0.8}]},
+      {id:"F",purpose:"ULS" as const,hypothesis:"1,0 G + 1,4 W + 1,2 Q",reference:ref,terms:[term("G",1),term("W",1.4),term("Q",1.2)]}]};
+  const a=assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["U","F"],engineeringCombinations:ec,
+    result:{combinations:{U:{nodes:{N1:r(-1000)}},F:{nodes:{N1:r(-1500)}}}}});
+  expect(a.favorablePermanentSet).toBe("present");expect(a.unfavorablePermanentSet).toBe("present");
+  expect(a.missingFavorableCombinationIds).toEqual([]);
+});
+
+it("A1: combinação ELS pedida como ELU bloqueia a verificação (nonULS)",()=>{
+  const a=assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["ELU-W","ELS-W"],result,engineeringCombinations});
+  expect(a.supports[0].pullout.status).toBe("verification-pending");expect(a.supports[0].pullout.demandKn).toBeNull();
+  expect(a.supports[0].issues.join()).toMatch(/Finalidade incompatível: ELS-W/);expect(a.governingSupport).toBeNull();
 });
