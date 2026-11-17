@@ -105,3 +105,20 @@ Registro curto das decisões tomadas sem consulta (ver regra em [PLANO-UI.md](PL
 8. **Opcional no viewer.** Cubo e rótulos são props do `Structure3D`. Só o estúdio liga; a demonstração com perfis e o 3D da Análise não mudam.
 9. **Modelo declarado.** A vista central continua sendo a de linhas 2D (`PhysicalLineView`). A barra de resultados, a legenda e os apoios funcionam; cores e deformada aparecem no 3D da própria Análise.
 10. **Cabeçalho no desktop.** No estúdio, a sobrelinha, a descrição e o rodapé ficam ocultos para dar altura ao 3D. O título e o aviso de exemplo continuam.
+
+## F4 — Dados ao vivo e selo
+
+1. **Totais ao vivo.** Peças, comprimento e área (`takeoff-totals`, como antes), mais massa (kg, marcada como "parcial" se faltar massa por metro) e venda (R$, do `calculateEstimate`, ou "a definir").
+   - São derivados no mesmo render da edição, sem esperar o salvamento.
+   - O e2e `studio-live` mede com `MutationObserver`: atualizam em menos de 200 ms.
+2. **Estado da análise na barra.** Mostra "Análise atual", "Análise desatualizada", "Rodando há N s · <status do job>" (relógio local enquanto o job existente roda), "Análise com erro", "Sem análise executada" ou "Análise não aberta".
+3. **Botão único "Recalcular".** Executa exatamente a mesma `execute()` da Análise Estrutural Experimental. Se o executor ainda não está pronto ou a ferramenta não foi aberta, leva até ela.
+   - O botão "Executar análise mista…" da própria ferramenta continua, porque os testes e o fluxo detalhado o usam.
+4. **Selo "Bloqueado para fabricação".** Fica na barra de status, sempre visível em todas as etapas e larguras, e virou botão. Abre o diálogo "Pendências do projeto" (modal acessível; Esc devolve o foco), com abas:
+   - **Normativas:** `releaseGate.blocked` e os bloqueios normativos de cada peça, ou "sem análise atual".
+   - **Dados faltando:** pendências da geometria gerada, revisão da preparação do modelo declarado e `dataIssues` de cada peça.
+   - **Revisão do engenheiro:** `computedStructuralApproval = false`, `fabricationRelease = false · NOT_READY_BLOCKED`, revisão profissional não emitida e `report.remaining`.
+   - Só lista o que o sistema já calcula; nada é aprovado ou removido.
+5. **Avisos locais viram ícone com dica (`InfoTip`).** É um Popover do Radix que abre por clique, toque e teclado, e não só por hover.
+   - Aplicado às orientações sem risco: "disponível também no celular" e "quantitativos independentes de preços".
+   - Avisos de segurança, bloqueios e o aviso permanente continuam em texto visível. **Pendente:** revisar, um a um, os avisos locais dentro dos painéis antigos (análise, preparação), porque mexer neles exige reescrever esses painéis.

@@ -1,8 +1,8 @@
 "use client";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useDeferredValue, useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, Box, Lock, Save } from "lucide-react";
+import { ArrowLeft, ArrowRight, Box, Save } from "lucide-react";
 import { newProject, projectSchema, type Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
 import { resolvePhysicalStructure } from "@/domain/physical-structure";
@@ -15,7 +15,6 @@ import { SpatialPreparationPanel } from "./spatial-preparation-panel";
 import { transferTakeoff } from "@/domain/calculations/project-basis";
 import { useData } from "@/components/data-provider";
 import { PageHeading } from "@/components/ui";
-import { Badge } from "@/components/ui/badge";
 import { GeneralForm } from "@/components/projects/general-form";
 import { RoofForm } from "@/components/geometry/roof-form";
 import { StructureForm } from "./structure-form";
@@ -28,6 +27,10 @@ import { StudioAnalysisProvider } from "./studio-analysis";
 import { StudioSelection } from "./studio-selection";
 import { studioModelFromPhysical } from "@/domain/studio-result-layers";
 import { StudioResultsBar, useStudioResultView } from "./studio-results";
+import { AnalysisState, FabricationSeal, LiveTotals, liveTotals } from "./studio-status";
+import { InfoTip } from "@/components/ui/info-tip";
+import { mixedPreparationReview } from "@/domain/mixed-adapter";
+import { newSpatialPreparation } from "@/domain/spatial-preparation";
 import type { PieceRole } from "@/domain/structure";
 
 const workbenchSection: Record<StudioStepId, ResultSection> = {
@@ -55,12 +58,16 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   const [open3DRequest, setOpen3DRequest] = useState(0);
   const declared = project.workspace.physicalStructure !== undefined;
   const generated = useGeneratedResult(project);
-  const preview = useMemo(() => declared ? { model: resolvePhysicalStructure(project).model, pending: [] as string[] } : generateStructure(project), [project, declared]);
+  // F4: a visualização (2D/3D, seleção, camadas) usa a versão adiada do projeto; totais, selo e
+  // formulários usam a imediata. Assim os totais mudam no primeiro commit após a edição.
+  const deferredProject = useDeferredValue(project);
+  const viewGenerated = useGeneratedResult(deferredProject);
+  const preview = useMemo(() => declared ? { model: resolvePhysicalStructure(project).model, pending: [] as string[] } : generated.result, [project, declared, generated.result]);
   const selectionModel = useMemo(() => {
-    if (!declared) return generated.result.model ?? null;
-    const physical = resolvePhysicalStructure(project).model;
+    if (!declared) return viewGenerated.result.model ?? null;
+    const physical = resolvePhysicalStructure(deferredProject).model;
     try { return physical ? studioModelFromPhysical(physical) : null; } catch { return null; }
-  }, [declared, generated.result.model, project]);
+  }, [declared, viewGenerated.result.model, deferredProject]);
   const parsed = projectSchema.safeParse(project);
   const errors = parsed.success ? {} : Object.fromEntries(parsed.error.issues.map(i => [i.path[0], i.message]));
   const stepIndex = studioStepIndex(step), stepLabel = studioSteps[stepIndex].label;
@@ -137,6 +144,13 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
 
   const declaredModel = declared ? <DeclaredModelParts project={project} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} /> : null;
   const resultView = useStudioResultView(selectionModel, selectedPiece, selectedNode, showLabels);
+  // F4: totais e pendências derivados do projeto em memória (atualizam no mesmo render da edição).
+  const totals = useMemo(() => liveTotals(project, declared ? null : generated.result), [project, declared, generated.result]);
+  const declaredIssues = useMemo(() => {
+    if (!declared) return [] as string[];
+    try { const draft = project.workspace.spatialPreparation ?? newSpatialPreparation(project); return mixedPreparationReview(project, draft, !!draft.loading).issues.map(i => i.message); }
+    catch { return [] as string[]; }
+  }, [declared, project]);
   const showSelection = !!selectedPiece || !!selectedNode || step === "analise" || step === "verificacao";
   const selection = showSelection ? <StudioSelection model={selectionModel} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} /> : null;
   const tool: WorkbenchTool = step === "cargas" ? "prepare" : analysisTool;
@@ -172,15 +186,17 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     {step !== "materiais" && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
     <StudioLayout
       rail={<StudioRail step={step} onStep={id => go(id)} tool={analysisTool} onTool={openTool} showTools={!declared} pendingCount={pendingCount} />}
-      viewportToolbar={<><div className="viewer-shortcut"><button type="button" className="button secondary" onClick={open3DViewer}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button><span className="field-hint">{preview.model ? "Visualização 3D da estrutura disponível também no celular." : `Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span></div>
+      viewportToolbar={<><div className="viewer-shortcut"><button type="button" className="button secondary" onClick={open3DViewer}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button>{preview.model
+          ? <InfoTip label="visualização 3D">Visualização 3D da estrutura disponível também no celular. Arraste para girar; use Iso/Superior/Frontal/Lateral para vistas prontas.</InfoTip>
+          : <span className="field-hint">{`Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span>}</div>
         {preview.model && <StudioResultsBar onSelectNode={setSelectedNode} onOpenAnalysis={() => openTool("mixedlocal")} showLabels={showLabels} onShowLabels={setShowLabels} />}</>}
-      viewport={declared ? declaredModel : <GeneratedViewport project={project} result={generated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece}
+      viewport={declared ? declaredModel : <GeneratedViewport project={deferredProject} result={viewGenerated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece}
         analysisColors={resultView.colors} deformed={resultView.deformed} orientationCube labels={resultView.labels} />}
       inspectorTitle={step === "analise" && !declared ? `Análise · ${analysisToolLabel(analysisTool)}` : stepLabel}
       inspector={<>
         <p className="workflow-progress">Passo {stepIndex + 1} de {studioSteps.length} — {stepLabel}</p>
         <div className="workflow-content">{selection}{panel}{workbench}</div>
-        <div className="workflow-footer"><span className="field-hint">Quantitativos independentes de preços</span><div className="actions">
+        <div className="workflow-footer"><InfoTip label="quantitativos">Quantitativos independentes de preços: comprimentos e peças vêm da geometria; preços entram só no Orçamento de venda.</InfoTip><div className="actions">
           {stepIndex > 0 && <button type="button" className="button secondary" onClick={() => go(studioSteps[stepIndex - 1].id)}><ArrowLeft size={18} />Voltar</button>}
           {initial && <button type="button" className={next ? "button secondary" : "button"} onClick={save}><Save size={18} />Salvar levantamento</button>}
           {next && <button type="button" className="button" onClick={() => go(next.id)}>{!initial ? "Salvar e continuar" : `Ir para ${next.label.toLowerCase()}`}<ArrowRight size={18} /></button>}
@@ -188,9 +204,11 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
         <p className="editor-save-note" role="status">{message || (!initial ? "O projeto será criado ao continuar." : saveState === "pending" ? "Salvando…" : saveState === "error" ? "Confira o aviso de armazenamento." : "Alterações salvas neste navegador.")}</p>
       </>}
       status={<>
-        <Badge tone="danger" icon={<Lock />} className="studio-lock">Bloqueado para fabricação</Badge>
+        <FabricationSeal result={declared ? null : generated.result} declaredIssues={declaredIssues} />
         {declared ? <DeclaredSafetyWarning /> : <GeneratedSafetyWarning />}
         {!declared && <GeneratedTotals result={generated.result} />}
+        <LiveTotals totals={totals} />
+        <AnalysisState onOpenAnalysis={() => openTool("mixedlocal")} />
       </>}
     />
   </>;
