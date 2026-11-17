@@ -257,9 +257,11 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     });
   }
   const a=book.area,gap=12,half=(a.width-gap)/2;
+  const installed=model.pieces.filter(p=>!unlocated.has(p.id));
   const plans=book.add("PLANTAS","Plantas de cobertura e estrutura");
-  const expanded=model.pieces.length>60;
+  const expanded=model.pieces.length>=28;
   const purlinPlan=expanded?book.add("TERCAS","Planta de terças e contraventamentos"):plans;
+  const markingPage=expanded?book.add("MARCACAO","Planta de marcação de peças"):null;
   const spacingPage=expanded?book.add("ESPACAMENTOS","Espaçamentos entre terças"):plans;
   const elevations=book.add("ELEVACOES","Elevações e corte transversal");
   const sideElevation=expanded?book.add("ELEVACAO LATERAL","Elevação lateral"):elevations;
@@ -269,18 +271,17 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const bases=book.add("BASES","Locação de bases e chumbadores");
   const notes=book.add("NOTAS","Notas gerais");
   const materialsPage=book.add("MATERIAIS","Lista de materiais e resumo por perfil");
-  // The first sheet reserves three rows; large books receive complete index sheets.
-  const indexCapacity=9;
-  plans.draw.push(space=>{
-    book.text(space,[a.x,a.y+a.height-1],book.pages.length>indexCapacity?"Índice de folhas — continua ao final do conjunto":"Índice de folhas","TEXTOS",2.5);
-    book.pages.slice(0,indexCapacity).forEach((p,i)=>book.text(space,[a.x+(i%3)*(a.width/3),a.y+a.height-7-Math.floor(i/3)*4],`${i+1}. ${p.title}`,"TEXTOS",1.8));
-  });
+  // The index now receives its own sheet after pagination. It never steals
+  // drawing height or forces the roof onto a tiny half-width first view.
   const viewTop=a.y+a.height-24,viewBottom=a.y+42,viewHeight=viewTop-viewBottom;
-  drawing(plans,expanded?{...a,height:a.height-24}:{x:a.x,y:viewBottom,width:half,height:viewHeight},"Planta de cobertura e apoios","plan",
-    expanded?{pieces:model.pieces.filter(p=>p.role==="column"||p.role==="topChord"||p.role==="beam")} : {});
-  const auxiliaries=model.pieces.filter(p=>p.role==="purlin"||isDeclaredBrace(p)||(p.role==="web"&&!data.frames.some(f=>f.pieces.includes(p))));
+  drawing(plans,expanded?a:{x:a.x,y:viewBottom,width:half,height:viewHeight},"Planta de cobertura e apoios","plan",
+    {pieces:expanded?installed.filter(p=>p.role==="column"||p.role==="topChord"||p.role==="beam"):installed,noMarks:true,
+      subtitle:"Planta de cobertura: cotas gerais. Marcas e locações ver folhas próprias."});
+  const auxiliaries=installed.filter(p=>p.role==="purlin"||isDeclaredBrace(p)||(p.role==="web"&&!data.frames.some(f=>f.pieces.includes(p))));
   drawing(purlinPlan,expanded?a:{x:a.x+half+gap,y:viewBottom,width:half,height:viewHeight},"Terças e contraventamentos","plan",{pieces:auxiliaries.length?auxiliaries:model.pieces,tercas:true,
     subtitle:"Marcas vinculadas à lista de materiais; espaçamentos projetados."});
+  if(markingPage)drawing(markingPage,a,"Planta de marcação de peças","plan",
+    {pieces:installed,showRoof:false,subtitle:"Peças instaladas no modelo; itens sem locação apenas na tabela de pendências."});
   if(distinct.length>=2){
     const ids=(point:P)=>purlins.filter(p=>{const c=cross(p);return c&&c[0]===point[0]&&c[1]===point[1];}).map(p=>marks.get(p.id)).join(" / ");
     book.table(spacingPage,expanded?a:{...a,height:35},"Espaçamentos entre terças no corte",["Marcas","Posição 1 / Z (mm)","Posição 2 / Z (mm)","Projeção (mm)","No corte (mm)"],distinct.slice(1).map((b,i)=>{
@@ -288,10 +289,10 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     }),[0,.28,.48,.68,.84,1]);
   }
   const smallHeight=(a.height-gap)/2;
-  const summaryOptions=expanded?{deduplicate:true,subtitle:"Projeções coincidentes: marca representativa; todas as peças nas folhas individuais e na lista."}:{};
+  const summaryOptions=expanded?{deduplicate:true,pieces:installed,subtitle:"Projeções coincidentes: marca representativa; todas as peças nas folhas individuais e na lista."}:{pieces:installed};
   drawing(elevations,expanded?a:{x:a.x,y:a.y+smallHeight+gap,width:half,height:smallHeight},"Elevação frontal","front",summaryOptions);
-  drawing(sideElevation,expanded?a:{x:a.x,y:a.y,width:half,height:smallHeight},"Elevação lateral","side",expanded?{...summaryOptions,pieces:model.pieces.filter(p=>p.role==="column"||p.role==="purlin"||isDeclaredBrace(p))}:{});
-  drawing(crossSection,expanded?a:{x:a.x+half+gap,y:a.y,width:half,height:a.height},"Corte A-A","cut");
+  drawing(sideElevation,expanded?a:{x:a.x,y:a.y,width:half,height:smallHeight},"Elevação lateral","side",expanded?{...summaryOptions,pieces:model.pieces.filter(p=>(p.role==="column"||p.role==="purlin"||isDeclaredBrace(p))&&!unlocated.has(p.id))}:{});
+  drawing(crossSection,expanded?a:{x:a.x+half+gap,y:a.y,width:half,height:a.height},"Corte A-A","cut",{pieces:installed});
   for(const [index,group] of data.frameGroups.entries()){
     const first=group[0],h=first.axis==="y"?"x":"y",page=framePages[index];
     const token=(frame:typeof first,p:CadPiece)=>{
@@ -356,27 +357,36 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     ...(references.size?[...references]:["PENDENTE: normas e respectivas edições não declaradas no modelo."]),
     "PENDENTE DE PROJETO: bases, chumbadores, chapas, furos, soldas, contato, ligações e fundações. Símbolos de apoio indicam apenas posições; não representam detalhes executivos ou capacidade verificada.",
     reactions.data?"As reações apresentadas foram conferidas contra a entrada atual. Permanecem experimentais e não representam capacidades de apoios, ligações ou fundações.":reactions.status,
-    "Responsável técnico, CREA e ART devem ser preenchidos pelo profissional responsável após conferência. Campos em branco não autorizam execução. Os bloqueios de aprovação estrutural e fabricação permanecem ativos."
+    "Responsável técnico, CREA e ART devem ser preenchidos pelo profissional responsável após conferência. Campos em branco não autorizam execução. Os bloqueios de aprovação estrutural e fabricação permanecem ativos.",
+    ...(unlocated.size?[`PENDENTE: ${unlocated.size} peças sem locação retiradas do desenho e subtotal principal; conferir itens a confirmar.`]:[]),
+    ...sourceDimensions.filter(r=>r.status==="PENDENTE").map(r=>`PENDENTE — DIVERGÊNCIA DIMENSIONAL ${r.pieceId}: cota fonte ${num(r.declaredMm)} mm, modelo ${r.actualMm===null?"não encontrado":num(r.actualMm)} mm, diferença ${r.discrepancyMm===null?"desconhecida":num(r.discrepancyMm)} mm; fonte ${r.source}.`)
+
   ],[...new Set(trace)].join(" | "));
   const detailHeight=a.height*.66;
-  const detailBottom=book.table(materialsPage,{...a,y:a.y+a.height-detailHeight,height:detailHeight},"Relação de peças",["Marca","Perfil declarado","Qtd.","Comprimento (mm)","Massa (kg/m)","Massa (kg)"],takeoff.pieces.map(p=>[
+  const detailBottom=book.table(materialsPage,{...a,y:a.y+a.height-detailHeight,height:detailHeight},"Relação de peças",["Marca","Perfil declarado","Qtd.","Comprimento (mm)","Massa (kg/m)","Massa (kg)"],takeoff.pieces.filter(p=>!unlocated.has(p.pieceId)).map(p=>[
     marks.get(p.pieceId)!,profile(p.pieceId),"1",num(p.lengthMm),p.massKg===null?"PENDENTE":num(p.massKg/(p.lengthMm/1000)),p.massKg===null?"PENDENTE":num(p.massKg)]),[0,.08,.42,.48,.66,.83,1]);
   const summary=new Map<string,{profile:string;quantity:number;length:number;mass:number|null}>();
-  for(const p of takeoff.pieces){
+  for(const p of takeoff.pieces.filter(p=>!unlocated.has(p.pieceId))){
     const assignment=draft?.physicalCatalog?.assignments.find(a=>a.pieceId===p.pieceId),key=JSON.stringify([assignment?.sectionId??p.sectionId??p.pieceId,assignment?.materialId??p.materialId??p.pieceId]);
     const row=summary.get(key)??{profile:profile(p.pieceId),quantity:0,length:0,mass:0};row.quantity++;row.length+=p.lengthMm;
     row.mass=row.mass===null||p.massKg===null?null:row.mass+p.massKg;summary.set(key,row);
   }
   book.table(materialsPage,{...a,height:Math.max(22,detailBottom-8-a.y)},"Resumo por perfil e material",["Perfil declarado","Qtd.","Comprimento total (mm)","Massa total (kg)"],[...summary.values()].map(r=>[
     r.profile,String(r.quantity),num(r.length),r.mass===null?"PENDENTE":num(r.mass)]),[0,.42,.5,.76,1],"MATERIAIS",
-    `TOTAL DA ESTRUTURA: ${takeoff.totals.quantity} peças; ${num(takeoff.totals.lengthM*1000)} mm; ${takeoff.totals.massKg===null?"PESO PENDENTE":num(takeoff.totals.massKg)+" kg"}.`);
-  // Build continuation indexes last, once all table and trace overflows are known.
-  if(book.pages.length>indexCapacity){
-    const indexPages:CadPage[]=[],perPage=Math.floor((a.height-18)/8.8);
-    while(Math.ceil((book.pages.length-indexCapacity)/perPage)>indexPages.length)indexPages.push(book.add("INDICE CONTINUACAO","Índice de folhas — continuação"));
-    const rows=book.pages.slice(indexCapacity).map((p,i)=>[String(indexCapacity+i+1),p.title]);
-    indexPages.forEach((page,i)=>book.table(page,a,"Índice de folhas",["Folha","Conteúdo"],rows.slice(i*perPage,(i+1)*perPage),[0,.1,1],"TEXTOS"));
+    `ESCOPO PRINCIPAL (SEM AVULSAS): ${takeoff.pieces.length-unlocated.size} peças; ${num(takeoff.pieces.filter(p=>!unlocated.has(p.pieceId)).reduce((v,p)=>v+p.lengthMm,0))} mm. Itens a confirmar em folha própria.`);
+  if(unlocated.size){
+    const pendingPage=book.add("ITENS A CONFIRMAR","Peças sem locação — fora do orçamento principal");
+    book.table(pendingPage,a,"Itens a confirmar",["Marca","ID peça","Perfil","Comprimento mm","Estado"],takeoff.pieces.filter(p=>unlocated.has(p.pieceId)).map(p=>[
+      marks.get(p.pieceId)!,p.pieceId,profile(p.pieceId),num(p.lengthMm),"SEM LOCAÇÃO"]),[0,.1,.27,.64,.8,1],"PENDENCIAS");
   }
+  if(sourceDimensions.some(r=>r.status==="PENDENTE")){
+    const reviewPage=book.add("DIVERGENCIAS","Pendências de cotas do desenho");
+    book.table(reviewPage,a,"Divergências >2 mm",["Peça","Cota fonte mm","Modelo mm","Diferença mm","Ação"],sourceDimensions.filter(r=>r.status==="PENDENTE").map(r=>[
+      r.pieceId,num(r.declaredMm),r.actualMm===null?"PENDENTE":num(r.actualMm),
+      r.discrepancyMm===null?"PENDENTE":num(r.discrepancyMm),"CONFERIR"]),[0,.12,.32,.52,.73,1],"PENDENCIAS");
+  }
+  const indexPage=book.add("INDICE","Índice geral de pranchas");
+  book.table(indexPage,a,"Índice completo",["Folha","Conteúdo"],book.pages.map((p,i)=>[String(i+1),p.title]),[0,.1,1],"TEXTOS");
   book.render();
   return book.scenes;
 }
