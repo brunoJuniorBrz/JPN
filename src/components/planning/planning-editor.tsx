@@ -27,6 +27,7 @@ import type { PendingTarget } from "./result-presentation";
 import { StudioAnalysisProvider } from "./studio-analysis";
 import { StudioSelection } from "./studio-selection";
 import { studioModelFromPhysical } from "@/domain/studio-result-layers";
+import { StudioResultsBar, useStudioResultView } from "./studio-results";
 import type { PieceRole } from "@/domain/structure";
 
 const workbenchSection: Record<StudioStepId, ResultSection> = {
@@ -44,6 +45,7 @@ export function PlanningEditor(props: EditorProps) {
 function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen3D = false }: EditorProps) {
   const { data, saveProject, flush, saveState, setInvalidDraft } = useData(); const router = useRouter();
   const [selectedPiece, setSelectedPiece] = useState(""), [selectedNode, setSelectedNode] = useState("");
+  const [showLabels, setShowLabels] = useState(true);
   const [project, setProject] = useState(() => initial ?? newProject(data.settings));
   const [step, setStep] = useState<StudioStepId>(initialStudioStep ?? studioStepFromLegacy(initialStep));
   const [analysisTool, setAnalysisTool] = useState<AnalysisTool>("overview");
@@ -134,6 +136,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   }
 
   const declaredModel = declared ? <DeclaredModelParts project={project} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} /> : null;
+  const resultView = useStudioResultView(selectionModel, selectedPiece, selectedNode, showLabels);
   const showSelection = !!selectedPiece || !!selectedNode || step === "analise" || step === "verificacao";
   const selection = showSelection ? <StudioSelection model={selectionModel} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} /> : null;
   const tool: WorkbenchTool = step === "cargas" ? "prepare" : analysisTool;
@@ -169,8 +172,10 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     {step !== "materiais" && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
     <StudioLayout
       rail={<StudioRail step={step} onStep={id => go(id)} tool={analysisTool} onTool={openTool} showTools={!declared} pendingCount={pendingCount} />}
-      viewportToolbar={<div className="viewer-shortcut"><button type="button" className="button secondary" onClick={open3DViewer}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button><span className="field-hint">{preview.model ? "Visualização 3D da estrutura disponível também no celular." : `Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span></div>}
-      viewport={declared ? declaredModel : <GeneratedViewport project={project} result={generated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece} />}
+      viewportToolbar={<><div className="viewer-shortcut"><button type="button" className="button secondary" onClick={open3DViewer}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button><span className="field-hint">{preview.model ? "Visualização 3D da estrutura disponível também no celular." : `Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span></div>
+        {preview.model && <StudioResultsBar onSelectNode={setSelectedNode} onOpenAnalysis={() => openTool("mixedlocal")} showLabels={showLabels} onShowLabels={setShowLabels} />}</>}
+      viewport={declared ? declaredModel : <GeneratedViewport project={project} result={generated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece}
+        analysisColors={resultView.colors} deformed={resultView.deformed} orientationCube labels={resultView.labels} />}
       inspectorTitle={step === "analise" && !declared ? `Análise · ${analysisToolLabel(analysisTool)}` : stepLabel}
       inspector={<>
         <p className="workflow-progress">Passo {stepIndex + 1} de {studioSteps.length} — {stepLabel}</p>

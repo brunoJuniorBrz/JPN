@@ -82,3 +82,26 @@ Registro curto das decisões tomadas sem consulta (ver regra em [PLANO-UI.md](PL
    - **Pendente:** os selects de peça, segmento e nó dentro da Análise Estrutural Experimental continuam lá. Removê-los exigiria reescrever o painel de resultados (47 KB), e a busca do inspetor os cobre.
    - **Pendente:** o hover no 3D não foi feito, porque o raycaster atual só trata clique.
 5. **Nomes acessíveis sem colisão.** O botão do cartão é "Desmarcar peça", porque o 3D já tem "Limpar seleção".
+
+## F3 — Resultados no 3D
+
+1. **Barra de resultados no topo da visualização (`studio-results.tsx`).** Tem 3 controles: "Combinação exibida", "Camada no 3D do estúdio" e "Rótulos no 3D".
+   - Os nomes diferem dos da Análise ("Camada de resultado…"), para os seletores não colidirem.
+   - Controla a mesma sessão da análise: mudar aqui muda lá, e vice-versa.
+2. **Cores e deformada no 3D principal.** Vêm da camada que a análise já aceitou para a mesma entrada (`acceptOverlay`). Camada recusada não pinta nada e mostra quantos motivos houve.
+3. **Legenda gráfica.** Gradiente igual ao de `overlayColors` (azul → oliva → vermelho), com mínimo, máximo, unidade e combinação.
+   - Texto alternativo: `role="img"` com um `aria-label` que descreve a escala inteira.
+4. **Deformada com escala animada.** "Animar deformada" vai de 0 até a escala atual em 1,2 s e devolve a escala que estava digitada. Com `prefers-reduced-motion`, salta direto. A escala é só visual.
+5. **Apoios com status.**
+   - Na barra: um botão por apoio da combinação ativa, com ícone, cor e texto ("pendente", "excede", "ok") e o arrancamento em kN. O nome acessível traz o texto completo, e o clique abre o nó no inspetor.
+   - No 3D: rótulos CSS2D na mesma cor.
+6. **Rótulos (`CSS2DRenderer`).** ID e comprimento (cota) da peça selecionada, ID do nó selecionado e status dos apoios.
+   - Ficam numa camada `aria-hidden`, porque a informação já existe em texto no inspetor e na barra.
+   - Somem no modo Acabado.
+7. **Cubo de orientação (`ViewHelper` do three/addons).** É desenhado no canto do próprio canvas, depois das métricas `data-draw-calls`/`data-triangles` (que os testes leem) e sem `autoClear`.
+   - Segue a câmera ativa (perspectiva ou ortográfica) por uma câmera auxiliar.
+   - Some no modo Acabado. `data-orientation-cube` diz se está ligado.
+   - **Pendente:** clicar no cubo para girar a câmera, porque o render é sob demanda e a animação do `ViewHelper` exige laço contínuo. Os botões Iso/Superior/Frontal/Lateral continuam sendo o caminho.
+8. **Opcional no viewer.** Cubo e rótulos são props do `Structure3D`. Só o estúdio liga; a demonstração com perfis e o 3D da Análise não mudam.
+9. **Modelo declarado.** A vista central continua sendo a de linhas 2D (`PhysicalLineView`). A barra de resultados, a legenda e os apoios funcionam; cores e deformada aparecem no 3D da própria Análise.
+10. **Cabeçalho no desktop.** No estúdio, a sobrelinha, a descrição e o rodapé ficam ocultos para dar altura ao 3D. O título e o aviso de exemplo continuam.

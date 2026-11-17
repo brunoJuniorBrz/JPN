@@ -9,6 +9,7 @@ import { useData } from "@/components/data-provider";
 import { downloadBlob, exportFilename } from "@/lib/exports/proposal";
 import { groupMaterialsForDisplay, summarizePending, locatePending, locatePendingGroup, type PendingTarget } from "./result-presentation";
 import { StructurePreview } from "./structure-preview";
+import type { Viewer3DLabel } from "./structure-3d";
 
 /** Seção da antiga etapa Resultado; o ProjectWorkbench ainda a usa para decidir o que mostrar. */
 export type ResultSection = "model" | "materials" | "engineering" | "files";
@@ -27,19 +28,20 @@ export function useGeneratedResult(project: Project) {
 type Generated = ReturnType<typeof useGeneratedResult>;
 
 /** Visualização central: desenho 2D / 3D ou o que falta para gerar as peças. */
-export function GeneratedViewport({ project, result, startIn3D, open3DRequest, onConfigureProfile, onEditStructure, onResolvePending, selected, onSelect, analysisColors, deformed, overlay }: {
+export function GeneratedViewport({ project, result, startIn3D, open3DRequest, onConfigureProfile, onEditStructure, onResolvePending, selected, onSelect, analysisColors, deformed, overlay, orientationCube, labels }: {
   project: Project; result: StructureResult; startIn3D: boolean; open3DRequest: number;
   onConfigureProfile?: (role: PieceRole) => void; onEditStructure?: () => void; onResolvePending?: (target: PendingTarget) => void;
   selected?: string; onSelect?: (id: string) => void;
   analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null;
   /** Elementos do estúdio sobre a visualização (legenda, combinação, apoios). */
   overlay?: ReactNode;
+  orientationCube?: boolean; labels?: Viewer3DLabel[];
 }) {
   const model = result.model;
   if (!model) return <div className="pending-box"><h3>Faltam dados para gerar as peças</h3><ul>{result.pending.map(p => <li key={p}>{p}{onResolvePending && locatePending(p) && <button className="button secondary result-pending-action" type="button" onClick={() => onResolvePending(locatePending(p)!)}>Corrigir dados</button>}</li>)}</ul></div>;
   return <div className="result-model-panel">
     {overlay}
-    <StructurePreview key={open3DRequest} project={project} result={result} onConfigureProfile={onConfigureProfile} onEditStructure={onEditStructure} startIn3D={startIn3D} selected={selected} onSelect={onSelect} analysisColors={analysisColors} deformed={deformed} />
+    <StructurePreview key={open3DRequest} project={project} result={result} onConfigureProfile={onConfigureProfile} onEditStructure={onEditStructure} startIn3D={startIn3D} selected={selected} onSelect={onSelect} analysisColors={analysisColors} deformed={deformed} orientationCube={orientationCube} labels={labels} />
     <p className="result-model-context">Tesouras: {model.frameCount} linhas · Terças: {model.purlinRows} linhas · Espaçamentos entre eixos: {formatMeasure(model.frameSpacingM, 2)} m / {formatMeasure(model.purlinSpacingM, 2)} m.</p>
   </div>;
 }
