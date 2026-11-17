@@ -1,0 +1,21 @@
+{
+  "schema_version": "jpn.validation-case/1",
+  "id": "example-cantilever",
+  "name": "Modelo sintético: balanço de 1 m com força vertical na ponta",
+  "projectFile": "example-cantilever.project.json",
+  "analysis_order": "linear",
+  "reference": {
+    "kind": "analytical",
+    "citation": "Solução analítica de Euler-Bernoulli: balanço prismático com carga concentrada na extremidade livre",
+    "basis": "L=1 m; Fz=-1000 N; E=200e9 Pa; Iy=Iz=1e-5 m^4. Rz=1000 N; My=-1000 N*m; uz=-F*L^3/(3*E*I)=-1/6000 m; ry=F*L^2/(2*E*I)=1/4000 rad. Sem peso próprio, cisalhamento deformável, não linearidade ou fatores normativos. Valores esperados calculados por fórmulas, nunca extraídos do solver.",
+    "reviewer": "Exemplo de formato para futura revisão independente; não é projeto real nem homologação",
+    "status": "example-unreviewed"
+  },
+  "checks": [
+    {"pointer": "/combinations/SLS/nodes/A/reaction_force_n/2", "expected": 1000, "unit": "N", "tolerance": {"absolute": 0.000001, "relative": 0.000000001}, "rationale": "Equilíbrio vertical Rz=-Fz"},
+    {"pointer": "/combinations/SLS/nodes/A/reaction_moment_nm/1", "expected": -1000, "unit": "N*m", "tolerance": {"absolute": 0.000001, "relative": 0.000000001}, "rationale": "Equilíbrio de momentos em torno da base: My=-1000 N*m"},
+    {"pointer": "/combinations/SLS/nodes/B/translation_m/2", "expected": -0.00016666666666666666, "unit": "m", "tolerance": {"absolute": 0.000000000001, "relative": 0.00000001}, "rationale": "Flecha Euler-Bernoulli Fz*L^3/(3EI)"},
+    {"pointer": "/combinations/SLS/nodes/B/rotation_rad/1", "expected": 0.00025, "unit": "rad", "tolerance": {"absolute": 0.000000000001, "relative": 0.00000001}, "rationale": "Rotação positiva em Y para flecha negativa em Z: -Fz*L^2/(2EI)"},
+    {"pointer": "/combinations/SLS/equilibrium/relative_residual", "expected": 0, "unit": "dimensionless", "tolerance": {"absolute": 0.0000000001, "relative": 0}, "rationale": "Resultantes globais de força e momento equilibradas"}
+  ]
+}
