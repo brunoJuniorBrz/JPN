@@ -7,6 +7,7 @@ import {autoTable} from "jspdf-autotable";
 import {createCadDrawing,type CadExportOptions} from "./cad";
 import {createCadPdf} from "./cad-pdf";
 import {packageTakeoff} from "./package-source";
+import {declaredCommercialGroups,isUnlocatedCommercialPiece} from "./package-commercial-groups";
 import {createPackageZip} from "./package-zip";
 import {CAD_NOTICE} from "./cad-book";
 import {mixedPreparationReview} from "@/domain/mixed-adapter";
@@ -20,19 +21,37 @@ const digest=async(bytes:Uint8Array)=>Array.from(new Uint8Array(await crypto.sub
 export function packageCutting(project:Project,options:PackageOptions={}){
   if(!project.workspace.physicalStructure)return projectCutting(project);
   const config=project.workspace.cutting,report=packageTakeoff(project),signature=structureSignature(project);
-  if(config.kerfMm===null||config.endTrimMm===null||config.minimumRemnantMm===null)throw Error("Declare serra, perdas de extremidade e sobra mínima; zero deve ser explícito.");
-  return {status:"simulation_only" as const,signature,groups:report.groups.map((g,i)=>{
-    const stockMm=options.stockByGroup?.[g.key];
-    if(!g.sectionId||!g.materialId||!report.pieces.filter(p=>g.pieceIds.includes(p.pieceId)).every(p=>p.steelGrade.trim()))throw Error(`${g.label}: perfil/material pendente.`);
+  if(config.kerfMm===null||config.endTrimMm===null||config.minimumRemnantMm===null)
+    throw Error("Declare serra, perdas de extremidade e sobra mínima; zero deve ser explícito.");
+  const piecesById=new Map(report.pieces.map(p=>[p.pieceId,p]));
+  const catalog=project.workspace.spatialPreparation?.physicalCatalog;
+  return {status:"simulation_only" as const,signature,groups:declaredCommercialGroups(project).map((g,i)=>{
+    const candidate=[options.stockByGroup?.[g.key],...g.legacyKeys.map(k=>options.stockByGroup?.[k])]
+      .filter((v):v is number=>v!==undefined);
+    const lengths=[...new Set(candidate)];
+    if(lengths.length>1)throw Error(`${g.label}: estoque conflitante entre funções do mesmo perfil; escolha um comprimento comercial único.`);
+    const stockMm=lengths[0];
+    if(!g.sectionId||!g.materialId||!g.steelGrade.trim())
+      throw Error(`${g.label}: perfil ou material pendente.`);
     if(!stockMm)throw Error(`${g.label}: declare o comprimento comercial em mm nas opções do pacote.`);
-    const pieces=report.pieces.filter(p=>g.pieceIds.includes(p.pieceId)).map(p=>{
-      const catalog=project.workspace.spatialPreparation?.physicalCatalog,assignment=catalog?.assignments.find(a=>a.pieceId===p.pieceId);
-      if(!catalog?.sections.find(s=>s.id===assignment?.sectionId)?.designation?.trim())throw Error(`${p.pieceId}: identificação do perfil pendente no catálogo físico.`);
+    const items=g.pieceIds.map(id=>{
+      const p=piecesById.get(id)!;
+      const assignment=catalog?.assignments.find(a=>a.pieceId===p.pieceId);
+      if(!catalog?.sections.find(s=>s.id===assignment?.sectionId)?.designation?.trim())
+        throw Error(`${p.pieceId}: identificação do perfil pendente no catálogo físico.`);
       const final=project.workspace.fabrication.find(f=>f.pieceId===p.pieceId&&f.signature===signature);
       if(config.useFabrication&&!final)throw Error(`${p.pieceId}: comprimento final ausente ou desatualizado.`);
-      return {id:p.pieceId,lengthMm:config.useFabrication?final!.lengthMm:p.lengthMm};
+      // CSV/PDF/shop lengths are integer millimetres, never rounded DOWN.
+      // Exact geometric lengths remain in the snapshot/materials/audit.
+      return {id:p.pieceId,lengthMm:Math.ceil((config.useFabrication?final!.lengthMm:p.lengthMm)-1e-9)};
     });
-    return {profile:g.label,groupId:`G${i+1}`,...packBars({stockMm,pieces,kerfMm:config.kerfMm!,endTrimMm:config.endTrimMm!,minimumRemnantMm:config.minimumRemnantMm!})};
+    const all=packBars({stockMm,pieces:items,kerfMm:config.kerfMm!,
+      endTrimMm:config.endTrimMm!,minimumRemnantMm:config.minimumRemnantMm!});
+    const confirmed=items.filter(p=>!g.unlocatedPieceIds.includes(p.id));
+    const confirmedStandalone=confirmed.length?packBars({stockMm,pieces:confirmed,
+      kerfMm:config.kerfMm!,endTrimMm:config.endTrimMm!,minimumRemnantMm:config.minimumRemnantMm!}):null;
+    return {profile:g.label,commercialKey:g.key,groupId:`G${i+1}`,unlocatedPieceIds:g.unlocatedPieceIds,
+      confirmedStandaloneBars:confirmedStandalone?.bars.length??0,...all};
   })};
 }
 export async function createCompletePackage(input:Project,options:PackageOptions={}){
