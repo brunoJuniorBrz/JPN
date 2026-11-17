@@ -126,12 +126,17 @@ it("exports real Tom dimensional takeoff using new PR141 package engine (study, 
   const cut=packageCutting(p,{stockByGroup});
   const purlins=cut.groups.filter(g=>g.profile.includes("Ue 75"));
   expect(purlins.flatMap(g=>g.bars)).toHaveLength(20);
-  const result=await createCompletePackage(p,{format:"A3",issuedAt:new Date("2026-11-17T20:00:00.000Z"),stockByGroup});
+  const barPriceCentsByGroup=Object.fromEntries(declaredCommercialGroups(p).map(g=>
+    [g.key,g.label.startsWith("Ue ")?15500:13500]));
+  const result=await createCompletePackage(p,{format:"A3",issuedAt:new Date("2026-11-17T20:00:00.000Z"),
+    stockByGroup,barPriceCentsByGroup});
   expect(result.manifest.cuttingAvailable).toBe(true);
   expect(result.manifest.fabricationRelease).toBe(false);
   expect(result.manifest.computedStructuralApproval).toBe(false);
   expect(result.manifest.totals.quantity).toBe(40);
   expect(result.manifest.unlocatedPieceIds).toHaveLength(4);
+  expect(result.manifest.commercialCostMainCents).toBe(377500);
+  expect(result.manifest.commercialCostCombinedCents).toBe(418000);
   expect(result.manifest.sourceDimensionReviews.filter(r=>r.status==="PENDENTE")).toHaveLength(2);
   expect(result.files.some(f=>f.name==="materiais/itens-a-confirmar.csv")).toBe(true);
   const uGroup=cut.groups.find(g=>g.profile.startsWith("U 75"));
