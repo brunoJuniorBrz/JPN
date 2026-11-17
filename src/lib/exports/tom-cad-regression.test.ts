@@ -16,6 +16,7 @@ import { physicalRoofFacesSchema, inspectPhysicalRoofFaces } from "@/domain/phys
 import { newSpatialPreparation } from "@/domain/spatial-preparation";
 import { transferDeclaredTakeoff } from "@/domain/declared-takeoff";
 import { packageTakeoff } from "./package-source";
+import {declaredCommercialGroups} from "./package-commercial-groups";
 import { createCompletePackage,packageCutting } from "./complete-package";
 
 const SOURCE = "Tom / Alan, planta baixa(2).pdf; reconstrução comercial JPN 17-11-2026. Posições das seis faces esquemáticas, NÃO levantamento de campo.";
