@@ -14,16 +14,17 @@ export function AnchorPulloutPanel({report}:{report:AnchorPulloutReport}){
     <p>Demanda = maior tração do apoio entre as combinações ELU do resultado. Capacidade = valor de cálculo declarado (ficha do fabricante), por apoio ou por tipo de ancoragem. O JPN não calcula ancoragem nem alvenaria; sem capacidade declarada o apoio fica PENDENTE.</p>
     {report.governingSupport&&<p data-testid="anchor-governing"><strong>Apoio que governa: {report.governingSupport.nodeId} · {report.governingSupport.combinationId??"—"} · razão {ratio(report.governingSupport.ratio)}</strong></p>}
     <div style={{overflowX:"auto"}} role="region" aria-label="Tabela de arrancamento por apoio" tabIndex={0}><table><thead><tr>
-      <th>Apoio</th><th>Combinação que governa</th><th>Arrancamento (kN)</th><th>Capacidade (kN) e fonte</th><th>Demanda / capacidade</th><th>Situação</th><th>Compressão (kN) / capacidade</th>
+      <th>Apoio</th><th>Combinação que governa</th><th>Arrancamento (kN)</th><th>Cisalhamento concomitante (kN) / momento (kN·m)</th><th>Capacidade (kN) e fonte</th><th>Demanda / capacidade</th><th>Situação</th><th>Compressão (kN) / capacidade</th>
     </tr></thead><tbody>
       {report.supports.map(s=><tr key={s.nodeId} data-testid={`anchor-row-${s.nodeId}`} data-critical={s.critical?"true":"false"} className={s.critical?"critical":undefined}
         style={s.critical?{fontWeight:700,outline:"2px solid #c0392b"}:undefined}>
         <td>{s.nodeId} · lado {s.side}{s.critical?" · CRÍTICO":""}</td>
         <td>{s.pullout.governingCombinationId??"—"}</td>
         <td>{kn(s.pullout.demandKn)}</td>
+        <td>{s.pullout.concurrentHorizontalShearKn===null?"—":`${kn(s.pullout.concurrentHorizontalShearKn)} / ${kn(s.pullout.concurrentMomentKnM??0)}`}</td>
         <td>{s.pullout.declaredCapacity?`${kn(s.pullout.declaredCapacity.valueKn)} (${s.pullout.declaredCapacity.origin==="anchor-type"?"tipo "+s.pullout.declaredCapacity.anchorTypeId:"apoio"}; ${s.pullout.declaredCapacity.source})`:"não declarada"}</td>
         <td>{ratio(s.pullout.ratio)}</td>
-        <td>{statusText[s.pullout.status]}{s.issues.length?" · "+s.issues.join(" "):""}</td>
+        <td>{s.issues.length&&s.pullout.status!=="exceeds-declared-capacity"&&s.pullout.status!=="capacity-pending"?"PENDENTE · ":""}{statusText[s.pullout.status]}{s.issues.length?" · "+s.issues.join(" "):""}</td>
         <td>{kn(s.compression.demandKn)} / {s.compression.declaredCapacity?kn(s.compression.declaredCapacity.valueKn):"não declarada"}</td>
       </tr>)}
     </tbody></table></div>

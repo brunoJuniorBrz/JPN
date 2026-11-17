@@ -115,6 +115,7 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
     engineeringCombinations:draft.engineeringCombinations??null,...(draft.normativeProvenance?.length?{normativeStatus:"PROVISIONAL" as const,normativeNotices:provisionalNotices(draft.normativeProvenance),normativeProvenance:draft.normativeProvenance}:{}),demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
     supportAudits:assessSupportReactions(draft.supportInterfaces??[],parsed),
     anchorPullout:assessAnchorPullout({interfaces:draft.supportInterfaces??[],anchorTypes:draft.anchorTypes,result:parsed,
+      engineeringCombinations:draft.engineeringCombinations??null,
       ulsCombinationIds:draft.engineeringCombinations?draft.engineeringCombinations.combinations.filter(c=>c.purpose==="ULS").map(c=>c.id):null}),
     ...(roofReactionAudit?{physicalRoofReactionAudit:roofReactionAudit}:{}),
     secondOrderAudit,
