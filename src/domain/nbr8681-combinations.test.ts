@@ -67,16 +67,18 @@ it("ELU normal: vetores calculados à mão, ações favoráveis/desfavoráveis e
 it("ELS quase permanente, frequente e rara: vetores calculados à mão",()=>{
   const g=generateNbr8681Combinations(decl({permanentSets:["unfavorable"],families:["sls-quasi-permanent","sls-frequent","sls-rare"]}),["G","Q","W1","W2"]);
   const by=(purpose:string)=>g.trace.filter(c=>c.purpose===purpose);
-  expect(by("SLS-quasi-permanent")).toHaveLength(1);
-  expect(by("SLS-frequent")).toHaveLength(3);
-  expect(by("SLS-characteristic")).toHaveLength(4);
-  expect(vec(g,by("SLS-quasi-permanent")[0].id)).toEqual({G:1,Q:.3,W1:0,W2:0});             // psi2: Q 0,3; vento 0
-  const fq=(p:string)=>vec(g,find(g,c=>c.purpose==="SLS-frequent"&&c.principal===p)[0].id);
-  expect(fq("Q")).toEqual({G:1,Q:.4,W1:0,W2:0});                                           // psi1*Q; vento psi2=0
-  expect(fq("W1")).toEqual({G:1,Q:.3,W1:.3,W2:0});                                         // psi1 vento 0,3; Q psi2 0,3
-  expect(vec(g,find(g,c=>c.purpose==="SLS-characteristic"&&c.principal==="W1")[0].id)).toEqual({G:1,Q:.4,W1:1,W2:0});   // rara
+  // 8681 4.3.3/4.3.3.1: acompanhantes favoráveis são omitidas também no ELS -> cada acompanhante presente/ausente
+  expect(by("SLS-quasi-permanent")).toHaveLength(2);
+  expect(by("SLS-frequent")).toHaveLength(5);
+  expect(by("SLS-characteristic")).toHaveLength(7);
+  expect(by("SLS-quasi-permanent").map(c=>vec(g,c.id))).toEqual([{G:1,Q:0,W1:0,W2:0},{G:1,Q:.3,W1:0,W2:0}]);   // psi2: Q 0,3; vento 0
+  const fq=(p:string)=>find(g,c=>c.purpose==="SLS-frequent"&&c.principal===p).map(c=>vec(g,c.id));
+  expect(fq("Q")).toEqual([{G:1,Q:.4,W1:0,W2:0}]);                                         // psi1*Q; vento psi2=0
+  expect(fq("W1")).toEqual([{G:1,Q:0,W1:.3,W2:0},{G:1,Q:.3,W1:.3,W2:0}]);                  // psi1 vento 0,3; Q psi2 0,3 ou ausente
+  expect(find(g,c=>c.purpose==="SLS-characteristic"&&c.principal==="W1").map(c=>vec(g,c.id)))
+    .toEqual([{G:1,Q:0,W1:1,W2:0},{G:1,Q:.4,W1:1,W2:0}]);                                  // rara
   expect(find(g,c=>c.purpose==="SLS-characteristic"&&c.principal==="Q").map(c=>vec(g,c.id)))
-    .toEqual([{G:1,Q:1,W1:.3,W2:0},{G:1,Q:1,W1:0,W2:.3}]);
+    .toEqual([{G:1,Q:1,W1:0,W2:0},{G:1,Q:1,W1:.3,W2:0},{G:1,Q:1,W1:0,W2:.3}]);
   expect(find(g,c=>c.purpose==="SLS-characteristic")[0].hypothesis).toContain("SLS-characteristic");
   for(const c of g.engineeringCombinations.combinations)
     expect(c.terms.filter(t=>["W1","W2"].includes(t.caseId)&&t.gamma*t.psi>0).length).toBeLessThanOrEqual(1);
@@ -132,7 +134,7 @@ it("rejeita configurações incompletas, ambíguas ou fora do domínio",()=>{
 it("integra ao motor: combinações físicas, cobertura ELU/ELS e rastreabilidade pelo caminho existente",()=>{
   const A=[perm("G"),live("Q"),wind("W1")],p=buildingProject(["G","Q","W1"]),d=decl({permanentSets:["unfavorable"]},A);
   const {project,generated}=applyNbr8681Combinations(p,d);
-  expect(generated.trace).toHaveLength(10);            // 3 ações × 4 famílias = 10 combinações (o contrato não tem mais teto fixo de 10)
+  expect(generated.trace).toHaveLength(14);            // ELU 5 + ELS 9 (acompanhantes presentes/ausentes, 4.3.3.1); o contrato não tem teto fixo de 10
   const sp=project.workspace.spatialPreparation!;
   expect(sp.combinations.map(c=>c.id)).toEqual(generated.trace.map(c=>c.id));
   for(const c of generated.trace)expect(sp.combinations.find(x=>x.id===c.id)!.factors).toEqual(Object.fromEntries(
@@ -211,14 +213,17 @@ it("NBR 8681 -> 6123 -> fachadas -> PyNite real: reações por combinação conf
   // permanentes apenas
   r=uls.reaction(uls.one(c=>c.principal===null).id);
   near(r[2],1.25*G);near(r[0],0);near(r[1],0);
-  // --- ELS (8 combinações): quase permanente, frequente, rara
+  // --- ELS (14 combinações): quase permanente, frequente, rara; acompanhantes presentes/ausentes (4.3.3.1)
   const sls=await solve(["sls-quasi-permanent","sls-frequent","sls-rare"]);
-  expect(sls.generated.trace).toHaveLength(8);
-  r=sls.reaction(sls.one(c=>c.purpose==="SLS-characteristic"&&c.principal==="W2").id);       // G + 1.0 W2 + 0.4 Q
+  expect(sls.generated.trace).toHaveLength(14);
+  const withQ=(c:typeof sls.generated.trace[number])=>c.terms.some(t=>t.caseId==="Q"&&t.role==="accompanying");
+  r=sls.reaction(sls.one(c=>c.purpose==="SLS-characteristic"&&c.principal==="W2"&&withQ(c)).id);       // G + 1.0 W2 + 0.4 Q
   near(r[2],G+.4*Qk);near(r[1],48*Qdyn*1.3);near(r[0],0);
-  r=sls.reaction(sls.one(c=>c.purpose==="SLS-frequent"&&c.principal==="W1").id);              // G + 0.3 W1 + 0.3 Q
+  r=sls.reaction(sls.one(c=>c.purpose==="SLS-characteristic"&&c.principal==="W2"&&!withQ(c)).id);      // G + 1.0 W2 (Q favorável omitida)
+  near(r[2],G);near(r[1],48*Qdyn*1.3);
+  r=sls.reaction(sls.one(c=>c.purpose==="SLS-frequent"&&c.principal==="W1"&&withQ(c)).id);              // G + 0.3 W1 + 0.3 Q
   near(r[2],G+.3*Qk);near(r[0],.3*24*Qdyn);
-  r=sls.reaction(sls.one(c=>c.purpose==="SLS-quasi-permanent").id);                           // G + 0.3 Q, vento psi2 = 0
+  r=sls.reaction(sls.one(c=>c.purpose==="SLS-quasi-permanent"&&withQ(c)).id);                           // G + 0.3 Q, vento psi2 = 0
   near(r[2],G+.3*Qk);near(r[0],0);near(r[1],0);
 },240000);
 
@@ -229,4 +234,20 @@ it("pós-INT-1: acima de 16 casos/ações o gerador RECUSA com erro explícito (
   expect(()=>generateNbr8681Combinations(decl,ids)).toThrow(/M42_TOO_MANY_ACTIONS.*17.*máximo 16/);
   expect(()=>generateNbr8681Combinations({...decl,actions:actions.slice(0,16)},ids)).toThrow(/M42_TOO_MANY_ACTIONS/);   // 17 project cases, 16 declared: still refused, nothing dropped
   expect(()=>generateNbr8681Combinations({...decl,actions:actions.slice(0,16)},ids.slice(0,16))).not.toThrow();           // exactly 16 is accepted
+});
+
+
+it("ELS: vento favorável à flecha descendente pode ser omitido; o teto impede truncamento",()=>{
+  const A=[perm("G"),live("Q"),wind("W1")],C=["G","Q","W1"];
+  const g=generateNbr8681Combinations(decl({permanentSets:["unfavorable"],families:["sls-rare"]},A),C);
+  const rareQ=find(g,c=>c.purpose==="SLS-characteristic"&&c.principal==="Q");
+  const loads={G:0.2,Q:0.4,W1:-0.9};
+  const value=(c:typeof rareQ[number])=>g.engineeringCombinations.combinations.find(x=>x.id===c.id)!.terms.reduce(
+    (sum,t)=>sum+t.gamma*t.psi*loads[t.caseId as keyof typeof loads],0);
+  // Omitting the favorable suction gives the governing positive effect; including it may govern in the other sense.
+  expect(rareQ).toHaveLength(2);
+  expect(value(rareQ[0])).toBeCloseTo(0.6,12);
+  expect(value(rareQ[1])).toBeCloseTo(0.33,12);
+  expect(()=>generateNbr8681Combinations(decl({permanentSets:["unfavorable"],families:["sls-rare"],maxCombinations:2},A),C))
+    .toThrow("M42_COMBINATION_LIMIT"); // Never silently drop a mandatory combination.
 });

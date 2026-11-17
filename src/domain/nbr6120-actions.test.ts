@@ -118,7 +118,8 @@ it("NBR 8681: carga concentrada isolada é principal sozinha no ELU e não entra
   for(const c of g.trace.filter(c=>c.purpose!=="ULS"))expect(f(c.id).QC).toBe(0);
   expect(g.trace.filter(c=>c.purpose==="SLS-characteristic").map(c=>f(c.id))).toEqual([{G:1,SC:1,QC:0}]);
   expect(g.trace.filter(c=>c.purpose==="SLS-frequent").map(c=>f(c.id))).toEqual([{G:1,SC:.7,QC:0}]);
-  expect(g.trace.filter(c=>c.purpose==="SLS-quasi-permanent").map(c=>f(c.id))).toEqual([{G:1,SC:.6,QC:0}]);
+  // 8681 4.3.3.1 no ELS: SC acompanhante pode estar ausente (efeito favorável)
+  expect(g.trace.filter(c=>c.purpose==="SLS-quasi-permanent").map(c=>f(c.id))).toEqual([{G:1,SC:0,QC:0},{G:1,SC:.6,QC:0}]);
   const sp={cases:[{id:"G"},{id:"SC"},{id:"QC"}],combos:g.trace.map(c=>({id:c.id,factors:f(c.id)}))};
   const cov=auditEngineeringCombinationCoverage(g.engineeringCombinations,sp.cases,sp.combos);
   expect(cov.missingSLS).toEqual(["QC"]);                                  // limitação registrada, não escondida
@@ -135,7 +136,7 @@ it("NBR 6120 -> superfície -> terças -> pilares -> NBR 8681 -> PyNite real: re
     families:["uls-normal","sls-quasi-permanent","sls-frequent","sls-rare"],
     actions:[{nature:"permanent",caseId:"ZERO",permanentType:"steel-and-equipment"},...r6.nbr8681Actions]};
   const {project,generated}=applyNbr8681Combinations(r6.project,decl);
-  expect(generated.trace).toHaveLength(6);                              // 3 ELU + QP + FQ + RA
+  expect(generated.trace).toHaveLength(7);                              // 3 ELU + 2 QP (SC ausente/presente, 4.3.3.1) + FQ + RA
   const sp=project.workspace.spatialPreparation!;
   // existing double-count guard: automatic roof loads + nodal loads coexist -> explicit review is required
   await expect(adaptLoadedMixedProject(project)).rejects.toThrow("POSSIBLE_DOUBLE_COUNT");
@@ -164,7 +165,8 @@ it("NBR 6120 -> superfície -> terças -> pilares -> NBR 8681 -> PyNite real: re
   check(find(c=>c.purpose==="ULS"&&c.principal===null).id,1.25*G,4*1.25*G,2.5*1.25*G);
   check(find(c=>c.purpose==="ULS"&&c.principal==="SC").id,1.25*G+1.5*S,4*(1.25*G+1.5*S),2.5*(1.25*G+1.5*S));
   check(find(c=>c.purpose==="ULS"&&c.principal==="QC").id,1.25*G+1.5*QC,4*(1.25*G+1.5*QC),2.5*1.25*G);    // QC at y=0
-  check(find(c=>c.purpose==="SLS-quasi-permanent").id,G+.6*S,4*(G+.6*S),2.5*(G+.6*S));
+  check(find(c=>c.purpose==="SLS-quasi-permanent"&&c.terms.some(t=>t.caseId==="SC"&&t.role==="accompanying")).id,G+.6*S,4*(G+.6*S),2.5*(G+.6*S));
+  check(find(c=>c.purpose==="SLS-quasi-permanent"&&!c.terms.some(t=>t.caseId==="SC"&&t.role==="accompanying")).id,G,4*G,2.5*G);
   check(find(c=>c.purpose==="SLS-frequent").id,G+.7*S,4*(G+.7*S),2.5*(G+.7*S));
   check(find(c=>c.purpose==="SLS-characteristic").id,G+S,4*(G+S),2.5*(G+S));
   for(const c of generated.trace)expect(result.result.combinations[c.id].equilibrium.relative_residual).toBeLessThan(1e-8);
