@@ -9,6 +9,10 @@ export type {CadReactionReceipt} from "./cad-model";
 export type {CadExportOptions} from "./cad-sheets";
 
 export function createStructureDxf(project: Project, issuedAtOrOptions:Date|CadExportOptions=new Date(), options:CadExportOptions={}): string {
+  return createCadDrawing(project,issuedAtOrOptions,options).dxf;
+}
+/** DXF and PDF share the exact same paper geometry, labels and pagination. */
+export function createCadDrawing(project: Project, issuedAtOrOptions:Date|CadExportOptions=new Date(), options:CadExportOptions={}) {
   const issuedAt=issuedAtOrOptions instanceof Date?issuedAtOrOptions:new Date();
   const settings=issuedAtOrOptions instanceof Date?options:issuedAtOrOptions;
   const result = resolvePhysicalStructure(project);
@@ -26,8 +30,8 @@ export function createStructureDxf(project: Project, issuedAtOrOptions:Date|CadE
   dxf.addText(point3d(0, -1000, 0), 150, "PRELIMINAR - NAO UTILIZAR PARA EXECUCAO OU CORTE", { layerName: "PRELIMINAR" });
   const revision = String(project.workspace.physicalStructure?.revision ?? project.roof.revision).replace(/[\x00-\x1f\x7f]/g," ");
   dxf.addText(point3d(0, -1300, 0), 100, `Projeto ${project.id} / revisao geometrica ${revision} / unidades mm`, { layerName: "PRELIMINAR" });
-  if(project.workspace.physicalStructure)addPhysicalSheets(dxf,project,issuedAt,settings);
-  return dxf.stringify();
+  const sheets=addPhysicalSheets(dxf,project,issuedAt,settings);
+  return {dxf:dxf.stringify(),sheets};
 }
 const escape = (value: string) => value.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]!);
 export function createStructureSvg(project: Project, view: ViewName = "front") {

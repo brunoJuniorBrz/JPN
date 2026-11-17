@@ -2,6 +2,7 @@ import {type DxfWriter,point3d} from "@tarikjabiri/dxf";
 import type {Project} from "@/domain/models";
 import {CadBook,CAD_NOTICE,cadNumber as num,type PaperFormat,type Point2 as P,type CadRect,type CadPage} from "./cad-book";
 import {cadModel,cadReactions,axisLetter,sortedCoordinates as unique,isDeclaredBrace,type CadPiece,type CadReactionReceipt} from "./cad-model";
+import {cadRoofFaces} from "./cad-roof";
 export {CAD_NOTICE};
 export type CadExportOptions={format?:PaperFormat;reactions?:CadReactionReceipt};
 
@@ -17,7 +18,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const trace:string[]=[`Obra=${project.id}; revisão=${model.revision}; origem=${model.provenance}`,
     ...model.pieces.map(p=>`${marks.get(p.id)}=${p.id}`),...supports.map(n=>`${supportMarks.get(n.id)}=${n.id}`)];
   const datum=Math.min(...(supports.length?supports:model.nodes).map(n=>n.z));
-  const faces=draft?.physicalRoofFaces?.faces??[],roof=faces.flatMap(f=>f.outer.map(([x,y,z])=>({x,y,z})));
+  const faces=cadRoofFaces(project),roof=faces.flatMap(f=>f.outer.map(([x,y,z])=>({x,y,z})));
   const ridge=faces.flatMap((f,i)=>faces.slice(i+1).flatMap(g=>{
     const common=f.outer.filter(p=>g.outer.some(q=>q.every((v,k)=>v===p[k])));
     const edge=[...new Map(common.map(p=>[p.join(","),p])).values()];
@@ -38,11 +39,19 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const distinct=crossings.filter((p,i)=>!i||p.some((v,k)=>v!==crossings[i-1][k]));
 
   type View="plan"|"front"|"side"|"cut";
-  type DrawOptions={pieces?:CadPiece[];showRoof?:boolean;bases?:boolean;subtitle?:string;aliases?:Map<string,string[]>;frame?:boolean;tercas?:boolean};
+  type DrawOptions={pieces?:CadPiece[];showRoof?:boolean;bases?:boolean;subtitle?:string;aliases?:Map<string,string[]>;frame?:boolean;tercas?:boolean;deduplicate?:boolean};
   function drawing(page:CadPage,rect:CadRect,name:string,view:View,opts:DrawOptions={}){
-    const pieces=opts.pieces??model.pieces,showRoof=opts.showRoof??true;
+    let pieces=opts.pieces??model.pieces;const showRoof=opts.showRoof??true;
     const horizontal=view==="side"?"y":view==="cut"?across:"x";
     const projection=(n:{x:number;y:number;z:number}):P=>view==="plan"?[n.x,n.y]:[n[horizontal],n.z];
+    if(opts.deduplicate){
+      const projected=new Map<string,CadPiece>();
+      for(const p of pieces){
+        const key=JSON.stringify([p.role,profile(p.id),[projection(nodes.get(p.start)!),projection(nodes.get(p.end)!)].sort((a,b)=>a[0]-b[0]||a[1]-b[1])]);
+        if(!projected.has(key))projected.set(key,p);
+      }
+      pieces=[...projected.values()];
+    }
     const points=opts.bases?(supports.length?supports:model.nodes):[...pieces.flatMap(p=>[nodes.get(p.start)!,nodes.get(p.end)!]),...(showRoof?roof:[])];
     const coords=points.map(projection);
     if(!coords.length)coords.push(...model.nodes.map(projection));
@@ -86,13 +95,13 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         occupied.push({x,y,width:radius,height:radius});
         const length=Math.hypot(x-anchor[0],y-anchor[1]);
         book.poly(space,[anchor,[x-(x-anchor[0])/length*radius,y-(y-anchor[1])/length*radius]],"MARCAS");
-        space.addCircle(point3d(x,y),radius,{layerName:"MARCAS"});
+        book.circle(space,[x,y],radius,"MARCAS");
         const text=book.text(space,[x,y-.8],id,"MARCAS",2.1);text.horizontalAlignment=1;text.secondAlignmentPoint=point3d(x,y-.8);
       };
       const horizontalAxes=horizontal==="x"?xs:ys;
       const axisName=(axis:"x"|"y",value:number)=>axis==="x"?axisLetter(xs.indexOf(value)):String(ys.indexOf(value)+1);
       const bubble=(p:P,value:string)=>{
-        space.addCircle(point3d(...p),3,{layerName:"EIXOS",lineType:"Continuous"});
+        book.circle(space,p,3,"EIXOS");
         book.text(space,[p[0]-value.length*.7,p[1]-.9],value,"EIXOS",2.5);
         occupied.push({x:p[0],y:p[1],width:3,height:3});
       };
@@ -164,10 +173,13 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       }
       if(opts.tercas){
         const values=unique(distinct.map(p=>p[0]));
-        const marked=values.length<=12?values:[values[0],values.at(-1)!];
+        // A paper dimension needs room for its own number. Dense sequences are
+        // fully retained in the spacing table instead of overprinting labels.
+        const legible=values.length<=12&&values.slice(1).every((v,i)=>(v-values[i])/scale>=14);
+        const marked=legible?values:[values[0],values.at(-1)!];
         for(let i=1;i<marked.length;i++){
           const a:P=cutAxis==="y"?[marked[i-1],minY]:[minX,marked[i-1]],b:P=cutAxis==="y"?[marked[i],minY]:[minX,marked[i]];
-          book.dim(space,at(a),at(b),scale,values.length<=12?"TERÇAS PROJ.":"TERÇAS: ver ESPACAMENTOS",-13);
+          book.dim(space,at(a),at(b),scale,legible?"TERÇAS PROJ.":"TERÇAS: ver ESPACAMENTOS",-13);
         }
         if(!model.pieces.some(isDeclaredBrace))book.text(space,[2,10],"PENDENTE: contraventamentos não identificados; barras auxiliares não implicam contenção.","PENDENCIAS",1.8);
       }
@@ -181,7 +193,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         const a=nodes.get(p.start)!,b=nodes.get(p.end)!,id=marks.get(p.id)!;
         const layer=isDeclaredBrace(p)?"CONTRAVENTOS":p.role==="web"&&opts.tercas?"BARRAS_AUXILIARES":"PERFIS";
         if(view==="cut"&&!(a[cutAxis]===sectionPosition&&b[cutAxis]===sectionPosition)){
-          const c=cross(p);if(c){const q=at(c);space.addCircle(point3d(...q),.7,{layerName:layer});label(q,id);}continue;
+          const c=cross(p);if(c){const q=at(c);book.circle(space,q,.7,layer);label(q,id);}continue;
         }
         const u=at(projection(a)),v=at(projection(b));book.poly(space,[u,v],layer);label([(u[0]+v[0])/2,(u[1]+v[1])/2],id);
       }
@@ -190,6 +202,9 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   }
   const a=book.area,gap=12,half=(a.width-gap)/2;
   const plans=book.add("PLANTAS","Plantas de cobertura e estrutura");
+  const expanded=model.pieces.length>60;
+  const purlinPlan=expanded?book.add("TERCAS","Planta de terças e contraventamentos"):plans;
+  const spacingPage=expanded?book.add("ESPACAMENTOS","Espaçamentos entre terças"):plans;
   const elevations=book.add("ELEVACOES","Elevações e corte transversal");
   const framePages=data.frameGroups.map((group,i)=>book.add(`${group[0].kind} ${i+1}`,`${group[0].kind==="TESOURA"?"Tesoura":"Pórtico"} — tipo ${i+1} (${group.length}×)`));
   const pendingFrame=!framePages.length?book.add("PORTICOS PENDENTE","Pórticos e tesouras — identificação pendente"):null;
@@ -203,19 +218,21 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     book.pages.slice(0,indexCapacity).forEach((p,i)=>book.text(space,[a.x+(i%3)*(a.width/3),a.y+a.height-7-Math.floor(i/3)*4],`${i+1}. ${p.title}`,"TEXTOS",1.8));
   });
   const viewTop=a.y+a.height-24,viewBottom=a.y+42,viewHeight=viewTop-viewBottom;
-  drawing(plans,{x:a.x,y:viewBottom,width:half,height:viewHeight},"Planta de cobertura e apoios","plan");
+  drawing(plans,expanded?{...a,height:a.height-24}:{x:a.x,y:viewBottom,width:half,height:viewHeight},"Planta de cobertura e apoios","plan",
+    expanded?{pieces:model.pieces.filter(p=>p.role==="column"||p.role==="topChord"||p.role==="beam")} : {});
   const auxiliaries=model.pieces.filter(p=>p.role==="purlin"||isDeclaredBrace(p)||(p.role==="web"&&!data.frames.some(f=>f.pieces.includes(p))));
-  drawing(plans,{x:a.x+half+gap,y:viewBottom,width:half,height:viewHeight},"Terças e contraventamentos","plan",{pieces:auxiliaries.length?auxiliaries:model.pieces,tercas:true,
+  drawing(purlinPlan,expanded?a:{x:a.x+half+gap,y:viewBottom,width:half,height:viewHeight},"Terças e contraventamentos","plan",{pieces:auxiliaries.length?auxiliaries:model.pieces,tercas:true,
     subtitle:"Marcas vinculadas à lista de materiais; espaçamentos projetados."});
   if(distinct.length>=2){
     const ids=(point:P)=>purlins.filter(p=>{const c=cross(p);return c&&c[0]===point[0]&&c[1]===point[1];}).map(p=>marks.get(p.id)).join(" / ");
-    book.table(plans,{...a,height:35},"Espaçamentos entre terças no corte",["Marcas","Posição 1 / Z (mm)","Posição 2 / Z (mm)","Projeção (mm)","No corte (mm)"],distinct.slice(1).map((b,i)=>{
+    book.table(spacingPage,expanded?a:{...a,height:35},"Espaçamentos entre terças no corte",["Marcas","Posição 1 / Z (mm)","Posição 2 / Z (mm)","Projeção (mm)","No corte (mm)"],distinct.slice(1).map((b,i)=>{
       const c=distinct[i];return [`${ids(c)} → ${ids(b)}`,`${num(c[0])} / ${num(c[1])}`,`${num(b[0])} / ${num(b[1])}`,num(b[0]-c[0]),num(Math.hypot(b[0]-c[0],b[1]-c[1]))];
     }),[0,.28,.48,.68,.84,1]);
   }
   const smallHeight=(a.height-gap)/2;
-  drawing(elevations,{x:a.x,y:a.y+smallHeight+gap,width:half,height:smallHeight},"Elevação frontal","front");
-  drawing(elevations,{x:a.x,y:a.y,width:half,height:smallHeight},"Elevação lateral","side");
+  const summaryOptions=expanded?{deduplicate:true,subtitle:"Projeções coincidentes: marca representativa; todas as peças nas folhas individuais e na lista."}:{};
+  drawing(elevations,{x:a.x,y:a.y+smallHeight+gap,width:half,height:smallHeight},"Elevação frontal","front",summaryOptions);
+  drawing(elevations,{x:a.x,y:a.y,width:half,height:smallHeight},"Elevação lateral","side",expanded?{...summaryOptions,pieces:model.pieces.filter(p=>p.role==="column"||p.role==="purlin"||isDeclaredBrace(p))}:{});
   drawing(elevations,{x:a.x+half+gap,y:a.y,width:half,height:a.height},"Corte A-A","cut");
   for(const [index,group] of data.frameGroups.entries()){
     const first=group[0],h=first.axis==="y"?"x":"y",page=framePages[index];
@@ -263,7 +280,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const steels=new Set<string>(),provenance=new Map<string,string[]>();
   for(const piece of model.pieces){
     const assignment=draft?.physicalCatalog?.assignments.find(r=>r.pieceId===piece.id),material=draft?.physicalCatalog?.materials.find(m=>m.id===assignment?.materialId),group=draft?.groups[piece.role],m=material??group;
-    const grade=m?.steelGrade?.trim()||"PENDENTE";
+    const grade=m?.steelGrade?.trim()||(!project.workspace.physicalStructure?data.rows.get(piece.id)?.steelGrade:"")||"PENDENTE";
     steels.add(grade==="Synthetic isotropic reference"?"material sintético de referência analítica, sem especificação comercial":grade);
     const section=draft?.physicalCatalog?.sections.find(s=>s.id===assignment?.sectionId),s=section??group;
     const description=`aço=${assignment?.materialId??"PENDENTE"}; identificação=${grade}; fonte=${m?.materialSource?.trim()||"PENDENTE"}; revisão=${m?.materialRevision?.trim()||"PENDENTE"}; seção=${assignment?.sectionId??"PENDENTE"}; fonte=${s?.sectionSource?.trim()||"PENDENTE"}; revisão=${s?.sectionRevision?.trim()||"PENDENTE"}`;
@@ -288,7 +305,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     marks.get(p.pieceId)!,profile(p.pieceId),"1",num(p.lengthMm),p.massKg===null?"PENDENTE":num(p.massKg/(p.lengthMm/1000)),p.massKg===null?"PENDENTE":num(p.massKg)]),[0,.08,.42,.48,.66,.83,1]);
   const summary=new Map<string,{profile:string;quantity:number;length:number;mass:number|null}>();
   for(const p of takeoff.pieces){
-    const assignment=draft?.physicalCatalog?.assignments.find(a=>a.pieceId===p.pieceId),key=JSON.stringify([assignment?.sectionId??p.sectionId??p.pieceId,assignment?.materialId??p.pieceId]);
+    const assignment=draft?.physicalCatalog?.assignments.find(a=>a.pieceId===p.pieceId),key=JSON.stringify([assignment?.sectionId??p.sectionId??p.pieceId,assignment?.materialId??p.materialId??p.pieceId]);
     const row=summary.get(key)??{profile:profile(p.pieceId),quantity:0,length:0,mass:0};row.quantity++;row.length+=p.lengthMm;
     row.mass=row.mass===null||p.massKg===null?null:row.mass+p.massKg;summary.set(key,row);
   }
@@ -303,4 +320,5 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     indexPages.forEach((page,i)=>book.table(page,a,"Índice de folhas",["Folha","Conteúdo"],rows.slice(i*perPage,(i+1)*perPage),[0,.1,1],"TEXTOS"));
   }
   book.render();
+  return book.scenes;
 }

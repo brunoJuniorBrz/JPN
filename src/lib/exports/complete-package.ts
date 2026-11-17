@@ -1,0 +1,82 @@
+import type {Project} from "@/domain/models";
+import {packBars,projectCutting} from "@/domain/calculations/cutting";
+import {structureSignature} from "@/domain/calculations/project-basis";
+import {calculateEstimate} from "@/domain/calculations/estimate";
+import {jsPDF} from "jspdf";
+import {autoTable} from "jspdf-autotable";
+import {createCadDrawing,type CadExportOptions} from "./cad";
+import {createCadPdf} from "./cad-pdf";
+import {packageTakeoff} from "./package-source";
+import {createPackageZip} from "./package-zip";
+import {CAD_NOTICE} from "./cad-book";
+import {mixedPreparationReview} from "@/domain/mixed-adapter";
+import {newSpatialPreparation} from "@/domain/spatial-preparation";
+
+export type PackageOptions=CadExportOptions&{issuedAt?:Date;stockByGroup?:Record<string,number>};
+const encoder=new TextEncoder();
+const csv=(rows:unknown[][])=>"\ufeff"+rows.map(row=>row.map(v=>`"${String(v??"PENDENTE").replace(/"/g,'""').replace(/^[=+@\-\t\r]/,"'$&")}"`).join(";")).join("\r\n");
+const safe=(s:string)=>s.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9_-]+/g,"-").slice(0,90)||"obra";
+const digest=async(bytes:Uint8Array)=>Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",new Uint8Array(bytes)))).map(b=>b.toString(16).padStart(2,"0")).join("");
+export function packageCutting(project:Project,options:PackageOptions={}){
+  if(!project.workspace.physicalStructure)return projectCutting(project);
+  const config=project.workspace.cutting,report=packageTakeoff(project),signature=structureSignature(project);
+  if(config.kerfMm===null||config.endTrimMm===null||config.minimumRemnantMm===null)throw Error("Declare serra, perdas de extremidade e sobra mínima; zero deve ser explícito.");
+  return {status:"simulation_only" as const,signature,groups:report.groups.map((g,i)=>{
+    const stockMm=options.stockByGroup?.[g.key];
+    if(!g.sectionId||!g.materialId||!report.pieces.filter(p=>g.pieceIds.includes(p.pieceId)).every(p=>p.steelGrade.trim()))throw Error(`${g.label}: perfil/material pendente.`);
+    if(!stockMm)throw Error(`${g.label}: declare o comprimento comercial em mm nas opções do pacote.`);
+    const pieces=report.pieces.filter(p=>g.pieceIds.includes(p.pieceId)).map(p=>{
+      const catalog=project.workspace.spatialPreparation?.physicalCatalog,assignment=catalog?.assignments.find(a=>a.pieceId===p.pieceId);
+      if(!catalog?.sections.find(s=>s.id===assignment?.sectionId)?.designation?.trim())throw Error(`${p.pieceId}: identificação do perfil pendente no catálogo físico.`);
+      const final=project.workspace.fabrication.find(f=>f.pieceId===p.pieceId&&f.signature===signature);
+      if(config.useFabrication&&!final)throw Error(`${p.pieceId}: comprimento final ausente ou desatualizado.`);
+      return {id:p.pieceId,lengthMm:config.useFabrication?final!.lengthMm:p.lengthMm};
+    });
+    return {profile:g.label,groupId:`G${i+1}`,...packBars({stockMm,pieces,kerfMm:config.kerfMm!,endTrimMm:config.endTrimMm!,minimumRemnantMm:config.minimumRemnantMm!})};
+  })};
+}
+export async function createCompletePackage(input:Project,options:PackageOptions={}){
+  // Snapshot before the first await: every file and hash refers to this revision.
+  const project=structuredClone(input),issuedAt=options.issuedAt??new Date(),takeoff=packageTakeoff(project),drawing=createCadDrawing(project,issuedAt,options);
+  const pending=[CAD_NOTICE,"Bases e chumbadores A4/A5, ligações, soldas, fundações, cargas e estabilidade: verificar pendências do projeto. Comprimentos entre nós não incluem detalhes de fabricação."];
+  const preparation=project.workspace.spatialPreparation??newSpatialPreparation(project);
+  pending.push(...mixedPreparationReview(project,preparation,!!preparation.loading).issues.map(i=>`${i.code}: ${i.message}`));
+  if(project.technicalNotes.trim())pending.push(`Observações técnicas do projeto: ${project.technicalNotes}`);
+  if(takeoff.totals.massKg===null)pending.push("Massa incompleta: propriedades ou densidades ausentes permanecem PENDENTE.");
+  let cutting:ReturnType<typeof packageCutting>|null=null;
+  try{cutting=packageCutting(project,options);}catch(e){pending.push(`Plano de corte indisponível: ${e instanceof Error?e.message:String(e)}`);}
+  const files:{name:string;mime:string;bytes:Uint8Array}[]=[];
+  const add=(name:string,mime:string,value:string|ArrayBuffer)=>files.push({name,mime,bytes:typeof value==="string"?encoder.encode(value):new Uint8Array(value)});
+  add("cad/pranchas.dxf","application/dxf",drawing.dxf);add("pranchas/pranchas.pdf","application/pdf",createCadPdf(drawing.sheets));
+  add("materiais/lista.csv","text/csv;charset=utf-8",csv([["ID","Perfil","Material","Quantidade","Comprimento geométrico mm","Massa linear kg/m","Massa kg","Preço cadastrado centavos/m"],...takeoff.pieces.map(p=>[p.pieceId,p.profile,p.steelGrade||"PENDENTE",1,p.lengthMm,p.massKg===null?null:p.massKg/(p.lengthMm/1000),p.massKg,p.pricePerMeterCents])]));
+  const cutRows=cutting?.groups.flatMap(g=>g.bars.flatMap(b=>b.pieces.map(p=>[g.groupId,g.profile,b.id,b.stockMm,p.id,p.lengthMm,b.kerfMm,b.trimMm,b.remainderMm,b.reusableMm,b.wasteMm,g.utilizationPercent])))??[];
+  if(cutting)add("corte/plano.csv","text/csv;charset=utf-8",csv([["Grupo","Perfil/material","Barra","Comercial mm","ID peça","Corte mm","Serra total barra mm","Pontas total barra mm","Sobra barra mm","Reutilizável barra mm","Desperdício barra mm","Aproveitamento grupo %"],...cutRows]));
+  else add("corte/PENDENTE.txt","text/plain;charset=utf-8",pending.at(-1)!);
+  const doc=new jsPDF({unit:"mm",format:"a4"}),estimate=calculateEstimate(project);
+  const table=(title:string,head:string[],body:(string|number)[][])=>{
+    if(doc.getNumberOfPages()>1||title!=="Memorial de quantitativos")doc.addPage();
+    doc.setFontSize(14);doc.text(title,14,17);
+    autoTable(doc,{startY:25,margin:{top:25,bottom:24},head:[head],body,styles:{fontSize:8,overflow:"linebreak"},didDrawPage:()=>{doc.setFontSize(8);doc.text("PRELIMINAR - NAO UTILIZAR PARA EXECUCAO OU CORTE",14,285);}});
+  };
+  table("Memorial de quantitativos",["Parâmetro","Valor"],[
+    ["Obra / ID",`${project.name} / ${project.id}`],["Revisão",takeoff.modelRevision],["Emissão",issuedAt.toISOString()],
+    ["Origem",project.workspace.physicalStructure?"Estrutura declarada pelo projeto":"Estrutura gerada pelos parâmetros da interface"],
+    ["Parâmetros",JSON.stringify(project.workspace.physicalStructure?{revision:takeoff.modelRevision}:project.roof)],
+    ["Premissas informadas",project.planning?.specificationNotes||"PENDENTE"],["Peças",takeoff.totals.quantity],["Comprimento geométrico m",takeoff.totals.lengthM],
+    ["Massa total kg",takeoff.totals.massKg??"PENDENTE"],["Corte",`${cutting?"First Fit Decreasing; heurístico, sem prova de mínimo global":"INDISPONÍVEL"}; ${project.workspace.cutting.useFabrication?"comprimentos finais declarados":"comprimentos geométricos"}`],
+    ["Configuração do corte",JSON.stringify(project.workspace.cutting)],["Custos",`Materiais conhecidos: ${estimate.materialsCents/100} BRL; custo total conhecido: ${estimate.totalCostCents/100} BRL. ${estimate.pending.length?"Orçamento incompleto; ver pendências.":"Conforme orçamento atual."}`],
+  ]);
+  table("Resumo de materiais",["Perfil/material","Qtd.","m","kg"],takeoff.groups.map(g=>[g.label,g.quantity,g.lengthM,g.massKg??"PENDENTE"]));
+  if(cutting)table("Plano de corte - simulação heurística",["Perfil/barra","Peças e cortes mm","Serra / pontas mm","Sobra / reutilizável mm"],cutting.groups.flatMap(g=>g.bars.map(b=>[`${g.profile} / ${g.groupId}-${b.id}`,b.pieces.map(p=>`${p.id}: ${p.lengthMm}`).join("; "),`${b.kerfMm} / ${b.trimMm}`,`${b.remainderMm} / ${b.reusableMm}`])));
+  table("Premissas e pendências",["Conferência"],[...pending,...estimate.pending,...estimate.warnings].map(p=>[p]));
+  add("memorial/quantitativos.pdf","application/pdf",doc.output("arraybuffer"));
+  add("rastreabilidade/projeto.json","application/json",JSON.stringify(project,null,2));
+  const manifest={schema_version:"jpn.documentation-package/1",projectId:project.id,revision:takeoff.modelRevision,issuedAt:issuedAt.toISOString(),
+    projectSha256:await digest(encoder.encode(JSON.stringify(project))),format:options.format??"A3",pages:drawing.sheets.map(s=>({name:s.name,title:s.title,widthMm:s.width,heightMm:s.height})),
+    totals:takeoff.totals,cuttingAvailable:!!cutting,stockByGroup:options.stockByGroup??{},pending,
+    computedStructuralApproval:false,fabricationRelease:false,releaseGate:"NOT_READY_BLOCKED",
+    files:await Promise.all(files.map(async f=>({name:f.name,bytes:f.bytes.length,sha256:await digest(f.bytes)})))};
+  add("manifesto.json","application/json",JSON.stringify(manifest,null,2));
+  const root=`${safe(project.name)}-rev-${safe(takeoff.modelRevision)}`;
+  return {name:`${root}.zip`,files,manifest,zip:createPackageZip(files.map(f=>({name:`${root}/${f.name}`,bytes:f.bytes})))};
+}

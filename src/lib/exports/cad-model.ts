@@ -1,5 +1,6 @@
 import type {Project} from "@/domain/models";
-import {declaredTakeoff} from "@/domain/declared-takeoff";
+import {packageTakeoff} from "./package-source";
+import {resolvePhysicalStructure} from "@/domain/physical-structure";
 import {restoreMixedAnalysis} from "@/domain/restore-mixed-analysis";
 import {structureSignature} from "@/domain/calculations/project-basis";
 import {cadNumber} from "./cad-book";
@@ -11,7 +12,10 @@ export const sortedCoordinates=(values:number[])=>[...new Set(values)].sort((a,b
 export const isDeclaredBrace=(p:CadPiece)=>/contravent|brac|tirante/i.test(`${p.label??""} ${p.group??""}`);
 
 export function cadModel(project:Project){
-  const model=project.workspace.physicalStructure!,draft=project.workspace.spatialPreparation,takeoff=declaredTakeoff(project);
+  const resolved=resolvePhysicalStructure(project);
+  if(!resolved.model)throw Error("Geometria indisponível para exportação.");
+  const model={...resolved.model,revision:project.workspace.physicalStructure?.revision??String(project.roof.revision),
+    provenance:project.workspace.physicalStructure?.provenance??"Geometria gerada pelos parâmetros do projeto"},draft=project.workspace.spatialPreparation,takeoff=packageTakeoff(project);
   const nodes=new Map(model.nodes.map(n=>[n.id,n])),rows=new Map(takeoff.pieces.map(p=>[p.pieceId,p]));
   const assignment=(p:CadPiece)=>draft?.physicalCatalog?.assignments.find(a=>a.pieceId===p.id);
   const connections=(p:CadPiece)=>{
@@ -20,6 +24,7 @@ export function cadModel(project:Project){
   };
   const profile=(id:string)=>{
     const p=model.pieces.find(p=>p.id===id)!,sectionId=assignment(p)?.sectionId;
+    if(resolved.source==="generated")return rows.get(id)?.profile||"PENDENTE";
     return draft?.physicalCatalog?.sections.find(s=>s.id===sectionId)?.designation?.trim()||`PENDENTE [${sectionId??rows.get(id)?.sectionId??"sem seção"}]`;
   };
   const supports=(draft?.supports??[]).filter(s=>s.dofs.some(d=>d==="fixed")).flatMap(s=>nodes.has(s.nodeId)?[nodes.get(s.nodeId)!]:[]);

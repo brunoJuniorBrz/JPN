@@ -1,4 +1,5 @@
 import {DxfObject,DxfLayer,Line,type Dxfier,type DxfBlock,type DxfWriter,point3d} from "@tarikjabiri/dxf";
+import type {CadScene,CadSceneItem} from "./cad-scene";
 
 export type PaperFormat="A3"|"A1";
 export type Point2=[number,number];
@@ -54,6 +55,9 @@ class SheetViewport extends Line{
 
 export type CadPage={name:string;title:string;draw:((space:DxfBlock)=>void)[]};
 export class CadBook{
+  readonly scenes:CadScene[]=[];
+  private graphics=new WeakMap<DxfBlock,CadSceneItem[]>();
+  private scene(space:DxfBlock){let items=this.graphics.get(space);if(!items){items=[];this.graphics.set(space,items);}return items;}
   readonly width:number;readonly height:number;readonly pages:CadPage[]=[];
   private viewCount=0;private cacheX:number;
   private dimensionLines=new WeakMap<DxfBlock,[Point2,Point2][]>();
@@ -73,10 +77,17 @@ export class CadBook{
   }
   get area():CadRect{return {x:30,y:86,width:this.width-45,height:this.height-123};}
   poly(space:DxfBlock,points:Point2[],layer="PERFIS"){
+    this.scene(space).push({kind:"line",points,layer});
     return space.addLWPolyline(points.map(([x,y])=>({point:{x,y}})),{layerName:layer});
   }
   text(space:DxfBlock,at:Point2,value:string,layer="TEXTOS",height=2.5){
-    const t=space.addText(point3d(...at),height,cleanCadText(value),{layerName:layer});t.textStyle="JPN_TEXTO";return t;
+    const t=space.addText(point3d(...at),height,cleanCadText(value),{layerName:layer});t.textStyle="JPN_TEXTO";
+    this.scene(space).push({kind:"text",x:at[0],y:at[1],height,value:cleanCadText(value),layer,get alignment(){return t.horizontalAlignment;},get rotation(){return t.rotation;}});
+    return t;
+  }
+  circle(space:DxfBlock,at:Point2,radius:number,layer:string){
+    this.scene(space).push({kind:"circle",x:at[0],y:at[1],radius,layer});
+    return space.addCircle(point3d(...at),radius,{layerName:layer,lineType:"Continuous"});
   }
   box(space:DxfBlock,r:CadRect,layer="TEXTOS"){
     this.poly(space,[[r.x,r.y],[r.x+r.width,r.y],[r.x+r.width,r.y+r.height],[r.x,r.y+r.height],[r.x,r.y]],layer);
@@ -97,6 +108,7 @@ export class CadBook{
     this.dxf.modelSpace.addInsert(block.name,point3d(offset,0),{layerName:"VISTAS",scaleFactor:{x:scale,y:scale,z:scale}});
     const id=page.draw.length+2;
     page.draw.push(space=>{
+      this.scene(space).push({kind:"view",x:rect.x,y:rect.y,items:this.scene(block)});
       this.text(space,[rect.x,rect.y+rect.height+1],`${title} · 1:${scale}`,"TEXTOS",3.2);
       space.addEntity(new SheetViewport(rect,[offset+rect.width/2*scale,rect.height/2*scale],scale,id));
     });
@@ -128,6 +140,7 @@ export class CadBook{
     }
     const dimension=space.addAlignedDim(point3d(...a),point3d(...b),{layerName:"COTAS",definitionPoint:point3d(...e),middlePoint:point3d(...middle),
       blockName:block.name,styleName,ActualMeasurement:length,text:"<>"});
+    this.scene(space).push({kind:"view",x:0,y:0,items:this.scene(block)});
     // This library version drops the final character in ExtendedData.string().
     // A disposable trailing space preserves the complete label (reader-tested).
     dimension.addXData("JPN_COTA").string(label+" ");
@@ -232,6 +245,7 @@ export class CadBook{
       this.text(space,[rev.x+2,rev.y+11],this.revision.length>15?"Ver notas":this.revision,"CARIMBO",2);
       this.text(space,[rev.x+32,rev.y+11],date,"CARIMBO",2);this.text(space,[rev.x+62,rev.y+11],"Para conferência","CARIMBO",2);
       this.text(space,[30,15],CAD_NOTICE,"CARIMBO",3);page.draw.forEach(draw=>draw(space));
+      this.scenes.push({name:page.name,title:page.title,width:this.width,height:this.height,items:this.scene(space)});
     }
   }
 }
