@@ -143,7 +143,7 @@ it("exports real Tom dimensional takeoff using new PR141 package engine (study, 
   const uGroup=cut.groups.find(g=>g.profile.startsWith("U 75"));
   expect(uGroup).toBeDefined();
   expect(uGroup!.bars).toHaveLength(8);
-  expect(uGroup!.confirmedStandaloneBars).toBe(5);
+  expect(uGroup&&"confirmedStandaloneBars" in uGroup?uGroup.confirmedStandaloneBars:null).toBe(5);
   // Optimum certificate for THIS instance: 7x6m holds only 42.000mm
   // while the 18 source members exceed it even BEFORE kerf and end trim.
   const uPieces=report.pieces.filter(p=>!p.profile.startsWith("Ue "));
