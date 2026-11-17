@@ -84,12 +84,12 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       const originX=available.x+(available.width-width/scale)/2,originY=available.y+(available.height-height/scale)/2;
       const at=(p:P):P=>[originX+(p[0]-minX)/scale,originY+(p[1]-minY)/scale];
       const subtitle=opts.subtitle??(view==="cut"?`Corte ${cutAxis.toUpperCase()}=${num(sectionPosition)} mm; representação por eixos.`:`Referência de altura Z=${num(datum)} mm.`);
-      book.text(space,[2,rect.height-4],subtitle,"TEXTOS",1.8);
+      if(!solo)book.text(space,[2,rect.height-4],subtitle,"TEXTOS",1.8);
       const disputed=pieces.filter(p=>dimensionByPiece.get(p.id)?.status==="PENDENTE");
       if(disputed.length)book.text(space,[2,rect.height-9],
         `PENDENTE — DIVERGÊNCIA DIMENSIONAL: ${disputed.map(p=>p.id).join(", ")} (detalhes na folha própria)`,"PENDENCIAS",1.8);
 
-      book.graphicScale(space,[rect.width-56,3],scale);
+      book.graphicScale(space,[rect.width-56,solo?rect.height-15:3],scale);
       const occupied:{x:number;y:number;width:number;height:number}[]=[];
       const reservedLabels:CadRect[]=[];
       const leaders:[P,P][]=[];
@@ -141,18 +141,18 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         book.text(space,[p[0]-value.length*.7,p[1]-.9],value,"EIXOS",2.5);
         occupied.push({x:p[0],y:p[1],width:3,height:3});
       };
-      for(const value of horizontalAxes.filter(x=>x>=minX&&x<=maxX)){
+      if(!opts.noMarks)for(const value of horizontalAxes.filter(x=>x>=minX&&x<=maxX)){
         const q=at([value,minY]),end=at([value,maxY]);
         book.poly(space,[[q[0],q[1]-3],[end[0],end[1]+6]],"EIXOS");bubble([end[0],end[1]+9],axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,value));
       }
       const hv=horizontalAxes.filter(x=>x>=minX&&x<=maxX);
-      for(let i=1;i<hv.length;i++)book.dim(space,at([hv[i-1],minY]),at([hv[i],minY]),scale,`EIXOS ${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i-1])}-${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i])}`,-8);
+      if(!opts.noMarks)for(let i=1;i<hv.length;i++)book.dim(space,at([hv[i-1],minY]),at([hv[i],minY]),scale,`EIXOS ${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i-1])}-${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i])}`,solo?8:-8);
       if(view==="plan"){
-        for(const value of (rotatePlan?xs.map(v=>-v):ys).filter(y=>y>=minY&&y<=maxY)){
+        if(!opts.noMarks)for(const value of (rotatePlan?xs.map(v=>-v):ys).filter(y=>y>=minY&&y<=maxY)){
           const a=at([minX,value]),b=at([maxX,value]);book.poly(space,[[a[0]-3,a[1]],[b[0]+3,b[1]]],"EIXOS");bubble([a[0]-7,a[1]],axisName(rotatePlan?"x":"y",rotatePlan?-value:value));
         }
         const vv=(rotatePlan?xs.map(v=>-v):ys).filter(y=>y>=minY&&y<=maxY).sort((a,b)=>a-b);
-        for(let i=1;i<vv.length;i++)book.dim(space,at([minX,vv[i-1]]),at([minX,vv[i]]),scale,`VÃO Y ${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i-1]:vv[i-1])}-${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i]:vv[i])}`,19);
+        if(!opts.noMarks)for(let i=1;i<vv.length;i++)book.dim(space,at([minX,vv[i-1]]),at([minX,vv[i]]),scale,`VÃO Y ${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i-1]:vv[i-1])}-${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i]:vv[i])}`,solo?-8:19);
         if(name==="PLANTA"){
           const a:P=cutAxis==="y"?[minX,sectionPosition]:[sectionPosition,minY],b:P=cutAxis==="y"?[maxX,sectionPosition]:[sectionPosition,maxY];
           book.poly(space,[at(a),at(b)],"EIXOS");book.text(space,at(a),"A-A","EIXOS");
@@ -192,7 +192,11 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         book.text(space,[q[0]+2,q[1]-3],marks.join("/"),"APOIOS",2);
         reservedLabels.push({x:q[0]+2,y:q[1]-4,width:marks.join("/").length*1.6,height:3});
       }
-      if(width>0&&!(hv.length===2&&hv[0]===minX&&hv[1]===maxX))book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",-20);
+      if(opts.noMarks){
+        book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",10);
+        book.dim(space,at([minX,minY]),at([minX,maxY]),scale,"EXTENSÃO",-10);
+      }else if(width>0&&!(hv.length===2&&hv[0]===minX&&hv[1]===maxX))
+        book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",solo?8:-20);
       if(view!=="plan"){
         const levels=showRoof?unique(roof.map(n=>n.z)):unique(points.map(n=>n.z));
         for(const [i,z] of levels.filter(z=>z!==datum).entries()){
