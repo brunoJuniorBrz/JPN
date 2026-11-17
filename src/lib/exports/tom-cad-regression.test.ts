@@ -134,7 +134,19 @@ it("exports real Tom dimensional takeoff using new PR141 package engine (study, 
   expect(result.manifest.unlocatedPieceIds).toHaveLength(4);
   expect(result.manifest.sourceDimensionReviews.filter(r=>r.status==="PENDENTE")).toHaveLength(2);
   expect(result.files.some(f=>f.name==="materiais/itens-a-confirmar.csv")).toBe(true);
-  expect(cut.groups.filter(g=>!g.profile.includes("Ue 75")).reduce((n,g)=>n+g.bars.length,0)).toBe(8);
+  const uGroup=cut.groups.find(g=>g.profile.startsWith("U 75"));
+  expect(uGroup).toBeDefined();
+  expect(uGroup!.bars).toHaveLength(8);
+  expect(uGroup!.confirmedStandaloneBars).toBe(5);
+  // Optimum certificate for THIS instance: 7x6m holds only 42.000mm
+  // while the 18 source members exceed it even BEFORE kerf and end trim.
+  const uPieces=report.pieces.filter(p=>!p.profile.startsWith("Ue "));
+  const rawTotal=uPieces.reduce((v,p)=>v+p.lengthMm,0);
+  expect(rawTotal).toBeGreaterThan(7*6000);
+  expect(uGroup!.bars.flatMap(b=>b.pieces).map(p=>p.id).sort()).toEqual(uPieces.map(p=>p.pieceId).sort());
+  for(const b of uGroup!.bars)
+    expect(b.pieces.reduce((v,p)=>v+p.lengthMm,0)+b.kerfMm+b.trimMm+b.remainderMm).toBeCloseTo(6000,9);
+  expect(cut.groups.filter(g=>g.profile.includes("Ue 75")).flatMap(g=>g.bars)).toHaveLength(20);
   const out=".tools/complete-package/tom";
   mkdirSync(out,{recursive:true});
   writeFileSync(`${out}/pacote.zip`,result.zip);
