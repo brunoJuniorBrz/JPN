@@ -8,12 +8,13 @@ import {createCadDrawing,type CadExportOptions} from "./cad";
 import {createCadPdf} from "./cad-pdf";
 import {packageTakeoff} from "./package-source";
 import {declaredCommercialGroups,isUnlocatedCommercialPiece} from "./package-commercial-groups";
+import {reviewSourceDimensions} from "./package-dimension-review";
 import {createPackageZip} from "./package-zip";
 import {CAD_NOTICE} from "./cad-book";
 import {mixedPreparationReview} from "@/domain/mixed-adapter";
 import {newSpatialPreparation} from "@/domain/spatial-preparation";
 
-export type PackageOptions=CadExportOptions&{issuedAt?:Date;stockByGroup?:Record<string,number>};
+export type PackageOptions=CadExportOptions&{issuedAt?:Date;stockByGroup?:Record<string,number>;barPriceCentsByGroup?:Record<string,number>};
 const encoder=new TextEncoder();
 const csv=(rows:unknown[][])=>"\ufeff"+rows.map(row=>row.map(v=>`"${String(v??"PENDENTE").replace(/"/g,'""').replace(/^[=+@\-\t\r]/,"'$&")}"`).join(";")).join("\r\n");
 const safe=(s:string)=>s.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9_-]+/g,"-").slice(0,90)||"obra";
@@ -57,20 +58,55 @@ export function packageCutting(project:Project,options:PackageOptions={}){
 export async function createCompletePackage(input:Project,options:PackageOptions={}){
   // Snapshot before the first await: every file and hash refers to this revision.
   const project=structuredClone(input),issuedAt=options.issuedAt??new Date(),takeoff=packageTakeoff(project),drawing=createCadDrawing(project,issuedAt,options);
+  const reviews=reviewSourceDimensions(project),reviewById=new Map(reviews.map(r=>[r.pieceId,r]));
+  const unlocated=takeoff.pieces.filter(p=>isUnlocatedCommercialPiece(p)),unlocatedIds=new Set(unlocated.map(p=>p.pieceId));
   const pending=[CAD_NOTICE,"Bases e chumbadores A4/A5, ligações, soldas, fundações, cargas e estabilidade: verificar pendências do projeto. Comprimentos entre nós não incluem detalhes de fabricação."];
   const preparation=project.workspace.spatialPreparation??newSpatialPreparation(project);
   pending.push(...mixedPreparationReview(project,preparation,!!preparation.loading).issues.map(i=>`${i.code}: ${i.message}`));
   if(project.technicalNotes.trim())pending.push(`Observações técnicas do projeto: ${project.technicalNotes}`);
   if(takeoff.totals.massKg===null)pending.push("Massa incompleta: propriedades ou densidades ausentes permanecem PENDENTE.");
+  for(const r of reviews.filter(r=>r.status==="PENDENTE"))pending.push(
+    `PENDENTE — DIVERGÊNCIA DIMENSIONAL: ${r.pieceId}; fonte ${r.declaredMm} mm; modelo ${r.actualMm??"sem peça"} mm; diferença ${r.discrepancyMm??"indefinida"} mm. ${r.source} (${r.revision}). ${r.note}`);
+  if(unlocated.length)pending.push(`PENDENTE: ${unlocated.length} peças sem locação confirmada, excluídas do escopo principal e listadas em materiais/itens-a-confirmar.csv.`);
+
   let cutting:ReturnType<typeof packageCutting>|null=null;
   try{cutting=packageCutting(project,options);}catch(e){pending.push(`Plano de corte indisponível: ${e instanceof Error?e.message:String(e)}`);}
   const files:{name:string;mime:string;bytes:Uint8Array}[]=[];
   const add=(name:string,mime:string,value:string|ArrayBuffer)=>files.push({name,mime,bytes:typeof value==="string"?encoder.encode(value):new Uint8Array(value)});
   add("cad/pranchas.dxf","application/dxf",drawing.dxf);add("pranchas/pranchas.pdf","application/pdf",createCadPdf(drawing.sheets));
-  add("materiais/lista.csv","text/csv;charset=utf-8",csv([["ID","Perfil","Material","Quantidade","Comprimento geométrico mm","Massa linear kg/m","Massa kg","Preço cadastrado centavos/m"],...takeoff.pieces.map(p=>[p.pieceId,p.profile,p.steelGrade||"PENDENTE",1,p.lengthMm,p.massKg===null?null:p.massKg/(p.lengthMm/1000),p.massKg,p.pricePerMeterCents])]));
-  const cutRows=cutting?.groups.flatMap(g=>g.bars.flatMap(b=>b.pieces.map(p=>[g.groupId,g.profile,b.id,b.stockMm,p.id,p.lengthMm,b.kerfMm,b.trimMm,b.remainderMm,b.reusableMm,b.wasteMm,g.utilizationPercent])))??[];
-  if(cutting)add("corte/plano.csv","text/csv;charset=utf-8",csv([["Grupo","Perfil/material","Barra","Comercial mm","ID peça","Corte mm","Serra total barra mm","Pontas total barra mm","Sobra barra mm","Reutilizável barra mm","Desperdício barra mm","Aproveitamento grupo %"],...cutRows]));
+  const materialHeaders=["ID","Perfil","Material","Quantidade","Comprimento geométrico mm","Massa linear kg/m","Massa kg","Preço cadastrado centavos/m","Cota fonte mm","Diferença mm","Conferência dimensional"];
+  const materialRow=(p:typeof takeoff.pieces[number])=>{const review=reviewById.get(p.pieceId);
+    return [p.pieceId,p.profile,p.steelGrade||"PENDENTE",1,p.lengthMm,
+      p.massKg===null?null:p.massKg/(p.lengthMm/1000),p.massKg,p.pricePerMeterCents,
+      review?.declaredMm??"NÃO DECLARADA",review?.discrepancyMm??"NÃO CONFERIDA",review?.status??"SEM COTA"];};
+  add("materiais/lista.csv","text/csv;charset=utf-8",csv([materialHeaders,
+    ...takeoff.pieces.filter(p=>!unlocatedIds.has(p.pieceId)).map(materialRow)]));
+  if(unlocated.length)add("materiais/itens-a-confirmar.csv","text/csv;charset=utf-8",csv([
+    materialHeaders,...unlocated.map(materialRow)]));
+  const cutRows=cutting?.groups.flatMap(g=>g.bars.flatMap(b=>b.pieces.map(p=>[
+    g.groupId,g.profile,b.id,b.stockMm,p.id,Math.ceil(p.lengthMm),b.kerfMm,b.trimMm,
+    b.remainderMm,b.reusableMm,b.wasteMm,g.utilizationPercent,
+    unlocatedIds.has(p.id)?"A CONFIRMAR":"PRINCIPAL",
+    reviewById.get(p.id)?.status??"COTA NÃO INFORMADA"])))??[];
+  if(cutting)add("corte/plano.csv","text/csv;charset=utf-8",csv([["Grupo","Perfil/material","Barra","Comercial mm","ID peça","Corte mm","Serra total barra mm","Pontas total barra mm","Sobra barra mm","Reutilizável barra mm","Desperdício barra mm","Aproveitamento grupo %","Escopo","Conferência dimensional"],...cutRows]));
   else add("corte/PENDENTE.txt","text/plain;charset=utf-8",pending.at(-1)!);
+  const commercial=cutting?.groups.map(g=>{
+    const price=options.barPriceCentsByGroup?.[
+      "commercialKey" in g&&typeof g.commercialKey==="string"?g.commercialKey:g.groupId
+    ]??null;
+    const confirmedBars="confirmedStandaloneBars" in g&&typeof g.confirmedStandaloneBars==="number"
+      ?g.confirmedStandaloneBars:g.bars.length;
+    const reuseMm=g.bars.reduce((v,b)=>v+b.reusableMm,0);
+    const wasteMm=g.bars.reduce((v,b)=>v+b.wasteMm,0);
+    return {profile:g.profile,groupId:g.groupId,barCountCombined:g.bars.length,
+      barCountMain:confirmedBars,pendingBarCountIfPurchasedTogether:g.bars.length-confirmedBars,
+      stockMm:g.bars[0]?.stockMm??null,reusableMm:reuseMm,wasteMm,
+      barPriceCents:price,
+      costMainCents:price===null?null:confirmedBars*price,
+      costCombinedCents:price===null?null:g.bars.length*price};
+  })??[];
+  const sumKnown=(key:"costMainCents"|"costCombinedCents")=>
+    commercial.every(g=>g[key]!==null)?commercial.reduce((a,g)=>a+g[key]!,0):null;
   const doc=new jsPDF({unit:"mm",format:"a4"}),estimate=calculateEstimate(project);
   const table=(title:string,head:string[],body:(string|number)[][])=>{
     if(doc.getNumberOfPages()>1||title!=="Memorial de quantitativos")doc.addPage();
@@ -86,13 +122,24 @@ export async function createCompletePackage(input:Project,options:PackageOptions
     ["Configuração do corte",JSON.stringify(project.workspace.cutting)],["Custos",`Materiais conhecidos: ${estimate.materialsCents/100} BRL; custo total conhecido: ${estimate.totalCostCents/100} BRL. ${estimate.pending.length?"Orçamento incompleto; ver pendências.":"Conforme orçamento atual."}`],
   ]);
   table("Resumo de materiais",["Perfil/material","Qtd.","m","kg"],takeoff.groups.map(g=>[g.label,g.quantity,g.lengthM,g.massKg??"PENDENTE"]));
-  if(cutting)table("Plano de corte - simulação heurística",["Perfil/barra","Peças e cortes mm","Serra / pontas mm","Sobra / reutilizável mm"],cutting.groups.flatMap(g=>g.bars.map(b=>[`${g.profile} / ${g.groupId}-${b.id}`,b.pieces.map(p=>`${p.id}: ${p.lengthMm}`).join("; "),`${b.kerfMm} / ${b.trimMm}`,`${b.remainderMm} / ${b.reusableMm}`])));
+  if(cutting)table("Plano de corte - simulação heurística",["Perfil/barra","Peças e cortes mm","Serra / pontas mm","Sobra / reutilizável mm"],cutting.groups.flatMap(g=>g.bars.map(b=>[
+    `${g.profile} / ${g.groupId}-${b.id}`,b.pieces.map(p=>`${p.id}: ${Math.ceil(p.lengthMm)}`).join("; "),
+    `${b.kerfMm} / ${b.trimMm}`,`${b.remainderMm} / ${b.reusableMm}`])));
+  if(commercial.length)table("Compra de barras e saldos",["Perfil","Principal / com itens a confirmar","Sobra reaproveitável mm","Perda / custo R$"],commercial.map(g=>[
+    g.profile,`${g.barCountMain} / ${g.barCountCombined} barras`,
+    g.reusableMm,`${g.wasteMm} mm / ${g.costMainCents===null?"PENDENTE":(g.costMainCents/100).toFixed(2)} (principal)`]));
+  if(unlocated.length)table("ITENS A CONFIRMAR - SEM LOCAÇÃO",["ID","Perfil","Comprimento mm"],unlocated.map(p=>[
+    p.pieceId,p.profile,Math.ceil(p.lengthMm)]));
+  if(reviews.length)table("Conferência de cotas declaradas",["ID","Fonte mm","Entre nós mm","Diferença / status"],reviews.map(r=>[
+    r.pieceId,r.declaredMm,r.actualMm??"PENDENTE",`${r.discrepancyMm??"PENDENTE"} / ${r.status}`]));
   table("Premissas e pendências",["Conferência"],[...pending,...estimate.pending,...estimate.warnings].map(p=>[p]));
   add("memorial/quantitativos.pdf","application/pdf",doc.output("arraybuffer"));
   add("rastreabilidade/projeto.json","application/json",JSON.stringify(project,null,2));
   const manifest={schema_version:"jpn.documentation-package/1",projectId:project.id,revision:takeoff.modelRevision,issuedAt:issuedAt.toISOString(),
     projectSha256:await digest(encoder.encode(JSON.stringify(project))),format:options.format??"A3",pages:drawing.sheets.map(s=>({name:s.name,title:s.title,widthMm:s.width,heightMm:s.height})),
-    totals:takeoff.totals,cuttingAvailable:!!cutting,stockByGroup:options.stockByGroup??{},pending,
+    totals:takeoff.totals,cuttingAvailable:!!cutting,stockByGroup:options.stockByGroup??{},
+    commercial,commercialCostMainCents:sumKnown("costMainCents"),commercialCostCombinedCents:sumKnown("costCombinedCents"),
+    unlocatedPieceIds:[...unlocatedIds],sourceDimensionReviews:reviews,pending,
     computedStructuralApproval:false,fabricationRelease:false,releaseGate:"NOT_READY_BLOCKED",
     files:await Promise.all(files.map(async f=>({name:f.name,bytes:f.bytes.length,sha256:await digest(f.bytes)})))};
   add("manifesto.json","application/json",JSON.stringify(manifest,null,2));
