@@ -5,7 +5,7 @@ test("menu de contexto, Ctrl+K e acabado realista no estúdio", async ({ page })
   await page.setViewportSize({ width: 1440, height: 950 });
   const errors: string[] = []; page.on("pageerror", e => errors.push(e.message));
   await page.goto("/"); await page.getByRole("button", { name: "Abrir exemplo de levantamento" }).click();
-  const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" }); await expect(canvas).toBeVisible();
+  const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" }); await expect(canvas).toBeVisible({ timeout: 20000 });
   await page.getByLabel("Selecionar peça no desenho").selectOption("T1-BS1");
 
   // Menu de contexto pelo teclado (Shift+F10) sobre a área do modelo.

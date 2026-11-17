@@ -133,8 +133,10 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   function save() { if (!parsed.success) { setSubmitted(true); setStep("obra"); return; } saveProject(parsed.data); if (flush()) setMessage("Levantamento salvo neste navegador."); }
   function importModel(next: Project) {
     saveProject(next); if (!flush()) throw Error("Não foi possível salvar o modelo importado; confira o aviso de armazenamento.");
-    setProject(next); setInvalidDraft(false); setStep("materiais"); setOpen3D(true); setOpen3DRequest(n => n + 1); setSelectedPiece(""); setSelectedNode("");
-    if (!initial) router.replace(`/projetos/${next.id}?fluxo=levantamento&etapa=materiais&vista=3d`);
+    // Modelo declarado segue para Geometria (contorno da cobertura e aviso do modelo); gerado, para Materiais.
+    const target: StudioStepId = next.workspace.physicalStructure ? "geometria" : "materiais";
+    setProject(next); setInvalidDraft(false); setStep(target); setOpen3D(true); setOpen3DRequest(n => n + 1); setSelectedPiece(""); setSelectedNode("");
+    if (!initial) router.replace(`/projetos/${next.id}?fluxo=levantamento&etapa=${target}&vista=3d`);
   }
   function open3DViewer() {
     if (preview.model) {
@@ -162,16 +164,17 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   const workbench = <ProjectWorkbench project={project} activeSection={declared && step === "cargas" ? "model" : workbenchSection[step]} tool={tool} onToolChange={openTool} onChange={update} onEditStructure={editStructure} />;
 
   let panel: ReactNode = null;
-  if (step === "obra") panel = <>
-    <GeneralForm project={project} onChange={update} errors={submitted || initial ? errors : {}} />
-    <div className="studio-project-tools">
-      <PhysicalModelImport project={project} onImport={importModel} />
-      <details className="technical-details"><summary>Referência comercial auditada — Tom</summary><p>Reproduz R$ 9.651,29 com 31 telhas e 107,65 m lineares, seis peças U e vinte peças Ue. Não cria tesouras, pilares, contorno ou propriedades. Reprodução de custo com margem zero; use orçamento vazio.</p><button type="button" className="button secondary" onClick={() => { try { const next = applyTomCommercial(project); update({ estimate: next.estimate }); setMessage("Orçamento comercial do Tom carregado; nenhuma estrutura real foi presumida."); } catch (e) { setMessage((e as Error).message); } }}>Carregar orçamento auditado do Tom</button></details>
-      <DeclaredStructureEditor key={project.id + JSON.stringify(project.workspace.physicalStructure)} project={project} onCommit={importModel} />
-    </div>
-  </>;
+  // Ferramentas do projeto (importar, Tom, estrutura irregular, contorno): recolhidas ao pé do inspetor em
+  // TODAS as etapas, como ficavam sempre visíveis na tela antiga. O menu "Ferramentas avançadas" leva até elas.
+  const projectTools = <section className="studio-project-tools" aria-label="Ferramentas do projeto">
+    <PhysicalModelImport project={project} onImport={importModel} />
+    <details className="technical-details"><summary>Referência comercial auditada — Tom</summary><p>Reproduz R$ 9.651,29 com 31 telhas e 107,65 m lineares, seis peças U e vinte peças Ue. Não cria tesouras, pilares, contorno ou propriedades. Reprodução de custo com margem zero; use orçamento vazio.</p><button type="button" className="button secondary" onClick={() => { try { const next = applyTomCommercial(project); update({ estimate: next.estimate }); setMessage("Orçamento comercial do Tom carregado; nenhuma estrutura real foi presumida."); } catch (e) { setMessage((e as Error).message); } }}>Carregar orçamento auditado do Tom</button></details>
+    <DeclaredStructureEditor key={project.id + JSON.stringify(project.workspace.physicalStructure)} project={project} onCommit={importModel} />
+    {declared && <RoofOutlinePanel key={project.id + JSON.stringify(project.workspace.roofOutline)} project={project} onChange={update} />}
+  </section>;
+  if (step === "obra") panel = <GeneralForm project={project} onChange={update} errors={submitted || initial ? errors : {}} />;
   else if (step === "geometria") panel = declared
-    ? <><p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no centro ou importe uma nova revisão JSON na etapa Obra. Nenhuma cobertura foi gerada.</p><RoofOutlinePanel key={project.id + JSON.stringify(project.workspace.roofOutline)} project={project} onChange={update} /></>
+    ? <p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no centro; o contorno da cobertura, a edição por nós e barras e a importação de nova revisão JSON ficam em Ferramentas do projeto, abaixo. Nenhuma cobertura foi gerada.</p>
     : <><GuidedRoofSetup project={project} onChange={update} />{["Cobertura metálica", "Galpão", "Barracão"].includes(project.category) ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning partialOutline={project.workspace.guidedSupport?.coverage === "partial"} /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>}</>;
   else if (step === "estrutura") panel = declared ? <SpatialPreparationPanel project={project} onChange={update} mixed /> : <StructureForm project={project} onChange={update} profileToEdit={profileToEdit} />;
   else if (step === "cargas" && declared) panel = <div className="notice"><p>No modelo declarado, apoios, cargas e combinações ficam na preparação física da etapa Estrutura.</p><button type="button" className="button secondary" onClick={() => go("estrutura")}>Abrir preparação física</button></div>;
@@ -210,7 +213,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
       inspectorTitle={step === "analise" && !declared ? `Análise · ${analysisToolLabel(analysisTool)}` : stepLabel}
       inspector={<>
         <p className="workflow-progress">Passo {stepIndex + 1} de {studioSteps.length} — {stepLabel}</p>
-        <div className="workflow-content">{selection}{panel}{workbench}</div>
+        <div className="workflow-content">{selection}{panel}{workbench}{projectTools}</div>
         <div className="workflow-footer"><InfoTip label="quantitativos">Quantitativos independentes de preços: comprimentos e peças vêm da geometria; preços entram só no Orçamento de venda.</InfoTip><div className="actions">
           {stepIndex > 0 && <button type="button" className="button secondary" onClick={() => go(studioSteps[stepIndex - 1].id)}><ArrowLeft size={18} />Voltar</button>}
           {initial && <button type="button" className={next ? "button secondary" : "button"} onClick={save}><Save size={18} />Salvar levantamento</button>}

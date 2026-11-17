@@ -162,4 +162,7 @@ Registro curto das decisões tomadas sem consulta (ver regra em [PLANO-UI.md](PL
 4. **Página inicial e lista de projetos.**
    - Estrutura, textos e seletores mantidos (testes `app`/`platform`), só com acabamento: hover e foco visível nos cartões, fonte e tokens.
    - Os estados vazios já tinham ação ("Criar primeiro projeto", "Cadastrar material", "Corrigir dados") e foram mantidos.
-5. **Screenshots.** As imagens em `validation/` são evidências protegidas e regeneradas pelos próprios testes, então não foram trocadas. As novas, de desktop 1440 e celular 390 nos temas claro e escuro, ficam em `docs/ui/screenshots/`.
+5. **Ferramentas do projeto.** Importar JSON, referência do Tom, estrutura irregular e, no modelo declarado, contorno da cobertura ficam recolhidos ao pé do inspetor em todas as etapas.
+   - Na tela antiga, eles ficavam sempre visíveis acima das etapas. Os testes protegidos `m35-irregular` e `m49-garage` os usam a partir de qualquer etapa.
+   - Importar ou registrar um modelo declarado leva à etapa Geometria; um modelo gerado continua indo para Materiais.
+6. **Screenshots.** As imagens em `validation/` são evidências protegidas e regeneradas pelos próprios testes, então não foram trocadas. As novas, de desktop 1440 e celular 390 nos temas claro e escuro, ficam em `docs/ui/screenshots/`.
