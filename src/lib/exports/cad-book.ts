@@ -75,7 +75,7 @@ export class CadBook{
     dxf.tables.addAppId("JPN_COTA");
     dxf.setVariable("$PSLTSCALE",{70:1});dxf.setVariable("$LTSCALE",{40:1});dxf.setVariable("$LWDISPLAY",{290:1});
   }
-  get area():CadRect{return {x:30,y:86,width:this.width-45,height:this.height-123};}
+  get area():CadRect{return {x:30,y:78,width:this.width-45,height:this.height-107};}
   poly(space:DxfBlock,points:Point2[],layer="PERFIS"){
     this.scene(space).push({kind:"line",points,layer});
     return space.addLWPolyline(points.map(([x,y])=>({point:{x,y}})),{layerName:layer});
@@ -96,11 +96,15 @@ export class CadBook{
     let unique=name,n=2;while(this.pages.some(p=>p.name===unique))unique=`${name} ${n++}`;
     const page={name:unique,title,draw:[]};this.pages.push(page);return page;
   }
-  /** Nearest standard scale to 70% occupancy; larger standards avoid clipping. */
+  /** Largest drawing scale (smallest standard denominator) that FITS the
+   * reserved paper rectangle. Never select a smaller drawing for an arbitrary
+   * 70% target. Original geometry and native viewport units remain unchanged. */
   scale(width:number,height:number,available:CadRect){
-    const required=Math.max(width/available.width,height/available.height),scales=[20,25,50,75,100,200,250,500,750,1000,2000,2500,5000,10000];
-    while(scales.at(-1)!<required)scales.push(scales.at(-1)!*2);
-    return scales.filter(s=>s>=required).sort((a,b)=>Math.abs(required/a-.7)-Math.abs(required/b-.7))[0];
+    if(available.width<=0||available.height<=0)throw Error("Área útil CAD indisponível.");
+    const required=Math.max(width/available.width,height/available.height);
+    const scales=[20,25,50,75,100,125,150,200,250,300,400,500,750,1000,1250,1500,2000,2500,5000,10000];
+    while(scales.at(-1)!+1e-9<required)scales.push(scales.at(-1)!*2);
+    return scales.find(s=>s+1e-9>=required)!;
   }
   view(page:CadPage,rect:CadRect,title:string,scale:number,draw:(space:DxfBlock)=>void){
     const block=this.dxf.addBlock(`JPN_VISTA_${++this.viewCount}`);draw(block);
@@ -226,8 +230,8 @@ export class CadBook{
       // The first viewport is the native paper view, not a model-detail viewport.
       space.addEntity(new SheetViewport({x:0,y:0,width:this.width,height:this.height},[this.width/2,this.height/2],1,1));
       this.box(space,{x:25,y:10,width:this.width-35,height:this.height-20},"CARIMBO");
-      this.text(space,[30,this.height-21],page.title,"TEXTOS",4.5);
-      this.text(space,[30,this.height-28],`${this.format} · cotas em mm · escalas indicadas nas vistas · comprimentos entre nós`,"TEXTOS",2.3);
+      this.text(space,[30,this.height-15],page.title,"TEXTOS",4.5);
+      this.text(space,[30,this.height-22],`${this.format} · cotas em mm · escalas indicadas nas vistas · comprimentos entre nós`,"TEXTOS",2.3);
       const x=this.width-190;this.box(space,{x,y:23,width:180,height:55},"CARIMBO");
       for(const y of [34,44,54,66])this.poly(space,[[x,y],[this.width-10,y]],"CARIMBO");
       this.wrapped(space,{x:x+2,y:66,width:176,height:10},this.job,this.job.length>120?2.3:3,this.job.length>120?2.8:3.6,"CARIMBO");
