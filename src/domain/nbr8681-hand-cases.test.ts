@@ -1,9 +1,9 @@
 ﻿import {expect,it} from "vitest";
 import {generateNbr8681Combinations} from "./nbr8681-combinations";
-import cases from "../../validation/hand-cases/nbr8681-hand-cases.json" with {type:"json"};
+import cases from "../../tests/validation/hand-cases/nbr8681-hand-cases.json" with {type:"json"};
 
-/** Hand cases (validation/hand-cases): the generator's combinations, applied to the declared characteristic
- * values, must reproduce the step-by-step values. Draft format until the Codex tests/validation folder exists. */
+/** Hand cases (tests/validation/hand-cases): the generator's combinations, applied to the declared characteristic
+ * values, must reproduce the step-by-step values. The hand-case schema is distinct from physical validation-case projects. */
 type Gen=ReturnType<typeof generateNbr8681Combinations>;
 const byId=Object.fromEntries(cases.cases.map(c=>[c.id,c]));
 const step=(id:string,n:number)=>byId[id].steps.find(s=>s.step===n)!.value as number;

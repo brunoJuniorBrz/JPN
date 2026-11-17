@@ -129,6 +129,7 @@ jobs:
             .tools/m49-runtime/
             .tools/m50-runtime/
             .tools/m51-runtime/
+            .tools/validation-campaign/
             test-results/
 
   optional-numerical-profiles:
