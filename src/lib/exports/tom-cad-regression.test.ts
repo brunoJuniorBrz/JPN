@@ -109,6 +109,8 @@ function buildTom(){
     }),
   });
   p.workspace.spatialPreparation=draft;
+  p.workspace.overallDimensionChecks=[{axis:"y",statedLengthMm:14280,
+    source:"Modulação 4510 + 4510 + 5260 do desenho do Alan",revision:REV}];
   p.workspace.dimensionalChecks=["BS_1","BS_2"].map(pieceId=>({
     pieceId,statedLengthMm:5410,
     source:"Cota do banzo superior no desenho do Alan; valor sujeito a revisão",revision:REV,
@@ -135,11 +137,27 @@ it("exports real Tom dimensional takeoff using new PR141 package engine (study, 
   expect(result.manifest.fabricationRelease).toBe(false);
   expect(result.manifest.computedStructuralApproval).toBe(false);
   expect(result.manifest.totals.quantity).toBe(40);
+  const trussSheets=result.manifest.pages.filter(v=>v.title.startsWith("Tesoura — tipo"));
+  expect(trussSheets.map(v=>v.title)).toEqual(["Tesoura — tipo 1 (2×)"]);
+  expect(result.manifest.pages.length).toBeLessThan(16);
+  expect(result.manifest.pages.some(v=>v.title==="Locação de bases e chumbadores")).toBe(false);
+  const dxf=new TextDecoder().decode(result.files.find(v=>v.name==="cad/pranchas.dxf")!.bytes);
+  expect((dxf.match(/\nDIMENSION\n/g)??[]).length).toBeGreaterThanOrEqual(47);
+  const pageNames=result.manifest.pages.map(v=>v.title).join(" | ");
+  expect(pageNames).toContain("Espaçamentos entre terças");
+  expect(pageNames).toContain("Pendências geométricas do desenho");
+
   expect(result.manifest.unlocatedPieceIds).toHaveLength(4);
   expect(result.manifest.commercialCostMainCents).toBe(377500);
   expect(result.manifest.commercialCostCombinedCents).toBe(418000);
   expect(result.manifest.commercialCostPendingIncrementalCents).toBe(40500);
   expect(result.manifest.sourceDimensionReviews.filter(r=>r.status==="PENDENTE")).toHaveLength(2);
+  expect(result.manifest.roofSlopeReviews.filter(r=>r.status==="PENDENTE").map(r=>r.pieceId).sort()).toEqual(["BS_1","BS_2"]);
+  const conflictText=new TextDecoder().decode(result.files.find(v=>v.name==="materiais/lista.csv")!.bytes);
+  expect(conflictText).toContain("PENDENTE");
+  expect(conflictText).toContain("5410");
+  expect(result.manifest.overallDimensionReviews.some(r=>r.axis==="y"&&r.status==="PENDENTE"
+    &&Math.abs(r.discrepancyMm!-220)<1e-6)).toBe(true);
   expect(result.files.some(f=>f.name==="materiais/itens-a-confirmar.csv")).toBe(true);
   const uGroup=cut.groups.find(g=>g.profile.startsWith("U 75"));
   expect(uGroup).toBeDefined();

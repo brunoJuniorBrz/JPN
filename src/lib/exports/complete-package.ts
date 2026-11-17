@@ -8,7 +8,7 @@ import {createCadDrawing,type CadExportOptions} from "./cad";
 import {createCadPdf} from "./cad-pdf";
 import {packageTakeoff} from "./package-source";
 import {declaredCommercialGroups,isUnlocatedCommercialPiece} from "./package-commercial-groups";
-import {reviewSourceDimensions} from "./package-dimension-review";
+import {reviewSourceDimensions,reviewRoofEnvelope,reviewRoofSlope} from "./package-dimension-review";
 import {createPackageZip} from "./package-zip";
 import {CAD_NOTICE} from "./cad-book";
 import {mixedPreparationReview} from "@/domain/mixed-adapter";
@@ -66,6 +66,7 @@ export async function createCompletePackage(input:Project,options:PackageOptions
   // Snapshot before the first await: every file and hash refers to this revision.
   const project=structuredClone(input),issuedAt=options.issuedAt??new Date(),takeoff=packageTakeoff(project),drawing=createCadDrawing(project,issuedAt,options);
   const reviews=reviewSourceDimensions(project),reviewById=new Map(reviews.map(r=>[r.pieceId,r]));
+  const roofSlopeReviews=reviewRoofSlope(project),overallDimensionReviews=reviewRoofEnvelope(project);
   const unlocated=takeoff.pieces.filter(p=>isUnlocatedCommercialPiece(p)),unlocatedIds=new Set(unlocated.map(p=>p.pieceId));
   const pending=[CAD_NOTICE,"Bases e chumbadores A4/A5, ligações, soldas, fundações, cargas e estabilidade: verificar pendências do projeto. Comprimentos entre nós não incluem detalhes de fabricação."];
   const preparation=project.workspace.spatialPreparation??newSpatialPreparation(project);
@@ -74,6 +75,10 @@ export async function createCompletePackage(input:Project,options:PackageOptions
   if(takeoff.totals.massKg===null)pending.push("Massa incompleta: propriedades ou densidades ausentes permanecem PENDENTE.");
   for(const r of reviews.filter(r=>r.status==="PENDENTE"))pending.push(
     `PENDENTE — DIVERGÊNCIA DIMENSIONAL: ${r.pieceId}; fonte ${r.declaredMm} mm; modelo ${r.actualMm??"sem peça"} mm; diferença ${r.discrepancyMm??"indefinida"} mm. ${r.source} (${r.revision}). ${r.note}`);
+  for(const r of roofSlopeReviews.filter(r=>r.status==="PENDENTE"))
+    pending.push(`PENDENTE — INCLINAÇÃO: ${r.pieceId} / face ${r.faceId}; subida do banzo ${r.modelRiseMm.toFixed(3)} mm; subida da face ${r.expectedRiseMm.toFixed(3)} mm; divergência ${r.deltaMm.toFixed(3)} mm. ${r.relation}.`);
+  for(const r of overallDimensionReviews.filter(r=>r.status==="PENDENTE"))
+    pending.push(`PENDENTE — COTA GERAL: eixo ${r.axis.toUpperCase()}; cota declarada ${r.statedLengthMm} mm; contorno esquemático ${r.actualMm??"indefinido"} mm; diferença ${r.discrepancyMm??"indefinida"} mm.`);
   if(unlocated.length)pending.push(`PENDENTE: ${unlocated.length} peças sem locação confirmada, excluídas do escopo principal e listadas em materiais/itens-a-confirmar.csv.`);
 
   let cutting:ReturnType<typeof packageCutting>|null=null;
@@ -140,6 +145,10 @@ export async function createCompletePackage(input:Project,options:PackageOptions
     p.pieceId,p.profile,Math.ceil(p.lengthMm)]));
   if(reviews.length)table("Conferência de cotas declaradas",["ID","Fonte mm","Entre nós mm","Diferença / status"],reviews.map(r=>[
     r.pieceId,r.declaredMm,r.actualMm??"PENDENTE",`${r.discrepancyMm??"PENDENTE"} / ${r.status}`]));
+  if(roofSlopeReviews.length)table("Conferência das inclinações",["Banzo/face","Subida banzo / face mm","Desvio mm / status"],roofSlopeReviews.map(r=>[
+    `${r.pieceId}/${r.faceId}`,`${r.modelRiseMm.toFixed(3)} / ${r.expectedRiseMm.toFixed(3)}`,`${r.deltaMm.toFixed(3)} / ${r.status}`]));
+  if(overallDimensionReviews.length)table("Conferência das cotas gerais",["Eixo","Cota declarada / modelo mm","Diferença / status"],overallDimensionReviews.map(r=>[
+    r.axis.toUpperCase(),`${r.statedLengthMm} / ${r.actualMm??"PENDENTE"}`,`${r.discrepancyMm??"PENDENTE"} / ${r.status}`]));
   table("Premissas e pendências",["Conferência"],[...pending,...estimate.pending,...estimate.warnings].map(p=>[p]));
   add("memorial/quantitativos.pdf","application/pdf",doc.output("arraybuffer"));
   add("rastreabilidade/projeto.json","application/json",JSON.stringify(project,null,2));
@@ -148,7 +157,7 @@ export async function createCompletePackage(input:Project,options:PackageOptions
     totals:takeoff.totals,cuttingAvailable:!!cutting,stockByGroup:options.stockByGroup??{},
     commercial,commercialCostMainCents:sumKnown("costMainCents"),commercialCostCombinedCents:sumKnown("costCombinedCents"),
     commercialCostPendingIncrementalCents:sumKnown("costPendingIncrementalCents"),
-    unlocatedPieceIds:[...unlocatedIds],sourceDimensionReviews:reviews,pending,
+    unlocatedPieceIds:[...unlocatedIds],sourceDimensionReviews:reviews,roofSlopeReviews,overallDimensionReviews,pending,
     computedStructuralApproval:false,fabricationRelease:false,releaseGate:"NOT_READY_BLOCKED",
     files:await Promise.all(files.map(async f=>({name:f.name,bytes:f.bytes.length,sha256:await digest(f.bytes)})))};
   add("manifesto.json","application/json",JSON.stringify(manifest,null,2));

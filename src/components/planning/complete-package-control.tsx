@@ -34,6 +34,13 @@ export function CompletePackageControl({project,onChange,beforeExport}:{project:
       note:"Conferir diferença entre cota de origem e comprimento geométrico entre nós"});
     onChange({workspace:{...project.workspace,dimensionalChecks:items}});
   };
+  const changeEnvelopeDimension=(axis:"x"|"y",value:number|null)=>{
+    const items=(project.workspace.overallDimensionChecks??[]).filter(c=>c.axis!==axis);
+    if(value!==null)items.push({axis,statedLengthMm:value,
+      source:"Cota geral declarada pelo usuário para confronto com o contorno CAD",
+      revision:project.workspace.physicalStructure?.revision??String(project.roof.revision)});
+    onChange({workspace:{...project.workspace,overallDimensionChecks:items}});
+  };
   return <section aria-label="Pacote completo de documentação" data-testid="complete-package-control">
     <h4>Pacote completo de documentação</h4>
     <p>AutoCAD, PDF das mesmas pranchas, materiais CSV, memorial e simulação de corte em um ZIP. Documentos preliminares para conferência.</p>
@@ -60,6 +67,13 @@ export function CompletePackageControl({project,onChange,beforeExport}:{project:
           value={project.workspace.dimensionalChecks?.find(v=>v.pieceId===p.id)?.statedLengthMm??null}
           min={0.001} max={1000000} onChange={v=>changeSourceDimension(p.id,v)}/>)}
       </div>
+    </details>}
+    {project.workspace.physicalStructure&&<details>
+      <summary>Cotas gerais para confronto (opcional)</summary>
+      {(["x","y"] as const).map(axis=><NumberField key={axis}
+        label={`Cota geral ${axis.toUpperCase()} declarada (mm)`}
+        value={project.workspace.overallDimensionChecks?.find(v=>v.axis===axis)?.statedLengthMm??null}
+        min={1} max={1000000} onChange={v=>changeEnvelopeDimension(axis,v)}/>)}
     </details>}
     <button type="button" className="button" disabled={busy||!!geometryError} onClick={()=>void generate()}>{busy?"Gerando pacote…":"Exportar pacote completo"}</button>
     {busy&&<p role="status">Gerando pranchas e documentos desta revisão…</p>}

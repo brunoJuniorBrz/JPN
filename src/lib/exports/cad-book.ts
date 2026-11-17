@@ -131,9 +131,18 @@ export class CadBook{
     const c:Point2=[a[0]+normal[0],a[1]+normal[1]],e:Point2=[b[0]+normal[0],b[1]+normal[1]];
     const lines=this.dimensionLines.get(space)??[];lines.push([a,c],[b,e],[c,e]);this.dimensionLines.set(space,lines);
     const block=this.dxf.addBlock(`COTA_${this.dxf.blocks.blocks.length}`);
-    for(const [u,v] of [[a,c],[b,e],[c,e]] as [Point2,Point2][])this.poly(block,[u,v],"COTAS");
+    // Real DIMENSION entity retained. Break its graphics block under the
+    // measurement label instead of drawing a dimension stroke THROUGH text.
+    const ux=(e[0]-c[0])/length,uy=(e[1]-c[1])/length;
+    const measurement=cadNumber(length*scale),gap=Math.min(length*.5,Math.max(5,measurement.length*1.65+4));
+    const center:Point2=[(c[0]+e[0])/2,(c[1]+e[1])/2];
+    const left:Point2=[center[0]-ux*gap/2,center[1]-uy*gap/2],
+      right:Point2=[center[0]+ux*gap/2,center[1]+uy*gap/2];
+    for(const [u,v] of [[a,c],[b,e],[c,left],[right,e]] as [Point2,Point2][])
+      if(Math.hypot(v[0]-u[0],v[1]-u[1])>1e-8)this.poly(block,[u,v],"COTAS");
     for(const p of [c,e])this.poly(block,[[p[0]-1,p[1]-1],[p[0]+1,p[1]+1]],"COTAS");
-    const middle:Point2=[(c[0]+e[0])/2,(c[1]+e[1])/2+1],dimensionText=this.text(block,middle,cadNumber(length*scale),"COTAS",2.5);
+    const middle:Point2=[center[0]-uy*2.3,center[1]+ux*2.3];
+    const dimensionText=this.text(block,middle,measurement,"COTAS",2.5);
     let angle=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI;if(angle>90||angle< -90)angle+=180;
     dimensionText.rotation=angle;dimensionText.horizontalAlignment=1;dimensionText.secondAlignmentPoint=point3d(...middle);
     const styleName=`JPN_MM_${scale}`;let style=this.dxf.tables.dimStyleTable.records.find(s=>s.name===styleName);

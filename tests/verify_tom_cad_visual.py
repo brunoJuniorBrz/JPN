@@ -49,7 +49,7 @@ for index,layout in enumerate(p for p in DOC.layouts if p.name!="Model"):
                     leaders.append(pts)
             if e.dxftype()=="CIRCLE" and e.dxf.layer=="MARCAS":
                 marks.append((e.dxf.center.x,e.dxf.center.y,e.dxf.radius))
-            if e.dxftype()=="TEXT" and e.dxf.layer=="MARCAS":
+            if e.dxftype()=="TEXT" and e.dxf.layer in ("MARCAS","PENDENCIAS"):
                 p=e.dxf.get("align_point",e.dxf.insert)
                 if p is None:p=e.dxf.insert
                 h=e.dxf.height
@@ -78,7 +78,7 @@ with (OUT/"medicoes-cad.json").open("w") as f:
     json.dump({"source":"DXF real do PR141 renderizado em PDF","metrics":metrics,
       "limits":["Ocupação por bbox de perfis/cobertura na viewport; não equivale a área real das peças",
        "Teste de balões verifica círculos e cruzamento estrito de linhas MARCAS; anotações e cotas requerem verificação visual",
-       "Geometria Tom esquemática, sem validação de apoios, ligações ou elevação real"]},f,ensure_ascii=False,indent=2)
+       "Geometria Tom esquemática, sem validação de apoios, ligações ou elevação real"]},f,ensure_ascii=False,indent=2, default=lambda o:o.item() if hasattr(o,"item") else str(o))
 baseline=Path("validation/tom-2026/cad-pr141-before-metrics.json")
 if baseline.exists():
     before=json.loads(baseline.read_text("utf-8"))
@@ -86,7 +86,7 @@ if baseline.exists():
     comparison={"baseline":before["sheet1"],"after":after,
       "area_definition":"bbox das linhas PERFIS+COBERTURA em cada viewport; base comparável por viewport"}
     (OUT/"comparativo-cad-antes-depois.json").write_text(
-      json.dumps(comparison,indent=2,ensure_ascii=False),encoding="utf-8")
+      json.dumps(comparison,indent=2,ensure_ascii=False, default=lambda o:o.item() if hasattr(o,"item") else str(o)),encoding="utf-8")
 with (OUT/"medicoes-cad.csv").open("w",newline="") as f:
     w=csv.DictWriter(f,fieldnames=list(metrics[0]),delimiter=";");w.writeheader();w.writerows(metrics)
 principal=[r for r in metrics if r["layout"]=="PLANTAS"]
@@ -101,4 +101,4 @@ assert all(r["lideres_atravessando_pecas"]==0 for r in metrics), "Líderes atrav
 print(json.dumps({"pages":len(PDF),"views":len(metrics),
     "min_occupancy":min((v["ocupacao_geometria_percent"] for v in metrics),default=0),
     "scales":[(r["folha"],r["escala"],r["ocupacao_geometria_percent"]) for r in metrics]},
-    ensure_ascii=False))
+    ensure_ascii=False, default=lambda o:o.item() if hasattr(o,"item") else str(o)))

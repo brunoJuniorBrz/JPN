@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      actions: read
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +28,16 @@ jobs:
           python -m pip install --quiet ezdxf PyMuPDF Pillow
       - name: PDF/DXF visual metrics, clipping and line crossing audit
         run: python tests/verify_tom_cad_visual.py
+      - name: Recover historical pre-correction CAD package for before pictures
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p .tools/complete-package/antes
+          gh run download 44181655801 -n tom-pr141-native-cad-actual-output -D .tools/complete-package/antes || echo 'Historical evidence unavailable; do not claim visual before/after comparison.'
+          BASE_PDF="$(find .tools/complete-package/antes -type f -name pranchas.pdf | head -n 1)"
+          if [ -n "$BASE_PDF" ]; then
+            pdftoppm -png -r 150 "$BASE_PDF" .tools/complete-package/antes/antes-prancha
+          fi
       - name: Render every Tom PDF sheet at 150 DPI
         if: always()
         run: |
@@ -39,4 +50,5 @@ jobs:
           name: tom-pr141-cad-qa-evidence
           path: |
             .tools/complete-package/tom
+            .tools/complete-package/antes
             test-results

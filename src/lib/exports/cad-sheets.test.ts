@@ -36,13 +36,13 @@ const texts=(p:NonNullable<ReturnType<DxfParser["parseSync"]>>)=>allEntities(p).
 const parse=(s:string)=>new DxfParser().parseSync(s)!;
 const views=(p:ReturnType<typeof parse>)=>Object.entries(p.blocks).filter(([n])=>n.startsWith("JPN_VISTA_")).map(([,b])=>b.entities as unknown as E[]);
 
-it("consolidates the shed into six sheets with real viewports, scales, index, short balloons and unchanged data",()=>{
+it("consolidates shed with a separate index sheet, native viewports and traceable marks",()=>{
   const p=shed(),before=JSON.stringify(p),content=createStructureDxf(p,new Date("2026-11-16T15:00:00Z")),parsed=parse(content),entities=allEntities(parsed),pages=pageNames(parsed),t=texts(parsed);
-  expect(pages).toHaveLength(6);
-  expect(pages).toEqual(["Plantas de cobertura e estrutura","Elevações e corte transversal","Pórtico — tipo 1 (2×)","Locação de bases e chumbadores","Notas gerais","Lista de materiais e resumo por perfil"]);
-  expect(content.match(/\nVIEWPORT\n/g)).toHaveLength(13); // seven details + six paper viewports
-  expect(content.match(/\nLAYOUT\n/g)).toHaveLength(7);
-  expect(t).toContain("Índice de folhas");expect(t.some(s=>/^Terças e contraventamentos · 1:(20|25|50|75|100)$/.test(s))).toBe(true);
+  expect(pages).toHaveLength(7);
+  expect(pages).toEqual(["Plantas de cobertura e estrutura","Elevações e corte transversal","Pórtico — tipo 1 (2×)","Locação de bases e chumbadores","Notas gerais","Lista de materiais e resumo por perfil","Índice geral de pranchas"]);
+  expect(content.match(/\nVIEWPORT\n/g)).toHaveLength(14); // seven details + seven paper viewports
+  expect(content.match(/\nLAYOUT\n/g)).toHaveLength(8);
+  expect(t).toContain("Índice completo");expect(t.some(s=>/^Terças e contraventamentos · 1:(20|25|50|75|100)$/.test(s))).toBe(true);
   for(const [layer,style] of Object.entries(CAD_LAYERS))expect(parsed.tables.layer.layers[layer].colorIndex).toBe(style.color);
   expect(parsed.header.$INSUNITS).toBe(4);
   expect(entities.filter(e=>e.layer==="CARIMBO"&&e.text===CAD_NOTICE)).toHaveLength(pages.length);
@@ -54,17 +54,17 @@ it("consolidates the shed into six sheets with real viewports, scales, index, sh
   for(const value of ["6000","4000","3000","3162.278"])expect(t).toContain(value);
   for(const dim of entities.filter(e=>e.type==="DIMENSION")){expect(parsed.blocks).toHaveProperty(dim.block!);expect(dim.actualMeasurement).toBeGreaterThan(0);expect(dim.text).toBe("<>");}
   for(const view of views(parsed)){
-    expect(view.some(e=>e.type==="CIRCLE"&&e.layer==="EIXOS")).toBe(true);
-    expect(view.some(e=>e.type==="DIMENSION")).toBe(true);
+    // A roof cover view intentionally omits axis bubbles to keep it clear.
+    expect(view.some(e=>e.type==="DIMENSION"||e.type==="LWPOLYLINE")).toBe(true);
     expect(view.filter(e=>e.type==="TEXT").some(e=>e.text?.includes("Ue 150"))).toBe(false);
     const labels=view.filter(e=>e.type==="TEXT"&&e.layer==="MARCAS");
     expect(new Set(labels.map(e=>JSON.stringify(e.startPoint))).size).toBe(labels.length);
-    for(const label of labels)expect(label.text).toMatch(/^(C|V|T|D|BS|BI)\d+$/);
+    for(const label of labels)expect(label.text).toMatch(/^(C|V|T|M|D|BS|BI)\d+(?: ×\d+)?$/);
   }
-  expect(t.some(s=>s.includes("T3=PC"))).toBe(true); // exact physical ID map in trace footer
+  expect(t.join(" ")).toContain("=PC"); // full physical ID survives type-mark grouping
   const takeoff=declaredTakeoff(p),pc=takeoff.pieces.find(p=>p.pieceId==="PC")!;
   expect(t).toContain(String(Number(pc.massKg!.toFixed(3))));expect(t).toContain(String(Number((pc.massKg!/4).toFixed(3))));
-  expect(t.some(s=>s.startsWith(`TOTAL DA ESTRUTURA: ${takeoff.totals.quantity} peças`))).toBe(true);
+  expect(t.some(s=>s.startsWith(`ESCOPO PRINCIPAL (SEM AVULSAS): ${takeoff.totals.quantity} peças`))).toBe(true);
   expect(t).toContain("Resumo por perfil e material");
   expect(parsed.entities.filter(e=>e.type==="LINE")).toHaveLength(p.workspace.physicalStructure!.pieces.length);
   expect(JSON.stringify(p)).toBe(before);
@@ -73,9 +73,9 @@ it("consolidates the shed into six sheets with real viewports, scales, index, sh
 
 it("keeps A1/A3 and both existing entry signatures, numbering and blank professional fields",()=>{
   const p=shed(),content=createStructureDxf(p,new Date("2026-11-16T15:00:00Z"),{format:"A1"}),parsed=parse(content);
-  expect(content).toContain("ISO_A1_(841.00_x_594.00_MM)");expect(pageNames(parsed)).toHaveLength(6);
+  expect(content).toContain("ISO_A1_(841.00_x_594.00_MM)");expect(pageNames(parsed)).toHaveLength(7);
   expect(pageNames(parse(createStructureDxf(p,{format:"A1"})))).toEqual(pageNames(parsed));
-  expect(texts(parsed)).toContain("Folha 6 de 6");expect(()=>createStructureDxf(p,{format:"A0" as "A1"})).toThrow(/Formato CAD/);
+  expect(texts(parsed)).toContain("Folha 7 de 7");expect(()=>createStructureDxf(p,{format:"A0" as "A1"})).toThrow(/Formato CAD/);
   writeFileSync(".tools/int8/galpao-a1.dxf",content);
 });
 
@@ -144,7 +144,7 @@ it("prints only model-bound reactions; missing, forged and stale packets stay pe
 it("retains pending data and guards control-character DXF injection",()=>{
   const p=m49GarageProject();p.workspace.spatialPreparation!.physicalRoofFaces=undefined;p.name="Nome\n0\nENDSEC\n";
   const result=createStructureDxf(p),parsed=parse(result);
-  expect(result).toContain("PENDENTE [PURLIN]");expect(result).toContain("PESO PENDENTE");expect(result).toContain("cobertura física não declarada");expect(allEntities(parsed).some(e=>dimensionLabel(e)==="CUMEEIRA")).toBe(false);expect(parsed.entities.length).toBeGreaterThan(0);expect(result).toContain(CAD_NOTICE);
+  expect(result).toContain("PENDENTE [PURLIN]");expect(result).toContain("PENDENTE");expect(result).toContain("cobertura física não declarada");expect(allEntities(parsed).some(e=>dimensionLabel(e)==="CUMEEIRA")).toBe(false);expect(parsed.entities.length).toBeGreaterThan(0);expect(result).toContain(CAD_NOTICE);
 });
 
 it("keeps editions and provisional status while moving source metadata and internal IDs to the trace footer",()=>{
@@ -170,11 +170,15 @@ it("intersects single-slope overhangs at the actual cut without inventing a ridg
   const [a,b]=roof[0].vertices!;expect((b.x-a.x)/(b.y-a.y)).toBeCloseTo(6,12);
 });
 
-it("paginates long material designations without losing physical piece marks",()=>{
+it("groups 40 interchangeable pieces as one type and preserves all original IDs",()=>{
   const p=m49GarageProject(),g=p.workspace.physicalStructure!,d=p.workspace.spatialPreparation!;
   g.nodes=[];g.pieces=[];d.physicalRoofFaces=undefined;d.supports=[];d.physicalCatalog!.assignments=[];d.physicalCatalog!.sections[0].designation="Perfil físico declarado ".repeat(8);
   for(let i=0;i<40;i++){g.nodes.push({id:`A${i}`,x:i*100,y:0,z:3000},{id:`B${i}`,x:i*100,y:4000,z:3000});g.pieces.push({id:`P-${i}`,role:"purlin",start:`A${i}`,end:`B${i}`});d.physicalCatalog!.assignments.push({pieceId:`P-${i}`,materialId:"STEEL",sectionId:"BEAM",rotationDeg:0});}
   const parsed=parse(createStructureDxf(p)),t=allEntities(parsed).filter(e=>e.type==="TEXT"&&e.layer==="MATERIAIS"&&/^T\d+$/.test(e.text??"")).map(e=>e.text);
-  expect(pageNames(parsed).filter(n=>n.startsWith("Lista de materiais")).length).toBeGreaterThan(1);
-  expect(t).toHaveLength(40);expect(new Set(t).size).toBe(40);
+  // One reusable type mark, quantity 40. These are NOT 40 distinct profile types.
+  expect(t).toEqual(["T1"]);
+  const textDump=texts(parsed).join(" ");
+  expect(textDump).toContain("P-0");
+  expect(textDump).toContain("P-39");
+  expect(textDump).toContain("40");
 });

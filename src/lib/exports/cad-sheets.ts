@@ -4,7 +4,7 @@ import {CadBook,CAD_NOTICE,cadNumber as num,type PaperFormat,type Point2 as P,ty
 import {cadModel,cadReactions,axisLetter,sortedCoordinates as unique,isDeclaredBrace,type CadPiece,type CadReactionReceipt} from "./cad-model";
 import {cadRoofFaces} from "./cad-roof";
 import {isUnlocatedCommercialPiece} from "./package-commercial-groups";
-import {reviewSourceDimensions} from "./package-dimension-review";
+import {reviewSourceDimensions,reviewRoofSlope,reviewRoofEnvelope} from "./package-dimension-review";
 export {CAD_NOTICE};
 export type CadExportOptions={format?:PaperFormat;reactions?:CadReactionReceipt};
 
@@ -15,8 +15,11 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const items=new Map(takeoff.pieces.map(p=>[p.pieceId,p]));
   const unlocated=new Set(takeoff.pieces.filter(isUnlocatedCommercialPiece).map(p=>p.pieceId));
   const sourceDimensions=reviewSourceDimensions(project),dimensionByPiece=new Map(sourceDimensions.map(r=>[r.pieceId,r]));
+  const roofSlopeReviews=reviewRoofSlope(project),overallDimensionReviews=reviewRoofEnvelope(project);
   for(const p of [...model.pieces].sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}))){
-    const prefix=isDeclaredBrace(p)?"D":({column:"C",beam:"V",purlin:"T",topChord:"BS",bottomChord:"BI",web:"D"} as const)[p.role];
+    const a=nodes.get(p.start)!,b=nodes.get(p.end)!;
+    const verticalWeb=p.role==="web"&&!isDeclaredBrace(p)&&Math.hypot(a.x-b.x,a.y-b.y)<=1;
+    const prefix=isDeclaredBrace(p)?"D":p.role==="web"?(verticalWeb?"M":"D"):({column:"C",beam:"V",purlin:"T",topChord:"BS",bottomChord:"BI"} as const)[p.role];
     const piece=items.get(p.id),assignment=draft?.physicalCatalog?.assignments.find(a=>a.pieceId===p.id);
     const ends=draft?.memberConnections.find(c=>c.pieceId===p.id);
     const fabrication=project.workspace.fabrication.find(f=>f.pieceId===p.id);
@@ -38,11 +41,21 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     if(edge.length!==2||edge[0][2]!==edge[1][2])return [];
     const h=edge[0][2];return [f,g].every(face=>face.outer.some(p=>p[2]<h)&&face.outer.every(p=>p[2]<=h))?[h]:[];
   }));
-  const purlins=model.pieces.filter(p=>p.role==="purlin");
+  const purlins=model.pieces.filter(p=>p.role==="purlin"&&!unlocated.has(p.id));
   const yDirection=purlins.reduce((s,p)=>s+Math.abs(nodes.get(p.end)!.y-nodes.get(p.start)!.y),0);
   const xDirection=purlins.reduce((s,p)=>s+Math.abs(nodes.get(p.end)!.x-nodes.get(p.start)!.x),0);
   const cutAxis=yDirection>=xDirection?"y":"x",across=cutAxis==="y"?"x":"y";
-  const sectionPosition=Math.min(...(supports.length?supports:model.nodes).map(n=>n[cutAxis]));
+  // A cut at an arbitrary unlocated/stock point previously missed every
+  // purlin. Choose the actual purlin interval with most intersections.
+  const intervals=purlins.map(p=>{
+    const a=nodes.get(p.start)!,b=nodes.get(p.end)!;
+    return [Math.min(a[cutAxis],b[cutAxis]),Math.max(a[cutAxis],b[cutAxis])] as const;
+  });
+  const candidateCuts=intervals.flatMap(([a,b])=>[a,(a+b)/2,b]).filter(Number.isFinite);
+  const sectionPosition=candidateCuts.length?candidateCuts.sort((a,b)=>{
+    const hits=(x:number)=>intervals.filter(([lo,hi])=>lo<=x&&x<=hi&&hi-lo>1).length;
+    return hits(b)-hits(a)||a-b;
+  })[0]:Math.min(...(supports.length?supports:model.nodes).map(n=>n[cutAxis]));
   const cross=(p:CadPiece):P|null=>{
     const a=nodes.get(p.start)!,b=nodes.get(p.end)!;
     if(a[cutAxis]===b[cutAxis]||sectionPosition<Math.min(a[cutAxis],b[cutAxis])||sectionPosition>Math.max(a[cutAxis],b[cutAxis]))return null;
@@ -77,7 +90,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     const minX=Math.min(...coords.map(p=>p[0])),minY=Math.min(...coords.map(p=>p[1]));
     const width=Math.max(...coords.map(p=>p[0]))-minX,height=Math.max(...coords.map(p=>p[1]))-minY;
     const solo=rect.width>=book.area.width*.94&&rect.height>=book.area.height*.94;
-    const available=solo?{x:12,y:2,width:rect.width-24,height:rect.height-4}
+    const available=solo?{x:4,y:2,width:rect.width-8,height:rect.height-4}
       :{x:22,y:12,width:Math.max(20,rect.width-36),height:Math.max(20,rect.height-24)};
     const scale=book.scale(width,height,available),maxX=minX+width,maxY=minY+height;
     book.view(page,rect,name,scale,space=>{
@@ -85,9 +98,15 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       const at=(p:P):P=>[originX+(p[0]-minX)/scale,originY+(p[1]-minY)/scale];
       const subtitle=opts.subtitle??(view==="cut"?`Corte ${cutAxis.toUpperCase()}=${num(sectionPosition)} mm; representação por eixos.`:`Referência de altura Z=${num(datum)} mm.`);
       if(!solo)book.text(space,[2,rect.height-4],subtitle,"TEXTOS",1.8);
+      const pendingNotes:string[]=[];
+      if(opts.frame)pendingNotes.push(
+        "PENDENTE: contato geométrico apenas para desenho; juntas, apoios e comportamento estrutural não verificados.");
       const disputed=pieces.filter(p=>dimensionByPiece.get(p.id)?.status==="PENDENTE");
-      if(disputed.length)book.text(space,[2,rect.height-9],
-        `PENDENTE — DIVERGÊNCIA DIMENSIONAL: ${disputed.map(p=>p.id).join(", ")} (detalhes na folha própria)`,"PENDENCIAS",1.8);
+      if(disputed.length)pendingNotes.push(
+        `PENDENTE — COTAS: ${disputed.map(p=>p.id).join(", ")}. Ver folha de divergências.`);
+      const mismatch=roofSlopeReviews.filter(r=>r.status==="PENDENTE"&&pieces.some(p=>p.id===r.pieceId));
+      if(mismatch.length)pendingNotes.push(
+        `PENDENTE — INCLINAÇÃO FACE/BANZO: ${mismatch.map(r=>r.pieceId).join(", ")}. Ver divergências.`);
 
       book.graphicScale(space,[rect.width-56,solo?rect.height-15:3],scale);
       const occupied:{x:number;y:number;width:number;height:number}[]=[];
@@ -204,12 +223,12 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
           const actual=candidates.sort((a,b)=>a[0]-b[0])[0]??[minX,z];
           book.dim(space,at([actual[0],datum]),at(actual),scale,showRoof?(ridge.includes(z)?"CUMEEIRA":"BORDA/BEIRAL"):"NÍVEL",(actual[0]-minX)/scale+10+i*7);
         }
-        if(showRoof&&!roof.length)book.text(space,[2,10],"PENDENTE: cobertura física não declarada; alturas não inferidas.","PENDENCIAS",1.8);
+        if(showRoof&&!roof.length)pendingNotes.push("PENDENTE: cobertura não declarada; alturas não inferidas.");
       }
       if(view==="cut"){
         if(distinct.length<=12)for(let i=1;i<distinct.length;i++)book.dim(space,at(distinct[i-1]),at(distinct[i]),scale,"EIXOS TERÇAS",5);
         else book.dim(space,at(distinct[0]),at(distinct.at(-1)!),scale,"TERÇAS: ver ESPACAMENTOS",5);
-        if(distinct.length<2)book.text(space,[2,10],"PENDENTE: sequência de terças não identificada neste corte.","PENDENCIAS",1.8);
+        if(distinct.length<2)pendingNotes.push("PENDENTE: sequência de terças não identificada neste corte.");
       }
       if(opts.tercas){
         const values=unique(distinct.map(p=>p[0]));
@@ -221,13 +240,15 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
           const a:P=cutAxis==="y"?[marked[i-1],minY]:[minX,marked[i-1]],b:P=cutAxis==="y"?[marked[i],minY]:[minX,marked[i]];
           book.dim(space,at(a),at(b),scale,legible?"TERÇAS PROJ.":"TERÇAS: ver ESPACAMENTOS",-13);
         }
-        if(!model.pieces.some(isDeclaredBrace))book.text(space,[2,10],"PENDENTE: contraventamentos não identificados; barras auxiliares não implicam contenção.","PENDENCIAS",1.8);
+        if(!model.pieces.some(isDeclaredBrace))
+          pendingNotes.push("PENDENTE: contraventamentos não declarados; sem comprovação de contenção.");
       }
       if(opts.bases){
         book.text(space,[2,rect.height-9],"PENDENTE DE PROJETO (A4/A5)","PENDENCIAS",2.5);
         book.text(space,[2,10],"Nós de apoio; chapas, furos, chumbadores e soldas não dimensionados.","PENDENCIAS",1.8);
       }
-      if(!supports.length)book.text(space,[2,15],"PENDENTE: apoios não declarados; nenhum apoio foi criado.","PENDENCIAS",1.8);
+      if(!supports.length&&page.name==="PLANTAS")
+        pendingNotes.push("PENDENTE: apoios não declarados; nenhum apoio foi criado.");
       const labelledTypes=new Set<string>();
       if(!opts.bases)for(const p of pieces){
         const a=nodes.get(p.start)!,b=nodes.get(p.end)!,mark=marks.get(p.id)!;
@@ -261,7 +282,34 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         book.poly(space,[u,v],layer);
         if(first)label([(u[0]+v[0])/2,(u[1]+v[1])/2],id);
       }
-      if(dense)book.text(space,[2,rect.height-9],"PENDENTE: marcas densas; conferir lista de materiais.","PENDENCIAS",1.8);
+      // Graphic dimensions only. Inferred visual contacts with chord axes do
+      // not become declared joints or solver restraints.
+      if(opts.frame&&pieces.some(p=>p.role==="topChord")&&pieces.some(p=>p.role==="bottomChord")){
+        const webs=pieces.filter(p=>p.role==="web"&&!isDeclaredBrace(p)).filter(p=>{
+          const u=nodes.get(p.start)!,v=nodes.get(p.end)!;
+          return Math.hypot(u.x-v.x,u.y-v.y)<=1;
+        }).sort((p,q)=>{
+          const u=nodes.get(p.start)!,v=nodes.get(q.start)!;
+          return u[horizontal]-v[horizontal];
+        });
+        const bottoms=pieces.filter(p=>p.role==="bottomChord").flatMap(p=>[nodes.get(p.start)!,nodes.get(p.end)!]);
+        const bottomZ=bottoms.length?Math.min(...bottoms.map(n=>n.z)):datum;
+        for(const [i,p] of webs.entries()){
+          const u=nodes.get(p.start)!,v=nodes.get(p.end)!;
+          book.dim(space,at(projection(u)),at(projection(v)),scale,
+            `ALTURA MONTANTE ${marks.get(p.id)}`,i%2===0?-7:7);
+        }
+        for(let i=1;i<webs.length;i++){
+          const u=nodes.get(webs[i-1].start)!,v=nodes.get(webs[i].start)!;
+          const a:P=[u[horizontal],bottomZ],b:P=[v[horizontal],bottomZ];
+          if(Math.abs(b[0]-a[0])>1e-5)book.dim(space,at(a),at(b),scale,"PAINEL ENTRE MONTANTES",-10);
+        }
+      }
+      if(dense)pendingNotes.push("PENDENTE: marcas densas; conferir tabela de peças.");
+      let noteY=rect.height-9;
+      for(const note of pendingNotes)for(const line of book.wrap(note,rect.width-8,1.75)){
+        book.text(space,[3,noteY],line,"PENDENCIAS",1.75);noteY-=3.1;
+      }
     });
   }
   const a=book.area,gap=12,half=(a.width-gap)/2;
@@ -270,13 +318,14 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const expanded=model.pieces.length>=28;
   const purlinPlan=expanded?book.add("TERCAS","Planta de terças e contraventamentos"):plans;
   const markingPage=expanded?book.add("MARCACAO","Planta de marcação de peças"):null;
-  const spacingPage=expanded?book.add("ESPACAMENTOS","Espaçamentos entre terças"):plans;
+  const spacingPage=distinct.length>=2?(expanded?book.add("ESPACAMENTOS","Espaçamentos entre terças"):plans):null;
   const elevations=book.add("ELEVACOES","Elevações e corte transversal");
   const sideElevation=expanded?book.add("ELEVACAO LATERAL","Elevação lateral"):elevations;
-  const crossSection=expanded?book.add("CORTE A-A","Corte transversal A-A"):elevations;
+  const hasMeaningfulSection=distinct.length>=2&&faces.length>0;
+  const crossSection=hasMeaningfulSection?(expanded?book.add("CORTE A-A","Corte transversal A-A"):elevations):null;
   const framePages=data.frameGroups.map((group,i)=>book.add(`${group[0].kind} ${i+1}`,`${group[0].kind==="TESOURA"?"Tesoura":"Pórtico"} — tipo ${i+1} (${group.length}×)`));
   const pendingFrame=!framePages.length?book.add("PORTICOS PENDENTE","Pórticos e tesouras — identificação pendente"):null;
-  const bases=book.add("BASES","Locação de bases e chumbadores");
+  const bases=supports.length?book.add("BASES","Locação de bases e chumbadores"):null;
   const notes=book.add("NOTAS","Notas gerais");
   const materialsPage=book.add("MATERIAIS","Lista de materiais e resumo por perfil");
   // The index now receives its own sheet after pagination. It never steals
@@ -290,7 +339,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     subtitle:"Marcas vinculadas à lista de materiais; espaçamentos projetados."});
   if(markingPage)drawing(markingPage,a,"Planta de marcação de peças","plan",
     {pieces:installed,showRoof:false,subtitle:"Peças instaladas no modelo; itens sem locação apenas na tabela de pendências."});
-  if(distinct.length>=2){
+  if(distinct.length>=2&&spacingPage){
     const ids=(point:P)=>purlins.filter(p=>{const c=cross(p);return c&&c[0]===point[0]&&c[1]===point[1];}).map(p=>marks.get(p.id)).join(" / ");
     book.table(spacingPage,expanded?a:{...a,height:35},"Espaçamentos entre terças no corte",["Marcas","Posição 1 / Z (mm)","Posição 2 / Z (mm)","Projeção (mm)","No corte (mm)"],distinct.slice(1).map((b,i)=>{
       const c=distinct[i];return [`${ids(c)} → ${ids(b)}`,`${num(c[0])} / ${num(c[1])}`,`${num(b[0])} / ${num(b[1])}`,num(b[0]-c[0]),num(Math.hypot(b[0]-c[0],b[1]-c[1]))];
@@ -300,7 +349,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const summaryOptions=expanded?{deduplicate:true,pieces:installed,subtitle:"Projeções coincidentes: marca representativa; todas as peças nas folhas individuais e na lista."}:{pieces:installed};
   drawing(elevations,expanded?a:{x:a.x,y:a.y+smallHeight+gap,width:half,height:smallHeight},"Elevação frontal","front",summaryOptions);
   drawing(sideElevation,expanded?a:{x:a.x,y:a.y,width:half,height:smallHeight},"Elevação lateral","side",expanded?{...summaryOptions,pieces:model.pieces.filter(p=>(p.role==="column"||p.role==="purlin"||isDeclaredBrace(p))&&!unlocated.has(p.id))}:{});
-  drawing(crossSection,expanded?a:{x:a.x+half+gap,y:a.y,width:half,height:a.height},"Corte A-A","cut",{pieces:installed});
+  if(crossSection)drawing(crossSection,expanded?a:{x:a.x+half+gap,y:a.y,width:half,height:a.height},"Corte A-A","cut",{pieces:installed});
   for(const [index,group] of data.frameGroups.entries()){
     const first=group[0],h=first.axis==="y"?"x":"y",page=framePages[index];
     const token=(frame:typeof first,p:CadPiece)=>{
@@ -312,14 +361,15 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       const positions=f.pieces.flatMap(p=>[nodes.get(p.start)![h],nodes.get(p.end)![h]]);
       return `eixo ${f.axis==="y"?ys.indexOf(f.coordinate)+1:axisLetter(xs.indexOf(f.coordinate))}; ${f.axis.toUpperCase()}=${num(f.coordinate)}; ${h.toUpperCase()}=${num(Math.min(...positions))} a ${num(Math.max(...positions))} mm`;
     });
-    drawing(page,{...a,width:a.width*.56},first.kind==="TESOURA"?"Elevação da tesoura":"Elevação do pórtico",first.axis==="y"?"front":"side",{pieces:first.pieces,showRoof:false,frame:true,aliases,
+    drawing(page,{...a,width:a.width*.69},first.kind==="TESOURA"?"Elevação da tesoura":"Elevação do pórtico",first.axis==="y"?"front":"side",{pieces:first.pieces,showRoof:false,frame:true,aliases,
       subtitle:`${group.length}× — peças correspondentes indicadas na tabela de identificação.`});
-    book.table(page,{x:a.x+a.width*.59,y:a.y,width:a.width*.41,height:a.height},"Identificação de peças",["Marca","Perfil","Qtd.","Locação"],first.pieces.map(p=>{
+    book.table(page,{x:a.x+a.width*.70,y:a.y,width:a.width*.30,height:a.height},"Identificação de peças",["Marca","Perfil","Qtd.","Locação"],first.pieces.map(p=>{
       const ids=aliases.get(p.id)??[p.id];return [ids.map(id=>marks.get(id)).join(" / "),profile(p.id),String(ids.length),locations.join("; ")];
-    }),[0,.2,.55,.64,1]);
+    }),[0,.19,.55,.65,1]);
   }
   if(pendingFrame)pendingFrame.draw.push(space=>book.wrapped(space,a,"PENDENTE: conjunto de pórtico ou tesoura não identificado em planos globais com conectividade declarada. Nenhuma peça, pilar ou vínculo foi inferido. As peças permanecem nas vistas gerais e na lista de materiais.",3,5,"PENDENCIAS"));
   const reactions=cadReactions(project,options.reactions),baseHeight=reactions.data?a.height*.53:a.height;
+  if(bases){
   drawing(bases,{x:a.x,y:a.y+a.height-baseHeight,width:half,height:baseHeight},"Locação de apoios","plan",{pieces:[],showRoof:false,bases:true,subtitle:"Coordenadas dos apoios declarados; não representa chapa ou fundação."});
   const typeNames:Record<string,string>={"steel-column":"Pilar metálico","existing-column":"Pilar existente","existing-beam":"Viga existente","concrete-beam":"Viga de concreto","concrete-column":"Pilar de concreto","masonry-wall":"Parede de alvenaria","foundation":"Fundação","wall":"Parede","beam":"Viga","column":"Pilar"};
   book.table(bases,{x:a.x+half+gap,y:a.y+a.height-baseHeight,width:half,height:baseHeight},"Posições de apoio",["Marca","Eixos","X / Y / Z (mm)","Vínculos / tipo"],supports.map(n=>{
@@ -331,6 +381,8 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   if(reactions.data)book.table(bases,{...a,height:a.height*.43},"Reações concomitantes por combinação — eixos globais",["Apoio","Combinação","Fx (kN)","Fy (kN)","Fz (kN)","Mx (kNm)","My (kNm)","Mz (kNm)"],reactions.data.rows.map(r=>[
     supportMarks.get(r.nodeId)!,r.combinationId,...r.force.map(n=>num(n/1000)),...r.moment.map(n=>num(n/1000))]),[0,.08,.28,.4,.52,.64,.76,.88,1],"REACOES");
   else bases.draw.push(space=>book.wrapped(space,{x:a.x+half+gap,y:a.y,width:half,height:10},reactions.status,2,3,"PENDENCIAS"));
+
+  }else trace.push("PENDENTE: nenhum apoio declarado; prancha de locação suprimida.");
   trace.push(reactions.status);
   const references=new Set<string>();
   const reference=(r:{standard:string;edition:string;clause:string;source:string;revision:string})=>{
@@ -360,7 +412,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     ...(project.technicalNotes.trim()?[`Observações declaradas: ${project.technicalNotes}`]:[]),
     "Unidades: geometria e cotas em milímetros; massas em quilogramas; reações em quilonewtons e quilonewtons-metro. Eixos globais X e Y; eixo Z positivo para cima.",
     "As vistas representam eixos de peças declaradas. As cotas prevalecem sobre a medição gráfica. Os comprimentos são medidos entre nós, sem descontos de fabricação ou lista de corte.",
-    "As marcas curtas ligam as vistas à lista de materiais: C — pilares; V — vigas; T — terças; BS e BI — banzos; D — barras auxiliares ou contraventamentos explicitamente identificados. A identificação não atribui contenção estrutural.",
+    "Marcas: C pilares, V vigas, T terças, BS/BI banzos, M montantes verticais; D exclusivamente diagonais e contraventamentos. Nenhuma marca atribui contenção estrutural.",
     "Pórticos e tesouras repetidos são agrupados somente quando geometria, perfis, materiais, orientações, vínculos e apoios declarados coincidem. A equivalência gráfica não equipara cargas ou aprovação.",
     `Aço declarado: ${[...steels].join("; ")}. As fontes e revisões constam na rastreabilidade. Informação ausente permanece PENDENTE.`,
     "Referências normativas declaradas no modelo; sua presença não comprova aplicação integral, revisão profissional ou homologação:",
@@ -368,13 +420,33 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     "PENDENTE DE PROJETO: bases, chumbadores, chapas, furos, soldas, contato, ligações e fundações. Símbolos de apoio indicam apenas posições; não representam detalhes executivos ou capacidade verificada.",
     reactions.data?"As reações apresentadas foram conferidas contra a entrada atual. Permanecem experimentais e não representam capacidades de apoios, ligações ou fundações.":reactions.status,
     "Responsável técnico, CREA e ART devem ser preenchidos pelo profissional responsável após conferência. Campos em branco não autorizam execução. Os bloqueios de aprovação estrutural e fabricação permanecem ativos.",
+    ...(!supports.length?["PENDENTE: sem apoios declarados; prancha de bases omitida, sem inventar fundações ou chumbadores."]:[]),
+    ...(distinct.length<2?["PENDENTE: sem espaçamentos/corte verificáveis; pranchas vazias omitidas."]:[]),
+    ...data.frames.flatMap(f=>f.visualOnlyContacts.map(c=>`PENDENTE: contato somente gráfico ${c} de ${f.kind}, tolerância de 7 mm, sem criar ligação estrutural.`)),
+    ...data.frames.flatMap(f=>f.omittedPieceIds.map(id=>`PENDENTE: ${id} do grupo ${f.kind} não entrou na elevação; conferir suas coordenadas.`)),
+    ...roofSlopeReviews.filter(r=>r.status==="PENDENTE").map(r=>`PENDENTE — INCLINAÇÃO: ${r.pieceId}/${r.faceId}, subida ${num(r.modelRiseMm)} mm vs face ${num(r.expectedRiseMm)} mm; ${r.relation}.`),
+    ...overallDimensionReviews.filter(r=>r.status==="PENDENTE").map(r=>`PENDENTE — COTA GERAL: eixo ${r.axis.toUpperCase()}, ${num(r.statedLengthMm)} mm declarados vs ${num(r.actualMm??0)} mm no contorno esquemático.`),
     ...(unlocated.size?[`PENDENTE: ${unlocated.size} peças sem locação retiradas do desenho e subtotal principal; conferir itens a confirmar.`]:[]),
     ...sourceDimensions.filter(r=>r.status==="PENDENTE").map(r=>`PENDENTE — DIVERGÊNCIA DIMENSIONAL ${r.pieceId}: cota fonte ${num(r.declaredMm)} mm, modelo ${r.actualMm===null?"não encontrado":num(r.actualMm)} mm, diferença ${r.discrepancyMm===null?"desconhecida":num(r.discrepancyMm)} mm; fonte ${r.source}.`)
 
   ],[...new Set(trace)].join(" | "));
+  // Material list is by interchangeable TYPE mark; every distinct original
+  // piece ID is retained individually in the trace/footer and CSV package.
+  const materialTypes=new Map<string,typeof takeoff.pieces>();
+  for(const p of takeoff.pieces.filter(p=>!unlocated.has(p.pieceId))){
+    const mark=marks.get(p.pieceId)!,g=materialTypes.get(mark)??[];g.push(p);materialTypes.set(mark,g);
+  }
   const detailHeight=a.height*.66;
-  const detailBottom=book.table(materialsPage,{...a,y:a.y+a.height-detailHeight,height:detailHeight},"Relação de peças",["Marca","Perfil declarado","Qtd.","Comprimento (mm)","Massa (kg/m)","Massa (kg)"],takeoff.pieces.filter(p=>!unlocated.has(p.pieceId)).map(p=>[
-    marks.get(p.pieceId)!,profile(p.pieceId),"1",num(p.lengthMm),p.massKg===null?"PENDENTE":num(p.massKg/(p.lengthMm/1000)),p.massKg===null?"PENDENTE":num(p.massKg)]),[0,.08,.42,.48,.66,.83,1]);
+  const detailBottom=book.table(materialsPage,
+    {...a,y:a.y+a.height-detailHeight,height:detailHeight},
+    "Relação de tipos de peças (IDs no quadro de rastreabilidade)",
+    ["Marca","Perfil","Qtd.","Compr. por peça mm","Massa kg/m","Massa total kg"],
+    [...materialTypes.entries()].map(([mark,group])=>{
+      const p=group[0],mass=group.some(v=>v.massKg===null)?null:group.reduce((v,q)=>v+q.massKg!,0);
+      return [mark,profile(p.pieceId),String(group.length),num(p.lengthMm),
+        mass===null?"PENDENTE":num(mass/(group.reduce((v,q)=>v+q.lengthMm,0)/1000)),
+        mass===null?"PENDENTE":num(mass)];
+    }),[0,.10,.42,.50,.70,.84,1]);
   const summary=new Map<string,{profile:string;quantity:number;length:number;mass:number|null}>();
   for(const p of takeoff.pieces.filter(p=>!unlocated.has(p.pieceId))){
     const assignment=draft?.physicalCatalog?.assignments.find(a=>a.pieceId===p.pieceId),key=JSON.stringify([assignment?.sectionId??p.sectionId??p.pieceId,assignment?.materialId??p.materialId??p.pieceId]);
@@ -389,11 +461,22 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     book.table(pendingPage,a,"Itens a confirmar",["Marca","ID peça","Perfil","Comprimento mm","Estado"],takeoff.pieces.filter(p=>unlocated.has(p.pieceId)).map(p=>[
       marks.get(p.pieceId)!,p.pieceId,profile(p.pieceId),num(p.lengthMm),"SEM LOCAÇÃO"]),[0,.1,.27,.64,.8,1],"PENDENCIAS");
   }
-  if(sourceDimensions.some(r=>r.status==="PENDENTE")){
-    const reviewPage=book.add("DIVERGENCIAS","Pendências de cotas do desenho");
-    book.table(reviewPage,a,"Divergências >2 mm",["Peça","Cota fonte mm","Modelo mm","Diferença mm","Ação"],sourceDimensions.filter(r=>r.status==="PENDENTE").map(r=>[
-      r.pieceId,num(r.declaredMm),r.actualMm===null?"PENDENTE":num(r.actualMm),
-      r.discrepancyMm===null?"PENDENTE":num(r.discrepancyMm),"CONFERIR"]),[0,.12,.32,.52,.73,1],"PENDENCIAS");
+  const dimensionalWarnings=sourceDimensions.filter(r=>r.status==="PENDENTE");
+  const slopeWarnings=roofSlopeReviews.filter(r=>r.status==="PENDENTE");
+  const envelopeWarnings=overallDimensionReviews.filter(r=>r.status==="PENDENTE");
+  if(dimensionalWarnings.length||slopeWarnings.length||envelopeWarnings.length){
+    const reviewPage=book.add("DIVERGENCIAS","Pendências geométricas do desenho");
+    const rows=[
+      ...dimensionalWarnings.map(r=>[r.pieceId,num(r.declaredMm),r.actualMm===null?"PENDENTE":num(r.actualMm),
+        r.discrepancyMm===null?"PENDENTE":num(r.discrepancyMm),"COTA DE PEÇA"]),
+      ...slopeWarnings.map(r=>[r.pieceId,`FACE ${r.faceId}`,num(r.modelRiseMm),
+        num(r.deltaMm),"INCLINAÇÃO PENDENTE"]),
+      ...envelopeWarnings.map(r=>[`EIXO ${r.axis.toUpperCase()}`,num(r.statedLengthMm),num(r.actualMm??0),
+        num(r.discrepancyMm??0),"COTA GERAL PENDENTE"]),
+    ];
+    book.table(reviewPage,a,"Divergências: cota fonte, modelo e inclinação; verificar antes de executar",
+      ["Peça/eixo","Declarado/face","Modelo/subida mm","Diferença mm","Ação"],rows,
+      [0,.13,.34,.57,.74,1],"PENDENCIAS");
   }
   const indexPage=book.add("INDICE","Índice geral de pranchas");
   book.table(indexPage,a,"Índice completo",["Folha","Conteúdo"],book.pages.map((p,i)=>[String(i+1),p.title]),[0,.1,1],"TEXTOS");

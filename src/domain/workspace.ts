@@ -20,6 +20,13 @@ export const workspaceSchema = z.object({
     revision: z.string().trim().min(1).max(200),
     note: z.string().max(500).default(""),
   }).strict()).max(1000).optional(),
+  /** Overall dimensions declared by a drawing, never inferred from CAD extents. */
+  overallDimensionChecks: z.array(z.object({
+    axis:z.enum(["x","y"]),
+    statedLengthMm:z.number().finite().positive().max(1000000),
+    source:z.string().trim().min(1).max(1000),
+    revision:z.string().trim().min(1).max(200),
+  }).strict()).max(10).optional(),
   roofOutline: roofOutlineSchema.optional(),
   guidedSupport: guidedSupportSchema.optional(),
   demonstration: demonstrationSchema.optional(),

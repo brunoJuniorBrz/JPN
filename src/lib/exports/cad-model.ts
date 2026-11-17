@@ -10,6 +10,15 @@ export type CadNode=NonNullable<Project["workspace"]["physicalStructure"]>["node
 export const axisLetter=(index:number):string=>{let s="";for(let n=index+1;n>0;n=Math.floor((n-1)/26))s=String.fromCharCode(65+(n-1)%26)+s;return s;};
 export const sortedCoordinates=(values:number[])=>[...new Set(values)].sort((a,b)=>a-b);
 export const isDeclaredBrace=(p:CadPiece)=>/contravent|brac|tirante/i.test(`${p.label??""} ${p.group??""}`);
+/** CAD-only contact search tolerance. A plotted touch NEVER creates a structural joint. */
+export const CAD_FRAME_CONTACT_TOLERANCE_MM=7;
+function pointNearSegment(p:CadNode,a:CadNode,b:CadNode,tolerance=CAD_FRAME_CONTACT_TOLERANCE_MM){
+  const dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L2=dx*dx+dy*dy+dz*dz;
+  if(L2<1e-8)return Math.hypot(p.x-a.x,p.y-a.y,p.z-a.z)<=tolerance;
+  const t=((p.x-a.x)*dx+(p.y-a.y)*dy+(p.z-a.z)*dz)/L2;
+  if(t<0||t>1)return false;
+  return Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy,p.z-a.z-t*dz)<=tolerance;
+}
 
 export function cadModel(project:Project){
   const resolved=resolvePhysicalStructure(project);
@@ -29,7 +38,7 @@ export function cadModel(project:Project){
   };
   const supports=(draft?.supports??[]).filter(s=>s.dofs.some(d=>d==="fixed")).flatMap(s=>nodes.has(s.nodeId)?[nodes.get(s.nodeId)!]:[]);
   const currentJunctions=draft?.connectivity?.geometrySignature===structureSignature(project)?draft.connectivity.junctions:[];
-  type Frame={axis:"x"|"y";coordinate:number;pieces:CadPiece[];kind:"TESOURA"|"PORTICO";key:string};
+  type Frame={axis:"x"|"y";coordinate:number;pieces:CadPiece[];kind:"TESOURA"|"PORTICO";key:string;visualOnlyContacts:string[];omittedPieceIds:string[];structuralStatus:"PENDENTE"|"DECLARED"};
   const frames:Frame[]=[];
   for(const axis of ["y","x"] as const){
     const planes=new Map<number,CadPiece[]>();
@@ -40,15 +49,30 @@ export function cadModel(project:Project){
       const members=planes.get(a[axis])??[];members.push(p);planes.set(a[axis],members);
     }
     for(const [coordinate,plane] of planes){
-      // Connectivity is explicit: common node IDs or a reviewed interior junction.
+      // Structural connectivity is explicit; CAD-only contacts are allowed
+      // for grouping elements in a VIEW, never for the calculation model.
+      const visualContact=(p:CadPiece,q:CadPiece)=>{
+        const chord=(p.role==="topChord"||p.role==="bottomChord")?p:
+          (q.role==="topChord"||q.role==="bottomChord")?q:null;
+        const web=chord===p?q:p;
+        if(!chord||web.role!=="web"||isDeclaredBrace(web))return false;
+        const a=nodes.get(chord.start)!,b=nodes.get(chord.end)!;
+        return [nodes.get(web.start)!,nodes.get(web.end)!].some(n=>pointNearSegment(n,a,b));
+      };
       const remaining=new Set(plane);
       while(remaining.size){
         const component:CadPiece[]=[remaining.values().next().value!];remaining.delete(component[0]);
+        const visualOnlyContacts=new Set<string>();
         for(let cursor=0;cursor<component.length;cursor++){
           const p=component[cursor];
           for(const q of remaining){
             const joint=currentJunctions.some(j=>j.decision==="connect"&&j.pieceIds.includes(p.id)&&j.pieceIds.includes(q.id));
-            if([p.start,p.end].some(id=>id===q.start||id===q.end)||joint){component.push(q);remaining.delete(q);}
+            const sharedNode=[p.start,p.end].some(id=>id===q.start||id===q.end);
+            const plottedContact=!sharedNode&&!joint&&visualContact(p,q);
+            if(sharedNode||joint||plottedContact){
+              component.push(q);remaining.delete(q);
+              if(plottedContact)visualOnlyContacts.add([p.id,q.id].sort().join(" / "));
+            }
           }
         }
         const h=axis==="y"?"x":"y",ns=component.flatMap(p=>[nodes.get(p.start)!,nodes.get(p.end)!]);
@@ -72,7 +96,15 @@ export function cadModel(project:Project){
             ends.start!=="pending"&&ends.end!=="pending";
         });
         const kind=component.some(p=>p.role==="bottomChord")&&component.some(p=>p.role==="topChord")?"TESOURA":"PORTICO";
-        frames.push({axis,coordinate,pieces:component,kind,key:known?JSON.stringify({axis,normalized,boundary}):`unknown:${axis}:${coordinate}:${component[0].id}`});
+        const relatedGroups=new Set(component.filter(p=>p.role==="topChord"||p.role==="bottomChord").map(p=>p.group).filter(Boolean));
+        const omittedPieceIds=plane.filter(p=>p.role==="web"&&p.group&&relatedGroups.has(p.group)&&!component.includes(p)).map(p=>p.id);
+        // This signature is a GRAPHIC TYPE ONLY; neither missing joints nor
+        // unknown supports are silently promoted to structural equivalence.
+        // Unknown conditions remain identical tokens in the signature.
+        const key=JSON.stringify({axis,normalized,boundary,kind});
+        frames.push({axis,coordinate,pieces:component,kind,key,
+          visualOnlyContacts:[...visualOnlyContacts],omittedPieceIds,
+          structuralStatus:known?"DECLARED":"PENDENTE"});
       }
     }
   }
