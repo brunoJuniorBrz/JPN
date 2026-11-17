@@ -79,8 +79,21 @@ with (OUT/"medicoes-cad.json").open("w") as f:
       "limits":["Ocupação por bbox de perfis/cobertura na viewport; não equivale a área real das peças",
        "Teste de balões verifica círculos e cruzamento estrito de linhas MARCAS; anotações e cotas requerem verificação visual",
        "Geometria Tom esquemática, sem validação de apoios, ligações ou elevação real"]},f,ensure_ascii=False,indent=2)
+baseline=Path("validation/tom-2026/cad-pr141-before-metrics.json")
+if baseline.exists():
+    before=json.loads(baseline.read_text("utf-8"))
+    after=next((r for r in metrics if r["layout"]=="PLANTAS"),None)
+    comparison={"baseline":before["sheet1"],"after":after,
+      "area_definition":"bbox das linhas PERFIS+COBERTURA em cada viewport; base comparável por viewport"}
+    (OUT/"comparativo-cad-antes-depois.json").write_text(
+      json.dumps(comparison,indent=2,ensure_ascii=False),encoding="utf-8")
 with (OUT/"medicoes-cad.csv").open("w",newline="") as f:
     w=csv.DictWriter(f,fieldnames=list(metrics[0]),delimiter=";");w.writeheader();w.writerows(metrics)
+principal=[r for r in metrics if r["layout"]=="PLANTAS"]
+assert len(principal)==1, "Esperada uma vista principal de cobertura isolada na prancha de plantas"
+assert principal[0]["ocupacao_geometria_percent"]>=50, (
+    "Planta ocupa menos de 50% da área útil A3: "+str(principal[0])
+)
 assert all(r["cruzamentos_lideres"]==0 for r in metrics), "Cruzamento de leaders na impressão"
 assert all(r["sobreposicoes_baloes"]==0 for r in metrics), "Balões colidem na impressão"
 assert all(r["sobreposicoes_textos"]==0 for r in metrics), "Textos MARCAS colidem na impressão"
