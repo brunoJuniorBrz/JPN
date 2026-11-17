@@ -37,12 +37,13 @@ it("caso B: 5,740 / 11,480 kN contra 8,0 / 15,0 kN -> 0,718 e 0,765; ELU-W gover
   for(const id of ["N1","N3"]){
     expect(by[id].pullout.demandKn).toBeCloseTo(5.740,9);expect(by[id].pullout.declaredCapacity!.origin).toBe("anchor-type");
     expect(by[id].pullout.ratio!).toBeCloseTo(0.718,3);expect(by[id].pullout.status).toBe("within-declared-capacity");
-    expect(by[id].pullout.governingCombinationId).toBe("ELU-W");expect(by[id].critical).toBe(false);
+    expect(by[id].pullout.governingCombinationId).toBe("ELU-W");expect(by[id].critical).toBe(true);
+    expect(by[id].issues.join()).toMatch(/ANCHOR_CAPACITY_SCOPE_PENDING/);
   }
   expect(by.N2.pullout.demandKn).toBeCloseTo(11.480,9);expect(by.N2.pullout.declaredCapacity!.origin).toBe("support");
   expect(by.N2.pullout.ratio!).toBeCloseTo(0.765,3);expect(by.N2.critical).toBe(true);
   expect(a.governingSupport).toEqual({nodeId:"N2",ratio:by.N2.pullout.ratio,combinationId:"ELU-W"});
-  expect(a.studioStatus).toEqual({N1:"ok",N2:"governing",N3:"ok"});
+  expect(a.studioStatus).toEqual({N1:"pending",N2:"governing",N3:"pending"});
   // compression is informed with declared capacity only (masonry resistance is N10)
   expect(by.N2.compression.demandKn).toBeCloseTo(6.2,9);expect(by.N2.compression.ratio!).toBeCloseTo(6.2/40,12);
   expect(by.N1.compression.status).toBe("capacity-pending");
@@ -93,7 +94,7 @@ it("A1 / HC-C: com os dois conjuntos de permanentes o arrancamento é 5,86 kN (1
   expect(a.favorablePermanentSet).toBe("present");
   expect(s.pullout.demandKn).toBeCloseTo(5.86,9);expect(s.pullout.ratio!).toBeCloseTo(0.7325,9);
   expect(a.favorableCombinationIds).toContain(s.pullout.governingCombinationId);
-  expect(s.issues).toEqual([]);expect(a.studioStatus.N1).toBe("governing");
+  expect(s.issues.join()).toMatch(/ANCHOR_CAPACITY_SCOPE_PENDING/);expect(a.studioStatus.N1).toBe("pending");
   expect(a.computedStructuralApproval).toBe(false);expect(a.fabricationRelease).toBe(false);expect(a.releaseGate).toBe("NOT_READY_BLOCKED");
 });
 

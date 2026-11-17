@@ -210,6 +210,9 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
     const issues=[
       ...(face.anchorTypeId&&!type?["ANCHOR_TYPE_MISSING: tipo "+face.anchorTypeId+" não declarado."]:[]),
       ...(pullout.status==="capacity-pending"?["ANCHOR_CAPACITY_PENDING: declare a capacidade de cálculo à tração (ficha do fabricante) para "+face.nodeId+"."]:[]),
+      // A5: a type catalogue value may be PER ANCHOR, while the reaction is PER SUPPORT.
+      // Without a typed, engineer-reviewed basis and group distribution, never show an OK for this comparison.
+      ...(pullout.declaredCapacity?.origin==="anchor-type"?["ANCHOR_CAPACITY_SCOPE_PENDING: capacidade do tipo não distingue chumbador individual de conjunto do apoio; exigir definição e revisão profissional."]:[]),
       ...(!validULS?["ANCHOR_ULS_COMBINATIONS_UNVERIFIED: nenhuma envoltória ELU completa e rastreada; não emitir demanda, razão nem comparação como ELU. "+
         (missingResults.length?"Resultados ausentes: "+missingResults.join(", ")+". ":"")+
         (nonULS.length?"Finalidade incompatível: "+nonULS.join(", ")+".":"")]:[]),

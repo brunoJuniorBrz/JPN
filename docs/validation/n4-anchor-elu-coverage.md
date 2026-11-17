@@ -15,3 +15,8 @@ Regressões no `src/domain/anchor-pullout.test.ts` abrangem HC-C, fraude da comb
 Pendentes com engenheiro: Cpi mais nocivo (A2), resistência do chumbador (A4), capacidade por chumbador ou por apoio (A5) e cinco interpretações da revisão NBR 8681.
 
 Sem liberação: `computedStructuralApproval=false`, `fabricationRelease=false`, `NOT_READY_BLOCKED`.
+
+
+## A5 — Capacidade de tipo versus capacidade de apoio
+
+O contrato de tipo de ancoragem ainda não discrimina numericamente a capacidade **por chumbador** da capacidade verificada **por conjunto do apoio**. Comparar diretamente a reação do apoio com um tipo de catálogo pode induzir falsa aprovação. Por isso, enquanto não houver declaração estruturada, inspeção e distribuição de esforços revisadas, valores provenientes de `anchorTypeId` permanecem `ANCHOR_CAPACITY_SCOPE_PENDING` e o Studio exibe **PENDENTE**, ainda que a razão isolada seja inferior a 1. Capacidade explicitamente declarada por apoio é tratada em separado, mantendo as demais limitações da revisão técnica.
