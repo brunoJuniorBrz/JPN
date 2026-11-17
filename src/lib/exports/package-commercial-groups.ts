@@ -30,5 +30,5 @@ export function declaredCommercialGroups(project:Project){
 /** Explicit 'not located / to confirm' classification; never infer that all
  * beams or bars with a particular role are unapproved commercial scope. */
 export function isUnlocatedCommercialPiece(p:{group?:string;label?:string}){
-  return /SEM[\\s_-]*LOCA[CÇ][AÃ]O|A[\\s_-]*CONFIRMAR|UNLOCATED/i.test(`${p.group??""} ${p.label??""}`);
+  return /SEM[-_ ]*LOCA[CÇ][AÃ]O|A[-_ ]*CONFIRMAR|UNLOCATED/i.test(`${p.group??""} ${p.label??""}`);
 }
