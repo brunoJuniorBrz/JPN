@@ -29,7 +29,8 @@ Mão de obra: zero nos dois (não informada).
 ## Achados
 
 1. **Terças:** o plano de corte do JPN fecha nas mesmas 20 barras (emendas sobre os apoios: 14,28 = 4,51+4,51+5,26). Correto no Alan.
-2. **Telhas:** o total linear coincide, mas o Alan pediu pelo comprimento em planta (5,38; 2,71; 3,78; 2,65…). Com a inclinação e o avanço na calha, a peça do corpo principal precisa ter ~5,52 m. As 9 telhas de 5,38 chegariam ~14 cm curtas (reposição ≈ R$ 1.739). O JPN distribui a mesma metragem em comprimentos corretos e dispensa a telha extra de 3,78.
+2. **Telhas:** o total linear coincide. O Alan orçou pelo comprimento em planta (5,38; 2,71; 3,78; 2,65…); o JPN, pelo comprimento inclinado + 0,10 m de avanço na calha (~5,52 m na peça maior).
+   **Retorno de campo do Tom (17/11):** sem problema na obra. Ele orça pela medida cheia da planta e, antes de pedir, mede de novo na obra já com a calha instalada; a medida real *sempre dá menos* que a da planta. Conclusão: a medida de planta funciona como teto de orçamento, e o "telha curta" não se confirmou. Para o JPN: (a) orçamento pode usar a medida cheia (margem a favor); (b) falta uma etapa de **medição na obra** que gera a lista final de pedido das telhas.
 3. **Tesouras:** 2 vigas como desenhadas (sem diagonais) + 4 peças avulsas = 42,0 m de U → 8 barras. As 6 barras do Alan (36 m) só fecham se as peças avulsas não forem desse perfil. Confirmar com o Tom. Viga monoinclinada sem diagonais também precisa ser verificada pelo motor.
 4. **Itens zerados ou ausentes:** a fixação nas paredes estava listada com quantidade vazia; calha e rufo não aparecem. São esses itens que fazem o orçamento real ficar 26–39% acima.
 5. **Consumíveis (fora do motor):** 40 discos e 20 kg de eletrodo para ~590 kg de aço parecem altos. Vale conferir com quem solda.

@@ -10,7 +10,7 @@ describe("Tom × JPN — quantitativo próprio vs orçamento do Alan (estimativa
   it("telhas no comprimento inclinado + avanço na calha: mesmo total linear, peças mais longas que as do Alan", () => {
     const s = sheetTakeoff();
     expect(s.linearM).toBeCloseTo(107.65, 2);
-    expect(s.faces[0].lengthM).toBeCloseTo(5.52, 2); // Alan pediu 5,38
+    expect(s.faces[0].lengthM).toBeCloseTo(5.52, 2); // teto teórico; Tom mede na obra antes de pedir e sempre dá menos
     expect(s.faces[0].purlinLines).toBe(5);
     expect(s.faces[1].purlinLines).toBe(3);
   });
