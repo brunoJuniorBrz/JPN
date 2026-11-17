@@ -26,6 +26,14 @@ export function CompletePackageControl({project,onChange,beforeExport}:{project:
     }catch(e){setError(e instanceof Error?e.message:"Não foi possível gerar o pacote.");}finally{setBusy(false);}
   }
   const changeCutting=(key:"kerfMm"|"endTrimMm"|"minimumRemnantMm",value:number|null)=>onChange({workspace:{...project.workspace,cutting:{...project.workspace.cutting,[key]:value}}});
+  const changeSourceDimension=(pieceId:string,value:number|null)=>{
+    const items=(project.workspace.dimensionalChecks??[]).filter(v=>v.pieceId!==pieceId);
+    if(value!==null)items.push({pieceId,statedLengthMm:value,
+      source:"Cota informada manualmente pelo usuário na exportação CAD",
+      revision:project.workspace.physicalStructure?.revision??String(project.roof.revision),
+      note:"Conferir diferença entre cota de origem e comprimento geométrico entre nós"});
+    onChange({workspace:{...project.workspace,dimensionalChecks:items}});
+  };
   return <section aria-label="Pacote completo de documentação" data-testid="complete-package-control">
     <h4>Pacote completo de documentação</h4>
     <p>AutoCAD, PDF das mesmas pranchas, materiais CSV, memorial e simulação de corte em um ZIP. Documentos preliminares para conferência.</p>
@@ -43,6 +51,16 @@ export function CompletePackageControl({project,onChange,beforeExport}:{project:
         </div>)}
       {!project.workspace.physicalStructure&&<p>Comprimentos comerciais: usados conforme os perfis cadastrados na etapa Estrutura.</p>}
     </details>
+    {project.workspace.physicalStructure&&<details>
+      <summary>Cotas da planta para conferência (opcional)</summary>
+      <p>Informe a medida declarada para comparar com o comprimento geométrico entre nós. Divergências superiores a 2 mm aparecem como PENDENTE nas pranchas e documentos. Isso não libera fabricação.</p>
+      <div className="form-grid">
+        {project.workspace.physicalStructure.pieces.map(p=><NumberField key={p.id}
+          label={`Cota informada (mm): ${p.id}`}
+          value={project.workspace.dimensionalChecks?.find(v=>v.pieceId===p.id)?.statedLengthMm??null}
+          min={0.001} max={1000000} onChange={v=>changeSourceDimension(p.id,v)}/>)}
+      </div>
+    </details>}
     <button type="button" className="button" disabled={busy||!!geometryError} onClick={()=>void generate()}>{busy?"Gerando pacote…":"Exportar pacote completo"}</button>
     {busy&&<p role="status">Gerando pranchas e documentos desta revisão…</p>}
     {(error||geometryError)&&<p role="alert">{error||geometryError}</p>}
