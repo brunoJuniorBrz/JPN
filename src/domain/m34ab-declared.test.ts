@@ -1,5 +1,7 @@
 import { afterAll,afterEach,beforeEach,expect,it,vi } from "vitest";
-import { readFileSync,writeFileSync } from "node:fs";
+import { mkdtempSync,readFileSync,writeFileSync,rmSync,rmdirSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import * as generator from "./calculations/structure";
 import { structureSignature,captureRevision } from "./calculations/project-basis";
 import { adaptMixedProject } from "./mixed-adapter";
@@ -19,6 +21,9 @@ import { adaptSpatialProject } from "./geometric-physical-adapter";
 import { trussGeometry } from "./analysis";
 
 const oracle=JSON.parse(readFileSync("validation/m34ab/analytic-reference.json","utf8"));
+const resultsReferencePath="validation/m34ab/analytic-results.json";
+const resultsReferenceBytes=readFileSync(resultsReferencePath);
+const resultsReference=JSON.parse(resultsReferenceBytes.toString("utf8"));
 const records:unknown[]=[];
 beforeEach(()=>{vi.spyOn(generator,"generateStructure").mockImplementation(()=>{throw Error("FORBIDDEN_GENERATOR_CALL: declared structure must be independent");});});
 afterEach(()=>{vi.restoreAllMocks();vi.unstubAllEnvs();});
@@ -162,4 +167,39 @@ it.each(["wind","roof","distribution"])("blocks unsupported declared loading bef
   expect(generator.generateStructure).not.toHaveBeenCalled();
 });
 
-afterAll(()=>{if(records.length)writeFileSync("validation/m34ab/analytic-results.json",JSON.stringify({schema_version:"jpn.m34ab-results/1",tolerance:oracle.tolerance,records},null,2)+"\n");});
+afterAll(()=>{
+  expect(readFileSync(resultsReferencePath)).toEqual(resultsReferenceBytes);
+  if(!records.length)return;
+  const directory=mkdtempSync(join(tmpdir(),"jpn-m34ab-")),output=join(directory,"analytic-results.json");
+  try{
+    writeFileSync(output,JSON.stringify({schema_version:"jpn.m34ab-results/1",tolerance:oracle.tolerance,records},null,2)+"\n");
+    const actual=JSON.parse(readFileSync(output,"utf8"));
+    expect(actual.schema_version).toBe(resultsReference.schema_version);
+    expect(actual.tolerance).toEqual(resultsReference.tolerance);
+    expect(actual.records).toHaveLength(resultsReference.records.length);
+    for(const [index,record] of actual.records.entries()){
+      const reference=resultsReference.records[index];
+      expect(record.changedFirstSection).toBe(reference.changedFirstSection);
+      expect(record.computedStructuralApproval).toBe(reference.computedStructuralApproval);
+      expect(record.fabricationRelease).toBe(reference.fabricationRelease);
+      // Compare physical results with the original tolerances. Input hashes and
+      // floating-point error diagnostics belong to each individual execution;
+      // their freshness/equilibrium checks above remain unchanged.
+      for(const key of ["tipX","tipZ","tipRY","axialY"]){
+        expect(record.comparison[key].expected).toBe(reference.comparison[key].expected);
+        near(record.comparison[key].calculated,reference.comparison[key].calculated,oracle.tolerance.absolute_displacement_m);
+      }
+      for(const key of ["reactions","moments"]){
+        expect(record.comparison[key]).toHaveLength(reference.comparison[key].length);
+        for(const [i,value] of record.comparison[key].entries()){
+          expect(value.expected).toBe(reference.comparison[key][i].expected);
+          near(value.calculated,reference.comparison[key][i].calculated,oracle.tolerance.absolute_force_n);
+        }
+      }
+    }
+    expect(readFileSync(resultsReferencePath)).toEqual(resultsReferenceBytes);
+  }finally{
+    rmSync(output,{force:true});
+    rmdirSync(directory);
+  }
+});
