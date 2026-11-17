@@ -106,7 +106,7 @@ export async function createCompletePackage(input:Project,options:PackageOptions
       costCombinedCents:price===null?null:g.bars.length*price};
   })??[];
   const sumKnown=(key:"costMainCents"|"costCombinedCents")=>
-    commercial.every(g=>g[key]!==null)?commercial.reduce((a,g)=>a+g[key]!,0):null;
+    commercial.length&&commercial.every(g=>g[key]!==null)?commercial.reduce((a,g)=>a+g[key]!,0):null;
   const doc=new jsPDF({unit:"mm",format:"a4"}),estimate=calculateEstimate(project);
   const table=(title:string,head:string[],body:(string|number)[][])=>{
     if(doc.getNumberOfPages()>1||title!=="Memorial de quantitativos")doc.addPage();
@@ -119,7 +119,7 @@ export async function createCompletePackage(input:Project,options:PackageOptions
     ["Parâmetros",JSON.stringify(project.workspace.physicalStructure?{revision:takeoff.modelRevision}:project.roof)],
     ["Premissas informadas",project.planning?.specificationNotes||"PENDENTE"],["Peças",takeoff.totals.quantity],["Comprimento geométrico m",takeoff.totals.lengthM],
     ["Massa total kg",takeoff.totals.massKg??"PENDENTE"],["Corte",`${cutting?"First Fit Decreasing; heurístico, sem prova de mínimo global":"INDISPONÍVEL"}; ${project.workspace.cutting.useFabrication?"comprimentos finais declarados":"comprimentos geométricos"}`],
-    ["Configuração do corte",JSON.stringify(project.workspace.cutting)],["Custos",`Materiais conhecidos: ${estimate.materialsCents/100} BRL; custo total conhecido: ${estimate.totalCostCents/100} BRL. ${estimate.pending.length?"Orçamento incompleto; ver pendências.":"Conforme orçamento atual."}`],
+    ["Configuração do corte",JSON.stringify(project.workspace.cutting)],["Custos",`Cadastro comercial existente (PODE incluir itens sem locação): materiais conhecidos ${estimate.materialsCents/100} BRL; total conhecido ${estimate.totalCostCents/100} BRL. Subtotal de barras PRINCIPAL: ${sumKnown("costMainCents")===null?"PENDENTE":(sumKnown("costMainCents")!/100).toFixed(2)} BRL; cenário COM itens a confirmar: ${sumKnown("costCombinedCents")===null?"PENDENTE":(sumKnown("costCombinedCents")!/100).toFixed(2)} BRL. Os subtotais de barras não incluem itens sem preço declarado ou demais componentes da obra.`],
   ]);
   table("Resumo de materiais",["Perfil/material","Qtd.","m","kg"],takeoff.groups.map(g=>[g.label,g.quantity,g.lengthM,g.massKg??"PENDENTE"]));
   if(cutting)table("Plano de corte - simulação heurística",["Perfil/barra","Peças e cortes mm","Serra / pontas mm","Sobra / reutilizável mm"],cutting.groups.flatMap(g=>g.bars.map(b=>[
