@@ -129,7 +129,7 @@ def evidence(purlin_results=None, truss_results=None):
 def test_tom_u75e_isolated_purlin_real_jpn_mechanics_and_limits():
     s=section("Ue")
     collected=[]
-    for q in (100.,250.):
+    for q in (100.,250.,500.):
         output=analyze_frame3d(purlin(q))
         r=output["combinations"]["Q-TEST"]
         station=r["members"]["T1"]["stations"][2]
@@ -142,14 +142,17 @@ def test_tom_u75e_isolated_purlin_real_jpn_mechanics_and_limits():
         collected.append(dict(q_n_m=q,midspan_deflection_mm=round(1000*analytic,4),
             max_bending_moment_nm=round(q*L**2/8,4),
             span_m=L,assumed_clear_span=True,engine_adapter=output["solver"]["adapter"]))
-    # 500 N/m exceeds the ENGINE'S experimental linear-domain motion threshold,
-    # not a Brazilian-code SLS resistance/deformation limit.
+    # JPN's FRAME3D guard checks NODAL motion, but not midspan displacement:
+    # q=500 N/m has >1% span deflection and is nevertheless returned.
+    # q=700 N/m crosses the nodal rotation guard and must be rejected.
+    assert collected[-1]["midspan_deflection_mm"] > L*10
     with pytest.raises(AnalysisError) as exc:
-        analyze_frame3d(purlin(500.))
+        analyze_frame3d(purlin(700.))
     assert exc.value.code == "MODEL_LIMIT"
     evidence(purlin_results=dict(hypothetical_loads=collected,
-        q500_engine_status="MODEL_LIMIT",q500_analytic_mm=round(1000*5*500*L**4/(384*E*s["iy_m4"]),4),
-        note="JPN motion guard is not a normative pass/fail. Clear span and profile orientation unverified."))
+        q500_engine_status="returned_even_though_midspan_exceeds_one_percent_span",
+        q700_engine_status="MODEL_LIMIT_on_nodal_rotation",
+        note="GAP: frame3d/2 lacks interior station motion guard; not a normative limit, but important experimental-domain inconsistency. Clear span unverified."))
 
 
 def test_tom_no_diagonals_experimental_frame_equilibrium_only():
