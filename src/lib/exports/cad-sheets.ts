@@ -85,6 +85,10 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       const at=(p:P):P=>[originX+(p[0]-minX)/scale,originY+(p[1]-minY)/scale];
       const subtitle=opts.subtitle??(view==="cut"?`Corte ${cutAxis.toUpperCase()}=${num(sectionPosition)} mm; representação por eixos.`:`Referência de altura Z=${num(datum)} mm.`);
       book.text(space,[2,rect.height-4],subtitle,"TEXTOS",1.8);
+      const disputed=pieces.filter(p=>dimensionByPiece.get(p.id)?.status==="PENDENTE");
+      if(disputed.length)book.text(space,[2,rect.height-9],
+        `PENDENTE — DIVERGÊNCIA DIMENSIONAL: ${disputed.map(p=>p.id).join(", ")} (detalhes na folha própria)`,"PENDENCIAS",1.8);
+
       book.graphicScale(space,[rect.width-56,3],scale);
       const occupied:{x:number;y:number;width:number;height:number}[]=[];
       const reservedLabels:CadRect[]=[];
