@@ -1,0 +1,88 @@
+{
+  "schema_version": "jpn.tom-2026-reconstruction/1",
+  "case_id": "tom-metal-cover-nov2026",
+  "status": "estimate_only",
+  "description": "Reconstrução geométrica da obra do Tom a partir da planta do arquiteto e da prancha do Alan, para o JPN gerar o próprio quantitativo e comparar com o orçamento do Alan. NÃO é modelo estrutural aprovado; nenhuma peça foi dimensionada.",
+  "assumptions": {
+    "slope_percent": 12,
+    "slope_note": "Prancha do Alan: montantes 0,30→0,83 a cada 1,34 m ≈ 12–13%. Planta do arquiteto pede 10% (fibrocimento). Para TR25 alguns fabricantes sugerem mínimo de 12%.",
+    "sheet": "TR25 0,43 mm",
+    "sheet_useful_width_m": 1.02,
+    "sheet_useful_width_note": "Catálogos TR25 do mercado: 1,020–1,025 m úteis.",
+    "sheet_gutter_projection_m": 0.10,
+    "purlin_spacing_m": 1.34,
+    "fasteners_per_sheet_per_purlin": 4,
+    "stitch_spacing_m": 0.5,
+    "stock_length_m": 6,
+    "kerf_mm": 3,
+    "end_trim_mm": 5,
+    "minimum_remnant_mm": 300
+  },
+  "faces": [
+    { "id": "F1", "name": "Corpo principal — trecho superior", "run_m": 5.38, "width_m": 9.02 },
+    { "id": "F2", "name": "Corpo principal — trecho inferior exposto", "run_m": 2.71, "width_m": 5.26 },
+    { "id": "F3", "name": "Bloco central", "run_m": 3.78, "width_m": 5.48 },
+    { "id": "F4", "name": "Bloco esquerdo", "run_m": 2.65, "width_m": 5.06 },
+    { "id": "F5", "name": "Faixa de ligação", "run_m": 1.13, "width_m": 1.88 },
+    { "id": "F6", "name": "Recorte", "run_m": 0.49, "width_m": 1.38 }
+  ],
+  "purlin_pieces": {
+    "profile": "Ue 75x40x15x2,65",
+    "kg_per_m": 3.68,
+    "note": "Linhas da prancha do Alan, emendadas sobre os apoios: 14,28 = 4,51+4,51+5,26 (3 linhas); 9,02 = 4,51+4,51 (2 linhas); 7,96 dividida em 2×3,98 (ponto de emenda a confirmar).",
+    "pieces": [
+      { "length_m": 4.51, "count": 10 },
+      { "length_m": 5.26, "count": 3 },
+      { "length_m": 5.48, "count": 3 },
+      { "length_m": 5.06, "count": 2 },
+      { "length_m": 1.88, "count": 2 },
+      { "length_m": 3.98, "count": 2 }
+    ]
+  },
+  "truss_pieces": {
+    "profile": "U 75x40x2,65",
+    "kg_per_m": 3.11,
+    "note": "2 vigas/tesouras monoinclinadas como desenhadas pelo Alan (banzo inferior 5,37, superior 5,41, montantes 0,30/0,48/0,65/0,83/1,01, sem diagonais no desenho) + 4 peças avulsas da prancha, 1 de cada (quantidade não informada).",
+    "pieces": [
+      { "length_m": 5.37, "count": 2 },
+      { "length_m": 5.41, "count": 2 },
+      { "length_m": 0.30, "count": 2 },
+      { "length_m": 0.48, "count": 2 },
+      { "length_m": 0.65, "count": 2 },
+      { "length_m": 0.83, "count": 2 },
+      { "length_m": 1.01, "count": 2 },
+      { "length_m": 5.08, "count": 1 },
+      { "length_m": 2.41, "count": 1 },
+      { "length_m": 3.48, "count": 1 },
+      { "length_m": 2.95, "count": 1 }
+    ]
+  },
+  "supports": {
+    "count": 30,
+    "note": "26 pontas de terça/viga apoiadas em parede + 4 apoios das 2 tesouras.",
+    "anchors_per_support": 2,
+    "anchor_length_m": 0.15,
+    "threaded_rod_stock_m": 1
+  },
+  "flashing": {
+    "gutter_m": 22.8,
+    "gutter_note": "Bordas baixas: 9,02 + 5,48 (compartilhada com o trecho inferior) + 5,06 + 1,88 + 1,38.",
+    "flashing_m": 45,
+    "flashing_note": "Bordas altas e laterais contra platibanda; estimativa ±10 m até o lançamento das faces no 3D.",
+    "sealant_tubes": 6
+  },
+  "prices_cents": {
+    "purlin_bar": 15500,
+    "truss_bar": 13500,
+    "sheet_per_m": 3500,
+    "fastener": 60,
+    "threaded_rod_bar": 1320,
+    "nut": 25,
+    "washer": 35,
+    "sealant_tube": 2042,
+    "flashing_per_m_low": 2919,
+    "flashing_per_m_low_source": "SINAPI 05/2026 insumo 1110, calha platibanda chapa 26 corte 45 (material)",
+    "flashing_per_m_high": 4730,
+    "flashing_per_m_high_source": "Larpontual, out/2026, São Paulo: material de calha/rufo chapa 24 (sem mão de obra)"
+  }
+}
