@@ -1,13 +1,21 @@
 import {type DxfWriter,point3d} from "@tarikjabiri/dxf";
 import type {Project} from "@/domain/models";
-import {CadBook,CAD_NOTICE,cadNumber as num,cleanCadText,type PaperFormat,type Point2 as P} from "./cad-book";
+import {CadBook,CAD_NOTICE,cadNumber as num,type PaperFormat,type Point2 as P,type CadRect,type CadPage} from "./cad-book";
 import {cadModel,cadReactions,axisLetter,sortedCoordinates as unique,isDeclaredBrace,type CadPiece,type CadReactionReceipt} from "./cad-model";
 export {CAD_NOTICE};
 export type CadExportOptions={format?:PaperFormat;reactions?:CadReactionReceipt};
 
 export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,options:CadExportOptions={}){
   const data=cadModel(project),{model,draft,takeoff,nodes,profile,supports,xs,ys}=data;
-  const book=new CadBook(dxf,options.format??"A3",project.name,model.revision,issuedAt);
+  const book=new CadBook(dxf,options.format??"A3",project.name,model.revision,issuedAt,Math.max(...model.nodes.map(n=>n.x)));
+  const counters=new Map<string,number>(),marks=new Map<string,string>();
+  for(const p of [...model.pieces].sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}))){
+    const prefix=isDeclaredBrace(p)?"D":({column:"C",beam:"V",purlin:"T",topChord:"BS",bottomChord:"BI",web:"D"} as const)[p.role];
+    const n=(counters.get(prefix)??0)+1;counters.set(prefix,n);marks.set(p.id,`${prefix}${n}`);
+  }
+  const supportMarks=new Map(supports.map((n,i)=>[n.id,`AP${i+1}`]));
+  const trace:string[]=[`Obra=${project.id}; revisão=${model.revision}; origem=${model.provenance}`,
+    ...model.pieces.map(p=>`${marks.get(p.id)}=${p.id}`),...supports.map(n=>`${supportMarks.get(n.id)}=${n.id}`)];
   const datum=Math.min(...(supports.length?supports:model.nodes).map(n=>n.z));
   const faces=draft?.physicalRoofFaces?.faces??[],roof=faces.flatMap(f=>f.outer.map(([x,y,z])=>({x,y,z})));
   const ridge=faces.flatMap((f,i)=>faces.slice(i+1).flatMap(g=>{
@@ -30,44 +38,63 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const distinct=crossings.filter((p,i)=>!i||p.some((v,k)=>v!==crossings[i-1][k]));
 
   type View="plan"|"front"|"side"|"cut";
-  type DrawOptions={pieces?:CadPiece[];showRoof?:boolean;bases?:boolean;subtitle?:string;aliases?:Map<string,string[]>;frame?:boolean};
-  function drawing(name:string,view:View,opts:DrawOptions={}){
+  type DrawOptions={pieces?:CadPiece[];showRoof?:boolean;bases?:boolean;subtitle?:string;aliases?:Map<string,string[]>;frame?:boolean;tercas?:boolean};
+  function drawing(page:CadPage,rect:CadRect,name:string,view:View,opts:DrawOptions={}){
     const pieces=opts.pieces??model.pieces,showRoof=opts.showRoof??true;
     const horizontal=view==="side"?"y":view==="cut"?across:"x";
     const projection=(n:{x:number;y:number;z:number}):P=>view==="plan"?[n.x,n.y]:[n[horizontal],n.z];
     const points=opts.bases?(supports.length?supports:model.nodes):[...pieces.flatMap(p=>[nodes.get(p.start)!,nodes.get(p.end)!]),...(showRoof?roof:[])];
     const coords=points.map(projection);
+    if(!coords.length)coords.push(...model.nodes.map(projection));
     if(view!=="plan")coords.push([coords[0][0],datum]);
     const minX=Math.min(...coords.map(p=>p[0])),minY=Math.min(...coords.map(p=>p[1]));
     const width=Math.max(...coords.map(p=>p[0]))-minX,height=Math.max(...coords.map(p=>p[1]))-minY;
-    const scale=book.scale(width,height),maxX=minX+width,maxY=minY+height;
-    book.add(name,scale,space=>{
-      const originX=40+(book.width-90-width/scale)/2,originY=105+(book.height-172-height/scale)/2;
+    const available={x:32,y:24,width:Math.max(20,rect.width-48),height:Math.max(20,rect.height-34)};
+    const scale=book.scale(width,height,available),maxX=minX+width,maxY=minY+height;
+    book.view(page,rect,name,scale,space=>{
+      const originX=available.x+(available.width-width/scale)/2,originY=available.y+(available.height-height/scale)/2;
       const at=(p:P):P=>[originX+(p[0]-minX)/scale,originY+(p[1]-minY)/scale];
-      const subtitle=opts.subtitle??(view==="cut"?`Corte real ${cutAxis.toUpperCase()}=${num(sectionPosition)} mm; símbolos indicam eixos, não seções fabricáveis.`:`Projeção de peças declaradas; referência de altura Z=${num(datum)} mm.`);
-      book.text(space,[18,book.height-38],subtitle,"TEXTOS",2.3);
+      const subtitle=opts.subtitle??(view==="cut"?`Corte ${cutAxis.toUpperCase()}=${num(sectionPosition)} mm; representação por eixos.`:`Referência de altura Z=${num(datum)} mm.`);
+      book.text(space,[2,rect.height-4],subtitle,"TEXTOS",1.8);
+      book.graphicScale(space,[rect.width-56,3],scale);
       const occupied:{x:number;y:number;width:number;height:number}[]=[];
+      const reservedLabels:CadRect[]=[];
       let dense=false;
-      const label=(anchor:P,id:string,designation:string)=>{
-        const value=`${id}: ${designation}`,full=cleanCadText(value).length<=90?value:`${id} (perfil: MATERIAIS)`;
-        const lines=full.match(/.{1,65}/gu)??[""],w=Math.max(...lines.map(l=>l.length))*1.15,h=lines.length*2.8;
-        let x=anchor[0]+1,y=anchor[1]+1,found=false;
-        for(let i=0;i<400;i++){
-          const column=Math.floor(i/100),offset=column%2?Math.ceil(column/2)*90:-Math.ceil(column/2)*90;
-          x=Math.max(18,Math.min(book.width-18-w,anchor[0]+1+offset));
-          y=Math.max(84+h,Math.min(book.height-56,anchor[1]+1+(i%2?-1:1)*Math.ceil((i%100)/2)*3));
-          if(!occupied.some(b=>x<b.x+b.width+1&&x+w+1>b.x&&y-h<b.y+1&&y+1>b.y-b.height)){found=true;break;}
+      const projectedNodes=points.map(n=>at(projection(n)));
+      const segments=pieces.flatMap(p=>{
+        const u=nodes.get(p.start)!,v=nodes.get(p.end)!;
+        return view==="cut"&&(u[cutAxis]!==sectionPosition||v[cutAxis]!==sectionPosition)?[]:[[at(projection(u)),at(projection(v))] as [P,P]];
+      });
+      const distanceToSegment=(p:P,u:P,v:P)=>{
+        const dx=v[0]-u[0],dy=v[1]-u[1],t=Math.max(0,Math.min(1,((p[0]-u[0])*dx+(p[1]-u[1])*dy)/(dx*dx+dy*dy||1)));
+        return Math.hypot(p[0]-u[0]-t*dx,p[1]-u[1]-t*dy);
+      };
+      const label=(anchor:P,id:string)=>{
+        const radius=Math.max(3,id.length*.7+1.2);let x=0,y=0,found=false;
+        for(let i=0;i<160;i++){
+          const angle=(i%16)*Math.PI/8,distance=7+Math.floor(i/16)*3;
+          x=anchor[0]+Math.cos(angle)*distance;y=anchor[1]+Math.sin(angle)*distance;
+          if(x<radius+2||x>rect.width-radius-2||y<18+radius||y>rect.height-10-radius)continue;
+          if(projectedNodes.some(p=>Math.hypot(p[0]-x,p[1]-y)<radius+2))continue;
+          if(reservedLabels.some(r=>Math.hypot(Math.max(r.x-x,0,x-r.x-r.width),Math.max(r.y-y,0,y-r.y-r.height))<radius+1))continue;
+          if(segments.some(([u,v])=>distanceToSegment([x,y],u,v)<radius+1.5))continue;
+          if(book.dimensionObstacles(space).some(([u,v])=>distanceToSegment([x,y],u,v)<radius+4))continue;
+          if(occupied.some(b=>Math.hypot(x-b.x,y-b.y)<radius+b.width+1))continue;
+          found=true;break;
         }
-        if(!found)dense=true;
-        occupied.push({x,y,width:w,height:h});
-        if(Math.hypot(x-anchor[0],y-anchor[1])>4)book.poly(space,[anchor,[x,y]],"MARCAS");
-        lines.forEach((line,i)=>book.text(space,[x,y-i*2.8],line,"PERFIS",2));
+        if(!found){dense=true;return;}
+        occupied.push({x,y,width:radius,height:radius});
+        const length=Math.hypot(x-anchor[0],y-anchor[1]);
+        book.poly(space,[anchor,[x-(x-anchor[0])/length*radius,y-(y-anchor[1])/length*radius]],"MARCAS");
+        space.addCircle(point3d(x,y),radius,{layerName:"MARCAS"});
+        const text=book.text(space,[x,y-.8],id,"MARCAS",2.1);text.horizontalAlignment=1;text.secondAlignmentPoint=point3d(x,y-.8);
       };
       const horizontalAxes=horizontal==="x"?xs:ys;
       const axisName=(axis:"x"|"y",value:number)=>axis==="x"?axisLetter(xs.indexOf(value)):String(ys.indexOf(value)+1);
       const bubble=(p:P,value:string)=>{
         space.addCircle(point3d(...p),3,{layerName:"EIXOS",lineType:"Continuous"});
         book.text(space,[p[0]-value.length*.7,p[1]-.9],value,"EIXOS",2.5);
+        occupied.push({x:p[0],y:p[1],width:3,height:3});
       };
       for(const value of (view==="plan"?xs:horizontalAxes).filter(x=>x>=minX&&x<=maxX)){
         const q=at([value,minY]),end=at([value,maxY]);
@@ -86,132 +113,194 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
           book.poly(space,[at(a),at(b)],"EIXOS");book.text(space,at(a),"A-A","EIXOS");
         }
       }
-      if(!opts.bases)for(const p of pieces){
-        const a=nodes.get(p.start)!,b=nodes.get(p.end)!,ids=(opts.aliases?.get(p.id)??[p.id]).join(" / "),id=ids.length<=60?ids:`${p.id} (*)`;
-        const layer=isDeclaredBrace(p)?"CONTRAVENTOS":p.role==="web"&&name==="TERCAS E CONTRAVENTOS"?"BARRAS_AUXILIARES":"PERFIS";
-        if(view==="cut"&&!(a[cutAxis]===sectionPosition&&b[cutAxis]===sectionPosition)){
-          const c=cross(p);if(c){const q=at(c);space.addCircle(point3d(...q),.7,{layerName:layer});label(q,id,profile(p.id));}continue;
-        }
-        const u=at(projection(a)),v=at(projection(b));book.poly(space,[u,v],layer);label([(u[0]+v[0])/2,(u[1]+v[1])/2],id,profile(p.id));
-      }
+      const roofSegments:[P,P][]=[],roofSegmentKeys=new Set<string>();
+      const roofSegment=(a:P,b:P)=>{
+        if(a.every((v,i)=>v===b[i]))return;
+        const key=[a.join(","),b.join(",")].sort().join(";");if(roofSegmentKeys.has(key))return;roofSegmentKeys.add(key);
+        roofSegments.push([a,b]);segments.push([at(a),at(b)]);book.poly(space,[at(a),at(b)],"COBERTURA");
+      };
       if(showRoof&&!opts.bases)for(const face of faces){
         if(view==="cut"){
           const intersections:P[]=[];
           for(const ring of [face.outer,...face.holes])for(let i=1;i<ring.length;i++){
             const av=ring[i-1],bv=ring[i],a={x:av[0],y:av[1],z:av[2]},b={x:bv[0],y:bv[1],z:bv[2]};
-            if(a[cutAxis]===sectionPosition&&b[cutAxis]===sectionPosition)book.poly(space,[at(projection(a)),at(projection(b))],"COBERTURA");
+            if(a[cutAxis]===sectionPosition&&b[cutAxis]===sectionPosition)roofSegment(projection(a),projection(b));
             else if((a[cutAxis]<=sectionPosition&&b[cutAxis]>sectionPosition)||(b[cutAxis]<=sectionPosition&&a[cutAxis]>sectionPosition)){
               const t=(sectionPosition-a[cutAxis])/(b[cutAxis]-a[cutAxis]);intersections.push([a[horizontal]+t*(b[horizontal]-a[horizontal]),a.z+t*(b.z-a.z)]);
             }
           }
           intersections.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
-          for(let i=1;i<intersections.length;i+=2)book.poly(space,[at(intersections[i-1]),at(intersections[i])],"COBERTURA");
-        }else for(const ring of [face.outer,...face.holes])book.poly(space,ring.map(([x,y,z])=>at(projection({x,y,z}))),"COBERTURA");
+          for(let i=1;i<intersections.length;i+=2)roofSegment(intersections[i-1],intersections[i]);
+        }else for(const ring of [face.outer,...face.holes]){
+          const projected=ring.map(([x,y,z])=>at(projection({x,y,z})));book.poly(space,projected,"COBERTURA");
+          for(let i=1;i<projected.length;i++)segments.push([projected[i-1],projected[i]]);
+        }
       }
+      const supportLabels=new Map<string,{point:P;marks:string[]}>();
       for(const n of supports){
         if(opts.frame&&!pieces.some(p=>p.start===n.id||p.end===n.id))continue;
         if(view==="cut"&&n[cutAxis]!==sectionPosition)continue;
-        const q=at(projection(n));book.poly(space,[[q[0],q[1]],[q[0]-1.5,q[1]-2],[q[0]+1.5,q[1]-2],[q[0],q[1]]],"APOIOS");
-        book.text(space,[q[0]+2,q[1]-3],`APOIO ${n.id}`,"APOIOS",2);
+        const q=at(projection(n)),key=q.join(","),row=supportLabels.get(key)??{point:q,marks:[]};row.marks.push(supportMarks.get(n.id)!);supportLabels.set(key,row);
       }
-      if(width>0)book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",-20);
+      for(const {point:q,marks} of supportLabels.values()){
+        book.poly(space,[[q[0],q[1]],[q[0]-1.5,q[1]-2],[q[0]+1.5,q[1]-2],[q[0],q[1]]],"APOIOS");
+        book.text(space,[q[0]+2,q[1]-3],marks.join("/"),"APOIOS",2);
+        reservedLabels.push({x:q[0]+2,y:q[1]-4,width:marks.join("/").length*1.6,height:3});
+      }
+      if(width>0&&!(hv.length===2&&hv[0]===minX&&hv[1]===maxX))book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",-20);
       if(view!=="plan"){
         const levels=showRoof?unique(roof.map(n=>n.z)):unique(points.map(n=>n.z));
-        for(const [i,z] of levels.filter(z=>z!==datum).entries())book.dim(space,at([minX,datum]),at([minX,z]),scale,showRoof?(ridge.includes(z)?"CUMEEIRA":"BORDA/BEIRAL"):"NÍVEL",10+i*9);
-        if(showRoof&&!roof.length)book.text(space,[18,78],"PENDENTE: cobertura física não declarada; alturas de beiral/cumeeira não inferidas.","TEXTOS",2.2);
+        for(const [i,z] of levels.filter(z=>z!==datum).entries()){
+          const candidates=view==="cut"?roofSegments.flat().filter(p=>p[1]===z):roof.filter(p=>p.z===z).map(p=>projection(p));
+          const actual=candidates.sort((a,b)=>a[0]-b[0])[0]??[minX,z];
+          book.dim(space,at([actual[0],datum]),at(actual),scale,showRoof?(ridge.includes(z)?"CUMEEIRA":"BORDA/BEIRAL"):"NÍVEL",(actual[0]-minX)/scale+10+i*7);
+        }
+        if(showRoof&&!roof.length)book.text(space,[2,10],"PENDENTE: cobertura física não declarada; alturas não inferidas.","PENDENCIAS",1.8);
       }
       if(view==="cut"){
         if(distinct.length<=12)for(let i=1;i<distinct.length;i++)book.dim(space,at(distinct[i-1]),at(distinct[i]),scale,"EIXOS TERÇAS",5);
         else book.dim(space,at(distinct[0]),at(distinct.at(-1)!),scale,"TERÇAS: ver ESPACAMENTOS",5);
-        if(distinct.length<2)book.text(space,[18,78],"PENDENTE: sequência de eixos de terças não identificada neste corte.","TEXTOS",2.2);
+        if(distinct.length<2)book.text(space,[2,10],"PENDENTE: sequência de terças não identificada neste corte.","PENDENCIAS",1.8);
       }
-      if(name==="TERCAS E CONTRAVENTOS"){
+      if(opts.tercas){
         const values=unique(distinct.map(p=>p[0]));
         const marked=values.length<=12?values:[values[0],values.at(-1)!];
         for(let i=1;i<marked.length;i++){
           const a:P=cutAxis==="y"?[marked[i-1],minY]:[minX,marked[i-1]],b:P=cutAxis==="y"?[marked[i],minY]:[minX,marked[i]];
           book.dim(space,at(a),at(b),scale,values.length<=12?"TERÇAS PROJ.":"TERÇAS: ver ESPACAMENTOS",-13);
         }
-        if(!model.pieces.some(isDeclaredBrace))book.text(space,[18,78],"PENDENTE: contraventamentos sem identificação explícita em label/grupo; web auxiliar não implica contenção.","TEXTOS",2.2);
+        if(!model.pieces.some(isDeclaredBrace))book.text(space,[2,10],"PENDENTE: contraventamentos não identificados; barras auxiliares não implicam contenção.","PENDENCIAS",1.8);
       }
       if(opts.bases){
-        book.text(space,[18,book.height-47],"PENDENTE DE PROJETO — BASES E CHUMBADORES (A4/A5)","REACOES",3);
-        book.text(space,[18,78],"Símbolos indicam nós; chapa, furos, chumbadores e soldas não dimensionados. Ver tabelas de posições e reações.","TEXTOS",2.2);
+        book.text(space,[2,rect.height-9],"PENDENTE DE PROJETO (A4/A5)","PENDENCIAS",2.5);
+        book.text(space,[2,10],"Nós de apoio; chapas, furos, chumbadores e soldas não dimensionados.","PENDENCIAS",1.8);
       }
-      if(!supports.length)book.text(space,[18,83],"PENDENTE: apoios não declarados; nenhum apoio foi criado.","TEXTOS",2.2);
-      if(dense)book.text(space,[18,book.height-47],"PENDENTE: etiquetas densas; conferir identificação completa nas folhas de materiais.","TEXTOS",2.3);
+      if(!supports.length)book.text(space,[2,15],"PENDENTE: apoios não declarados; nenhum apoio foi criado.","PENDENCIAS",1.8);
+      // Place the balloons after roof and dimensions are known, keeping labels off those lines too.
+      if(!opts.bases)for(const p of pieces){
+        const a=nodes.get(p.start)!,b=nodes.get(p.end)!,id=marks.get(p.id)!;
+        const layer=isDeclaredBrace(p)?"CONTRAVENTOS":p.role==="web"&&opts.tercas?"BARRAS_AUXILIARES":"PERFIS";
+        if(view==="cut"&&!(a[cutAxis]===sectionPosition&&b[cutAxis]===sectionPosition)){
+          const c=cross(p);if(c){const q=at(c);space.addCircle(point3d(...q),.7,{layerName:layer});label(q,id);}continue;
+        }
+        const u=at(projection(a)),v=at(projection(b));book.poly(space,[u,v],layer);label([(u[0]+v[0])/2,(u[1]+v[1])/2],id);
+      }
+      if(dense)book.text(space,[2,rect.height-9],"PENDENTE: marcas densas; conferir lista de materiais.","PENDENCIAS",1.8);
     });
   }
-  drawing("PLANTA","plan");drawing("FRONTAL","front");drawing("LATERAL","side");drawing("CORTE A-A","cut");
+  const a=book.area,gap=12,half=(a.width-gap)/2;
+  const plans=book.add("PLANTAS","Plantas de cobertura e estrutura");
+  const elevations=book.add("ELEVACOES","Elevações e corte transversal");
+  const framePages=data.frameGroups.map((group,i)=>book.add(`${group[0].kind} ${i+1}`,`${group[0].kind==="TESOURA"?"Tesoura":"Pórtico"} — tipo ${i+1} (${group.length}×)`));
+  const pendingFrame=!framePages.length?book.add("PORTICOS PENDENTE","Pórticos e tesouras — identificação pendente"):null;
+  const bases=book.add("BASES","Locação de bases e chumbadores");
+  const notes=book.add("NOTAS","Notas gerais");
+  const materialsPage=book.add("MATERIAIS","Lista de materiais e resumo por perfil");
+  // The first sheet reserves three rows; large books receive complete index sheets.
+  const indexCapacity=9;
+  plans.draw.push(space=>{
+    book.text(space,[a.x,a.y+a.height-1],book.pages.length>indexCapacity?"Índice de folhas — continua ao final do conjunto":"Índice de folhas","TEXTOS",2.5);
+    book.pages.slice(0,indexCapacity).forEach((p,i)=>book.text(space,[a.x+(i%3)*(a.width/3),a.y+a.height-7-Math.floor(i/3)*4],`${i+1}. ${p.title}`,"TEXTOS",1.8));
+  });
+  const viewTop=a.y+a.height-24,viewBottom=a.y+42,viewHeight=viewTop-viewBottom;
+  drawing(plans,{x:a.x,y:viewBottom,width:half,height:viewHeight},"Planta de cobertura e apoios","plan");
   const auxiliaries=model.pieces.filter(p=>p.role==="purlin"||isDeclaredBrace(p)||(p.role==="web"&&!data.frames.some(f=>f.pieces.includes(p))));
-  drawing("TERCAS E CONTRAVENTOS","plan",{pieces:auxiliaries.length?auxiliaries:model.pieces,
-    subtitle:"IDs vinculados à lista de materiais; espaçamentos projetados. Contraventamentos apenas quando identificados no modelo."});
+  drawing(plans,{x:a.x+half+gap,y:viewBottom,width:half,height:viewHeight},"Terças e contraventamentos","plan",{pieces:auxiliaries.length?auxiliaries:model.pieces,tercas:true,
+    subtitle:"Marcas vinculadas à lista de materiais; espaçamentos projetados."});
   if(distinct.length>=2){
-    const ids=(point:P)=>purlins.filter(p=>{const c=cross(p);return c&&c[0]===point[0]&&c[1]===point[1];}).map(p=>p.id).join(" / ");
-    book.table("ESPACAMENTOS TERCAS",["PEÇAS / EIXOS","POS. 1 (mm)","POS. 2 (mm)","PROJ. (mm)","CORTE (mm)"],distinct.slice(1).map((b,i)=>{
-      const a=distinct[i];return [`${ids(a)} -> ${ids(b)}`,`${num(a[0])} / Z=${num(a[1])}`,`${num(b[0])} / Z=${num(b[1])}`,num(b[0]-a[0]),num(Math.hypot(b[0]-a[0],b[1]-a[1]))];
-    }),[0,.3,.5,.7,.83,1],"MATERIAIS",`${cutAxis.toUpperCase()}=${num(sectionPosition)} mm · distâncias entre eixos reais no corte, sem hipótese de faixa tributária.`);
+    const ids=(point:P)=>purlins.filter(p=>{const c=cross(p);return c&&c[0]===point[0]&&c[1]===point[1];}).map(p=>marks.get(p.id)).join(" / ");
+    book.table(plans,{...a,height:35},"Espaçamentos entre terças no corte",["Marcas","Posição 1 / Z (mm)","Posição 2 / Z (mm)","Projeção (mm)","No corte (mm)"],distinct.slice(1).map((b,i)=>{
+      const c=distinct[i];return [`${ids(c)} → ${ids(b)}`,`${num(c[0])} / ${num(c[1])}`,`${num(b[0])} / ${num(b[1])}`,num(b[0]-c[0]),num(Math.hypot(b[0]-c[0],b[1]-c[1]))];
+    }),[0,.28,.48,.68,.84,1]);
   }
+  const smallHeight=(a.height-gap)/2;
+  drawing(elevations,{x:a.x,y:a.y+smallHeight+gap,width:half,height:smallHeight},"Elevação frontal","front");
+  drawing(elevations,{x:a.x,y:a.y,width:half,height:smallHeight},"Elevação lateral","side");
+  drawing(elevations,{x:a.x+half+gap,y:a.y,width:half,height:a.height},"Corte A-A","cut");
   for(const [index,group] of data.frameGroups.entries()){
-    const first=group[0],h=first.axis==="y"?"x":"y";
+    const first=group[0],h=first.axis==="y"?"x":"y",page=framePages[index];
     const token=(frame:typeof first,p:CadPiece)=>{
-      const min=Math.min(...frame.pieces.flatMap(p=>[nodes.get(p.start)![h],nodes.get(p.end)![h]])),a=nodes.get(p.start)!,b=nodes.get(p.end)!;
-      return JSON.stringify([a[h]-min,a.z,b[h]-min,b.z,p.role,profile(p.id)]);
+      const min=Math.min(...frame.pieces.flatMap(p=>[nodes.get(p.start)![h],nodes.get(p.end)![h]])),u=nodes.get(p.start)!,v=nodes.get(p.end)!;
+      return JSON.stringify([u[h]-min,u.z,v[h]-min,v.z,p.role,profile(p.id)]);
     };
     const aliases=new Map(first.pieces.map(p=>[p.id,group.flatMap(f=>f.pieces.filter(q=>token(f,q)===token(first,p)).map(q=>q.id))]));
     const locations=group.map(f=>{
       const positions=f.pieces.flatMap(p=>[nodes.get(p.start)![h],nodes.get(p.end)![h]]);
-      return `${f.axis.toUpperCase()}=${num(f.coordinate)} mm (eixo ${f.axis==="y"?ys.indexOf(f.coordinate)+1:axisLetter(xs.indexOf(f.coordinate))}); ${h.toUpperCase()}=${num(Math.min(...positions))}..${num(Math.max(...positions))} mm`;
+      return `eixo ${f.axis==="y"?ys.indexOf(f.coordinate)+1:axisLetter(xs.indexOf(f.coordinate))}; ${f.axis.toUpperCase()}=${num(f.coordinate)}; ${h.toUpperCase()}=${num(Math.min(...positions))} a ${num(Math.max(...positions))} mm`;
     });
-    drawing(`${first.kind} ${index+1}`,first.axis==="y"?"front":"side",{pieces:first.pieces,showRoof:false,frame:true,aliases,
-      subtitle:`${group.length}× ${first.kind}: posições e IDs equivalentes (*) nas folhas IDENTIFICACAO ${first.kind} ${index+1}.`});
-    book.notes(`IDENTIFICACAO ${first.kind} ${index+1}`,[`${group.length}× — LOCAÇÃO:`,...locations,
-      "Agrupamento gráfico por geometria orientada, perfil/material, vínculos declarados e apoios iguais. Cargas e aprovação não são equiparadas.",
-      ...first.pieces.map(p=>`${p.id} => ${(aliases.get(p.id)??[]).join(" / ")} | ${profile(p.id)}`)]);
+    drawing(page,{...a,width:a.width*.56},first.kind==="TESOURA"?"Elevação da tesoura":"Elevação do pórtico",first.axis==="y"?"front":"side",{pieces:first.pieces,showRoof:false,frame:true,aliases,
+      subtitle:`${group.length}× — peças correspondentes indicadas na tabela de identificação.`});
+    book.table(page,{x:a.x+a.width*.59,y:a.y,width:a.width*.41,height:a.height},"Identificação de peças",["Marca","Perfil","Qtd.","Locação"],first.pieces.map(p=>{
+      const ids=aliases.get(p.id)??[p.id];return [ids.map(id=>marks.get(id)).join(" / "),profile(p.id),String(ids.length),locations.join("; ")];
+    }),[0,.2,.55,.64,1]);
   }
-  if(!data.frameGroups.length)book.notes("PORTICOS PENDENTE",["PENDENTE: conjunto de pórtico/tesoura não identificado em planos globais X/Y com conectividade declarada.","Nenhuma tesoura, pilar ou vínculo foi inferido. Peças permanecem nas vistas gerais e na lista de materiais."]);
-  drawing("BASES E CHUMBADORES","plan",{pieces:[],showRoof:false,bases:true,subtitle:"Locação de apoios declarados — coordenadas em mm; não representa geometria de chapa ou fundação."});
-  book.table("BASES POSICOES",["NÓ","EIXOS","X / Y / Z (mm)","DOFs / TIPO"],supports.map(n=>{
+  if(pendingFrame)pendingFrame.draw.push(space=>book.wrapped(space,a,"PENDENTE: conjunto de pórtico ou tesoura não identificado em planos globais com conectividade declarada. Nenhuma peça, pilar ou vínculo foi inferido. As peças permanecem nas vistas gerais e na lista de materiais.",3,5,"PENDENCIAS"));
+  const reactions=cadReactions(project,options.reactions),baseHeight=reactions.data?a.height*.53:a.height;
+  drawing(bases,{x:a.x,y:a.y+a.height-baseHeight,width:half,height:baseHeight},"Locação de apoios","plan",{pieces:[],showRoof:false,bases:true,subtitle:"Coordenadas dos apoios declarados; não representa chapa ou fundação."});
+  const typeNames:Record<string,string>={"steel-column":"Pilar metálico","existing-column":"Pilar existente","existing-beam":"Viga existente","concrete-beam":"Viga de concreto","concrete-column":"Pilar de concreto","masonry-wall":"Parede de alvenaria","foundation":"Fundação","wall":"Parede","beam":"Viga","column":"Pilar"};
+  book.table(bases,{x:a.x+half+gap,y:a.y+a.height-baseHeight,width:half,height:baseHeight},"Posições de apoio",["Marca","Eixos","X / Y / Z (mm)","Vínculos / tipo"],supports.map(n=>{
     const support=draft!.supports.find(s=>s.nodeId===n.id)!,face=draft?.supportInterfaces?.find(f=>f.nodeId===n.id);
     const dofs=support.dofs.map(d=>d==="fixed"?"fixo":d==="free"?"livre":"PENDENTE").join(" / ");
-    return [n.id,data.location(n),`${num(n.x)} / ${num(n.y)} / ${num(n.z)}`,`${dofs} · ${face?.kind??"PENDENTE"}`];
-  }),[0,.14,.3,.64,1],"APOIOS","PENDENTE DE PROJETO (A4/A5): nenhuma chapa, furação, solda ou resistência foi presumida.");
-  const reactions=cadReactions(project,options.reactions);
-  if(reactions.data)book.table("REACOES",["NÓ","COMB.","Fx (kN)","Fy (kN)","Fz (kN)","Mx (kNm)","My (kNm)","Mz (kNm)"],reactions.data.rows.map(r=>[
-    r.nodeId,r.combinationId,...r.force.map(n=>num(n/1000)),...r.moment.map(n=>num(n/1000))]),[0,.08,.28,.4,.52,.64,.76,.88,1],"REACOES",
-    "PENDENTE DE PROJETO (A4/A5) · reações concomitantes por combinação, eixos globais; não são capacidades.");
-  book.notes("RASTREIO REACOES",[reactions.status,"PENDENTE DE PROJETO (A4/A5). Revisão profissional, ancoragem, chapa, furos, soldas, contato e fundação não verificados."]);
+    if(face)trace.push(`${supportMarks.get(n.id)}: tipo=${face.kind}`);
+    return [supportMarks.get(n.id)!,data.location(n),`${num(n.x)} / ${num(n.y)} / ${num(n.z)}`,`${dofs}; ${face?(typeNames[face.kind]??"tipo: ver rastreabilidade"):"PENDENTE"}`];
+  }),[0,.12,.24,.6,1],"APOIOS");
+  if(reactions.data)book.table(bases,{...a,height:a.height*.43},"Reações concomitantes por combinação — eixos globais",["Apoio","Combinação","Fx (kN)","Fy (kN)","Fz (kN)","Mx (kNm)","My (kNm)","Mz (kNm)"],reactions.data.rows.map(r=>[
+    supportMarks.get(r.nodeId)!,r.combinationId,...r.force.map(n=>num(n/1000)),...r.moment.map(n=>num(n/1000))]),[0,.08,.28,.4,.52,.64,.76,.88,1],"REACOES");
+  else bases.draw.push(space=>book.wrapped(space,{x:a.x+half+gap,y:a.y,width:half,height:10},reactions.status,2,3,"PENDENCIAS"));
+  trace.push(reactions.status);
   const references=new Set<string>();
-  const reference=(r:{standard:string;edition:string;clause:string;source:string;revision:string})=>references.add(`${r.standard} · edição ${r.edition} · item ${r.clause} · fonte ${r.source} · revisão ${r.revision}`);
+  const reference=(r:{standard:string;edition:string;clause:string;source:string;revision:string})=>{
+    references.add(/^(ABNT\s+)?NBR\b|^(ISO|ASTM|EN|AISC)\b/.test(r.standard)?`${r.standard}; edição ${r.edition}; item ${r.clause}.`:"Referência técnica adicional declarada; identificação e edição constam na rastreabilidade.");
+    trace.push(`${r.standard}; edição=${r.edition}; item=${r.clause}; fonte=${r.source}; revisão=${r.revision}`);
+  };
   for(const c of draft?.engineeringCombinations?.combinations??[])for(const r of [c.reference,...c.terms.map(t=>t.reference)])reference(r);
-  for(const a of draft?.engineeringCombinations?.actions??[])reference(a.reference);
+  for(const action of draft?.engineeringCombinations?.actions??[])reference(action.reference);
   const wind=draft?.loading?.wind;
-  if(wind){
-    reference(wind.building.reference);reference(wind.building.velocityReference);
-    for(const c of wind.cases){reference(c.reference);for(const z of c.zones)reference(z.reference);}
-  }
-  for(const p of draft?.normativeProvenance??[])references.add(`PROVISÓRIO — ${p.standard} · edição ${p.edition} · origem ${p.origin} · ${p.reason}`);
-  for(const c of draft?.loading?.facadeTraction?.cases??[])references.add(`Pressões de fachada: fonte declarada ${c.reference}; norma/edição não inferida desse texto.`);
-  for(const s of draft?.resistanceStandards??[])references.add(`${s.standard}: peça ${s.pieceId}; edição e aplicação integral PENDENTE.`);
-  const materials=new Map<string,string>(),sections=new Map<string,string>();
+  if(wind){reference(wind.building.reference);reference(wind.building.velocityReference);for(const c of wind.cases){reference(c.reference);for(const z of c.zones)reference(z.reference);}}
+  for(const p of draft?.normativeProvenance??[]){references.add(`PROVISÓRIO — ${p.standard}; edição ${p.edition}; aplicação não confirmada.`);trace.push(`${p.id}: ${p.origin}; ${p.reason}`);}
+  for(const c of draft?.loading?.facadeTraction?.cases??[]){references.add("Pressões de fachada: norma e edição não inferidas de texto livre; conferir a fonte declarada.");trace.push(`Fachada: ${c.reference}`);}
+  for(const s of draft?.resistanceStandards??[]){references.add(`${s.standard}: edição e aplicação integral PENDENTE.`);trace.push(`${marks.get(s.pieceId)}: ${s.standard}`);}
+  const steels=new Set<string>(),provenance=new Map<string,string[]>();
   for(const piece of model.pieces){
-    const a=draft?.physicalCatalog?.assignments.find(a=>a.pieceId===piece.id),m=draft?.physicalCatalog?.materials.find(m=>m.id===a?.materialId),g=draft?.groups[piece.role];
-    const key=m?.id??`grupo ${piece.role}`,value=m??g;
-    materials.set(key,`${key}: aço ${value?.steelGrade?.trim()||"PENDENTE"} · fonte ${value?.materialSource?.trim()||"PENDENTE"} · revisão ${value?.materialRevision?.trim()||"PENDENTE"}`);
-    const section=draft?.physicalCatalog?.sections.find(s=>s.id===a?.sectionId),sectionKey=section?.id??`grupo ${piece.role}`,s=section??g;
-    sections.set(sectionKey,`${sectionKey}: fonte ${s?.sectionSource?.trim()||"PENDENTE"} · revisão ${s?.sectionRevision?.trim()||"PENDENTE"}`);
+    const assignment=draft?.physicalCatalog?.assignments.find(r=>r.pieceId===piece.id),material=draft?.physicalCatalog?.materials.find(m=>m.id===assignment?.materialId),group=draft?.groups[piece.role],m=material??group;
+    const grade=m?.steelGrade?.trim()||"PENDENTE";
+    steels.add(grade==="Synthetic isotropic reference"?"material sintético de referência analítica, sem especificação comercial":grade);
+    const section=draft?.physicalCatalog?.sections.find(s=>s.id===assignment?.sectionId),s=section??group;
+    const description=`aço=${assignment?.materialId??"PENDENTE"}; identificação=${grade}; fonte=${m?.materialSource?.trim()||"PENDENTE"}; revisão=${m?.materialRevision?.trim()||"PENDENTE"}; seção=${assignment?.sectionId??"PENDENTE"}; fonte=${s?.sectionSource?.trim()||"PENDENTE"}; revisão=${s?.sectionRevision?.trim()||"PENDENTE"}`;
+    const groupMarks=provenance.get(description)??[];groupMarks.push(marks.get(piece.id)!);provenance.set(description,groupMarks);
   }
-  book.notes("NOTAS GERAIS",[CAD_NOTICE,`Obra: ${project.name} · revisão física ${model.revision} · fonte ${model.provenance}`,
-    "Unidades: geometria/cotas em mm; massas em kg; reações em kN e kNm. Eixos globais X/Y; Z para cima.",
-    "Eixos de locação derivados de apoios, pilares e planos identificados; não criam vínculos ou dimensões físicas novas.",
-    "IDs originais ligam vistas, agrupamentos e lista de materiais. Comprimentos entre nós, sem descontos de fabricação.",
-    "REFERÊNCIAS DECLARADAS — não atestam aplicação integral, edição vigente, revisão profissional ou homologação:",
-    ...(references.size?[...references]:["PENDENTE: normas e edições não declaradas no modelo."]),"AÇO E PROVENIÊNCIA:",...materials.values(),"PERFIS E PROVENIÊNCIA:",...sections.values(),
-    "PENDENTE DE PROJETO: detalhamento de bases, chumbadores, chapas, furos, ligações e soldas (A4/A5).",
-    "Responsável técnico, CREA e ART devem ser preenchidos pelo profissional responsável, após conferência; campos em branco não autorizam execução.",
-    "Análise experimental, revisão normativa, responsabilidade técnica e liberação de fabricação são estados separados. Bloqueios atuais preservados."]);
-  book.table("MATERIAIS",["PEÇA","PERFIL DECLARADO","QTD","COMP. (mm)","PESO (kg/m)","PESO (kg)"],takeoff.pieces.map(p=>[
-    p.pieceId,profile(p.pieceId),"1",num(p.lengthMm),p.massKg===null?"PENDENTE":num(p.massKg/(p.lengthMm/1000)),p.massKg===null?"PENDENTE":num(p.massKg)]),
-    [0,.09,.42,.47,.62,.79,1],"MATERIAIS",`TOTAL: ${takeoff.totals.quantity} peças · ${num(takeoff.totals.lengthM*1000)} mm · ${takeoff.totals.massKg===null?"PESO PENDENTE":num(takeoff.totals.massKg)+" kg"}`);
+  for(const [description,groupMarks] of provenance)trace.push(`${groupMarks.join(",")}: ${description}`);
+  book.notes(notes,a,[
+    `Obra: ${project.name}. Revisão da geometria: ${model.revision}. ${CAD_NOTICE}.`,
+    "Unidades: geometria e cotas em milímetros; massas em quilogramas; reações em quilonewtons e quilonewtons-metro. Eixos globais X e Y; eixo Z positivo para cima.",
+    "As vistas representam eixos de peças declaradas. As cotas prevalecem sobre a medição gráfica. Os comprimentos são medidos entre nós, sem descontos de fabricação ou lista de corte.",
+    "As marcas curtas ligam as vistas à lista de materiais: C — pilares; V — vigas; T — terças; BS e BI — banzos; D — barras auxiliares ou contraventamentos explicitamente identificados. A identificação não atribui contenção estrutural.",
+    "Pórticos e tesouras repetidos são agrupados somente quando geometria, perfis, materiais, orientações, vínculos e apoios declarados coincidem. A equivalência gráfica não equipara cargas ou aprovação.",
+    `Aço declarado: ${[...steels].join("; ")}. As fontes e revisões constam na rastreabilidade. Informação ausente permanece PENDENTE.`,
+    "Referências normativas declaradas no modelo; sua presença não comprova aplicação integral, revisão profissional ou homologação:",
+    ...(references.size?[...references]:["PENDENTE: normas e respectivas edições não declaradas no modelo."]),
+    "PENDENTE DE PROJETO: bases, chumbadores, chapas, furos, soldas, contato, ligações e fundações. Símbolos de apoio indicam apenas posições; não representam detalhes executivos ou capacidade verificada.",
+    reactions.data?"As reações apresentadas foram conferidas contra a entrada atual. Permanecem experimentais e não representam capacidades de apoios, ligações ou fundações.":reactions.status,
+    "Responsável técnico, CREA e ART devem ser preenchidos pelo profissional responsável após conferência. Campos em branco não autorizam execução. Os bloqueios de aprovação estrutural e fabricação permanecem ativos."
+  ],[...new Set(trace)].join(" | "));
+  const detailHeight=a.height*.66;
+  const detailBottom=book.table(materialsPage,{...a,y:a.y+a.height-detailHeight,height:detailHeight},"Relação de peças",["Marca","Perfil declarado","Qtd.","Comprimento (mm)","Massa (kg/m)","Massa (kg)"],takeoff.pieces.map(p=>[
+    marks.get(p.pieceId)!,profile(p.pieceId),"1",num(p.lengthMm),p.massKg===null?"PENDENTE":num(p.massKg/(p.lengthMm/1000)),p.massKg===null?"PENDENTE":num(p.massKg)]),[0,.08,.42,.48,.66,.83,1]);
+  const summary=new Map<string,{profile:string;quantity:number;length:number;mass:number|null}>();
+  for(const p of takeoff.pieces){
+    const assignment=draft?.physicalCatalog?.assignments.find(a=>a.pieceId===p.pieceId),key=JSON.stringify([assignment?.sectionId??p.sectionId??p.pieceId,assignment?.materialId??p.pieceId]);
+    const row=summary.get(key)??{profile:profile(p.pieceId),quantity:0,length:0,mass:0};row.quantity++;row.length+=p.lengthMm;
+    row.mass=row.mass===null||p.massKg===null?null:row.mass+p.massKg;summary.set(key,row);
+  }
+  book.table(materialsPage,{...a,height:Math.max(22,detailBottom-8-a.y)},"Resumo por perfil e material",["Perfil declarado","Qtd.","Comprimento total (mm)","Massa total (kg)"],[...summary.values()].map(r=>[
+    r.profile,String(r.quantity),num(r.length),r.mass===null?"PENDENTE":num(r.mass)]),[0,.42,.5,.76,1],"MATERIAIS",
+    `TOTAL DA ESTRUTURA: ${takeoff.totals.quantity} peças; ${num(takeoff.totals.lengthM*1000)} mm; ${takeoff.totals.massKg===null?"PESO PENDENTE":num(takeoff.totals.massKg)+" kg"}.`);
+  // Build continuation indexes last, once all table and trace overflows are known.
+  if(book.pages.length>indexCapacity){
+    const indexPages:CadPage[]=[],perPage=Math.floor((a.height-18)/8.8);
+    while(Math.ceil((book.pages.length-indexCapacity)/perPage)>indexPages.length)indexPages.push(book.add("INDICE CONTINUACAO","Índice de folhas — continuação"));
+    const rows=book.pages.slice(indexCapacity).map((p,i)=>[String(indexCapacity+i+1),p.title]);
+    indexPages.forEach((page,i)=>book.table(page,a,"Índice de folhas",["Folha","Conteúdo"],rows.slice(i*perPage,(i+1)*perPage),[0,.1,1],"TEXTOS"));
+  }
   book.render();
 }

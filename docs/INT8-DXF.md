@@ -1,113 +1,143 @@
 # INT-8 — Pranchas físicas para conferência
 
-`createStructureDxf(project)` continua síncrona e mantém os botões existentes.
-Obras com `physicalStructure` recebem layouts nativos de papel, além das barras
-3D originais em mm. Obras geradas sem essa declaração mantêm o DXF 3D anterior.
-Nenhum dado de engenharia, fórmula normativa ou bloqueio é alterado pelo CAD.
+`createStructureDxf(project)` permanece síncrona e compatível com os botões
+existentes. Não altera o projeto, quantitativos, pendências, cálculo ou liberação.
+Sem `physicalStructure`, continua disponível o DXF 3D anterior.
 
-## Formatos e entrada compatível
+## Formatos e entrada
 
 ```ts
-createStructureDxf(project);                                  // A3 padrão
-createStructureDxf(project, {format: "A1"});                   // A1
-createStructureDxf(project, issuedAt, {format: "A1"});         // data explícita
+createStructureDxf(project); // A3, 420 × 297 mm, paisagem
+createStructureDxf(project, {format: "A1"}); // 841 × 594 mm
+createStructureDxf(project, issuedAt, {format: "A1"});
 const receipt = await prepareCadReactions(project, packetText);
 createStructureDxf(project, issuedAt, {format: "A3", reactions: receipt});
 ```
 
-A3 paisagem: 420 × 297 mm; A1 paisagem: 841 × 594 mm. Moldura a 10 mm;
-carimbo reservado abaixo de Y=72 mm. Escalas geométricas escolhidas entre
-1, 2, 2,5 e 5 × potências de dez, com valor escrito em cada folha. Textos,
-tabelas e símbolos usam mm de papel; tabelas não possuem escala geométrica.
-Vistas centralizadas na área útil, reservando espaço para cotas e carimbo.
-Data em America/Sao_Paulo. Nenhum seletor de UI é modificado nesta entrega.
+A apresentação solicitada, de referência NBR 10068, usa margem esquerda de
+25 mm, demais margens de 10 mm e carimbo de 180 × 55 mm no canto inferior
+direito. Obra, revisão, data, Folha X de Y e campos em branco de Responsável
+técnico, CREA e ART ficam em caixas. O quadro de revisões registra somente a
+emissão atual; linhas vazias não inventam histórico. Não se declara certificação
+normativa de desenho. A data usa America/Sao_Paulo.
 
-## Folhas e vínculos
+Todas as folhas, inclusive continuações, mantêm:
+**PRELIMINAR – NÃO UTILIZAR PARA EXECUÇÃO OU CORTE**.
 
-- **INDICE:** nomes, números e escalas de todas as folhas, inclusive continuações.
-- **PLANTA, FRONTAL, LATERAL:** peças, cobertura física, apoios e eixos de locação.
-- **CORTE A-A:** interseção real no primeiro alinhamento de apoios, perpendicular
-  à direção predominante das terças X/Y; plano e coordenada estão escritos.
-- **TERCAS E CONTRAVENTOS:** IDs/perfis e espaçamentos projetados. Contraventamento
-  exige identificação explícita em `label`/`group` (contraventamento/bracing/tirante).
-  Outras barras web fora dos conjuntos aparecem como auxiliares, com PENDENTE;
-  telhas e terças não passam a representar contenções automaticamente.
-- **ESPACAMENTOS TERCAS:** peças, posições reais no corte, distância projetada e
-  distância entre eixos no corte. Acima de 12 posições, as vistas apontam à tabela
-  para evitar sobreposição de cadeias de cotas. Não são faixas tributárias.
-- **PORTICO/TESOURA:** elevação por conjunto distinto coplanar em X ou Y, com cotas
-  e perfis. Tesoura exige banzos superior e inferior declarados. Conexões gráficas
-  usam nós comuns/junções explícitas; nenhuma tesoura ou pilar é criado.
-- **IDENTIFICACAO:** locação de cada repetição, IDs originais e perfis. Conjuntos
-  iguais são agrupados com **N×** somente quando geometria orientada, níveis Z,
-  seções, materiais, orientação, vínculos e apoios declarados coincidem. Perfil,
-  aço ou vínculo desconhecido impede agrupamento. Cargas não são equiparadas.
-  Marcas com `(*)` remetem à identificação completa; todos os IDs permanecem na
-  lista de materiais. Diferenças de perfil/aço/rotação/apoio/geometria separam folhas.
-- **BASES E CHUMBADORES / BASES POSICOES:** locação, X/Y/Z, DOFs e tipo declarado.
-  Símbolos indicam nós, nunca contornos de chapa. **PENDENTE DE PROJETO (A4/A5)**:
-  não há chapa, furação, quantidade/diâmetro de chumbadores, solda ou capacidade inferida.
-- **REACOES / RASTREIO REACOES:** quando fornecidas e conferidas, seis componentes
-  globais concomitantes por nó e combinação em kN/kNm, ordem de análise e SHA.
-  Ausência, recibo inválido ou projeto alterado: PENDENTE, sem imprimir reações antigas.
-- **NOTAS GERAIS:** referências normativas/edições/fontes efetivamente declaradas,
-  aço, fontes/revisões dos perfis, unidades, revisão e limitações. Edição ou norma ausente
-  aparece PENDENTE; referência declarada não comprova aplicação integral da norma.
-  Referências de vento, ações, combinações, pressão de fachada e marcas PROVISÓRIO
-  são conservadas como declaradas, sem deduzir edição de texto livre.
-- **MATERIAIS:** ID, perfil, quantidade, comprimento entre nós, kg/m e kg. Usa
-  `declaredTakeoff`; kg/m deriva apenas de massa/comprimento conhecidos. Falta de
-  perfil ou densidade rastreável permanece PENDENTE. Não é lista de corte.
+## Composição do galpão de teste: seis folhas
 
-Eixos X recebem A, B, …, Z, AA…; eixos Y recebem 1, 2, 3… em coordenadas crescentes.
-São derivados de apoios/pilares/planos identificados. Sem esses dados, apenas
-extremidades geométricas são referenciadas; apoios e pórticos continuam PENDENTE.
-As mesmas letras/números são usados nas plantas, elevações e locação de bases.
-Cada vão entre eixos é medido a partir das coordenadas, sem presumir equidistância.
-Cumeeira só é nomeada em aresta alta comum de duas águas; bordas/beirais vêm das
-faces físicas. Z de referência é o menor Z dos apoios declarados, não terreno presumido.
+1. **Plantas de cobertura e estrutura:** índice no início, planta de cobertura e
+   apoios, planta de terças e contraventamentos e tabela de espaçamentos.
+2. **Elevações e corte transversal:** elevação frontal, lateral e corte A-A.
+3. **Pórtico — tipo 1 (2×):** elevação e tabela de marca, perfil, quantidade e
+   locação. Cada pórtico/tesoura distinto acrescenta sua própria folha.
+4. **Locação de bases e chumbadores:** planta e posições de apoio. Reações
+   conferidas são acrescentadas por combinação; tabelas extensas continuam
+   em folhas adicionais. O detalhe continua PENDENTE DE PROJETO (A4/A5).
+5. **Notas gerais:** notas numeradas em português técnico, aço, normas/edições
+   efetivamente declaradas, unidades, revisão e limites. Metadados livres,
+   fontes, hashes e mapa completo marca → ID original ficam na faixa pequena
+   de **Rastreabilidade** no rodapé desta folha. Textos de origem são preservados
+   nessa faixa, inclusive quando estão em outro idioma.
+6. **Lista de materiais e resumo por perfil:** marcas, perfis, quantidades,
+   comprimentos, kg/m e kg; resumo de comprimento/massa por seção e material
+   declarado e massa total da estrutura. Não é lista de corte.
 
-## Carimbo e padrão gráfico do projeto
+A paginação depende dos dados: não há limite artificial de seis folhas. Notas,
+tabelas e rastreabilidade extensa recebem continuações, com carimbo e aviso.
+O índice é planejado após a paginação: até nove entradas na primeira folha;
+conjuntos maiores recebem continuação do índice, incluindo todas as páginas.
 
-Todas as folhas trazem obra, revisão, data, **Folha X de Y**, campos em branco
-para **Responsável técnico, CREA e ART**, e o aviso:
+## Vistas, escala e identificação
 
-**PRELIMINAR – NÃO UTILIZAR PARA EXECUÇÃO OU CORTE**
+As vistas usam **VIEWPORT nativo bloqueado**, com escala real 1:S. Projeções de
+apresentação ficam em blocos `JPN_VISTA_*`, inseridos em uma área auxiliar do
+espaço de modelo após a maior coordenada X + 1.000.000 mm. Esses INSERTs são
+somente cache gráfico, separados entre si, sem alterar as barras 3D originais,
+seus IDs, dimensões ou o projeto salvo. O primeiro viewport de cada layout é
+o viewport de papel; os demais apontam aos respectivos caches. Ao usar o
+espaço de modelo, não interpretar o cache como estrutura adicional.
 
-Revisões extensas remetem às notas, onde o texto completo é conservado.
-Este padrão gráfico é do JPN; não representa certificação de conformidade de desenho.
+A escala padrão mais próxima de 70% de ocupação da dimensão limitante é escolhida
+entre 1:20, 1:25, 1:50, 1:75 e 1:100. Modelos maiores usam denominadores padrão
+maiores quando necessários para caber, sem recortar a geometria. A escolha
+reserva espaço para cotas, chamadas e símbolos; arredondamento para escala
+padrão impede garantir exatamente 70%. Cada vista tem escala numérica e barra
+gráfica em milímetros. Tabelas, textos e carimbo permanecem em mm de papel.
 
-| Layer | Cor ACI | Tipo de linha | Espessura (mm) |
+Marcas curtas determinísticas: C (pilar), V (viga), T (terça), BS/BI (banzo) e D
+(barra auxiliar ou contraventamento identificado). O balão, afastado dos nós e
+das barras, usa linha de chamada. Designações completas ficam nas tabelas,
+nunca sobre as peças. Apoios usam AP1, AP2…; projeções coincidentes compartilham
+um rótulo, sem eliminar apoios do modelo. Marcas densas continuam PENDENTE.
+
+Eixos X: A, B… Z, AA…; eixos Y: 1, 2… em ordem crescente. Derivados de apoios,
+pilares e planos identificados; na ausência deles, somente extremos físicos.
+As mesmas referências aparecem em todas as vistas. Vãos entre eixos vêm das
+coordenadas reais. Cotas totais coincidentes com o único vão não são repetidas.
+
+O corte A-A intersecta as faces físicas no primeiro alinhamento de apoios,
+perpendicular à direção predominante das terças. Arestas coincidentes são
+traçadas uma única vez. A cota de cumeeira parte do ponto real da aresta alta
+comum às duas águas; em uma água, cotam-se bordas, sem inventar cumeeira.
+A referência de altura é o menor Z dos apoios declarados, sem terreno presumido.
+
+## Padrão gráfico
+
+Entidades usam cor e espessura por layer; nenhuma CTB externa é necessária
+para definir espessuras. A prévia PDF é monocromática. No DXF, as cores ACI
+preservam a distinção de layers. Impressão de espessuras está habilitada;
+`LWDISPLAY=1`, `LTSCALE=1`, `PSLTSCALE=1`. A moldura não imprime bordas de viewports.
+
+| Layer | ACI | Linha | Espessura (mm) |
 |---|---:|---|---:|
-| EIXOS | 8 | JPN_EIXO (8, −2, 1, −2 mm de papel) | 0,13 |
-| COTAS | 2 | Continuous | 0,13 |
-| PERFIS | 7 | Continuous | 0,35 |
-| CONTRAVENTOS | 6 | JPN_TRACEJADO (4, −2 mm de papel) | 0,25 |
-| BARRAS_AUXILIARES | 8 | Continuous | 0,18 |
-| COBERTURA | 4 | Continuous | 0,18 |
-| APOIOS | 3 | Continuous | 0,35 |
-| TEXTOS, MATERIAIS, MARCAS | 7 | Continuous | 0,18 |
-| REACOES | 1 | Continuous | 0,18 |
-| CARIMBO | 7 | Continuous | 0,50 |
-| column / beam / topChord / bottomChord (3D) | 30 / 7 / 3 / 3 | Continuous | 0,35 |
-| purlin / web (3D) | 4 / 8 | Continuous | 0,25 / 0,18 |
-| IDENTIFICACAO / PRELIMINAR (3D) | 7 / 1 | Continuous | 0,18 / 0,25 |
+| PERFIS, APOIOS | 7 / 3 | Contínua | 0,50 |
+| CONTRAVENTOS | 6 | JPN_TRACEJADO (4, −2) | 0,50 |
+| BARRAS_AUXILIARES | 8 | Contínua | 0,50 |
+| EIXOS | 8 | JPN_EIXO (4, −1, 0,5, −1), traço-ponto | 0,18 |
+| COTAS | 2 | Contínua | 0,25 |
+| TEXTOS, MATERIAIS, MARCAS | 7 | Contínua | 0,25 |
+| COBERTURA | 4 | Contínua | 0,25 |
+| REACOES | 1 | Contínua | 0,25 |
+| PENDENCIAS | 1 | Contínua | 0,35 |
+| CARIMBO | 7 | Contínua | 0,50 |
+| VISTAS | 7 | Contínua | 0,18 |
+| column / beam / topChord / bottomChord (3D) | 30 / 7 / 3 / 3 | Contínua | 0,50 |
+| purlin / web (3D) | 4 / 8 | Contínua | 0,50 |
+| IDENTIFICACAO / PRELIMINAR (3D) | 7 / 1 | Contínua | 0,25 / 0,35 |
 
-Entidades usam propriedades por layer. Bolhas de eixos têm raio de 3 mm e linha
-contínua. Estilo `JPN_TEXTO`: Arial.ttf, largura 0,85; notas 2,5 mm, marcas
-2 mm, títulos 4,5 mm. Estilos `JPN_MM_<escala>`: DIMENSION alinhada nativa,
-DIMLFAC=escala, DIMTXT=2,5, DIMASZ=1,5, precisão de 0,001 mm, ponto decimal e
-traços oblíquos nos blocos gráficos. A medida nativa conserva o valor não arredondado.
+Estilo de texto `JPN_TEXTO`, Arial.ttf, fator 0,85: títulos 4,5 mm; títulos de
+vista 3,2 mm; notas/cotas 2,5 mm; marcas/tabelas 2,1 mm; rastreabilidade 1,4 mm.
+Eixos têm bolhas de raio 3 mm; balões de peças ajustam o raio ao comprimento da marca.
+Estilos `JPN_MM_<S>`: DIMENSION alinhada, DIMLFAC=S, DIMTXT=2,5, DIMASZ=1,5,
+precisão de 0,001 mm, ponto decimal e traços oblíquos. A medida nativa conserva
+o valor completo. O texto nativo é `<>`, mantendo somente números após regeneração.
+O identificador semântico de cada cota fica em XData `JPN_COTA`, sem prefixo gráfico.
+O ponto de definição nativo coincide com a linha de cota, inclusive na cumeeira.
 
-## Reações e verificação
+## Dados e pendências preservados
 
-`prepareCadReactions` reutiliza `restoreMixedAnalysis`: reconstrói a entrada atual
-e confere hash/contrato/rastreios existentes. Não executa outro solver. O recibo
-é local à memória e vinculado ao projeto integral; não se fabrica por JSON nem
-é reaproveitado após alterações. Resultados importados continuam experimentais,
-sem origem homologada ou verificação de resistência das bases/ancoragens.
-O projeto salvo não contém por si só o resultado misto completo: sem pacote,
-o botão atual produz as pranchas com as reações explicitamente PENDENTE.
+Agrupamento N× exige geometria orientada, níveis, perfis, materiais, orientação,
+vínculos e apoios iguais e conhecidos. Conectividade exige nós comuns ou junções
+explícitas atuais. Cargas não são equiparadas. Não são inferidos pórticos,
+tesouras, apoios ou contenções. Contraventamento exige identificação explícita
+na declaração; telhas/terças não viram contenção. Pórticos fora dos planos
+X/Y globais ou não identificados continuam PENDENTE.
+
+Quantitativos vêm exclusivamente de `declaredTakeoff`. Ausência de densidade,
+perfil ou massa permanece PENDENTE, inclusive no resumo e no total. Perfis de
+mesmo nome com seção/material distintos não são fundidos silenciosamente.
+
+`prepareCadReactions` reutiliza `restoreMixedAnalysis` e seus contratos/hash:
+sem pacote atual conferido, recibo inválido ou projeto alterado, não imprime
+reações antigas. Preserva componentes concomitantes por nó e combinação,
+sem tratá-los como capacidades. A ordem/origem experimental e SHA constam
+na rastreabilidade. O botão atual, sem pacote, informa reações PENDENTE.
+Bases, chumbadores, chapas, furos, soldas e fundações não são dimensionados.
+Permanecem `computedStructuralApproval=false`, `fabricationRelease=false` e
+`NOT_READY_BLOCKED`. A apresentação não constitui aprovação estrutural.
+
+## Reprodução e evidências
 
 ```text
 npx vitest run src/lib/exports
@@ -115,15 +145,24 @@ npx tsc --noEmit
 npx eslint .
 python validation/integration-general/audit.py
 python tests/verify_int8_dxf.py
+python tests/preview_int8_dxf.py
 ```
 
 Os testes geram `.tools/int8/galpao.dxf`, `galpao-a1.dxf` e `garagem-reacoes.dxf`.
-`dxf-parser` e `ezdxf` conferem folhas, estilos, cotas independentes, modelos 3D,
-agrupamentos, bases e reações. A conferência gráfica usa renderização independente;
-não foi testada uma instalação comercial do AutoCAD. Geometrias de pórtico fora
-dos planos globais, etiquetas muito densas e dados incompletos exigem conferência
-manual e aparecem PENDENTE, sem recriar dados de engenharia.
+`dxf-parser` e `ezdxf` verificam folhas, viewports realmente ligados aos caches,
+estilos, medidas analíticas, reações, modelos 3D e geometria da cumeeira.
+O verificador também confere limites dos textos com as fontes reais e
+não admite reparos silenciosos do DXF. O galpão analítico tem 9 peças,
+36.000 mm de comprimento total e 942 kg; não é projeto liberado para construção.
 
-Referência primária dos objetos nativos:
+`preview_int8_dxf.py` usa `ezdxf.addons.drawing` + Matplotlib, sem redesenhar as
+vistas, para produzir PDF com todas as folhas e PNGs individuais para inspeção.
+Converte mm de espessura para pontos tipográficos no backend PDF. Prévia
+conferida: [galpao-pranchas.pdf](validation/int8/galpao-pranchas.pdf).
+Não foi testado o AutoCAD comercial nem uma impressora física.
+
+Referências técnicas primárias dos formatos e da renderização:
 [Autodesk LAYOUT](https://help.autodesk.com/cloudhelp/2025/ENU/AutoCAD-DXF/files/GUID-433D25BF-655D-4697-834E-C666EDFD956D.htm),
-[BLOCK_RECORD](https://help.autodesk.com/cloudhelp/2026/ENU/AutoCAD-DXF/files/GUID-A1FD1934-7EF5-4D35-A4B0-F8AE54A9A20A.htm).
+[PLOTSETTINGS](https://help.autodesk.com/cloudhelp/2025/ENU/AutoCAD-DXF/files/GUID-1113675E-AB07-4567-801A-310CDE0D56E9.htm),
+[escala de tipos de linha em viewports](https://help.autodesk.com/cloudhelp/2026/ENU/AutoCAD-Core/files/GUID-4323BBAD-2757-4E92-B2E4-E0E550BB37CB.htm),
+[ezdxf drawing](https://ezdxf.readthedocs.io/en/stable/addons/drawing.html).
