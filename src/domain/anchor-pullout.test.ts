@@ -248,3 +248,20 @@ it("A1: permanente sem classificação ou sem declaração NBR 8681 -> unverifie
     result:{combinations:{U:{nodes:{N1:r(-1000)}},F:{nodes:{N1:r(-1500)}}}}});
   expect(other.permanentClassificationVerified).toBe(false);expect(other.studioStatus.N1).toBe("pending");
 });
+it("A1 fatores: γg abaixo do favorável (0,9) e acima do desfavorável (1,35) -> ANCHOR_PERMANENT_FACTOR_MISMATCH e PENDENTE",()=>{
+  const mk=(gU:number,gF:number)=>({actions:engineeringCombinations.actions,combinations:[
+    {id:"U",purpose:"ULS" as const,hypothesis:gU+" G + 1,4 W",reference:ref,terms:[term("G",gU),term("W",1.4)]},
+    {id:"F",purpose:"ULS" as const,hypothesis:gF+" G + 1,4 W",reference:ref,terms:[term("G",gF),term("W",1.4)]}]});
+  const go=(gU:number,gF:number)=>assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["U","F"],nbr8681Declaration,
+    engineeringCombinations:mk(gU,gF),result:{combinations:{U:{nodes:{N1:r(-1000)}},F:{nodes:{N1:r(-1500)}}}}});
+  const below=go(1.25,0.9);
+  expect(below.permanentFactorMismatches).toEqual([{combinationId:"F",caseId:"G",declaredGamma:0.9,referenceFavorable:1,referenceUnfavorable:1.25}]);
+  expect(below.supports[0].issues.join()).toMatch(/ANCHOR_PERMANENT_FACTOR_MISMATCH: γg fora dos valores de referência \(NBR 8681 Tabelas 1 a 3\): F\/G γ declarado 0,9 \(referência favorável 1, desfavorável 1,25\)/);
+  expect(below.studioStatus.N1).toBe("pending");
+  const above=go(1.35,1);
+  expect(above.permanentFactorMismatches).toEqual([{combinationId:"U",caseId:"G",declaredGamma:1.35,referenceFavorable:1,referenceUnfavorable:1.25}]);
+  expect(above.supports[0].issues.join()).toMatch(/U\/G γ declarado 1,35 \(referência favorável 1, desfavorável 1,25\)/);
+  expect(above.studioStatus.N1).toBe("pending");
+  // at the references (1,25 and 1,0) there is no mismatch
+  expect(go(1.25,1).permanentFactorMismatches).toEqual([]);
+});

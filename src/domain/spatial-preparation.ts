@@ -66,6 +66,10 @@ export const spatialPreparationSchema = z.object({
   resistanceStandards:resistanceStandardsSchema.optional(),
   resistance: z.array(resistancePreparationSchema).max(5000).optional(),
   engineeringCombinations: engineeringCombinationsSchema.optional(),
+  /** NBR 8681 declaration (classification of each action) that GENERATED engineeringCombinations. Stored as given to the
+   * generator and fully re-validated where used (nbr8681DeclarationFor regenerates and must reproduce the stored table);
+   * dropped whenever the combination table is replaced by any other path. */
+  nbr8681Declaration: z.object({ schema_version: z.literal("jpn.nbr8681-declaration/1") }).passthrough().optional(),
   connections: connectionsSchema.optional(),
   serviceCriteria:z.array(declaredServiceCriterionSchema).max(500).optional(),
   memberDesign:z.array(memberDesignDeclarationSchema).max(1000).refine(items=>new Set(items.map(d=>JSON.stringify([d.pieceId,d.combinationId]))).size===items.length,"Estudos resistentes duplicados para a mesma peça e combinação.").optional(),

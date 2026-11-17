@@ -10,7 +10,9 @@ export function applyEngineeringCombinations(project:Project,value:unknown):Proj
   const compiled=compileEngineeringCombinations(value,draft.cases.map(c=>c.id));
   const loading=draft.loading?{...draft.loading}:undefined;
   if(loading)delete loading.overlapReview;
-  return {...project,workspace:{...project.workspace,spatialPreparation:spatialPreparationSchema.parse({...draft,
+  // A replaced table no longer comes from a stored NBR 8681 declaration (applyNbr8681Combinations sets it afterwards).
+  const {nbr8681Declaration:_stale,...rest}=draft;void _stale;
+  return {...project,workspace:{...project.workspace,spatialPreparation:spatialPreparationSchema.parse({...rest,
     combinations:compiled.combinations,engineeringCombinations:compiled.declaration,...(loading?{loading}:{}),
   })}};
 }

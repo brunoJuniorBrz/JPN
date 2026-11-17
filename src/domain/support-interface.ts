@@ -197,6 +197,18 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
     for(const id of permanentIds)if(!refs?.has(id))unclassified.add(id);
   }
   const classificationVerified=permanentIds.size>0&&unclassified.size===0;
+  // Each permanent term of a ULS combination must sit at its reference favorable OR unfavorable factor (gamma*psi,
+  // NBR 8681 Tabelas 1 a 3, by classification). Anything else (below favorable, above unfavorable, in between, psi != 1)
+  // is not a 5.1.3.1 set: pending with the action, the declared and the reference values.
+  const fmt=(v:number)=>v.toLocaleString("pt-BR",{maximumFractionDigits:6});
+  const factorMismatches=classificationVerified?ulsDeclarations.flatMap(c=>{
+    const refs=referenceFor(kindOf(c)!)!;
+    return [...permanentIds].flatMap(id=>{
+      const t=c.terms.find(t=>t.caseId===id),r=refs.get(id)!,declared=t?t.gamma*t.psi:0;
+      const ok=Math.abs(declared-r.gf)<=1e-9||Math.abs(declared-r.gu)<=1e-9;
+      return ok?[]:[{combinationId:c.id,caseId:id,declaredGamma:declared,referenceFavorable:r.gf,referenceUnfavorable:r.gu}];
+    });
+  }):[];
   const permanentsAt=(c:Ec,bound:"gf"|"gu")=>{
     const kind=kindOf(c),refs=kind?referenceFor(kind):null;
     return !!refs&&[...permanentIds].every(id=>{
@@ -265,6 +277,9 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
         favorableSet==="unverified"?["ANCHOR_FAVORABLE_PERMANENT_SET_UNVERIFIED: fatores e cobertura das combinações ELU não confirmados; o arrancamento com permanente mínimo não foi verificado."]:[]),
       ...(validULS&&ec&&!classificationVerified?["ANCHOR_PERMANENT_CLASSIFICATION_UNVERIFIED: sem classificação NBR 8681 rastreável (Tabelas 1 a 3) para "+
         (unclassified.size?[...unclassified].join(", "):"as ações permanentes")+"; γg de referência desconhecido, conjuntos favorável e desfavorável não verificados."]:[]),
+      ...(factorMismatches.length?["ANCHOR_PERMANENT_FACTOR_MISMATCH: γg fora dos valores de referência (NBR 8681 Tabelas 1 a 3): "+
+        factorMismatches.map(m=>m.combinationId+"/"+m.caseId+" γ declarado "+fmt(m.declaredGamma)+" (referência favorável "+fmt(m.referenceFavorable)+
+          ", desfavorável "+fmt(m.referenceUnfavorable)+")").join("; ")+"."]:[]),
       ...(unfavorableSet==="missing"?["ANCHOR_UNFAVORABLE_PERMANENT_SET_MISSING: falta combinar cada permanente com o seu γg desfavorável de referência (NBR 8681 5.1.3.1; Tabelas 1 a 3) em cada hipótese variável; se a permanente tracionar o apoio, o arrancamento fica subestimado. Verifique ELU: "+
         [...new Set(missingUnfavorableCombinationIds)].join(", ")+"."]:[]),
       ...(pullout.demandKn!==null&&pullout.demandKn>1e-9&&(pullout.concurrentHorizontalShearKn??0)>1e-9?
@@ -281,7 +296,7 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
   return {schema_version:"jpn.anchor-pullout/1" as const,combinationsConsidered:uls,
     combinationPurposeDeclared:validULS,favorablePermanentSet:favorableSet,favorableCombinationIds,
     missingFavorableCombinationIds,unfavorablePermanentSet:unfavorableSet,missingUnfavorableCombinationIds,
-    permanentClassificationVerified:classificationVerified,unclassifiedPermanents:[...unclassified],supports,
+    permanentClassificationVerified:classificationVerified,unclassifiedPermanents:[...unclassified],permanentFactorMismatches:factorMismatches,supports,
     governingSupport:governing?{nodeId:governing.nodeId,ratio:governing.pullout.ratio,combinationId:governing.pullout.governingCombinationId}:null,
     studioStatus:Object.fromEntries(supports.map(s=>[s.nodeId,s.pullout.status==="exceeds-declared-capacity"?"exceeds":s.pullout.status==="capacity-pending"||s.issues.length?"pending":s.critical?"governing":"ok"])) as Record<string,"exceeds"|"pending"|"governing"|"ok">,
     limitations:["Capacidades declaradas pelo engenheiro (ficha do fabricante); o JPN não calcula ancoragem nem alvenaria.",

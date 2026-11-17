@@ -22,7 +22,9 @@ export function applyEngineeringPackage(project: Project, value: unknown): Proje
   cases.push(...pack.wind.cases.map(c=>({id:c.id,source:c.reference.source})));
   const combinations = compileEngineeringCombinations(pack.combinations,cases.map(c=>c.id)).combinations;
   const loading = {...(d.loading??emptyLoading()),wind:pack.wind}; delete loading.overlapReview;
-  const draft = spatialPreparationSchema.parse({...d,cases,combinations,engineeringCombinations:pack.combinations,loading});
+  // The package replaces the combination table: a stored NBR 8681 declaration no longer describes it.
+  const { nbr8681Declaration: _stale, ...rest } = d; void _stale;
+  const draft = spatialPreparationSchema.parse({...rest,cases,combinations,engineeringCombinations:pack.combinations,loading});
   const next = {...project,workspace:{...project.workspace,spatialPreparation:draft}};
   // Pure preflight; never invokes solver or supplies missing physical data.
   distributeWindActions(next,pack.wind);

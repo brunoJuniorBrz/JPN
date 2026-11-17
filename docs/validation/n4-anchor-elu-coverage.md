@@ -17,7 +17,9 @@ Viram `unverified`, com o apoio PENDENTE (`ANCHOR_PERMANENT_CLASSIFICATION_UNVER
 - declaração NBR 8681 ausente;
 - combinação sem item 5.1.3.x.
 
-**Limitação atual:** o projeto não guarda a declaração NBR 8681, que só é usada pelo gerador e descartada depois. Por isso o relatório de resistência ainda não a repassa, e no app todos os apoios em parede existente ficam com classificação `unverified` (PENDENTE) até que a declaração seja persistida.
+**Integração (auditoria cruzada do 7db6287).** `applyNbr8681Combinations` grava no projeto (`spatialPreparation.nbr8681Declaration`) a declaração que gerou a tabela. O relatório de resistência a repassa ao arrancamento por `nbr8681DeclarationFor`, mas só quando ela, regenerada com os casos atuais, reproduz exatamente as `engineeringCombinations` do projeto. Se a tabela foi editada à mão, substituída por pacote ou pelo caminho genérico (que apaga a declaração), ou se os casos mudaram, nada é repassado: a classificação fica `unverified` e o apoio PENDENTE. A classificação nunca é inventada. Teste com PyNite real em `support-interfaces-real.test.ts`.
+
+**Fatores fora da referência.** Cada permanente de cada ELU precisa estar no γg favorável ou no desfavorável de referência (γ·ψ, tolerância 1e-9). Fora disso, o apoio fica PENDENTE com `ANCHOR_PERMANENT_FACTOR_MISMATCH`, informando combinação, ação, γ declarado e γ de referência. Coeficientes normativos não foram alterados.
 
 A assinatura compara γ·ψ arredondado a 9 casas, para que 1,5 × 0,8 (1.2000000000000002 em ponto flutuante) case com 1,2 declarado.
 
