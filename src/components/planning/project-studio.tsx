@@ -1,6 +1,6 @@
 "use client";
-import type { ReactNode } from "react";
-import { BarChart3, Box, ClipboardCheck, FileText, HardHat, Layers, Package, Ruler, Weight } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { BarChart3, Box, ChevronDown, ChevronUp, ClipboardCheck, FileText, HardHat, Layers, Package, Ruler, Weight } from "lucide-react";
 import { cx } from "@/components/ui/cx";
 
 /** Etapas do estúdio do projeto (F1). A ordem é a do fluxo de trabalho. */
@@ -72,6 +72,7 @@ export function StudioRail({ step, onStep, tool, onTool, showTools, pendingCount
 export function StudioLayout({ rail, viewportToolbar, viewport, inspectorTitle, inspector, status }: {
   rail: ReactNode; viewportToolbar?: ReactNode; viewport: ReactNode; inspectorTitle: string; inspector: ReactNode; status: ReactNode;
 }) {
+  const [collapsed, setCollapsed] = useState(false);
   return <div className="project-studio" data-testid="project-studio">
     {rail}
     <section className="studio-viewport" aria-label="Visualização do modelo">
@@ -79,8 +80,15 @@ export function StudioLayout({ rail, viewportToolbar, viewport, inspectorTitle, 
       <div className="studio-viewport-body">{viewport}</div>
     </section>
     <section className="studio-inspector" aria-labelledby="studio-inspector-title">
-      <h2 id="studio-inspector-title" className="studio-inspector-title">{inspectorTitle}</h2>
-      {inspector}
+      <span className="studio-sheet-grabber" aria-hidden="true" />
+      <div className="studio-inspector-head">
+        <h2 id="studio-inspector-title" className="studio-inspector-title">{inspectorTitle}</h2>
+        {/* Só aparece no celular: recolhe o painel para ver mais do modelo. */}
+        <button type="button" className="studio-sheet-toggle" aria-expanded={!collapsed} aria-controls="studio-inspector-body" onClick={() => setCollapsed(value => !value)}>
+          {collapsed ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{collapsed ? "Mostrar painel" : "Recolher painel"}
+        </button>
+      </div>
+      <div id="studio-inspector-body" hidden={collapsed}>{inspector}</div>
     </section>
     <footer className="studio-status" aria-label="Estado do projeto">{status}</footer>
   </div>;

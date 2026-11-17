@@ -46,6 +46,22 @@ Registro curto das decisões tomadas sem consulta (ver regra em [PLANO-UI.md](PL
    - Isso é feito só com CSS (`order` e `display: contents`), sem reescrever o `structure-3d.tsx`.
    - A ordem de foco segue o DOM antigo. A F2/F3 deve reorganizar os controles no código.
 7. **Barra de status.** Mostra o selo "Bloqueado para fabricação", o aviso permanente de segurança (`result-safety-warning`) e os totais (`takeoff-totals`), sempre visíveis. O estado de salvamento fica no rodapé do inspetor, como antes.
-8. **Testes e2e.** Os testes antigos são protegidos pelo `audit.py`.
+8. **Altura da janela no desktop.** A partir de 1200px o estúdio ocupa a altura da janela, e etapas, visualização e inspetor rolam cada um por si.
+   - Isso substitui o `sticky` do item 1. A barra de status fixa cobria a parte de baixo da tela 3D e quebrava a seleção por clique no modelo (e2e `profiles-3d`).
+   - A tela 3D mede a altura da coluna via container query (`cqh`).
+   - Na coluna estreita, os botões de câmera (Iso, Superior…) viram uma barra acima da tela em vez de ficarem sobrepostos.
+9. **Testes e2e.** Os testes antigos são protegidos pelo `audit.py`.
    - As mudanças necessárias (helper `result-tabs.ts` e 7 specs) são fixadas por blob em `REVIEWED_AMENDMENTS`, para revisão do dono do projeto no PR.
    - O helper mantém `openResultTab` e `openEngineeringTool`, agora traduzidos para etapas e ferramentas.
+
+## F1 parte B — Celular
+
+1. **Três faixas de largura.**
+   - Celular (< 1000px): a visualização fica no topo, com altura contida (54% da tela) e os controles extras rolando dentro dela. Logo abaixo vem o inspetor, como painel inferior.
+   - Tablet (1000–1199px): mesma ordem, com as etapas em grade no topo.
+   - Desktop (≥ 1200px): como na parte A.
+2. **Etapas numa barra fixa embaixo** (ícone e rótulo, rolagem horizontal). A navegação móvel do app (Início/Projetos/…) some na tela do projeto: nenhum teste depende dela e o link "Todos os projetos" continua no topo. A contagem de pendências da Verificação vira um ponto, e o texto continua no nome acessível.
+3. **Inspetor como painel inferior, não modal.** Tem alça e botão "Recolher painel" (`aria-expanded`). Um `Sheet` modal escureceria e bloquearia o 3D e quebraria os fluxos de 375/390px, que alternam entre o modelo e o formulário. O `Sheet` modal da F0 fica para ações pontuais (F2/F4).
+4. **Barra de status fixa acima das etapas**, com o selo "Bloqueado para fabricação", o aviso de segurança (texto completo, fonte menor) e os totais com rolagem horizontal.
+5. **Grades com `minmax(0, 1fr)`.** Sem isso, a lista de ferramentas alargava a página para 647px e o celular dava zoom out.
+6. **Selo do modo dev.** O selo "N · Insight" do Next ficava sobre as duas primeiras etapas da barra e interceptava os toques, inclusive no e2e. Foi movido para `top-right` em `next.config.ts` (só desenvolvimento; `devIndicators: false` não o esconde nesta versão).
