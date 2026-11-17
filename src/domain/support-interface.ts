@@ -170,7 +170,11 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
     });
   const favorableCombinationIds=ulsDeclarations.filter(minimumPermanents).map(c=>c.id);
   const favorableSignatures=new Set(ulsDeclarations.filter(minimumPermanents).map(signature));
-  const missingFavorableCombinationIds=ulsDeclarations.filter(c=>!favorableSignatures.has(signature(c))).map(c=>c.id);
+  // The permanent-only case does not produce a suction hypothesis if variable-load ULS exist.
+  // Demand the minimum permanent for every distinct ACTIVE variable-load vector, not just a global G-only case.
+  const activeVariableULS=ulsDeclarations.filter(c=>variableIds.some(id=>factorOf(c,id)>1e-12));
+  const requiredULS=activeVariableULS.length?activeVariableULS:ulsDeclarations;
+  const missingFavorableCombinationIds=requiredULS.filter(c=>!favorableSignatures.has(signature(c))).map(c=>c.id);
   const favorableSet=!validULS||!ec||permanentIds.size===0?"unverified" as const:
     favorableCombinationIds.length>0&&missingFavorableCombinationIds.length===0?"present" as const:"missing" as const;
   const supports=input.interfaces.filter(f=>EXISTING.has(f.kind)).map(face=>{
