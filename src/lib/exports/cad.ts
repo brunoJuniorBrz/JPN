@@ -3,9 +3,14 @@ import type { Project } from "@/domain/models";
 import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { generateStructure, structureViews } from "@/domain/calculations/structure";
 import { PRELIMINARY_NOTICE, type ViewName } from "@/domain/calculations/geometry";
-import {addPhysicalSheets} from "./cad-sheets";
+import {addPhysicalSheets,type CadExportOptions} from "./cad-sheets";
+export {prepareCadReactions} from "./cad-model";
+export type {CadReactionReceipt} from "./cad-model";
+export type {CadExportOptions} from "./cad-sheets";
 
-export function createStructureDxf(project: Project, issuedAt:Date=new Date()): string {
+export function createStructureDxf(project: Project, issuedAtOrOptions:Date|CadExportOptions=new Date(), options:CadExportOptions={}): string {
+  const issuedAt=issuedAtOrOptions instanceof Date?issuedAtOrOptions:new Date();
+  const settings=issuedAtOrOptions instanceof Date?options:issuedAtOrOptions;
   const result = resolvePhysicalStructure(project);
   if (!result.model) throw new Error("Geometria indisponível para exportação.");
   const dxf = new DxfWriter(); dxf.setUnits(Units.Millimeters);
@@ -21,7 +26,7 @@ export function createStructureDxf(project: Project, issuedAt:Date=new Date()): 
   dxf.addText(point3d(0, -1000, 0), 150, "PRELIMINAR - NAO UTILIZAR PARA EXECUCAO OU CORTE", { layerName: "PRELIMINAR" });
   const revision = String(project.workspace.physicalStructure?.revision ?? project.roof.revision).replace(/[\x00-\x1f\x7f]/g," ");
   dxf.addText(point3d(0, -1300, 0), 100, `Projeto ${project.id} / revisao geometrica ${revision} / unidades mm`, { layerName: "PRELIMINAR" });
-  if(project.workspace.physicalStructure)addPhysicalSheets(dxf,project,issuedAt);
+  if(project.workspace.physicalStructure)addPhysicalSheets(dxf,project,issuedAt,settings);
   return dxf.stringify();
 }
 const escape = (value: string) => value.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]!);
