@@ -23,7 +23,9 @@ import { DeclaredEngineering, DeclaredFiles, DeclaredMaterials, DeclaredSafetyWa
 import { ProjectWorkbench, type WorkbenchTool } from "./project-workbench";
 import { StudioLayout, StudioRail, studioStepFromLegacy, studioStepIndex, studioStepUrl, studioSteps, type AnalysisTool, type StudioStepId } from "./project-studio";
 import type { PendingTarget } from "./result-presentation";
-import { StudioAnalysisProvider } from "./studio-analysis";
+import { StudioAnalysisProvider, useStudioAnalysis } from "./studio-analysis";
+import { StudioCommandPalette, StudioViewportMenu } from "./studio-command";
+import type { Viewer3DApi } from "./structure-3d";
 import { StudioSelection } from "./studio-selection";
 import { studioModelFromPhysical } from "@/domain/studio-result-layers";
 import { StudioResultsBar, useStudioResultView } from "./studio-results";
@@ -49,6 +51,8 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   const { data, saveProject, flush, saveState, setInvalidDraft } = useData(); const router = useRouter();
   const [selectedPiece, setSelectedPiece] = useState(""), [selectedNode, setSelectedNode] = useState("");
   const [showLabels, setShowLabels] = useState(true);
+  const [viewerApi, setViewerApi] = useState<Viewer3DApi | null>(null);
+  const { analysis: studioAnalysis, commands: analysisCommands } = useStudioAnalysis();
   const [project, setProject] = useState(() => initial ?? newProject(data.settings));
   const [step, setStep] = useState<StudioStepId>(initialStudioStep ?? studioStepFromLegacy(initialStep));
   const [analysisTool, setAnalysisTool] = useState<AnalysisTool>("overview");
@@ -181,7 +185,11 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   const pendingCount = declared ? undefined : generated.result.pending.length;
   return <>
     <Link href="/projetos" className="back-link"><ArrowLeft size={18} />Todos os projetos</Link>
-    <PageHeading eyebrow="DA MEDIDA À LISTA DE MATERIAIS" title={project.name || "Vamos começar sua obra"} description="Informe a obra, configure a geometria e veja as peças e os quantitativos." />
+    <PageHeading eyebrow="DA MEDIDA À LISTA DE MATERIAIS" title={project.name || "Vamos começar sua obra"} description="Informe a obra, configure a geometria e veja as peças e os quantitativos."
+      action={<StudioCommandPalette model={selectionModel} actions={{
+        goStep: id => go(id), openTool, open3D: open3DViewer, save, selectPiece: setSelectedPiece, showAll: () => viewerApi?.showAll(),
+        recalculate: () => { if (studioAnalysis.ready) analysisCommands.run(); else openTool("mixedlocal"); },
+      }} />} />
     {project.isExample && <p className="example-banner">EXEMPLO FICTÍCIO · Medidas, distribuição e perfis apenas para demonstrar o cálculo geométrico.</p>}
     {step !== "materiais" && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
     <StudioLayout
@@ -190,8 +198,10 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
           ? <InfoTip label="visualização 3D">Visualização 3D da estrutura disponível também no celular. Arraste para girar; use Iso/Superior/Frontal/Lateral para vistas prontas.</InfoTip>
           : <span className="field-hint">{`Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span>}</div>
         {preview.model && <StudioResultsBar onSelectNode={setSelectedNode} onOpenAnalysis={() => openTool("mixedlocal")} showLabels={showLabels} onShowLabels={setShowLabels} />}</>}
-      viewport={declared ? declaredModel : <GeneratedViewport project={deferredProject} result={viewGenerated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece}
-        analysisColors={resultView.colors} deformed={resultView.deformed} orientationCube labels={resultView.labels} />}
+      viewport={declared ? declaredModel : <StudioViewportMenu model={selectionModel} selected={selectedPiece} api={viewerApi} onShowForces={id => { setSelectedPiece(id); if (step !== "analise" && step !== "verificacao") go("verificacao"); }} onEditProfile={configureProfile}>
+        <GeneratedViewport project={deferredProject} result={viewGenerated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece}
+          analysisColors={resultView.colors} deformed={resultView.deformed} orientationCube labels={resultView.labels} onApi={setViewerApi} />
+      </StudioViewportMenu>}
       inspectorTitle={step === "analise" && !declared ? `Análise · ${analysisToolLabel(analysisTool)}` : stepLabel}
       inspector={<>
         <p className="workflow-progress">Passo {stepIndex + 1} de {studioSteps.length} — {stepLabel}</p>

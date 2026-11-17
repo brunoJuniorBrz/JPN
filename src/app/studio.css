@@ -134,6 +134,21 @@
 .studio-pending-dialog { width: min(720px, calc(100vw - 24px)); }
 .studio-pending-list ul { margin: var(--space-3) 0 0; padding-left: 18px; display: grid; gap: 6px; font-size: var(--text-md); line-height: 1.5; }
 
+/* F5: menu de contexto e paleta de comandos */
+.studio-canvas-zone { min-width: 0; border-radius: var(--radius-md); }
+.studio-canvas-zone:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.studio-command-trigger { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 10px; border: 1px solid var(--color-line-strong); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-muted); font-size: var(--text-sm); }
+.studio-command-trigger:hover { color: var(--color-ink); background: var(--color-surface-hover); }
+.studio-command-trigger:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.studio-command-dialog { width: min(560px, calc(100vw - 24px)); top: 18%; transform: translate(-50%, 0); }
+.studio-command-dialog .ui-dialog-body { padding-top: 0; }
+.studio-command-input { min-height: 44px; margin-bottom: var(--space-2); }
+.studio-command-list { max-height: min(56vh, 420px); overflow: auto; }
+.studio-command-list [cmdk-group-heading] { padding: 8px 6px 4px; font-size: var(--text-2xs); font-weight: var(--weight-bold); color: var(--color-muted); text-transform: uppercase; letter-spacing: .5px; }
+.studio-command-list [cmdk-item] { display: flex; align-items: center; gap: 8px; min-height: 38px; padding: 6px 8px; border-radius: var(--radius-sm); font-size: var(--text-md); cursor: pointer; }
+.studio-command-list [cmdk-item][data-selected="true"] { background: var(--color-accent-soft); }
+.studio-command-list [cmdk-empty] { padding: 16px 8px; color: var(--color-muted); font-size: var(--text-sm); }
+
 /* Barra de status */
 .studio-status { position: sticky; bottom: 0; z-index: var(--z-sticky); display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-3); padding: 8px 12px; background: #fffffff2; backdrop-filter: blur(8px); border: 1px solid var(--color-line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
 .studio-status .result-permanent-warning { position: static; margin: 0; padding: 4px 8px; flex: 1 1 260px; font-size: var(--text-xs); }

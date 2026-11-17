@@ -122,3 +122,23 @@ Registro curto das decisões tomadas sem consulta (ver regra em [PLANO-UI.md](PL
 5. **Avisos locais viram ícone com dica (`InfoTip`).** É um Popover do Radix que abre por clique, toque e teclado, e não só por hover.
    - Aplicado às orientações sem risco: "disponível também no celular" e "quantitativos independentes de preços".
    - Avisos de segurança, bloqueios e o aviso permanente continuam em texto visível. **Pendente:** revisar, um a um, os avisos locais dentro dos painéis antigos (análise, preparação), porque mexer neles exige reescrever esses painéis.
+6. **Desempenho.** A primeira medição deu 226–283 ms no modo dev, porque o projeto era gerado várias vezes e a visualização re-renderizava junto. Com 2 mudanças, os totais caíram abaixo de 200 ms no e2e:
+   - A pré-visualização passou a reaproveitar o resultado gerado.
+   - A visualização (2D/3D, seleção, camadas) passou a usar `useDeferredValue(project)`. Formulários, totais e selo continuam imediatos.
+
+## F5 — Realismo e menus
+
+1. **Menu de contexto no 3D.** É o `ContextMenu` da F0, aberto por clique direito, toque longo, Shift+F10 ou tecla Menu, na área do modelo (`studio-canvas-zone`, focável).
+   - O clique direito já seleciona a peça sob o cursor, porque o raycaster trata qualquer botão.
+   - Ações: ver esforços, isolar peça, ocultar família, medir a partir daqui, aproximar, editar perfil, mostrar tudo e vista isométrica.
+   - Todas existem também em lugar visível (ferramentas do 3D, inspetor, etapa Estrutura).
+   - O `Structure3D` expõe essas ações por `onApi`, com os mesmos estados dos botões (só visuais, nada persistido).
+2. **Ctrl+K / ⌘K (cmdk).** Paleta com etapas, ferramentas de análise, ações (abrir 3D, recalcular, mostrar tudo, salvar) e busca de peças (até 20 resultados, via `findPieces`). Há também o botão "Comandos" com a tecla no cabeçalho.
+3. **Modo Acabado (apresentação): GTAO e contorno de arestas.** Usa `EffectComposer` com `GTAOPass`, `OutlinePass` (sobre a raiz dos perfis) e `OutputPass`, todos de `three/addons`.
+   - É criado só na primeira vez que o Acabado abre e nunca em aparelho de qualidade reduzida.
+   - As métricas `data-draw-calls`/`data-triangles` continuam medidas só no passe da cena; `data-postprocessing` diz o que está ligado.
+4. **Materiais.**
+   - Aço pintado/galvanizado/bruto, telhas trapezoidal/termoacústica/junta agrafada, paredes e piso já existiam.
+   - Nova: telha ondulada, senoide de 76 mm × 18 mm, só visual, com teste unitário.
+   - "Paredes existentes" continuam as paredes cenográficas do Acabado. **Pendente:** representar paredes de alvenaria ou concreto do apoio guiado como objetos próprios.
+5. **Desempenho.** O pós-processamento só roda no Acabado e só em qualidade padrão. Em celular fraco, `viewerQuality` já reduz segmentos e pixels e desliga o pós-processamento. O exemplo do galpão segue fluido nos modos técnicos, que não mudaram.

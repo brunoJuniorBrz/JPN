@@ -20,8 +20,11 @@ export function ContextMenuTrigger({ onKeyDown, ...props }: ComponentProps<typeo
         if (event.defaultPrevented) return;
         if (event.key === "ContextMenu" || (event.shiftKey && event.key === "F10")) {
           event.preventDefault();
+          // Centro da parte VISÍVEL do elemento: num gatilho maior que a tela, o menu nasce dentro dela.
           const rect = event.currentTarget.getBoundingClientRect();
-          event.currentTarget.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 2 }));
+          const left = Math.max(rect.left, 0), right = Math.min(rect.right, window.innerWidth);
+          const top = Math.max(rect.top, 0), bottom = Math.min(rect.bottom, window.innerHeight);
+          event.currentTarget.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: (left + right) / 2, clientY: (top + bottom) / 2 }));
         }
       }}
     />
