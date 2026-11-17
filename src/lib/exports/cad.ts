@@ -25,7 +25,8 @@ export function createCadDrawing(project: Project, issuedAtOrOptions:Date|CadExp
   const nodes = new Map(result.model.nodes.map(n => [n.id, n]));
   // Loose commercial components have NO verified XYZ location.
   // Do not export their test/staging coordinates as installed 3D geometry.
-  const installed=result.model.pieces.filter(p=>!isUnlocatedCommercialPiece(p));
+  const unlocatedIds=new Set(project.workspace.physicalStructure?.pieces.filter(isUnlocatedCommercialPiece).map(p=>p.id)??[]);
+  const installed=result.model.pieces.filter(p=>!unlocatedIds.has(p.id));
   for (const p of installed) {
     const a = nodes.get(p.start)!, b = nodes.get(p.end)!;
     dxf.addLine(point3d(a.x, a.y, a.z), point3d(b.x, b.y, b.z), { layerName: p.role });
