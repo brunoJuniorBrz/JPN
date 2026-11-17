@@ -4,6 +4,7 @@ import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { generateStructure, structureViews } from "@/domain/calculations/structure";
 import { PRELIMINARY_NOTICE, type ViewName } from "@/domain/calculations/geometry";
 import {addPhysicalSheets,type CadExportOptions} from "./cad-sheets";
+import {isUnlocatedCommercialPiece} from "./package-commercial-groups";
 export {prepareCadReactions} from "./cad-model";
 export type {CadReactionReceipt} from "./cad-model";
 export type {CadExportOptions} from "./cad-sheets";
@@ -22,12 +23,19 @@ export function createCadDrawing(project: Project, issuedAtOrOptions:Date|CadExp
   for (const [role, color] of Object.entries(colors)) dxf.addLayer(role, color);
   dxf.addLayer("IDENTIFICACAO", 7); dxf.addLayer("PRELIMINAR", 1);
   const nodes = new Map(result.model.nodes.map(n => [n.id, n]));
-  for (const p of result.model.pieces) {
+  // Loose commercial components have NO verified XYZ location.
+  // Do not export their test/staging coordinates as installed 3D geometry.
+  const installed=result.model.pieces.filter(p=>!isUnlocatedCommercialPiece(p));
+  for (const p of installed) {
     const a = nodes.get(p.start)!, b = nodes.get(p.end)!;
     dxf.addLine(point3d(a.x, a.y, a.z), point3d(b.x, b.y, b.z), { layerName: p.role });
     dxf.addText(point3d((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2), 60, p.id, { layerName: "IDENTIFICACAO" });
   }
   dxf.addText(point3d(0, -1000, 0), 150, "PRELIMINAR - NAO UTILIZAR PARA EXECUCAO OU CORTE", { layerName: "PRELIMINAR" });
+  if(installed.length!==result.model.pieces.length)
+    dxf.addText(point3d(0,-1700,0),90,
+      `${result.model.pieces.length-installed.length} itens SEM LOCACAO omitidos do modelo 3D; consultar itens a confirmar.`,
+      {layerName:"PRELIMINAR"});
   const revision = String(project.workspace.physicalStructure?.revision ?? project.roof.revision).replace(/[\x00-\x1f\x7f]/g," ");
   dxf.addText(point3d(0, -1300, 0), 100, `Projeto ${project.id} / revisao geometrica ${revision} / unidades mm`, { layerName: "PRELIMINAR" });
   const sheets=addPhysicalSheets(dxf,project,issuedAt,settings);
