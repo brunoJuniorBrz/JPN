@@ -121,10 +121,52 @@ it("A3: cisalhamento e momento da MESMA combinação que governa a tração; mom
   expect(p.governingCombinationId).toBe("ELU-W");
   expect(p.concurrentHorizontalShearKn).toBeCloseTo(5,12);   // hypot(3, 4) of ELU-W, not the 9 kN of ELU-G
   expect(p.concurrentMomentKnM).toBe(0);
-  expect(a.supports[0].issues).toEqual([]);
+  expect(a.supports[0].issues.join()).toMatch(/ANCHOR_SHEAR_INTERACTION_PENDING/);
+  expect(a.studioStatus.N1).toBe("pending");
   expect(a.limitations.join()).toMatch(/Interação tração \+ cisalhamento no chumbador não verificada/);
   res.combinations["ELU-G"].nodes.N1.reaction_moment_nm=[0,1200,0];
   const m=assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["ELU-W","ELU-G"],result:res,engineeringCombinations});
   expect(m.supports[0].issues.join()).toMatch(/ANCHOR_REACTION_MOMENT_PENDING: momento de reação em ELU-G/);
   expect(m.studioStatus.N1).toBe("pending");
+});
+
+
+it("A1: permanente favorável sem vento NÃO valida a combinação de sucção com permanente mínimo",()=>{
+  const refSig=(caseId:string,gamma:number)=>({caseId,gamma,psi:1,reference:ref});
+  const combinations={
+    actions:engineeringCombinations.actions,
+    combinations:[
+      {id:"ELU-W",purpose:"ULS" as const,hypothesis:"1.25 G + 1.4 W",reference:ref,terms:[refSig("G",1.25),refSig("W",1.4)]},
+      {id:"ELU-G",purpose:"ULS" as const,hypothesis:"1.0 G, vento ausente",reference:ref,terms:[refSig("G",1),{...refSig("W",0),psi:0}]},
+    ],
+  };
+  const incomplete={combinations:{
+    "ELU-W":{nodes:{N1:r(1.25*3100-1.4*6400)}},
+    "ELU-G":{nodes:{N1:r(3100)}},
+  }};
+  const a=assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["ELU-W","ELU-G"],
+    result:incomplete,engineeringCombinations:combinations});
+  expect(a.supports[0].pullout.demandKn).toBeCloseTo(5.085,9);
+  expect(a.favorableCombinationIds).toContain("ELU-G");
+  expect(a.missingFavorableCombinationIds).toContain("ELU-W");
+  expect(a.favorablePermanentSet).toBe("missing");
+  expect(a.supports[0].issues.join()).toMatch(/ANCHOR_FAVORABLE_PERMANENT_SET_MISSING/);
+  expect(a.studioStatus.N1).toBe("pending");
+});
+
+it("A1: sem ELU identificada, recusa usar reação de ELS como demanda ou razão ELU",()=>{
+  const a=assessAnchorPullout({interfaces:[wallA],anchorTypes,
+    ulsCombinationIds:null,result:{combinations:{"ELS-W":{nodes:{N1:r(-9000)}}}}});
+  expect(a.supports[0].pullout.status).toBe("verification-pending");
+  expect(a.supports[0].pullout.demandKn).toBeNull();
+  expect(a.supports[0].pullout.ratio).toBeNull();
+  expect(a.governingSupport).toBeNull();
+  expect(a.supports[0].issues.join()).toMatch(/ANCHOR_ULS_COMBINATIONS_UNVERIFIED/);
+  expect(a.studioStatus.N1).toBe("pending");
+});
+it("A1: ELU ausente do resultado não pode ser descartada silenciosamente",()=>{
+  const a=assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["ELU-W","ELU-AUSENTE"],
+    result:{combinations:{"ELU-W":{nodes:{N1:r(-5740)}}}},engineeringCombinations});
+  expect(a.supports[0].pullout.demandKn).toBeNull();
+  expect(a.supports[0].issues.join()).toMatch(/Resultados ausentes: ELU-AUSENTE/);
 });

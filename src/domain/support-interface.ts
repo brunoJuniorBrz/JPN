@@ -132,7 +132,7 @@ export function assessSupportReactions(interfaces:readonly SupportInterface[],
 }
 
 const EXISTING=new Set(["existing-masonry","existing-concrete"]);
-export type AnchorStatus="within-declared-capacity"|"exceeds-declared-capacity"|"capacity-pending"|"no-demand";
+export type AnchorStatus="within-declared-capacity"|"exceeds-declared-capacity"|"capacity-pending"|"no-demand"|"verification-pending";
 type CapacitySource={valueKn:number;origin:"support"|"anchor-type";anchorTypeId:string|null;source:string;revision:string}|null;
 /** N4: pull-out (and, informatively, compression) per support on an EXISTING wall or concrete element.
  * Demand = governing ULS reaction of the analysis result handed in (the /3 result, or the second-order result
@@ -147,13 +147,32 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
   engineeringCombinations?:Pick<EngineeringCombinations,"actions"|"combinations">|null}){
   const types=new Map((input.anchorTypes??[]).map(t=>[t.id,t]));
   const all=Object.keys(input.result.combinations);
-  const uls=input.ulsCombinationIds?all.filter(id=>input.ulsCombinationIds!.includes(id)):all;
   const ec=input.engineeringCombinations??null;
+  const requestedULS=input.ulsCombinationIds;
+  const missingResults=requestedULS?.filter(id=>!all.includes(id))??[];
+  const nonULS=requestedULS?.filter(id=>ec?.combinations.some(c=>c.id===id&&c.purpose!=="ULS"))??[];
+  // Never treat unknown-purpose combinations (potentially ELS) or a partial ULS envelope as a valid ELU check.
+  const validULS=requestedULS!==null&&requestedULS.length>0&&!missingResults.length&&!nonULS.length;
+  const uls=validULS?[...requestedULS]:[];
   const permanentIds=new Set(ec?.actions.filter(a=>a.category==="permanent").map(a=>a.caseId)??[]);
-  // Favorable permanent set present: a ULS combination (also in the result) whose permanent terms all have gamma <= 1,0.
-  const favorableCombinationIds=ec?ec.combinations.filter(c=>c.purpose==="ULS"&&uls.includes(c.id)&&
-    c.terms.every(t=>!permanentIds.has(t.caseId)||t.gamma<=1+1e-12)).map(c=>c.id):[];
-  const favorableSet=!ec?"unverified" as const:favorableCombinationIds.length?"present" as const:"missing" as const;
+  const variableIds=ec?.actions.filter(a=>a.category!=="permanent").map(a=>a.caseId)??[];
+  const ulsDeclarations=ec?.combinations.filter(c=>c.purpose==="ULS"&&uls.includes(c.id))??[];
+  const factorOf=(c:typeof ulsDeclarations[number],id:string)=>{
+    const t=c.terms.find(t=>t.caseId===id);return t?t.gamma*t.psi:0;
+  };
+  const signature=(c:typeof ulsDeclarations[number])=>JSON.stringify(variableIds.map(id=>[id,factorOf(c,id)]));
+  // A minimum-permanent combination must pair with EACH actual variable-load vector.
+  // A standalone 1.0 G combination cannot validate 1.25 G + 1.4 W (HC-C).
+  const minimumPermanents=(c:typeof ulsDeclarations[number])=>permanentIds.size>0&&
+    [...permanentIds].every(id=>{
+      const t=c.terms.find(t=>t.caseId===id);
+      return !!t&&Math.abs(t.psi-1)<1e-12&&t.gamma<=1+1e-12;
+    });
+  const favorableCombinationIds=ulsDeclarations.filter(minimumPermanents).map(c=>c.id);
+  const favorableSignatures=new Set(ulsDeclarations.filter(minimumPermanents).map(signature));
+  const missingFavorableCombinationIds=ulsDeclarations.filter(c=>!favorableSignatures.has(signature(c))).map(c=>c.id);
+  const favorableSet=!validULS||!ec||permanentIds.size===0?"unverified" as const:
+    favorableCombinationIds.length>0&&missingFavorableCombinationIds.length===0?"present" as const:"missing" as const;
   const supports=input.interfaces.filter(f=>EXISTING.has(f.kind)).map(face=>{
     const type=face.anchorTypeId?types.get(face.anchorTypeId)??null:null;
     const capacity=(own:number|null|undefined,fromType:number|null|undefined):CapacitySource=>
@@ -169,6 +188,8 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
         horizontalShearKn:Math.hypot(fx,fy)/1000,momentKnM:Math.hypot(...node.reaction_moment_nm)/1000};
     });
     const check=(key:"pulloutKn"|"compressionKn",cap:CapacitySource)=>{
+      if(!validULS)return {demandKn:null,governingCombinationId:null,declaredCapacity:cap,ratio:null,
+        status:"verification-pending" as const,concurrentHorizontalShearKn:null,concurrentMomentKnM:null};
       const governing=per.reduce<typeof per[number]|null>((g,r)=>!g||r[key]>g[key]?r:g,null);
       const demandKn=governing?.[key]??0;
       const ratio=cap&&cap.valueKn>0?demandKn/cap.valueKn:null;
@@ -185,9 +206,16 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
     const issues=[
       ...(face.anchorTypeId&&!type?["ANCHOR_TYPE_MISSING: tipo "+face.anchorTypeId+" não declarado."]:[]),
       ...(pullout.status==="capacity-pending"?["ANCHOR_CAPACITY_PENDING: declare a capacidade de cálculo à tração (ficha do fabricante) para "+face.nodeId+"."]:[]),
+      ...(!validULS?["ANCHOR_ULS_COMBINATIONS_UNVERIFIED: nenhuma envoltória ELU completa e rastreada; não emitir demanda, razão nem comparação como ELU. "+
+        (missingResults.length?"Resultados ausentes: "+missingResults.join(", ")+". ":"")+
+        (nonULS.length?"Finalidade incompatível: "+nonULS.join(", ")+".":"")]:[]),
       ...(face.reviewStatus!=="site-reviewed"?["EXISTING_SUPPORT_PENDING: parede existente sem inspeção registrada."]:[]),
-      ...(favorableSet==="missing"?["ANCHOR_FAVORABLE_PERMANENT_SET_MISSING: nenhuma combinação ELU com todas as permanentes favoráveis (γg ≤ 1,0; NBR 8681 5.1.3.1); o arrancamento com permanente mínimo + sucção máxima não foi avaliado."]:
-        favorableSet==="unverified"?["ANCHOR_FAVORABLE_PERMANENT_SET_UNVERIFIED: fatores das combinações não declarados; não é possível confirmar a combinação com permanente mínimo (NBR 8681 5.1.3.1)."]:[]),
+      ...(favorableSet==="missing"?["ANCHOR_FAVORABLE_PERMANENT_SET_MISSING: falta combinar permanentes favoráveis (γg ≤ 1,0; NBR 8681 5.1.3.1) com cada hipótese variável considerada, incluindo a sucção. Verifique ELU: "+
+        [...new Set(missingFavorableCombinationIds)].join(", ")+"."]:
+        favorableSet==="unverified"?["ANCHOR_FAVORABLE_PERMANENT_SET_UNVERIFIED: fatores e cobertura das combinações ELU não confirmados; o arrancamento com permanente mínimo não foi verificado."]:[]),
+      ...(pullout.demandKn!==null&&pullout.demandKn>1e-9&&(pullout.concurrentHorizontalShearKn??0)>1e-9?
+        ["ANCHOR_SHEAR_INTERACTION_PENDING: tração e cisalhamento concomitantes da ELU "+pullout.governingCombinationId+
+         "; interação não verificada, não aprovar apoio."]:[]),
       ...(momentCombinationIds.length?["ANCHOR_REACTION_MOMENT_PENDING: momento de reação em "+momentCombinationIds.join(", ")+" sem verificação no chumbador."]:[]),
     ];
     return {nodeId:face.nodeId,side:face.side,kind:face.kind,reviewStatus:face.reviewStatus,pullout,compression,issues,critical:false};
@@ -197,14 +225,15 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
     s.issues.length>0||(maxRatio>0&&s.pullout.ratio===maxRatio);
   const governing=supports.filter(s=>s.pullout.ratio!==null).sort((a,b)=>b.pullout.ratio!-a.pullout.ratio!)[0]??null;
   return {schema_version:"jpn.anchor-pullout/1" as const,combinationsConsidered:uls,
-    combinationPurposeDeclared:input.ulsCombinationIds!==null,favorablePermanentSet:favorableSet,favorableCombinationIds,supports,
+    combinationPurposeDeclared:validULS,favorablePermanentSet:favorableSet,favorableCombinationIds,
+    missingFavorableCombinationIds,supports,
     governingSupport:governing?{nodeId:governing.nodeId,ratio:governing.pullout.ratio,combinationId:governing.pullout.governingCombinationId}:null,
     studioStatus:Object.fromEntries(supports.map(s=>[s.nodeId,s.pullout.status==="exceeds-declared-capacity"?"exceeds":s.pullout.status==="capacity-pending"||s.issues.length?"pending":s.critical?"governing":"ok"])) as Record<string,"exceeds"|"pending"|"governing"|"ok">,
     limitations:["Capacidades declaradas pelo engenheiro (ficha do fabricante); o JPN não calcula ancoragem nem alvenaria.",
       "Demanda no nó do modelo: distribuição entre chumbadores, excentricidade, efeito alavanca e borda não são verificados.",
       "Interação tração + cisalhamento no chumbador não verificada: o cisalhamento e o momento informados são os da combinação que governa a tração.",
       "Pendências do engenheiro: cpi mais nocivo para a sucção (NBR 6123 6.3.2.1); capacidade declarada por chumbador ou por apoio; tração no aço do chumbador (item da NBR 8800 a confirmar).",
-      ...(input.ulsCombinationIds===null?["Combinações sem finalidade declarada: todas tratadas como ELU."]:[])],
+      ...(!validULS?["Sem finalidade/cobertura ELU confirmada: nenhuma combinação ELS é considerada ELU; comparação bloqueada."]:[])],
     normativeApproval:false as const,computedStructuralApproval:false as const,fabricationRelease:false as const,releaseGate:"NOT_READY_BLOCKED" as const};
 }
 export type AnchorPulloutReport=ReturnType<typeof assessAnchorPullout>;
