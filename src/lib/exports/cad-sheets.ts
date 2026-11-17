@@ -206,6 +206,8 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const purlinPlan=expanded?book.add("TERCAS","Planta de terças e contraventamentos"):plans;
   const spacingPage=expanded?book.add("ESPACAMENTOS","Espaçamentos entre terças"):plans;
   const elevations=book.add("ELEVACOES","Elevações e corte transversal");
+  const sideElevation=expanded?book.add("ELEVACAO LATERAL","Elevação lateral"):elevations;
+  const crossSection=expanded?book.add("CORTE A-A","Corte transversal A-A"):elevations;
   const framePages=data.frameGroups.map((group,i)=>book.add(`${group[0].kind} ${i+1}`,`${group[0].kind==="TESOURA"?"Tesoura":"Pórtico"} — tipo ${i+1} (${group.length}×)`));
   const pendingFrame=!framePages.length?book.add("PORTICOS PENDENTE","Pórticos e tesouras — identificação pendente"):null;
   const bases=book.add("BASES","Locação de bases e chumbadores");
@@ -231,9 +233,9 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   }
   const smallHeight=(a.height-gap)/2;
   const summaryOptions=expanded?{deduplicate:true,subtitle:"Projeções coincidentes: marca representativa; todas as peças nas folhas individuais e na lista."}:{};
-  drawing(elevations,{x:a.x,y:a.y+smallHeight+gap,width:half,height:smallHeight},"Elevação frontal","front",summaryOptions);
-  drawing(elevations,{x:a.x,y:a.y,width:half,height:smallHeight},"Elevação lateral","side",expanded?{...summaryOptions,pieces:model.pieces.filter(p=>p.role==="column"||p.role==="purlin"||isDeclaredBrace(p))}:{});
-  drawing(elevations,{x:a.x+half+gap,y:a.y,width:half,height:a.height},"Corte A-A","cut");
+  drawing(elevations,expanded?a:{x:a.x,y:a.y+smallHeight+gap,width:half,height:smallHeight},"Elevação frontal","front",summaryOptions);
+  drawing(sideElevation,expanded?a:{x:a.x,y:a.y,width:half,height:smallHeight},"Elevação lateral","side",expanded?{...summaryOptions,pieces:model.pieces.filter(p=>p.role==="column"||p.role==="purlin"||isDeclaredBrace(p))}:{});
+  drawing(crossSection,expanded?a:{x:a.x+half+gap,y:a.y,width:half,height:a.height},"Corte A-A","cut");
   for(const [index,group] of data.frameGroups.entries()){
     const first=group[0],h=first.axis==="y"?"x":"y",page=framePages[index];
     const token=(frame:typeof first,p:CadPiece)=>{

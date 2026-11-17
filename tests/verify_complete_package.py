@@ -59,6 +59,43 @@ for case in ('regular', 'irregular'):
         for i, page in enumerate(pdf):
             assert abs(page.rect.width*25.4/72-manifest['pages'][i]['widthMm']) < .01
             assert f'Folha {i+1} de {len(pdf)}' in page.get_text()
+            # Compare vector endpoints independently of the shared JS scene. The
+            # native DXF viewport maps a scaled model cache back to paper mm.
+            paper = sheets[i]
+            paper_height = manifest['pages'][i]['heightMm']
+            def segment_key(a, b):
+                return tuple(sorted((tuple(round(v, 2) for v in a), tuple(round(v, 2) for v in b))))
+            segments = set()
+            segment_pairs = []
+            for path_data in page.get_drawings():
+                for item in path_data['items']:
+                    if item[0] == 'l':
+                        points = [(p.x*25.4/72, paper_height-p.y*25.4/72) for p in item[1:3]]
+                        segments.add(segment_key(*points))
+                        segment_pairs.append(points)
+            def check_vectors(entities, dx=0, dy=0):
+                for entity in entities:
+                    if entity.dxftype() == 'LWPOLYLINE':
+                        points = [(v[0]+dx, v[1]+dy) for v in entity.get_points('xy')]
+                        for a, b in zip(points, points[1:]):
+                            matched = segment_key(a,b) in segments or any(
+                                # MuPDF extracts drawing points as float32; at A1
+                                # extents their resolution is about 0.0001 mm.
+                                (math.dist(a,c)<1e-4 and math.dist(b,d)<1e-4) or
+                                (math.dist(a,d)<1e-4 and math.dist(b,c)<1e-4)
+                                for c,d in segment_pairs)
+                            assert matched, (case, i+1, a, b)
+                    elif entity.dxftype() == 'DIMENSION':
+                        check_vectors(doc.blocks[entity.dxf.geometry], dx, dy)
+            check_vectors(paper)
+            for viewport in paper.query('VIEWPORT'):
+                if viewport.dxf.id == 1:
+                    continue
+                scale = viewport.dxf.view_height/viewport.dxf.height
+                caches = [ins for ins in doc.modelspace().query('INSERT')
+                          if ins.dxf.name.startswith('JPN_VISTA_') and math.isclose(ins.dxf.insert.x+viewport.dxf.width/2*scale, viewport.dxf.view_center_point.x, abs_tol=1e-6)]
+                assert len(caches) == 1
+                check_vectors(doc.blocks[caches[0].dxf.name], viewport.dxf.center.x-viewport.dxf.width/2, viewport.dxf.center.y-viewport.dxf.height/2)
             path = folder/f'page-{i+1:02d}.png'
             page.get_pixmap(matrix=fitz.Matrix(1.5,1.5)).save(path)
             image = Image.open(path).convert('RGB');image.thumbnail((630,450));thumbs.append(image.copy())

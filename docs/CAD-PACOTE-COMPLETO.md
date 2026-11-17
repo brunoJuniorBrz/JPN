@@ -88,3 +88,28 @@ O verificador independente reabre ZIP/CSV, recalcula hashes, audita DXF sem
 reparos e compara os cortes (considerando o arredondamento de micrômetros).
 Playwright cobre o botão, download individual, mudança de formato e os comprimentos
 comerciais explicitamente preenchidos na interface irregular.
+
+## Evidência local desta entrega
+
+- Vitest completo: **126 arquivos, 982 testes aprovados** (588,82 s).
+- Exportação após o último ajuste de paginação: **7 arquivos, 34 testes aprovados**.
+- Playwright do pacote: **2 testes aprovados**, projeto regular e irregular; ZIP e
+  PDF individual baixados pelo navegador.
+- Typecheck e build de produção aprovados. ESLint: zero erros; seis avisos
+  preexistentes (incluindo arquivos gerados do workflow).
+- Auditoria independente: **123 peças / 19 layouts A3** no galpão e **5 peças /
+  6 layouts A3** na cobertura trapezoidal; ZIP/CRC, SHA256, CSV, coordenadas 3D e
+  DXF sem erros/reparos aprovados. Com `--render`, também confere segmentos do PDF
+  contra o DXF e as transformações dos viewports, além de renderizar todas as folhas.
+- Next.js emite um alerta de segurança da versão instalada; dependências não foram
+  alteradas nesta entrega. A atualização merece tarefa própria.
+
+Exemplos produzidos automaticamente pelos testes (dados sintéticos):
+
+- [Galpão — pacote ZIP](validation/complete-package/galpao-pacote.zip)
+- [Galpão — pranchas PDF](validation/complete-package/galpao-pranchas.pdf)
+- [Cobertura irregular — pacote ZIP](validation/complete-package/irregular-pacote.zip)
+- [Cobertura irregular — pranchas PDF](validation/complete-package/irregular-pranchas.pdf)
+
+![Galpão: planta gerada](validation/complete-package/galpao-previa.png)
+![Cobertura irregular: planta gerada](validation/complete-package/irregular-previa.png)
