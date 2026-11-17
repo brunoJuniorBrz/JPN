@@ -1,0 +1,45 @@
+name: Native Tom CAD PR141 diagnostic
+on:
+  push:
+    branches:
+      - validation/tom-cad-package-native-20261117
+  workflow_dispatch:
+jobs:
+  tom-pr141:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install immutable dependencies
+        run: npx --yes pnpm@12.15.0 install --frozen-lockfile
+      - name: Execute actual PR141 export with Tom dimensions
+        run: npx --yes pnpm@12.15.0 exec vitest run src/lib/exports/tom-cad-regression.test.ts --reporter=verbose
+      - name: Verify native output ZIP/PDF/DXF/CSVs and render preview
+        run: |
+          python -m pip install --quiet ezdxf PyMuPDF Pillow
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile,hashlib,json,fitz,ezdxf
+          p=Path('.tools/complete-package/tom')
+          m=json.loads((p/'manifesto.json').read_text())
+          with zipfile.ZipFile(p/'pacote.zip') as z:
+            assert z.testzip() is None
+            for f in m['files']:
+              assert hashlib.sha256((p/f['name']).read_bytes()).hexdigest()==f['sha256']
+          doc=ezdxf.readfile(p/'cad/pranchas.dxf')
+          assert not doc.audit().errors and not doc.audit().fixes
+          pdf=fitz.open(p/'pranchas/pranchas.pdf')
+          assert len(pdf)==len(m['pages'])
+          for i,page in enumerate(pdf):
+            page.get_pixmap(matrix=fitz.Matrix(1,1)).save(p/f'prancha-{i+1:02}.png')
+          print('Native TOM package VERIFIED',len(pdf),'pages')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tom-pr141-native-cad-actual-output
+          path: .tools/complete-package/tom/
