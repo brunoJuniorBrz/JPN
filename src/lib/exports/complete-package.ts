@@ -110,9 +110,10 @@ export async function createCompletePackage(input:Project,options:PackageOptions
       stockMm:g.bars[0]?.stockMm??null,reusableMm:reuseMm,wasteMm,
       barPriceCents:price,
       costMainCents:price===null?null:confirmedBars*price,
-      costCombinedCents:price===null?null:g.bars.length*price};
+      costCombinedCents:price===null?null:g.bars.length*price,
+      costPendingIncrementalCents:price===null?null:(g.bars.length-confirmedBars)*price};
   })??[];
-  const sumKnown=(key:"costMainCents"|"costCombinedCents")=>
+  const sumKnown=(key:"costMainCents"|"costCombinedCents"|"costPendingIncrementalCents")=>
     commercial.length&&commercial.every(g=>g[key]!==null)?commercial.reduce((a,g)=>a+g[key]!,0):null;
   const doc=new jsPDF({unit:"mm",format:"a4"}),estimate=calculateEstimate(project);
   const table=(title:string,head:string[],body:(string|number)[][])=>{
@@ -134,7 +135,7 @@ export async function createCompletePackage(input:Project,options:PackageOptions
     `${b.kerfMm} / ${b.trimMm}`,`${b.remainderMm} / ${b.reusableMm}`])));
   if(commercial.length)table("Compra de barras e saldos",["Perfil","Principal / com itens a confirmar","Sobra reaproveitável mm","Perda / custo R$"],commercial.map(g=>[
     g.profile,`${g.barCountMain} / ${g.barCountCombined} barras`,
-    g.reusableMm,`${g.wasteMm} mm / ${g.costMainCents===null?"PENDENTE":(g.costMainCents/100).toFixed(2)} (principal)`]));
+    g.reusableMm,`${g.wasteMm} mm / ${g.costMainCents===null?"PENDENTE":(g.costMainCents/100).toFixed(2)} (principal); itens sem locação +${g.costPendingIncrementalCents===null?"PENDENTE":(g.costPendingIncrementalCents/100).toFixed(2)} BRL`]));
   if(unlocated.length)table("ITENS A CONFIRMAR - SEM LOCAÇÃO",["ID","Perfil","Comprimento mm"],unlocated.map(p=>[
     p.pieceId,p.profile,Math.ceil(p.lengthMm)]));
   if(reviews.length)table("Conferência de cotas declaradas",["ID","Fonte mm","Entre nós mm","Diferença / status"],reviews.map(r=>[
@@ -146,6 +147,7 @@ export async function createCompletePackage(input:Project,options:PackageOptions
     projectSha256:await digest(encoder.encode(JSON.stringify(project))),format:options.format??"A3",pages:drawing.sheets.map(s=>({name:s.name,title:s.title,widthMm:s.width,heightMm:s.height})),
     totals:takeoff.totals,cuttingAvailable:!!cutting,stockByGroup:options.stockByGroup??{},
     commercial,commercialCostMainCents:sumKnown("costMainCents"),commercialCostCombinedCents:sumKnown("costCombinedCents"),
+    commercialCostPendingIncrementalCents:sumKnown("costPendingIncrementalCents"),
     unlocatedPieceIds:[...unlocatedIds],sourceDimensionReviews:reviews,pending,
     computedStructuralApproval:false,fabricationRelease:false,releaseGate:"NOT_READY_BLOCKED",
     files:await Promise.all(files.map(async f=>({name:f.name,bytes:f.bytes.length,sha256:await digest(f.bytes)})))};
