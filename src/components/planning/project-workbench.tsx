@@ -17,6 +17,7 @@ import { SpatialCoordinationPanel } from "./spatial-coordination-panel";
 import { MixedAnalysisWorkspace } from "./mixed-analysis-workspace";
 import { DeclaredTakeoffPanel } from "./declared-takeoff-panel";
 import type { ResultSection } from "./takeoff-summary";
+import {CompletePackageControl} from "./complete-package-control";
 
 export function ProjectWorkbench({ project, onChange, onEditStructure, activeSection = "engineering" }: { project: Project; onChange: (patch: Partial<Project>) => void; onEditStructure?: () => void; activeSection?: ResultSection }) {
   const { data, saveProject, flush } = useData(), [tab, setTab] = useState("overview"), [message, setMessage] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
@@ -55,6 +56,7 @@ export function ProjectWorkbench({ project, onChange, onEditStructure, activeSec
     finally{setBusy(false);}
   }
   return <section className="project-workbench" hidden={activeSection==="model"} aria-label={activeSection==="materials"?"Aproveitamento e orçamento":activeSection==="engineering"?"Ferramentas de engenharia":"Desenhos e revisões"}>
+    {activeSection==="files"&&<CompletePackageControl project={project} onChange={onChange} beforeExport={()=>{saveProject(project);if(!flush())throw Error("Não foi possível salvar esta revisão antes da exportação.");}}/>}
     {activeSection === "materials" && <div className="result-business-action"><div><h3>Do levantamento ao orçamento</h3><p>Quantitativos geométricos preliminares. Confira preços e custos antes de apresentar uma proposta.</p></div><button type="button" className="button" disabled={!model} onClick={() => action(() => { onChange(transferTakeoff(project, Math.round(data.settings.defaultWastePercent * 100) / 100)); setMessage("Quantitativos vinculados ao orçamento de venda. Confira preços por metro e custos na área comercial."); })}>Atualizar quantitativos no orçamento</button></div>}
     {declared&&activeSection==="materials"&&<DeclaredTakeoffPanel project={project}/>}
     {activeSection === "engineering" && <div className="actions"><button type="button" className="button" onClick={()=>{setTab("mixedlocal");setMixedOpened(true);}}>Preparar e analisar este projeto</button></div>}
