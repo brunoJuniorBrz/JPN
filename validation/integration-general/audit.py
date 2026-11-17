@@ -71,7 +71,9 @@ REVIEWED_AMENDMENTS = {
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/loaded-mixed.spec.ts": "1ba5e3a0f1bfdadda560ed862e7e3c4e05b5393c",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
-    "tests/e2e/integration-generated.spec.ts": "02be09e163f00ea74cfd714d89bc9d4bb6c3183f",
+    # UI F1 (owner-authorized test change, review in the UI PR): the old "4 Resultado" step button became the
+    # Materiais studio step via the openResultTab helper; solver, binding and blocking checks unchanged (was 02be09e).
+    "tests/e2e/integration-generated.spec.ts": "cd703922ab820690c1cc57eba21736ebcbffe407",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/integration-declared.spec.ts": "c716931c89b85bfbf6fa5c41a998d17a634bd184",   # INT-1f: now picks the simple view (supersedes 232a7db, INT-1a)
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
