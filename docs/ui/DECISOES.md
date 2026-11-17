@@ -141,4 +141,25 @@ Registro curto das decisões tomadas sem consulta (ver regra em [PLANO-UI.md](PL
    - Aço pintado/galvanizado/bruto, telhas trapezoidal/termoacústica/junta agrafada, paredes e piso já existiam.
    - Nova: telha ondulada, senoide de 76 mm × 18 mm, só visual, com teste unitário.
    - "Paredes existentes" continuam as paredes cenográficas do Acabado. **Pendente:** representar paredes de alvenaria ou concreto do apoio guiado como objetos próprios.
-5. **Desempenho.** O pós-processamento só roda no Acabado e só em qualidade padrão. Em celular fraco, `viewerQuality` já reduz segmentos e pixels e desliga o pós-processamento. O exemplo do galpão segue fluido nos modos técnicos, que não mudaram.
+5. **Desempenho do pós-processamento.** Ele só roda no Acabado e só em qualidade padrão. Em celular fraco, `viewerQuality` já reduz segmentos e pixels e desliga o pós-processamento. O exemplo do galpão segue fluido nos modos técnicos, que não mudaram.
+6. **Menu de contexto por teclado.** Shift+F10 abre o menu no centro da parte visível da área do modelo, que pode ser mais alta que a tela.
+
+## F6 — Polimento
+
+1. **Menu "Ferramentas avançadas"** no cabeçalho do estúdio:
+   - **Referências e modelos:** referência comercial do Tom, importar modelo JSON e estrutura irregular. Leva à etapa Obra e abre e foca o painel.
+   - **Experimentais:** Análise Estrutural Experimental com os exemplos sintéticos, Análise 3D experimental, análise 2D disponível e roteiro.
+   - Os painéis não mudaram de lugar. Assim nenhum teste protegido precisou mudar, e tudo fica a 2 cliques.
+2. **Tour curto.** São 4 passos num diálogo: etapas, modelo e seleção, resultados e pendências, atalhos.
+   - Só abre quando o usuário pede. Um selo "novo" aparece até ele ser visto.
+   - Não abre sozinho porque um diálogo automático cobriria a tela em todo primeiro acesso, inclusive nos testes.
+   - A marca de "visto" é preferência de interface (`localStorage` `jpn-studio-tour:v1`) e fica fora dos dados de projeto.
+3. **Tema escuro.**
+   - Botão "Tema escuro" (`aria-pressed`) na barra superior. A preferência é salva em `jpn-theme:v1` e aplicada por um script no `<head>` antes da hidratação, para não piscar.
+   - Os tokens mudam, e as superfícies antigas com branco fixo (painéis, campos, botões, avisos, tabelas, barras) recebem sobrescritas em `theme-dark.css`.
+   - O 3D e os desenhos técnicos (SVG) ficam claros de propósito, porque as cores de camada e cotas foram calibradas para fundo claro.
+   - **Pendente:** cores fixas internas de alguns painéis antigos de análise podem destoar no escuro.
+4. **Página inicial e lista de projetos.**
+   - Estrutura, textos e seletores mantidos (testes `app`/`platform`), só com acabamento: hover e foco visível nos cartões, fonte e tokens.
+   - Os estados vazios já tinham ação ("Criar primeiro projeto", "Cadastrar material", "Corrigir dados") e foram mantidos.
+5. **Screenshots.** As imagens em `validation/` são evidências protegidas e regeneradas pelos próprios testes, então não foram trocadas. As novas, de desktop 1440 e celular 390 nos temas claro e escuro, ficam em `docs/ui/screenshots/`.

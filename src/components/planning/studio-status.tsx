@@ -17,7 +17,9 @@ const money = (cents: number) => (cents / 100).toLocaleString("pt-BR", { style: 
 /** Totais ao vivo (F4): derivados de forma síncrona do projeto em memória, sem esperar o salvamento. */
 export function liveTotals(project: Project, result: StructureResult | null) {
   const model = result?.model ?? null;
-  const massKg = model ? model.pieces.reduce((sum, p) => sum + (p.massKg ?? 0), 0) : null;
+  // Massa só aparece quando alguma peça tem massa cadastrada; nada de "0 kg" por falta de dado.
+  const known = model ? model.pieces.reduce((sum, p) => sum + (p.massKg ?? 0), 0) : 0;
+  const massKg = model && known > 0 ? known : null;
   let saleCents: number | null = null;
   try { saleCents = calculateEstimate(project).saleCents; } catch { saleCents = null; }
   return { pieces: model?.pieces.length ?? null, lengthM: model?.totalLengthM ?? null, massKg, massComplete: model?.massComplete ?? false, saleCents };
@@ -82,7 +84,7 @@ export function FabricationSeal({ result, declaredIssues }: { result: StructureR
     <DialogTrigger asChild>
       <button type="button" className="studio-seal" data-testid="fabrication-seal" aria-haspopup="dialog">
         <Badge tone="danger" icon={<Lock />} className="studio-lock">Bloqueado para fabricação</Badge>
-        <span className="studio-seal-count">{normative.length + missing.length + engineer.length} pendências</span>
+        <span className="studio-seal-count">{groups.reduce((sum, g) => sum + g.items.length, 0)} pendências</span>
       </button>
     </DialogTrigger>
     <DialogContent title="Pendências do projeto" description="Bloqueado para fabricação até que todas sejam resolvidas e revisadas por um engenheiro. Status do sistema: NOT_READY_BLOCKED." className="studio-pending-dialog">
@@ -97,7 +99,7 @@ export function FabricationSeal({ result, declaredIssues }: { result: StructureR
 export function LiveTotals({ totals }: { totals: ReturnType<typeof liveTotals> }) {
   if (totals.pieces === null) return null;
   return <div className="studio-live-totals" data-testid="studio-live-totals" aria-label="Totais ao vivo">
-    <span><small>Massa</small><strong>{totals.massKg === null ? "—" : `${formatMeasure(totals.massKg, 0)} kg`}{!totals.massComplete && " (parcial)"}</strong></span>
+    <span><small>Massa</small><strong>{totals.massKg === null ? "pendente" : `${formatMeasure(totals.massKg, 0)} kg${totals.massComplete ? "" : " (parcial)"}`}</strong></span>
     <span><small>Venda</small><strong>{totals.saleCents === null ? "a definir" : money(totals.saleCents)}</strong></span>
   </div>;
 }

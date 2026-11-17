@@ -149,6 +149,17 @@
 .studio-command-list [cmdk-item][data-selected="true"] { background: var(--color-accent-soft); }
 .studio-command-list [cmdk-empty] { padding: 16px 8px; color: var(--color-muted); font-size: var(--text-sm); }
 
+/* No desktop e no tablet os dados da barra seguem o fluxo normal da barra de status. */
+.studio-status-data { display: contents; }
+
+/* F6: ações do cabeçalho, tour e cartões da lista */
+.studio-header-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.studio-tour-new { margin-left: 4px; padding: 0 6px; border-radius: var(--radius-full); background: var(--color-accent-soft); color: var(--color-accent-strong); font-size: var(--text-2xs); font-weight: var(--weight-bold); text-transform: uppercase; }
+.studio-tour-body { font-size: var(--text-base); line-height: 1.6; }
+.project-card { transition: border-color .15s, box-shadow .15s, transform .15s; }
+.project-card:hover { border-color: var(--color-line-strong); box-shadow: var(--shadow-sm); }
+.project-card:focus-within { outline: var(--focus-ring); outline-offset: 2px; }
+
 /* Barra de status */
 .studio-status { position: sticky; bottom: 0; z-index: var(--z-sticky); display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-3); padding: 8px 12px; background: #fffffff2; backdrop-filter: blur(8px); border: 1px solid var(--color-line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
 .studio-status .result-permanent-warning { position: static; margin: 0; padding: 4px 8px; flex: 1 1 260px; font-size: var(--text-xs); }
@@ -183,6 +194,16 @@
   .studio-sheet-toggle { display: inline-flex; align-items: center; gap: 4px; min-height: var(--hit-target); margin: var(--space-2) var(--space-3) 0 0; padding: 0 10px; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface-muted); color: var(--color-ink); font-size: var(--text-sm); font-weight: var(--weight-semibold); }
   .studio-status { bottom: calc(var(--studio-steps-h) + env(safe-area-inset-bottom)); z-index: 45; padding: 6px 8px; gap: 4px 8px; }
   .studio-status .result-permanent-warning { flex-basis: 100%; order: 3; padding: 3px 6px; font-size: 10.5px; line-height: 1.35; }
+  /* Totais, massa, venda e análise numa faixa única com rolagem horizontal. */
+  .studio-status-data { display: flex; flex: 1 1 100%; flex-wrap: nowrap; gap: 6px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .studio-status-data > * { flex: 0 0 auto; }
+  .studio-status-data .result-metrics { overflow: visible; }
+  /* Cabeçalho do projeto compacto no celular: ações numa linha, sem a descrição decorativa. */
+  .main-content:has(.project-studio) .page-heading .muted, .main-content:has(.project-studio) .page-heading .eyebrow { display: none; }
+  .main-content:has(.project-studio) .page-heading { gap: var(--space-2); margin-bottom: var(--space-3); }
+  .studio-header-actions { flex-wrap: nowrap; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .studio-header-actions > * { flex: 0 0 auto; }
+  .studio-command-trigger .ui-kbd-combo { display: none; }
 }
 
 @media (min-width: 1200px) {

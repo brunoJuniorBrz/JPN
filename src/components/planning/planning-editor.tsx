@@ -25,6 +25,7 @@ import { StudioLayout, StudioRail, studioStepFromLegacy, studioStepIndex, studio
 import type { PendingTarget } from "./result-presentation";
 import { StudioAnalysisProvider, useStudioAnalysis } from "./studio-analysis";
 import { StudioCommandPalette, StudioViewportMenu } from "./studio-command";
+import { AdvancedToolsMenu, StudioTour } from "./studio-advanced";
 import type { Viewer3DApi } from "./structure-3d";
 import { StudioSelection } from "./studio-selection";
 import { studioModelFromPhysical } from "@/domain/studio-result-layers";
@@ -186,10 +187,14 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   return <>
     <Link href="/projetos" className="back-link"><ArrowLeft size={18} />Todos os projetos</Link>
     <PageHeading eyebrow="DA MEDIDA À LISTA DE MATERIAIS" title={project.name || "Vamos começar sua obra"} description="Informe a obra, configure a geometria e veja as peças e os quantitativos."
-      action={<StudioCommandPalette model={selectionModel} actions={{
-        goStep: id => go(id), openTool, open3D: open3DViewer, save, selectPiece: setSelectedPiece, showAll: () => viewerApi?.showAll(),
-        recalculate: () => { if (studioAnalysis.ready) analysisCommands.run(); else openTool("mixedlocal"); },
-      }} />} />
+      action={<div className="studio-header-actions">
+        <StudioTour />
+        <AdvancedToolsMenu goStep={id => go(id)} openTool={openTool} />
+        <StudioCommandPalette model={selectionModel} actions={{
+          goStep: id => go(id), openTool, open3D: open3DViewer, save, selectPiece: setSelectedPiece, showAll: () => viewerApi?.showAll(),
+          recalculate: () => { if (studioAnalysis.ready) analysisCommands.run(); else openTool("mixedlocal"); },
+        }} />
+      </div>} />
     {project.isExample && <p className="example-banner">EXEMPLO FICTÍCIO · Medidas, distribuição e perfis apenas para demonstrar o cálculo geométrico.</p>}
     {step !== "materiais" && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
     <StudioLayout
@@ -216,9 +221,11 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
       status={<>
         <FabricationSeal result={declared ? null : generated.result} declaredIssues={declaredIssues} />
         {declared ? <DeclaredSafetyWarning /> : <GeneratedSafetyWarning />}
-        {!declared && <GeneratedTotals result={generated.result} />}
-        <LiveTotals totals={totals} />
-        <AnalysisState onOpenAnalysis={() => openTool("mixedlocal")} />
+        <div className="studio-status-data">
+          {!declared && <GeneratedTotals result={generated.result} />}
+          <LiveTotals totals={totals} />
+          <AnalysisState onOpenAnalysis={() => openTool("mixedlocal")} />
+        </div>
       </>}
     />
   </>;
