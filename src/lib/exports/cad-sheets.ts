@@ -356,6 +356,8 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   for(const [description,groupMarks] of provenance)trace.push(`${groupMarks.join(",")}: ${description}`);
   book.notes(notes,a,[
     `Obra: ${project.name}. Revisão da geometria: ${model.revision}. ${CAD_NOTICE}.`,
+    `Origem da geometria: ${model.provenance}. Medidas sem fonte física revisada não são levantamento de campo.`,
+    ...(project.technicalNotes.trim()?[`Observações declaradas: ${project.technicalNotes}`]:[]),
     "Unidades: geometria e cotas em milímetros; massas em quilogramas; reações em quilonewtons e quilonewtons-metro. Eixos globais X e Y; eixo Z positivo para cima.",
     "As vistas representam eixos de peças declaradas. As cotas prevalecem sobre a medição gráfica. Os comprimentos são medidos entre nós, sem descontos de fabricação ou lista de corte.",
     "As marcas curtas ligam as vistas à lista de materiais: C — pilares; V — vigas; T — terças; BS e BI — banzos; D — barras auxiliares ou contraventamentos explicitamente identificados. A identificação não atribui contenção estrutural.",
