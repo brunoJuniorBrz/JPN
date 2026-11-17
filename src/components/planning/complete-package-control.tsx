@@ -10,9 +10,9 @@ import {NumberField} from "@/components/number-field";
 
 type Package=Awaited<ReturnType<typeof createCompletePackage>>;
 export function CompletePackageControl({project,onChange,beforeExport}:{project:Project;onChange:(patch:Partial<Project>)=>void;beforeExport:()=>void}){
-  const [format,setFormat]=useState<"A3"|"A1">("A3"),[stock,setStock]=useState<Record<string,number>>({});
+  const [format,setFormat]=useState<"A3"|"A1">("A3"),[stock,setStock]=useState<Record<string,number>>({}),[barPrices,setBarPrices]=useState<Record<string,number>>({});
   const [busy,setBusy]=useState(false),[error,setError]=useState(""),[result,setResult]=useState<{identity:string;value:Package}|null>(null);
-  const identity=JSON.stringify({project,format,stock}),current=result?.identity===identity?result.value:null;
+  const identity=JSON.stringify({project,format,stock,barPrices}),current=result?.identity===identity?result.value:null;
   let groups:{key:string;label:string}[]=[],geometryError="";
   try{groups=project.workspace.physicalStructure?declaredCommercialGroups(project):packageTakeoff(project).groups;}catch(e){geometryError=e instanceof Error?e.message:String(e);}
   async function generate(){
@@ -20,7 +20,8 @@ export function CompletePackageControl({project,onChange,beforeExport}:{project:
     try{
       beforeExport();
       const {createCompletePackage}=await import("@/lib/exports/complete-package");
-      const value=await createCompletePackage(project,{format,stockByGroup:stock});
+      const value=await createCompletePackage(project,{format,stockByGroup:stock,
+        barPriceCentsByGroup:Object.fromEntries(Object.entries(barPrices).map(([key,v])=>[key,Math.round(v*100)]))});
       setResult({identity,value});downloadBlob(new Blob([value.zip],{type:"application/zip"}),value.name);
     }catch(e){setError(e instanceof Error?e.message:"Não foi possível gerar o pacote.");}finally{setBusy(false);}
   }
@@ -36,7 +37,10 @@ export function CompletePackageControl({project,onChange,beforeExport}:{project:
         <NumberField label="Perda por extremidade (mm)" value={project.workspace.cutting.endTrimMm} min={0} max={100000} onChange={v=>changeCutting("endTrimMm",v)}/>
         <NumberField label="Sobra reaproveitável mínima (mm)" value={project.workspace.cutting.minimumRemnantMm} min={0} max={1000000} onChange={v=>changeCutting("minimumRemnantMm",v)}/>
       </div>
-      {project.workspace.physicalStructure&&groups.map(g=><NumberField key={g.key} label={`Barra comercial (mm): ${g.label}`} value={stock[g.key]??null} min={1} max={1000000} onChange={v=>setStock(old=>{const next={...old};if(v===null)delete next[g.key];else next[g.key]=v;return next;})}/>)}
+      {project.workspace.physicalStructure&&groups.map(g=><div key={g.key}>
+          <NumberField label={`Barra comercial (mm): ${g.label}`} value={stock[g.key]??null} min={1} max={1000000} onChange={v=>setStock(old=>{const next={...old};if(v===null)delete next[g.key];else next[g.key]=v;return next;})}/>
+          <NumberField label={`Preço de compra por barra (R$, opcional): ${g.label}`} value={barPrices[g.key]??null} min={0} max={1000000} onChange={v=>setBarPrices(old=>{const next={...old};if(v===null)delete next[g.key];else next[g.key]=v;return next;})}/>
+        </div>)}
       {!project.workspace.physicalStructure&&<p>Comprimentos comerciais: usados conforme os perfis cadastrados na etapa Estrutura.</p>}
     </details>
     <button type="button" className="button" disabled={busy||!!geometryError} onClick={()=>void generate()}>{busy?"Gerando pacote…":"Exportar pacote completo"}</button>
