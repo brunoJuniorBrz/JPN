@@ -67,6 +67,27 @@
 .studio-inspector .workflow-content > .project-workbench:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .studio-inspector .workflow-content > .project-workbench:first-child > .actions:first-child { margin-top: 0; }
 
+/* Seleção (F2): peça, segmentos e nó/apoio no topo do inspetor */
+.studio-selection { display: grid; gap: var(--space-3); margin-bottom: var(--space-5); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-line); }
+.studio-selection-search { display: grid; gap: 6px; position: relative; }
+.studio-selection-label { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-muted); }
+.studio-selection-search .input { min-height: 40px; padding: 8px 10px; font-size: var(--text-base); }
+.studio-selection-results { list-style: none; margin: 0; padding: 4px; display: grid; gap: 2px; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface); box-shadow: var(--shadow-sm); }
+.studio-selection-results button { width: 100%; min-height: 36px; padding: 6px 8px; border: 0; border-radius: var(--radius-sm); background: transparent; text-align: left; font-size: var(--text-sm); }
+.studio-selection-results button:hover, .studio-selection-results button:focus-visible { background: var(--color-accent-soft); outline: none; }
+.studio-selection-results .field-hint { padding: 6px 8px; }
+.studio-selection-empty { display: flex; align-items: center; gap: 6px; margin: 0; }
+.studio-selection-card { display: grid; gap: var(--space-2); padding: var(--space-3); border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface-muted); }
+.studio-selection-card > header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); font-size: var(--text-base); }
+.studio-selection-sub { margin: 0; font-size: var(--text-sm); color: var(--color-muted); }
+.studio-selection-status { display: grid; gap: 6px; justify-items: start; }
+.studio-selection-status details { font-size: var(--text-sm); }
+.studio-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px var(--space-3); margin: 0; }
+.studio-facts > div { min-width: 0; }
+.studio-facts dt { font-size: var(--text-2xs); color: var(--color-muted); text-transform: uppercase; letter-spacing: .5px; }
+.studio-facts dd { margin: 0; font-size: var(--text-md); font-weight: var(--weight-semibold); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.studio-facts--forces dd { font-size: var(--text-base); }
+
 /* Barra de status */
 .studio-status { position: sticky; bottom: 0; z-index: var(--z-sticky); display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-3); padding: 8px 12px; background: #fffffff2; backdrop-filter: blur(8px); border: 1px solid var(--color-line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
 .studio-status .result-permanent-warning { position: static; margin: 0; padding: 4px 8px; flex: 1 1 260px; font-size: var(--text-xs); }
@@ -93,6 +114,8 @@
   .studio-tools ul { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
   .studio-tool { flex: 0 0 auto; white-space: nowrap; }
   .studio-viewport { height: max(340px, 54dvh); }
+  /* Conteúdo largo (tabelas de resultado) rola dentro do painel, nunca a página. */
+  .studio-inspector { overflow-x: auto; }
   /* Inspetor como painel inferior (não modal), com alça e botão para recolher. */
   .studio-inspector { position: relative; border-radius: 18px 18px var(--radius-lg) var(--radius-lg); box-shadow: 0 -8px 24px -18px #1f241d66; }
   .studio-sheet-grabber { display: block; width: 40px; height: 4px; margin: 8px auto 0; border-radius: var(--radius-full); background: var(--color-line-strong); }

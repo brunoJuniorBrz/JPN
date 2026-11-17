@@ -16,8 +16,9 @@ export function useDeclaredModel(project: Project) {
 type Declared = ReturnType<typeof useDeclaredModel>;
 
 /** Visualização central do modelo declarado (vistas de linhas). */
-export function DeclaredViewport({ project, declared: { model, review } }: { project: Project; declared: Declared }) {
-  const [piece, setPiece] = useState(""), [node, setNode] = useState("");
+export function DeclaredViewport({ project, declared: { model, review }, selected, onSelect, nodeId, onSelectNode }: { project: Project; declared: Declared; selected?: string; onSelect?: (id: string) => void; nodeId?: string; onSelectNode?: (id: string) => void }) {
+  const [localPiece, setLocalPiece] = useState(""), [localNode, setLocalNode] = useState("");
+  const piece = selected ?? localPiece, setPiece = onSelect ?? setLocalPiece, node = nodeId ?? localNode, setNode = onSelectNode ?? setLocalNode;
   return <section className="result-workspace" aria-label="Resultado do modelo declarado"><h2>Estrutura física declarada</h2>
     <p>{model.nodes.length} nós · {model.pieces.length} barras · revisão {project.workspace.physicalStructure!.revision} · {review.issues.length ? "Dados físicos pendentes" : "Modelo válido para preparar a análise"}.</p>
     <PhysicalLineView model={model} selected={piece} onSelect={setPiece} selectedNodeId={node} onSelectNode={setNode} />

@@ -24,6 +24,9 @@ import { DeclaredEngineering, DeclaredFiles, DeclaredMaterials, DeclaredSafetyWa
 import { ProjectWorkbench, type WorkbenchTool } from "./project-workbench";
 import { StudioLayout, StudioRail, studioStepFromLegacy, studioStepIndex, studioStepUrl, studioSteps, type AnalysisTool, type StudioStepId } from "./project-studio";
 import type { PendingTarget } from "./result-presentation";
+import { StudioAnalysisProvider } from "./studio-analysis";
+import { StudioSelection } from "./studio-selection";
+import { studioModelFromPhysical } from "@/domain/studio-result-layers";
 import type { PieceRole } from "@/domain/structure";
 
 const workbenchSection: Record<StudioStepId, ResultSection> = {
@@ -31,8 +34,16 @@ const workbenchSection: Record<StudioStepId, ResultSection> = {
   verificacao: "model", materiais: "materials", arquivos: "files",
 };
 
-export function PlanningEditor({ initial, initialStep = 0, initialStudioStep, initialOpen3D = false }: { initial?: Project; initialStep?: number; initialStudioStep?: StudioStepId; initialOpen3D?: boolean }) {
+type EditorProps = { initial?: Project; initialStep?: number; initialStudioStep?: StudioStepId; initialOpen3D?: boolean };
+
+/** O provedor da análise fica acima do estúdio: inspetor, 3D e status leem o mesmo estado. */
+export function PlanningEditor(props: EditorProps) {
+  return <StudioAnalysisProvider><StudioEditor {...props} /></StudioAnalysisProvider>;
+}
+
+function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen3D = false }: EditorProps) {
   const { data, saveProject, flush, saveState, setInvalidDraft } = useData(); const router = useRouter();
+  const [selectedPiece, setSelectedPiece] = useState(""), [selectedNode, setSelectedNode] = useState("");
   const [project, setProject] = useState(() => initial ?? newProject(data.settings));
   const [step, setStep] = useState<StudioStepId>(initialStudioStep ?? studioStepFromLegacy(initialStep));
   const [analysisTool, setAnalysisTool] = useState<AnalysisTool>("overview");
@@ -43,11 +54,18 @@ export function PlanningEditor({ initial, initialStep = 0, initialStudioStep, in
   const declared = project.workspace.physicalStructure !== undefined;
   const generated = useGeneratedResult(project);
   const preview = useMemo(() => declared ? { model: resolvePhysicalStructure(project).model, pending: [] as string[] } : generateStructure(project), [project, declared]);
+  const selectionModel = useMemo(() => {
+    if (!declared) return generated.result.model ?? null;
+    const physical = resolvePhysicalStructure(project).model;
+    try { return physical ? studioModelFromPhysical(physical) : null; } catch { return null; }
+  }, [declared, generated.result.model, project]);
   const parsed = projectSchema.safeParse(project);
   const errors = parsed.success ? {} : Object.fromEntries(parsed.error.issues.map(i => [i.path[0], i.message]));
   const stepIndex = studioStepIndex(step), stepLabel = studioSteps[stepIndex].label;
   useEffect(() => () => setInvalidDraft(false), [setInvalidDraft]);
   useEffect(() => { document.querySelector(".studio-inspector")?.scrollTo({ top: 0 }); }, [step]);
+  // F2: ao selecionar no 3D, o cartão da seleção (topo do inspetor) fica visível sem rolar.
+  useEffect(() => { if (selectedPiece || selectedNode) document.querySelector(".studio-inspector")?.scrollTo({ top: 0, behavior: "smooth" }); }, [selectedPiece, selectedNode]);
   useEffect(() => {
     if (!open3D || open3DRequest === 0) return;
     const frame = window.requestAnimationFrame(() => document.getElementById("jpn-viewer")?.scrollIntoView({ behavior: "smooth", block: "nearest" }));
@@ -86,7 +104,7 @@ export function PlanningEditor({ initial, initialStep = 0, initialStudioStep, in
     setSubmitted(true); if (!parsed.success) { setStep("obra"); return; }
     if (!initial) { saveProject(parsed.data); if (flush()) { setInvalidDraft(false); router.replace(`/projetos/${project.id}?fluxo=levantamento&etapa=${studioStepUrl(target)}${request3D ? "&vista=3d" : ""}`); } return; }
     setStep(target); setSubmitted(false);
-    if (request3D) { setOpen3D(true); setOpen3DRequest(n => n + 1); }
+    if (request3D) { setOpen3D(true); setOpen3DRequest(n => n + 1); setSelectedPiece(""); }
     else window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function openTool(tool: WorkbenchTool) {
@@ -95,26 +113,29 @@ export function PlanningEditor({ initial, initialStep = 0, initialStudioStep, in
   }
   function resolvePending(target: PendingTarget) { setProfileToEdit(target.role); go(target.step === 1 ? "geometria" : "estrutura"); }
   /** Ao saltar do visualizador para a edição, a seleção é limpa (como quando o Resultado fechava). */
-  function resetViewer() { setOpen3DRequest(n => n + 1); }
+  function resetViewer() { setOpen3DRequest(n => n + 1); setSelectedPiece(""); }
   function editStructure() { setProfileToEdit(undefined); resetViewer(); go("estrutura"); }
   function configureProfile(role: PieceRole) { setProfileToEdit(role); resetViewer(); go("estrutura"); }
   function save() { if (!parsed.success) { setSubmitted(true); setStep("obra"); return; } saveProject(parsed.data); if (flush()) setMessage("Levantamento salvo neste navegador."); }
   function importModel(next: Project) {
     saveProject(next); if (!flush()) throw Error("Não foi possível salvar o modelo importado; confira o aviso de armazenamento.");
-    setProject(next); setInvalidDraft(false); setStep("materiais"); setOpen3D(true); setOpen3DRequest(n => n + 1);
+    setProject(next); setInvalidDraft(false); setStep("materiais"); setOpen3D(true); setOpen3DRequest(n => n + 1); setSelectedPiece(""); setSelectedNode("");
     if (!initial) router.replace(`/projetos/${next.id}?fluxo=levantamento&etapa=materiais&vista=3d`);
   }
   function open3DViewer() {
     if (preview.model) {
       if (!initial) { go(step, true); return; }
-      setOpen3D(true); setOpen3DRequest(n => n + 1); return;
+      // Reabrir o 3D recomeça a câmera e a seleção, como quando o visualizador era remontado.
+      setOpen3D(true); setOpen3DRequest(n => n + 1); setSelectedPiece(""); return;
     }
     setMessage(preview.pending[0] ?? "Complete as medidas e a estrutura para visualizar o modelo 3D.");
     const roof = project.roof;
     go(roof.widthM === null || roof.lengthM === null || roof.lowHeightM === null || roof.slopePercent === null ? "geometria" : "estrutura");
   }
 
-  const declaredModel = declared ? <DeclaredModelParts project={project} /> : null;
+  const declaredModel = declared ? <DeclaredModelParts project={project} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} /> : null;
+  const showSelection = !!selectedPiece || !!selectedNode || step === "analise" || step === "verificacao";
+  const selection = showSelection ? <StudioSelection model={selectionModel} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} /> : null;
   const tool: WorkbenchTool = step === "cargas" ? "prepare" : analysisTool;
   const workbench = <ProjectWorkbench project={project} activeSection={declared && step === "cargas" ? "model" : workbenchSection[step]} tool={tool} onToolChange={openTool} onChange={update} onEditStructure={editStructure} />;
 
@@ -149,11 +170,11 @@ export function PlanningEditor({ initial, initialStep = 0, initialStudioStep, in
     <StudioLayout
       rail={<StudioRail step={step} onStep={id => go(id)} tool={analysisTool} onTool={openTool} showTools={!declared} pendingCount={pendingCount} />}
       viewportToolbar={<div className="viewer-shortcut"><button type="button" className="button secondary" onClick={open3DViewer}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button><span className="field-hint">{preview.model ? "Visualização 3D da estrutura disponível também no celular." : `Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span></div>}
-      viewport={declared ? declaredModel : <GeneratedViewport project={project} result={generated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} />}
+      viewport={declared ? declaredModel : <GeneratedViewport project={project} result={generated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece} />}
       inspectorTitle={step === "analise" && !declared ? `Análise · ${analysisToolLabel(analysisTool)}` : stepLabel}
       inspector={<>
         <p className="workflow-progress">Passo {stepIndex + 1} de {studioSteps.length} — {stepLabel}</p>
-        <div className="workflow-content">{panel}{workbench}</div>
+        <div className="workflow-content">{selection}{panel}{workbench}</div>
         <div className="workflow-footer"><span className="field-hint">Quantitativos independentes de preços</span><div className="actions">
           {stepIndex > 0 && <button type="button" className="button secondary" onClick={() => go(studioSteps[stepIndex - 1].id)}><ArrowLeft size={18} />Voltar</button>}
           {initial && <button type="button" className={next ? "button secondary" : "button"} onClick={save}><Save size={18} />Salvar levantamento</button>}
@@ -174,9 +195,9 @@ function analysisToolLabel(tool: AnalysisTool) {
   return { overview: "Roteiro estrutural", analysis: "Análise disponível", spatial: "Análise 3D experimental", mixedlocal: "Análise Estrutural Experimental" }[tool];
 }
 
-function DeclaredModelParts({ project }: { project: Project }) {
+function DeclaredModelParts({ project, selected, onSelect, nodeId, onSelectNode }: { project: Project; selected: string; onSelect: (id: string) => void; nodeId: string; onSelectNode: (id: string) => void }) {
   const declared = useDeclaredModel(project);
-  return <DeclaredViewport project={project} declared={declared} />;
+  return <DeclaredViewport project={project} declared={declared} selected={selected} onSelect={onSelect} nodeId={nodeId} onSelectNode={onSelectNode} />;
 }
 function DeclaredMaterialsPart({ project }: { project: Project }) {
   const declared = useDeclaredModel(project);

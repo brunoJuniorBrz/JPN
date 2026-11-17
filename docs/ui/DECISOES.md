@@ -65,3 +65,20 @@ Registro curto das decisões tomadas sem consulta (ver regra em [PLANO-UI.md](PL
 4. **Barra de status fixa acima das etapas**, com o selo "Bloqueado para fabricação", o aviso de segurança (texto completo, fonte menor) e os totais com rolagem horizontal.
 5. **Grades com `minmax(0, 1fr)`.** Sem isso, a lista de ferramentas alargava a página para 647px e o celular dava zoom out.
 6. **Selo do modo dev.** O selo "N · Insight" do Next ficava sobre as duas primeiras etapas da barra e interceptava os toques, inclusive no e2e. Foi movido para `top-right` em `next.config.ts` (só desenvolvimento; `devIndicators: false` não o esconde nesta versão).
+
+## F2 — Seleção e inspetor
+
+1. **Ponte da análise (`studio-analysis.tsx`).** A análise mista continua dona do estado, do job, do cache e da camada de resultado. Ela só publica uma cópia somente leitura num contexto: estado (atual, desatualizada, rodando, erro), combinação ativa, resultado, mapeamento peça → segmentos, relatório de resistência e camada. Também expõe 4 comandos (trocar combinação, trocar camada, escala, executar).
+   - A única mudança em `mixed-analysis-workspace.tsx` é um efeito de publicação, sem lógica de cálculo.
+   - Exemplos sintéticos abertos dentro da análise não são publicados: o estúdio só mostra resultados do próprio projeto.
+2. **Seleção no estúdio.** A peça e o nó selecionados passam a ser estado do editor. `StructurePreview` e a vista do modelo declarado aceitam a seleção controlada e caem no estado local quando ninguém a controla (demonstrações).
+3. **Inspetor de seleção.** Fica no topo do inspetor, visível nas etapas Análise e Verificação e sempre que há algo selecionado. Ao selecionar no 3D, o inspetor volta ao topo: os esforços aparecem sem rolar.
+   - **Peça:** perfil, comprimento, massa, nós; N máx. (com sinal), V e M máximos da combinação ativa, agregados pelos segmentos analisados; status e pendências do relatório de resistência.
+   - **Peças só axiais:** V e M aparecem como "não se aplica"; nada é inventado.
+   - **Utilização:** o relatório básico não calcula (`utilization: null`). O inspetor diz "Utilização não calculada", em vez de mostrar um número.
+   - **Nó/apoio:** reações Fx, Fy e Fz, momento de reação, auditoria do apoio (compressão, arrancamento e cisalhamento contra a capacidade declarada) e limitações.
+   - O selo "Não aprovada · bloqueada para fabricação" aparece sempre no cartão.
+4. **Busca no inspetor.** Peça (ID ou categoria, Enter seleciona a primeira) e nó/apoio.
+   - **Pendente:** os selects de peça, segmento e nó dentro da Análise Estrutural Experimental continuam lá. Removê-los exigiria reescrever o painel de resultados (47 KB), e a busca do inspetor os cobre.
+   - **Pendente:** o hover no 3D não foi feito, porque o raycaster atual só trata clique.
+5. **Nomes acessíveis sem colisão.** O botão do cartão é "Desmarcar peça", porque o 3D já tem "Limpar seleção".

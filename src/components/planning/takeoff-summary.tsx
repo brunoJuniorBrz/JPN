@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { Download } from "lucide-react";
 import type { Project } from "@/domain/models";
 import { generateStructure } from "@/domain/calculations/structure";
@@ -27,14 +27,19 @@ export function useGeneratedResult(project: Project) {
 type Generated = ReturnType<typeof useGeneratedResult>;
 
 /** Visualização central: desenho 2D / 3D ou o que falta para gerar as peças. */
-export function GeneratedViewport({ project, result, startIn3D, open3DRequest, onConfigureProfile, onEditStructure, onResolvePending }: {
+export function GeneratedViewport({ project, result, startIn3D, open3DRequest, onConfigureProfile, onEditStructure, onResolvePending, selected, onSelect, analysisColors, deformed, overlay }: {
   project: Project; result: StructureResult; startIn3D: boolean; open3DRequest: number;
   onConfigureProfile?: (role: PieceRole) => void; onEditStructure?: () => void; onResolvePending?: (target: PendingTarget) => void;
+  selected?: string; onSelect?: (id: string) => void;
+  analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null;
+  /** Elementos do estúdio sobre a visualização (legenda, combinação, apoios). */
+  overlay?: ReactNode;
 }) {
   const model = result.model;
   if (!model) return <div className="pending-box"><h3>Faltam dados para gerar as peças</h3><ul>{result.pending.map(p => <li key={p}>{p}{onResolvePending && locatePending(p) && <button className="button secondary result-pending-action" type="button" onClick={() => onResolvePending(locatePending(p)!)}>Corrigir dados</button>}</li>)}</ul></div>;
   return <div className="result-model-panel">
-    <StructurePreview key={open3DRequest} project={project} result={result} onConfigureProfile={onConfigureProfile} onEditStructure={onEditStructure} startIn3D={startIn3D} />
+    {overlay}
+    <StructurePreview key={open3DRequest} project={project} result={result} onConfigureProfile={onConfigureProfile} onEditStructure={onEditStructure} startIn3D={startIn3D} selected={selected} onSelect={onSelect} analysisColors={analysisColors} deformed={deformed} />
     <p className="result-model-context">Tesouras: {model.frameCount} linhas · Terças: {model.purlinRows} linhas · Espaçamentos entre eixos: {formatMeasure(model.frameSpacingM, 2)} m / {formatMeasure(model.purlinSpacingM, 2)} m.</p>
   </div>;
 }
