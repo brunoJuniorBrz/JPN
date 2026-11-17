@@ -31,7 +31,11 @@ const engineeringCombinations={
     {id:"ELU-G",purpose:"ULS" as const,hypothesis:"1,25 G",reference:ref,terms:[term("G",1.25)]},
     {id:"ELS-W",purpose:"SLS-characteristic" as const,hypothesis:"G + W",reference:ref,terms:[term("G",1),term("W",1)]},
   ]};
-const run=(interfaces=[wallA,center,wallB])=>assessAnchorPullout({interfaces,anchorTypes,ulsCombinationIds:["ELU-W","ELU-WU","ELU-G"],result,engineeringCombinations});
+// NBR 8681 classification of the permanent action: G = steel (Tabela 1: unfavorable 1,25, favorable 1,0).
+const nbr8681Declaration={schema_version:"jpn.nbr8681-declaration/1",permanentMode:"separate",variableMode:"separate",permanentSets:["unfavorable","favorable"],
+  families:["uls-normal"],actions:[{nature:"permanent",caseId:"G",permanentType:"steel-and-equipment"},
+    {nature:"variable",caseId:"W",variableType:"wind",psiRow:"wind",exclusiveGroup:"WIND"}]};
+const run=(interfaces=[wallA,center,wallB])=>assessAnchorPullout({interfaces,anchorTypes,ulsCombinationIds:["ELU-W","ELU-WU","ELU-G"],result,engineeringCombinations,nbr8681Declaration});
 
 it("caso B: 5,740 / 11,480 kN contra 8,0 / 15,0 kN -> 0,718 e 0,765; ELU-W governa e o apoio central é crítico",()=>{
   const a=run(),by=Object.fromEntries(a.supports.map(s=>[s.nodeId,s]));
@@ -85,11 +89,12 @@ const hcActions=[{nature:"permanent",caseId:"G",permanentType:"steel-and-equipme
   {nature:"variable",caseId:"Q",variableType:"other-and-equipment-temperature",psiRow:"libraries-archives-warehouses-workshops-garages-roofs",exclusiveGroup:null},
   {nature:"variable",caseId:"W",variableType:"wind",psiRow:"wind",exclusiveGroup:"WIND"}];
 const hc=(permanentSets:string[])=>{
-  const g=generateNbr8681Combinations({schema_version:"jpn.nbr8681-declaration/1",permanentMode:"separate",variableMode:"separate",
-    permanentSets,families:["uls-normal"],actions:hcActions},["G","Q","W"]);
+  const decl={schema_version:"jpn.nbr8681-declaration/1",permanentMode:"separate",variableMode:"separate",
+    permanentSets,families:["uls-normal"],actions:hcActions};
+  const g=generateNbr8681Combinations(decl,["G","Q","W"]);
   const ec=g.engineeringCombinations;
   const res={combinations:Object.fromEntries(ec.combinations.map(c=>[c.id,{nodes:{N1:r(c.terms.reduce((s,t)=>s+t.gamma*t.psi*hcR[t.caseId as keyof typeof hcR],0))}}]))};
-  return assessAnchorPullout({interfaces:[wallA],anchorTypes,result:res,engineeringCombinations:ec,
+  return assessAnchorPullout({interfaces:[wallA],anchorTypes,result:res,engineeringCombinations:ec,nbr8681Declaration:decl,
     ulsCombinationIds:ec.combinations.filter(c=>c.purpose==="ULS").map(c=>c.id)});
 };
 
@@ -150,7 +155,7 @@ it("A1: permanente favorável sem vento NÃO valida a combinação de sucção c
     "ELU-G":{nodes:{N1:r(3100)}},
   }};
   const a=assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["ELU-W","ELU-G"],
-    result:incomplete,engineeringCombinations:combinations});
+    result:incomplete,engineeringCombinations:combinations,nbr8681Declaration});
   expect(a.supports[0].pullout.demandKn).toBeCloseTo(5.085,9);
   expect(a.favorableCombinationIds).toContain("ELU-G");
   expect(a.missingFavorableCombinationIds).toContain("ELU-W");
@@ -192,7 +197,7 @@ it("A1: assinatura γ·ψ arredondada: 1,5 x 0,8 (=1.2000000000000002) casa com 
     combinations:[
       {id:"U",purpose:"ULS" as const,hypothesis:"1,25 G + 1,4 W + 1,5·0,8 Q",reference:ref,terms:[term("G",1.25),term("W",1.4),{...term("Q",1.5),psi:0.8}]},
       {id:"F",purpose:"ULS" as const,hypothesis:"1,0 G + 1,4 W + 1,2 Q",reference:ref,terms:[term("G",1),term("W",1.4),term("Q",1.2)]}]};
-  const a=assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["U","F"],engineeringCombinations:ec,
+  const a=assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["U","F"],engineeringCombinations:ec,nbr8681Declaration,
     result:{combinations:{U:{nodes:{N1:r(-1000)}},F:{nodes:{N1:r(-1500)}}}}});
   expect(a.favorablePermanentSet).toBe("present");expect(a.unfavorablePermanentSet).toBe("present");
   expect(a.missingFavorableCombinationIds).toEqual([]);
@@ -202,4 +207,44 @@ it("A1: combinação ELS pedida como ELU bloqueia a verificação (nonULS)",()=>
   const a=assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["ELU-W","ELS-W"],result,engineeringCombinations});
   expect(a.supports[0].pullout.status).toBe("verification-pending");expect(a.supports[0].pullout.demandKn).toBeNull();
   expect(a.supports[0].issues.join()).toMatch(/Finalidade incompatível: ELS-W/);expect(a.governingSupport).toBeNull();
+});
+
+/** Counterexample from the cross audit of 67b5169 (ChatGPT, #134): G1 steel (Tabela 1 unfavorable 1,25) and G2
+ * industrialized (Tabela 1 unfavorable 1,30). "U" = 1,25 G1 + 1,00 G2 + 1,4 W: G2 is NOT at its unfavorable factor, so
+ * the unfavorable set is missing even though G1 is at 1,25. The reference comes from the single source, not from the
+ * combinations received. */
+const twoG={actions:[{caseId:"G1",category:"permanent" as const,exclusiveGroup:null,reference:ref},{caseId:"G2",category:"permanent" as const,exclusiveGroup:null,reference:ref},
+  {caseId:"W",category:"wind" as const,exclusiveGroup:null,reference:ref}],
+  combinations:(g2u:number)=>[
+    {id:"U",purpose:"ULS" as const,hypothesis:"1,25 G1 + "+g2u+" G2 + 1,4 W",reference:ref,terms:[term("G1",1.25),term("G2",g2u),term("W",1.4)]},
+    {id:"F",purpose:"ULS" as const,hypothesis:"1,0 G1 + 1,0 G2 + 1,4 W",reference:ref,terms:[term("G1",1),term("G2",1),term("W",1.4)]}]};
+const twoGDecl=(g2Type?:string)=>({schema_version:"jpn.nbr8681-declaration/1",permanentMode:"separate",variableMode:"separate",permanentSets:["unfavorable","favorable"],
+  families:["uls-normal"],actions:[{nature:"permanent",caseId:"G1",permanentType:"steel-and-equipment"},
+    {nature:"permanent",caseId:"G2",...(g2Type?{permanentType:g2Type}:{})},{nature:"variable",caseId:"W",variableType:"wind",psiRow:"wind",exclusiveGroup:"WIND"}]});
+const twoGRun=(g2u:number,decl:unknown)=>assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["U","F"],nbr8681Declaration:decl,
+  engineeringCombinations:{actions:twoG.actions,combinations:twoG.combinations(g2u)},result:{combinations:{U:{nodes:{N1:r(-1000)}},F:{nodes:{N1:r(-1500)}}}}});
+
+it("A1 contraexemplo: G1 = 1,25, G2 = 1,00, W = 1,40 -> conjunto desfavorável MISSING (G2 desfavorável de referência 1,30)",()=>{
+  const a=twoGRun(1.0,twoGDecl("prefab-wood-industrialized"));
+  expect(a.permanentClassificationVerified).toBe(true);
+  expect(a.favorablePermanentSet).toBe("present");
+  expect(a.unfavorablePermanentSet).toBe("missing");expect(a.missingUnfavorableCombinationIds).toEqual(["U","F"]);
+  expect(a.supports[0].issues.join()).toMatch(/ANCHOR_UNFAVORABLE_PERMANENT_SET_MISSING/);expect(a.studioStatus.N1).toBe("pending");
+  // control: G2 at its reference 1,30 closes the unfavorable set
+  expect(twoGRun(1.3,twoGDecl("prefab-wood-industrialized")).unfavorablePermanentSet).toBe("present");
+});
+
+it("A1: permanente sem classificação ou sem declaração NBR 8681 -> unverified e apoio PENDENTE",()=>{
+  const noType=twoGRun(1.3,twoGDecl());
+  expect(noType.permanentClassificationVerified).toBe(false);expect(noType.unclassifiedPermanents).toEqual(expect.arrayContaining(["G1","G2"]));
+  expect(noType.favorablePermanentSet).toBe("unverified");expect(noType.unfavorablePermanentSet).toBe("unverified");
+  expect(noType.supports[0].issues.join()).toMatch(/ANCHOR_PERMANENT_CLASSIFICATION_UNVERIFIED/);expect(noType.studioStatus.N1).toBe("pending");
+  const noDecl=twoGRun(1.3,undefined);
+  expect(noDecl.unfavorablePermanentSet).toBe("unverified");expect(noDecl.unclassifiedPermanents).toEqual(["G1","G2"]);
+  expect(noDecl.supports[0].issues.join()).toMatch(/ANCHOR_PERMANENT_CLASSIFICATION_UNVERIFIED/);
+  // a combination whose item is not 5.1.3.x has no traceable kind (normal/special/exceptional)
+  const other=assessAnchorPullout({interfaces:[wallA],anchorTypes,ulsCombinationIds:["U","F"],nbr8681Declaration:twoGDecl("prefab-wood-industrialized"),
+    engineeringCombinations:{actions:twoG.actions,combinations:twoG.combinations(1.3).map(c=>({...c,reference:{...ref,clause:"memorial"}}))},
+    result:{combinations:{U:{nodes:{N1:r(-1000)}},F:{nodes:{N1:r(-1500)}}}}});
+  expect(other.permanentClassificationVerified).toBe(false);expect(other.studioStatus.N1).toBe("pending");
 });

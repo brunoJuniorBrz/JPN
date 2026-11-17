@@ -3,6 +3,7 @@ import type {Project} from "./models";
 import type {SpatialPreparation} from "./spatial-preparation";
 import type {PhysicalGeometry} from "./structure";
 import type {EngineeringCombinations} from "./engineering-combinations";
+import {nbr8681PermanentReferenceFactors,type Nbr8681UlsKind} from "./nbr8681-permanent-factors";
 
 const evidence=z.string().trim().min(5).max(1000);
 const n=z.number().finite().nonnegative().max(1e9);
@@ -138,13 +139,16 @@ type CapacitySource={valueKn:number;origin:"support"|"anchor-type";anchorTypeId:
  * Demand = governing ULS reaction of the analysis result handed in (the /3 result, or the second-order result
  * when that is the active analysis). Capacity = declared per support or by declared anchor type; never computed.
  * No declared capacity -> "capacity-pending", never a pass. Masonry/concrete resistance (NBR 16868) is N10.
- * A1 (NBR 8681 5.1.3.1; Tabelas 1 a 3): pull-out is governed by minimum permanent + maximum suction, so at least one
- * ULS combination must carry every permanent action with a favorable factor (all favorable values in Tabelas 1 a 3
- * are <= 1,0). Without that combination, or without the declared factors, the support stays pending.
+ * A1 (NBR 8681 5.1.3.1; Tabelas 1 a 3): for each variable-load hypothesis there must be one ULS combination with every
+ * permanent at its reference favorable gamma and one with every permanent at its reference unfavorable gamma, both
+ * taken from the single source by the declared classification. Missing set, missing classification or missing
+ * factors -> the support stays pending.
  * A3: shear and moment of the combination that governs tension are reported; their interaction is NOT verified. */
 export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[];anchorTypes?:readonly AnchorType[];
   ulsCombinationIds:readonly string[]|null;result:{combinations:Record<string,{nodes:Record<string,Reaction>}>};
-  engineeringCombinations?:Pick<EngineeringCombinations,"actions"|"combinations">|null}){
+  engineeringCombinations?:Pick<EngineeringCombinations,"actions"|"combinations">|null;
+  /** NBR 8681 declaration (classification of each permanent action) used to look up the reference gamma. */
+  nbr8681Declaration?:unknown}){
   const types=new Map((input.anchorTypes??[]).map(t=>[t.id,t]));
   const all=Object.keys(input.result.combinations);
   const ec=input.engineeringCombinations??null;
@@ -161,36 +165,60 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
   const factorOf=(c:typeof ulsDeclarations[number],id:string)=>{
     const t=c.terms.find(t=>t.caseId===id);return t?Number((t.gamma*t.psi).toFixed(9)):0;
   };
-  const signature=(c:typeof ulsDeclarations[number])=>JSON.stringify(variableIds.map(id=>[id,factorOf(c,id)]));
-  // A minimum-permanent combination must pair with EACH actual variable-load vector.
-  // A standalone 1.0 G combination cannot validate 1.25 G + 1.4 W (HC-C).
-  const minimumPermanents=(c:typeof ulsDeclarations[number])=>permanentIds.size>0&&
-    [...permanentIds].every(id=>{
-      const t=c.terms.find(t=>t.caseId===id);
-      return !!t&&Math.abs(t.psi-1)<1e-12&&t.gamma<=1+1e-12;
-    });
-  const favorableCombinationIds=ulsDeclarations.filter(minimumPermanents).map(c=>c.id);
-  const favorableSignatures=new Set(ulsDeclarations.filter(minimumPermanents).map(signature));
+  type Ec=typeof ulsDeclarations[number];
+  // ULS kind from the combination's traceable clause (the generator writes 5.1.3.1 / 5.1.3.2 / 5.1.3.3).
+  const kindOf=(c:Ec):Nbr8681UlsKind|null=>{const cl=c.reference.clause.trim();
+    return cl==="5.1.3.1"?"normal":cl==="5.1.3.2"?"special":cl==="5.1.3.3"?"exceptional":null;};
+  const signature=(c:Ec)=>JSON.stringify([kindOf(c),variableIds.map(id=>[id,factorOf(c,id)])]);
+  // Reference gamma of each permanent from the single source (data/normas/nbr8681-2025-combinations.json), by the
+  // declared classification (Tabela 1 type, Tabela 2 grouped, Tabela 3). Never inferred from the combinations received:
+  // G1 = 1,25 with G2 = 1,00 must not count as the unfavorable set when G2's unfavorable reference is > 1,0.
+  const referenceCache=new Map<Nbr8681UlsKind,Map<string,{gu:number;gf:number}>|null>();
+  const referenceFor=(kind:Nbr8681UlsKind)=>{
+    if(!referenceCache.has(kind)){
+      let m:Map<string,{gu:number;gf:number}>|null=null;
+      const d=input.nbr8681Declaration as Parameters<typeof nbr8681PermanentReferenceFactors>[0]|null|undefined;
+      if(d&&(d.permanentMode==="separate"||d.permanentMode==="grouped")&&Array.isArray(d.actions))
+        try{m=new Map(nbr8681PermanentReferenceFactors(d,kind).map(p=>[p.caseId,{gu:p.gu,gf:p.gf}]));}catch{m=null;}
+      referenceCache.set(kind,m);
+    }
+    return referenceCache.get(kind)!;
+  };
   // The permanent-only case does not produce a suction hypothesis if variable-load ULS exist.
   // Demand the minimum permanent for every distinct ACTIVE variable-load vector, not just a global G-only case.
   const activeVariableULS=ulsDeclarations.filter(c=>variableIds.some(id=>factorOf(c,id)>1e-12));
   const requiredULS=activeVariableULS.length?activeVariableULS:ulsDeclarations;
-  const missingFavorableCombinationIds=requiredULS.filter(c=>!favorableSignatures.has(signature(c))).map(c=>c.id);
-  const favorableSet=!validULS||!ec||permanentIds.size===0?"unverified" as const:
+  const unclassified=new Set<string>();
+  if(input.nbr8681Declaration==null)for(const id of permanentIds)unclassified.add(id);
+  for(const c of ulsDeclarations){
+    const kind=kindOf(c);
+    if(!kind){unclassified.add("combinação "+c.id+" sem item 5.1.3.x");continue;}
+    const refs=referenceFor(kind);
+    for(const id of permanentIds)if(!refs?.has(id))unclassified.add(id);
+  }
+  const classificationVerified=permanentIds.size>0&&unclassified.size===0;
+  const permanentsAt=(c:Ec,bound:"gf"|"gu")=>{
+    const kind=kindOf(c),refs=kind?referenceFor(kind):null;
+    return !!refs&&[...permanentIds].every(id=>{
+      const t=c.terms.find(t=>t.caseId===id),r=refs.get(id);
+      if(!t||!r||Math.abs(t.psi-1)>1e-12)return false;
+      return bound==="gf"?t.gamma<=r.gf+1e-9:t.gamma>=r.gu-1e-9;
+    });
+  };
+  // A minimum-permanent combination must pair with EACH actual variable-load vector.
+  // A standalone 1.0 G combination cannot validate 1.25 G + 1.4 W (HC-C).
+  const favorableCombinationIds=classificationVerified?ulsDeclarations.filter(c=>permanentsAt(c,"gf")).map(c=>c.id):[];
+  const favorableSignatures=new Set(ulsDeclarations.filter(c=>favorableCombinationIds.includes(c.id)).map(signature));
+  const missingFavorableCombinationIds=classificationVerified?requiredULS.filter(c=>!favorableSignatures.has(signature(c))).map(c=>c.id):[];
+  const verifiable=validULS&&!!ec&&classificationVerified;
+  const favorableSet=!verifiable?"unverified" as const:
     favorableCombinationIds.length>0&&missingFavorableCombinationIds.length===0?"present" as const:"missing" as const;
   // The unfavorable set is also needed per hypothesis (NBR 8681 5.1.3.1): where a permanent action itself lifts the
-  // support (e.g. G on the adjacent span of a continuous beam), 1,25 G + suction governs. A favorable-only declaration
-  // (every permanent at <= 1,0) must not pass. Per variable vector, require one combination carrying every permanent
-  // at its largest factor in that vector, with at least one of them > 1,0. (Per-action mixes, 5.1.4.1, stay with the engineer.)
-  const permanentGamma=(c:typeof ulsDeclarations[number],id:string)=>{const t=c.terms.find(t=>t.caseId===id);return t&&Math.abs(t.psi-1)<1e-12?t.gamma:null;};
-  const unfavorableCovered=(sig:string)=>{
-    const group=ulsDeclarations.filter(c=>signature(c)===sig&&[...permanentIds].every(id=>permanentGamma(c,id)!==null));
-    if(!group.length)return false;
-    const maxes=[...permanentIds].map(id=>Math.max(...group.map(c=>permanentGamma(c,id)!)));
-    return maxes.some(m=>m>1+1e-12)&&group.some(c=>[...permanentIds].every((id,i)=>permanentGamma(c,id)!>=maxes[i]-1e-12));
-  };
-  const missingUnfavorableCombinationIds=requiredULS.filter(c=>!unfavorableCovered(signature(c))).map(c=>c.id);
-  const unfavorableSet=!validULS||!ec||permanentIds.size===0?"unverified" as const:
+  // support (e.g. G on the adjacent span of a continuous beam), the unfavorable set + suction governs. Each permanent
+  // must reach ITS reference unfavorable gamma in one combination of that vector. (Per-action mixes, 5.1.4.1, stay with the engineer.)
+  const unfavorableSignatures=new Set(classificationVerified?ulsDeclarations.filter(c=>permanentsAt(c,"gu")).map(signature):[]);
+  const missingUnfavorableCombinationIds=classificationVerified?requiredULS.filter(c=>!unfavorableSignatures.has(signature(c))).map(c=>c.id):[];
+  const unfavorableSet=!verifiable?"unverified" as const:
     missingUnfavorableCombinationIds.length===0?"present" as const:"missing" as const;
   const supports=input.interfaces.filter(f=>EXISTING.has(f.kind)).map(face=>{
     const type=face.anchorTypeId?types.get(face.anchorTypeId)??null:null;
@@ -232,10 +260,12 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
         (missingResults.length?"Resultados ausentes: "+missingResults.join(", ")+". ":"")+
         (nonULS.length?"Finalidade incompatível: "+nonULS.join(", ")+".":"")]:[]),
       ...(face.reviewStatus!=="site-reviewed"?["EXISTING_SUPPORT_PENDING: parede existente sem inspeção registrada."]:[]),
-      ...(favorableSet==="missing"?["ANCHOR_FAVORABLE_PERMANENT_SET_MISSING: falta combinar permanentes favoráveis (γg ≤ 1,0; NBR 8681 5.1.3.1) com cada hipótese variável considerada, incluindo a sucção. Verifique ELU: "+
+      ...(favorableSet==="missing"?["ANCHOR_FAVORABLE_PERMANENT_SET_MISSING: falta combinar permanentes com o γg favorável de referência (NBR 8681 5.1.3.1; Tabelas 1 a 3) com cada hipótese variável considerada, incluindo a sucção. Verifique ELU: "+
         [...new Set(missingFavorableCombinationIds)].join(", ")+"."]:
         favorableSet==="unverified"?["ANCHOR_FAVORABLE_PERMANENT_SET_UNVERIFIED: fatores e cobertura das combinações ELU não confirmados; o arrancamento com permanente mínimo não foi verificado."]:[]),
-      ...(unfavorableSet==="missing"?["ANCHOR_UNFAVORABLE_PERMANENT_SET_MISSING: falta combinar permanentes desfavoráveis (γg > 1,0; NBR 8681 5.1.3.1) com cada hipótese variável; se a permanente tracionar o apoio, o arrancamento fica subestimado. Verifique ELU: "+
+      ...(validULS&&ec&&!classificationVerified?["ANCHOR_PERMANENT_CLASSIFICATION_UNVERIFIED: sem classificação NBR 8681 rastreável (Tabelas 1 a 3) para "+
+        (unclassified.size?[...unclassified].join(", "):"as ações permanentes")+"; γg de referência desconhecido, conjuntos favorável e desfavorável não verificados."]:[]),
+      ...(unfavorableSet==="missing"?["ANCHOR_UNFAVORABLE_PERMANENT_SET_MISSING: falta combinar cada permanente com o seu γg desfavorável de referência (NBR 8681 5.1.3.1; Tabelas 1 a 3) em cada hipótese variável; se a permanente tracionar o apoio, o arrancamento fica subestimado. Verifique ELU: "+
         [...new Set(missingUnfavorableCombinationIds)].join(", ")+"."]:[]),
       ...(pullout.demandKn!==null&&pullout.demandKn>1e-9&&(pullout.concurrentHorizontalShearKn??0)>1e-9?
         ["ANCHOR_SHEAR_INTERACTION_PENDING: tração e cisalhamento concomitantes da ELU "+pullout.governingCombinationId+
@@ -250,7 +280,8 @@ export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[
   const governing=supports.filter(s=>s.pullout.ratio!==null).sort((a,b)=>b.pullout.ratio!-a.pullout.ratio!)[0]??null;
   return {schema_version:"jpn.anchor-pullout/1" as const,combinationsConsidered:uls,
     combinationPurposeDeclared:validULS,favorablePermanentSet:favorableSet,favorableCombinationIds,
-    missingFavorableCombinationIds,unfavorablePermanentSet:unfavorableSet,missingUnfavorableCombinationIds,supports,
+    missingFavorableCombinationIds,unfavorablePermanentSet:unfavorableSet,missingUnfavorableCombinationIds,
+    permanentClassificationVerified:classificationVerified,unclassifiedPermanents:[...unclassified],supports,
     governingSupport:governing?{nodeId:governing.nodeId,ratio:governing.pullout.ratio,combinationId:governing.pullout.governingCombinationId}:null,
     studioStatus:Object.fromEntries(supports.map(s=>[s.nodeId,s.pullout.status==="exceeds-declared-capacity"?"exceeds":s.pullout.status==="capacity-pending"||s.issues.length?"pending":s.critical?"governing":"ok"])) as Record<string,"exceeds"|"pending"|"governing"|"ok">,
     limitations:["Capacidades declaradas pelo engenheiro (ficha do fabricante); o JPN não calcula ancoragem nem alvenaria.",

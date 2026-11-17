@@ -6,6 +6,7 @@ import data from "../../data/normas/nbr8681-2025-combinations.json" with {type:"
 import type {Project} from "./models";
 import {applyEngineeringCombinations} from "./apply-engineering-combinations";
 import {engineeringCombinationsSchema} from "./engineering-combinations";
+import {nbr8681PermanentReferenceFactors} from "./nbr8681-permanent-factors";
 /** Generator limit (every analysis case must be classified exactly once). The analysis itself accepts more cases (MAX_CASES); above this the generator REFUSES, never truncates. */
 export const MAX_DECLARED_ACTIONS=16;
 
@@ -45,18 +46,8 @@ const ref=(clause:string)=>({standard:"ABNT NBR 8681",edition:"2025",clause,
   responsible:"Revisão profissional pendente; o JPN não substitui o responsável técnico"});
 const psiOf=(row:string)=>(data.table6.rows as Record<string,{psi:number[]}>)[row].psi;
 
-type Perm={caseId:string;gu:number;gf:number;table:string};
-function permanentFactors(d:Nbr8681Declaration,kind:Kind):Perm[]{
-  return d.actions.flatMap(a=>{
-    if(a.nature!=="permanent")return [];
-    if(a.permanentType==="prestress"||a.permanentType==="settlement-shrinkage"){
-      const [gu,gf]=data.table3[a.permanentType][kind];return [{caseId:a.caseId,gu,gf,table:"Tabela 3"}];
-    }
-    if(d.permanentMode==="grouped"){const [gu,gf]=data.table2[kind];return [{caseId:a.caseId,gu,gf,table:"Tabela 2"}];}
-    if(!a.permanentType)return fail("M42_PERMANENT_TYPE","tipo da Tabela 1 é obrigatório para "+a.caseId+" em permanentMode=separate");
-    const [gu,gf]=data.table1.types[a.permanentType][kind];return [{caseId:a.caseId,gu,gf,table:"Tabela 1"}];
-  });
-}
+// Tabelas 1 a 3 lookup shared with the anchor pull-out check (single implementation).
+const permanentFactors=(d:Nbr8681Declaration,kind:Kind)=>nbr8681PermanentReferenceFactors(d,kind);
 const gammaQ=(d:Nbr8681Declaration,type:keyof typeof data.table4.types,kind:Kind)=>
   d.variableMode==="joint"&&type!=="temperature-atmospheric"?data.table5[kind]:data.table4.types[type][kind];
 
