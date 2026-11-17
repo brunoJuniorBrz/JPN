@@ -57,8 +57,9 @@ def ancestor(a, b):
 REVIEWED_AMENDMENTS = {
     # timeout explícito de 30 s no canvas 3D do CI (studio-next:32, quick-project:46)
     "tests/e2e/quick-project.spec.ts": "16614d78c2aebf3e397343b5f7738079cf4216ef",
-    # INT-1c/M44: m34ab (cap 10 lifted) and M50 (9.8.4 computed) tests updated, reviewed
-    "src/domain/m34ab-declared.test.ts": "093f11fe3277226097c79a82b7afd9daf1315127",
+    # Owner-requested M34ab fix: temporary output; read-only historical results.
+    # Preserves the reviewed INT-1c/M44 checks and all original tolerances.
+    "src/domain/m34ab-declared.test.ts": "7cbaf71bb161bad52054f2ed2f799e1611941fff",
     # M44-P1: NBR 14762 audit amendments (reviewed; was 477462c)
     "engine/tests/test_coldformed_design.py": "3ffd991d47f070b881c9024ea69b61154d7172c4",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
