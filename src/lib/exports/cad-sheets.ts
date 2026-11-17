@@ -3,16 +3,29 @@ import type {Project} from "@/domain/models";
 import {CadBook,CAD_NOTICE,cadNumber as num,type PaperFormat,type Point2 as P,type CadRect,type CadPage} from "./cad-book";
 import {cadModel,cadReactions,axisLetter,sortedCoordinates as unique,isDeclaredBrace,type CadPiece,type CadReactionReceipt} from "./cad-model";
 import {cadRoofFaces} from "./cad-roof";
+import {isUnlocatedCommercialPiece} from "./package-commercial-groups";
+import {reviewSourceDimensions} from "./package-dimension-review";
 export {CAD_NOTICE};
 export type CadExportOptions={format?:PaperFormat;reactions?:CadReactionReceipt};
 
 export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,options:CadExportOptions={}){
   const data=cadModel(project),{model,draft,takeoff,nodes,profile,supports,xs,ys}=data;
   const book=new CadBook(dxf,options.format??"A3",project.name,model.revision,issuedAt,Math.max(...model.nodes.map(n=>n.x)));
-  const counters=new Map<string,number>(),marks=new Map<string,string>();
+  const counters=new Map<string,number>(),marks=new Map<string,string>(),markByType=new Map<string,string>(),markCounts=new Map<string,number>();
+  const items=new Map(takeoff.pieces.map(p=>[p.pieceId,p]));
+  const unlocated=new Set(takeoff.pieces.filter(isUnlocatedCommercialPiece).map(p=>p.pieceId));
+  const sourceDimensions=reviewSourceDimensions(project),dimensionByPiece=new Map(sourceDimensions.map(r=>[r.pieceId,r]));
   for(const p of [...model.pieces].sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}))){
     const prefix=isDeclaredBrace(p)?"D":({column:"C",beam:"V",purlin:"T",topChord:"BS",bottomChord:"BI",web:"D"} as const)[p.role];
-    const n=(counters.get(prefix)??0)+1;counters.set(prefix,n);marks.set(p.id,`${prefix}${n}`);
+    const piece=items.get(p.id),assignment=draft?.physicalCatalog?.assignments.find(a=>a.pieceId===p.id);
+    const ends=draft?.memberConnections.find(c=>c.pieceId===p.id);
+    const fabrication=project.workspace.fabrication.find(f=>f.pieceId===p.id);
+    const key=JSON.stringify([prefix,p.role,assignment?.sectionId??piece?.sectionId,assignment?.materialId??piece?.materialId,
+      piece?.steelGrade,piece?.lengthMm,assignment?.rotationDeg,ends?.start,ends?.end,
+      fabrication?.signature,fabrication?.lengthMm,unlocated.has(p.id)]);
+    const mark=markByType.get(key)??`${prefix}${(counters.get(prefix)??0)+1}`;
+    if(!markByType.has(key)){markByType.set(key,mark);counters.set(prefix,(counters.get(prefix)??0)+1);}
+    marks.set(p.id,mark);markCounts.set(mark,(markCounts.get(mark)??0)+1);
   }
   const supportMarks=new Map(supports.map((n,i)=>[n.id,`AP${i+1}`]));
   const trace:string[]=[`Obra=${project.id}; revisão=${model.revision}; origem=${model.provenance}`,
@@ -39,11 +52,16 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const distinct=crossings.filter((p,i)=>!i||p.some((v,k)=>v!==crossings[i-1][k]));
 
   type View="plan"|"front"|"side"|"cut";
-  type DrawOptions={pieces?:CadPiece[];showRoof?:boolean;bases?:boolean;subtitle?:string;aliases?:Map<string,string[]>;frame?:boolean;tercas?:boolean;deduplicate?:boolean};
+  type DrawOptions={pieces?:CadPiece[];showRoof?:boolean;bases?:boolean;noMarks?:boolean;subtitle?:string;aliases?:Map<string,string[]>;frame?:boolean;tercas?:boolean;deduplicate?:boolean};
   function drawing(page:CadPage,rect:CadRect,name:string,view:View,opts:DrawOptions={}){
     let pieces=opts.pieces??model.pieces;const showRoof=opts.showRoof??true;
     const horizontal=view==="side"?"y":view==="cut"?across:"x";
-    const projection=(n:{x:number;y:number;z:number}):P=>view==="plan"?[n.x,n.y]:[n[horizontal],n.z];
+    const extentNodes=[...pieces.flatMap(p=>[nodes.get(p.start)!,nodes.get(p.end)!]),...(showRoof?roof:[])];
+    const xSpan=Math.max(...extentNodes.map(n=>n.x))-Math.min(...extentNodes.map(n=>n.x));
+    const ySpan=Math.max(...extentNodes.map(n=>n.y))-Math.min(...extentNodes.map(n=>n.y));
+    const rotatePlan=view==="plan"&&rect.width>rect.height&&ySpan>xSpan;
+    const projection=(n:{x:number;y:number;z:number}):P=>view==="plan"
+      ?(rotatePlan?[n.y,-n.x]:[n.x,n.y]):[n[horizontal],n.z];
     if(opts.deduplicate){
       const projected=new Map<string,CadPiece>();
       for(const p of pieces){
@@ -58,7 +76,9 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     if(view!=="plan")coords.push([coords[0][0],datum]);
     const minX=Math.min(...coords.map(p=>p[0])),minY=Math.min(...coords.map(p=>p[1]));
     const width=Math.max(...coords.map(p=>p[0]))-minX,height=Math.max(...coords.map(p=>p[1]))-minY;
-    const available={x:32,y:24,width:Math.max(20,rect.width-48),height:Math.max(20,rect.height-34)};
+    const solo=rect.width>=book.area.width*.94&&rect.height>=book.area.height*.94;
+    const available=solo?{x:12,y:2,width:rect.width-24,height:rect.height-4}
+      :{x:22,y:12,width:Math.max(20,rect.width-36),height:Math.max(20,rect.height-24)};
     const scale=book.scale(width,height,available),maxX=minX+width,maxY=minY+height;
     book.view(page,rect,name,scale,space=>{
       const originX=available.x+(available.width-width/scale)/2,originY=available.y+(available.height-height/scale)/2;
@@ -98,25 +118,25 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         book.circle(space,[x,y],radius,"MARCAS");
         const text=book.text(space,[x,y-.8],id,"MARCAS",2.1);text.horizontalAlignment=1;text.secondAlignmentPoint=point3d(x,y-.8);
       };
-      const horizontalAxes=horizontal==="x"?xs:ys;
+      const horizontalAxes=view==="plan"?(rotatePlan?ys:xs):horizontal==="x"?xs:ys;
       const axisName=(axis:"x"|"y",value:number)=>axis==="x"?axisLetter(xs.indexOf(value)):String(ys.indexOf(value)+1);
       const bubble=(p:P,value:string)=>{
         book.circle(space,p,3,"EIXOS");
         book.text(space,[p[0]-value.length*.7,p[1]-.9],value,"EIXOS",2.5);
         occupied.push({x:p[0],y:p[1],width:3,height:3});
       };
-      for(const value of (view==="plan"?xs:horizontalAxes).filter(x=>x>=minX&&x<=maxX)){
+      for(const value of horizontalAxes.filter(x=>x>=minX&&x<=maxX)){
         const q=at([value,minY]),end=at([value,maxY]);
-        book.poly(space,[[q[0],q[1]-3],[end[0],end[1]+6]],"EIXOS");bubble([end[0],end[1]+9],axisName(view==="plan"?"x":horizontal,value));
+        book.poly(space,[[q[0],q[1]-3],[end[0],end[1]+6]],"EIXOS");bubble([end[0],end[1]+9],axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,value));
       }
-      const hv=(view==="plan"?xs:horizontalAxes).filter(x=>x>=minX&&x<=maxX);
-      for(let i=1;i<hv.length;i++)book.dim(space,at([hv[i-1],minY]),at([hv[i],minY]),scale,`EIXOS ${axisName(view==="plan"?"x":horizontal,hv[i-1])}-${axisName(view==="plan"?"x":horizontal,hv[i])}`,-8);
+      const hv=horizontalAxes.filter(x=>x>=minX&&x<=maxX);
+      for(let i=1;i<hv.length;i++)book.dim(space,at([hv[i-1],minY]),at([hv[i],minY]),scale,`EIXOS ${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i-1])}-${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i])}`,-8);
       if(view==="plan"){
-        for(const value of ys.filter(y=>y>=minY&&y<=maxY)){
-          const a=at([minX,value]),b=at([maxX,value]);book.poly(space,[[a[0]-3,a[1]],[b[0]+3,b[1]]],"EIXOS");bubble([a[0]-7,a[1]],axisName("y",value));
+        for(const value of (rotatePlan?xs.map(v=>-v):ys).filter(y=>y>=minY&&y<=maxY)){
+          const a=at([minX,value]),b=at([maxX,value]);book.poly(space,[[a[0]-3,a[1]],[b[0]+3,b[1]]],"EIXOS");bubble([a[0]-7,a[1]],axisName(rotatePlan?"x":"y",rotatePlan?-value:value));
         }
-        const vv=ys.filter(y=>y>=minY&&y<=maxY);
-        for(let i=1;i<vv.length;i++)book.dim(space,at([minX,vv[i-1]]),at([minX,vv[i]]),scale,`VÃO Y ${axisName("y",vv[i-1])}-${axisName("y",vv[i])}`,19);
+        const vv=(rotatePlan?xs.map(v=>-v):ys).filter(y=>y>=minY&&y<=maxY).sort((a,b)=>a-b);
+        for(let i=1;i<vv.length;i++)book.dim(space,at([minX,vv[i-1]]),at([minX,vv[i]]),scale,`VÃO Y ${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i-1]:vv[i-1])}-${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i]:vv[i])}`,19);
         if(name==="PLANTA"){
           const a:P=cutAxis==="y"?[minX,sectionPosition]:[sectionPosition,minY],b:P=cutAxis==="y"?[maxX,sectionPosition]:[sectionPosition,maxY];
           book.poly(space,[at(a),at(b)],"EIXOS");book.text(space,at(a),"A-A","EIXOS");
