@@ -82,7 +82,7 @@ def purlin(q):
         combinations=[dict(id="Q-TEST",factors={"Q-SYNTH":1})])
 
 
-def no_diagonals():
+def no_diagonals(*, laterally_braced=False):
     """One idealised welded Vierendeel-like member: rigid joints, no diagonals.
 
     Five upper/lower nodes, five verticals, two simple end supports; the drawing
@@ -101,7 +101,8 @@ def no_diagonals():
             source="Croqui: 5.37m inferior, cerca 5.41m superior; uniao rigida hipotetica"),
         nodes=nodes,members=members,materials=material(),sections=[section("U")],
         supports=[dict(node="B0",restrained=[True,True,True,False,False,False]),
-                  dict(node="B4",restrained=[False,True,True,False,False,False])],
+                  dict(node="B4",restrained=[False,True,True,False,False,False])] +
+                 ([dict(node="T0",restrained=[False,True,False,False,False,False])] if laterally_braced else []),
         cases=[dict(id="DOWN",source="3 forcas verticais de 200 N sintéticas, sem distribuicao fisica"),
                dict(id="UP",source="Sucção nodal inversa sintética, NAO vento da obra")],
         nodal_loads=[dict(node=f"T{i}",case=case,fx_n=0,fy_n=0,
@@ -156,7 +157,14 @@ def test_tom_u75e_isolated_purlin_real_jpn_mechanics_and_limits():
 
 
 def test_tom_no_diagonals_experimental_frame_equilibrium_only():
-    raw=no_diagonals()
+    # Two end supports along the bottom axis leave a whole-body roll mechanism.
+    # An unconfirmed purlin/wall lateral brace must NEVER be silently invented.
+    with pytest.raises(AnalysisError) as exc:
+        analyze_frame3d(no_diagonals(laterally_braced=False))
+    assert exc.value.code == "UNSTABLE"
+    # Separate mechanically stabilised scenario; extra restraint at upper T0
+    # is a HYPOTHESIS, not a support found in the architectural PDF.
+    raw=no_diagonals(laterally_braced=True)
     result=analyze_frame3d(raw)
     combinations={}
     for name,sign in (("BAIXO",-1),("CIMA",1)):
@@ -174,4 +182,6 @@ def test_tom_no_diagonals_experimental_frame_equilibrium_only():
         rigid_joint_assumption=True,bracing_unverified=True,
         synthetic_point_loads_per_case=3,point_load_n=200,
         modeled_loose_U_pieces=0,combinations=combinations,
-        note="Not a true truss, nor real project design; all joint stiffness and loading remain unverified."))
+        unbraced_solver_status="UNSTABLE",
+        added_hypothetical_brace="UY at upper node T0 (only for sensitivity)",
+        note="Not a true truss, nor real project design; all joint stiffness, lateral bracing and loading remain unverified."))
