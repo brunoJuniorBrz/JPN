@@ -20,7 +20,7 @@ import { MAX_CASES, MAX_COMBINATIONS } from "./analysis-limits";
 import { connectionsSchema } from "./connections";
 import { declaredServiceCriterionSchema } from "./declared-service";
 import { memberDesignDeclarationSchema } from "./coldformed-design";
-import { supportInterfacesSchema } from "./support-interface";
+import { supportInterfacesSchema, anchorTypesSchema } from "./support-interface";
 import { physicalRoofFacesSchema } from "./physical-roof-faces";
 import { physicalFacadesSchema } from "./physical-facades";
 import { auditPhysicalFacadeEnvelope } from "./physical-facade-envelope";
@@ -47,6 +47,7 @@ export const spatialPreparationSchema = z.object({
   groups: z.object({ column: physicalGroupSchema, topChord: physicalGroupSchema, bottomChord: physicalGroupSchema, web: physicalGroupSchema, purlin: physicalGroupSchema, beam: physicalGroupSchema.optional() }).strict(),
   supports: z.array(supportSchema).max(200),
   supportInterfaces: supportInterfacesSchema.optional(),
+  anchorTypes: anchorTypesSchema.optional(),
   physicalRestraints: physicalRestraintsSchema.optional(),
   elasticLtbStudies: elasticLtbStudiesSchema.optional(),
   memberConnections: z.array(z.object({ pieceId: z.string().min(1).max(100), start: z.enum(["inherit", ...connectionChoices]), end: z.enum(["inherit", ...connectionChoices]) }).strict()).max(5000),

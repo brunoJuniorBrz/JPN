@@ -2,18 +2,18 @@
 import {useState} from "react";
 import {Field,Input,Select,Textarea} from "@/components/ui";
 import {NumberField} from "@/components/number-field";
-import {supportInterfaceSchema} from "@/domain/support-interface";
+import {supportInterfaceSchema,anchorTypeSchema} from "@/domain/support-interface";
 import type {SupportInterface} from "@/domain/support-interface";
 import type {SpatialPreparation} from "@/domain/spatial-preparation";
 
 type CapacityKey="compressionKn"|"upliftKn"|"horizontalShearKn";
 type FormState={nodeId:string;side:string;kind:string;source:string;revision:string;
   loadPath:string;restraintBasis:string;reviewStatus:"hypothesis"|"site-reviewed";
-  capacities:Record<CapacityKey,number|null>;capacitySource:string;capacityRevision:string;};
+  capacities:Record<CapacityKey,number|null>;capacitySource:string;capacityRevision:string;anchorTypeId:string;};
 const fresh=():FormState=>({nodeId:"",side:"",kind:"",source:"",revision:"",
   loadPath:"",restraintBasis:"",reviewStatus:"hypothesis",
   capacities:{compressionKn:null,upliftKn:null,horizontalShearKn:null},
-  capacitySource:"",capacityRevision:""});
+  capacitySource:"",capacityRevision:"",anchorTypeId:""});
 const kinds=[
  ["new-steel-column","Pilar metálico novo"],
  ["existing-masonry","Alvenaria existente"],
@@ -32,6 +32,8 @@ export function SupportInterfaceEditor({draft,onChange}:{
 }){
   const [form,setForm]=useState<FormState>(fresh);
   const [notice,setNotice]=useState("");
+  const [anchor,setAnchor]=useState({id:"",label:"",tensionDesignKn:null as number|null,compressionDesignKn:null as number|null,source:"",revision:""});
+  const anchorParsed=anchorTypeSchema.safeParse(anchor);
   const available=draft.supports.filter(s=>s.dofs.every(d=>d!=="pending")&&s.dofs.some(d=>d==="fixed"));
   const declared=available.find(s=>s.nodeId===form.nodeId);
   const includeCapacity=Object.values(form.capacities).some(x=>x!==null)||
@@ -41,6 +43,7 @@ export function SupportInterfaceEditor({draft,onChange}:{
     dofs:declared?.dofs.map(x=>x==="fixed"?"fixed":"free"),
     source:form.source,revision:form.revision,loadPath:form.loadPath,
     restraintBasis:form.restraintBasis,reviewStatus:form.reviewStatus,
+    ...(form.anchorTypeId?{anchorTypeId:form.anchorTypeId}:{}),
     ...(includeCapacity?{capacity:{...form.capacities,source:form.capacitySource,
       revision:form.capacityRevision}}:{}),
   };
@@ -54,7 +57,7 @@ export function SupportInterfaceEditor({draft,onChange}:{
         upliftKn:face.capacity?.upliftKn??null,
         horizontalShearKn:face.capacity?.horizontalShearKn??null},
       capacitySource:face.capacity?.source??"",
-      capacityRevision:face.capacity?.revision??""});
+      capacityRevision:face.capacity?.revision??"",anchorTypeId:face.anchorTypeId??""});
     setNotice("Declaração carregada para edição. Confirme os vínculos atuais antes de salvar.");
   }
   return <section aria-label="Interfaces físicas de apoio" className="technical-review">
@@ -98,6 +101,9 @@ export function SupportInterfaceEditor({draft,onChange}:{
       <div className="form-grid">
         {axes.map(([key,label])=><NumberField key={key} label={label} value={form.capacities[key]}
           min={0} max={1e9} decimals={3} onChange={value=>update({capacities:{...form.capacities,[key]:value}})}/>)}
+        <Field label="Tipo de ancoragem declarado (usado se o apoio não tiver capacidade própria)"><Select value={form.anchorTypeId} onChange={e=>update({anchorTypeId:e.target.value})}>
+          <option value="">Nenhum</option>{(draft.anchorTypes??[]).map(a=><option key={a.id} value={a.id}>{a.id} · {a.label} · {a.tensionDesignKn} kN</option>)}
+        </Select></Field>
         <Field label="Fonte das capacidades declaradas"><Input value={form.capacitySource} maxLength={1000}
           onChange={e=>update({capacitySource:e.target.value})}/></Field>
         <Field label="Revisão das capacidades"><Input value={form.capacityRevision} maxLength={1000}
@@ -115,6 +121,22 @@ export function SupportInterfaceEditor({draft,onChange}:{
         <button type="button" className="button secondary" onClick={()=>{setForm(fresh());setNotice("");}}>Limpar formulário</button>
       </div>
     </details>
-    {notice&&<p role="status">{notice}</p>}
+    <details className="technical-details" data-testid="anchor-types">
+      <summary>Tipos de ancoragem (ficha do fabricante)</summary>
+      <p className="field-hint">Informe a capacidade de cálculo à tração do conjunto de ancoragem do apoio, com a fonte (ficha técnica do fabricante, revisão). O JPN não calcula ancoragem nem alvenaria; sem valor declarado o apoio fica pendente.</p>
+      {(draft.anchorTypes??[]).map(a=><div className="physical-row" key={a.id}><strong>{a.id} · {a.label} · tração {a.tensionDesignKn} kN{a.compressionDesignKn!==null?` · compressão ${a.compressionDesignKn} kN`:""} · {a.source}</strong>
+        <button type="button" className="button secondary" onClick={()=>onChange({...draft,anchorTypes:(draft.anchorTypes??[]).filter(x=>x.id!==a.id)})}>Remover tipo</button></div>)}
+      <div className="form-grid">
+        <Field label="ID do tipo"><Input maxLength={40} value={anchor.id} onChange={e=>setAnchor({...anchor,id:e.target.value})}/></Field>
+        <Field label="Descrição (ex.: chumbador químico M12)"><Input maxLength={1000} value={anchor.label} onChange={e=>setAnchor({...anchor,label:e.target.value})}/></Field>
+        <NumberField label="Capacidade de cálculo à tração (kN)" value={anchor.tensionDesignKn} min={0} max={1e6} decimals={3} onChange={v=>setAnchor({...anchor,tensionDesignKn:v})}/>
+        <NumberField label="Capacidade de cálculo à compressão (kN, opcional)" value={anchor.compressionDesignKn} min={0} max={1e6} decimals={3} onChange={v=>setAnchor({...anchor,compressionDesignKn:v})}/>
+        <Field label="Fonte (ficha do fabricante)"><Input maxLength={1000} value={anchor.source} onChange={e=>setAnchor({...anchor,source:e.target.value})}/></Field>
+        <Field label="Revisão"><Input maxLength={1000} value={anchor.revision} onChange={e=>setAnchor({...anchor,revision:e.target.value})}/></Field>
+      </div>
+      <button type="button" className="button secondary" disabled={!anchorParsed.success} onClick={()=>{if(!anchorParsed.success)return;
+        onChange({...draft,anchorTypes:[...(draft.anchorTypes??[]).filter(x=>x.id!==anchorParsed.data.id),anchorParsed.data]});
+        setAnchor({id:"",label:"",tensionDesignKn:null,compressionDesignKn:null,source:"",revision:""});setNotice("Tipo de ancoragem registrado.");}}>Salvar tipo de ancoragem</button>
+    </details>    {notice&&<p role="status">{notice}</p>}
   </section>;
 }

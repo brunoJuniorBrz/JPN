@@ -18,7 +18,19 @@ export const supportInterfaceSchema=z.object({
     compressionKn:n.nullable(),upliftKn:n.nullable(),horizontalShearKn:n.nullable(),
     source:evidence,revision:evidence,
   }).strict().optional(),
+  /** N4: declared anchor type (manufacturer data); used when this support has no own declared capacity. */
+  anchorTypeId:z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/).optional(),
 }).strict();
+/** N4: anchor type declared by the engineer from manufacturer data. The JPN never computes anchor or masonry capacity. */
+export const anchorTypeSchema=z.object({
+  id:z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$/),label:evidence,
+  tensionDesignKn:z.number().finite().positive().max(1e6),
+  compressionDesignKn:z.number().finite().positive().max(1e6).nullable(),
+  source:evidence,revision:evidence,
+}).strict();
+export const anchorTypesSchema=z.array(anchorTypeSchema).max(50)
+  .refine(items=>new Set(items.map(x=>x.id)).size===items.length,"Tipos de ancoragem com ID repetido.");
+export type AnchorType=z.infer<typeof anchorTypeSchema>;
 export const supportInterfacesSchema=z.array(supportInterfaceSchema).max(200)
   .refine(items=>new Set(items.map(x=>x.nodeId)).size===items.length,
     "Cada nó pode ter uma única interface física de apoio.");
@@ -117,3 +129,60 @@ export function assessSupportReactions(interfaces:readonly SupportInterface[],
         "Comparação preliminar de reações combinadas: não é dimensionamento nem liberação de fabricação."]};
   }));
 }
+
+const EXISTING=new Set(["existing-masonry","existing-concrete"]);
+export type AnchorStatus="within-declared-capacity"|"exceeds-declared-capacity"|"capacity-pending"|"no-demand";
+type CapacitySource={valueKn:number;origin:"support"|"anchor-type";anchorTypeId:string|null;source:string;revision:string}|null;
+/** N4: pull-out (and, informatively, compression) per support on an EXISTING wall or concrete element.
+ * Demand = governing ULS reaction of the analysis result handed in (the /3 result, or the second-order result
+ * when that is the active analysis). Capacity = declared per support or by declared anchor type; never computed.
+ * No declared capacity -> "capacity-pending", never a pass. Masonry/concrete resistance (NBR 16868) is N10. */
+export function assessAnchorPullout(input:{interfaces:readonly SupportInterface[];anchorTypes?:readonly AnchorType[];
+  ulsCombinationIds:readonly string[]|null;result:{combinations:Record<string,{nodes:Record<string,Reaction>}>}}){
+  const types=new Map((input.anchorTypes??[]).map(t=>[t.id,t]));
+  const all=Object.keys(input.result.combinations);
+  const uls=input.ulsCombinationIds?all.filter(id=>input.ulsCombinationIds!.includes(id)):all;
+  const supports=input.interfaces.filter(f=>EXISTING.has(f.kind)).map(face=>{
+    const type=face.anchorTypeId?types.get(face.anchorTypeId)??null:null;
+    const capacity=(own:number|null|undefined,fromType:number|null|undefined):CapacitySource=>
+      own!=null&&face.capacity?{valueKn:own,origin:"support",anchorTypeId:null,source:face.capacity.source,revision:face.capacity.revision}:
+      fromType!=null&&type?{valueKn:fromType,origin:"anchor-type",anchorTypeId:type.id,source:type.source,revision:type.revision}:null;
+    const per=uls.map(combinationId=>{
+      const node=input.result.combinations[combinationId].nodes[face.nodeId];
+      if(!node)throw new Error("SUPPORT_REACTION_MISSING: "+face.nodeId+" sem reação em "+combinationId);
+      const fz=node.reaction_force_n[2];
+      if(!Number.isFinite(fz))throw new Error("SUPPORT_REACTION_INVALID");
+      // Global Z up: -Fz on the structure = the support pulls the steel down = anchor in tension.
+      return {combinationId,pulloutKn:Math.max(0,-fz)/1000,compressionKn:Math.max(0,fz)/1000};
+    });
+    const check=(key:"pulloutKn"|"compressionKn",cap:CapacitySource)=>{
+      const governing=per.reduce<typeof per[number]|null>((g,r)=>!g||r[key]>g[key]?r:g,null);
+      const demandKn=governing?.[key]??0;
+      const ratio=cap&&cap.valueKn>0?demandKn/cap.valueKn:null;
+      const status:AnchorStatus=!cap?"capacity-pending":demandKn<=1e-9?"no-demand":demandKn>cap.valueKn+1e-9?"exceeds-declared-capacity":"within-declared-capacity";
+      return {demandKn,governingCombinationId:demandKn>1e-9?governing!.combinationId:null,declaredCapacity:cap,ratio,status};
+    };
+    const pullout=check("pulloutKn",capacity(face.capacity?.upliftKn,type?.tensionDesignKn));
+    const compression={...check("compressionKn",capacity(face.capacity?.compressionKn,type?.compressionDesignKn??null)),
+      note:"Compressão sobre a parede: demanda informada x capacidade declarada; resistência da alvenaria (NBR 16868) fica para o N10."};
+    const issues=[
+      ...(face.anchorTypeId&&!type?["ANCHOR_TYPE_MISSING: tipo "+face.anchorTypeId+" não declarado."]:[]),
+      ...(pullout.status==="capacity-pending"?["ANCHOR_CAPACITY_PENDING: declare a capacidade de cálculo à tração (ficha do fabricante) para "+face.nodeId+"."]:[]),
+      ...(face.reviewStatus!=="site-reviewed"?["EXISTING_SUPPORT_PENDING: parede existente sem inspeção registrada."]:[]),
+    ];
+    return {nodeId:face.nodeId,side:face.side,kind:face.kind,reviewStatus:face.reviewStatus,pullout,compression,issues,critical:false};
+  });
+  const ratios=supports.map(s=>s.pullout.ratio??-1),maxRatio=Math.max(-1,...ratios);
+  for(const s of supports)s.critical=s.pullout.status==="exceeds-declared-capacity"||s.pullout.status==="capacity-pending"||
+    s.issues.length>0||(maxRatio>0&&s.pullout.ratio===maxRatio);
+  const governing=supports.filter(s=>s.pullout.ratio!==null).sort((a,b)=>b.pullout.ratio!-a.pullout.ratio!)[0]??null;
+  return {schema_version:"jpn.anchor-pullout/1" as const,combinationsConsidered:uls,
+    combinationPurposeDeclared:input.ulsCombinationIds!==null,supports,
+    governingSupport:governing?{nodeId:governing.nodeId,ratio:governing.pullout.ratio,combinationId:governing.pullout.governingCombinationId}:null,
+    studioStatus:Object.fromEntries(supports.map(s=>[s.nodeId,s.pullout.status==="exceeds-declared-capacity"?"exceeds":s.pullout.status==="capacity-pending"||s.issues.length?"pending":s.critical?"governing":"ok"])) as Record<string,"exceeds"|"pending"|"governing"|"ok">,
+    limitations:["Capacidades declaradas pelo engenheiro (ficha do fabricante); o JPN não calcula ancoragem nem alvenaria.",
+      "Demanda no nó do modelo: distribuição entre chumbadores, excentricidade, efeito alavanca e borda não são verificados.",
+      ...(input.ulsCombinationIds===null?["Combinações sem finalidade declarada: todas tratadas como ELU."]:[])],
+    normativeApproval:false as const,computedStructuralApproval:false as const,fabricationRelease:false as const,releaseGate:"NOT_READY_BLOCKED" as const};
+}
+export type AnchorPulloutReport=ReturnType<typeof assessAnchorPullout>;
