@@ -20,7 +20,14 @@ const csv=(rows:unknown[][])=>"\ufeff"+rows.map(row=>row.map(v=>`"${String(v??"P
 const safe=(s:string)=>s.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9_-]+/g,"-").slice(0,90)||"obra";
 const digest=async(bytes:Uint8Array)=>Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",new Uint8Array(bytes)))).map(b=>b.toString(16).padStart(2,"0")).join("");
 export function packageCutting(project:Project,options:PackageOptions={}){
-  if(!project.workspace.physicalStructure)return projectCutting(project);
+  if(!project.workspace.physicalStructure){
+    const original=projectCutting(project),c=project.workspace.cutting;
+    return {...original,groups:original.groups.map(g=>({...g,...packBars({
+      stockMm:g.bars[0].stockMm,
+      pieces:g.bars.flatMap(b=>b.pieces.map(p=>({id:p.id,lengthMm:Math.ceil(p.lengthMm-1e-9)}))),
+      kerfMm:c.kerfMm!,endTrimMm:c.endTrimMm!,minimumRemnantMm:c.minimumRemnantMm!,
+    })}))};
+  }
   const config=project.workspace.cutting,report=packageTakeoff(project),signature=structureSignature(project);
   if(config.kerfMm===null||config.endTrimMm===null||config.minimumRemnantMm===null)
     throw Error("Declare serra, perdas de extremidade e sobra mínima; zero deve ser explícito.");
