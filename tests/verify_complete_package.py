@@ -40,8 +40,12 @@ for case in ('regular', 'irregular'):
     assert math.isclose(sum(float(p['Comprimento geométrico mm']) for p in rows)/1000, manifest['totals']['lengthM'], rel_tol=1e-12)
     for p in rows:
         c = next(c for c in cuts if c['ID peça'] == p['ID'])
-        # packBars rounds UP to integer micrometres; do not compare to rounded drawing labels.
-        assert 0 <= float(c['Corte mm'])-float(p['Comprimento geométrico mm']) < .00100001
+        # Shop lengths are deliberately integer-mm CEILING values; the
+        # unrounded geometric length remains in materials and project.json.
+        cut = float(c['Corte mm'])
+        geometric = float(p['Comprimento geométrico mm'])
+        assert cut == math.ceil(geometric - 1e-9)
+        assert 0 <= cut-geometric < 1.000001
     if project['workspace'].get('physicalStructure'):
         structure = project['workspace']['physicalStructure']
         nodes = {n['id']: n for n in structure['nodes']}
