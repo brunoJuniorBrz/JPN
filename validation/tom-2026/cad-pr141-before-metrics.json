@@ -1,0 +1,56 @@
+{
+  "source": "PR #141 before CAD improvements, fixture Tom export from 2026-11-17; inspected actual DXF model/paperspace",
+  "important": "Occupancy is geometry bbox / VIEWPORT area, not total sheet; basis narrower than user A3 occupancy requirement.",
+  "sheet1": [
+    {
+      "view": "planta de cobertura",
+      "scale": 500,
+      "viewportMm": [
+        181.5,
+        108
+      ],
+      "geometryBBoxOccupancyPercent": 3.3
+    },
+    {
+      "view": "terças",
+      "scale": 250,
+      "viewportMm": [
+        181.5,
+        108
+      ],
+      "geometryBBoxOccupancyPercent": 10.8
+    }
+  ],
+  "sheet2": [
+    {
+      "view": "elevação frontal",
+      "scale": 100,
+      "occupancyPercent": 6.3
+    },
+    {
+      "view": "elevação lateral",
+      "scale": 200,
+      "occupancyPercent": 3.1
+    },
+    {
+      "view": "corte",
+      "scale": 100,
+      "occupancyPercent": 0
+    }
+  ],
+  "sheet3": {
+    "view": "tesoura 1",
+    "scale": 50,
+    "occupancyPercent": 5.9
+  },
+  "sheet4": {
+    "view": "tesoura 2",
+    "scale": 50,
+    "occupancyPercent": 5.9
+  },
+  "technicalCaveats": [
+    "Do not equate bbox occupancy in a small viewport with percentage of the usable A3 sheet.",
+    "Tom 6 roof faces are schematically positioned, not a surveyed layout.",
+    "Z=3000 mm was assumed for CAD experiment."
+  ]
+}
