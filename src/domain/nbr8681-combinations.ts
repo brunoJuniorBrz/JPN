@@ -72,10 +72,12 @@ function slotsOf(d:Nbr8681Declaration):Slot[]{
   }
   return out;
 }
-/** Active-variable selections for one principal (null = no principal, permanents only). */
-function selections(slots:Slot[],principal:string|null,subsets:boolean){
+/** Active-variable selections for one principal. With subsets, every accompanying slot may also be absent
+ * (4.3.3.1: only variable parts with unfavorable effect are considered; the effect is unknown here, so both are
+ * enumerated). ULS with no principal = permanents only; SLS quasi-permanent (no principal) enumerates the subsets. */
+function selections(slots:Slot[],principal:string|null,subsets:boolean,permanentsOnlyWithoutPrincipal=true){
   const result:Map<string,"principal"|"accompanying">[]=[];
-  if(principal===null&&subsets)return [new Map<string,"principal"|"accompanying">()];   // permanents only
+  if(principal===null&&subsets&&permanentsOnlyWithoutPrincipal)return [new Map<string,"principal"|"accompanying">()];   // permanents only
   const rest=slots.filter(s=>principal===null||!s.alts.includes(principal));
   const opts=rest.map(s=>subsets?[null,...s.alts]:s.alts);
   const total=opts.reduce((n,o)=>n*o.length,1);
@@ -143,7 +145,9 @@ export function generateNbr8681Combinations(raw:unknown,existingCaseIds:string[]
           const exc=kind==="exceptional";
           const gamma=role==="principal"&&exc?data.gammaQExceptional:gammaQ(d,v.variableType,kind);
           const factor=role==="principal"?1:(kind==="normal"?psi[0]:(veryShort?psi[2]:psi[0]));
-          terms.push({caseId:v.caseId,role,gamma,psi:factor,table:d.variableMode==="joint"?"Tabela 5":"Tabela 4"});
+          // Tabela 5 nota a: in joint mode the temperature effect stays on Tabela 4; the trace must name the table actually used.
+          const table=role==="principal"&&exc?"5.1.4.3 (gamma_q,exc)":d.variableMode==="joint"&&v.variableType!=="temperature-atmospheric"?"Tabela 5":"Tabela 4";
+          terms.push({caseId:v.caseId,role,gamma,psi:factor,table});
         }
         const cl=kind==="normal"?"5.1.3.1":kind==="special"?"5.1.3.2":"5.1.3.3";
         push(fam,"U-"+(kind==="normal"?"N":kind==="special"?"S":"X"),"ULS",cl,
@@ -151,7 +155,9 @@ export function generateNbr8681Combinations(raw:unknown,existingCaseIds:string[]
       }
     }else{
       const principals=fam==="sls-quasi-permanent"?[null]:variables.filter(v=>!v.isolated).map(v=>v.caseId);
-      for(const pr of principals)for(const sel of selections(slots,pr,false)){
+      // 4.3.3 applies 4.3.3.1 to service combinations too: favorable accompanying variable actions are omitted,
+      // so each accompanying slot is enumerated present/absent (as in ULS), never forced into the combination.
+      for(const pr of principals)for(const sel of selections(slots,pr,true,false)){
         const terms:Term[]=permanentFactors(d,"normal").map(p=>({caseId:p.caseId,role:"permanent",gamma:1,psi:1,table:"5.1.5 (gamma=1,0)"}));
         for(const v of variables){
           const role=sel.get(v.caseId),psi=psiOf(v.psiRow);
