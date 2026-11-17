@@ -461,6 +461,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
         </div>
       </aside>}
     </div>
+    {!failure && supportStatus && Object.keys(supportStatus).length > 0 && <SupportLegend status={supportStatus} />}
     {!failure && mode === "finished" && <section className="presentation-controls" aria-label="Personalizar apresentação da obra">
       <div className="presentation-controls-head"><strong>Personalizar visualização</strong><span>Elementos cenográficos, sem alteração do orçamento ou da estrutura</span></div>
       <div className="presentation-settings">
@@ -480,5 +481,20 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       {pictureError && <p role="alert" className="field-error">{pictureError}</p>}
       <p className="drawing-help">Arraste para girar; dois dedos para ampliar/deslocar. Grade: {gridSpacingM.toLocaleString("pt-BR")} m por célula. Cores por categoria; acabamento, sombras e reflexos são apenas visuais. Nitidez de imagem adaptativa com limite de pixels para preservar o desempenho. Use a seleção de peças para acesso por teclado.</p>
     </>}
+  </div>;
+}
+
+/** N4: the marker colours always come with text (state + support IDs), never colour alone. */
+const supportLegend=[["exceeds","EXCEDE a capacidade declarada","#c0392b"],["pending","PENDENTE (capacidade ou inspeção)","#e89f27"],
+  ["governing","GOVERNA (maior razão)","#d35400"],["ok","OK, dentro da capacidade declarada","#2e8b57"]] as const;
+function SupportLegend({status}:{status:Record<string,"exceeds"|"pending"|"governing"|"ok">}){
+  const entries=Object.entries(status);
+  return <div className="studio-support-legend" data-testid="studio-support-legend" role="note" aria-label="Arrancamento por apoio"
+    style={{margin:"8px 0",background:"#fff",color:"#1d1d1d",border:"1px solid #999",borderRadius:6,padding:"6px 8px",fontSize:13,lineHeight:1.4}}>
+    <strong>Arrancamento por apoio (ELU)</strong>
+    {supportLegend.map(([key,label,color])=>{const ids=entries.filter(([,s])=>s===key).map(([id])=>id);if(!ids.length)return null;
+      return <div key={key} data-state={key} style={{display:"flex",gap:6,alignItems:"baseline"}}>
+        <span aria-hidden="true" style={{display:"inline-block",width:10,height:10,borderRadius:5,background:color,flex:"none"}}/>
+        <span><strong>{label}</strong>: {ids.join(", ")}</span></div>;})}
   </div>;
 }
