@@ -88,6 +88,11 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       book.graphicScale(space,[rect.width-56,3],scale);
       const occupied:{x:number;y:number;width:number;height:number}[]=[];
       const reservedLabels:CadRect[]=[];
+      const leaders:[P,P][]=[];
+      const intersects=(a:P,b:P,c:P,d:P)=>{
+        const o=(p:P,q:P,r:P)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);
+        return o(a,b,c)*o(a,b,d)<-1e-8&&o(c,d,a)*o(c,d,b)<-1e-8;
+      };
       let dense=false;
       const projectedNodes=points.map(n=>at(projection(n)));
       const segments=pieces.flatMap(p=>{
@@ -98,25 +103,32 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         const dx=v[0]-u[0],dy=v[1]-u[1],t=Math.max(0,Math.min(1,((p[0]-u[0])*dx+(p[1]-u[1])*dy)/(dx*dx+dy*dy||1)));
         return Math.hypot(p[0]-u[0]-t*dx,p[1]-u[1]-t*dy);
       };
+      // Leaders are rejected if they intersect other leaders, non-target
+      // members or dimension lines. When placement fails: use materials table.
       const label=(anchor:P,id:string)=>{
-        const radius=Math.max(3,id.length*.7+1.2);let x=0,y=0,found=false;
-        for(let i=0;i<160;i++){
-          const angle=(i%16)*Math.PI/8,distance=7+Math.floor(i/16)*3;
-          x=anchor[0]+Math.cos(angle)*distance;y=anchor[1]+Math.sin(angle)*distance;
-          if(x<radius+2||x>rect.width-radius-2||y<18+radius||y>rect.height-10-radius)continue;
+        const radius=Math.max(3,id.length*.72+1.2);
+        for(let i=0;i<208;i++){
+          const angle=(i%16)*Math.PI/8,distance=8+Math.floor(i/16)*4;
+          const x=anchor[0]+Math.cos(angle)*distance,y=anchor[1]+Math.sin(angle)*distance;
+          if(x<radius+2||x>rect.width-radius-2||y<radius+2||y>rect.height-9-radius)continue;
+          const tip:P=[x-(x-anchor[0])/distance*radius,y-(y-anchor[1])/distance*radius];
           if(projectedNodes.some(p=>Math.hypot(p[0]-x,p[1]-y)<radius+2))continue;
           if(reservedLabels.some(r=>Math.hypot(Math.max(r.x-x,0,x-r.x-r.width),Math.max(r.y-y,0,y-r.y-r.height))<radius+1))continue;
-          if(segments.some(([u,v])=>distanceToSegment([x,y],u,v)<radius+1.5))continue;
-          if(book.dimensionObstacles(space).some(([u,v])=>distanceToSegment([x,y],u,v)<radius+4))continue;
-          if(occupied.some(b=>Math.hypot(x-b.x,y-b.y)<radius+b.width+1))continue;
-          found=true;break;
+          if(segments.some(([u,v])=>distanceToSegment([x,y],u,v)<radius+1.5||
+            (intersects(anchor,tip,u,v)&&distanceToSegment(anchor,u,v)>1)))continue;
+          if(book.dimensionObstacles(space).some(([u,v])=>distanceToSegment([x,y],u,v)<radius+3||
+            intersects(anchor,tip,u,v)))continue;
+          if(occupied.some(b=>Math.hypot(x-b.x,y-b.y)<radius+b.width+2))continue;
+          if(leaders.some(([u,v])=>intersects(anchor,tip,u,v)))continue;
+          leaders.push([anchor,tip]);
+          occupied.push({x,y,width:radius,height:radius});
+          book.poly(space,[anchor,tip],"MARCAS");
+          book.circle(space,[x,y],radius,"MARCAS");
+          const t=book.text(space,[x,y-.8],id,"MARCAS",2.1);
+          t.horizontalAlignment=1;t.secondAlignmentPoint=point3d(x,y-.8);
+          return;
         }
-        if(!found){dense=true;return;}
-        occupied.push({x,y,width:radius,height:radius});
-        const length=Math.hypot(x-anchor[0],y-anchor[1]);
-        book.poly(space,[anchor,[x-(x-anchor[0])/length*radius,y-(y-anchor[1])/length*radius]],"MARCAS");
-        book.circle(space,[x,y],radius,"MARCAS");
-        const text=book.text(space,[x,y-.8],id,"MARCAS",2.1);text.horizontalAlignment=1;text.secondAlignmentPoint=point3d(x,y-.8);
+        dense=true;
       };
       const horizontalAxes=view==="plan"?(rotatePlan?ys:xs):horizontal==="x"?xs:ys;
       const axisName=(axis:"x"|"y",value:number)=>axis==="x"?axisLetter(xs.indexOf(value)):String(ys.indexOf(value)+1);
@@ -208,14 +220,38 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         book.text(space,[2,10],"Nós de apoio; chapas, furos, chumbadores e soldas não dimensionados.","PENDENCIAS",1.8);
       }
       if(!supports.length)book.text(space,[2,15],"PENDENTE: apoios não declarados; nenhum apoio foi criado.","PENDENCIAS",1.8);
-      // Place the balloons after roof and dimensions are known, keeping labels off those lines too.
+      const labelledTypes=new Set<string>();
       if(!opts.bases)for(const p of pieces){
-        const a=nodes.get(p.start)!,b=nodes.get(p.end)!,id=marks.get(p.id)!;
+        const a=nodes.get(p.start)!,b=nodes.get(p.end)!,mark=marks.get(p.id)!;
+        const count=markCounts.get(mark)??1,id=count>1?`${mark} ×${count}`:mark;
         const layer=isDeclaredBrace(p)?"CONTRAVENTOS":p.role==="web"&&opts.tercas?"BARRAS_AUXILIARES":"PERFIS";
+        const first=!labelledTypes.has(mark)&&!opts.noMarks;labelledTypes.add(mark);
         if(view==="cut"&&!(a[cutAxis]===sectionPosition&&b[cutAxis]===sectionPosition)){
-          const c=cross(p);if(c){const q=at(c);book.circle(space,q,.7,layer);label(q,id);}continue;
+          const c=cross(p);if(c){const q=at(c);book.circle(space,q,.7,layer);if(first)label(q,id);}
+          continue;
         }
-        const u=at(projection(a)),v=at(projection(b));book.poly(space,[u,v],layer);label([(u[0]+v[0])/2,(u[1]+v[1])/2],id);
+        const u=at(projection(a)),v=at(projection(b)),length=Math.hypot(v[0]-u[0],v[1]-u[1]);
+        if(first&&length>=34){
+          const mx=(u[0]+v[0])/2,my=(u[1]+v[1])/2;
+          const samePoint=segments.filter(([c,d])=>distanceToSegment([mx,my],c,d)<1.4);
+          const textWidth=Math.min(21,id.length*1.5+2),gap=textWidth+3;
+          const clear=samePoint.length<=1&&length>gap+12&&
+            !occupied.some(o=>Math.hypot(o.x-mx,o.y-my)<o.width+textWidth)&&
+            !reservedLabels.some(r=>mx>=r.x-10&&mx<=r.x+r.width+10&&my>=r.y-4&&my<=r.y+r.height+4);
+          if(clear){
+            const dx=(v[0]-u[0])/length,dy=(v[1]-u[1])/length;
+            const left:P=[mx-dx*gap/2,my-dy*gap/2],right:P=[mx+dx*gap/2,my+dy*gap/2];
+            book.poly(space,[u,left],layer);book.poly(space,[right,v],layer);
+            const angle0=Math.atan2(dy,dx)*180/Math.PI;
+            const angle=angle0>90?angle0-180:angle0< -90?angle0+180:angle0;
+            const t=book.text(space,[mx,my-.7],id,"MARCAS",2.1);
+            t.rotation=angle;t.horizontalAlignment=1;t.secondAlignmentPoint=point3d(mx,my-.7);
+            occupied.push({x:mx,y:my,width:textWidth/2,height:3});
+            continue;
+          }
+        }
+        book.poly(space,[u,v],layer);
+        if(first)label([(u[0]+v[0])/2,(u[1]+v[1])/2],id);
       }
       if(dense)book.text(space,[2,rect.height-9],"PENDENTE: marcas densas; conferir lista de materiais.","PENDENCIAS",1.8);
     });
