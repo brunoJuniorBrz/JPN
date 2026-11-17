@@ -11,6 +11,15 @@ export const workspaceSchema = z.object({
   fabrication: z.array(z.object({ pieceId: z.string().max(100), lengthMm: z.number().finite().positive().max(1000000), signature: z.string().max(100000), note: z.string().max(500) }).strict()).max(5000),
   spatialPreparation: spatialPreparationSchema.optional(),
   physicalStructure: declaredStructureSchema.optional(),
+  /** User-declared drawing dimensions. Compared with node-to-node geometry
+   * before publication; NEVER interpreted as approved fabrication lengths. */
+  dimensionalChecks: z.array(z.object({
+    pieceId: z.string().min(1).max(100),
+    statedLengthMm: z.number().finite().positive().max(1000000),
+    source: z.string().trim().min(1).max(1000),
+    revision: z.string().trim().min(1).max(200),
+    note: z.string().max(500).default(""),
+  }).strict()).max(1000).optional(),
   roofOutline: roofOutlineSchema.optional(),
   guidedSupport: guidedSupportSchema.optional(),
   demonstration: demonstrationSchema.optional(),
