@@ -2,6 +2,7 @@
 import {useState} from "react";
 import type {Project} from "@/domain/models";
 import {packageTakeoff} from "@/lib/exports/package-source";
+import {declaredCommercialGroups} from "@/lib/exports/package-commercial-groups";
 import {downloadBlob} from "@/lib/exports/proposal";
 import type {createCompletePackage} from "@/lib/exports/complete-package";
 import {Field,Select} from "@/components/ui";
@@ -12,8 +13,8 @@ export function CompletePackageControl({project,onChange,beforeExport}:{project:
   const [format,setFormat]=useState<"A3"|"A1">("A3"),[stock,setStock]=useState<Record<string,number>>({});
   const [busy,setBusy]=useState(false),[error,setError]=useState(""),[result,setResult]=useState<{identity:string;value:Package}|null>(null);
   const identity=JSON.stringify({project,format,stock}),current=result?.identity===identity?result.value:null;
-  let groups:ReturnType<typeof packageTakeoff>["groups"]=[],geometryError="";
-  try{groups=packageTakeoff(project).groups;}catch(e){geometryError=e instanceof Error?e.message:String(e);}
+  let groups:{key:string;label:string}[]=[],geometryError="";
+  try{groups=project.workspace.physicalStructure?declaredCommercialGroups(project):packageTakeoff(project).groups;}catch(e){geometryError=e instanceof Error?e.message:String(e);}
   async function generate(){
     setBusy(true);setError("");setResult(null);
     try{
