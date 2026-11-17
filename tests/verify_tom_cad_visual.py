@@ -37,26 +37,43 @@ for index,layout in enumerate(p for p in DOC.layouts if p.name!="Model"):
         coords=[]
         leaders=[]
         marks=[]
+        annotation_text=[]
+        member_edges=[]
         for e in block:
             if e.dxftype()=="LWPOLYLINE":
                 pts=[(v[0],v[1]) for v in e.get_points("xy")]
                 if e.dxf.layer in ("PERFIS","COBERTURA","CONTRAVENTOS"):
                     coords.extend(pts)
+                    member_edges.extend(zip(pts,pts[1:]))
                 if e.dxf.layer=="MARCAS" and len(pts)==2:
                     leaders.append(pts)
             if e.dxftype()=="CIRCLE" and e.dxf.layer=="MARCAS":
                 marks.append((e.dxf.center.x,e.dxf.center.y,e.dxf.radius))
+            if e.dxftype()=="TEXT" and e.dxf.layer=="MARCAS":
+                p=e.dxf.get("align_point",e.dxf.insert)
+                if p is None:p=e.dxf.insert
+                h=e.dxf.height
+                width=max(1,len(e.dxf.text))*h*0.85*0.56
+                angle=math.radians(e.dxf.get("rotation",0))
+                halfx=abs(math.cos(angle))*width/2+abs(math.sin(angle))*h/2
+                halfy=abs(math.sin(angle))*width/2+abs(math.cos(angle))*h/2
+                annotation_text.append((p.x-halfx,p.y-halfy,p.x+halfx,p.y+halfy))
         occupied=0
         if coords:
             xs=[v[0] for v in coords];ys=[v[1] for v in coords]
             occupied=(max(xs)-min(xs))*(max(ys)-min(ys))/(vp.dxf.width*vp.dxf.height)*100
         crossings=sum(cross(*leaders[i],*leaders[j]) for i in range(len(leaders)) for j in range(i+1,len(leaders)))
+        through_pieces=sum(cross(*lead,*edge) for lead in leaders for edge in member_edges)
         overlap=sum(math.hypot(a[0]-b[0],a[1]-b[1]) < a[2]+b[2]-.01
             for i,a in enumerate(marks) for b in marks[i+1:])
+        def box_overlap(a,b):
+            return min(a[2],b[2])-max(a[0],b[0])>0.4 and min(a[3],b[3])-max(a[1],b[1])>0.4
+        text_overlap=sum(box_overlap(a,b) for i,a in enumerate(annotation_text) for b in annotation_text[i+1:])
         metrics.append({"folha":index+1,"layout":layout.name,"vista_cache":matches[0].dxf.name,
           "escala":f"1:{scale:g}","area_util_vista_mm2":vp.dxf.width*vp.dxf.height,
           "ocupacao_geometria_percent":round(occupied,2),"lideres":len(leaders),
-          "cruzamentos_lideres":crossings,"sobreposicoes_baloes":overlap})
+          "cruzamentos_lideres":crossings,"lideres_atravessando_pecas":through_pieces,
+          "sobreposicoes_baloes":overlap,"sobreposicoes_textos":text_overlap})
 with (OUT/"medicoes-cad.json").open("w") as f:
     json.dump({"source":"DXF real do PR141 renderizado em PDF","metrics":metrics,
       "limits":["Ocupação por bbox de perfis/cobertura na viewport; não equivale a área real das peças",
@@ -66,6 +83,8 @@ with (OUT/"medicoes-cad.csv").open("w",newline="") as f:
     w=csv.DictWriter(f,fieldnames=list(metrics[0]),delimiter=";");w.writeheader();w.writerows(metrics)
 assert all(r["cruzamentos_lideres"]==0 for r in metrics), "Cruzamento de leaders na impressão"
 assert all(r["sobreposicoes_baloes"]==0 for r in metrics), "Balões colidem na impressão"
+assert all(r["sobreposicoes_textos"]==0 for r in metrics), "Textos MARCAS colidem na impressão"
+assert all(r["lideres_atravessando_pecas"]==0 for r in metrics), "Líderes atravessam peças de outras linhas"
 print(json.dumps({"pages":len(PDF),"views":len(metrics),
     "min_occupancy":min((v["ocupacao_geometria_percent"] for v in metrics),default=0),
     "scales":[(r["folha"],r["escala"],r["ocupacao_geometria_percent"]) for r in metrics]},
