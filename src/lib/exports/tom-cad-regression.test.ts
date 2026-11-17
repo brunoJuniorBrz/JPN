@@ -137,6 +137,7 @@ it("exports real Tom dimensional takeoff using new PR141 package engine (study, 
   expect(result.manifest.unlocatedPieceIds).toHaveLength(4);
   expect(result.manifest.commercialCostMainCents).toBe(377500);
   expect(result.manifest.commercialCostCombinedCents).toBe(418000);
+  expect(result.manifest.commercialCostPendingIncrementalCents).toBe(40500);
   expect(result.manifest.sourceDimensionReviews.filter(r=>r.status==="PENDENTE")).toHaveLength(2);
   expect(result.files.some(f=>f.name==="materiais/itens-a-confirmar.csv")).toBe(true);
   const uGroup=cut.groups.find(g=>g.profile.startsWith("U 75"));
