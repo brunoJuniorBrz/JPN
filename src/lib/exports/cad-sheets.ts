@@ -143,13 +143,13 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       };
       if(!opts.noMarks)for(const value of horizontalAxes.filter(x=>x>=minX&&x<=maxX)){
         const q=at([value,minY]),end=at([value,maxY]);
-        book.poly(space,[[q[0],q[1]-3],[end[0],end[1]+6]],"EIXOS");bubble([end[0],end[1]+9],axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,value));
+        book.poly(space,[[q[0],q[1]+(solo?3:-3)],[end[0],end[1]+(solo?-8:6)]],"EIXOS");bubble([end[0],end[1]+(solo?-12:9)],axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,value));
       }
       const hv=horizontalAxes.filter(x=>x>=minX&&x<=maxX);
       if(!opts.noMarks)for(let i=1;i<hv.length;i++)book.dim(space,at([hv[i-1],minY]),at([hv[i],minY]),scale,`EIXOS ${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i-1])}-${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i])}`,solo?8:-8);
       if(view==="plan"){
         if(!opts.noMarks)for(const value of (rotatePlan?xs.map(v=>-v):ys).filter(y=>y>=minY&&y<=maxY)){
-          const a=at([minX,value]),b=at([maxX,value]);book.poly(space,[[a[0]-3,a[1]],[b[0]+3,b[1]]],"EIXOS");bubble([a[0]-7,a[1]],axisName(rotatePlan?"x":"y",rotatePlan?-value:value));
+          const a=at([minX,value]),b=at([maxX,value]);book.poly(space,[[a[0]+(solo?6:-3),a[1]],[b[0]+(solo?-2:3),b[1]]],"EIXOS");bubble([a[0]+(solo?10:-7),a[1]],axisName(rotatePlan?"x":"y",rotatePlan?-value:value));
         }
         const vv=(rotatePlan?xs.map(v=>-v):ys).filter(y=>y>=minY&&y<=maxY).sort((a,b)=>a-b);
         if(!opts.noMarks)for(let i=1;i<vv.length;i++)book.dim(space,at([minX,vv[i-1]]),at([minX,vv[i]]),scale,`VÃO Y ${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i-1]:vv[i-1])}-${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i]:vv[i])}`,solo?-8:19);
