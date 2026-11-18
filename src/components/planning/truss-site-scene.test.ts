@@ -1,18 +1,30 @@
 import { describe, expect, it } from "vitest";
-import { tomTrussDefaults } from "@/domain/truss-editor";
+import * as THREE from "three";
 import { createTrussSiteScene } from "./truss-site-scene";
+import { tomTrussDefaults } from "@/domain/truss-editor";
 
-describe("contexto 3D preliminar de tesouras", () => {
-  it("distingue uma e duas águas e os dois beirais sem alterar o modelo resistente", () => {
-    for (const count of [1, 2] as const) {
-      const t = { ...tomTrussDefaults(), roofKind: count === 1 ? "one-slope" as const : "two-slopes" as const };
-      const scene = createTrussSiteScene(t);
-      expect(scene.root.userData.preliminary).toBe(true);
-      expect(scene.root.userData.roofCount).toBe(count);
-      expect(scene.root.userData.gutterCount).toBe(count);
-      expect(scene.root.userData.anchorCount).toBe(count * t.trusses);
-      expect(scene.root.children.filter(mesh => mesh.name.startsWith("Cobertura preliminar"))).toHaveLength(count);
-      scene.dispose();
-    }
+describe("contexto arquitetônico 3D do editor de tesouras (não estrutural)", () => {
+  it("uma água conserva a geometria comercial e não cria vínculos", () => {
+    const site = createTrussSiteScene(tomTrussDefaults());
+    try {
+      expect(site.root.userData).toMatchObject({ preliminary: true, slopeCount: 1, gutterCount: 1, roofCount: 1, anchorCount: 3 });
+      expect(site.root.name).toContain("não é ligação estrutural");
+      const box = new THREE.Box3().setFromObject(site.root);
+      expect(box.min.y).toBeCloseTo(0, 4);
+    } finally { site.dispose(); }
+  });
+
+  it("duas águas mostram dois beirais e duas faces com seis posições de chapa", () => {
+    const t = { ...tomTrussDefaults(), roofKind: "two-slopes" as const, purlinStepMm: 650 };
+    const site = createTrussSiteScene(t);
+    try {
+      expect(site.root.userData).toMatchObject({ preliminary: true, slopeCount: 2, wallCount: 2, gutterCount: 2, roofCount: 2, anchorCount: 6 });
+      const roofs = site.root.children.filter(c => c.name.startsWith("Cobertura preliminar"));
+      expect(roofs).toHaveLength(2);
+      const box = new THREE.Box3().setFromObject(site.root);
+      expect(box.min.x).toBeLessThan(0.3);
+      expect(box.max.x).toBeGreaterThan(7.7);
+      expect(box.min.y).toBeCloseTo(0, 4);
+    } finally { site.dispose(); }
   });
 });
