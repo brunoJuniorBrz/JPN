@@ -144,7 +144,10 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
   // The hash is stored WITH the result it belongs to; a different (or no) result yields "" without any synchronous reset.
   useEffect(() => { let live = true; if (current) void mixedInputHash(current.result).then(h => { if (live) setHashed({ result: current.result, hash: h }); }); return () => { live = false; }; }, [current]);
   const resultHash = current && hashed?.result === current.result ? hashed.hash : "";
-  const studioModel = useMemo(() => model && active.workspace.physicalStructure ? studioModelFromPhysical(model) : null, [model, active]);
+  // Pelo conteúdo dos nós/barras: uma ação comercial (ex.: quantitativos no orçamento) não deve recriar a tela WebGL.
+  const physicalKey = active.workspace.physicalStructure ? JSON.stringify(active.workspace.physicalStructure) : "";
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const studioModel = useMemo(() => model && physicalKey ? studioModelFromPhysical(model) : null, [physicalKey]);
   const layer = useMemo(() => {
     if (!current || !result || !selectedCombo || !resultHash || layerKind === "none" || !model) return null;
     const utilizationByPiece: Record<string, number> = {};

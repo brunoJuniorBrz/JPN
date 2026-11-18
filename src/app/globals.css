@@ -773,11 +773,10 @@ body { font-size: 16px; }
   .app:has(.project-studio) .main-content, .app:has(.structure-viewer) .main-content, .app:has(.result-workspace) .main-content { max-width: none; width: 100%; }
   .app:has(.project-studio) .workspace-exit-link, .app:has(.structure-viewer) .workspace-exit-link, .app:has(.result-workspace) .workspace-exit-link { display: inline-flex; }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1000px) {
   .app:has(.project-studio) .workspace-rail-toggle { display: inline-flex; }
-  .app[data-studio-rail-collapsed="true"]:has(.project-studio) .project-studio {
-    grid-template-columns: minmax(0, 1fr) minmax(400px, 40%);
-    grid-template-areas: "viewport inspector" "status status";
-  }
+  /* Etapas recolhidas: o 3D e o painel da etapa ocupam a largura toda. */
+  .app[data-studio-rail-collapsed="true"]:has(.project-studio) .project-studio { grid-template-columns: minmax(0, 1fr) minmax(340px, 400px); grid-template-areas: "viewport inspector" "status status"; }
+  .app[data-studio-rail-collapsed="true"]:has(.project-studio) .project-studio[data-panel="closed"] { grid-template-columns: minmax(0, 1fr); grid-template-areas: "viewport" "status"; }
   .app[data-studio-rail-collapsed="true"]:has(.project-studio) .studio-rail { display: none; }
 }

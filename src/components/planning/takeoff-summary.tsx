@@ -41,7 +41,7 @@ export function GeneratedViewport({ project, result, startIn3D, open3DRequest, o
   if (!model) return <div className="pending-box"><h3>Faltam dados para gerar as peças</h3><ul>{result.pending.map(p => <li key={p}>{p}{onResolvePending && locatePending(p) && <button className="button secondary result-pending-action" type="button" onClick={() => onResolvePending(locatePending(p)!)}>Corrigir dados</button>}</li>)}</ul></div>;
   return <div className="result-model-panel">
     {overlay}
-    <StructurePreview key={open3DRequest} project={project} result={result} onConfigureProfile={onConfigureProfile} onEditStructure={onEditStructure} startIn3D={startIn3D} selected={selected} onSelect={onSelect} analysisColors={analysisColors} deformed={deformed} orientationCube={orientationCube} labels={labels} onApi={onApi} onHover={onHover} />
+    <StructurePreview openRequest={open3DRequest} project={project} result={result} onConfigureProfile={onConfigureProfile} onEditStructure={onEditStructure} startIn3D={startIn3D} selected={selected} onSelect={onSelect} analysisColors={analysisColors} deformed={deformed} orientationCube={orientationCube} labels={labels} onApi={onApi} onHover={onHover} />
     <p className="result-model-context">Tesouras: {model.frameCount} linhas · Terças: {model.purlinRows} linhas · Espaçamentos entre eixos: {formatMeasure(model.frameSpacingM, 2)} m / {formatMeasure(model.purlinSpacingM, 2)} m.</p>
   </div>;
 }
@@ -62,7 +62,10 @@ export function GeneratedSafetyWarning() {
   </div>;
 }
 
-export function GeneratedMaterials({ result, grouped }: Pick<Generated, "result" | "grouped">) {
+export function GeneratedMaterials({ result, grouped, onShowPieces }: Pick<Generated, "result" | "grouped"> & {
+  /** Seleciona no 3D a primeira peça da linha e enquadra a câmera nela. */
+  onShowPieces?: (pieceIds: string[]) => void;
+}) {
   const model = result.model;
   if (!model) return <p className="notice">Complete a geometria e a estrutura para gerar os quantitativos.</p>;
   return <section className="result-section-panel">
@@ -75,6 +78,7 @@ export function GeneratedMaterials({ result, grouped }: Pick<Generated, "result"
           {group.steelGrade && <small>{group.steelGrade}</small>}
           <details className="result-material-lengths"><summary>{group.rows.length} comprimentos · identificar peças</summary>
             <ul>{group.rows.map(row => <li key={row.key}><strong>{formatMeasure(row.lengthMm / 1000, 2)} m</strong> · {row.quantity} peças · {formatMeasure(row.totalLengthM, 2)} m
+              {onShowPieces && <button type="button" className="result-show-3d" onClick={() => onShowPieces(row.pieceIds)}>Mostrar no 3D</button>}
               <details><summary>Ver IDs</summary><span>{row.pieceIds.join(", ")}</span></details>
             </li>)}</ul>
           </details>

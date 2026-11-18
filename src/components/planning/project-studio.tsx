@@ -1,6 +1,6 @@
 "use client";
 import { useState, type ReactNode } from "react";
-import { BarChart3, Box, ChevronDown, ChevronUp, ClipboardCheck, FileText, HardHat, Layers, Package, Ruler, Triangle, Weight } from "lucide-react";
+import { BarChart3, Box, ChevronDown, ChevronUp, ClipboardCheck, FileText, HardHat, Layers, Package, PanelRightClose, PanelRightOpen, Ruler, Triangle, Weight } from "lucide-react";
 import { cx } from "@/components/ui/cx";
 
 /** Etapas do estúdio do projeto (F1). A ordem é a do fluxo de trabalho. */
@@ -48,44 +48,66 @@ export function studioStepUrl(id: StudioStepId): string {
   return legacy >= 0 ? String(legacy) : id;
 }
 
-export function StudioRail({ step, onStep, tool, onTool, showTools, pendingCount }: {
+export function StudioRail({ step, onStep, pendingCount }: {
   step: StudioStepId; onStep: (id: StudioStepId) => void;
-  tool: AnalysisTool; onTool: (tool: AnalysisTool) => void; showTools: boolean;
   /** Pendências da revisão técnica (modelo gerado), mostradas na etapa Verificação. */
   pendingCount?: number;
 }) {
   return <div className="studio-rail">
     <nav className="studio-steps" aria-label="Etapas do levantamento">
       <ol>{studioSteps.map(({ id, label, icon: Icon }, index) =>
-        <li key={id}><button type="button" className={cx("studio-step", step === id && "current")} aria-current={step === id ? "step" : undefined} onClick={() => onStep(id)}>
-          <span className="studio-step-index" aria-hidden="true">{index + 1}</span><Icon size={16} aria-hidden="true" /><span className="studio-step-label">{label}</span>
+        <li key={id}><button type="button" className={cx("studio-step", step === id && "current")} aria-current={step === id ? "step" : undefined} title={label} onClick={() => onStep(id)}>
+          <span className="studio-step-index" aria-hidden="true">{index + 1}</span><Icon size={18} aria-hidden="true" /><span className="studio-step-label">{label}</span>
           {id === "verificacao" && pendingCount !== undefined && <small className="studio-step-count">{pendingCount > 0 ? `${pendingCount} pendências` : "verificação pendente"}</small>}
         </button></li>)}</ol>
     </nav>
-    {showTools && <nav className="studio-tools" aria-label="Ferramentas de análise">
-      <p className="studio-tools-caption" aria-hidden="true">Ferramentas de análise</p>
-      <ul>{analysisTools.map(({ id, label }) =>
-        <li key={id}><button type="button" className={cx("studio-tool", step === "analise" && tool === id && "current")} aria-current={step === "analise" && tool === id ? "page" : undefined} onClick={() => onTool(id)}>{label}</button></li>)}</ul>
-    </nav>}
   </div>;
 }
 
-export function StudioLayout({ rail, viewportToolbar, viewport, inspectorTitle, inspector, status }: {
-  rail: ReactNode; viewportToolbar?: ReactNode; viewport: ReactNode; inspectorTitle: string; inspector: ReactNode; status: ReactNode;
+/** Ferramentas da etapa Análise: ficam no topo do painel da etapa, não na barra estreita de etapas. */
+export function StudioTools({ step, tool, onTool }: { step: StudioStepId; tool: AnalysisTool; onTool: (tool: AnalysisTool) => void }) {
+  return <nav className="studio-tools" aria-label="Ferramentas de análise">
+    <p className="studio-tools-caption" aria-hidden="true">Ferramentas de análise</p>
+    <ul>{analysisTools.map(({ id, label }) =>
+      <li key={id}><button type="button" className={cx("studio-tool", step === "analise" && tool === id && "current")} aria-current={step === "analise" && tool === id ? "page" : undefined} onClick={() => onTool(id)}>{label}</button></li>)}</ul>
+  </nav>;
+}
+
+/**
+ * Estúdio: o 3D é a área principal. Etapas numa barra estreita à esquerda e o painel da etapa à
+ * direita, que pode ser recolhido para o modelo ocupar a largura toda. O painel reabre sozinho
+ * quando muda a etapa ou a seleção (openKey). Recolher/abrir só redimensiona a tela 3D; a cena
+ * não é recriada.
+ */
+export function StudioLayout({ rail, viewportToolbar, viewport, inspectorTitle, inspector, status, openKey }: {
+  rail: ReactNode; viewportToolbar?: ReactNode; viewport: ReactNode; inspectorTitle: string; inspector: ReactNode; status: ReactNode; openKey?: string;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
-  return <div className="project-studio" data-testid="project-studio">
+  // O estúdio só é montado depois de carregar os dados do navegador, então ler a preferência aqui é seguro.
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return typeof window !== "undefined" && window.localStorage.getItem("jpn-studio-panel") === "closed"; } catch { return false; }
+  });
+  const [lastKey, setLastKey] = useState(openKey);
+  if (openKey !== lastKey) { setLastKey(openKey); if (collapsed) setCollapsed(false); }
+  function toggle(next = !collapsed) {
+    setCollapsed(next);
+    try { window.localStorage.setItem("jpn-studio-panel", next ? "closed" : "open"); } catch { /* armazenamento indisponível */ }
+  }
+  return <div className="project-studio" data-testid="project-studio" data-panel={collapsed ? "closed" : "open"}>
     {rail}
     <section className="studio-viewport" aria-label="Visualização do modelo">
-      {viewportToolbar}
+      <div className="studio-viewport-bar">
+        {viewportToolbar}
+        <button type="button" className="studio-panel-toggle" aria-expanded={!collapsed} aria-controls="studio-inspector-body" onClick={() => toggle()}>
+          {collapsed ? <PanelRightOpen size={16} aria-hidden="true" /> : <PanelRightClose size={16} aria-hidden="true" />}{collapsed ? `Mostrar painel · ${inspectorTitle}` : "Ampliar 3D"}
+        </button>
+      </div>
       <div className="studio-viewport-body">{viewport}</div>
     </section>
     <section className="studio-inspector" aria-labelledby="studio-inspector-title">
       <span className="studio-sheet-grabber" aria-hidden="true" />
       <div className="studio-inspector-head">
         <h2 id="studio-inspector-title" className="studio-inspector-title">{inspectorTitle}</h2>
-        {/* Só aparece no celular: recolhe o painel para ver mais do modelo. */}
-        <button type="button" className="studio-sheet-toggle" aria-expanded={!collapsed} aria-controls="studio-inspector-body" onClick={() => setCollapsed(value => !value)}>
+        <button type="button" className="studio-sheet-toggle" aria-expanded={!collapsed} aria-controls="studio-inspector-body" onClick={() => toggle()}>
           {collapsed ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}{collapsed ? "Mostrar painel" : "Recolher painel"}
         </button>
       </div>

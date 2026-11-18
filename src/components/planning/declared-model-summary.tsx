@@ -31,8 +31,13 @@ export function DeclaredViewport({ project, declared: { model, review }, selecte
   const piece = selected ?? localPiece, setPiece = onSelect ?? setLocalPiece, node = nodeId ?? localNode, setNode = onSelectNode ?? setLocalNode;
   // Uma mudança comercial não deve recriar o canvas/câmera se os nós e barras são os mesmos.
   // A referência física é a fonte do modelo: outros campos podem criar um novo objeto model idêntico.
+  // Compara pelo conteúdo: ações comerciais (ex.: atualizar quantitativos no orçamento) podem copiar o
+  // workspace e gerar uma referência nova com os mesmos nós e barras, o que recriava a tela WebGL inteira.
+  const physicalKey = JSON.stringify(project.workspace.physicalStructure), siteKey = JSON.stringify(project.workspace.trussEditor ?? null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const visualModel = useMemo(() => studioModelFromPhysical(model), [project.workspace.physicalStructure]);
+  const visualModel = useMemo(() => studioModelFromPhysical(model), [physicalKey]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const siteContext = useMemo(() => project.workspace.trussEditor, [siteKey]);
   return <section className="result-workspace declared-studio-view" aria-label="Resultado do modelo declarado"><h2>Estrutura física declarada</h2>
     <p>{model.nodes.length} nós · {model.pieces.length} barras · revisão {project.workspace.physicalStructure!.revision} · {review.issues.length ? "Dados físicos pendentes" : "Modelo válido para preparar a análise"}.</p>
     <div className="actions" role="group" aria-label="Visualização declarada">
@@ -43,7 +48,7 @@ export function DeclaredViewport({ project, declared: { model, review }, selecte
       <p className="field-hint">Barras e nós declarados em 3D. {project.workspace.trussEditor ? "Muros, calhas, telhas e chapas são representações arquitetônicas esquemáticas, sem capacidade resistente verificada." : "Sem inferência de perfis, ligações ou apoios; dados faltantes continuam pendentes."}</p>
       <Structure3D model={visualModel} roof={project.roof} planning={project.planning} projectName={project.name}
         selected={piece} onSelect={setPiece} selectedNodeId={node} onSelectNode={setNode} inspectNodes
-        orientationCube labels={labels} analysisColors={analysisColors} deformed={deformed} onApi={onApi} onHover={onHover} allowPresentation={false} siteContext={project.workspace.trussEditor} />
+        orientationCube labels={labels} analysisColors={analysisColors} deformed={deformed} onApi={onApi} onHover={onHover} allowPresentation={false} siteContext={siteContext} />
     </> : <PhysicalLineView model={model} selected={piece} onSelect={setPiece} selectedNodeId={node} onSelectNode={setNode} analysisColors={analysisColors} />}
   </section>;
 }

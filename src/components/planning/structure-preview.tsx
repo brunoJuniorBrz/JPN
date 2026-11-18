@@ -15,7 +15,9 @@ import { profiles3DDemo } from "@/domain/profiles-3d-demo";
 import type { Viewer3DApi, Viewer3DLabel } from "./structure-3d";
 const Structure3D = dynamic(() => import("./structure-3d").then(m => m.Structure3D), { ssr: false, loading: () => <p role="status">Carregando visualização 3D…</p> });
 
-export function StructurePreview({ project, result, onConfigureProfile, onEditStructure, startIn3D = false, selected: selectedProp, onSelect, analysisColors, deformed, orientationCube = false, labels, onApi, onHover }: { project: Project; result: StructureResult; onConfigureProfile?: (role: PieceRole) => void; onEditStructure?: () => void; startIn3D?: boolean;
+export function StructurePreview({ project, result, onConfigureProfile, onEditStructure, startIn3D = false, openRequest = 0, selected: selectedProp, onSelect, analysisColors, deformed, orientationCube = false, labels, onApi, onHover }: { project: Project; result: StructureResult; onConfigureProfile?: (role: PieceRole) => void; onEditStructure?: () => void; startIn3D?: boolean;
+  /** Cada novo pedido volta ao 3D do projeto (sem demonstração) sem desmontar a cena WebGL já criada. */
+  openRequest?: number;
   /** Seleção controlada pelo estúdio (F2); sem estas props a seleção é local, como antes. */
   selected?: string; onSelect?: (id: string) => void;
   /** Camada de resultado da análise atual (F3), aplicada só ao modelo do projeto, nunca à demonstração. */
@@ -26,6 +28,8 @@ export function StructurePreview({ project, result, onConfigureProfile, onEditSt
   const selected = selectedProp ?? localSelected, setSelected = onSelect ?? setLocalSelected;
   const [three, setThree] = useState(startIn3D), [dimensions, setDimensions] = useState(true);
   const [demo, setDemo] = useState(false), [pieceQuery, setPieceQuery] = useState("");
+  const [lastRequest, setLastRequest] = useState(openRequest);
+  if (openRequest !== lastRequest) { setLastRequest(openRequest); setThree(startIn3D); setDemo(false); setDetail(false); }
   const activeModel = useMemo(() => demo && three ? profiles3DDemo(project) : result.model, [demo, three, project, result.model]);
   const model = useMemo(() => structureViews(project, result, detail), [project, result, detail]);
   if (!model || !result.model) return null;
