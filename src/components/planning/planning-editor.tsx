@@ -200,7 +200,15 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
       saveProject(project);
       if (!flush()) throw Error("Não foi possível salvar esta revisão antes da exportação.");
     }} />
-  </> : <GeneratedFiles project={project} hasModel={!!generated.result.model} />;
+  </> : <>
+    <GeneratedFiles project={project} hasModel={!!generated.result.model} />
+    {/* O pacote CAD usa tanto a geometria gerada quanto a física declarada.
+        Preservar a exportação para a obra criada pelo formulário. */}
+    <CompletePackageControl project={project} onChange={update} beforeExport={() => {
+      saveProject(project);
+      if (!flush()) throw Error("Não foi possível salvar esta revisão antes da exportação.");
+    }} />
+  </>;
 
   const next = studioSteps[stepIndex + 1];
   const pendingCount = declared ? undefined : generated.result.pending.length;
