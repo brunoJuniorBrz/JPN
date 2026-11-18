@@ -15,6 +15,7 @@ for (const mobile of [true, false]) test.describe(mobile ? "iPhone 375" : "deskt
     await page.getByLabel("Comprimento (m)", { exact: true }).fill("20");
     await page.getByLabel("Altura (m)", { exact: true }).fill("4");
     await page.getByRole("button", { name: "Gerar modelo 3D", exact: true }).click();
+    await page.getByRole("button", { name: "Abrir modelo 3D" }).click();
     await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Perfis 3D", exact: true })).toHaveAttribute("aria-pressed", "true");
     await openEngineeringTool(page, "Análise 3D experimental");

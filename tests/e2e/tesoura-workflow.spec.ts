@@ -7,6 +7,7 @@ test("edita tesoura, mantém quantidades e cria projeto na aba Tesoura com pacot
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/tesoura");
   await expect(page.getByRole("heading", { level: 1, name: "Tesoura", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Exemplo 8×10" }).click(); // teste comercial de referência, não o modelo genérico
 
   await page.getByLabel("Painel (cm)").fill("60");
   await page.getByLabel("Painel (cm)").blur();

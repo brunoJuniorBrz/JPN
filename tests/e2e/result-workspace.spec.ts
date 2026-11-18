@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { openResultTab } from "./result-tabs";
+import { openEngineeringTool, openResultTab } from "./result-tabs";
 
 for (const width of [375, 1440]) test(`resultado organizado preserva modelo, avisos, materiais e dados em ${width}px`, async ({page}) => {
   await page.setViewportSize({width,height:950});
@@ -19,7 +19,8 @@ for (const width of [375, 1440]) test(`resultado organizado preserva modelo, avi
     (window as Window & {__resultCanvas?:Element}).__resultCanvas=document.querySelector('canvas[aria-label="Modelo 3D da estrutura"]')??undefined;
   });
   await openResultTab(page,"Materiais");
-  await expect(canvas).toBeHidden();
+  // O canvas 3D não desmonta ao alternar etapas do Studio.
+  await expect(canvas).toBeVisible();
   expect(await canvas.count()).toBe(1);
   await expect(page.getByRole("heading",{name:"Quantitativos por perfil"})).toBeVisible();
   await expect(page.getByRole("region",{name:"Lista de materiais"})).toBeVisible();
@@ -28,13 +29,14 @@ for (const width of [375, 1440]) test(`resultado organizado preserva modelo, avi
   expect(await rows.count()).toBeGreaterThan(0);
   await rows.first().locator("details").first().locator(":scope > summary").click();
   await expect(rows.first().locator("details").first()).toHaveAttribute("open","");
-  await page.getByRole("tab",{name:/^Materiais/}).focus();
-  await page.getByRole("tab",{name:/^Materiais/}).press("ArrowRight");
-  await expect(page.getByRole("tab",{name:/^Engenharia/})).toHaveAttribute("aria-selected","true");
+  const nav = page.getByRole("navigation",{name:"Etapas do levantamento"});
+  const verify = nav.getByRole("button",{name:/Verificação/});
+  await verify.focus();
+  await verify.press("Enter");
+  await expect(verify).toHaveAttribute("aria-current","step");
   await expect(page.getByRole("heading",{name:"Pendências da revisão técnica"})).toBeVisible();
-  await expect(page.getByRole("tab",{name:/^Engenharia/})).toContainText("pendências");
   await expect(page.getByTestId("result-safety-warning")).toBeVisible();
-  await page.getByLabel("Ferramenta de engenharia").selectOption({label:"Preparar análise"});
+  await openEngineeringTool(page,"Preparar análise");
   await expect(page.getByTestId("physical-prep-status")).toBeVisible();
   await openResultTab(page,"Arquivos");
   await expect(page.getByRole("heading",{name:"Arquivos preliminares"})).toBeVisible();
