@@ -4,7 +4,7 @@ import { RotateCcw, Plus, Trash2, ArrowLeftRight, Check, TriangleAlert, FilePlus
 import { NumberField } from "@/components/number-field";
 import { Field, Input, Select } from "@/components/ui";
 import {
-  blankTruss, COMMON_PROFILES, fallPercent, roofPurlinPositions, slopeCount, stations, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
+  blankTruss, COMMON_PROFILES, fallPercent, geometricPurlinLines, provisionalTrussCount, roofPurlinPositions, slopeCount, stations, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
   type TrussEditor as Truss,
 } from "@/domain/truss-editor";
 import styles from "./truss-editor.module.css";
@@ -61,7 +61,7 @@ function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null;
 }
 
 export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss; onApply: (t: Truss) => void; applyLabel: string }) {
-  const [t, setT] = useState<Truss>(() => initial ?? tomTrussDefaults());
+  const [t, setT] = useState<Truss>(() => initial ?? blankTruss());
   const [selected, setSelected] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const set = (patch: Partial<Truss>) => { setMessage(""); setT(prev => ({ ...prev, ...patch })); };
@@ -128,19 +128,22 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
           <Field label="Tipo de cobertura"><Select value={t.roofKind} onChange={e => {
             const kind = e.target.value as Truss["roofKind"], off = tipOffsetMm(t);
             const run = (t.spanMm - (kind === "two-slopes" ? 2 : 1) * off) / (kind === "two-slopes" ? 2 : 1);
-            const step = Math.max(300, Math.floor(run / (t.purlinLines - 1) / 10) * 10);
-            // A alternância preserva a inclinação escolhida; só o semivão muda.
+            // Mantém o passo geométrico solicitado, recalculando o número de linhas em cada água.
             const highHeightMm = Math.round((t.tipHeightMm + run * fallPercent(t) / 100) * 10) / 10;
-            set({ roofKind: kind, highHeightMm, purlinStepMm: Math.min(t.purlinStepMm, step), stationsMm: null, flippedPanels: [] });
+            const changed = { ...t, roofKind: kind, highHeightMm };
+            set({ roofKind: kind, highHeightMm, purlinLines: geometricPurlinLines(changed), stationsMm: null, flippedPanels: [] });
           }}><option value="one-slope">Uma água</option><option value="two-slopes">Duas águas simétricas</option></Select></Field>
-          <Cm label="Muro a muro (cm)" mm={t.spanMm} onMm={spanMm => set({ spanMm, stationsMm: null })} min={100} />
-          <Cm label="Comprimento (cm)" mm={t.lengthMm} onMm={lengthMm => set({ lengthMm })} min={100} />
+          <Cm label="Muro a muro (cm)" mm={t.spanMm} onMm={spanMm => {
+            const changed = { ...t, spanMm };
+            set({ spanMm, purlinLines: geometricPurlinLines(changed), highHeightMm: Math.round(t.tipHeightMm + trussLengthMm(changed) * fallPercent(t) / 100), stationsMm: null, flippedPanels: [] });
+          }} min={100} />
+          <Cm label="Comprimento (cm)" mm={t.lengthMm} onMm={lengthMm => set({ lengthMm, trusses: provisionalTrussCount(lengthMm, t.stockMm) })} min={100} />
           <Cm label="Altura do muro baixo (cm)" mm={t.walls.lowMm} onMm={v => set({ walls: { ...t.walls, lowMm: v } })} hint="Do piso ao topo." />
           {t.roofKind === "one-slope" && <Cm label="Altura do muro alto (cm)" mm={t.walls.highMm} onMm={v => set({ walls: { ...t.walls, highMm: v } })} hint="Referência para a ancoragem no lado alto." />}
           {t.roofKind === "two-slopes" && <p className={styles.muted}>Duas águas: mesmo nível nos dois beirais, cumeeira central e calhas dos dois lados. Sem atribuir vínculos ou ligações.</p>}
           <Cm label="Espessura do muro (cm)" mm={t.walls.thicknessMm} onMm={v => set({ walls: { ...t.walls, thicknessMm: v } })} min={5} />
           <Cm label="Banzo de baixo a partir do piso (cm)" mm={t.supportZMm} onMm={supportZMm => set({ supportZMm })} hint="Altura de apoio da tesoura." />
-          <NumberField label="Tesouras" value={t.trusses} min={2} max={60} decimals={0} onChange={v => v !== null && set({ trusses: v })} hint={`A cada ${m(t.lengthMm / (t.trusses - 1))} m`} />
+          <NumberField label="Tesouras" value={t.trusses} min={2} max={60} decimals={0} onChange={v => v !== null && set({ trusses: v })} hint={`A cada ${m(t.lengthMm / (t.trusses - 1))} m · arranjo geométrico, não espaçamento resistente verificado`} />
         </div>
       </section>
       <section className={styles.card}>
@@ -183,7 +186,7 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
         <h3>Terças</h3>
         <div className={styles.grid}>
           <NumberField label={t.roofKind === "two-slopes" ? "Linhas de terça por água" : "Linhas de terça"} value={t.purlinLines} min={2} max={60} decimals={0} onChange={v => v !== null && set({ purlinLines: v })} />
-          <Cm label={t.roofKind === "two-slopes" ? "Espaço a partir da cumeeira (cm)" : "Espaço a partir do lado alto (cm)"} mm={t.purlinStepMm} onMm={purlinStepMm => set({ purlinStepMm })} min={30} hint="A última terça fica na ponta." />
+          <Cm label={t.roofKind === "two-slopes" ? "Espaço a partir da cumeeira (cm)" : "Espaço a partir do lado alto (cm)"} mm={t.purlinStepMm} onMm={purlinStepMm => set({ purlinStepMm, purlinLines: geometricPurlinLines({ ...t, purlinStepMm }) })} min={30} hint="A última terça fica na ponta." />
         </div>
       </section>
       <section className={styles.card}>
