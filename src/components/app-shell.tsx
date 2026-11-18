@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, FolderOpen, Boxes, Settings2, Triangle, HardDrive, ArrowUpRight, Check, LoaderCircle, AlertCircle, Download, RotateCcw, ArrowLeft, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useData } from "./data-provider";
+import { ThemeToggle } from "./ui/theme-toggle";
 import { downloadText } from "@/lib/format";
 import { serializeBackup } from "@/infrastructure/persistence/local";
 import { Fragment, useState, type ReactNode } from "react";
@@ -26,7 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   }}>
     <a href="#conteudo" className="skip-link">Ir ao conteúdo</a>
     <aside className="sidebar"><Link href="/" className="brand"><span className="brand-word">{data.settings.companyName}</span><span className="brand-caption">GESTÃO DE ESTRUTURAS</span></Link><p className="nav-caption">ÁREA DE TRABALHO</p><nav aria-label="Navegação principal">{nav()}</nav><div className="sidebar-bottom"><div className="workspace-note"><HardDrive size={20} /><strong>Seu espaço de trabalho</strong><p>Dados salvos neste navegador.<br />Faça backups regularmente.</p><Link href="/configuracoes">Gerenciar backups <ArrowUpRight size={15} /></Link></div><span className="version">LEVANTAMENTO <span>v0.6.0</span></span></div></aside>
-    <div className="main-shell"><header className="topbar"><span className="topbar-label">{data.settings.companyName} <span className="desktop-inline">/ Área de trabalho</span></span><div className="workspace-topbar-actions">
+    <div className="main-shell"><header className="topbar"><span className="topbar-label">{data.settings.companyName} <span className="desktop-inline">/ Área de trabalho</span></span><div className="workspace-topbar-actions"><ThemeToggle />
         <Link className="workspace-exit-link" href="/projetos"><ArrowLeft size={16} aria-hidden="true" />Voltar aos projetos</Link>
         <button type="button" className="workspace-rail-toggle" aria-pressed={studioRailCollapsed}
           onClick={() => setStudioRailCollapsed(value => !value)}>
