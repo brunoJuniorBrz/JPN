@@ -90,8 +90,21 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     const minX=Math.min(...coords.map(p=>p[0])),minY=Math.min(...coords.map(p=>p[1]));
     const width=Math.max(...coords.map(p=>p[0]))-minX,height=Math.max(...coords.map(p=>p[1]))-minY;
     const solo=rect.width>=book.area.width*.94&&rect.height>=book.area.height*.94;
-    const available=solo?{x:4,y:2,width:rect.width-8,height:rect.height-4}
-      :{x:22,y:12,width:Math.max(20,rect.width-36),height:Math.max(20,rect.height-24)};
+    // Trusses get one height dimension per vertical; a second stacked chain of
+    // level dimensions would duplicate them and push annotation off the sheet.
+    const trussHeights=!!opts.frame&&pieces.some(p=>p.role==="topChord")&&pieces.some(p=>p.role==="bottomChord");
+    const levelValues=view==="plan"||trussHeights?[]:
+      (showRoof?unique(roof.map(n=>n.z)):unique(points.map(n=>n.z))).filter(z=>z!==datum);
+    // Stacked level dimensions sit LEFT of the drawing (10 mm + 7 mm per
+    // level + text). Reserve that paper so the viewport never clips them.
+    const levelReserve=levelValues.length?14+(levelValues.length-1)*7:0;
+    // Dimensions, axis lines and bubbles are always drawn OUTSIDE the
+    // geometry (below / left / above), never through it. Reserve that paper
+    // so the native viewport does not clip them. Solo sheets also keep the
+    // pending-note band at the top clear of the drawing.
+    const left=Math.max(view==="plan"&&!opts.noMarks?24:14,levelReserve);
+    const bottom=opts.noMarks?16:26,top=solo?27:14,right=solo?6:14;
+    const available={x:left,y:bottom,width:Math.max(20,rect.width-left-right),height:Math.max(20,rect.height-bottom-top)};
     const scale=book.scale(width,height,available),maxX=minX+width,maxY=minY+height;
     book.view(page,rect,name,scale,space=>{
       const originX=available.x+(available.width-width/scale)/2,originY=available.y+(available.height-height/scale)/2;
@@ -162,16 +175,16 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       };
       if(!opts.noMarks)for(const value of horizontalAxes.filter(x=>x>=minX&&x<=maxX)){
         const q=at([value,minY]),end=at([value,maxY]);
-        book.poly(space,[[q[0],q[1]+(solo?3:-3)],[end[0],end[1]+(solo?-8:6)]],"EIXOS");bubble([end[0],end[1]+(solo?-12:9)],axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,value));
+        book.poly(space,[[q[0],q[1]-3],[end[0],end[1]+6]],"EIXOS");bubble([end[0],end[1]+9],axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,value));
       }
       const hv=horizontalAxes.filter(x=>x>=minX&&x<=maxX);
-      if(!opts.noMarks)for(let i=1;i<hv.length;i++)book.dim(space,at([hv[i-1],minY]),at([hv[i],minY]),scale,`EIXOS ${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i-1])}-${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i])}`,solo?8:-8);
+      if(!opts.noMarks)for(let i=1;i<hv.length;i++)book.dim(space,at([hv[i-1],minY]),at([hv[i],minY]),scale,`EIXOS ${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i-1])}-${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i])}`,-8);
       if(view==="plan"){
         if(!opts.noMarks)for(const value of (rotatePlan?xs.map(v=>-v):ys).filter(y=>y>=minY&&y<=maxY)){
-          const a=at([minX,value]),b=at([maxX,value]);book.poly(space,[[a[0]+(solo?6:-3),a[1]],[b[0]+(solo?-2:3),b[1]]],"EIXOS");bubble([a[0]+(solo?10:-7),a[1]],axisName(rotatePlan?"x":"y",rotatePlan?-value:value));
+          const a=at([minX,value]),b=at([maxX,value]);book.poly(space,[[a[0]-3,a[1]],[b[0]+3,b[1]]],"EIXOS");bubble([a[0]-7,a[1]],axisName(rotatePlan?"x":"y",rotatePlan?-value:value));
         }
         const vv=(rotatePlan?xs.map(v=>-v):ys).filter(y=>y>=minY&&y<=maxY).sort((a,b)=>a-b);
-        if(!opts.noMarks)for(let i=1;i<vv.length;i++)book.dim(space,at([minX,vv[i-1]]),at([minX,vv[i]]),scale,`VÃO Y ${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i-1]:vv[i-1])}-${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i]:vv[i])}`,solo?-8:19);
+        if(!opts.noMarks)for(let i=1;i<vv.length;i++)book.dim(space,at([minX,vv[i-1]]),at([minX,vv[i]]),scale,`VÃO Y ${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i-1]:vv[i-1])}-${axisName(rotatePlan?"x":"y",rotatePlan?-vv[i]:vv[i])}`,19);
         if(name==="PLANTA"){
           const a:P=cutAxis==="y"?[minX,sectionPosition]:[sectionPosition,minY],b:P=cutAxis==="y"?[maxX,sectionPosition]:[sectionPosition,maxY];
           book.poly(space,[at(a),at(b)],"EIXOS");book.text(space,at(a),"A-A","EIXOS");
@@ -212,18 +225,18 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         reservedLabels.push({x:q[0]+2,y:q[1]-4,width:marks.join("/").length*1.6,height:3});
       }
       if(opts.noMarks){
-        book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",10);
-        book.dim(space,at([minX,minY]),at([minX,maxY]),scale,"EXTENSÃO",-10);
+        // Positive normal = up / left: horizontal below, vertical left.
+        book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",-10);
+        book.dim(space,at([minX,minY]),at([minX,maxY]),scale,"EXTENSÃO",10);
       }else if(width>0&&!(hv.length===2&&hv[0]===minX&&hv[1]===maxX))
-        book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",solo?8:-20);
+        book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",(hv.length>1&&!opts.noMarks)||trussHeights?-20:-8);
       if(view!=="plan"){
-        const levels=showRoof?unique(roof.map(n=>n.z)):unique(points.map(n=>n.z));
-        for(const [i,z] of levels.filter(z=>z!==datum).entries()){
+        for(const [i,z] of levelValues.entries()){
           const candidates=view==="cut"?roofSegments.flat().filter(p=>p[1]===z):roof.filter(p=>p.z===z).map(p=>projection(p));
           const actual=candidates.sort((a,b)=>a[0]-b[0])[0]??[minX,z];
           book.dim(space,at([actual[0],datum]),at(actual),scale,showRoof?(ridge.includes(z)?"CUMEEIRA":"BORDA/BEIRAL"):"NÍVEL",(actual[0]-minX)/scale+10+i*7);
         }
-        if(showRoof&&!roof.length)pendingNotes.push("PENDENTE: cobertura não declarada; alturas não inferidas.");
+        if(showRoof&&!roof.length)pendingNotes.push("PENDENTE: cobertura física não declarada; alturas não inferidas.");
       }
       if(view==="cut"){
         if(distinct.length<=12)for(let i=1;i<distinct.length;i++)book.dim(space,at(distinct[i-1]),at(distinct[i]),scale,"EIXOS TERÇAS",5);
@@ -364,7 +377,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     drawing(page,{...a,width:a.width*.69},first.kind==="TESOURA"?"Elevação da tesoura":"Elevação do pórtico",first.axis==="y"?"front":"side",{pieces:first.pieces,showRoof:false,frame:true,aliases,
       subtitle:`${group.length}× — peças correspondentes indicadas na tabela de identificação.`});
     book.table(page,{x:a.x+a.width*.70,y:a.y,width:a.width*.30,height:a.height},"Identificação de peças",["Marca","Perfil","Qtd.","Locação"],first.pieces.map(p=>{
-      const ids=aliases.get(p.id)??[p.id];return [ids.map(id=>marks.get(id)).join(" / "),profile(p.id),String(ids.length),locations.join("; ")];
+      const ids=aliases.get(p.id)??[p.id];return [[...new Set(ids.map(id=>marks.get(id)))].join(" / "),profile(p.id),String(ids.length),locations.join("; ")];
     }),[0,.19,.55,.65,1]);
   }
   if(pendingFrame)pendingFrame.draw.push(space=>book.wrapped(space,a,"PENDENTE: conjunto de pórtico ou tesoura não identificado em planos globais com conectividade declarada. Nenhuma peça, pilar ou vínculo foi inferido. As peças permanecem nas vistas gerais e na lista de materiais.",3,5,"PENDENCIAS"));
@@ -440,13 +453,16 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const detailBottom=book.table(materialsPage,
     {...a,y:a.y+a.height-detailHeight,height:detailHeight},
     "Relação de tipos de peças (IDs no quadro de rastreabilidade)",
-    ["Marca","Perfil","Qtd.","Compr. por peça mm","Massa kg/m","Massa total kg"],
+    ["Marca","Perfil","Qtd.","Compr. por peça mm","Massa kg/m","Massa por peça kg","Massa total kg"],
     [...materialTypes.entries()].map(([mark,group])=>{
       const p=group[0],mass=group.some(v=>v.massKg===null)?null:group.reduce((v,q)=>v+q.massKg!,0);
+      // Grouped rows share one type signature; keep the unit mass visible so
+      // a fabricator can check a single piece without dividing the total.
       return [mark,profile(p.pieceId),String(group.length),num(p.lengthMm),
         mass===null?"PENDENTE":num(mass/(group.reduce((v,q)=>v+q.lengthMm,0)/1000)),
+        mass===null?"PENDENTE":num(mass/group.length),
         mass===null?"PENDENTE":num(mass)];
-    }),[0,.10,.42,.50,.70,.84,1]);
+    }),[0,.10,.40,.47,.62,.74,.87,1]);
   const summary=new Map<string,{profile:string;quantity:number;length:number;mass:number|null}>();
   for(const p of takeoff.pieces.filter(p=>!unlocated.has(p.pieceId))){
     const assignment=draft?.physicalCatalog?.assignments.find(a=>a.pieceId===p.pieceId),key=JSON.stringify([assignment?.sectionId??p.sectionId??p.pieceId,assignment?.materialId??p.materialId??p.pieceId]);

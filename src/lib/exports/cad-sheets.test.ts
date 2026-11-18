@@ -1,6 +1,9 @@
 import {expect,it,vi} from "vitest";
 import DxfParser from "dxf-parser";
 import {mkdirSync,writeFileSync} from "node:fs";
+
+// Each test writes its own review artifact; do not depend on test order.
+mkdirSync(".tools/int8",{recursive:true});
 import {createStructureDxf,prepareCadReactions} from "./cad";
 import {CAD_NOTICE} from "./cad-sheets";
 import {CAD_LAYERS} from "./cad-book";

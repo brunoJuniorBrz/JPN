@@ -38,6 +38,14 @@ export function reviewRoofSlope(project:Project){
     const t=Math.max(0,Math.min(1,((p.x-u[0])*dx+(p.y-u[1])*dy)/den));
     return Math.hypot(p.x-u[0]-t*dx,p.y-u[1]-t*dy)<=7;
   });
+  const inside=(p:{x:number;y:number},outer:[number,number,number][])=>{
+    let hit=false;
+    for(let i=0,j=outer.length-1;i<outer.length;j=i++){
+      const [xi,yi]=outer[i],[xj,yj]=outer[j];
+      if((yi>p.y)!==(yj>p.y)&&p.x<(xj-xi)*(p.y-yi)/(yj-yi)+xi)hit=!hit;
+    }
+    return hit;
+  };
   const gradient=(ring:[number,number,number][])=>{
     const a=ring[0];
     for(let i=1;i<ring.length;i++)for(let j=i+1;j<ring.length;j++){
@@ -51,8 +59,11 @@ export function reviewRoofSlope(project:Project){
   return model.pieces.filter(p=>p.role==="topChord").flatMap(piece=>{
     const a=nodes.get(piece.start),b=nodes.get(piece.end);
     if(!a||!b)return [];
+    // A chord under the interior of a face supports it just as much as one on
+    // its edge; both ends must project on (or inside) the same face outline.
+    const covers=(p:{x:number;y:number},outer:[number,number,number][])=>nearEdge(p,outer)||inside(p,outer);
     const related=faces.filter(f=>f.supportPieceIds.includes(piece.id)||
-      (nearEdge(a,f.outer)&&nearEdge(b,f.outer)));
+      (covers(a,f.outer)&&covers(b,f.outer)));
     if(!related.length)return [];
     const face=related[0],g=gradient(face.outer);
     if(!g)return [];

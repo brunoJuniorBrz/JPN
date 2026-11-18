@@ -19,16 +19,22 @@ import { packageTakeoff } from "./package-source";
 import {declaredCommercialGroups} from "./package-commercial-groups";
 import { createCompletePackage,packageCutting } from "./complete-package";
 
-const SOURCE = "Tom / Alan, planta baixa(2).pdf; reconstrução comercial JPN 17-11-2026. Posições das seis faces esquemáticas, NÃO levantamento de campo.";
+const SOURCE = "Tom / Alan, planta baixa(2).pdf; reconstrução comercial JPN 17-11-2026. Posições das seis faces medidas nos vetores da prancha do Alan, NÃO levantamento de campo.";
 const REV = "TOM-ESTUDO-1";
+// Positions read from the vector geometry of Alan's AutoCAD plan (right-hand
+// drawing; scale fixed by his 5.38 m and 14.28 m dimensions, 41.93 pt/m).
+// Sizes stay the declared ones. Origin: left edge of the left block (F4) and
+// top edge of the main body (F1). The central block (F3) starts 0.30 m below
+// the 9.02 line and ends 0.52 m past the main body (14.80 m total extent).
 const NOMINAL = [
-  {id:"F1", title:"Corpo principal superior", x:3.78, y:0, dx:5.38, dy:9.02},
-  {id:"F2", title:"Corpo principal inferior", x:6.45, y:9.02, dx:2.71, dy:5.26},
-  {id:"F3", title:"Bloco central", x:2.67, y:9.02, dx:3.78, dy:5.48},
-  {id:"F4", title:"Bloco esquerdo", x:0, y:7.14, dx:2.65, dy:5.06},
-  {id:"F5", title:"Faixa de ligação", x:2.65, y:7.14, dx:1.13, dy:1.88},
-  {id:"F6", title:"Recorte", x:2.18, y:12.20, dx:.49, dy:1.38},
+  {id:"F1", title:"Corpo principal superior", x:4.06, y:0, dx:5.38, dy:9.02},
+  {id:"F2", title:"Corpo principal inferior", x:6.73, y:9.02, dx:2.71, dy:5.26},
+  {id:"F3", title:"Bloco central", x:2.95, y:9.32, dx:3.78, dy:5.48},
+  {id:"F4", title:"Bloco esquerdo", x:0, y:7.44, dx:2.65, dy:5.06},
+  {id:"F5", title:"Faixa de ligação", x:2.93, y:7.44, dx:1.13, dy:1.88},
+  {id:"F6", title:"Recorte", x:-.49, y:11.12, dx:.49, dy:1.38},
 ] as const;
+const MAIN_X=4060; // F1 left edge, mm
 
 function buildTom(){
   const p=planningExample();
@@ -37,7 +43,7 @@ function buildTom(){
   p.client="Obra do Tom";
   p.category="Cobertura metálica";
   p.description="Ensaio CAD nativo PR #141 a partir das medidas transcritas do orçamento e planta de Alan.";
-  p.technicalNotes="NÃO É PLANTA DE LOCAÇÃO FINAL. Trechos dispostos esquematicamente; conferir encontros e posição real dos elementos. 2 tesouras SEM diagonais. Quatro peças avulsas SEM locação. Alturas de apoio não informadas: Z=3000 mm é referência de desenho hipotética, não medida da obra. Banzo superior 5.41 m cotado vs 5.4167 m pelos montantes: discrepância de arredondamento. Vento, ancoragens, soldas, travamentos, grau do aço e dimensionamento pendentes. Sem aprovação estrutural.";
+  p.technicalNotes="NÃO É PLANTA DE LOCAÇÃO FINAL. Trechos posicionados pela prancha do Alan (sem levantamento); faixa de 0,56 m abaixo do bloco central não identificada; tesouras nas linhas de emenda das terças (Y=4,51 e 9,02), a confirmar com o Tom. 2 tesouras SEM diagonais. Quatro peças avulsas SEM locação. Alturas de apoio não informadas: Z=3000 mm é referência de desenho hipotética, não medida da obra. Banzo superior 5.41 m cotado vs 5.4167 m pelos montantes: discrepância de arredondamento. Vento, ancoragens, soldas, travamentos, grau do aço e dimensionamento pendentes. Sem aprovação estrutural.";
   p.workspace.cutting={kerfMm:3,endTrimMm:5,minimumRemnantMm:300,useFabrication:false};
   // Always use stable unique IDs for repeated parts; no invented joint connectivity.
   type Node={id:string;x:number;y:number;z:number};
@@ -54,8 +60,11 @@ function buildTom(){
   }
   // Main trusses: the nominal drawing reports lower 5.37 m, top 5.41 m and
   // five web heights. Exact implied upper geometric length is ~5.416733 m.
-  for(const [index,y] of [0,9020].entries()){
-    const x0=3780,dx=[0,1342.5,2685,4027.5,5370],rise=[300,480,650,830,1010];
+  // Purlins of the main body are spliced at Y=4.51 and Y=9.02 (Alan's
+  // modulation 4.51+4.51+5.26); the two trusses are placed on those support
+  // lines. Y=0 and Y=14.28 are taken as existing walls. Inferred, to confirm.
+  for(const [index,y] of [4510,9020].entries()){
+    const x0=MAIN_X,dx=[0,1342.5,2685,4027.5,5370],rise=[300,480,650,830,1010];
     bar(`BI_${index+1}`,"bottomChord",[x0,y,3000],[x0+5370,y,3000],"Banzo inferior U 75x40x2.65","TESOURA-SEM-DIAGONAIS");
     bar(`BS_${index+1}`,"topChord",[x0,y,3300],[x0+5370,y,4010],"Banzo superior U 75x40x2.65","TESOURA-SEM-DIAGONAIS");
     dx.forEach((v,j)=>bar(`M_${index+1}_${j+1}`,"web",[x0+v,y,3000],[x0+v,y,3000+rise[j]],"Montante U 75x40x2.65","TESOURA-SEM-DIAGONAIS"));
@@ -66,13 +75,13 @@ function buildTom(){
   let index=0;
   const purlin=(x:number,y:number,len:number)=>bar(`T_${++index}`,"purlin",[x*1000,y*1000,3300],[x*1000,(y+len)*1000,3300],
     "Terca Ue 75x40x15x2.65","TERCAS-PREVISTAS");
-  [6.65,7.62,8.60].forEach(x=>{purlin(x,0,4.51);purlin(x,4.51,4.51);purlin(x,9.02,5.26);});
-  [4.45,5.42].forEach(x=>{purlin(x,0,4.51);purlin(x,4.51,4.51);});
+  [6.93,7.90,8.88].forEach(x=>{purlin(x,0,4.51);purlin(x,4.51,4.51);purlin(x,9.02,5.26);});
+  [4.73,5.70].forEach(x=>{purlin(x,0,4.51);purlin(x,4.51,4.51);});
   // 10 4.51 m, 3 5.26 m = 13 pieces.
-  [3.05,4.20,5.40].forEach(x=>purlin(x,9.02,5.48));
-  [0.45,1.78].forEach(x=>purlin(x,7.14,5.06));
-  [2.85,3.42].forEach(x=>purlin(x,7.14,1.88));
-  [0.95,2.15].forEach(x=>purlin(x,7.14,3.98));
+  [3.33,4.48,5.68].forEach(x=>purlin(x,9.32,5.48));
+  [0.45,1.78].forEach(x=>purlin(x,7.44,5.06));
+  [3.13,3.70].forEach(x=>purlin(x,7.44,1.88));
+  [0.95,2.15].forEach(x=>purlin(x,7.44,3.98));
   // 4 loose pieces confirmed same U profile, but NOT installed in drawings.
   // Place them in separate negative-Y staging zone labelled 'SEM LOCACAO'.
   [5.08,2.41,3.48,2.95].forEach((length,i)=>bar(`AV_${i+1}`,"beam",
@@ -109,13 +118,27 @@ function buildTom(){
     }),
   });
   p.workspace.spatialPreparation=draft;
-  p.workspace.overallDimensionChecks=[{axis:"y",statedLengthMm:14280,
-    source:"Modulação 4510 + 4510 + 5260 do desenho do Alan",revision:REV}];
-  p.workspace.dimensionalChecks=["BS_1","BS_2"].map(pieceId=>({
-    pieceId,statedLengthMm:5410,
-    source:"Cota do banzo superior no desenho do Alan; valor sujeito a revisão",revision:REV,
-    note:"Comprimento entre nós com 5370 mm horizontais e 710 mm de desnível; verificar eixo/face e montagem.",
-  }));
+  // 14.28 m is the MAIN BODY only (4510 + 4510 + 5260). The total Y extent of
+  // the roof, measured on Alan's drawing scale (not dimensioned by him), is
+  // 9.32 + 5.48 = 14.80 m. X extent: recorte (-0.49) to main body edge (9.44).
+  p.workspace.overallDimensionChecks=[
+    {axis:"y",statedLengthMm:14800,source:"Extensão total medida na escala da prancha do Alan (corpo principal 14280 + bloco central 520 além)",revision:REV},
+    {axis:"x",statedLengthMm:9930,source:"Extensão total medida na escala da prancha do Alan (recorte 490 + 4060 + 5380)",revision:REV},
+  ];
+  p.workspace.dimensionalChecks=[
+    ...["BS_1","BS_2"].map(pieceId=>({
+      pieceId,statedLengthMm:5410,
+      source:"Cota do banzo superior no desenho do Alan; valor sujeito a revisão",revision:REV,
+      note:"Comprimento entre nós com 5370 mm horizontais e 710 mm de desnível; verificar eixo/face e montagem.",
+    })),
+    // Alan's right-hand plan dimensions the central block as 5.41 m while his
+    // left-hand plan, the budget and the drawn polygon give 5.48 m.
+    ...["T_14","T_15","T_16"].map(pieceId=>({
+      pieceId,statedLengthMm:5410,
+      source:"Cota 5,41 ao lado do bloco central na planta da direita do Alan (a esquerda e o orçamento dão 5,48)",revision:REV,
+      note:"Confirmar com o Tom o comprimento real do bloco central antes de cortar.",
+    })),
+  ];
   return transferDeclaredTakeoff(p,0);
 }
 
@@ -151,13 +174,17 @@ it("exports real Tom dimensional takeoff using new PR141 package engine (study, 
   expect(result.manifest.commercialCostMainCents).toBe(377500);
   expect(result.manifest.commercialCostCombinedCents).toBe(418000);
   expect(result.manifest.commercialCostPendingIncrementalCents).toBe(40500);
-  expect(result.manifest.sourceDimensionReviews.filter(r=>r.status==="PENDENTE")).toHaveLength(2);
+  expect(result.manifest.sourceDimensionReviews.filter(r=>r.status==="PENDENTE").map(r=>r.pieceId).sort())
+    .toEqual(["BS_1","BS_2","T_14","T_15","T_16"]);
   expect(result.manifest.roofSlopeReviews.filter(r=>r.status==="PENDENTE").map(r=>r.pieceId).sort()).toEqual(["BS_1","BS_2"]);
   const conflictText=new TextDecoder().decode(result.files.find(v=>v.name==="materiais/lista.csv")!.bytes);
   expect(conflictText).toContain("PENDENTE");
   expect(conflictText).toContain("5410");
-  expect(result.manifest.overallDimensionReviews.some(r=>r.axis==="y"&&r.status==="PENDENTE"
-    &&Math.abs(r.discrepancyMm!-220)<1e-6)).toBe(true);
+  // Positions now follow Alan's plan: total extents close within 10 mm.
+  for(const axis of ["x","y"] as const){
+    const r=result.manifest.overallDimensionReviews.find(v=>v.axis===axis)!;
+    expect(r.status,`extensão ${axis}`).not.toBe("PENDENTE");
+  }
   expect(result.files.some(f=>f.name==="materiais/itens-a-confirmar.csv")).toBe(true);
   const uGroup=cut.groups.find(g=>g.profile.startsWith("U 75"));
   expect(uGroup).toBeDefined();
@@ -190,7 +217,9 @@ it("exports real Tom dimensional takeoff using new PR141 package engine (study, 
     UCombinedCommercialReferenceBars:8,
     UCutGroups:cut.groups.filter(g=>!g.profile.includes("Terca Ue")).map(g=>({profile:g.profile,bars:g.bars.length})),
     caveats:[
-      "Contorno das seis faces posicionado esquematicamente; a planta nao informa relacao XYZ completa.",
+      "Contorno das seis faces posicionado pelos vetores da prancha do Alan; sem levantamento de campo.",
+      "Faixa de 0,56 m abaixo do bloco central (cota do Alan) nao identificada: beiral, parede ou calha?",
+      "Tesouras nas linhas Y=4,51 e Y=9,02 (emendas das tercas): inferido, confirmar com o Tom.",
       "Z=3000 mm de referencia HIPOTETICA; altura real de apoio nao informada.",
       "4 pecas avulsas desenhadas no ESTOQUE, fora da cobertura. SEM LOCACAO definida.",
       "As cotas do banzo superior e as alturas dos montantes nao fecham exatamente.",

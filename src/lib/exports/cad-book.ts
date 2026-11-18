@@ -112,7 +112,9 @@ export class CadBook{
     this.dxf.modelSpace.addInsert(block.name,point3d(offset,0),{layerName:"VISTAS",scaleFactor:{x:scale,y:scale,z:scale}});
     const id=page.draw.length+2;
     page.draw.push(space=>{
-      this.scene(space).push({kind:"view",x:rect.x,y:rect.y,items:this.scene(block)});
+      // Same window as the native DXF viewport: the PDF must not show what
+      // AutoCAD hides outside the viewport.
+      this.scene(space).push({kind:"view",x:rect.x,y:rect.y,items:this.scene(block),clip:{width:rect.width,height:rect.height}});
       this.text(space,[rect.x,rect.y+rect.height+1],`${title} · 1:${scale}`,"TEXTOS",3.2);
       space.addEntity(new SheetViewport(rect,[offset+rect.width/2*scale,rect.height/2*scale],scale,id));
     });
@@ -203,9 +205,11 @@ export class CadBook{
     lines.forEach((l,i)=>this.text(space,[area.x,area.y+area.height-height-i*leading],l,layer,height));return lines.length*leading;
   }
   notes(page:CadPage,rect:CadRect,lines:string[],trace=""){
-    const traceLines=this.wrap(`Rastreabilidade: ${trace}`,rect.width,1.4),maxTrace=Math.floor(28/2);
+    // 1.8 mm is the smallest height that stays legible on an A3 print.
+    const TRACE_H=1.8,TRACE_LEAD=2.7,TRACE_BAND=40;
+    const traceLines=this.wrap(`Rastreabilidade: ${trace}`,rect.width,TRACE_H),maxTrace=Math.floor((TRACE_BAND-3)/TRACE_LEAD);
     // Trace continuations use separate pages if needed; no metadata is truncated.
-    const tracePages=Math.max(1,Math.ceil(traceLines.length/maxTrace)),reserve=Math.min(28,traceLines.length*2+3);
+    const tracePages=Math.max(1,Math.ceil(traceLines.length/maxTrace)),reserve=Math.min(TRACE_BAND,traceLines.length*TRACE_LEAD+3);
     let target=page,y=rect.y+rect.height;
     for(const [i,line] of lines.entries()){
       const wrapped=this.wrap(`${i+1}. ${line}`,rect.width,2.5);let offset=0;
@@ -223,7 +227,7 @@ export class CadBook{
       const rows=traceLines.slice(i*maxTrace,(i+1)*maxTrace);
       target.draw.push(space=>{
         this.poly(space,[[rect.x,rect.y+reserve],[rect.x+rect.width,rect.y+reserve]],"TEXTOS");
-        rows.forEach((line,j)=>this.text(space,[rect.x,rect.y+reserve-3-j*2],line,"TEXTOS",1.4));
+        rows.forEach((line,j)=>this.text(space,[rect.x,rect.y+reserve-3-j*TRACE_LEAD],line,"TEXTOS",TRACE_H));
       });
     }
   }

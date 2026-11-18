@@ -58,6 +58,34 @@ for index,layout in enumerate(p for p in DOC.layouts if p.name!="Model"):
                 halfx=abs(math.cos(angle))*width/2+abs(math.sin(angle))*h/2
                 halfy=abs(math.sin(angle))*width/2+abs(math.cos(angle))*h/2
                 annotation_text.append((p.x-halfx,p.y-halfy,p.x+halfx,p.y+halfy))
+        # Everything the viewport would hide: drawing, dimensions and texts must
+        # lie inside the window (block units are paper mm, origin at the window).
+        def points(container,depth=0,skip_notes=False):
+            for e in container:
+                t=e.dxftype()
+                if t=="LWPOLYLINE":yield from ((v[0],v[1]) for v in e.get_points("xy"))
+                elif t=="TEXT":
+                    if not skip_notes or e.dxf.layer!="PENDENCIAS":yield (e.dxf.insert.x,e.dxf.insert.y)
+                elif t=="CIRCLE":
+                    c,r=e.dxf.center,e.dxf.radius;yield (c.x-r,c.y-r);yield (c.x+r,c.y+r)
+                elif t=="DIMENSION" and depth<3 and e.dxf.get("geometry") in DOC.blocks:
+                    yield from points(DOC.blocks[e.dxf.geometry],depth+1,skip_notes)
+        every=list(points(block))
+        # Pending notes sit in a fixed band at the top; they do not grow with scale.
+        annotated=list(points(block,skip_notes=True))
+        outside=sum(1 for x,y in every if x< -.5 or y< -.5 or x>vp.dxf.width+.5 or y>vp.dxf.height+.5)
+        denominator=round(1/scale) if scale<1 else round(scale)
+        standard=[20,25,50,75,100,125,150,200]
+        larger=[v for v in standard if v<denominator]
+        fits_larger=False
+        if coords and larger:
+            k=denominator/larger[-1]
+            xs=[v[0] for v in coords];ys=[v[1] for v in coords]
+            ax=[v[0] for v in annotated];ay=[v[1] for v in annotated]
+            gw,gh=max(xs)-min(xs),max(ys)-min(ys)
+            # Geometry grows with the scale; dimensions, bubbles and notes keep
+            # their paper size. Both must stay inside the viewport window.
+            fits_larger=gw*k+(max(ax)-min(ax)-gw)<=vp.dxf.width and gh*k+(max(ay)-min(ay)-gh)<=vp.dxf.height
         occupied=0
         if coords:
             xs=[v[0] for v in coords];ys=[v[1] for v in coords]
@@ -71,7 +99,7 @@ for index,layout in enumerate(p for p in DOC.layouts if p.name!="Model"):
         text_overlap=sum(box_overlap(a,b) for i,a in enumerate(annotation_text) for b in annotation_text[i+1:])
         metrics.append({"folha":index+1,"layout":layout.name,"vista_cache":matches[0].dxf.name,
           "escala":f"1:{scale:g}","area_util_vista_mm2":vp.dxf.width*vp.dxf.height,
-          "ocupacao_geometria_percent":round(occupied,2),"lideres":len(leaders),
+          "ocupacao_geometria_percent":round(occupied,2),"pontos_fora_da_vista":outside,"escala_maior_caberia":fits_larger,"lideres":len(leaders),
           "cruzamentos_lideres":crossings,"lideres_atravessando_pecas":through_pieces,
           "sobreposicoes_baloes":overlap,"sobreposicoes_textos":text_overlap})
 with (OUT/"medicoes-cad.json").open("w") as f:
@@ -91,9 +119,13 @@ with (OUT/"medicoes-cad.csv").open("w",newline="") as f:
     w=csv.DictWriter(f,fieldnames=list(metrics[0]),delimiter=";");w.writeheader();w.writerows(metrics)
 principal=[r for r in metrics if r["layout"]=="PLANTAS"]
 assert len(principal)==1, "Esperada uma vista principal de cobertura isolada na prancha de plantas"
-assert principal[0]["ocupacao_geometria_percent"]>=50, (
-    "Planta ocupa menos de 50% da área útil A3: "+str(principal[0])
+assert principal[0]["ocupacao_geometria_percent"]>=50 or not principal[0]["escala_maior_caberia"], (
+    "Planta pequena e a escala maior seguinte caberia: "+str(principal[0])
 )
+assert all(r["pontos_fora_da_vista"]==0 for r in metrics), ("Conteúdo fora da janela da vista (cortado no AutoCAD)",
+    [(r["folha"],r["layout"],r["pontos_fora_da_vista"]) for r in metrics if r["pontos_fora_da_vista"]])
+assert all(not r["escala_maior_caberia"] for r in metrics), ("Vista poderia usar escala maior",
+    [(r["folha"],r["layout"],r["escala"]) for r in metrics if r["escala_maior_caberia"]])
 assert all(r["cruzamentos_lideres"]==0 for r in metrics), "Cruzamento de leaders na impressão"
 assert all(r["sobreposicoes_baloes"]==0 for r in metrics), "Balões colidem na impressão"
 assert all(r["sobreposicoes_textos"]==0 for r in metrics), "Textos MARCAS colidem na impressão"

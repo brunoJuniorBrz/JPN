@@ -12,7 +12,16 @@ export function createCadPdf(sheets:CadScene[]):ArrayBuffer{
     if(i)doc.addPage([sheet.width,sheet.height],"landscape");
     function draw(items:CadSceneItem[],ox=0,oy=0){
       for(const item of items){
-        if(item.kind==="view"){draw(item.items,ox+item.x,oy+item.y);continue;}
+        if(item.kind==="view"){
+          if(item.clip){
+            doc.saveGraphicsState();
+            doc.rect(ox+item.x,sheet.height-oy-item.y-item.clip.height,item.clip.width,item.clip.height,null);
+            doc.clip();doc.discardPath();
+            draw(item.items,ox+item.x,oy+item.y);
+            doc.restoreGraphicsState();
+          }else draw(item.items,ox+item.x,oy+item.y);
+          continue;
+        }
         const style=CAD_LAYERS[item.layer as keyof typeof CAD_LAYERS];
         doc.setDrawColor(35);doc.setTextColor(item.layer==="PENDENCIAS"?130:25,25,25);
         doc.setLineWidth((style?.weight??25)/100);
