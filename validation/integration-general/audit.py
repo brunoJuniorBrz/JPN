@@ -98,7 +98,8 @@ REVIEWED_AMENDMENTS = {
     # UI F1 (docs/ui/PLANO-UI.md, test changes authorized by the project owner; review in the UI PR):
     # the project screen became a studio. Result tabs / "Ferramenta de engenharia" select became
     # steps and an analysis-tools nav; navigation-only edits, no warning/blocking check removed.
-    "tests/e2e/result-tabs.ts": "2a2444028ccf3ab9911fa98d1eb5d4d3ec2da5ee",              # helpers map old tabs/select to studio steps/tools
+    # PR #145: adaptation reviewed against F0–F6 original; adds Tesoura stage and resolves the tool only after opening Análise, without changing assertions.
+    "tests/e2e/result-tabs.ts": "1c30655fa8702b0a5fbe29b9669c55897590d93e",              # helpers map old tabs/select to studio steps/tools
     "tests/e2e/planning.spec.ts": "db23a7a0af199f21d15c20e567ada7006fa4928d",            # "Resultado"/"Ir para resultado" -> Materiais; pendências em Verificação
     "tests/e2e/platform.spec.ts": "92a90f3a0c8c9ff15dace977691469f72d5332f9",            # "Resultado" -> Materiais
     "tests/e2e/profiles-3d.spec.ts": "7d4c531ca63be452e18caa7e9045c5f1ddb75c43",         # "Resultado" -> Materiais
