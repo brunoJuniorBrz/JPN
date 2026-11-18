@@ -105,18 +105,44 @@ export function tomTrussDefaults(): TrussEditor {
 /** Obra nova: modelo genérico para digitar por cima (sem preços). */
 export function blankTruss(): TrussEditor {
   const b = tomTrussDefaults();
-  return { ...b, spanMm: 6000, lengthMm: 8000, trusses: 3, highHeightMm: Math.round(75 + (6000 - 750) * 0.1), stationsMm: null, flippedPanels: [],
+  return { ...b, spanMm: 6000, lengthMm: 8000, trusses: 3, highHeightMm: Math.round(75 + (6000 - 750) * 0.1), purlinStepMm: 1000, stationsMm: null, flippedPanels: [],
     chord: { ...b.chord, barPriceCents: null }, web: { ...b.web, barPriceCents: null }, purlin: { ...b.purlin, barPriceCents: null },
     sheet: { ...b.sheet, pricePerMCents: null }, laborPerM2Cents: null, consumablesCents: null, screwPriceCents: null };
 }
 
-/** Defaults a partir das medidas da cobertura de um projeto existente. */
+/** Contagem geométrica para orçamento, limitada pelo comprimento comercial.
+ * NÃO representa espaçamento estrutural admissível, nem dimensionamento de terças. */
+export function provisionalTrussCount(lengthMm: number, stockMm: number): number {
+  const usable = stockMm - 10; // 5 mm de acabamento em cada extremidade (simulador de corte)
+  return Math.min(60, Math.max(2, Math.ceil(lengthMm / Math.max(usable, 1)) + 1));
+}
+
+/** Linhas geométricas de terça para cobrir o semivão com o passo DECLARADO.
+ * Não equivale a verificação de capacidade da telha ou da terça. */
+export function geometricPurlinLines(t: TrussEditor): number {
+  return Math.min(60, Math.max(2, Math.ceil(Math.max(0, trussLengthMm(t)) / t.purlinStepMm) + 1));
+}
+
+/** Obra existente: medidas reais do projeto, nunca os preços do exemplo do Tom.
+ * O número geométrico preliminar usa somente a barra comercial (não resistência). */
 export function trussDefaultsFor(project: Project): TrussEditor {
-  const base = tomTrussDefaults(), r = project.roof;
+  const base = blankTruss(), r = project.roof;
   if (!r.widthM || !r.lengthM) return base;
-  const spanMm = r.widthM * 1000, slope = (r.slopePercent ?? 10) / 100;
-  const length = spanMm - base.gutter.supportMm - base.gutter.widthMm - base.gutter.clearanceMm;
-  return { ...base, spanMm, lengthMm: r.lengthM * 1000, highHeightMm: Math.round(base.tipHeightMm + length * slope) };
+  const spanMm = r.widthM * 1000, lengthMm = r.lengthM * 1000;
+  const roofKind = project.planning?.typology === "gable" ? "two-slopes" : "one-slope";
+  const declaredSpacing = project.planning?.frameSpacingM;
+  const trusses = declaredSpacing && declaredSpacing > 0
+    ? Math.min(60, Math.max(2, Math.ceil(r.lengthM / declaredSpacing) + 1))
+    : provisionalTrussCount(lengthMm, base.stockMm);
+  const declaredPurlinStepMm = project.planning?.purlinSpacingM
+    ? project.planning.purlinSpacingM * 1000 : base.purlinStepMm;
+  const purlinStepMm = Math.min(6000, Math.max(300, declaredPurlinStepMm));
+  const geometry = { ...base, roofKind, spanMm, lengthMm, trusses, purlinStepMm };
+  const slope = (r.slopePercent ?? 10) / 100;
+  return {
+    ...geometry, purlinLines: geometricPurlinLines(geometry),
+    highHeightMm: Math.round(base.tipHeightMm + trussLengthMm(geometry) * slope),
+  };
 }
 
 /** Projeção horizontal de uma água; em duas águas há dois semivãos simétricos. */
@@ -153,10 +179,16 @@ export function trussIssues(t: TrussEditor): TrussIssue[] {
   if (Math.max(...panels) > t.stockMm) out.push({ level: "erro", message: "Há painel maior que a barra comercial." });
   if (t.chordSpliceMm + 20 > t.stockMm) out.push({ level: "erro", message: "A emenda do banzo precisa caber numa barra (com acabamento das pontas)." });
   const purlins = purlinPositions(t);
+  const bayMm = t.lengthMm / (t.trusses - 1);
+  if (bayMm > t.stockMm - 10 + 1e-6)
+    out.push({ level: "erro", message: `Trecho de terça de ${(bayMm / 1000).toFixed(2)} m excede a barra comercial de ${(t.stockMm / 1000).toFixed(2)} m. Declare mais tesouras ou detalhe emenda (ligação pendente, sem fabricação).` });
   if (purlins.length !== t.purlinLines)
     out.push({ level: "erro", message: "Número de linhas de terça não cabe no semivão com o passo informado." });
   if (new Set(purlins.map(p => p.sMm)).size !== purlins.length)
     out.push({ level: "erro", message: "Duas linhas de terça coincidem no mesmo nó; altere a quantidade, o passo ou os montantes." });
+  const gaps = purlins.slice(1).map((p, i) => p.sMm - purlins[i].sMm);
+  if (gaps.some(g => g > t.purlinStepMm * 1.2 + 1))
+    out.push({ level: "aviso", message: "Há trecho sem linha de terça conforme o passo informado. Revise a distribuição; vão admissível da telha não foi verificado." });
   const shifted = purlins.filter(p => Math.abs(p.shiftMm) > 10);
   if (shifted.length) out.push({ level: "aviso", message: `${shifted.length} posição(ões) de terça ajustada(s) ao montante mais próximo: ${shifted.map(p => `${(p.requestedMm / 10).toFixed(1)} → ${(p.sMm / 10).toFixed(1)} cm`).join(", ")}. Conferir espaçamentos.` });
   const step = t.purlinStepMm * Math.hypot(1, fallPercent(t) / 100);
