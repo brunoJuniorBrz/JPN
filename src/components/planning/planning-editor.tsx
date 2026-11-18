@@ -29,7 +29,9 @@ export function PlanningEditor({ initial, initialStep = 0, initialOpen3D = false
   const [step, setStep] = useState(initialStep), [submitted, setSubmitted] = useState(false), [message, setMessage] = useState("");
   const [profileToEdit, setProfileToEdit] = useState<PieceRole>();
   const [open3D, setOpen3D] = useState(initialOpen3D);
-  const [resultSection, setResultSection] = useState<ResultSection>("model");
+  // Projects created by the truss editor must open directly on their truss tab.
+  // Existing projects without an editor retain the previous model-first behavior.
+  const [resultSection, setResultSection] = useState<ResultSection>(initial?.workspace.trussEditor ? "truss" : "model");
   const [open3DRequest, setOpen3DRequest] = useState(0);
   const declared=project.workspace.physicalStructure!==undefined;
   const preview = useMemo(() => declared?{model:resolvePhysicalStructure(project).model,pending:[]}:generateStructure(project), [project,declared]);
