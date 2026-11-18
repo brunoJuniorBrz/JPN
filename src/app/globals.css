@@ -4,9 +4,29 @@
 .physical-line-view { min-width:0; }
 .project-workbench[hidden],.mixed-preserved[hidden] { display:none !important; }
 
-:root { --background: #f6f7f4; --surface: #fff; --ink: #292d28; --muted: #72786f; --line: #e3e6df; --gold: #b09655; --gold-dark: #746032; --dark: #242823; }
+/* Tokens de design (F0, ver docs/ui/PADROES.md). Valores iguais aos já usados; as variáveis antigas viram apelidos. */
+:root {
+  --color-bg: #f6f7f4; --color-surface: #fff; --color-surface-muted: #f9faf7; --color-surface-hover: #f1f3ee;
+  --color-ink: #292d28; --color-muted: #72786f; --color-subtle: #92998b;
+  --color-line: #e3e6df; --color-line-strong: #d9ddd4;
+  --color-accent: #b09655; --color-accent-strong: #746032; --color-accent-soft: #f0ecdf;
+  --color-dark: #242823; --color-dark-hover: #3d4439; --color-on-dark: #fff;
+  --color-success: #68745e; --color-success-soft: #edf0e8;
+  --color-warning: #6d603f; --color-warning-soft: #faf8f0; --color-warning-line: #e4ddc8;
+  --color-danger: #b13d30; --color-danger-strong: #953b32; --color-danger-soft: #fff5f3; --color-danger-line: #eac8c4;
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+  --radius-sm: 4px; --radius-md: 7px; --radius-lg: 11px; --radius-full: 999px;
+  --font-sans: var(--font-inter), system-ui, Arial, Helvetica, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --text-2xs: 10px; --text-xs: 11px; --text-sm: 12px; --text-md: 13px; --text-base: 14px; --text-lg: 16px; --text-xl: 19px;
+  --weight-regular: 400; --weight-medium: 500; --weight-semibold: 600; --weight-bold: 700;
+  --shadow-sm: 0 1px 2px #1f241d14; --shadow-md: 0 8px 24px #1f241d1f; --shadow-lg: 0 18px 48px #1f241d2e;
+  --focus-ring: 3px solid var(--color-accent); --hit-target: 44px;
+  --z-sticky: 20; --z-overlay: 60; --z-popover: 70; --z-toast: 80;
+  --background: var(--color-bg); --surface: var(--color-surface); --ink: var(--color-ink); --muted: var(--color-muted); --line: var(--color-line); --gold: var(--color-accent); --gold-dark: var(--color-accent-strong); --dark: var(--color-dark);
+}
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--background); color: var(--ink); font-family: Arial, Helvetica, sans-serif; font-size: 14px; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--background); color: var(--ink); font-family: var(--font-sans); font-size: var(--text-base); -webkit-font-smoothing: antialiased; }
 button, input, select, textarea { font: inherit; }
 button, a, input, textarea, select, summary { -webkit-tap-highlight-color: transparent; }
 button, a { touch-action: manipulation; }
@@ -739,4 +759,25 @@ body { font-size: 16px; }
   .studio .presentation-viewport > .inspection-selected-piece { position:static; width:auto; margin:0 0 10px; }
   .studio-stats { bottom:18px; left:8px; }
   .studio-field { grid-column:1 / -1; }
+}
+
+/* Projetos com modelo em foco: o menu global de 232px não compete com o 3D.
+   A navegação de retorno permanece na barra superior e no editor. */
+.workspace-topbar-actions { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.workspace-exit-link, .workspace-rail-toggle { display: none; align-items: center; gap: 6px; min-height: 36px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--ink); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.workspace-exit-link:hover, .workspace-rail-toggle:hover { background: #f1efe6; }
+.workspace-exit-link:focus-visible, .workspace-rail-toggle:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+@media (min-width: 1000px) {
+  .app:has(.project-studio), .app:has(.structure-viewer), .app:has(.result-workspace) { grid-template-columns: minmax(0, 1fr); }
+  .app:has(.project-studio) > .sidebar, .app:has(.structure-viewer) > .sidebar, .app:has(.result-workspace) > .sidebar { display: none; }
+  .app:has(.project-studio) .main-content, .app:has(.structure-viewer) .main-content, .app:has(.result-workspace) .main-content { max-width: none; width: 100%; }
+  .app:has(.project-studio) .workspace-exit-link, .app:has(.structure-viewer) .workspace-exit-link, .app:has(.result-workspace) .workspace-exit-link { display: inline-flex; }
+}
+@media (min-width: 1200px) {
+  .app:has(.project-studio) .workspace-rail-toggle { display: inline-flex; }
+  .app[data-studio-rail-collapsed="true"]:has(.project-studio) .project-studio {
+    grid-template-columns: minmax(0, 1fr) minmax(400px, 40%);
+    grid-template-areas: "viewport inspector" "status status";
+  }
+  .app[data-studio-rail-collapsed="true"]:has(.project-studio) .studio-rail { display: none; }
 }

@@ -12,10 +12,18 @@ import { Field, Input, Select } from "@/components/ui";
 import { findPieces } from "./piece-search";
 import type { ViewName } from "@/domain/calculations/geometry";
 import { profiles3DDemo } from "@/domain/profiles-3d-demo";
+import type { Viewer3DApi, Viewer3DLabel } from "./structure-3d";
 const Structure3D = dynamic(() => import("./structure-3d").then(m => m.Structure3D), { ssr: false, loading: () => <p role="status">Carregando visualização 3D…</p> });
 
-export function StructurePreview({ project, result, onConfigureProfile, onEditStructure, startIn3D = false }: { project: Project; result: StructureResult; onConfigureProfile?: (role: PieceRole) => void; onEditStructure?: () => void; startIn3D?: boolean }) {
-  const [view, setView] = useState<ViewName>("plan"), [detail, setDetail] = useState(false), [selected, setSelected] = useState("");
+export function StructurePreview({ project, result, onConfigureProfile, onEditStructure, startIn3D = false, selected: selectedProp, onSelect, analysisColors, deformed, orientationCube = false, labels, onApi, onHover }: { project: Project; result: StructureResult; onConfigureProfile?: (role: PieceRole) => void; onEditStructure?: () => void; startIn3D?: boolean;
+  /** Seleção controlada pelo estúdio (F2); sem estas props a seleção é local, como antes. */
+  selected?: string; onSelect?: (id: string) => void;
+  /** Camada de resultado da análise atual (F3), aplicada só ao modelo do projeto, nunca à demonstração. */
+  analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null;
+  /** Cubo de orientação e rótulos de ID/cota/apoio (F3). */
+  orientationCube?: boolean; labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; onHover?: (id: string) => void }) {
+  const [view, setView] = useState<ViewName>("plan"), [detail, setDetail] = useState(false), [localSelected, setLocalSelected] = useState("");
+  const selected = selectedProp ?? localSelected, setSelected = onSelect ?? setLocalSelected;
   const [three, setThree] = useState(startIn3D), [dimensions, setDimensions] = useState(true);
   const [demo, setDemo] = useState(false), [pieceQuery, setPieceQuery] = useState("");
   const activeModel = useMemo(() => demo && three ? profiles3DDemo(project) : result.model, [demo, three, project, result.model]);
@@ -34,7 +42,7 @@ export function StructurePreview({ project, result, onConfigureProfile, onEditSt
     </div>
     {!three && <div className="actions"><label className="checkbox-label"><input type="checkbox" checked={dimensions} onChange={e => setDimensions(e.target.checked)} />Mostrar cotas 2D</label></div>}
     {three && demo && <div className="notice" data-testid="profile-demo-notice"><strong>DEMONSTRAÇÃO VISUAL · DIMENSÕES SINTÉTICAS</strong><p>Este modelo mostra perfis completos. Seu projeto e seus quantitativos permanecem preservados.</p><button type="button" className="button secondary" onClick={() => { setDemo(false); setSelected(""); }}>Voltar ao meu projeto</button></div>}
-    {three ? <Structure3D key={demo ? "demo" : "project"} model={activeModel!} roof={project.roof} planning={project.planning} projectName={project.name} selected={selected} onSelect={setSelected} onDemonstrate={demo ? undefined : () => { setDemo(true); setDetail(false); setSelected(""); }} onConfigureProfile={!demo && onConfigureProfile ? () => onConfigureProfile(selectedPiece?.role ?? result.model!.pieces.find(p => !resolveSection(p.profile).section)?.role ?? "column") : undefined} /> : <DrawingCanvas key={`${view}-${detail}`} model={{ ...model, views: { ...model.views, [view]: { ...model.views[view], entities: model.views[view].entities.filter(e => dimensions || e.layer !== "COTAS") } } }} view={view} selected={selected} onSelect={setSelected} />}
+    {three ? <Structure3D key={demo ? "demo" : "project"} model={activeModel!} roof={project.roof} planning={project.planning} projectName={project.name} selected={selected} onSelect={setSelected} analysisColors={demo ? undefined : analysisColors} deformed={demo ? undefined : deformed} orientationCube={orientationCube} labels={demo ? undefined : labels} onApi={demo ? undefined : onApi} onHover={demo ? undefined : onHover} onDemonstrate={demo ? undefined : () => { setDemo(true); setDetail(false); setSelected(""); }} onConfigureProfile={!demo && onConfigureProfile ? () => onConfigureProfile(selectedPiece?.role ?? result.model!.pieces.find(p => !resolveSection(p.profile).section)?.role ?? "column") : undefined} /> : <DrawingCanvas key={`${view}-${detail}`} model={{ ...model, views: { ...model.views, [view]: { ...model.views[view], entities: model.views[view].entities.filter(e => dimensions || e.layer !== "COTAS") } } }} view={view} selected={selected} onSelect={setSelected} />}
     {!three && <p className="drawing-help">Toque em uma barra ou selecione abaixo. Arraste para mover e use dois dedos para ampliar. Marrom: pilares · azul: terças · verde: tesouras.</p>}
     <div className="piece-search-tools">
       <Field label="Buscar peça por ID ou categoria"><Input type="search" value={pieceQuery} onChange={e => setPieceQuery(e.target.value)}
