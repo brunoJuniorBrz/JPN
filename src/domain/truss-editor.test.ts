@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { newProject } from "./models";
-import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema } from "./truss-editor";
+import { emptyPlanning } from "./structure";
+import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor } from "./truss-editor";
 import { spatialPreparationReview } from "./spatial-preparation";
 import { packageTakeoff } from "@/lib/exports/package-source";
 import { packageCutting } from "@/lib/exports/complete-package";
@@ -139,4 +140,32 @@ describe("editor de tesoura por estações", () => {
     expect(dual.knownCents - notBudgeted.knownCents).toBe(2400 * 20);
     expect(trussSummary({ ...t, gutter: { ...t.gutter, budgeted: true, pricePerMCents: null } }).missing).toContain("Calha (m)");
   });
+  it("obra independente do exemplo e projeto 12×20 de duas águas com espaçamentos declarados", () => {
+    const empty = blankTruss(), example = tomTrussDefaults();
+    expect(empty.spanMm).not.toBe(example.spanMm);
+    expect(empty.sheet.pricePerMCents).toBeNull();
+    expect(empty.laborPerM2Cents).toBeNull();
+    expect(trussIssues(empty).filter(i => i.level === "erro")).toEqual([]);
+    const p = newProject();
+    p.roof = { ...p.roof, widthM: 12, lengthM: 20, slopePercent: 10 };
+    p.planning = { ...emptyPlanning(), typology: "gable", frameSpacingM: 5, purlinSpacingM: 1.2 };
+    const t = trussDefaultsFor(p);
+    expect(t.roofKind).toBe("two-slopes");
+    expect([t.spanMm, t.lengthMm, t.trusses]).toEqual([12000, 20000, 5]);
+    expect(t.purlinLines).toBe(6);
+    expect(purlinPositions(t)).toHaveLength(t.purlinLines);
+    expect(trussIssues(t).filter(i => i.level === "erro")).toEqual([]);
+    expect(trussSummary(t).knownCents).toBe(0);
+    expect(applyTrussToProject(p, t).workspace.trussEditor?.spanMm).toBe(12000);
+  });
+
+  it("não inventa apoios para trecho de terça maior que a barra disponível", () => {
+    const p = newProject();
+    p.roof = { ...p.roof, widthM: 12, lengthM: 20, slopePercent: 10 };
+    const t = trussDefaultsFor(p);
+    expect(t.trusses).toBe(3); // espaçamento entre tesouras não foi declarado
+    expect(trussIssues(t).some(i => i.level === "erro" && i.message.includes("excede a barra comercial"))).toBe(true);
+    expect(() => applyTrussToProject(p, t)).toThrow(/excede a barra comercial/);
+  });
+
 });

@@ -61,7 +61,7 @@ function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null;
 }
 
 export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss; onApply: (t: Truss) => void; applyLabel: string }) {
-  const [t, setT] = useState<Truss>(() => initial ?? tomTrussDefaults());
+  const [t, setT] = useState<Truss>(() => initial ?? blankTruss());
   const [selected, setSelected] = useState<number | null>(null);
   const [message, setMessage] = useState("");
   const set = (patch: Partial<Truss>) => { setMessage(""); setT(prev => ({ ...prev, ...patch })); };

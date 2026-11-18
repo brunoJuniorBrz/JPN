@@ -102,21 +102,41 @@ export function tomTrussDefaults(): TrussEditor {
   };
 }
 
-/** Obra nova: modelo genérico para digitar por cima (sem preços). */
+/** Obra nova independente do exemplo do Tom: preços continuam sem valor. */
 export function blankTruss(): TrussEditor {
-  const b = tomTrussDefaults();
-  return { ...b, spanMm: 6000, lengthMm: 8000, trusses: 3, highHeightMm: Math.round(75 + (6000 - 750) * 0.1), stationsMm: null, flippedPanels: [],
-    chord: { ...b.chord, barPriceCents: null }, web: { ...b.web, barPriceCents: null }, purlin: { ...b.purlin, barPriceCents: null },
-    sheet: { ...b.sheet, pricePerMCents: null }, laborPerM2Cents: null, consumablesCents: null, screwPriceCents: null };
+  return {
+    version: 1, roofKind: "one-slope", spanMm: 6000, lengthMm: 8000, trusses: 3,
+    gutter: { supportMm: 150, widthMm: 300, clearanceMm: 150, lowSideMm: 125, highSideMm: 200, budgeted: false, pricePerMCents: null },
+    walls: { lowMm: 3000, highMm: 3600, thicknessMm: 150 }, supportZMm: 3000,
+    anchor: { plateWidthMm: 150, plateHeightMm: 200, boltsPerSupport: 2, boltLengthMm: 1000, platePriceCents: null, boltPriceCents: null },
+    tipHeightMm: 75, highHeightMm: 615, panelMm: 500, countFrom: "high", diagonal: "to-high",
+    stationsMm: null, flippedPanels: [], purlinLines: 6, purlinStepMm: 1000, chordSpliceMm: 5980, stockMm: 6000,
+    chord: { designation: "U 100x40x2.65 mm", kgPerM: 3.54, barPriceCents: null, extraBars: 0 },
+    web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: null, extraBars: 0 },
+    purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: null, extraBars: 0 },
+    sheet: { usefulWidthMm: 1020, pricePerMCents: null, beyondTipMm: 300, piecesPerSlope: 1, overlapMm: 250 },
+    laborPerM2Cents: null, consumablesCents: null, screwPriceCents: null, fullHeightBudget: false,
+  };
 }
 
-/** Defaults a partir das medidas da cobertura de um projeto existente. */
+/** Usa apenas dimensões e espaçamentos declarados; sem espaçamento informado, a quantidade
+ * inicial é um campo editável, NÃO uma verificação de apoio ou capacidade. */
 export function trussDefaultsFor(project: Project): TrussEditor {
-  const base = tomTrussDefaults(), r = project.roof;
-  if (!r.widthM || !r.lengthM) return base;
-  const spanMm = r.widthM * 1000, slope = (r.slopePercent ?? 10) / 100;
-  const length = spanMm - base.gutter.supportMm - base.gutter.widthMm - base.gutter.clearanceMm;
-  return { ...base, spanMm, lengthMm: r.lengthM * 1000, highHeightMm: Math.round(base.tipHeightMm + length * slope) };
+  const base = blankTruss(), roof = project.roof, planning = project.planning;
+  if (!roof.widthM || !roof.lengthM) return base;
+  const spanMm = Math.round(roof.widthM * 1000), lengthMm = Math.round(roof.lengthM * 1000);
+  const roofKind = planning?.typology === "gable" ? "two-slopes" : "one-slope";
+  const slopes = roofKind === "two-slopes" ? 2 : 1;
+  const runMm = (spanMm - slopes * (base.gutter.supportMm + base.gutter.widthMm + base.gutter.clearanceMm)) / slopes;
+  const wantedStep = planning?.purlinSpacingM ? planning.purlinSpacingM * 1000 : base.purlinStepMm;
+  const purlinLines = runMm > 0 ? Math.min(60, Math.max(2, Math.ceil(runMm / wantedStep) + 1)) : base.purlinLines;
+  const purlinStepMm = runMm > 0 ? Math.min(6000, Math.max(300, Math.round(runMm / (purlinLines - 1) / 10) * 10)) : base.purlinStepMm;
+  const trusses = planning?.frameSpacingM ? Math.min(60, Math.max(2, Math.ceil(lengthMm / (planning.frameSpacingM * 1000)) + 1)) : base.trusses;
+  const supportZMm = roof.lowHeightM === null ? base.supportZMm : Math.round(roof.lowHeightM * 1000);
+  const highHeightMm = Math.round(base.tipHeightMm + runMm * ((roof.slopePercent ?? 10) / 100));
+  return { ...base, roofKind, spanMm, lengthMm, trusses, purlinLines, purlinStepMm, highHeightMm,
+    supportZMm, walls: { ...base.walls, lowMm: supportZMm,
+      highMm: roofKind === "two-slopes" ? supportZMm : Math.min(20000, Math.max(0, supportZMm + highHeightMm)) } };
 }
 
 /** Projeção horizontal de uma água; em duas águas há dois semivãos simétricos. */
@@ -153,6 +173,8 @@ export function trussIssues(t: TrussEditor): TrussIssue[] {
   if (Math.max(...panels) > t.stockMm) out.push({ level: "erro", message: "Há painel maior que a barra comercial." });
   if (t.chordSpliceMm + 20 > t.stockMm) out.push({ level: "erro", message: "A emenda do banzo precisa caber numa barra (com acabamento das pontas)." });
   const purlins = purlinPositions(t);
+  const purlinBayMm = t.lengthMm / (t.trusses - 1);
+  if (purlinBayMm > t.stockMm - 10) out.push({ level: "erro", message: `Terça de ${Math.round(purlinBayMm)} mm entre tesouras excede a barra comercial de ${t.stockMm} mm. Declare outro espaçamento/quantidade de tesouras ou detalhe a emenda pendente; nenhuma ligação é dimensionada automaticamente.` });
   if (purlins.length !== t.purlinLines)
     out.push({ level: "erro", message: "Número de linhas de terça não cabe no semivão com o passo informado." });
   if (new Set(purlins.map(p => p.sMm)).size !== purlins.length)
