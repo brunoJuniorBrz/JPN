@@ -86,6 +86,16 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     const points=opts.bases?(supports.length?supports:model.nodes):[...pieces.flatMap(p=>[nodes.get(p.start)!,nodes.get(p.end)!]),...(showRoof?roof:[])];
     const coords=points.map(projection);
     if(!coords.length)coords.push(...model.nodes.map(projection));
+    // No corte frontal da tesoura, muros/calhas explicitamente informados também
+    // entram nos limites gráficos. Isso nunca cria barras ou vínculos de cálculo.
+    const trussContext=view==="cut"&&across==="x"&&!opts.bases?project.workspace.trussEditor:null;
+    if(trussContext){
+      const S=trussContext.roofKind==="two-slopes"?2:1,span=trussContext.spanMm,th=trussContext.walls.thicknessMm;
+      for(const [x,h] of [[0,trussContext.walls.lowMm],[span,S===2?trussContext.walls.lowMm:trussContext.walls.highMm]])
+        coords.push([x-th/2,0],[x+th/2,h]);
+      const gutterBottom=trussContext.supportZMm-Math.max(trussContext.gutter.lowSideMm,trussContext.gutter.highSideMm);
+      coords.push([0,gutterBottom],[span,gutterBottom]);
+    }
     if(view!=="plan")coords.push([coords[0][0],datum]);
     const minX=Math.min(...coords.map(p=>p[0])),minY=Math.min(...coords.map(p=>p[1]));
     const width=Math.max(...coords.map(p=>p[0]))-minX,height=Math.max(...coords.map(p=>p[1]))-minY;
@@ -212,6 +222,27 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
           const projected=ring.map(([x,y,z])=>at(projection({x,y,z})));book.poly(space,projected,"COBERTURA");
           for(let i=1;i<projected.length;i++)segments.push([projected[i-1],projected[i]]);
         }
+      }
+      if(trussContext){
+        const t=trussContext,S=t.roofKind==="two-slopes"?2:1,span=t.spanMm,th=t.walls.thicknessMm;
+        // Esquema arquitetônico no CORTE, exclusivamente com dados cadastrados.
+        // Camadas existentes: BARRAS_AUXILIARES (muros) e COBERTURA (calhas).
+        for(const [i,x,h] of [[0,0,t.walls.lowMm],[1,span,S===2?t.walls.lowMm:t.walls.highMm]]){
+          const wall:[[number,number],[number,number],[number,number],[number,number],[number,number]]=[
+            [x-th/2,0],[x+th/2,0],[x+th/2,h],[x-th/2,h],[x-th/2,0]
+          ];
+          book.poly(space,wall.map(at),"BARRAS_AUXILIARES");
+          book.text(space,at([x+th/2+70,Math.max(h/2,100)]),i===0?"MURO BAIXO (ESQUEMA)":S===2?"MURO OUTRO BEIRAL (ESQUEMA)":"MURO ALTO (ESQUEMA)","TEXTOS",1.8);
+        }
+        const g=t.gutter,bottom=t.supportZMm-Math.max(g.lowSideMm,g.highSideMm);
+        const positions=S===2?[g.supportMm,span-g.supportMm-g.widthMm]:[g.supportMm];
+        for(const [index,x] of positions.entries()){
+          const outline:P=[[x,bottom+g.lowSideMm],[x,bottom],[x+g.widthMm,bottom],[x+g.widthMm,bottom+g.highSideMm]];
+          book.poly(space,outline.map(at),"COBERTURA");
+          book.text(space,at([x,bottom-70]),`CALHA ${index+1} - ESQUEMA`,"TEXTOS",1.8);
+        }
+        pendingNotes.push("PENDENTE: MUROS E CALHAS apenas representacao esquematica no corte; cotas e materiais conforme editor. Sem verificacao estrutural/hidraulica.");
+        pendingNotes.push(`PENDENTE: CHAPAS ${t.anchor.plateWidthMm}x${t.anchor.plateHeightMm} mm; ${t.anchor.boltsPerSupport} chumbador(es) por posicao, L=${t.anchor.boltLengthMm} mm. Furos/ligacoes sem detalhe validado.`);
       }
       const supportLabels=new Map<string,{point:P;marks:string[]}>();
       for(const n of supports){
