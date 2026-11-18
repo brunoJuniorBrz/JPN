@@ -740,3 +740,24 @@ body { font-size: 16px; }
   .studio-stats { bottom:18px; left:8px; }
   .studio-field { grid-column:1 / -1; }
 }
+
+/* Projetos com modelo em foco: o menu global de 232px não compete com o 3D.
+   A navegação de retorno permanece na barra superior e no editor. */
+.workspace-topbar-actions { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.workspace-exit-link, .workspace-rail-toggle { display: none; align-items: center; gap: 6px; min-height: 36px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); color: var(--ink); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.workspace-exit-link:hover, .workspace-rail-toggle:hover { background: #f1efe6; }
+.workspace-exit-link:focus-visible, .workspace-rail-toggle:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+@media (min-width: 1000px) {
+  .app:has(.project-studio), .app:has(.structure-viewer) { grid-template-columns: minmax(0, 1fr); }
+  .app:has(.project-studio) > .sidebar, .app:has(.structure-viewer) > .sidebar { display: none; }
+  .app:has(.project-studio) .main-content, .app:has(.structure-viewer) .main-content { max-width: none; width: 100%; }
+  .app:has(.project-studio) .workspace-exit-link, .app:has(.structure-viewer) .workspace-exit-link { display: inline-flex; }
+}
+@media (min-width: 1200px) {
+  .app:has(.project-studio) .workspace-rail-toggle { display: inline-flex; }
+  .app[data-studio-rail-collapsed="true"]:has(.project-studio) .project-studio {
+    grid-template-columns: minmax(0, 1fr) minmax(400px, 40%);
+    grid-template-areas: "viewport inspector" "status status";
+  }
+  .app[data-studio-rail-collapsed="true"]:has(.project-studio) .studio-rail { display: none; }
+}
