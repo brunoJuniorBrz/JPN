@@ -35,6 +35,10 @@ const NOMINAL = [
   {id:"F6", title:"Recorte", x:-.49, y:11.12, dx:.49, dy:1.38},
 ] as const;
 const MAIN_X=4060; // F1 left edge, mm
+// The PDF page grows downward; CAD Y grows upward. Positions above are read
+// as on the page, so Y is mirrored here or the building comes out reversed.
+const EXTENT_Y=14800;
+const cadY=(pageY:number)=>EXTENT_Y-pageY;
 
 function buildTom(){
   const p=planningExample();
@@ -53,7 +57,7 @@ function buildTom(){
   function point(x:number,y:number,z:number):string{
     const key=[x,y,z].map(n=>n.toFixed(5)).join("/");
     if(coordIds.has(key))return coordIds.get(key)!;
-    const id="N"+(nodes.length+1);nodes.push({id,x,y,z});coordIds.set(key,id);return id;
+    const id="N"+(nodes.length+1);nodes.push({id,x,y:cadY(y),z});coordIds.set(key,id);return id;
   }
   function bar(id:string,role:Piece["role"],a:[number,number,number],b:[number,number,number],label:string,group:string){
     pieces.push({id,role,start:point(...a),end:point(...b),label,group});
@@ -109,7 +113,7 @@ function buildTom(){
   draft.physicalRoofFaces=physicalRoofFacesSchema.parse({
     schema_version:"jpn.physical-roof-faces/1",units:"mm",source:SOURCE,revision:REV,
     faces:NOMINAL.map(f=>{
-      const x=f.x*1000,y=f.y*1000,dx=f.dx*1000,dy=f.dy*1000;
+      const x=f.x*1000,y=cadY((f.y+f.dy)*1000),dx=f.dx*1000,dy=f.dy*1000;
       const zz=(xx:number)=>3300+.12*(xx-x);
       return {id:f.id,source:`${SOURCE} / ${f.title} / COTAS DE AREA; LOCALIZACAO PENDENTE`,
         revision:REV,supportPieceIds:[],
