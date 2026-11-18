@@ -21,7 +21,7 @@ export function compactMemorialWarnings(rows:string[]):string[]{
   const grouped=new Map<string,string[]>();
   for(const row of rows){
     const match=/^([A-Z][A-Z0-9_]+):\s/.exec(row);
-    const key=match?match[1]:row;
+    const key=match && !["PENDENTE","AVISO"].includes(match[1]) ? match[1] : row;
     const group=grouped.get(key)??[];group.push(row);grouped.set(key,group);
   }
   return [...grouped].flatMap(([code,group])=>group.length<=3?group:[`${code}: ${group.length} ocorrências; exemplos: ${group.slice(0,2).map(x=>x.slice(0,165)).join(" / ")}. Lista integral em rastreabilidade/pendencias-completas.txt.`]);
@@ -164,7 +164,7 @@ export async function createCompletePackage(input:Project,options:PackageOptions
     r.axis.toUpperCase(),`${r.statedLengthMm} / ${r.actualMm??"PENDENTE"}`,`${r.discrepancyMm??"PENDENTE"} / ${r.status}`]));
   const detailedWarnings=[...pending,...estimate.pending,...estimate.warnings];
   table("Premissas e pendências",["Conferência"],compactMemorialWarnings(detailedWarnings).map(p=>[p]));
-  add("rastreabilidade/pendencias-completas.txt","text/plain;charset=utf-8",detailedWarnings.join("\\n"));
+  add("rastreabilidade/pendencias-completas.txt","text/plain;charset=utf-8",detailedWarnings.join("\n"));
   add("memorial/quantitativos.pdf","application/pdf",doc.output("arraybuffer"));
   add("rastreabilidade/projeto.json","application/json",JSON.stringify(project,null,2));
   const manifest={schema_version:"jpn.documentation-package/1",projectId:project.id,revision:takeoff.modelRevision,issuedAt:issuedAt.toISOString(),
