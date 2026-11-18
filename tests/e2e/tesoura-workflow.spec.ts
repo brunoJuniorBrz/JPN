@@ -6,7 +6,7 @@ test("edita tesoura, mantém quantidades e cria projeto na aba Tesoura com pacot
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/tesoura");
-  await expect(page.getByRole("heading", { name: "Tesoura", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Tesoura", exact: true })).toBeVisible();
 
   await page.getByLabel("Painel (cm)").fill("60");
   await page.getByLabel("Painel (cm)").blur();
