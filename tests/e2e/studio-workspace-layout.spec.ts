@@ -19,15 +19,9 @@ test("o 3D usa largura total sem menu global, com retorno seguro aos projetos", 
 test("o trilho do Studio recolhe e reaparece sem perder os controles", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/tesoura");
-  // O Studio F0–F6 ainda pertence ao PR #145. Exercitamos o shell global
-  // com sua estrutura documentada, sem copiar seus componentes para #146.
-  await page.evaluate(() => {
-    const root = document.querySelector(".main-content");
-    const studio = document.createElement("div");
-    studio.className = "project-studio";
-    studio.innerHTML = '<div class="studio-rail">Etapas</div><section class="studio-viewport">3D</section><aside class="studio-inspector">Inspetor</aside><footer class="studio-status">Status</footer>';
-    root?.appendChild(studio);
-  });
+  // Teste da rota real, não de um elemento artificial inserido no DOM.
+  await page.getByRole("button", { name: "Criar projeto com esta tesoura" }).click();
+  await expect(page.getByTestId("project-studio")).toBeVisible();
   await expect(page.locator(".sidebar")).toBeHidden();
   const toggle = page.locator(".workspace-rail-toggle");
   await expect(toggle).toBeVisible();

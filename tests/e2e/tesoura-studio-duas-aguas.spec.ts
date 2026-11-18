@@ -40,3 +40,22 @@ test("obra do Tom continua com apenas uma água", async ({ page }) => {
   await expect(page.getByLabel("Tipo de cobertura")).toHaveValue("one-slope");
   await expect(page.getByRole("button", { name: "Criar projeto com esta tesoura" })).toBeEnabled();
 });
+
+test("obra nova 12×20, duas águas e cinco tesouras declaradas: 3D sem preços de exemplo", async ({ page }) => {
+  test.setTimeout(120000);
+  await page.setViewportSize({ width: 1440, height: 920 });
+  await page.goto("/tesoura");
+  await expect(page.getByLabel("Muro a muro (cm)")).toHaveValue("600");
+  await page.getByLabel("Muro a muro (cm)").fill("1200");
+  await page.getByLabel("Comprimento (cm)").fill("2000");
+  await page.getByLabel("Tesouras").fill("5");
+  await page.getByLabel("Tipo de cobertura").selectOption("two-slopes");
+  await expect(page.getByRole("button", { name: "Criar projeto com esta tesoura" })).toBeEnabled();
+  await expect(page.getByText(/Sem preço:/)).toBeVisible();
+  await page.getByRole("button", { name: "Criar projeto com esta tesoura" }).click();
+  await expect(page.getByTestId("project-studio")).toBeVisible();
+  const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
+  await expect(canvas).toHaveAttribute("data-site-slopes", "2", { timeout: 45000 });
+  await expect(canvas).toHaveAttribute("data-site-anchors", "10");
+  await expect(page.getByTestId("fabrication-seal")).toBeVisible();
+});
