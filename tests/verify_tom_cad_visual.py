@@ -10,7 +10,9 @@ import math
 import fitz
 import ezdxf
 
-OUT=Path(".tools/complete-package/tom")
+import sys
+# Default: the Tom regression package; pass another package folder to check it.
+OUT=Path(sys.argv[1] if len(sys.argv)>1 else ".tools/complete-package/tom")
 DOC=ezdxf.readfile(OUT/"cad/pranchas.dxf")
 audit=DOC.audit()
 assert not audit.errors and not audit.fixes, (audit.errors,audit.fixes)

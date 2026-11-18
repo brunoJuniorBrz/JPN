@@ -37,14 +37,16 @@ const allEntities=(p:NonNullable<ReturnType<DxfParser["parseSync"]>>)=>[...p.ent
 const pageNames=(p:NonNullable<ReturnType<DxfParser["parseSync"]>>)=>allEntities(p).filter(e=>e.type==="TEXT"&&e.layer==="TEXTOS"&&e.textHeight===4.5).map(e=>e.text!);
 const texts=(p:NonNullable<ReturnType<DxfParser["parseSync"]>>)=>allEntities(p).filter(e=>e.type==="TEXT").map(e=>e.text!);
 const parse=(s:string)=>new DxfParser().parseSync(s)!;
+/** Frame drawing sheets only (a small frame takes the full sheet and moves its table to the next one). */
+const frameTypes=(names:string[],prefix:string)=>names.filter(n=>n.startsWith(prefix)&&!n.endsWith("— identificação de peças"));
 const views=(p:ReturnType<typeof parse>)=>Object.entries(p.blocks).filter(([n])=>n.startsWith("JPN_VISTA_")).map(([,b])=>b.entities as unknown as E[]);
 
 it("consolidates shed with a separate index sheet, native viewports and traceable marks",()=>{
   const p=shed(),before=JSON.stringify(p),content=createStructureDxf(p,new Date("2026-11-16T15:00:00Z")),parsed=parse(content),entities=allEntities(parsed),pages=pageNames(parsed),t=texts(parsed);
-  expect(pages).toHaveLength(7);
-  expect(pages).toEqual(["Plantas de cobertura e estrutura","Elevações e corte transversal","Pórtico — tipo 1 (2×)","Locação de bases e chumbadores","Notas gerais","Lista de materiais e resumo por perfil","Índice geral de pranchas"]);
-  expect(content.match(/\nVIEWPORT\n/g)).toHaveLength(14); // seven details + seven paper viewports
-  expect(content.match(/\nLAYOUT\n/g)).toHaveLength(8);
+  expect(pages).toHaveLength(8);
+  expect(pages).toEqual(["Plantas de cobertura e estrutura","Elevações e corte transversal","Pórtico — tipo 1 (2×)","Pórtico — tipo 1 (2×) — identificação de peças","Locação de bases e chumbadores","Notas gerais","Lista de materiais e resumo por perfil","Índice geral de pranchas"]);
+  expect(content.match(/\nVIEWPORT\n/g)).toHaveLength(15); // seven details + eight paper viewports
+  expect(content.match(/\nLAYOUT\n/g)).toHaveLength(9);
   expect(t).toContain("Índice completo");expect(t.some(s=>/^Terças e contraventamentos · 1:(20|25|50|75|100)$/.test(s))).toBe(true);
   for(const [layer,style] of Object.entries(CAD_LAYERS))expect(parsed.tables.layer.layers[layer].colorIndex).toBe(style.color);
   expect(parsed.header.$INSUNITS).toBe(4);
@@ -91,7 +93,7 @@ it.each(["profile","steel","rotation","support","support-pending","geometry","co
   if(change==="support-pending")d.supports.find(s=>s.nodeId==="A4BASE")!.dofs[0]="pending";
   if(change==="geometry")g.nodes.find(n=>n.id==="A4")!.x=100;
   if(change==="connection")d.memberConnections.find(c=>c.pieceId==="COL-A4")!.start="pending";
-  expect(pageNames(parse(createStructureDxf(p))).filter(n=>n.startsWith("Pórtico — tipo"))).toHaveLength(2);
+  expect(frameTypes(pageNames(parse(createStructureDxf(p))),"Pórtico — tipo")).toHaveLength(2);
 });
 
 it("identifies actual trusses, grouping short marks and preserving original IDs in traceability",()=>{
@@ -105,7 +107,7 @@ it("identifies actual trusses, grouping short marks and preserving original IDs 
     }
     for(const nodeId of ["A"+y,"B"+y])d.supports.push({nodeId,dofs:["fixed","fixed","fixed","free","free","free"]});
   }
-  const parsed=parse(createStructureDxf(p));expect(pageNames(parsed).filter(n=>n.startsWith("Tesoura — tipo"))).toEqual(["Tesoura — tipo 1 (2×)"]);
+  const parsed=parse(createStructureDxf(p));expect(frameTypes(pageNames(parsed),"Tesoura — tipo")).toEqual(["Tesoura — tipo 1 (2×)"]);
   expect(texts(parsed).join(" ")).toContain("TC14000");expect(texts(parsed)).toContain("Identificação de peças");
 });
 
@@ -126,7 +128,7 @@ it("keeps locations and grouped piece marks across three longitudinal axes",()=>
   }
   for(const s of d.supports.filter(s=>s.nodeId==="A0BASE"||s.nodeId==="B0BASE"))d.supports.push({...s,nodeId:s.nodeId+"-8"});
   const parsed=parse(createStructureDxf(p)),t=texts(parsed);
-  expect(pageNames(parsed).filter(n=>n.startsWith("Pórtico — tipo"))).toEqual(["Pórtico — tipo 1 (3×)"]);
+  expect(frameTypes(pageNames(parsed),"Pórtico — tipo")).toEqual(["Pórtico — tipo 1 (3×)"]);
   expect(allEntities(parsed).some(e=>e.type==="DIMENSION"&&dimensionLabel(e)==="VÃO Y 2-3")).toBe(true);
   expect(allEntities(parsed).some(e=>e.type==="DIMENSION"&&dimensionLabel(e)==="EIXOS 2-3")).toBe(true);expect(t.join(" ")).toMatch(/eixo 3; Y=8000/);
 });

@@ -103,7 +103,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     // so the native viewport does not clip them. Solo sheets also keep the
     // pending-note band at the top clear of the drawing.
     const left=Math.max(view==="plan"&&!opts.noMarks?24:14,levelReserve);
-    const bottom=opts.noMarks?16:26,top=solo?27:14,right=solo?6:14;
+    const bottom=opts.noMarks?16:trussHeights?34:26,top=solo?27:14,right=solo?6:14;
     const available={x:left,y:bottom,width:Math.max(20,rect.width-left-right),height:Math.max(20,rect.height-bottom-top)};
     const scale=book.scale(width,height,available),maxX=minX+width,maxY=minY+height;
     book.view(page,rect,name,scale,space=>{
@@ -178,7 +178,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         book.poly(space,[[q[0],q[1]-3],[end[0],end[1]+6]],"EIXOS");bubble([end[0],end[1]+9],axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,value));
       }
       const hv=horizontalAxes.filter(x=>x>=minX&&x<=maxX);
-      if(!opts.noMarks)for(let i=1;i<hv.length;i++)book.dim(space,at([hv[i-1],minY]),at([hv[i],minY]),scale,`EIXOS ${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i-1])}-${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i])}`,-8);
+      if(!opts.noMarks)for(let i=1;i<hv.length;i++)book.dim(space,at([hv[i-1],minY]),at([hv[i],minY]),scale,`EIXOS ${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i-1])}-${axisName(view==="plan"&&rotatePlan?"y":view==="plan"?"x":horizontal,hv[i])}`,trussHeights?-20:-8);
       if(view==="plan"){
         if(!opts.noMarks)for(const value of (rotatePlan?xs.map(v=>-v):ys).filter(y=>y>=minY&&y<=maxY)){
           const a=at([minX,value]),b=at([maxX,value]);book.poly(space,[[a[0]-3,a[1]],[b[0]+3,b[1]]],"EIXOS");bubble([a[0]-7,a[1]],axisName(rotatePlan?"x":"y",rotatePlan?-value:value));
@@ -229,7 +229,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",-10);
         book.dim(space,at([minX,minY]),at([minX,maxY]),scale,"EXTENSÃO",10);
       }else if(width>0&&!(hv.length===2&&hv[0]===minX&&hv[1]===maxX))
-        book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",(hv.length>1&&!opts.noMarks)||trussHeights?-20:-8);
+        book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",(hv.length>1&&!opts.noMarks)?(trussHeights?-28:-20):(trussHeights?-20:-8));
       if(view!=="plan"){
         for(const [i,z] of levelValues.entries()){
           const candidates=view==="cut"?roofSegments.flat().filter(p=>p[1]===z):roof.filter(p=>p.z===z).map(p=>projection(p));
@@ -336,7 +336,24 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   const sideElevation=expanded?book.add("ELEVACAO LATERAL","Elevação lateral"):elevations;
   const hasMeaningfulSection=distinct.length>=2&&faces.length>0;
   const crossSection=hasMeaningfulSection?(expanded?book.add("CORTE A-A","Corte transversal A-A"):elevations):null;
-  const framePages=data.frameGroups.map((group,i)=>book.add(`${group[0].kind} ${i+1}`,`${group[0].kind==="TESOURA"?"Tesoura":"Pórtico"} — tipo ${i+1} (${group.length}×)`));
+  // A frame drawn beside its identification table is limited to 69 % of the
+  // sheet. When the full width allows a LARGER scale (e.g. an 8 m truss at
+  // 1:25 instead of 1:50), the drawing takes the sheet and the table moves to
+  // the next sheet: dimension texts and member marks stop colliding.
+  const frameWide=data.frameGroups.map(group=>{
+    const f=group[0],h=f.axis==="y"?"x":"y",pts=f.pieces.flatMap(p=>[nodes.get(p.start)!,nodes.get(p.end)!]);
+    const span=Math.max(...pts.map(n=>n[h]))-Math.min(...pts.map(n=>n[h])),rise=Math.max(...pts.map(n=>n.z))-Math.min(...pts.map(n=>n.z));
+    const narrow=book.scale(span,rise,{x:0,y:0,width:a.width*.69-28,height:a.height-40});
+    const wide=book.scale(span,rise,{x:0,y:0,width:a.width-20,height:a.height-53});
+    // Only when the frame would be small (smaller than 1:25) and the full
+    // sheet at least doubles its size; otherwise keep drawing and table together.
+    return narrow>25&&wide*2<=narrow;
+  });
+  const framePages=data.frameGroups.map((group,i)=>{
+    const title=`${group[0].kind==="TESOURA"?"Tesoura":"Pórtico"} — tipo ${i+1} (${group.length}×)`;
+    const drawingPage=book.add(`${group[0].kind} ${i+1}`,title);
+    return {drawingPage,tablePage:frameWide[i]?book.add(`${group[0].kind} ${i+1} PECAS`,`${title} — identificação de peças`):drawingPage};
+  });
   const pendingFrame=!framePages.length?book.add("PORTICOS PENDENTE","Pórticos e tesouras — identificação pendente"):null;
   const bases=supports.length?book.add("BASES","Locação de bases e chumbadores"):null;
   const notes=book.add("NOTAS","Notas gerais");
@@ -364,7 +381,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   drawing(sideElevation,expanded?a:{x:a.x,y:a.y,width:half,height:smallHeight},"Elevação lateral","side",expanded?{...summaryOptions,pieces:model.pieces.filter(p=>(p.role==="column"||p.role==="purlin"||isDeclaredBrace(p))&&!unlocated.has(p.id))}:{});
   if(crossSection)drawing(crossSection,expanded?a:{x:a.x+half+gap,y:a.y,width:half,height:a.height},"Corte A-A","cut",{pieces:installed});
   for(const [index,group] of data.frameGroups.entries()){
-    const first=group[0],h=first.axis==="y"?"x":"y",page=framePages[index];
+    const first=group[0],h=first.axis==="y"?"x":"y",{drawingPage:page,tablePage}=framePages[index],wide=frameWide[index];
     const token=(frame:typeof first,p:CadPiece)=>{
       const min=Math.min(...frame.pieces.flatMap(p=>[nodes.get(p.start)![h],nodes.get(p.end)![h]])),u=nodes.get(p.start)!,v=nodes.get(p.end)!;
       return JSON.stringify([u[h]-min,u.z,v[h]-min,v.z,p.role,profile(p.id)]);
@@ -374,11 +391,13 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       const positions=f.pieces.flatMap(p=>[nodes.get(p.start)![h],nodes.get(p.end)![h]]);
       return `eixo ${f.axis==="y"?ys.indexOf(f.coordinate)+1:axisLetter(xs.indexOf(f.coordinate))}; ${f.axis.toUpperCase()}=${num(f.coordinate)}; ${h.toUpperCase()}=${num(Math.min(...positions))} a ${num(Math.max(...positions))} mm`;
     });
-    drawing(page,{...a,width:a.width*.69},first.kind==="TESOURA"?"Elevação da tesoura":"Elevação do pórtico",first.axis==="y"?"front":"side",{pieces:first.pieces,showRoof:false,frame:true,aliases,
-      subtitle:`${group.length}× — peças correspondentes indicadas na tabela de identificação.`});
-    book.table(page,{x:a.x+a.width*.70,y:a.y,width:a.width*.30,height:a.height},"Identificação de peças",["Marca","Perfil","Qtd.","Locação"],first.pieces.map(p=>{
-      const ids=aliases.get(p.id)??[p.id];return [[...new Set(ids.map(id=>marks.get(id)))].join(" / "),profile(p.id),String(ids.length),locations.join("; ")];
-    }),[0,.19,.55,.65,1]);
+    drawing(page,wide?a:{...a,width:a.width*.69},first.kind==="TESOURA"?"Elevação da tesoura":"Elevação do pórtico",first.axis==="y"?"front":"side",{pieces:first.pieces,showRoof:false,frame:true,aliases,
+      subtitle:`${group.length}× — peças correspondentes indicadas na tabela de identificação${wide?" (folha seguinte)":""}.`});
+    book.table(tablePage,wide?a:{x:a.x+a.width*.70,y:a.y,width:a.width*.30,height:a.height},"Identificação de peças",["Marca","Perfil","Qtd.","Compr. mm","Locação"],first.pieces.map(p=>{
+      const ids=aliases.get(p.id)??[p.id],u=nodes.get(p.start)!,v=nodes.get(p.end)!;
+      // Length between node axes, as in the materials list (not a cut length).
+      return [[...new Set(ids.map(id=>marks.get(id)))].join(" / "),profile(p.id),String(ids.length),num(Math.hypot(v.x-u.x,v.y-u.y,v.z-u.z)),locations.join("; ")];
+    }),wide?[0,.10,.32,.38,.48,1]:[0,.16,.46,.54,.66,1]);
   }
   if(pendingFrame)pendingFrame.draw.push(space=>book.wrapped(space,a,"PENDENTE: conjunto de pórtico ou tesoura não identificado em planos globais com conectividade declarada. Nenhuma peça, pilar ou vínculo foi inferido. As peças permanecem nas vistas gerais e na lista de materiais.",3,5,"PENDENCIAS"));
   const reactions=cadReactions(project,options.reactions),baseHeight=reactions.data?a.height*.53:a.height;
@@ -435,7 +454,13 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     "Responsável técnico, CREA e ART devem ser preenchidos pelo profissional responsável após conferência. Campos em branco não autorizam execução. Os bloqueios de aprovação estrutural e fabricação permanecem ativos.",
     ...(!supports.length?["PENDENTE: sem apoios declarados; prancha de bases omitida, sem inventar fundações ou chumbadores."]:[]),
     ...(distinct.length<2?["PENDENTE: sem espaçamentos/corte verificáveis; pranchas vazias omitidas."]:[]),
-    ...data.frames.flatMap(f=>f.visualOnlyContacts.map(c=>`PENDENTE: contato somente gráfico ${c} de ${f.kind}, tolerância de 7 mm, sem criar ligação estrutural.`)),
+    // One note per frame TYPE: identical frames repeat the same contacts and a
+    // line per contact buried the notes (36 lines for three equal trusses).
+    // Every contact pair stays listed, just grouped.
+    ...data.frameGroups.filter(g=>g.some(f=>f.visualOnlyContacts.length)).map((group,i)=>{
+      const contacts=group.flatMap(f=>f.visualOnlyContacts);
+      return `PENDENTE: ${contacts.length} contatos somente gráficos em ${group.length} ${group[0].kind==="TESOURA"?"tesoura(s)":"pórtico(s)"} do tipo ${i+1} (montantes/diagonais tocando banzo contínuo fora de nó declarado), tolerância de 7 mm, sem criar ligação estrutural: ${contacts.join("; ")}.`;
+    }),
     ...data.frames.flatMap(f=>f.omittedPieceIds.map(id=>`PENDENTE: ${id} do grupo ${f.kind} não entrou na elevação; conferir suas coordenadas.`)),
     ...roofSlopeReviews.filter(r=>r.status==="PENDENTE").map(r=>`PENDENTE — INCLINAÇÃO: ${r.pieceId}/${r.faceId}, subida ${num(r.modelRiseMm)} mm vs face ${num(r.expectedRiseMm)} mm; ${r.relation}.`),
     ...overallDimensionReviews.filter(r=>r.status==="PENDENTE").map(r=>`PENDENTE — COTA GERAL: eixo ${r.axis.toUpperCase()}, ${num(r.statedLengthMm)} mm declarados vs ${num(r.actualMm??0)} mm no contorno esquemático.`),
