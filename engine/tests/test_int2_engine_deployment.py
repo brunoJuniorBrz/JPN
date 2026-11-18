@@ -3,11 +3,17 @@ import json
 from .test_vercel_mixed_http import ROOT, call, http
 
 
-def test_engine_git_deploys_main_and_int2_previews():
+def test_engine_git_deploys_are_blocked_without_disabling_http_service():
+    # Política explícita solicitada: deploy automático bloqueado em todas as
+    # branches, inclusive main e as previews do INT-2. Deploy manual permanece.
     config = json.loads((ROOT/"vercel.json").read_text(encoding="utf-8"))
     assert config["git"]["deploymentEnabled"] == {
-        "**": False, "main": True, "codex/int-2-*": True,
+        "**": False,
+        "main": False,
+        "codex/int-2-*": False,
+        "integration/jpn-general-candidate": False,
     }
+    # O endpoint e suas proteções HTTP continuam no serviço publicado.
     assert list(config["functions"]) == ["app.py"]
 
 
