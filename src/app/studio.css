@@ -246,3 +246,60 @@
   .main-content:has(.project-studio) .page-heading .muted { margin-top: 2px; font-size: var(--text-sm); }
   .main-content:has(.project-studio) .example-banner { margin: 0 0 var(--space-3); padding: 8px 12px; font-size: var(--text-sm); }
 }
+
+/* Auditoria F1–F6: garantir que o visualizador fique acima das ferramentas e caiba no celular.
+   O selo de bloqueio e o aviso de segurança continuam permanentemente visíveis. */
+.studio-viewport-body .declared-studio-view .structure-3d {
+  min-height: 300px;
+  height: max(300px, calc(100cqh - 195px));
+}
+.studio-viewport-body .declared-studio-view .presentation-viewport { display: flex; flex-direction: column; }
+.studio-viewport-body .declared-studio-view .studio-camera {
+  position: static; order: -1; display: flex; flex-wrap: wrap; justify-content: flex-end;
+  gap: 6px; margin: 6px 0;
+}
+.declared-studio-view > .actions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.declared-studio-view > .field-hint { margin: 4px 0 8px; font-size: var(--text-xs); }
+.studio-selection-card header small { color: var(--color-muted); font-weight: var(--weight-regular); }
+@media (max-width: 599.98px) {
+  .main-content:has(.project-studio) { padding-left: 10px; padding-right: 10px; }
+  .main-content:has(.project-studio) .project-mode { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-bottom: 8px; }
+  .main-content:has(.project-studio) .project-mode button {
+    min-width: 0; min-height: 42px; padding: 6px; font-size: 13px; line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .main-content:has(.project-studio) .back-link { margin: 2px 0 6px; font-size: 12px; }
+  .main-content:has(.project-studio) .page-heading { margin: 0 0 8px; gap: 6px; }
+  .main-content:has(.project-studio) .page-heading h1 { font-size: clamp(19px, 5.6vw, 23px); line-height: 1.18; letter-spacing: -.3px; }
+  .main-content:has(.project-studio) .example-banner {
+    margin: 0 0 8px; padding: 7px 9px; font-size: 11px; line-height: 1.3;
+  }
+  .studio-header-actions { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; gap: 5px; }
+  .studio-header-actions button { min-height: 36px; padding: 5px 7px; font-size: 11px; white-space: nowrap; }
+  .studio-header-actions svg { width: 14px; height: 14px; }
+  .studio-tour-new { display: none; }
+  .project-studio { gap: 8px; }
+  /* Etapas mantêm a navegação fixa; a lista de ferramentas aparece junto da etapa Análise. */
+  .studio-rail { order: 2; }
+  .project-studio:has(.studio-tools) .studio-rail { order: 0; }
+  .studio-viewport { order: 0; height: clamp(415px, 64dvh, 620px); }
+  .studio-inspector { order: 1; }
+  .studio-status { order: 3; }
+  .studio-viewport-body { padding: 7px; }
+  .studio-viewport-body .result-model-panel .structure-3d,
+  .studio-viewport-body .declared-studio-view .structure-3d {
+    min-height: 285px; height: max(285px, calc(100cqh - 155px));
+  }
+  .studio-viewport-body .declared-studio-view .structure-viewer { min-width: 0; }
+  .studio-results { padding: 5px 7px; }
+  .studio-viewport .viewer-shortcut { padding: 6px 7px; }
+  .studio-viewport .viewer-shortcut .button { min-height: 34px; padding: 4px 7px; font-size: 12px; }
+  .studio-inspector-title { padding: 10px 10px 0; font-size: 16px; }
+  .studio-inspector .workflow-content { padding: 10px; }
+  .studio-inspector .workflow-progress { padding: 6px 10px 8px; }
+  .studio-status { padding: 4px 6px; gap: 2px 6px; }
+  .studio-status .result-permanent-warning { padding: 2px 4px; font-size: 11px; line-height: 1.3; }
+  .studio-status .result-metrics > div, .studio-live-totals > span { padding: 2px 6px; }
+  .studio-status .result-metrics strong, .studio-live-totals strong { font-size: 13px; }
+  .studio-analysis-state .ui-button { min-height: 32px; }
+}
