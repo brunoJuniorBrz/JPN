@@ -20,14 +20,16 @@ jobs:
       - name: Typecheck
         run: npx --yes pnpm@12.15.0 typecheck
       - name: Real native export of Tom and regular/irregular regressions
-        run: npx --yes pnpm@12.15.0 exec vitest run src/lib/exports/tom-cad-regression.test.ts src/lib/exports/complete-package.test.ts --reporter=verbose
+        run: npx --yes pnpm@12.15.0 exec vitest run src/lib/exports/tom-cad-regression.test.ts src/lib/exports/tom-8x10-cad.test.ts src/lib/exports/complete-package.test.ts --reporter=verbose
       - name: Install PDF/DXF audit dependencies
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y poppler-utils
           python -m pip install --quiet ezdxf PyMuPDF Pillow
       - name: PDF/DXF visual metrics, clipping and line crossing audit
-        run: python tests/verify_tom_cad_visual.py
+        run: |
+          python tests/verify_tom_cad_visual.py
+          python tests/verify_tom_cad_visual.py .tools/complete-package/tom-8x10
       - name: Recover historical pre-correction CAD package for before pictures
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -44,11 +46,15 @@ jobs:
           if test -f .tools/complete-package/tom/pranchas/pranchas.pdf; then
             pdftoppm -png -r 150 .tools/complete-package/tom/pranchas/pranchas.pdf .tools/complete-package/tom/prancha
           fi
+          if test -f .tools/complete-package/tom-8x10/pranchas/pranchas.pdf; then
+            pdftoppm -png -r 150 .tools/complete-package/tom-8x10/pranchas/pranchas.pdf .tools/complete-package/tom-8x10/prancha
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: tom-pr141-cad-qa-evidence
           path: |
             .tools/complete-package/tom
+            .tools/complete-package/tom-8x10
             .tools/complete-package/antes
             test-results

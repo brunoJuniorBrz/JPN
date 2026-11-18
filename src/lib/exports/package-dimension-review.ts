@@ -62,9 +62,16 @@ export function reviewRoofSlope(project:Project){
     // A chord under the interior of a face supports it just as much as one on
     // its edge; both ends must project on (or inside) the same face outline.
     const covers=(p:{x:number;y:number},outer:[number,number,number][])=>nearEdge(p,outer)||inside(p,outer);
-    const related=faces.filter(f=>f.supportPieceIds.includes(piece.id)||
-      (covers(a,f.outer)&&covers(b,f.outer)));
-    if(!related.length)return [];
+    // Prefer explicitly declared face association. Never take the first face
+    // just because array order happens to put it before a different roof face.
+    const explicit=faces.filter(f=>f.supportPieceIds.includes(piece.id));
+    const mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+    const geometric=faces.filter(f=>covers(a,f.outer)&&covers(b,f.outer)&&covers(mid,f.outer));
+    const related=explicit.length?explicit:geometric;
+    // Several eligible faces (a shared ridge or overlapping roof polygons)
+    // have no unambiguous slope. Do not invent an association or flag a false
+    // mismatch; a connection/face assignment remains to be declared.
+    if(related.length!==1)return [];
     const face=related[0],g=gradient(face.outer);
     if(!g)return [];
     const expectedRiseMm=g.gx*(b.x-a.x)+g.gy*(b.y-a.y),modelRiseMm=b.z-a.z,
