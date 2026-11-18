@@ -40,10 +40,10 @@ export function DeclaredViewport({ project, declared: { model, review }, selecte
       <button type="button" className={view === "lines" ? "button" : "button secondary"} aria-pressed={view === "lines"} onClick={() => setView("lines")}>Vista simples 2D</button>
     </div>
     {view === "3d" ? <>
-      <p className="field-hint">Barras e nós declarados em 3D. Sem inferência de perfis, ligações ou apoios; dados faltantes continuam pendentes.</p>
+      <p className="field-hint">Barras e nós declarados em 3D. {project.workspace.trussEditor ? "Muros, calhas, telhas e chapas são representações arquitetônicas esquemáticas, sem capacidade resistente verificada." : "Sem inferência de perfis, ligações ou apoios; dados faltantes continuam pendentes."}</p>
       <Structure3D model={visualModel} roof={project.roof} planning={project.planning} projectName={project.name}
         selected={piece} onSelect={setPiece} selectedNodeId={node} onSelectNode={setNode} inspectNodes
-        orientationCube labels={labels} analysisColors={analysisColors} deformed={deformed} onApi={onApi} onHover={onHover} allowPresentation={false} />
+        orientationCube labels={labels} analysisColors={analysisColors} deformed={deformed} onApi={onApi} onHover={onHover} allowPresentation={false} siteContext={project.workspace.trussEditor} />
     </> : <PhysicalLineView model={model} selected={piece} onSelect={setPiece} selectedNodeId={node} onSelectNode={setNode} analysisColors={analysisColors} />}
   </section>;
 }
