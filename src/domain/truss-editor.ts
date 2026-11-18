@@ -107,22 +107,28 @@ export function trussIssues(t: TrussEditor): TrussIssue[] {
   if (panels.some(p => p < 50)) out.push({ level: "erro", message: "Há montantes a menos de 5 cm um do outro." });
   if (Math.max(...panels) > t.stockMm) out.push({ level: "erro", message: "Há painel maior que a barra comercial." });
   if (t.chordSpliceMm + 20 > t.stockMm) out.push({ level: "erro", message: "A emenda do banzo precisa caber numa barra (com acabamento das pontas)." });
-  const off = purlinPositions(t).filter(p => !p.onNode);
-  if (off.length) out.push({ level: "aviso", message: `${off.length} terça(s) fora de nó da tesoura: ${off.map(p => (p.sMm / 10).toFixed(1)).join(", ")} cm a partir da ponta.` });
+  const purlins = purlinPositions(t);
+  if (purlins.length !== t.purlinLines)
+    out.push({ level: "erro", message: "Número de linhas de terça não cabe no vão com o passo informado." });
+  if (new Set(purlins.map(p => p.sMm)).size !== purlins.length)
+    out.push({ level: "erro", message: "Duas linhas de terça recaem no mesmo nó; reduza o passo ou altere os montantes." });
+  const shifted = purlins.filter(p => Math.abs(p.shiftMm) > 10);
+  if (shifted.length) out.push({ level: "aviso", message: `${shifted.length} posição(ões) de terça originalmente fora de nó foram encaixadas nos montantes mais próximos: ${shifted.map(p => `${(p.requestedMm / 10).toFixed(1)} → ${(p.sMm / 10).toFixed(1)} cm`).join(", ")}. Confira os espaçamentos.` });
   const step = t.purlinStepMm * Math.hypot(1, fallPercent(t) / 100);
   if (step > 2500) out.push({ level: "aviso", message: `Terças a ${(step / 1000).toFixed(2)} m na inclinação: confira o vão máximo da telha.` });
   out.push({ level: "aviso", message: "Perfis, emendas e ligações sem verificação estrutural: conferência por engenheiro antes de fabricar." });
   return out;
 }
 
-/** Terças: a partir do lado alto a cada passo, a última na ponta; presas ao nó mais próximo (até 10 mm). */
+/** Terças: passo desejado desde o lado alto; geometria final sempre em nó declarado.
+ * O deslocamento fica explícito no aviso e não declara a ligação estrutural. */
 export function purlinPositions(t: TrussEditor) {
   const L = trussLengthMm(t), st = stations(t);
   const targets = [...new Set([...Array.from({ length: t.purlinLines - 1 }, (_, r) => L - r * t.purlinStepMm), 0])]
     .filter(s => s >= -1e-6).sort((a, b) => a - b);
   return targets.map(s => {
     const near = st.reduce((b, x) => Math.abs(x - s) < Math.abs(b - s) ? x : b, st[0]);
-    return Math.abs(near - s) <= 10 ? { sMm: near, onNode: true } : { sMm: s, onNode: false };
+    return { sMm: near, onNode: true, requestedMm: s, shiftMm: near - s };
   });
 }
 

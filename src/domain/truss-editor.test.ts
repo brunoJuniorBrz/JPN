@@ -54,6 +54,34 @@ describe("editor de tesoura por estações", () => {
     expect(() => applyTrussToProject(newProject(), { ...t, highHeightMm: 50 })).toThrow();
   });
 
+  it("painel de 60 cm mantém terças nos nós e quantidade comercial do editor", () => {
+    const t = { ...tomTrussDefaults(), panelMm: 600 };
+    const purlins = purlinPositions(t), nodes = stations(t);
+    expect(purlins).toHaveLength(t.purlinLines);
+    expect(purlins.every(p => p.onNode && nodes.includes(p.sMm))).toBe(true);
+    expect(purlins.some(p => Math.abs(p.shiftMm) > 10)).toBe(true);
+    expect(trussIssues(t).some(i => i.message.includes("fora de nó"))).toBe(true);
+    const summary = trussSummary(t);
+    expect(summary.bars.web).toBe(8);
+    expect(summary.bars.webFullHeight).toBe(13);
+    const project = applyTrussToProject(newProject(), { ...t, fullHeightBudget: true });
+    expect(project.workspace.physicalStructure!.pieces.filter(p => p.role === "purlin"))
+      .toHaveLength((t.trusses - 1) * t.purlinLines);
+  });
+
+  it("não aplica linhas de terça duplicadas ou que não cabem no vão", () => {
+    const t = { ...tomTrussDefaults(), purlinStepMm: 6000 };
+    expect(trussIssues(t).some(i => i.level === "erro")).toBe(true);
+    expect(() => applyTrussToProject(newProject(), t)).toThrow();
+  });
+
+  it("mantém workspace legado sem campo trussEditor", async () => {
+    const { emptyWorkspace, workspaceSchema } = await import("./workspace");
+    const old = emptyWorkspace();
+    expect("trussEditor" in old).toBe(false);
+    expect(workspaceSchema.parse(old)).toEqual(old);
+  });
+
   it("orçamento: medida cheia e itens sem preço", () => {
     const t = tomTrussDefaults(), real = trussSummary(t), full = trussSummary({ ...t, fullHeightBudget: true });
     expect(full.lines[1].qty).toBe("14 barras");

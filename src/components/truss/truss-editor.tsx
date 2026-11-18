@@ -28,7 +28,7 @@ function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null;
     {pieces.filter(p => p.kind === "D").map(p => <line key={p.id} x1={X(p.a[0])} y1={Y(p.a[1])} x2={X(p.b[0])} y2={Y(p.b[1])} className={styles.web} />)}
     {pieces.filter(p => p.kind === "BI" || p.kind === "BS").map(p => <line key={p.id} x1={X(p.a[0])} y1={Y(p.a[1])} x2={X(p.b[0])} y2={Y(p.b[1])} className={styles.chord} />)}
     {pieces.filter(p => p.kind === "BI" || p.kind === "BS").filter(p => p.id.endsWith("-A") && p.b[0] < L - 1).map(p => <circle key={`e${p.id}`} cx={X(p.b[0])} cy={Y(p.b[1])} r={5} className={styles.splice}><title>Emenda do banzo</title></circle>)}
-    {st.map((s, i) => <g key={s} onClick={() => onSelect(i)} className={selected === i ? styles.selected : styles.post} role="button" aria-label={`Montante ${i + 1}, ${cm(s)} cm da ponta`}>
+    {st.map((s, i) => <g key={s} onClick={() => onSelect(i)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(i); } }} tabIndex={0} className={selected === i ? styles.selected : styles.post} role="button" aria-label={`Montante ${i + 1}, ${cm(s)} cm da ponta`}>
       <line x1={X(s)} y1={Y(0)} x2={X(s)} y2={Y(st.length && t.tipHeightMm + (t.highHeightMm - t.tipHeightMm) * s / L)} />
       <rect x={X(s) - 9} y={Y(t.highHeightMm) - 10} width={18} height={Y(0) - Y(t.highHeightMm) + 20} fill="transparent" stroke="none" />
     </g>)}
