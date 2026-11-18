@@ -70,6 +70,10 @@ export const trussEditorSchema = z.object({
   purlinLines: z.number().int().min(2).max(60),
   purlinStepMm: mm.min(300).max(6000),
   chordSpliceMm: mm.min(500).max(12000),
+  /** Duas águas: banzo inferior contínuo de beiral a beiral (emendas a cada chordSpliceMm) ou dividido
+   * na cumeeira (duas metades, cada uma com a sua emenda). Questão de fabricação em aberto: o padrão
+   * contínuo compra menos barras, mas a decisão é do construtor/engenheiro. Uma água: sem efeito. */
+  bottomChord: z.enum(["continuous", "split"]).default("continuous"),
   stockMm: mm.min(1000).max(14000),
   chord: profileSchema,
   web: profileSchema,
@@ -93,7 +97,7 @@ export function tomTrussDefaults(): TrussEditor {
     walls: { lowMm: 3000, highMm: 3800, thicknessMm: 150 }, supportZMm: 3000,
     anchor: { plateWidthMm: 150, plateHeightMm: 200, boltsPerSupport: 2, boltLengthMm: 1000, platePriceCents: null, boltPriceCents: null },
     tipHeightMm: 75, highHeightMm: 800, panelMm: 500, countFrom: "high", diagonal: "to-high",
-    stationsMm: null, flippedPanels: [], purlinLines: 6, purlinStepMm: 1500, chordSpliceMm: 5980, stockMm: 6000,
+    stationsMm: null, flippedPanels: [], purlinLines: 6, purlinStepMm: 1500, chordSpliceMm: 5980, bottomChord: "continuous", stockMm: 6000,
     chord: { designation: "U 100x40x2.65 mm", kgPerM: 3.54, barPriceCents: null, extraBars: 0 },
     web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: null, extraBars: 0 },
     purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: null, extraBars: 0 },
@@ -104,8 +108,11 @@ export function tomTrussDefaults(): TrussEditor {
 
 /** Obra nova: modelo genérico para digitar por cima (sem preços). */
 export function blankTruss(): TrussEditor {
-  const b = tomTrussDefaults();
-  return { ...b, spanMm: 6000, lengthMm: 8000, trusses: 3, highHeightMm: Math.round(75 + (6000 - 750) * 0.1), stationsMm: null, flippedPanels: [],
+  const b = tomTrussDefaults(), spanMm = 6000;
+  // O passo das terças precisa caber no semivão novo (6 linhas a cada 1,50 m não cabem em ~5,2 m).
+  const run = spanMm - b.gutter.supportMm - b.gutter.widthMm - b.gutter.clearanceMm;
+  const purlinStepMm = Math.max(300, Math.min(b.purlinStepMm, Math.floor(run / (b.purlinLines - 1) / 10) * 10));
+  return { ...b, spanMm, lengthMm: 8000, trusses: 3, highHeightMm: Math.round(75 + (spanMm - 750) * 0.1), purlinStepMm, stationsMm: null, flippedPanels: [],
     chord: { ...b.chord, barPriceCents: null }, web: { ...b.web, barPriceCents: null }, purlin: { ...b.purlin, barPriceCents: null },
     sheet: { ...b.sheet, pricePerMCents: null }, laborPerM2Cents: null, consumablesCents: null, screwPriceCents: null };
 }
@@ -206,13 +213,22 @@ export function trussPiecesComplete(t: TrussEditor): TrussPiece[] {
   const left = trussPieces(t);
   if (t.roofKind !== "two-slopes") return left;
   const L = trussLengthMm(t);
-  const leftParts = left.map(p => ({ ...p, id: `E-${p.id}`, mark: `E-${p.mark}` }));
-  const rightParts = left
+  const continuous = t.bottomChord !== "split";
+  const mirrored = continuous ? left.filter(p => p.kind !== "BI") : left;
+  const leftParts = mirrored.map(p => ({ ...p, id: `E-${p.id}`, mark: `E-${p.mark}` }));
+  const rightParts = mirrored
     .filter(p => !(p.kind === "M" && Math.abs(p.a[0] - L) < 1e-6))
     .map(p => ({ ...p, id: `D-${p.id}`, mark: `D-${p.mark}`,
       a: [2 * L - p.a[0], p.a[1]] as [number, number],
       b: [2 * L - p.b[0], p.b[1]] as [number, number] }));
-  return [...leftParts, ...rightParts];
+  if (!continuous) return [...leftParts, ...rightParts];
+  // Banzo inferior contínuo de ponta a ponta, com emendas a cada chordSpliceMm (a última peça fica com a sobra).
+  const chord: TrussPiece[] = [];
+  for (let s = 0, i = 0; s < 2 * L - 1e-6; s += t.chordSpliceMm, i++) {
+    const e = Math.min(2 * L, s + t.chordSpliceMm), letter = String.fromCharCode(65 + i);
+    chord.push({ id: `BI-${letter}`, mark: `BI${i + 1}`, kind: "BI", lengthMm: e - s, a: [s, 0], b: [e, 0] });
+  }
+  return [...chord, ...leftParts, ...rightParts];
 }
 /** Linhas globais de terça; o elemento de cumeeira é compartilhado e aparece uma única vez. */
 export function roofPurlinPositions(t: TrussEditor) {
