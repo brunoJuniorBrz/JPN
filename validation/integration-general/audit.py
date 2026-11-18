@@ -71,7 +71,9 @@ REVIEWED_AMENDMENTS = {
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/loaded-mixed.spec.ts": "1ba5e3a0f1bfdadda560ed862e7e3c4e05b5393c",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
-    "tests/e2e/integration-generated.spec.ts": "02be09e163f00ea74cfd714d89bc9d4bb6c3183f",
+    # UI F1 (owner-authorized test change, review in the UI PR): the old "4 Resultado" step button became the
+    # Materiais studio step via the openResultTab helper; solver, binding and blocking checks unchanged (was 02be09e).
+    "tests/e2e/integration-generated.spec.ts": "cd703922ab820690c1cc57eba21736ebcbffe407",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/integration-declared.spec.ts": "c716931c89b85bfbf6fa5c41a998d17a634bd184",   # INT-1f: now picks the simple view (supersedes 232a7db, INT-1a)
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
@@ -93,6 +95,17 @@ REVIEWED_AMENDMENTS = {
     # edition literals and the speed-data SHA assertion updated, no numerical expectation changed.
     "src/domain/normative-origin.test.ts": "80a2d9c9ee73462acebc9d17711d845124e66ced",
     "src/domain/wind-speed.test.ts": "e5cf65b5ac01975374c50803a7c96b1eb3d0f65e",
+    # UI F1 (docs/ui/PLANO-UI.md, test changes authorized by the project owner; review in the UI PR):
+    # the project screen became a studio. Result tabs / "Ferramenta de engenharia" select became
+    # steps and an analysis-tools nav; navigation-only edits, no warning/blocking check removed.
+    "tests/e2e/result-tabs.ts": "2a2444028ccf3ab9911fa98d1eb5d4d3ec2da5ee",              # helpers map old tabs/select to studio steps/tools
+    "tests/e2e/planning.spec.ts": "db23a7a0af199f21d15c20e567ada7006fa4928d",            # "Resultado"/"Ir para resultado" -> Materiais; pendências em Verificação
+    "tests/e2e/platform.spec.ts": "92a90f3a0c8c9ff15dace977691469f72d5332f9",            # "Resultado" -> Materiais
+    "tests/e2e/profiles-3d.spec.ts": "7d4c531ca63be452e18caa7e9045c5f1ddb75c43",         # "Resultado" -> Materiais
+    "tests/e2e/result-workspace.spec.ts": "bfce4a587b4bfb624b028209af74585527f2ae0c",    # 3D stays visible across steps; keyboard on the steps list
+    "tests/e2e/spatial-coordination.spec.ts": "fc586e16e91730d4461c261b27a98b535dec5655",# "Resultado" -> Materiais
+    "tests/e2e/spatial-preparation.spec.ts": "82482409d92f1c7a5249f1783ec9eb5059f9dd75", # "Resultado" -> Materiais
+    "tests/e2e/ux-actions.spec.ts": "acfe1ce55ee5e6208b904120ad7edc594d26bc21",          # tab "Modelo 3D" -> viewport region; pendências em Verificação
 }
 
 TREES = {}
