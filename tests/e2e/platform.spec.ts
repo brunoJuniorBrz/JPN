@@ -37,7 +37,7 @@ for (const width of [320, 375, 768, 1440]) test(`pré-projeto, corte, revisão, 
   await page.getByRole("navigation", { name: "Etapas do levantamento" }).getByRole("button", { name: "Estrutura" }).click();
   await page.getByLabel("Tipologia da cobertura").selectOption("gable");
   await page.getByLabel("Balanço longitudinal na frente (m)").fill("0,5");
-  await page.getByRole("navigation", { name: "Etapas do levantamento" }).getByRole("button", { name: "Resultado" }).click();
+  await page.getByRole("navigation", { name: "Etapas do levantamento" }).getByRole("button", { name: /^Materiais/ }).click();
   await expect(page.getByTestId("takeoff-totals")).toContainText("130");
   await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
   await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();

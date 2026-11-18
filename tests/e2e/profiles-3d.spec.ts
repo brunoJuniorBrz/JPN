@@ -95,7 +95,7 @@ test("cadastro geométrico incompleto avisa e persiste dimensões sem inferir pr
   await detail.getByLabel("Aba X externa 3D (mm)").fill("100"); await detail.getByLabel("Aba Y externa 3D (mm)").fill("80");
   await detail.getByLabel("Espessura uniforme 3D (mm)").fill("6"); await detail.getByLabel("Giro axial visual (graus)").fill("90");
   await expect(detail).toContainText("Seção ideal completa");
-  await page.getByRole("navigation", { name: "Etapas do levantamento" }).getByRole("button", { name: "Resultado" }).click();
+  await page.getByRole("navigation", { name: "Etapas do levantamento" }).getByRole("button", { name: /^Materiais/ }).click();
   await page.getByRole("button", { name: "Salvar levantamento", exact: true }).click(); await page.reload();
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!).projects[0].planning.profiles.column);
   expect(stored.visualSection).toEqual({ family: "angle", legXmm: 100, legYmm: 80, rollDeg: 90 });

@@ -1,0 +1,66 @@
+/* Tema escuro (F6). Os tokens mudam aqui; superfícies antigas com cor fixa recebem sobrescritas pontuais.
+   O 3D (canvas WebGL) e os desenhos técnicos mantêm o fundo claro para leitura de cores de resultado. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #151714; --color-surface: #1d201c; --color-surface-muted: #232722; --color-surface-hover: #2a2e28;
+  --color-ink: #e8ebe4; --color-muted: #a7ae9f; --color-subtle: #868d80;
+  --color-line: #33382f; --color-line-strong: #434a3e;
+  --color-accent: #c9ae6a; --color-accent-strong: #e2c98a; --color-accent-soft: #3a3322;
+  --color-dark: #e8ebe4; --color-dark-hover: #cdd2c6; --color-on-dark: #151714;
+  --color-success: #9fbf8f; --color-success-soft: #22301f;
+  --color-warning: #e5c785; --color-warning-soft: #352d1a; --color-warning-line: #5a4b28;
+  --color-danger: #f0978b; --color-danger-strong: #f5ada3; --color-danger-soft: #3a1f1c; --color-danger-line: #6a342e;
+  --shadow-sm: 0 1px 2px #0006; --shadow-md: 0 8px 24px #0008; --shadow-lg: 0 18px 48px #000a;
+}
+
+/* Casca do app */
+[data-theme="dark"] .topbar { background: #1a1d19e6; border-color: var(--color-line); }
+[data-theme="dark"] .sidebar, [data-theme="dark"] .mobile-nav { background: var(--color-surface); border-color: var(--color-line); }
+[data-theme="dark"] .nav-item { color: var(--color-muted); }
+[data-theme="dark"] .nav-item.active { background: var(--color-accent-soft); color: var(--color-accent-strong); }
+[data-theme="dark"] .workspace-note { background: var(--color-surface-muted); border-color: var(--color-line); }
+[data-theme="dark"] .workspace-note p, [data-theme="dark"] .version, [data-theme="dark"] .brand-caption, [data-theme="dark"] .nav-caption { color: var(--color-subtle); }
+[data-theme="dark"] .skip-link { background: var(--color-surface); }
+
+/* Superfícies e formulários antigos */
+[data-theme="dark"] .panel, [data-theme="dark"] .stat-card, [data-theme="dark"] .filter-bar, [data-theme="dark"] .project-card,
+[data-theme="dark"] .roadmap-card, [data-theme="dark"] .proposal-delivery, [data-theme="dark"] .technical-review,
+[data-theme="dark"] .pending-box, [data-theme="dark"] .spatial-jump, [data-theme="dark"] .demo-entry-card { background: var(--color-surface); border-color: var(--color-line); color: var(--color-ink); }
+[data-theme="dark"] .input { background: var(--color-surface-muted); border-color: var(--color-line-strong); color: var(--color-ink); }
+[data-theme="dark"] .input::placeholder { color: var(--color-subtle); }
+[data-theme="dark"] .button { background: var(--color-dark); border-color: var(--color-dark); color: var(--color-on-dark); }
+[data-theme="dark"] .button:hover { background: var(--color-dark-hover); }
+[data-theme="dark"] .button.secondary, [data-theme="dark"] .project-mode button { background: var(--color-surface); border-color: var(--color-line-strong); color: var(--color-ink); }
+[data-theme="dark"] .button.secondary:hover { background: var(--color-surface-hover); }
+[data-theme="dark"] .project-mode button.selected { background: var(--color-dark); color: var(--color-on-dark); }
+[data-theme="dark"] .notice, [data-theme="dark"] .alert, [data-theme="dark"] .example-banner { background: var(--color-warning-soft); border-color: var(--color-warning-line); color: var(--color-warning); }
+[data-theme="dark"] .error-alert { background: var(--color-danger-soft); border-color: var(--color-danger-line); color: var(--color-danger-strong); }
+[data-theme="dark"] .empty-state { background: #ffffff08; border-color: var(--color-line-strong); }
+[data-theme="dark"] .empty-icon { background: var(--color-surface-muted); color: var(--color-muted); }
+[data-theme="dark"] .takeoff-table th, [data-theme="dark"] .takeoff-table td { border-color: var(--color-line); }
+[data-theme="dark"] .takeoff-table thead th { background: var(--color-surface-muted); color: var(--color-ink); }
+[data-theme="dark"] .workflow-progress { background: transparent; color: var(--color-accent-strong); }
+[data-theme="dark"] .workflow-steps button { color: var(--color-muted); }
+[data-theme="dark"] details > summary { color: var(--color-ink); }
+[data-theme="dark"] .page-footer { color: var(--color-subtle); border-color: var(--color-line); }
+
+/* Estúdio */
+[data-theme="dark"] .studio-step { color: var(--color-muted); }
+[data-theme="dark"] .studio-step.current { color: var(--color-accent-strong); }
+[data-theme="dark"] .studio-step.current .studio-step-index { background: var(--color-accent); border-color: var(--color-accent); color: #151714; }
+[data-theme="dark"] .studio-status, [data-theme="dark"] .studio-steps { background: #1d201cf2; }
+[data-theme="dark"] .result-permanent-warning { background: var(--color-warning-soft); border-color: var(--color-warning-line); color: var(--color-warning); }
+[data-theme="dark"] .result-metrics > div, [data-theme="dark"] .studio-live-totals > span { background: var(--color-success-soft); border-color: #33452e; }
+[data-theme="dark"] .result-metrics span, [data-theme="dark"] .studio-live-totals small { color: var(--color-success); }
+[data-theme="dark"] .result-metrics strong, [data-theme="dark"] .studio-live-totals strong { color: var(--color-ink); }
+[data-theme="dark"] .studio-analysis-chip--running { background: #1b2a38; border-color: #2f4a63; color: #9cc3e6; }
+[data-theme="dark"] .viewer-shortcut { background: var(--color-surface-muted); border-color: var(--color-line); }
+[data-theme="dark"] .view-switch { background: var(--color-surface-muted); }
+[data-theme="dark"] .view-switch button { color: var(--color-muted); }
+[data-theme="dark"] .view-switch button.selected { background: var(--color-dark); color: var(--color-on-dark); }
+[data-theme="dark"] .studio-support { background: var(--color-surface); }
+/* Desenhos técnicos e 3D continuam claros: cores de camada e cotas foram calibradas para fundo claro. */
+[data-theme="dark"] .roof-svg, [data-theme="dark"] .physical-line-svg { background: #f6f8f2; }
+[data-theme="dark"] .ui-tooltip { background: #e8ebe4; color: #151714; }
+[data-theme="dark"] .ui-tooltip-arrow { fill: #e8ebe4; }
+.topbar-actions { display: inline-flex; align-items: center; gap: var(--space-2); flex-shrink: 0; }

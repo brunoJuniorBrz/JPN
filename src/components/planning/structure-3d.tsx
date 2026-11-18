@@ -2,6 +2,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { ViewHelper } from "three/addons/helpers/ViewHelper.js";
+import { CSS2DObject, CSS2DRenderer } from "three/addons/renderers/CSS2DRenderer.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
+import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+/** Rótulo HTML preso a um nó ou ao meio de uma peça (F3). Só visual; a informação também existe em texto no estúdio. */
+/** Ações visuais expostas ao estúdio (menu de contexto e Ctrl+K). Nada é persistido. */
+export type Viewer3DApi = { isolate: (pieceId: string) => void; hideRole: (role: PieceRole) => void; showAll: () => void; measureFrom: (nodeId: string) => void; focus: (pieceId: string) => void; reset: () => void; pickAt: (clientX: number, clientY: number) => string | null };
+export type Viewer3DLabel ={ key: string; nodeId?: string; pieceId?: string; text: string; tone?: "neutral" | "ok" | "warn" | "danger" };
 import { roles, roleLabels, type PieceRole, type StructureModel, type Planning } from "@/domain/structure";
 import type { RoofParameters } from "@/domain/project-details";
 import { initialPresentationOptions, presentationEnvelope, type PresentationOptions, type WallLayout, type RoofColor, type RoofFinish } from "./presentation-scene";
@@ -16,12 +28,17 @@ import { sectionAxes, sectionAxisLabels, sectionPlane, steelFinishes, steelFinis
 const TRANSITION_MS = 420;
 const metres = (mm: number, digits = 3) => (mm / 1000).toLocaleString("pt-BR", { maximumFractionDigits: digits });
 
-export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
+export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false, orientationCube=false, labels, onApi, onHover, allowPresentation=true }: { orientationCube?: boolean; labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; onHover?: (id: string) => void; allowPresentation?: boolean; model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
   const selectNode=useRef(onSelectNode),nodePicking=useRef(inspectNodes),nodeTools=useRef<(enabled:boolean,id:string,measurementActive?:boolean,ids?:readonly string[])=>void>(()=>{});
   useEffect(()=>{selectNode.current=onSelectNode;},[onSelectNode]);
+  const hover=useRef(onHover), pickAt=useRef<(x: number, y: number) => string | null>(() => null);
+  useEffect(() => { hover.current = onHover; }, [onHover]);
+  // F3: cubo de orientação e rótulos 2D sobre o modelo (opcionais; só o estúdio liga).
+  const orientationRef = useRef(orientationCube), applyLabels = useRef<(labels: Viewer3DLabel[]) => void>(() => {});
+  useEffect(() => { orientationRef.current = orientationCube; }, [orientationCube]);
   const [measuring, setMeasuring] = useState(false);
   const [measurementSelection, setMeasurementSelection] = useState<{model:StructureModel;ids:string[]}>({model,ids:[]});
   const measuredNodes = useMemo(() => measurementSelection.model === model ? measurementSelection.ids : [], [measurementSelection, model]);
@@ -37,7 +54,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const optionsRef = useRef(presentationOptions);
   const applyOptions = useRef<(options:PresentationOptions)=>void>(()=>{});
   const capture = useRef<()=>void>(()=>{});
-  const envelope = useMemo(() => presentationEnvelope(roof, planning), [roof, planning]);
+  const envelope = useMemo(() => allowPresentation ? presentationEnvelope(roof, planning) : null, [roof, planning, allowPresentation]);
   const dimensions = envelope ? dimensionLabels(presentationDimensions(envelope)) : [];
   const [expanded, setExpanded] = useState(false);
   const [visibleRoles, setVisibleRoles] = useState<PieceRole[]>([...roles]);
@@ -54,6 +71,20 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const focus = useRef<(id: string) => void>(() => {});
   const colorize = useRef<(colors?: Record<string, number>) => void>(() => {});
   const showDeformed = useRef<(segments: { a: [number, number, number]; b: [number, number, number] }[] | null) => void>(() => {});
+  // F5: ações do menu de contexto do estúdio. Usam os mesmos estados dos botões de ferramentas (só visuais).
+  useEffect(() => {
+    if (!onApi) return;
+    onApi({
+      isolate: id => { onSelect(id); setVisibleRoles([...roles]); setIsolatedId(id); },
+      hideRole: role => { setVisibleRoles(current => current.filter(r => r !== role)); setIsolatedId(null); },
+      showAll: () => { setVisibleRoles([...roles]); setIsolatedId(null); },
+      measureFrom: nodeId => { setMeasuring(true); setMeasurementSelection({ model, ids: [nodeId] }); },
+      focus: id => focus.current(id),
+      reset: () => reset.current(),
+      pickAt: (x,y) => pickAt.current(x,y),
+    });
+    return () => onApi(null);
+  }, [onApi, onSelect, model]);
   // Studio tools. All of them are view state: nothing is persisted or sent to the engine.
   const [projection, setProjection] = useState<Projection>("perspective");
   const [finish, setFinish] = useState<SteelFinish>("painted");
@@ -99,13 +130,67 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     let disposed = false, environment: PresentationHandle | null = null;
     const rig = createCameraRig(1, () => { controls.target.copy(rig.target); controls.update(); render(); });
     const controls = new OrbitControls(rig.active(), renderer.domElement); controls.enableDamping = false;
+    // O cubo usa a câmera real para permitir girar por clique, sem um loop permanente.
+    const viewHelper = new ViewHelper(rig.active(), renderer.domElement);
+    // @types/three ainda não declara a propriedade pública camera do ViewHelper r187.
+    const setHelperCamera = (camera: THREE.Camera) => { Object.assign(viewHelper, { camera }); };
+    const labelRenderer = new CSS2DRenderer(), labelLayer = labelRenderer.domElement, labelGroup = new THREE.Group();
+    labelLayer.className = "viewer-labels"; labelLayer.setAttribute("aria-hidden", "true"); container.appendChild(labelLayer); scene.add(labelGroup);
+    // F5: oclusão ambiente (GTAO) e contorno de arestas só no modo Acabado e fora de aparelho fraco.
+    // Criados na primeira vez que o modo é usado; as métricas continuam medidas só no passe da cena.
+    let post: { composer: EffectComposer; scenePass: RenderPass; gtao: GTAOPass; outline: OutlinePass } | null = null;
+    let sceneCalls = 0, sceneTriangles = 0;
+    const postprocessing = () => {
+      if (post || quality.low) return post;
+      const size = renderer.getSize(new THREE.Vector2()), composer = new EffectComposer(renderer);
+      const scenePass = new RenderPass(scene, rig.active());
+      const sceneRender = scenePass.render.bind(scenePass);
+      scenePass.render = (...args: Parameters<RenderPass["render"]>) => { sceneRender(...args); sceneCalls = renderer.info.render.calls; sceneTriangles = renderer.info.render.triangles; };
+      const gtao = new GTAOPass(scene, rig.active(), size.x, size.y); gtao.output = GTAOPass.OUTPUT.Default;
+      const outline = new OutlinePass(new THREE.Vector2(size.x, size.y), scene, rig.active(), [profiles.root]);
+      outline.edgeStrength = 2.2; outline.edgeThickness = 1; outline.visibleEdgeColor.set(0x2b302a); outline.hiddenEdgeColor.set(0x2b302a);
+      composer.addPass(scenePass); composer.addPass(gtao); composer.addPass(outline); composer.addPass(new OutputPass());
+      post = { composer, scenePass, gtao, outline };
+      return post;
+    };
     function render() {
       if (disposed) return;
-      renderer.render(scene, rig.active());
-      canvas.dataset.drawCalls = String(renderer.info.render.calls); canvas.dataset.triangles = String(renderer.info.render.triangles);
-      if (stats.current) stats.current.textContent = `${renderer.info.render.calls} chamadas · ${renderer.info.render.triangles.toLocaleString("pt-BR")} triângulos`;
+      const effects = canvas.dataset.mode === "finished" ? postprocessing() : null;
+      if (effects) {
+        const camera = rig.active(); effects.scenePass.camera = camera; effects.gtao.camera = camera; effects.outline.renderCamera = camera;
+        effects.composer.render();
+        canvas.dataset.drawCalls = String(sceneCalls); canvas.dataset.triangles = String(sceneTriangles); canvas.dataset.postprocessing = "gtao+outline";
+      } else {
+        renderer.render(scene, rig.active());
+        canvas.dataset.drawCalls = String(renderer.info.render.calls); canvas.dataset.triangles = String(renderer.info.render.triangles); canvas.dataset.postprocessing = "off";
+      }
+      if (stats.current) stats.current.textContent = `${canvas.dataset.drawCalls} chamadas · ${Number(canvas.dataset.triangles).toLocaleString("pt-BR")} triângulos`;
       if (environment) { const sources = environment.status(); canvas.dataset.carSource = sources.carSource; canvas.dataset.personSource = sources.personSource; }
+      // Depois das métricas: o cubo não entra nas contagens de chamadas/triângulos usadas pelos testes.
+      const presenting = canvas.dataset.mode === "finished";
+      canvas.dataset.orientationCube = orientationRef.current && !presenting ? "on" : "off";
+      if (orientationRef.current && !presenting) {
+        // Sem autoClear: o cubo é desenhado por cima da cena, só no canto.
+        const autoClear = renderer.autoClear; renderer.autoClear = false;
+        setHelperCamera(rig.active()); viewHelper.render(renderer);
+        renderer.autoClear = autoClear;
+      }
+      labelLayer.style.display = presenting ? "none" : "";
+      if (labelGroup.children.length && !presenting) labelRenderer.render(scene, rig.active());
     }
+    applyLabels.current = list => {
+      for (const child of [...labelGroup.children]) { labelGroup.remove(child); (child as CSS2DObject).element.remove(); }
+      const at = new Map(model.nodes.map(n => [n.id, n]));
+      for (const label of list) {
+        let position: THREE.Vector3 | null = null;
+        if (label.nodeId && at.has(label.nodeId)) position = scenePoint(at.get(label.nodeId)!);
+        else if (label.pieceId) { const piece = model.pieces.find(p => p.id === label.pieceId); const a = piece && at.get(piece.start), b = piece && at.get(piece.end); if (a && b) position = scenePoint(a).add(scenePoint(b)).multiplyScalar(.5); }
+        if (!position) continue;
+        const element = document.createElement("span"); element.className = `viewer-label viewer-label--${label.tone ?? "neutral"}`; element.textContent = label.text;
+        const object = new CSS2DObject(element); object.position.copy(position); labelGroup.add(object);
+      }
+      canvas.dataset.labels = String(labelGroup.children.length); render();
+    };
     const nodeGeometry=new THREE.SphereGeometry(span/150,8,6),nodeMaterial=new THREE.MeshBasicMaterial({depthTest:false,transparent:true,opacity:.9,toneMapped:false});
     const nodeMarkers=new THREE.InstancedMesh(nodeGeometry,nodeMaterial,model.nodes.length);nodeMarkers.renderOrder=10;nodeMarkers.visible=false;scene.add(nodeMarkers);resources.push(nodeGeometry,nodeMaterial);
     const nodeMatrix=new THREE.Matrix4();model.nodes.forEach((n,i)=>{nodeMatrix.makeTranslation(scenePoint(n).x,scenePoint(n).y,scenePoint(n).z);nodeMarkers.setMatrixAt(i,nodeMatrix);nodeMarkers.setColorAt(i,new THREE.Color(0x8262b5));});
@@ -285,7 +370,8 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       const pixelBudget = quality.low ? 1_200_000 : 2_400_000;
       const ratio = Math.max(1, Math.min(window.devicePixelRatio || 1, activeMode === "finished" ? 2 : quality.pixelRatio, Math.sqrt(pixelBudget / (width * height))));
       renderer.setPixelRatio(ratio); canvas.dataset.pixelRatio = ratio.toFixed(2);
-      renderer.setSize(width, height);
+      renderer.setSize(width, height); labelRenderer.setSize(width, height);
+      if (post) { post.composer.setPixelRatio(ratio); post.composer.setSize(width, height); }
       rig.setAspect(width / height);
       // Preserve camera pose and zoom after viewport/orientation changes.
       if (!cameraFramed) { lightScene(); goTo("iso", framingBounds, false); }
@@ -294,14 +380,64 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const follow = () => { rig.target.copy(controls.target); render(); };
     const observer = new ResizeObserver(resize); observer.observe(container); controls.addEventListener("change", follow);
     const raycaster = new THREE.Raycaster(); raycaster.params.Line = { threshold: span / 180 };
-    let startX = 0, startY = 0;
-    const down = (e: PointerEvent) => { startX = e.clientX; startY = e.clientY; rig.cancel(); };
-    const wheel = () => rig.cancel();
+    let startX = 0, startY = 0, hoverFrame = 0, orientationFrame = 0, lastHover = "";
+    const pickPiece = (x: number, y: number, commit: boolean): string | null => {
+      if (activeMode === "finished") return null;
+      const rect = renderer.domElement.getBoundingClientRect();
+      if (!rect.width || !rect.height || x < rect.left || y < rect.top || x > rect.right || y > rect.bottom) return null;
+      raycaster.setFromCamera(new THREE.Vector2((x - rect.left) / rect.width * 2 - 1, -(y - rect.top) / rect.height * 2 + 1), rig.active());
+      const hit = raycaster.intersectObjects(profiles.targets(), false).find(h => !activePlane || activePlane.distanceToPoint(h.point) >= 0);
+      const id = hit ? pieceIdFromHit(hit) : null;
+      if (id && commit) { canvas.dataset.pickedPiece = id; select.current(id); }
+      return id;
+    };
+    pickAt.current = (x, y) => pickPiece(x, y, true);
+    const move = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse" || hoverFrame) return;
+      const x = e.clientX, y = e.clientY;
+      hoverFrame = window.requestAnimationFrame(() => {
+        hoverFrame = 0;
+        const id = pickPiece(x, y, false) ?? "";
+        if (id === lastHover) return;
+        lastHover = id; canvas.style.cursor = id ? "pointer" : ""; hover.current?.(id);
+      });
+    };
+    const leave = () => {
+      window.cancelAnimationFrame(hoverFrame); hoverFrame = 0;
+      if (lastHover) { lastHover = ""; hover.current?.(""); }
+      canvas.style.cursor = "";
+    };
+    const stopOrientation = () => {
+      if (orientationFrame) window.cancelAnimationFrame(orientationFrame);
+      orientationFrame = 0;
+      if (viewHelper.animating) { viewHelper.update(1); controls.update(); }
+    };
+    const down = (e: PointerEvent) => { startX = e.clientX; startY = e.clientY; rig.cancel(); stopOrientation(); };
+    const wheel = () => { rig.cancel(); stopOrientation(); };
     const up = (e: PointerEvent) => {
       if (Math.hypot(e.clientX - startX, e.clientY - startY) > 5) return;
       const rect = renderer.domElement.getBoundingClientRect();
       raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), rig.active());
       if (activeMode === "finished") return;
+      if (orientationRef.current && e.button === 0) {
+        setHelperCamera(rig.active());
+        viewHelper.center.copy(controls.target);
+        if (viewHelper.handleClick(e)) {
+          rig.cancel();
+          canvas.dataset.cameraView = "orientation-cube";
+          let previous = performance.now();
+          const tick = (now: number) => {
+            if (disposed) return;
+            viewHelper.update(reducedMotion ? 1 : Math.max(1 / 120, Math.min(.1, (now - previous) / 1000)));
+            previous = now;
+            render();
+            if (viewHelper.animating) orientationFrame = window.requestAnimationFrame(tick);
+            else { orientationFrame = 0; controls.update(); }
+          };
+          tick(performance.now() + 16);
+          return;
+        }
+      }
       if((nodePicking.current||measurePicking.current)&&nodeMarkers.visible){
         const nodeHit=raycaster.intersectObject(nodeMarkers,false)[0];
         if(nodeHit?.instanceId!==undefined){const id=model.nodes[nodeHit.instanceId]?.id;if(id){
@@ -312,11 +448,10 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
         }}
       }
       // Never pick what the section cut has removed from view.
-      const hit = raycaster.intersectObjects(profiles.targets(), false).find(h => !activePlane || activePlane.distanceToPoint(h.point) >= 0);
-      const id = hit ? pieceIdFromHit(hit) : null; if (id) { canvas.dataset.pickedPiece = id; select.current(id); }
+      pickPiece(e.clientX, e.clientY, true);
     };
     const lost = (e: Event) => { e.preventDefault(); rig.cancel(); setFailure("O dispositivo perdeu o contexto gráfico. As vistas 2D continuam disponíveis."); };
-    renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("webglcontextlost", lost);
+    renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("pointermove", move); renderer.domElement.addEventListener("pointerleave", leave); renderer.domElement.addEventListener("webglcontextlost", lost);
     renderer.domElement.addEventListener("wheel", wheel, { passive: true });
     resize();
     // Reflections arrive after the first frame so opening never waits for them.
@@ -325,13 +460,14 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       canvas.dataset.environment = stage.loadEnvironment() ? "procedural" : "none";
       canvas.dataset.environmentMs = stage.environmentMs().toFixed(0); render();
     }, 60);
-    return () => { disposed = true; showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
+    return () => { disposed = true; window.cancelAnimationFrame(hoverFrame); window.cancelAnimationFrame(orientationFrame); pickAt.current=()=>null; applyLabels.current = () => {}; viewHelper.dispose(); labelLayer.remove(); if (post) { post.gtao.dispose(); post.outline.dispose(); post.composer.dispose(); post = null; } showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("pointermove", move); renderer.domElement.removeEventListener("pointerleave", leave); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
   }, [model, gridSpacingM, envelope, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
   useEffect(() => { colorize.current(analysisColors); }, [analysisColors, model]);
   useEffect(() => { showDeformed.current(deformed ?? null); }, [deformed, model]);
+  useEffect(() => { applyLabels.current(labels ?? []); }, [labels, model]);
   useEffect(() => { applyProjection.current(projection); }, [projection, model]);
   useEffect(() => { applyFinish.current(finish); }, [finish, model]);
   useEffect(() => { applyGhost.current(ghost && mode !== "finished"); }, [ghost, mode, model, selected]);
@@ -352,7 +488,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const technical = !failure && mode !== "finished";
   return <div className={expanded ? "structure-viewer structure-viewer--expanded studio" : "structure-viewer studio"}>
     {expanded && <div className="structure-viewer-heading"><strong>Apresentação da estrutura · 3D</strong><button type="button" className="button secondary" onClick={() => setExpanded(false)}>Fechar tela cheia</button></div>}
-    {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).filter(([value]) => !analysisColors || value !== "finished").map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
+    {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).filter(([value]) => (allowPresentation && !analysisColors) || value !== "finished").map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
     {technical && <div className={toolsCollapsed ? "inspection-tools inspection-tools--collapsed" : "inspection-tools"} aria-label="Ferramentas de inspeção 3D">
       <button type="button" className="inspection-collapse" aria-expanded={!toolsCollapsed} onClick={() => setToolsCollapsed(value => !value)}>{toolsCollapsed ? "Mostrar ferramentas" : "Recolher ferramentas"}</button>
       {!toolsCollapsed && <>
@@ -452,7 +588,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     {!failure && mode === "finished" && <section className="presentation-controls" aria-label="Personalizar apresentação da obra">
       <div className="presentation-controls-head"><strong>Personalizar visualização</strong><span>Elementos cenográficos, sem alteração do orçamento ou da estrutura</span></div>
       <div className="presentation-settings">
-        <label>Tipo de telha<select className="input" value={presentationOptions.roofFinish} onChange={e=>setPresentationOptions(o=>({...o,roofFinish:e.target.value as RoofFinish}))}><option value="trapezoidal">Trapezoidal (visual)</option><option value="sandwich">Termoacústica (visual)</option><option value="standing">Junta agrafada (visual)</option></select></label>
+        <label>Tipo de telha<select className="input" value={presentationOptions.roofFinish} onChange={e=>setPresentationOptions(o=>({...o,roofFinish:e.target.value as RoofFinish}))}><option value="trapezoidal">Trapezoidal (visual)</option><option value="sandwich">Termoacústica (visual)</option><option value="standing">Junta agrafada (visual)</option><option value="corrugated">Ondulada (visual)</option></select></label>
         <label>Cor do telhado<select className="input" value={presentationOptions.roofColor} onChange={e=>setPresentationOptions(o=>({...o,roofColor:e.target.value as RoofColor}))}>{Object.entries({graphite:"Grafite",silver:"Prata",white:"Branco",terracotta:"Terracota"}).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
         <label>Paredes<select className="input" value={presentationOptions.walls} onChange={e=>setPresentationOptions(o=>({...o,walls:e.target.value as WallLayout}))}><option value="none">Sem paredes</option><option value="rear">Parede do fundo</option><option value="sides">Duas laterais</option><option value="three">Fundo + laterais</option><option value="closed">Quatro paredes</option></select></label>
         <label>Opacidade do telhado <strong>{Math.round(presentationOptions.roofOpacity*100)}%</strong><input type="range" min="0.15" max="1" step="0.05" value={presentationOptions.roofOpacity} onChange={e=>setPresentationOptions(o=>({...o,roofOpacity:Number(e.target.value)}))}/></label>

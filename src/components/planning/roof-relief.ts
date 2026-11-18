@@ -10,6 +10,8 @@ export const reliefProfiles: Record<RoofFinish, ReliefProfile> = {
   trapezoidal: { pitchM: .25, heightM: .035, thicknessM: 0, points: [[0, 0], [.085, 0], [.105, .035], [.145, .035], [.165, 0]] },
   sandwich: { pitchM: 1, heightM: .035, thicknessM: .04, points: [[0, 0], [.02, .035], [.06, .035], [.08, 0], [.33, 0], [.34, .005], [.37, .005], [.38, 0], [.66, 0], [.67, .005], [.7, .005], [.71, 0]] },
   standing: { pitchM: .4, heightM: .025, thicknessM: 0, points: [[0, 0], [.008, .025], [.016, 0]] },
+  // F5: telha ondulada (senoide de 76 mm de passo e 18 mm de altura), amostrada em 8 pontos por onda.
+  corrugated: { pitchM: .076, heightM: .018, thicknessM: 0, points: Array.from({ length: 8 }, (_, i) => [i * .076 / 8, .009 * (1 - Math.cos(2 * Math.PI * i / 8))] as const) },
 };
 export const VISUAL_EAVE_OVERHANG_M = .12;
 
