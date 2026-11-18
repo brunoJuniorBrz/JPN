@@ -25,7 +25,7 @@ export function activeSupports(analysis: StudioAnalysis) {
   if (analysis.state !== "current" || !analysis.resistance) return [];
   return analysis.resistance.supportAudits.filter(a => a.combinationId === analysis.combo).map(a => ({
     nodeId: a.nodeId, status: a.status as SupportStatus,
-    upliftKn: a.checks.find(c => c.action === "upliftKn")?.demandKn ?? 0,
+    upliftKn: a.checks.find(c => c.action === "upliftKn")?.demandKn ?? null,
   }));
 }
 
@@ -115,9 +115,9 @@ export function StudioResultsBar({ onSelectNode, onOpenAnalysis, showLabels, onS
     {supports.length > 0 && <div className="studio-supports" data-testid="studio-supports">
       <span className="studio-results-caption">Apoios · {analysis.combo}</span>
       <ul>{supports.map(s => <li key={s.nodeId}><button type="button" className={`studio-support studio-support--${supportTone[s.status]}`} onClick={() => onSelectNode(s.nodeId)}
-        aria-label={`Apoio ${s.nodeId}: ${supportText[s.status]}; arrancamento ${formatMeasure(s.upliftKn, 2)} kN`}>
+        aria-label={`Apoio ${s.nodeId}: ${supportText[s.status]}; arrancamento ${s.upliftKn === null ? "pendente" : `${formatMeasure(s.upliftKn, 2)} kN`}`}>
         {s.status === "within-declared-capacity" ? <CheckCircle2 size={14} aria-hidden="true" /> : s.status === "capacity-pending" ? <CircleDashed size={14} aria-hidden="true" /> : <AlertTriangle size={14} aria-hidden="true" />}
-        {s.nodeId}<small>{formatMeasure(s.upliftKn, 1)} kN</small>
+        {s.nodeId}<small>{s.upliftKn === null ? "pendente" : `${formatMeasure(s.upliftKn, 1)} kN`}</small>
       </button></li>)}</ul>
     </div>}
   </div>;

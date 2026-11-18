@@ -227,7 +227,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
         {declared ? <DeclaredSafetyWarning /> : <GeneratedSafetyWarning />}
         <div className="studio-status-data">
           {!declared && <GeneratedTotals result={generated.result} />}
-          <LiveTotals totals={totals} />
+          <LiveTotals totals={totals} includeGeometry={declared} />
           <AnalysisState onOpenAnalysis={() => openTool("mixedlocal")} />
         </div>
       </>}

@@ -32,6 +32,8 @@ export type StudioAnalysis = {
   result: AnalysisResult | null;
   mapping: StudioMappedMember[];
   resistance: ResistanceReport | null;
+  /** Utilizações demonstradas por peça/combinação; nunca equivalem à aprovação global. */
+  utilizationByPiece?: Record<string, number> | null;
   layerKind: ResultOverlayKind | "none";
   layer: StudioLayer | null;
   scaleInput: string;

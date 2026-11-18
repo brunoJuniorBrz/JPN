@@ -37,6 +37,7 @@ export function StudioSelection({ model, selected, onSelect, nodeId, onSelectNod
   const extremes = piece && comb ? pieceExtremes(analysis, piece.id, stationsOf) : null;
   const report = analysis.state === "current" ? analysis.resistance : null;
   const pieceReport = piece && report ? report.pieces.find(p => p.pieceId === piece.id) : undefined;
+  const utilization = piece ? analysis.utilizationByPiece?.[piece.id] : undefined;
   const node = comb && nodeId ? comb.nodes[nodeId] : undefined;
   const supportAudit = report && nodeId ? report.supportAudits.find(a => a.nodeId === nodeId && a.combinationId === analysis.combo) : undefined;
   if (!model) return null;
@@ -73,7 +74,9 @@ export function StudioSelection({ model, selected, onSelect, nodeId, onSelectNod
           <div><dt>Segmentos</dt><dd>{extremes.segments.join(", ")}</dd></div>
         </dl> : <p className="field-hint">Esta peça não está no modelo analisado.</p>}
         {pieceReport && <div className="studio-selection-status">
-          <Badge tone="warning">Utilização não calculada · peça {pieceReport.status === "incomplete" ? "incompleta" : pieceReport.status}</Badge>
+          <Badge tone={utilization !== undefined && utilization > 1 ? "danger" : "warning"}>
+            {utilization === undefined ? "Utilização não calculada" : `Utilização verificada parcialmente: ${(utilization * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}% · sem aprovação`} · peça {pieceReport.status === "incomplete" ? "incompleta" : pieceReport.status}
+          </Badge>
           {pieceReport.normativeReadiness.blockers.length > 0 && <details><summary>Pendências desta peça ({pieceReport.normativeReadiness.blockers.length})</summary><ul>{pieceReport.normativeReadiness.blockers.slice(0, 6).map((b, i) => <li key={i}>{b}</li>)}</ul></details>}
         </div>}
       </> : <p className="field-hint">{analysis.state === "stale" ? "Análise desatualizada: recalcule para ver esforços desta peça." : analysis.state === "running" ? "Análise em execução…" : "Sem análise atual. Execute a Análise Estrutural Experimental para ver N, V e M."}</p>}

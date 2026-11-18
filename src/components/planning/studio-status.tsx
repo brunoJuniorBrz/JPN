@@ -5,6 +5,7 @@ import type { Project } from "@/domain/models";
 import type { StructureResult } from "@/domain/structure";
 import { calculateEstimate } from "@/domain/calculations/estimate";
 import { formatMeasure } from "@/domain/calculations/units";
+import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -16,13 +17,13 @@ const money = (cents: number) => (cents / 100).toLocaleString("pt-BR", { style: 
 
 /** Totais ao vivo (F4): derivados de forma síncrona do projeto em memória, sem esperar o salvamento. */
 export function liveTotals(project: Project, result: StructureResult | null) {
-  const model = result?.model ?? null;
+  const model = result?.model ?? (project.workspace.physicalStructure ? resolvePhysicalStructure(project).model : null);
   // Massa só aparece quando alguma peça tem massa cadastrada; nada de "0 kg" por falta de dado.
-  const known = model ? model.pieces.reduce((sum, p) => sum + (p.massKg ?? 0), 0) : 0;
+  const known = model && result?.model ? result.model.pieces.reduce((sum, p) => sum + (p.massKg ?? 0), 0) : 0;
   const massKg = model && known > 0 ? known : null;
   let saleCents: number | null = null;
   try { saleCents = calculateEstimate(project).saleCents; } catch { saleCents = null; }
-  return { pieces: model?.pieces.length ?? null, lengthM: model?.totalLengthM ?? null, massKg, massComplete: model?.massComplete ?? false, saleCents };
+  return { pieces: model?.pieces.length ?? null, lengthM: model && result?.model ? result.model.totalLengthM : model ? model.pieces.reduce((sum, item) => sum + item.lengthMm, 0) / 1000 : null, massKg, massComplete: result?.model?.massComplete ?? false, saleCents };
 }
 
 /** Estado da análise para a barra: atual, desatualizada, rodando há N s, erro ou sem análise. */
@@ -96,9 +97,10 @@ export function FabricationSeal({ result, declaredIssues }: { result: StructureR
   </Dialog>;
 }
 
-export function LiveTotals({ totals }: { totals: ReturnType<typeof liveTotals> }) {
+export function LiveTotals({ totals, includeGeometry = false }: { totals: ReturnType<typeof liveTotals>; includeGeometry?: boolean }) {
   if (totals.pieces === null) return null;
   return <div className="studio-live-totals" data-testid="studio-live-totals" aria-label="Totais ao vivo">
+    {includeGeometry && <><span><small>Peças</small><strong>{totals.pieces}</strong></span><span><small>Comprimento</small><strong>{formatMeasure(totals.lengthM ?? 0, 2)} m</strong></span></>}
     <span><small>Massa</small><strong>{totals.massKg === null ? "pendente" : `${formatMeasure(totals.massKg, 0)} kg${totals.massComplete ? "" : " (parcial)"}`}</strong></span>
     <span><small>Venda</small><strong>{totals.saleCents === null ? "a definir" : money(totals.saleCents)}</strong></span>
   </div>;

@@ -213,6 +213,21 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
     finally { if (ticket.current.value === mine) { setBusyIdentity(null); setJob(null); } }
   }
   function exportJSON(value: unknown, name: string) { downloadText(JSON.stringify(value, null, 2), name); }
+  // Somente verificações executadas alimentam a utilização do inspetor, por peça e combinação.
+  const studioUtilization = useMemo(() => {
+    if (!current || !selectedCombo) return null;
+    const values: Record<string, number> = {};
+    if (matrixState?.identity === current.identity) for (const row of matrixState.matrix.rows) {
+      if (row.combinationId === selectedCombo && row.maxUtilization !== null && Number.isFinite(row.maxUtilization))
+        values[row.pieceId] = Math.max(values[row.pieceId] ?? 0, row.maxUtilization);
+    }
+    for (const execution of (current.designExecutions ?? [])) {
+      if (execution.result.combination_id !== selectedCombo) continue;
+      for (const check of execution.result.checks) if (check.utilization !== null && Number.isFinite(check.utilization))
+        values[execution.result.piece_id] = Math.max(values[execution.result.piece_id] ?? 0, check.utilization);
+    }
+    return Object.keys(values).length ? values : null;
+  }, [current, selectedCombo, matrixState]);
   // UI F2–F4: publica uma cópia somente leitura do estado para o estúdio (inspetor, 3D, status).
   // Exemplos sintéticos não são o projeto: nada é publicado enquanto um exemplo está aberto.
   const { publish: publishStudio } = useStudioAnalysis();
@@ -223,12 +238,12 @@ export function MixedAnalysisWorkspace({ project, onChange, demoPresentation=fal
       state, ready, health, job, error,
       combinations: current ? Object.keys(current.result.combinations) : [], combo: selectedCombo ?? "",
       result: current?.result ?? null, mapping: current ? current.prepared.mapping.members as StudioMappedMember[] : [],
-      resistance: current?.resistance ?? null, layerKind, scaleInput,
+      resistance: current?.resistance ?? null, utilizationByPiece: studioUtilization, layerKind, scaleInput,
       layer: layer && layerKind !== "none" ? { kind: layerKind, colors: layer.colors, segments: layer.segments, legend: layer.legend ? { min: layer.legend.min, max: layer.legend.max, units: layer.legend.units } : null, scale: layer.scale, refused: layer.refused } : null,
     }, { setCombo, setLayerKind, setScale: setScaleInput, run: () => { if (ready && !busy) void execute(); } });
   // execute muda a cada render; o comando publicado sempre chama a versão atual via este efeito.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [example, demoPresentation, busy, current, session, error, ready, health, job, selectedCombo, layerKind, layer, scaleInput, publishStudio]);
+  }, [example, demoPresentation, busy, current, session, error, ready, health, job, selectedCombo, layerKind, layer, scaleInput, studioUtilization, publishStudio]);
   useEffect(() => () => publishStudio(null, null), [publishStudio]);
   async function restore(file:File){
     const mine=++ticket.current.value;request.current?.abort();setError("");
