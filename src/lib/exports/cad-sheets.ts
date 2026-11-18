@@ -1,16 +1,23 @@
 import {type DxfWriter,point3d} from "@tarikjabiri/dxf";
 import type {Project} from "@/domain/models";
-import {CadBook,CAD_NOTICE,cadNumber as num,type PaperFormat,type Point2 as P,type CadRect,type CadPage} from "./cad-book";
+import {CadBook,CAD_NOTICE,type PaperFormat,type Point2 as P,type CadRect,type CadPage} from "./cad-book";
 import {cadModel,cadReactions,axisLetter,sortedCoordinates as unique,isDeclaredBrace,type CadPiece,type CadReactionReceipt} from "./cad-model";
 import {cadRoofFaces} from "./cad-roof";
+import {trussSummary} from "@/domain/truss-editor";
 import {isUnlocatedCommercialPiece} from "./package-commercial-groups";
 import {reviewSourceDimensions,reviewRoofSlope,reviewRoofEnvelope} from "./package-dimension-review";
 export {CAD_NOTICE};
 export type CadExportOptions={format?:PaperFormat;reactions?:CadReactionReceipt};
+/** Somente textos das pranchas: comprimentos/cotas inteiros e massas com 1 casa.
+ * As coordenadas físicas continuam numéricas sem arredondamento de geometria. */
+const num=(n:number)=>String(Math.round(n));
+const mass1=(n:number)=>n.toFixed(1);
+const reaction3=(n:number)=>Number(n.toFixed(3)).toString();
 
 export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,options:CadExportOptions={}){
   const data=cadModel(project),{model,draft,takeoff,nodes,profile,supports,xs,ys}=data;
   const book=new CadBook(dxf,options.format??"A3",project.name,model.revision,issuedAt,Math.max(...model.nodes.map(n=>n.x)));
+  const trussAccounting=project.workspace.trussEditor?trussSummary(project.workspace.trussEditor):null;
   const counters=new Map<string,number>(),marks=new Map<string,string>(),markByType=new Map<string,string>(),markCounts=new Map<string,number>();
   const items=new Map(takeoff.pieces.map(p=>[p.pieceId,p]));
   const unlocated=new Set(takeoff.pieces.filter(isUnlocatedCommercialPiece).map(p=>p.pieceId));
@@ -448,7 +455,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     return [supportMarks.get(n.id)!,data.location(n),`${num(n.x)} / ${num(n.y)} / ${num(n.z)}`,`${dofs}; ${face?(typeNames[face.kind]??"tipo: ver rastreabilidade"):"PENDENTE"}`];
   }),[0,.12,.24,.6,1],"APOIOS");
   if(reactions.data)book.table(bases,{...a,height:a.height*.43},"Reações concomitantes por combinação — eixos globais",["Apoio","Combinação","Fx (kN)","Fy (kN)","Fz (kN)","Mx (kNm)","My (kNm)","Mz (kNm)"],reactions.data.rows.map(r=>[
-    supportMarks.get(r.nodeId)!,r.combinationId,...r.force.map(n=>num(n/1000)),...r.moment.map(n=>num(n/1000))]),[0,.08,.28,.4,.52,.64,.76,.88,1],"REACOES");
+    supportMarks.get(r.nodeId)!,r.combinationId,...r.force.map(n=>reaction3(n/1000)),...r.moment.map(n=>reaction3(n/1000))]),[0,.08,.28,.4,.52,.64,.76,.88,1],"REACOES");
   else bases.draw.push(space=>book.wrapped(space,{x:a.x+half+gap,y:a.y,width:half,height:10},reactions.status,2,3,"PENDENCIAS"));
 
   }else trace.push("PENDENTE: nenhum apoio declarado; prancha de locação suprimida.");
@@ -478,7 +485,8 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   book.notes(notes,a,[
     `Obra: ${project.name}. Revisão da geometria: ${model.revision}. ${CAD_NOTICE}.`,
     `Origem da geometria: ${model.provenance}. Medidas sem fonte física revisada não são levantamento de campo.`,
-    ...(project.technicalNotes.trim()?[`Observações declaradas: ${project.technicalNotes}`]:[]),
+    ...(project.technicalNotes.trim()?[ `Observações declaradas: ${project.technicalNotes}` ]:[]),
+    ...(trussAccounting&&project.workspace.trussEditor?.fullHeightBudget ? [`MONTANTES/DIAGONAIS: compra por medida cheia ${trussAccounting.buy.web} barras; corte geométrico real ${trussAccounting.bars.web} barras. Conferir ambas as contagens; não autorizam fabricação.`] : []),
     "Unidades: geometria e cotas em milímetros; massas em quilogramas; reações em quilonewtons e quilonewtons-metro. Eixos globais X e Y; eixo Z positivo para cima.",
     "As vistas representam eixos de peças declaradas. As cotas prevalecem sobre a medição gráfica. Os comprimentos são medidos entre nós, sem descontos de fabricação ou lista de corte.",
     "Marcas: C pilares, V vigas, T terças, BS/BI banzos, M montantes verticais; D exclusivamente diagonais e contraventamentos. Nenhuma marca atribui contenção estrutural.",
@@ -521,9 +529,9 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       // Grouped rows share one type signature; keep the unit mass visible so
       // a fabricator can check a single piece without dividing the total.
       return [mark,profile(p.pieceId),String(group.length),num(p.lengthMm),
-        mass===null?"PENDENTE":num(mass/(group.reduce((v,q)=>v+q.lengthMm,0)/1000)),
-        mass===null?"PENDENTE":num(mass/group.length),
-        mass===null?"PENDENTE":num(mass)];
+        mass===null?"PENDENTE":mass1(mass/(group.reduce((v,q)=>v+q.lengthMm,0)/1000)),
+        mass===null?"PENDENTE":mass1(mass/group.length),
+        mass===null?"PENDENTE":mass1(mass)];
     }),[0,.10,.40,.47,.62,.74,.87,1]);
   const summary=new Map<string,{profile:string;quantity:number;length:number;mass:number|null}>();
   for(const p of takeoff.pieces.filter(p=>!unlocated.has(p.pieceId))){
@@ -532,7 +540,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     row.mass=row.mass===null||p.massKg===null?null:row.mass+p.massKg;summary.set(key,row);
   }
   book.table(materialsPage,{...a,height:Math.max(22,detailBottom-8-a.y)},"Resumo por perfil e material",["Perfil declarado","Qtd.","Comprimento total (mm)","Massa total (kg)"],[...summary.values()].map(r=>[
-    r.profile,String(r.quantity),num(r.length),r.mass===null?"PENDENTE":num(r.mass)]),[0,.42,.5,.76,1],"MATERIAIS",
+    r.profile,String(r.quantity),num(r.length),r.mass===null?"PENDENTE":mass1(r.mass)]),[0,.42,.5,.76,1],"MATERIAIS",
     `ESCOPO PRINCIPAL (SEM AVULSAS): ${takeoff.pieces.length-unlocated.size} peças; ${num(takeoff.pieces.filter(p=>!unlocated.has(p.pieceId)).reduce((v,p)=>v+p.lengthMm,0))} mm. Itens a confirmar em folha própria.`);
   if(unlocated.size){
     const pendingPage=book.add("ITENS A CONFIRMAR","Peças sem locação — fora do orçamento principal");
