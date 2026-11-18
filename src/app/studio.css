@@ -247,6 +247,72 @@
   .main-content:has(.project-studio) .example-banner { margin: 0 0 var(--space-3); padding: 8px 12px; font-size: var(--text-sm); }
 }
 
+/* Passo Tesoura: o viewport é só 3D/elevação (o canvas ocupa a área); inspetor com resumo e
+   Aplicar/Descartar fixos. Ferramentas avançadas do 3D ficam recolhidas (modo compacto). */
+.truss-viewport { display: flex; flex-direction: column; gap: 6px; height: 100%; min-height: 0; }
+.truss-toolbar { flex: 0 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.truss-segmented, .truss-layers { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 2px; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface-muted); }
+.truss-segmented button, .truss-layers button { min-height: 36px; padding: 0 10px; border: 0; border-radius: calc(var(--radius-md) - 2px); background: transparent; color: var(--color-ink); font-size: var(--text-sm); white-space: nowrap; }
+.truss-segmented button[aria-pressed="true"] { background: var(--color-dark); color: var(--color-on-dark); }
+.truss-layers button[aria-pressed="true"] { background: var(--color-surface); box-shadow: inset 0 0 0 1px var(--color-line-strong); font-weight: var(--weight-semibold); }
+.truss-layers button[aria-pressed="false"] { color: var(--color-muted); text-decoration: line-through; }
+.truss-segmented button:focus-visible, .truss-layers button:focus-visible { outline: var(--focus-ring); outline-offset: 1px; }
+.truss-split-only { display: none; }
+.truss-stage { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 6px; }
+.truss-elevation { flex: 1 1 auto; min-height: 0; display: flex; }
+.truss-elevation > svg { flex: 1 1 auto; height: 100%; }
+.truss-viewport--split .truss-elevation { flex: 0 0 40%; }
+.studio-viewport-body .truss-3d { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.studio-viewport-body .truss-3d .structure-viewer { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.studio-viewport-body .truss-3d .presentation-viewport { flex: 1 1 auto; min-height: 0; position: relative; }
+.studio-viewport-body .truss-3d .structure-3d { flex: 1 1 auto; height: auto; min-height: 200px; margin: 0; }
+/* As vistas da tesoura (Frente/Iso) ficam na barra própria; o painel do montante substitui o cartão da peça. */
+.studio-viewport-body .truss-3d .studio-camera, .truss-3d .inspection-selected-piece { display: none; }
+/* Ferramentas avançadas: um botão no canto do 3D, recolhido por padrão; aberto, vira painel sobreposto. */
+.studio-viewport-body .truss-3d .structure-viewer { position: relative; }
+.truss-3d .inspection-tools { position: absolute; top: 6px; right: 6px; z-index: 4; width: min(420px, calc(100% - 12px)); max-height: calc(100% - 12px); overflow: auto; margin: 0; background: var(--color-surface); box-shadow: var(--shadow-md, 0 8px 24px -12px #1f241d66); }
+.truss-3d .inspection-tools--collapsed { width: auto; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.truss-3d .inspection-tools--collapsed .inspection-collapse { width: auto; min-height: 32px; padding: 4px 10px; font-size: var(--text-xs); background: var(--color-surface); }
+.truss-3d .structure-viewer-tools { display: none; }
+.truss-inspector { display: flex; flex-direction: column; gap: 10px; padding: 0 var(--space-4) 0; }
+.truss-inspector-top { position: sticky; top: 0; z-index: 3; display: grid; gap: 6px; padding: 10px 0 8px; background: var(--color-surface); border-bottom: 1px solid var(--color-line); }
+.truss-draft { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.truss-notice { margin: 0; color: var(--color-muted); font-size: var(--text-xs); }
+.truss-inspector-footer { position: sticky; bottom: 0; z-index: 3; display: flex; flex-wrap: wrap; gap: 6px; margin: 0 calc(-1 * var(--space-4)); padding: 10px var(--space-4) calc(10px + env(safe-area-inset-bottom)); background: var(--color-surface); border-top: 1px solid var(--color-line); box-shadow: 0 -8px 16px -14px #1f241d66; }
+.truss-inspector-footer .button { flex: 1 1 0; justify-content: center; min-height: var(--hit-target); }
+.truss-start { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--color-muted); font-size: var(--text-sm); }
+.truss-start .button { min-height: 36px; padding: 4px 10px; font-size: var(--text-sm); }
+.project-studio[data-step="tesoura"] .editor-save-note { padding: 0 var(--space-4) var(--space-3); }
+.project-studio[data-step="tesoura"] .studio-status { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+.project-studio[data-step="tesoura"] .studio-status > * { flex: 0 0 auto; }
+.project-studio[data-step="tesoura"] .studio-status .result-permanent-warning { flex: 1 0 260px; }
+.truss-status-span { color: var(--color-muted); font-size: var(--text-xs); }
+@media (min-width: 1200px) {
+  .truss-split-only { display: inline-block; }
+  .project-studio[data-step="tesoura"] .studio-viewport-body { padding: var(--space-2); }
+}
+@media (max-width: 999.98px) {
+  /* Celular: 3D/elevação fixo no topo (~45% da tela) enquanto o inspetor rola por baixo. */
+  .project-studio[data-step="tesoura"] .studio-viewport { position: sticky; top: 0; z-index: 30; height: 45dvh; min-height: 280px; box-shadow: 0 8px 18px -16px #1f241d80; }
+  .project-studio[data-step="tesoura"] .studio-viewport-body { padding: 6px; }
+  .project-studio[data-step="tesoura"] .studio-status { position: static; }
+  /* Sem rolagem própria: o resumo e o rodapé grudam na página, abaixo do 3D e acima das etapas. */
+  .project-studio[data-step="tesoura"] .studio-inspector { overflow: visible; }
+  .truss-inspector { padding: 0 10px; }
+  .truss-toolbar { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .truss-toolbar > * { flex: 0 0 auto; flex-wrap: nowrap; }
+  .truss-segmented button, .truss-layers button { min-height: 34px; padding: 0 8px; font-size: var(--text-xs); }
+  /* Aplicar/Descartar acima da barra de etapas fixa. */
+  .truss-inspector-footer { bottom: calc(var(--studio-steps-h) + 8px + env(safe-area-inset-bottom)); margin: 0 -10px; padding: 8px 10px; }
+  .truss-inspector-top [data-testid="truss-summary-chips"] { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .truss-inspector-top [data-testid="truss-summary-chips"] > span { flex: 0 0 auto; }
+  .truss-inspector-footer .button { min-height: 40px; padding: 6px 10px; }
+  .truss-inspector-top { top: 45dvh; }
+}
+@media (max-width: 999.98px) and (max-height: 620px) {
+  .truss-inspector-top { top: 280px; }
+}
+
 /* Auditoria F1–F6: garantir que o visualizador fique acima das ferramentas e caiba no celular.
    O selo de bloqueio e o aviso de segurança continuam permanentemente visíveis. */
 .studio-viewport-body .declared-studio-view .structure-3d {

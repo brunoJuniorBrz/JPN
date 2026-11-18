@@ -18,8 +18,9 @@ import { PageHeading } from "@/components/ui";
 import { GeneralForm } from "@/components/projects/general-form";
 import { RoofForm } from "@/components/geometry/roof-form";
 import { StructureForm } from "./structure-form";
-import { TrussEditor } from "@/components/truss/truss-editor";
-import { applyTrussToProject, trussDefaultsFor } from "@/domain/truss-editor";
+import { TrussInspector, TrussStatus, TrussStudioViewport, useLiveTrussDraft, type TrussView } from "@/components/truss/truss-studio";
+import { pieceIdsForStation, stationFromPieceId, type TrussSectionId } from "@/components/truss/truss-parts";
+import { applyTrussToProject, trussDefaultsFor, type TrussEditor as Truss } from "@/domain/truss-editor";
 import { CompletePackageControl } from "./complete-package-control";
 import { GeneratedFiles, GeneratedMaterials, GeneratedReview, GeneratedSafetyWarning, GeneratedTotals, GeneratedViewport, useGeneratedResult, type ResultSection } from "./takeoff-summary";
 import { DeclaredEngineering, DeclaredFiles, DeclaredMaterials, DeclaredSafetyWarning, DeclaredViewport, useDeclaredModel } from "./declared-model-summary";
@@ -78,6 +79,27 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     const physical = resolvePhysicalStructure(deferredProject).model;
     try { return physical ? studioModelFromPhysical(physical) : null; } catch { return null; }
   }, [declared, viewGenerated.result.model, deferredProject]);
+  // Passo Tesoura: o formulário edita um rascunho; o 3D mostra o rascunho (em memória) e só "Aplicar" salva.
+  const isTruss = step === "tesoura";
+  const appliedTruss = project.workspace.trussEditor ?? null;
+  const trussDefaults = useMemo(() => trussDefaultsFor(project), [project]);
+  const [trussDraft, setTrussDraft] = useState<Truss | null>(null);
+  const workingTruss = trussDraft ?? appliedTruss ?? trussDefaults;
+  const trussIsDraft = !appliedTruss || (trussDraft !== null && JSON.stringify(trussDraft) !== JSON.stringify(appliedTruss));
+  const liveDraft = useLiveTrussDraft(project, workingTruss, isTruss);
+  const [trussStation, setTrussStation] = useState<number | null>(null), [trussHover, setTrussHover] = useState<number | null>(null);
+  const [trussView, setTrussView] = useState<TrussView>("3d"), [trussSection, setTrussSection] = useState<TrussSectionId>("obra");
+  const setTruss = (patch: Partial<Truss>) => setTrussDraft(prev => ({ ...(prev ?? appliedTruss ?? trussDefaults), ...patch }));
+  const setTrussWith = (f: (prev: Truss) => Truss) => setTrussDraft(prev => f(prev ?? appliedTruss ?? trussDefaults));
+  /** Seleção sincronizada: montante/diagonal no 3D ↔ estação no desenho (vale para todas as tesouras). */
+  function selectTrussPiece(id: string) { setSelectedPiece(id); setTrussStation(id ? stationFromPieceId(id) : null); }
+  function selectTrussStation(i: number | null) { setTrussStation(i); setSelectedPiece(i === null ? "" : pieceIdsForStation(workingTruss, i)[0] ?? ""); }
+  function applyTruss(t: Truss) {
+    const next = applyTrussToProject(project, t);
+    update({ roof: next.roof, planning: next.planning, workspace: next.workspace, technicalNotes: next.technicalNotes, updatedAt: next.updatedAt });
+    setTrussDraft(null); setSelectedPiece(""); setSelectedNode(""); setHoveredPiece(""); setTrussStation(null);
+    setMessage("Tesoura aplicada no mesmo modelo físico do 3D, CAD e quantitativos. Fabricação continua bloqueada.");
+  }
   const parsed = projectSchema.safeParse(project);
   const errors = parsed.success ? {} : Object.fromEntries(parsed.error.issues.map(i => [i.path[0], i.message]));
   const stepIndex = studioStepIndex(step), stepLabel = studioSteps[stepIndex].label;
@@ -182,12 +204,6 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     ? <p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no centro; o contorno da cobertura, a edição por nós e barras e a importação de nova revisão JSON ficam em Ferramentas do projeto, abaixo. Nenhuma cobertura foi gerada.</p>
     : <><GuidedRoofSetup project={project} onChange={update} />{["Cobertura metálica", "Galpão", "Barracão"].includes(project.category) ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning partialOutline={project.workspace.guidedSupport?.coverage === "partial"} /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>}</>;
   else if (step === "estrutura") panel = declared ? <SpatialPreparationPanel project={project} onChange={update} mixed /> : <StructureForm project={project} onChange={update} profileToEdit={profileToEdit} />;
-  else if (step === "tesoura") panel = <TrussEditor key={project.id} initial={project.workspace.trussEditor ?? trussDefaultsFor(project)} applyLabel="Aplicar na obra e atualizar o 3D" onApply={t => {
-    const next = applyTrussToProject(project, t);
-    update({ roof: next.roof, planning: next.planning, workspace: next.workspace, technicalNotes: next.technicalNotes, updatedAt: next.updatedAt });
-    setSelectedPiece(""); setSelectedNode(""); setHoveredPiece("");
-    setMessage("Tesoura atualizada no mesmo modelo físico do 3D, CAD e quantitativos. Fabricação continua bloqueada.");
-  }} />;
   else if (step === "cargas" && declared) panel = <div className="notice"><p>No modelo declarado, apoios, cargas e combinações ficam na preparação física da etapa Estrutura.</p><button type="button" className="button secondary" onClick={() => go("estrutura")}>Abrir preparação física</button></div>;
   else if (step === "analise" && declared) panel = <DeclaredEngineering />;
   else if (step === "verificacao") panel = declared
@@ -204,6 +220,16 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
 
   const next = studioSteps[stepIndex + 1];
   const pendingCount = declared ? undefined : generated.result.pending.length;
+  const saveNote = <p className="editor-save-note" role="status">{message || (!initial ? "O projeto será criado ao continuar." : saveState === "pending" ? "Salvando…" : saveState === "error" ? "Confira o aviso de armazenamento." : "Alterações salvas neste navegador.")}</p>;
+  const trussViewport = isTruss ? <TrussStudioViewport project={liveDraft?.project ?? project} truss={liveDraft?.truss ?? workingTruss} liveTruss={workingTruss} draftMs={liveDraft?.ms ?? null}
+    view={trussView} onView={setTrussView} selected={selectedPiece} onSelectPiece={selectTrussPiece} station={trussStation} hovered={trussHover}
+    onStation={selectTrussStation} onHover={setTrussHover} onChange={setTruss} onApi={setViewerApi} api={viewerApi} /> : null;
+  const trussInspector = isTruss ? <>
+    <TrussInspector applied={appliedTruss} working={workingTruss} isDraft={trussIsDraft} set={setTruss} setT={setTrussWith}
+      station={trussStation} onStation={selectTrussStation} section={trussSection} onSection={setTrussSection}
+      onApply={applyTruss} onDiscard={() => { setTrussDraft(null); setTrussStation(null); setSelectedPiece(""); }} onReplace={t => { setTrussDraft(t); setTrussStation(null); setSelectedPiece(""); }} />
+    {saveNote}
+  </> : null;
   return <>
     <Link href="/projetos" className="back-link"><ArrowLeft size={18} />Todos os projetos</Link>
     <PageHeading eyebrow="DA MEDIDA À LISTA DE MATERIAIS" title={project.name || "Vamos começar sua obra"} description="Informe a obra, configure a geometria e veja as peças e os quantitativos."
@@ -217,18 +243,18 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
       </div>} />
     {project.isExample && <p className="example-banner">EXEMPLO FICTÍCIO · Medidas, distribuição e perfis apenas para demonstrar o cálculo geométrico.</p>}
     {step !== "materiais" && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
-    <StudioLayout
+    <StudioLayout stepId={step}
       rail={<StudioRail step={step} onStep={id => go(id)} tool={analysisTool} onTool={openTool} showTools={!declared && step === "analise"} pendingCount={pendingCount} />}
-      viewportToolbar={<><div className="viewer-shortcut"><button type="button" className="button secondary" onClick={open3DViewer}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button>{preview.model
+      viewportToolbar={isTruss ? undefined : <><div className="viewer-shortcut"><button type="button" className="button secondary" onClick={open3DViewer}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button>{preview.model
           ? <InfoTip label="visualização 3D">Visualização 3D da estrutura disponível também no celular. Arraste para girar; use Iso/Superior/Frontal/Lateral para vistas prontas.</InfoTip>
           : <span className="field-hint">{`Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span>}</div>
         {preview.model && <StudioResultsBar onSelectNode={setSelectedNode} onOpenAnalysis={() => openTool("mixedlocal")} showLabels={showLabels} onShowLabels={setShowLabels} />}</>}
-      viewport={<StudioViewportMenu model={selectionModel} selected={selectedPiece} api={viewerApi} onShowForces={id => { setSelectedPiece(id); if (step !== "analise" && step !== "verificacao") go("verificacao"); }} onEditProfile={declared ? () => go(project.workspace.trussEditor ? "tesoura" : "estrutura") : configureProfile}>
+      viewport={trussViewport ?? <StudioViewportMenu model={selectionModel} selected={selectedPiece} api={viewerApi} onShowForces={id => { setSelectedPiece(id); if (step !== "analise" && step !== "verificacao") go("verificacao"); }} onEditProfile={declared ? () => go(project.workspace.trussEditor ? "tesoura" : "estrutura") : configureProfile}>
         {declared ? declaredModel : <GeneratedViewport project={deferredProject} result={viewGenerated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece}
           analysisColors={resultView.colors} deformed={resultView.deformed} orientationCube labels={resultView.labels} onApi={setViewerApi} onHover={setHoveredPiece} />}
       </StudioViewportMenu>}
       inspectorTitle={step === "analise" && !declared ? `Análise · ${analysisToolLabel(analysisTool)}` : stepLabel}
-      inspector={<>
+      inspector={trussInspector ?? <>
         <p className="workflow-progress">Passo {stepIndex + 1} de {studioSteps.length} — {stepLabel}</p>
         <div className="workflow-content">{selection}{panel}{workbench}{projectTools}</div>
         <div className="workflow-footer"><InfoTip label="quantitativos">Quantitativos independentes de preços: comprimentos e peças vêm da geometria; preços entram só no Orçamento de venda.</InfoTip><div className="actions">
@@ -236,9 +262,9 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
           {initial && <button type="button" className={next ? "button secondary" : "button"} onClick={save}><Save size={18} />Salvar levantamento</button>}
           {next && <button type="button" className="button" onClick={() => go(next.id)}>{!initial ? "Salvar e continuar" : `Ir para ${next.label.toLowerCase()}`}<ArrowRight size={18} /></button>}
         </div></div>
-        <p className="editor-save-note" role="status">{message || (!initial ? "O projeto será criado ao continuar." : saveState === "pending" ? "Salvando…" : saveState === "error" ? "Confira o aviso de armazenamento." : "Alterações salvas neste navegador.")}</p>
+        {saveNote}
       </>}
-      status={<>
+      status={isTruss ? <TrussStatus t={workingTruss}>{declared ? <DeclaredSafetyWarning /> : <GeneratedSafetyWarning />}</TrussStatus> : <>
         <FabricationSeal result={declared ? null : generated.result} declaredIssues={declaredIssues} />
         {declared ? <DeclaredSafetyWarning /> : <GeneratedSafetyWarning />}
         <div className="studio-status-data">

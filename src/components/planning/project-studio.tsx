@@ -70,11 +70,11 @@ export function StudioRail({ step, onStep, tool, onTool, showTools, pendingCount
   </div>;
 }
 
-export function StudioLayout({ rail, viewportToolbar, viewport, inspectorTitle, inspector, status }: {
-  rail: ReactNode; viewportToolbar?: ReactNode; viewport: ReactNode; inspectorTitle: string; inspector: ReactNode; status: ReactNode;
+export function StudioLayout({ rail, viewportToolbar, viewport, inspectorTitle, inspector, status, stepId }: {
+  rail: ReactNode; viewportToolbar?: ReactNode; viewport: ReactNode; inspectorTitle: string; inspector: ReactNode; status: ReactNode; stepId?: string;
 }) {
   const [collapsed, setCollapsed] = useState(false);
-  return <div className="project-studio" data-testid="project-studio">
+  return <div className="project-studio" data-testid="project-studio" data-step={stepId}>
     {rail}
     <section className="studio-viewport" aria-label="Visualização do modelo">
       {viewportToolbar}

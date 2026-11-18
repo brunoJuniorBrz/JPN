@@ -6,6 +6,7 @@ import type { StructureResult } from "@/domain/structure";
 import { calculateEstimate } from "@/domain/calculations/estimate";
 import { formatMeasure } from "@/domain/calculations/units";
 import { resolvePhysicalStructure } from "@/domain/physical-structure";
+import { declaredTakeoff } from "@/domain/declared-takeoff";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -20,10 +21,13 @@ export function liveTotals(project: Project, result: StructureResult | null) {
   const model = result?.model ?? (project.workspace.physicalStructure ? resolvePhysicalStructure(project).model : null);
   // Massa só aparece quando alguma peça tem massa cadastrada; nada de "0 kg" por falta de dado.
   const known = model && result?.model ? result.model.pieces.reduce((sum, p) => sum + (p.massKg ?? 0), 0) : 0;
-  const massKg = model && known > 0 ? known : null;
+  // Modelo declarado: massa do levantamento declarado (kg/m informado por perfil), só quando todas as peças têm massa.
+  let declaredKg: number | null = null;
+  if (model && !result?.model) { try { declaredKg = declaredTakeoff(project).totals.massKg; } catch { declaredKg = null; } }
+  const massKg = model && known > 0 ? known : declaredKg !== null && declaredKg > 0 ? declaredKg : null;
   let saleCents: number | null = null;
   try { saleCents = calculateEstimate(project).saleCents; } catch { saleCents = null; }
-  return { pieces: model?.pieces.length ?? null, lengthM: model && result?.model ? result.model.totalLengthM : model ? model.pieces.reduce((sum, item) => sum + item.lengthMm, 0) / 1000 : null, massKg, massComplete: result?.model?.massComplete ?? false, saleCents };
+  return { pieces: model?.pieces.length ?? null, lengthM: model && result?.model ? result.model.totalLengthM : model ? model.pieces.reduce((sum, item) => sum + item.lengthMm, 0) / 1000 : null, massKg, massComplete: result?.model?.massComplete ?? declaredKg !== null, saleCents };
 }
 
 /** Estado da análise para a barra: atual, desatualizada, rodando há N s, erro ou sem análise. */

@@ -76,11 +76,13 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const focus = useRef<(id: string) => void>(() => {});
   const colorize = useRef<(colors?: Record<string, number>) => void>(() => {});
   const showDeformed = useRef<(segments: { a: [number, number, number]; b: [number, number, number] }[] | null) => void>(() => {});
+  const [projection, setProjection] = useState<Projection>("perspective");
   // F5: ações do menu de contexto do estúdio. Usam os mesmos estados dos botões de ferramentas (só visuais).
   useEffect(() => {
     if (!onApi) return;
     onApi({
-      isolate: id => { onSelect(id); setVisibleRoles([...roles]); setIsolatedId(id); },
+      // select.current: a API não muda quando o pai recria onSelect (evita laço onApi → render → onApi).
+      isolate: id => { select.current(id); setVisibleRoles([...roles]); setIsolatedId(id); },
       hideRole: role => { setVisibleRoles(current => current.filter(r => r !== role)); setIsolatedId(null); },
       showAll: () => { setVisibleRoles([...roles]); setIsolatedId(null); },
       measureFrom: nodeId => { setMeasuring(true); setMeasurementSelection({ model, ids: [nodeId] }); },
@@ -91,11 +93,10 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       setRoles: visible => { setVisibleRoles(roles.filter(r => visible.includes(r))); setIsolatedId(null); },
     });
     return () => onApi(null);
-  }, [onApi, onSelect, model]);
+  }, [onApi, model]);
   const applySite = useRef<(v?: SiteVisibility) => void>(() => {});
   useEffect(() => { applySite.current(siteVisibility); }, [siteVisibility, model, siteContext]);
   // Studio tools. All of them are view state: nothing is persisted or sent to the engine.
-  const [projection, setProjection] = useState<Projection>("perspective");
   const [finish, setFinish] = useState<SteelFinish>("painted");
   const [ghost, setGhost] = useState(false);
   const [cut, setCut] = useState<SectionCut | null>(null);
