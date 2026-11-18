@@ -17,6 +17,10 @@ A auditoria da integração geral confere blobs Git de testes históricos. Esta 
 | `tests/e2e/studio-measurement.spec.ts` | `1f8111b5e775b6fc8ded62671ce73c6075bf7de5` | `7d8eb37822bd2c6e0d6d76043c3f5fff492d309d` | Renomeia comando de visualização, mantendo testes de medição |
 | `tests/e2e/ux-actions.spec.ts` | `40c47d0bcf61cf6d7e011eefad0c7bf0d3936311` | `e95dabbea2c3b1dd75e700ffb4d665710b1e9c94` | Confere canvas real no lugar de aba inexistente e preserva busca/pendências |
 
+| `tests/e2e/integration-declared.spec.ts` | `3471934e847fe2f3b593191e9e0744b297c898e8` | `a2e8fd24b62fc0f7c3ad163b8dd62946c51511a0` | Abre explicitamente a vista 2D para conferir nós/IDs após validar visualização 3D do Studio; mantém as verificações do solver. |
+
+A jornada `tests/e2e/journey-galpao.spec.ts` (criada após o snapshot histórico) também abre a vista 2D explícita, preservando o ensaio de vento, combinações, análise e resistência sem alterar o oráculo numérico.
+
 ## Escopo do aceite
 
 1. Seletores obsoletos de abas e botões devem apontar para a interface real. Uma mudança em teste não é prova de funcionamento da interface.

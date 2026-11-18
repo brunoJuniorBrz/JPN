@@ -75,7 +75,7 @@ REVIEWED_AMENDMENTS = {
     # Materiais studio step via the openResultTab helper; solver, binding and blocking checks unchanged (was 02be09e).
     "tests/e2e/integration-generated.spec.ts": "cd703922ab820690c1cc57eba21736ebcbffe407",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
-    "tests/e2e/integration-declared.spec.ts": "c716931c89b85bfbf6fa5c41a998d17a634bd184",   # INT-1f: now picks the simple view (supersedes 232a7db, INT-1a)
+    "tests/e2e/integration-declared.spec.ts": "a2e8fd24b62fc0f7c3ad163b8dd62946c51511a0",   # INT-1f: now picks the simple view (supersedes 232a7db, INT-1a)
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/general-integration.spec.ts": "7bf58daedae0e19f41ee68d13809c9b071d66f81",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
