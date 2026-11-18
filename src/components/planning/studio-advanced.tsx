@@ -30,6 +30,7 @@ export function AdvancedToolsMenu({ goStep, openTool }: { goStep: (id: StudioSte
       <MenuLabel>Referências e modelos</MenuLabel>
       <MenuItem icon={<Receipt />} onSelect={() => toObra("Referência comercial auditada")}>Referência comercial do Tom</MenuItem>
       <MenuItem icon={<FileJson />} onSelect={() => toObra("Importar modelo estrutural declarado")}>Importar modelo estrutural (JSON)</MenuItem>
+      <MenuItem icon={<Network />} onSelect={() => goStep("tesoura")}>Editor de tesoura — uma ou duas águas</MenuItem>
       <MenuItem icon={<Network />} onSelect={() => toObra("Criar ou editar estrutura irregular")}>Estrutura irregular por nós e barras</MenuItem>
       <MenuSeparator />
       <MenuLabel>Experimentais</MenuLabel>
@@ -43,7 +44,7 @@ export function AdvancedToolsMenu({ goStep, openTool }: { goStep: (id: StudioSte
 
 const tourKey = "jpn-studio-tour:v1";
 const tourSteps = [
-  { title: "Etapas à esquerda", body: "Obra, Geometria, Estrutura, Cargas, Análise, Verificação, Materiais e Arquivos. No celular elas ficam na barra de baixo." },
+  { title: "Etapas à esquerda", body: "Obra, Geometria, Estrutura, Tesoura, Cargas, Análise, Verificação, Materiais e Arquivos. No celular elas ficam na barra de baixo." },
   { title: "Modelo sempre no centro", body: "Clique numa peça para ver perfil, comprimento e, com análise atual, N, V e M no inspetor. Clique direito (ou Shift+F10) abre as ações do 3D." },
   { title: "Resultados e pendências", body: "A barra sobre o 3D escolhe combinação e camada, com legenda. O selo vermelho “Bloqueado para fabricação” abre todas as pendências: nada é liberado sem revisão do engenheiro." },
   { title: "Atalhos", body: "Ctrl+K (⌘K no Mac) abre os comandos: etapas, ferramentas, recalcular e busca de peças." },
