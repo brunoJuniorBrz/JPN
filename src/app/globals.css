@@ -748,10 +748,10 @@ body { font-size: 16px; }
 .workspace-exit-link:hover, .workspace-rail-toggle:hover { background: #f1efe6; }
 .workspace-exit-link:focus-visible, .workspace-rail-toggle:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 @media (min-width: 1000px) {
-  .app:has(.project-studio), .app:has(.structure-viewer) { grid-template-columns: minmax(0, 1fr); }
-  .app:has(.project-studio) > .sidebar, .app:has(.structure-viewer) > .sidebar { display: none; }
-  .app:has(.project-studio) .main-content, .app:has(.structure-viewer) .main-content { max-width: none; width: 100%; }
-  .app:has(.project-studio) .workspace-exit-link, .app:has(.structure-viewer) .workspace-exit-link { display: inline-flex; }
+  .app:has(.project-studio), .app:has(.structure-viewer), .app:has(.result-workspace) { grid-template-columns: minmax(0, 1fr); }
+  .app:has(.project-studio) > .sidebar, .app:has(.structure-viewer) > .sidebar, .app:has(.result-workspace) > .sidebar { display: none; }
+  .app:has(.project-studio) .main-content, .app:has(.structure-viewer) .main-content, .app:has(.result-workspace) .main-content { max-width: none; width: 100%; }
+  .app:has(.project-studio) .workspace-exit-link, .app:has(.structure-viewer) .workspace-exit-link, .app:has(.result-workspace) .workspace-exit-link { display: inline-flex; }
 }
 @media (min-width: 1200px) {
   .app:has(.project-studio) .workspace-rail-toggle { display: inline-flex; }
