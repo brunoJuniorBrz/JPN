@@ -18,6 +18,9 @@ import { PageHeading } from "@/components/ui";
 import { GeneralForm } from "@/components/projects/general-form";
 import { RoofForm } from "@/components/geometry/roof-form";
 import { StructureForm } from "./structure-form";
+import { TrussEditor } from "@/components/truss/truss-editor";
+import { applyTrussToProject, trussDefaultsFor } from "@/domain/truss-editor";
+import { CompletePackageControl } from "./complete-package-control";
 import { GeneratedFiles, GeneratedMaterials, GeneratedReview, GeneratedSafetyWarning, GeneratedTotals, GeneratedViewport, useGeneratedResult, type ResultSection } from "./takeoff-summary";
 import { DeclaredEngineering, DeclaredFiles, DeclaredMaterials, DeclaredSafetyWarning, DeclaredViewport, useDeclaredModel } from "./declared-model-summary";
 import { ProjectWorkbench, type WorkbenchTool } from "./project-workbench";
@@ -37,7 +40,7 @@ import { newSpatialPreparation } from "@/domain/spatial-preparation";
 import type { PieceRole } from "@/domain/structure";
 
 const workbenchSection: Record<StudioStepId, ResultSection> = {
-  obra: "model", geometria: "model", estrutura: "model", cargas: "engineering", analise: "engineering",
+  obra: "model", geometria: "model", estrutura: "model", tesoura: "model", cargas: "engineering", analise: "engineering",
   verificacao: "model", materiais: "materials", arquivos: "files",
 };
 
@@ -56,7 +59,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   const [viewerApi, setViewerApi] = useState<Viewer3DApi | null>(null);
   const { analysis: studioAnalysis, commands: analysisCommands } = useStudioAnalysis();
   const [project, setProject] = useState(() => initial ?? newProject(data.settings));
-  const [step, setStep] = useState<StudioStepId>(initialStudioStep ?? studioStepFromLegacy(initialStep));
+  const [step, setStep] = useState<StudioStepId>(initialStudioStep ?? (initial?.workspace.trussEditor && initialStep === 3 ? "tesoura" : studioStepFromLegacy(initialStep)));
   const [analysisTool, setAnalysisTool] = useState<AnalysisTool>("overview");
   const [submitted, setSubmitted] = useState(false), [message, setMessage] = useState("");
   const [profileToEdit, setProfileToEdit] = useState<PieceRole>();
@@ -179,13 +182,25 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     ? <p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no centro; o contorno da cobertura, a edição por nós e barras e a importação de nova revisão JSON ficam em Ferramentas do projeto, abaixo. Nenhuma cobertura foi gerada.</p>
     : <><GuidedRoofSetup project={project} onChange={update} />{["Cobertura metálica", "Galpão", "Barracão"].includes(project.category) ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning partialOutline={project.workspace.guidedSupport?.coverage === "partial"} /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>}</>;
   else if (step === "estrutura") panel = declared ? <SpatialPreparationPanel project={project} onChange={update} mixed /> : <StructureForm project={project} onChange={update} profileToEdit={profileToEdit} />;
+  else if (step === "tesoura") panel = <TrussEditor key={project.id} initial={project.workspace.trussEditor ?? trussDefaultsFor(project)} applyLabel="Aplicar na obra e atualizar o 3D" onApply={t => {
+    const next = applyTrussToProject(project, t);
+    update({ roof: next.roof, planning: next.planning, workspace: next.workspace, technicalNotes: next.technicalNotes, updatedAt: next.updatedAt });
+    setSelectedPiece(""); setSelectedNode(""); setHoveredPiece("");
+    setMessage("Tesoura atualizada no mesmo modelo físico do 3D, CAD e quantitativos. Fabricação continua bloqueada.");
+  }} />;
   else if (step === "cargas" && declared) panel = <div className="notice"><p>No modelo declarado, apoios, cargas e combinações ficam na preparação física da etapa Estrutura.</p><button type="button" className="button secondary" onClick={() => go("estrutura")}>Abrir preparação física</button></div>;
   else if (step === "analise" && declared) panel = <DeclaredEngineering />;
   else if (step === "verificacao") panel = declared
     ? <div className="notice"><p>Os relatórios de resistência, apoios e ligações ficam nos resultados da análise estrutural. Verificações normativas incompletas · fabricação bloqueada.</p><button type="button" className="button secondary" onClick={() => go("analise")}>Abrir análise estrutural</button></div>
     : <><GeneratedReview result={generated.result} pending={generated.pending} onResolvePending={resolvePending} /><div className="spatial-jump"><p>Resistência, apoios e ligações aparecem nos resultados da Análise Estrutural Experimental.</p><button type="button" className="button secondary" onClick={() => openTool("mixedlocal")}>Abrir análise estrutural</button></div></>;
   else if (step === "materiais") panel = declared ? <DeclaredMaterialsPart project={project} /> : <GeneratedMaterials result={generated.result} grouped={generated.grouped} />;
-  else if (step === "arquivos") panel = declared ? <DeclaredFiles project={project} /> : <GeneratedFiles project={project} hasModel={!!generated.result.model} />;
+  else if (step === "arquivos") panel = declared ? <>
+    <DeclaredFiles project={project} />
+    <CompletePackageControl project={project} onChange={update} beforeExport={() => {
+      saveProject(project);
+      if (!flush()) throw Error("Não foi possível salvar esta revisão antes da exportação.");
+    }} />
+  </> : <GeneratedFiles project={project} hasModel={!!generated.result.model} />;
 
   const next = studioSteps[stepIndex + 1];
   const pendingCount = declared ? undefined : generated.result.pending.length;
@@ -208,7 +223,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
           ? <InfoTip label="visualização 3D">Visualização 3D da estrutura disponível também no celular. Arraste para girar; use Iso/Superior/Frontal/Lateral para vistas prontas.</InfoTip>
           : <span className="field-hint">{`Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span>}</div>
         {preview.model && <StudioResultsBar onSelectNode={setSelectedNode} onOpenAnalysis={() => openTool("mixedlocal")} showLabels={showLabels} onShowLabels={setShowLabels} />}</>}
-      viewport={<StudioViewportMenu model={selectionModel} selected={selectedPiece} api={viewerApi} onShowForces={id => { setSelectedPiece(id); if (step !== "analise" && step !== "verificacao") go("verificacao"); }} onEditProfile={declared ? () => go("estrutura") : configureProfile}>
+      viewport={<StudioViewportMenu model={selectionModel} selected={selectedPiece} api={viewerApi} onShowForces={id => { setSelectedPiece(id); if (step !== "analise" && step !== "verificacao") go("verificacao"); }} onEditProfile={declared ? () => go(project.workspace.trussEditor ? "tesoura" : "estrutura") : configureProfile}>
         {declared ? declaredModel : <GeneratedViewport project={deferredProject} result={viewGenerated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece}
           analysisColors={resultView.colors} deformed={resultView.deformed} orientationCube labels={resultView.labels} onApi={setViewerApi} onHover={setHoveredPiece} />}
       </StudioViewportMenu>}
