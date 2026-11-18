@@ -24,7 +24,7 @@ export function StudioViewportMenu({ children, model, selected, api, onShowForce
   const viewer = !!api;
   return <ContextMenu>
     <ContextMenuTrigger asChild>
-      <div className="studio-canvas-zone" tabIndex={0} aria-label="Modelo do projeto. Shift+F10 ou tecla Menu abre as ações do 3D." data-testid="studio-canvas-zone">{children}</div>
+      <div className="studio-canvas-zone" onContextMenuCapture={event => { if (event.clientX > 0 && event.clientY > 0) api?.pickAt(event.clientX, event.clientY); }} tabIndex={0} aria-label="Modelo do projeto. Shift+F10 ou tecla Menu abre as ações do 3D." data-testid="studio-canvas-zone">{children}</div>
     </ContextMenuTrigger>
     <ContextMenuContent aria-label="Ações do modelo 3D">
       <ContextMenuLabel>{piece ? `${piece.id} · ${roleLabels[piece.role]}` : "Nenhuma peça selecionada"}</ContextMenuLabel>

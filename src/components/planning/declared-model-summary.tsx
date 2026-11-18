@@ -20,11 +20,11 @@ export function useDeclaredModel(project: Project) {
 type Declared = ReturnType<typeof useDeclaredModel>;
 
 /** Visualização real das barras declaradas: a conversão não infere seções ou apoios. */
-export function DeclaredViewport({ project, declared: { model, review }, selected, onSelect, nodeId, onSelectNode, analysisColors, deformed, labels, onApi }: {
+export function DeclaredViewport({ project, declared: { model, review }, selected, onSelect, nodeId, onSelectNode, analysisColors, deformed, labels, onApi, onHover }: {
   project: Project; declared: Declared; selected?: string; onSelect?: (id: string) => void;
   nodeId?: string; onSelectNode?: (id: string) => void; analysisColors?: Record<string, number>;
   deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null;
-  labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void;
+  labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; onHover?: (id: string) => void;
 }) {
   const [localPiece, setLocalPiece] = useState(""), [localNode, setLocalNode] = useState("");
   const [view, setView] = useState<"3d" | "lines">("3d");
@@ -41,7 +41,7 @@ export function DeclaredViewport({ project, declared: { model, review }, selecte
       <p className="field-hint">Barras e nós declarados em 3D. Sem inferência de perfis, ligações ou apoios; dados faltantes continuam pendentes.</p>
       <Structure3D model={visualModel} roof={project.roof} planning={project.planning} projectName={project.name}
         selected={piece} onSelect={setPiece} selectedNodeId={node} onSelectNode={setNode} inspectNodes
-        orientationCube labels={labels} analysisColors={analysisColors} deformed={deformed} onApi={onApi} allowPresentation={false} />
+        orientationCube labels={labels} analysisColors={analysisColors} deformed={deformed} onApi={onApi} onHover={onHover} allowPresentation={false} />
     </> : <PhysicalLineView model={model} selected={piece} onSelect={setPiece} selectedNodeId={node} onSelectNode={setNode} analysisColors={analysisColors} />}
   </section>;
 }

@@ -51,6 +51,7 @@ export function PlanningEditor(props: EditorProps) {
 function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen3D = false }: EditorProps) {
   const { data, saveProject, flush, saveState, setInvalidDraft } = useData(); const router = useRouter();
   const [selectedPiece, setSelectedPiece] = useState(""), [selectedNode, setSelectedNode] = useState("");
+  const [hoveredPiece, setHoveredPiece] = useState("");
   const [showLabels, setShowLabels] = useState(true);
   const [viewerApi, setViewerApi] = useState<Viewer3DApi | null>(null);
   const { analysis: studioAnalysis, commands: analysisCommands } = useStudioAnalysis();
@@ -151,7 +152,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   }
 
   const resultView = useStudioResultView(selectionModel, selectedPiece, selectedNode, showLabels);
-  const declaredModel = declared ? <DeclaredModelParts project={project} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} analysisColors={resultView.colors} deformed={resultView.deformed} labels={resultView.labels} onApi={setViewerApi} /> : null;
+  const declaredModel = declared ? <DeclaredModelParts project={project} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} analysisColors={resultView.colors} deformed={resultView.deformed} labels={resultView.labels} onApi={setViewerApi} onHover={setHoveredPiece} /> : null;
   // F4: totais e pendências derivados do projeto em memória (atualizam no mesmo render da edição).
   const totals = useMemo(() => liveTotals(project, declared ? null : generated.result), [project, declared, generated.result]);
   const declaredIssues = useMemo(() => {
@@ -159,8 +160,8 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     try { const draft = project.workspace.spatialPreparation ?? newSpatialPreparation(project); return mixedPreparationReview(project, draft, !!draft.loading).issues.map(i => i.message); }
     catch { return [] as string[]; }
   }, [declared, project]);
-  const showSelection = !!selectedPiece || !!selectedNode || step === "analise" || step === "verificacao";
-  const selection = showSelection ? <StudioSelection model={selectionModel} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} /> : null;
+  const showSelection = !!selectedPiece || !!selectedNode || !!hoveredPiece || step === "analise" || step === "verificacao";
+  const selection = showSelection ? <StudioSelection model={selectionModel} selected={selectedPiece} hovered={hoveredPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} /> : null;
   const tool: WorkbenchTool = step === "cargas" ? "prepare" : analysisTool;
   const workbench = <ProjectWorkbench project={project} activeSection={declared && step === "cargas" ? "model" : workbenchSection[step]} tool={tool} onToolChange={openTool} onChange={update} onEditStructure={editStructure} />;
 
@@ -209,7 +210,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
         {preview.model && <StudioResultsBar onSelectNode={setSelectedNode} onOpenAnalysis={() => openTool("mixedlocal")} showLabels={showLabels} onShowLabels={setShowLabels} />}</>}
       viewport={<StudioViewportMenu model={selectionModel} selected={selectedPiece} api={viewerApi} onShowForces={id => { setSelectedPiece(id); if (step !== "analise" && step !== "verificacao") go("verificacao"); }} onEditProfile={configureProfile}>
         {declared ? declaredModel : <GeneratedViewport project={deferredProject} result={viewGenerated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece}
-          analysisColors={resultView.colors} deformed={resultView.deformed} orientationCube labels={resultView.labels} onApi={setViewerApi} />}
+          analysisColors={resultView.colors} deformed={resultView.deformed} orientationCube labels={resultView.labels} onApi={setViewerApi} onHover={setHoveredPiece} />}
       </StudioViewportMenu>}
       inspectorTitle={step === "analise" && !declared ? `Análise · ${analysisToolLabel(analysisTool)}` : stepLabel}
       inspector={<>
@@ -239,14 +240,14 @@ function analysisToolLabel(tool: AnalysisTool) {
   return { overview: "Roteiro estrutural", analysis: "Análise disponível", spatial: "Análise 3D experimental", mixedlocal: "Análise Estrutural Experimental" }[tool];
 }
 
-function DeclaredModelParts({ project, selected, onSelect, nodeId, onSelectNode, analysisColors, deformed, labels, onApi }: {
+function DeclaredModelParts({ project, selected, onSelect, nodeId, onSelectNode, analysisColors, deformed, labels, onApi, onHover }: {
   project: Project; selected: string; onSelect: (id: string) => void; nodeId: string; onSelectNode: (id: string) => void;
   analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null;
-  labels?: import("./structure-3d").Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void;
+  labels?: import("./structure-3d").Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; onHover?: (id: string) => void;
 }) {
   const declared = useDeclaredModel(project);
   return <DeclaredViewport project={project} declared={declared} selected={selected} onSelect={onSelect} nodeId={nodeId} onSelectNode={onSelectNode}
-    analysisColors={analysisColors} deformed={deformed} labels={labels} onApi={onApi} />;
+    analysisColors={analysisColors} deformed={deformed} labels={labels} onApi={onApi} onHover={onHover} />;
 }
 function DeclaredMaterialsPart({ project }: { project: Project }) {
   const declared = useDeclaredModel(project);

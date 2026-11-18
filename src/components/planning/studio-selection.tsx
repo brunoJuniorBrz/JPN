@@ -15,14 +15,14 @@ const kn = (value: number | null | undefined, digits = 2) => value === null || v
  * Inspetor de seleção (F2): peça, segmentos e nó/apoio. Lê o modelo e, quando existe, a análise
  * atual (mesma entrada). Mostra esforços já calculados e pendências; nunca aprova peça ou apoio.
  */
-export function StudioSelection({ model, selected, onSelect, nodeId, onSelectNode }: {
-  model: StructureModel | null; selected: string; onSelect: (id: string) => void;
+export function StudioSelection({ model, selected, hovered = "", onSelect, nodeId, onSelectNode }: {
+  model: StructureModel | null; selected: string; hovered?: string; onSelect: (id: string) => void;
   nodeId: string; onSelectNode: (id: string) => void;
 }) {
   const { analysis } = useStudioAnalysis();
   const [query, setQuery] = useState(""), [nodeQuery, setNodeQuery] = useState("");
   const searchId = useId(), nodeSearchId = useId();
-  const piece = model?.pieces.find(p => p.id === selected) ?? null;
+  const piece = model?.pieces.find(p => p.id === (selected || hovered)) ?? null;
   const matches = useMemo(() => model && query.trim() ? findPieces(model.pieces, query) : null, [model, query]);
   const nodeMatches = useMemo(() => {
     if (!model || !nodeQuery.trim()) return [];
@@ -56,8 +56,8 @@ export function StudioSelection({ model, selected, onSelect, nodeId, onSelectNod
 
     {piece ? <article className="studio-selection-card" aria-label={`Peça ${piece.id}`}>
       <header>
-        <div><strong>{piece.id}</strong> · {roleLabels[piece.role]}</div>
-        <IconButton size="sm" label="Desmarcar peça" icon={<X />} onClick={() => onSelect("")} />
+        <div><strong>{piece.id}</strong> · {roleLabels[piece.role]}{!selected && <small> · sob cursor</small>}</div>
+        {selected ? <IconButton size="sm" label="Desmarcar peça" icon={<X />} onClick={() => onSelect("")} /> : <button type="button" className="button secondary" onClick={() => onSelect(piece.id)}>Fixar seleção</button>}
       </header>
       <dl className="studio-facts">
         <div><dt>Perfil</dt><dd>{piece.profile.name || piece.profile.section || "Perfil não definido"}</dd></div>
