@@ -17,16 +17,22 @@ import { SpatialCoordinationPanel } from "./spatial-coordination-panel";
 import { MixedAnalysisWorkspace } from "./mixed-analysis-workspace";
 import { DeclaredTakeoffPanel } from "./declared-takeoff-panel";
 import type { ResultSection } from "./takeoff-summary";
-import {CompletePackageControl} from "./complete-package-control";
-import { TrussEditor } from "@/components/truss/truss-editor";
-import { applyTrussToProject, trussDefaultsFor } from "@/domain/truss-editor";
 
-export function ProjectWorkbench({ project, onChange, onEditStructure, activeSection = "engineering" }: { project: Project; onChange: (patch: Partial<Project>) => void; onEditStructure?: () => void; activeSection?: ResultSection }) {
-  const { data, saveProject, flush } = useData(), [tab, setTab] = useState("overview"), [message, setMessage] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
+export type WorkbenchTool = "overview" | "prepare" | "analysis" | "spatial" | "mixedlocal";
+
+/**
+ * Ferramentas de engenharia, materiais e arquivos do projeto. No estúdio (F1) a ferramenta
+ * vem das etapas (Cargas = preparar análise; Análise = demais ferramentas) em vez de um select.
+ * Fica sempre montado para preservar o estado da análise em andamento.
+ */
+export function ProjectWorkbench({ project, onChange, onEditStructure, activeSection = "engineering", tool, onToolChange }: { project: Project; onChange: (patch: Partial<Project>) => void; onEditStructure?: () => void; activeSection?: ResultSection; tool: WorkbenchTool; onToolChange: (tool: WorkbenchTool) => void }) {
+  const { data, saveProject, flush } = useData(), [message, setMessage] = useState(""), [error, setError] = useState(""), [busy, setBusy] = useState(false);
+  const tab = tool, setTab = onToolChange;
   const [preparationStage, setPreparationStage] = useState<"profiles" | "supports" | "loads" | "review">("profiles");
   const [label, setLabel] = useState(""), [author, setAuthor] = useState(""), [pieceId, setPieceId] = useState(""), [lengthMm, setLengthMm] = useState<number | null>(null);
   const declared=project.workspace.physicalStructure!==undefined;
-  const [mixedOpened,setMixedOpened]=useState(false);
+  const [mixedOpened,setMixedOpened]=useState(tool==="mixedlocal");
+  if (tool === "mixedlocal" && !mixedOpened) setMixedOpened(true);
   const model=resolvePhysicalStructure(project).model,config=project.workspace.cutting;
   const preproduction = !declared && model && activeSection==="materials" ? buildPreproductionDossier(project) : null;
   let plan: ReturnType<typeof projectCutting> | null = null, pending = "";
@@ -58,13 +64,10 @@ export function ProjectWorkbench({ project, onChange, onEditStructure, activeSec
     finally{setBusy(false);}
   }
   return <section className="project-workbench" hidden={activeSection==="model"} aria-label={activeSection==="materials"?"Aproveitamento e orçamento":activeSection==="engineering"?"Ferramentas de engenharia":"Desenhos e revisões"}>
-    {activeSection==="truss"&&<TrussEditor key={project.workspace.trussEditor?"saved":"new"} initial={project.workspace.trussEditor??trussDefaultsFor(project)} applyLabel="Aplicar na obra" onApply={t=>{const next=applyTrussToProject(project,t);onChange({planning:next.planning,roof:next.roof,workspace:next.workspace,technicalNotes:next.technicalNotes});}}/>}
-    {activeSection==="files"&&<CompletePackageControl project={project} onChange={onChange} beforeExport={()=>{saveProject(project);if(!flush())throw Error("Não foi possível salvar esta revisão antes da exportação.");}}/>}
     {activeSection === "materials" && <div className="result-business-action"><div><h3>Do levantamento ao orçamento</h3><p>Quantitativos geométricos preliminares. Confira preços e custos antes de apresentar uma proposta.</p></div><button type="button" className="button" disabled={!model} onClick={() => action(() => { onChange(transferTakeoff(project, Math.round(data.settings.defaultWastePercent * 100) / 100)); setMessage("Quantitativos vinculados ao orçamento de venda. Confira preços por metro e custos na área comercial."); })}>Atualizar quantitativos no orçamento</button></div>}
     {declared&&activeSection==="materials"&&<DeclaredTakeoffPanel project={project}/>}
-    {activeSection === "engineering" && <div className="actions"><button type="button" className="button" onClick={()=>{setTab("mixedlocal");setMixedOpened(true);}}>Preparar e analisar este projeto</button></div>}
-    {!declared && activeSection === "engineering" && <div className="spatial-jump"><p>Consulte o roteiro estrutural e os módulos de análise disponíveis nesta revisão. Nenhum resultado libera fabricação.</p><button type="button" className="button secondary" onClick={() => setTab("overview")}>Ver roteiro estrutural</button></div>}
-    {!declared && activeSection === "engineering" && <Field label="Ferramenta de engenharia"><Select value={tab} onChange={e=>{setTab(e.target.value);if(e.target.value==="mixedlocal")setMixedOpened(true);}}>{[["overview","Roteiro estrutural"],["prepare","Preparar análise"],["analysis","Análise disponível"],["spatial","Análise 3D experimental"],["mixedlocal","Análise Estrutural Experimental"]].map(([key,title])=><option key={key} value={key}>{title}</option>)}</Select></Field>}
+    {activeSection === "engineering" && tab !== "prepare" && <div className="actions"><button type="button" className="button" onClick={()=>{setTab("mixedlocal");setMixedOpened(true);}}>Preparar e analisar este projeto</button></div>}
+    {!declared && activeSection === "engineering" && tab !== "prepare" && tab !== "overview" && <div className="spatial-jump"><p>Consulte o roteiro estrutural e os módulos de análise disponíveis nesta revisão. Nenhum resultado libera fabricação.</p><button type="button" className="button secondary" onClick={() => setTab("overview")}>Ver roteiro estrutural</button></div>}
     {!declared && activeSection === "engineering" && tab === "overview" && <SpatialCoordinationPanel project={project} onEdit={openPreparation} onOpenAnalysis={() => setTab("spatial")} onEditStructure={onEditStructure} />}
     {!declared && activeSection === "engineering" && tab === "prepare" && <SpatialPreparationPanel key={preparationStage} initialSection={preparationStage} project={project} onChange={onChange} onOpenSpatial={() => setTab("spatial")} />}
     {!declared && activeSection === "engineering" && tab === "analysis" && <AnalysisPanel project={project} onChange={onChange} />}

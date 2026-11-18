@@ -9,10 +9,10 @@ import { applyTrussToProject } from "@/domain/truss-editor";
 export default function TrussPage() {
   const router = useRouter(), { data, saveProject, flush } = useData();
   return <section>
-    <PageHeading eyebrow="FERRAMENTA" title="Tesoura" description="Monte a tesoura de uma água do jeito que ela é fabricada: medidas em cm, ajuste ponto a ponto, barras e preço na hora." />
+    <PageHeading eyebrow="FERRAMENTA" title="Tesoura" description="Monte a tesoura de uma ou duas águas do jeito que ela é fabricada: medidas em cm, ajuste ponto a ponto, barras e preço na hora." />
     <TrussEditor applyLabel="Criar projeto com esta tesoura" onApply={t => {
       const base = newProject(data.settings);
-      base.name = `Cobertura uma água ${(t.spanMm / 1000).toLocaleString("pt-BR")} x ${(t.lengthMm / 1000).toLocaleString("pt-BR")} m`;
+      base.name = `Cobertura ${t.roofKind === "two-slopes" ? "duas águas" : "uma água"} ${(t.spanMm / 1000).toLocaleString("pt-BR")} x ${(t.lengthMm / 1000).toLocaleString("pt-BR")} m`;
       base.client = "Cliente a informar";
       const project = applyTrussToProject(base, t);
       saveProject(project);

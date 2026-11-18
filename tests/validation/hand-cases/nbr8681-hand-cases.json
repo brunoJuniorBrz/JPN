@@ -1,0 +1,87 @@
+{
+  "schema_version": "jpn.hand-cases/0-draft",
+  "status": "DRAFT_FORMAT: a pasta tests/validation/ do Codex ainda não existe na main (ac4abf9); converter para o formato dela quando existir",
+  "norms": {
+    "NBR8681": "ABNT NBR 8681:2025 (data/normas/nbr8681-2025-combinations.json, SHA f4020c71…)",
+    "NBR6123": "ABNT NBR 6123:2023 corrigida 2025 (src/domain/nbr6123-edition.ts)"
+  },
+  "declaredInputsWarning": "Valores marcados 'declared' são entradas do caso de ensaio, NÃO valores normativos: cargas, Vk, cpe e capacidades devem ser substituídos pelos do projeto real e conferidos pelo engenheiro.",
+  "tolerance": {"relative": 1e-9},
+  "computedStructuralApproval": false,
+  "fabricationRelease": false,
+  "releaseGate": "NOT_READY_BLOCKED",
+  "cases": [
+    {
+      "id": "HC-A-wind-suction",
+      "title": "Pressão efetiva de sucção na cobertura e fatores de combinação do vento",
+      "inputs": {
+        "VkMps": {"value": 30, "origin": "declared"},
+        "cpe": {"value": -1.0, "origin": "declared (a ler na Tabela 7/8 da NBR 6123 para a cobertura real)"},
+        "cpiAlternatives": {"value": [-0.3, 0.0], "origin": "NBR 6123 6.3.2.1 b) quatro faces igualmente permeáveis: -0,3 ou 0, o mais nocivo"}
+      },
+      "steps": [
+        {"step": 1, "clause": "NBR 6123 4.2 c)", "formula": "q = 0,613 Vk^2", "value": 551.7, "unit": "N/m2"},
+        {"step": 2, "clause": "NBR 6123 4.3.1", "formula": "dp = (cpe - cpi) q, cpi = -0,3", "value": -386.19, "unit": "N/m2"},
+        {"step": 3, "clause": "NBR 6123 4.3.1", "formula": "dp = (cpe - cpi) q, cpi = 0", "value": -551.7, "unit": "N/m2"},
+        {"step": 4, "clause": "NBR 6123 6.3.2.1 b)", "formula": "mais nocivo para sucção: cpi = 0", "value": -551.7, "unit": "N/m2"},
+        {"step": 5, "clause": "NBR 8681 5.1.3.1; Tabela 4 (vento, normal 1,4)", "formula": "ELU normal, vento principal: 1,4 dp", "value": -772.38, "unit": "N/m2"},
+        {"step": 6, "clause": "NBR 8681 5.1.3.1; Tabelas 4 e 6 (psi0 vento 0,6)", "formula": "ELU normal, vento acompanhante: 1,4 x 0,6 dp", "value": -463.428, "unit": "N/m2"},
+        {"step": 7, "clause": "NBR 8681 5.1.3.2; Tabela 4 (vento, especial 1,2)", "formula": "ELU especial, vento como ação especial: 1,2 dp", "value": -662.04, "unit": "N/m2"},
+        {"step": 8, "clause": "NBR 8681 5.1.5.4", "formula": "ELS rara, vento principal: 1,0 dp", "value": -551.7, "unit": "N/m2"},
+        {"step": 9, "clause": "NBR 8681 5.1.5.3; Tabela 6 (psi1 vento 0,3)", "formula": "ELS frequente, vento principal: 0,3 dp", "value": -165.51, "unit": "N/m2"},
+        {"step": 10, "clause": "NBR 8681 5.1.5.2; Tabela 6 (psi2 vento 0)", "formula": "ELS quase permanente: 0 x dp", "value": 0, "unit": "N/m2"}
+      ]
+    },
+    {
+      "id": "HC-B-purlin-simply-supported",
+      "title": "Terça biapoiada: ELU gravitacional, ELU de sucção com permanentes favoráveis e cargas de ELS",
+      "inputs": {
+        "spanM": {"value": 6.0, "origin": "declared"},
+        "tributaryWidthM": {"value": 1.5, "origin": "declared"},
+        "G1_purlinKnM": {"value": 0.075, "origin": "declared; Tabela 1 'peso próprio de estruturas de aço'"},
+        "G2_roofingKnM2": {"value": 0.10, "origin": "declared; classificada na Tabela 1 como 'elementos construtivos industrializados' (nota a) - classificação a confirmar pelo engenheiro"},
+        "Q_roofKnM2": {"value": 0.25, "origin": "declared (valor da NBR 6120 a confirmar pelo engenheiro); Tabela 6 linha 'coberturas' psi = 0,8/0,7/0,6; Tabela 4 'demais ações' 1,5"},
+        "W_netKnM2": {"value": -0.5517, "origin": "caso HC-A passo 4 (sucção, para cima)"}
+      },
+      "lineLoadsKnM": {"G1": 0.075, "G2": 0.15, "Q": 0.375, "W": -0.82755},
+      "steps": [
+        {"step": 1, "clause": "-", "formula": "cargas lineares = carga de área x 1,5 m", "value": {"G2": 0.15, "Q": 0.375, "W": -0.82755}, "unit": "kN/m"},
+        {"step": 2, "clause": "NBR 8681 5.1.3.1; Tabela 1 (1,25 / 1,30); Tabela 4 (1,5); 5.1.4.2 (vento de sucção favorável omitido)", "formula": "wd = 1,25 G1 + 1,30 G2 + 1,5 Q", "value": 0.85125, "unit": "kN/m"},
+        {"step": 3, "clause": "estática (biapoiada)", "formula": "Md = wd L^2 / 8", "value": 3.830625, "unit": "kN.m"},
+        {"step": 4, "clause": "estática (biapoiada)", "formula": "Vd = wd L / 2", "value": 2.55375, "unit": "kN"},
+        {"step": 5, "clause": "NBR 8681 5.1.3.1 (segundo conjunto: permanentes favoráveis); Tabela 1 (1,0); Tabela 4 (1,4); 4.3.3.1 (Q favorável omitida)", "formula": "wd = 1,0 (G1 + G2) + 1,4 W", "value": -0.93357, "unit": "kN/m"},
+        {"step": 6, "clause": "estática (biapoiada)", "formula": "Md = wd L^2 / 8 (inverte a mesa comprimida)", "value": -4.201065, "unit": "kN.m"},
+        {"step": 7, "clause": "estática (biapoiada)", "formula": "reação de arrancamento por apoio = |wd| L / 2", "value": 2.80071, "unit": "kN"},
+        {"step": 8, "clause": "comparação: permanentes desfavoráveis com sucção", "formula": "wd = 1,25 G1 + 1,30 G2 + 1,4 W", "value": -0.86982, "unit": "kN/m", "note": "menos crítico que o passo 5 (|wd| 7% menor)"},
+        {"step": 9, "clause": "NBR 8681 5.1.5.4", "formula": "ELS rara, Q principal: G1 + G2 + Q", "value": 0.6, "unit": "kN/m"},
+        {"step": 10, "clause": "NBR 8681 5.1.5.4; 4.3.3.1", "formula": "ELS rara, vento principal: G1 + G2 + W (Q favorável omitida)", "value": -0.60255, "unit": "kN/m"},
+        {"step": 11, "clause": "NBR 8681 5.1.5.3; Tabela 6 (psi1 coberturas 0,7)", "formula": "ELS frequente, Q principal: G1 + G2 + 0,7 Q", "value": 0.4875, "unit": "kN/m"},
+        {"step": 12, "clause": "NBR 8681 5.1.5.2; Tabela 6 (psi2 coberturas 0,6; vento 0)", "formula": "ELS quase permanente: G1 + G2 + 0,6 Q", "value": 0.45, "unit": "kN/m"}
+      ],
+      "expectedEnvelope": {"ulsMaxKnM": 0.85125, "ulsMinKnM": -0.93357, "slsRareMaxKnM": 0.6, "slsRareMinKnM": -0.60255},
+      "notCovered": ["flecha (exige o perfil e o limite da NBR 8800 Anexo C)", "resistência do perfil", "fixação da telha"]
+    },
+    {
+      "id": "HC-C-support-pullout",
+      "title": "Arrancamento de um apoio sobre parede existente: permanente mínimo + sucção máxima",
+      "inputs": {
+        "R_G_kN": {"value": 3.10, "origin": "declared: reação característica do peso próprio de aço (compressão, +)"},
+        "R_Q_kN": {"value": 2.00, "origin": "declared: reação característica da sobrecarga de cobertura (compressão)"},
+        "R_W_kN": {"value": -6.40, "origin": "declared: reação característica do vento de sucção (tração, -)"},
+        "declaredCapacityKn": {"value": 8.0, "origin": "declared: capacidade de cálculo à tração do conjunto de chumbadores do apoio (ficha do fabricante)"}
+      },
+      "steps": [
+        {"step": 1, "clause": "NBR 8681 5.1.3.1 (permanentes favoráveis); Tabela 1 (1,0); Tabela 4 (1,4); 5.1.4.2 (Q favorável omitida)", "formula": "Rd = 1,0 R_G + 1,4 R_W", "value": -5.86, "unit": "kN"},
+        {"step": 2, "clause": "comparação: permanentes desfavoráveis (Tabela 1, aço 1,25)", "formula": "Rd = 1,25 R_G + 1,4 R_W", "value": -5.085, "unit": "kN", "note": "subestima o arrancamento em 13,2% se só o conjunto desfavorável for gerado"},
+        {"step": 3, "clause": "-", "formula": "demanda de arrancamento = max(0, -Rd) do passo 1", "value": 5.86, "unit": "kN"},
+        {"step": 4, "clause": "capacidade declarada (o JPN não calcula)", "formula": "razão = 5,86 / 8,0", "value": 0.7325, "unit": "-"},
+        {"step": 5, "clause": "comparação", "formula": "razão com o conjunto desfavorável = 5,085 / 8,0", "value": 0.635625, "unit": "-"}
+      ],
+      "pendingForEngineer": [
+        "Tração no aço do chumbador pela NBR 8800 (barra redonda rosqueada): fórmula e item a conferir no texto da norma, não consultado nesta revisão",
+        "Arrancamento da alvenaria/concreto (cone, aderência, borda): fora da NBR 8800; depende da ficha do fabricante e do substrato",
+        "Interação tração + cisalhamento no chumbador"
+      ]
+    }
+  ]
+}
