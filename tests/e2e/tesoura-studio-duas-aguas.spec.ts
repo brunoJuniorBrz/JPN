@@ -40,3 +40,24 @@ test("obra do Tom continua com apenas uma água", async ({ page }) => {
   await expect(page.getByLabel("Tipo de cobertura")).toHaveValue("one-slope");
   await expect(page.getByRole("button", { name: "Criar projeto com esta tesoura" })).toBeEnabled();
 });
+
+test("obra nova 12×20 em duas águas não herda o exemplo 8×10 nem preços", async ({ page }) => {
+  test.setTimeout(120000);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/tesoura");
+  await expect(page.getByLabel("Muro a muro (cm)")).toHaveValue("600");
+  await page.getByLabel("Muro a muro (cm)").fill("1200");
+  await page.getByLabel("Muro a muro (cm)").blur();
+  await page.getByLabel("Comprimento (cm)", { exact: true }).fill("2000");
+  await page.getByLabel("Comprimento (cm)", { exact: true }).blur();
+  await page.getByLabel("Tipo de cobertura").selectOption("two-slopes");
+  await expect(page.getByLabel("Tesouras")).toHaveValue("5");
+  await expect(page.getByLabel("Linhas de terça por água")).toHaveValue("7");
+  await expect(page.getByRole("button", { name: "Criar projeto com esta tesoura" })).toBeEnabled();
+  await page.getByRole("button", { name: "Criar projeto com esta tesoura" }).click();
+  await expect(page.getByTestId("project-studio")).toBeVisible();
+  await expect(page.getByTestId("fabrication-seal")).toBeVisible();
+  const nav = page.getByRole("navigation", { name: "Etapas do levantamento" });
+  await nav.getByRole("button", { name: /Tesoura/ }).click();
+  await expect(page.getByLabel("Tipo de cobertura")).toHaveValue("two-slopes");
+});
