@@ -99,16 +99,29 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const applySection = useRef<(value: SectionCut | null) => void>(() => {});
   const stats = useRef<HTMLSpanElement>(null);
   useEffect(() => { select.current = onSelect; }, [onSelect]);
+  // Um único renderer WebGL por visualizador: trocar o modelo (ex.: rascunho da tesoura a cada edição)
+  // troca só a cena e dá dispose na anterior; o canvas e o contexto só são liberados ao desmontar.
+  // Este efeito vem ANTES do principal: na desmontagem a limpeza dele roda primeiro e marca o descarte total.
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null), unmounting = useRef(false);
+  const cameraMemory = useRef<{ position: THREE.Vector3; target: THREE.Vector3; zoom: number } | null>(null);
+  useEffect(() => { unmounting.current = false; return () => { unmounting.current = true; }; }, []);
   useEffect(() => {
     const container = host.current!;
-    let renderer: THREE.WebGLRenderer;
+    let renderer: THREE.WebGLRenderer, canvas: HTMLCanvasElement;
     const quality = viewerQuality(model.pieces.length, navigator.hardwareConcurrency, (navigator as Navigator & { deviceMemory?: number }).deviceMemory);
-    const canvas = document.createElement("canvas"), context = canvas.getContext("webgl2", { antialias: true, alpha: false, powerPreference: "default" });
-    if (!context) { const timer = setTimeout(() => setFailure("3D indisponível neste dispositivo. Use as vistas 2D acima."), 0); return () => clearTimeout(timer); }
-    try { renderer = new THREE.WebGLRenderer({ canvas, context, antialias: true, alpha: false, powerPreference: "default" }); }
-    catch { const timer = setTimeout(() => setFailure("3D indisponível neste dispositivo. Use as vistas 2D acima."), 0); return () => clearTimeout(timer); }
-    renderer.setClearColor(0xeef1ee); container.appendChild(renderer.domElement);
-    renderer.domElement.setAttribute("aria-label", "Modelo 3D da estrutura"); renderer.domElement.setAttribute("role", "img");
+    const kept = rendererRef.current && !rendererRef.current.getContext().isContextLost() ? rendererRef.current : null;
+    if (kept) { renderer = kept; canvas = kept.domElement; canvas.dataset.rebuilds = String(Number(canvas.dataset.rebuilds ?? "0") + 1); }
+    else {
+      canvas = document.createElement("canvas");
+      const context = canvas.getContext("webgl2", { antialias: true, alpha: false, powerPreference: "default" });
+      if (!context) { const timer = setTimeout(() => setFailure("3D indisponível neste dispositivo. Use as vistas 2D acima."), 0); return () => clearTimeout(timer); }
+      try { renderer = new THREE.WebGLRenderer({ canvas, context, antialias: true, alpha: false, powerPreference: "default" }); }
+      catch { const timer = setTimeout(() => setFailure("3D indisponível neste dispositivo. Use as vistas 2D acima."), 0); return () => clearTimeout(timer); }
+      renderer.setClearColor(0xeef1ee); container.appendChild(renderer.domElement);
+      renderer.domElement.setAttribute("aria-label", "Modelo 3D da estrutura"); renderer.domElement.setAttribute("role", "img");
+      rendererRef.current = renderer; canvas.dataset.rebuilds = "0";
+    }
+    const buildStart = performance.now();
     const scene = new THREE.Scene();
     // Shadows cost one extra on-demand pass. Keep them unless the device is
     // limited AND the model is large.
@@ -466,13 +479,30 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     renderer.domElement.addEventListener("pointerdown", down); renderer.domElement.addEventListener("pointerup", up); renderer.domElement.addEventListener("pointermove", move); renderer.domElement.addEventListener("pointerleave", leave); renderer.domElement.addEventListener("webglcontextlost", lost);
     renderer.domElement.addEventListener("wheel", wheel, { passive: true });
     resize();
+    // Modelo trocado no mesmo canvas (rascunho ao vivo): a câmera continua onde o usuário deixou.
+    const memory = kept ? cameraMemory.current : null;
+    if (memory) {
+      const camera = rig.active() as THREE.PerspectiveCamera | THREE.OrthographicCamera;
+      camera.position.copy(memory.position); camera.zoom = memory.zoom; camera.updateProjectionMatrix();
+      controls.target.copy(memory.target); rig.target.copy(memory.target); controls.update(); cameraMemory.current = null; render();
+    }
+    canvas.dataset.buildMs = (performance.now() - buildStart).toFixed(1);
+    canvas.dataset.geometries = String(renderer.info.memory.geometries);
     // Reflections arrive after the first frame so opening never waits for them.
     const environmentTimer = window.setTimeout(() => {
       if (disposed) return;
       canvas.dataset.environment = stage.loadEnvironment() ? "procedural" : "none";
       canvas.dataset.environmentMs = stage.environmentMs().toFixed(0); render();
     }, 60);
-    return () => { disposed = true; window.cancelAnimationFrame(hoverFrame); window.cancelAnimationFrame(orientationFrame); pickAt.current=()=>null; applyLabels.current = () => {}; viewHelper.dispose(); labelLayer.remove(); if (post) { post.gtao.dispose(); post.outline.dispose(); post.composer.dispose(); post = null; } showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); site?.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("pointermove", move); renderer.domElement.removeEventListener("pointerleave", leave); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
+    return () => { disposed = true; window.cancelAnimationFrame(hoverFrame); window.cancelAnimationFrame(orientationFrame); pickAt.current=()=>null; applyLabels.current = () => {}; viewHelper.dispose(); labelLayer.remove(); if (post) { post.gtao.dispose(); post.outline.dispose(); post.composer.dispose(); post = null; } showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); site?.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("pointermove", move); renderer.domElement.removeEventListener("pointerleave", leave); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose();
+      if (unmounting.current) { renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); rendererRef.current = null; cameraMemory.current = null; }
+      else {
+        // Troca de modelo: mantém canvas/contexto e guarda a câmera para a próxima cena.
+        const camera = rig.active() as THREE.PerspectiveCamera | THREE.OrthographicCamera;
+        cameraMemory.current = { position: camera.position.clone(), target: controls.target.clone(), zoom: camera.zoom };
+        renderer.renderLists.dispose();
+      }
+      highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
   }, [model, gridSpacingM, envelope, projectName, siteContext]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
