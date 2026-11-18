@@ -3,7 +3,7 @@ import type { PhysicalPiece } from "./structure";
 import { resolveMemberPhysical } from "./member-physical";
 import { structureSignature } from "./calculations/project-basis";
 import { newSpatialPreparation, spatialPreparationSchema, spatialPreparationReview, type SpatialPreparation } from "./spatial-preparation";
-import { ConnectivityError, discretizeGeometry } from "./spatial-connectivity";
+import { CONNECTIVITY_LIMITS, ConnectivityError, discretizeGeometry } from "./spatial-connectivity";
 import { mixedInputHash, mixedRequestSchema } from "./mixed-analysis";
 import { spatialSI } from "./spatial-analysis";
 import { verifyEngineeringCombinations } from "./engineering-combinations";
@@ -52,6 +52,11 @@ export function mixedPreparationReview(project: Project, draft: SpatialPreparati
 }
 
 export async function prepareMixedInput(project: Project, loaded = false, contract: MixedContract = "legacy") {
+  // Limite do cálculo continua independente da capacidade de cadastro e visualização CAD.
+  // Recusar explicitamente ANTES de validar ligações/IDs para não mascarar o bloqueio.
+  const physical=project.workspace.physicalStructure;
+  if(physical && (physical.nodes.length>CONNECTIVITY_LIMITS.nodes || physical.pieces.length>CONNECTIVITY_LIMITS.members))
+    throw new ConnectivityError("MODEL_LIMIT",`Motor estrutural limitado a ${CONNECTIVITY_LIMITS.nodes} nós ou ${CONNECTIVITY_LIMITS.members} peças. Modelo maior pode ser visualizado/exportado preliminarmente, mas não calculado neste contrato.`);
   const draft = spatialPreparationSchema.parse(project.workspace.spatialPreparation ?? newSpatialPreparation(project));
   if(draft.roofRegions)throw Error("COMPOSED_ROOF_PRELIMINARY: regiões retangulares compostas ainda sem transmissão auditada.");
   if(project.workspace.physicalStructure&&draft.loading?.wind)throw Error("DECLARED_STRUCTURE_UNSUPPORTED: vento em estrutura física declarada exige zonas e fachadas validadas.");

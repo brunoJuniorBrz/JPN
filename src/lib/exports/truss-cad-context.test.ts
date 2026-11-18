@@ -30,7 +30,7 @@ describe("CAD preliminar do editor de tesoura", () => {
     const generated=await createCompletePackage(p,{issuedAt:new Date("2026-11-18T10:00:00Z"),stockByGroup});
     const raw=generated.files.find(f=>f.name==="rastreabilidade/pendencias-completas.txt");
     expect(raw).toBeDefined();
-    expect(new TextDecoder().decode(raw!.bytes)).toContain("PENDENTE");
+    expect(new TextDecoder().decode(raw!.bytes)).toContain("SUPPORTS:");
     expect(compactMemorialWarnings(Array.from({length:117},(_,i)=>`MEMBER_PENDING: Peça T${i} sem vínculo.`))).toHaveLength(1);
     expect(generated.manifest.fabricationRelease).toBe(false);
     expect(generated.manifest.releaseGate).toBe("NOT_READY_BLOCKED");
