@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { openResultTab } from "./result-tabs";
+import { openStudioStep } from "./result-tabs";
 
 async function createQuickRoof(page: import("@playwright/test").Page) {
   await page.goto("/projetos/novo");
@@ -27,7 +27,7 @@ for (const width of [375, 1440]) {
   test(`pendências cadastrais levam à etapa de edição em ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await createQuickRoof(page);
-    await openResultTab(page, "Engenharia");
+    await openStudioStep(page, "Verificação");
     await expect(page.getByRole("heading", { name: "Pendências da revisão técnica" })).toBeVisible();
     await page.getByRole("button", { name: "Corrigir na estrutura" }).first().click();
     await expect(page.getByRole("heading", { name: "Como distribuir a estrutura?" })).toBeVisible();

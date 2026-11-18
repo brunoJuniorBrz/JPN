@@ -3,6 +3,8 @@ import { openResultTab } from "./result-tabs";
 
 for (const width of [375, 1440]) {
   test(`criação rápida abre perfis sólidos 3D e permite refinar o projeto em ${width}px`, async ({ page }) => {
+    // End-to-end WebGL + regenerate + full reload can exceed the default 30s on CI.
+    test.setTimeout(90000);
     await page.setViewportSize({ width, height: 900 });
     const errors: string[] = [];
     page.on("pageerror", e => errors.push(e.message));

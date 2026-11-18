@@ -30,3 +30,20 @@ A jornada `tests/e2e/journey-galpao.spec.ts` (criada após o snapshot histórico
 5. A exportação CAD de uma obra genérica deve permanecer funcional; a correção de produto está no commit `978bffb`.
 
 **Condição obrigatória de integração:** CI completa verde no novo HEAD, incluindo E2E, validações Python/Windows/Linux e build. `computedStructuralApproval=false`, `fabricationRelease=false` e `NOT_READY_BLOCKED` permanecem bloqueados. Nenhum deploy de produção sem teste remoto integrado.
+
+## Revisão pós-CI do PR #148 (falhas do HEAD f75390a)
+
+- `src/components/planning/planning-editor.tsx`: projeto novo declarado é salvo e roteado **antes** de montar o 3D na tela de cadastro; modelo, validação e bloqueio de fabricação não mudaram.
+- `tests/e2e/m35-irregular.spec.ts`: conserva o ensaio completo de geometria negativa, contorno, orçamento, suportes pendentes e segurança; URL recebe espera explícita de até 30 s.
+- `tests/e2e/planning.spec.ts` e `tests/e2e/ux-actions.spec.ts`: pendências cadastrais são exibidas e corrigidas em **Verificação**, não na antiga aba Engenharia; todos os asserts das pendências e ações continuam.
+- `tests/e2e/profiles-3d.spec.ts`: único seletor legado “Resultado” troca por “Materiais”; persistência de geometria e perfil segue obrigatória.
+- `tests/e2e/quick-project.spec.ts`: prazo total do teste com WebGL, regeneração e reload passa para 90 s, sem excluir validações de sólidos, quantitativos ou persistência.
+
+Blobs explicitamente revistos e fixados em `validation/integration-general/audit.py`:
+- `tests/e2e/planning.spec.ts`: `42b0e9a79de1f9d4b07b20a2a3c564c8aca5ea23`
+- `tests/e2e/profiles-3d.spec.ts`: `51a16f83c93441385db33db21e81f5dc639506e4`
+- `tests/e2e/ux-actions.spec.ts`: `1f4e72cafb6b27a4aadf34545d9fb17e6d1210b6`
+- `tests/e2e/quick-project.spec.ts`: `f780563e546b4e71f5f5b026e5b49288e74a7771`
+- `tests/e2e/m35-irregular.spec.ts`: `ef9a670b15d50688af852db13d05e8c9e0bc4ad9`
+
+Nenhum oráculo estrutural, aprovação, bloqueio de fabricação, regra de deploy ou arquivo de evidência histórico foi modificado. Merge condicionado à CI verde após este commit.

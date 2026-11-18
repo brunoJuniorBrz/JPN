@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { PLANNING_EXAMPLE_ID } from "../../src/domain/planning-example";
-import { openResultTab } from "./result-tabs";
+import { openResultTab, openStudioStep } from "./result-tabs";
 
 for (const width of [390, 1440]) test(`levantamento sem preços, revisão ao final e downloads em ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
@@ -53,7 +53,7 @@ test("cria levantamento com perfis pendentes e preserva os dados no backup", asy
   await expect(page.getByTestId("takeoff-totals")).toContainText("123");
   await openResultTab(page, "Arquivos");
   await expect(page.getByRole("button", { name: "Baixar lista em PDF" })).toBeEnabled();
-  await openResultTab(page, "Engenharia");
+  await openStudioStep(page, "Verificação");
   await expect(page.locator("#result-panel-engineering").getByRole("listitem").filter({hasText:/^Pilares: perfil não definido\./})).toBeVisible();
   await page.getByRole("button", { name: "Salvar levantamento" }).click();
   const snapshot = await page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!));

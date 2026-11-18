@@ -140,8 +140,14 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     saveProject(next); if (!flush()) throw Error("Não foi possível salvar o modelo importado; confira o aviso de armazenamento.");
     // Modelo declarado segue para Geometria (contorno da cobertura e aviso do modelo); gerado, para Materiais.
     const target: StudioStepId = next.workspace.physicalStructure ? "geometria" : "materiais";
+    // For a brand-new project, avoid mounting the large 3D viewer on /projetos/novo
+    // before the route transition. The saved model is ready in the destination page.
+    if (!initial) {
+      setInvalidDraft(false);
+      router.replace(`/projetos/${next.id}?fluxo=levantamento&etapa=${target}&vista=3d`);
+      return;
+    }
     setProject(next); setInvalidDraft(false); setStep(target); setOpen3D(true); setOpen3DRequest(n => n + 1); setSelectedPiece(""); setSelectedNode("");
-    if (!initial) router.replace(`/projetos/${next.id}?fluxo=levantamento&etapa=${target}&vista=3d`);
   }
   function open3DViewer() {
     if (preview.model) {
