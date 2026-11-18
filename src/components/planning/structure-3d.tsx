@@ -23,12 +23,14 @@ import { scenePoint } from "./profile-geometry";
 import { calculateNodeMeasurement, nextMeasurementNode } from "./node-measurement";
 import { buildProfileScene, pieceIdFromHit, viewerQuality, type ViewerMode } from "./profile-scene";
 import { createCameraRig, createStudioStage } from "./studio-stage";
+import { createTrussSiteScene } from "./truss-site-scene";
+import type { TrussEditor } from "@/domain/truss-editor";
 import { sectionAxes, sectionAxisLabels, sectionPlane, steelFinishes, steelFinishLabels, viewPose, type Projection, type SectionCut, type SteelFinish, type StudioView } from "./studio-view";
 
 const TRANSITION_MS = 420;
 const metres = (mm: number, digits = 3) => (mm / 1000).toLocaleString("pt-BR", { maximumFractionDigits: digits });
 
-export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false, orientationCube=false, labels, onApi, onHover, allowPresentation=true }: { orientationCube?: boolean; labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; onHover?: (id: string) => void; allowPresentation?: boolean; model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
+export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false, orientationCube=false, labels, onApi, onHover, siteContext, allowPresentation=true }: { orientationCube?: boolean; labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; onHover?: (id: string) => void; siteContext?: TrussEditor; allowPresentation?: boolean; model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
@@ -115,13 +117,17 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
     const duration = reducedMotion ? 0 : TRANSITION_MS;
     const profiles = buildProfileScene(model, quality.segments); scene.add(profiles.root);
+    const site = siteContext ? createTrussSiteScene(siteContext) : null;
+    if (site) scene.add(site.root);
     canvas.dataset.quality = quality.low ? "reduced" : "standard";
     canvas.dataset.shadows = shadows ? "on" : "off"; canvas.dataset.environment = "pending";
     canvas.dataset.solidCount = String(profiles.solidCount); canvas.dataset.fallbackCount = String(profiles.fallbackCount);
     canvas.dataset.framing = "whole-structure"; canvas.dataset.projection = "perspective";
     canvas.dataset.finish = "painted"; canvas.dataset.ghost = "false"; canvas.dataset.sectionAxis = "";
     const resources: (THREE.BufferGeometry | THREE.Material)[] = [];
-    const bounds = profiles.bounds, center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
+    const bounds = site ? profiles.bounds.clone().union(new THREE.Box3().setFromObject(site.root)) : profiles.bounds;
+    canvas.dataset.contextType = site ? "truss-architectural-preliminary" : "none";
+    const center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
     const span = Math.max(size.x, size.y, size.z, 1), gridStep = gridSpacingM;
     const grid = new THREE.GridHelper(gridStep * 20, 20, 0x9aa79c, 0xd3dad2); grid.position.set(center.x, 0, center.z); scene.add(grid);
     const gridMaterials = Array.isArray(grid.material) ? grid.material : [grid.material];
@@ -460,8 +466,8 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       canvas.dataset.environment = stage.loadEnvironment() ? "procedural" : "none";
       canvas.dataset.environmentMs = stage.environmentMs().toFixed(0); render();
     }, 60);
-    return () => { disposed = true; window.cancelAnimationFrame(hoverFrame); window.cancelAnimationFrame(orientationFrame); pickAt.current=()=>null; applyLabels.current = () => {}; viewHelper.dispose(); labelLayer.remove(); if (post) { post.gtao.dispose(); post.outline.dispose(); post.composer.dispose(); post = null; } showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("pointermove", move); renderer.domElement.removeEventListener("pointerleave", leave); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
-  }, [model, gridSpacingM, envelope, projectName]);
+    return () => { disposed = true; window.cancelAnimationFrame(hoverFrame); window.cancelAnimationFrame(orientationFrame); pickAt.current=()=>null; applyLabels.current = () => {}; viewHelper.dispose(); labelLayer.remove(); if (post) { post.gtao.dispose(); post.outline.dispose(); post.composer.dispose(); post = null; } showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); site?.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("pointermove", move); renderer.domElement.removeEventListener("pointerleave", leave); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
+  }, [model, gridSpacingM, envelope, projectName, siteContext]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
