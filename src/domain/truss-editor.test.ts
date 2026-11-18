@@ -96,7 +96,7 @@ describe("editor de tesoura por estações", () => {
     const t = tomTrussDefaults();
     // Dado salvo antes destes campos continua abrindo (defaults).
     const old = JSON.parse(JSON.stringify(t));
-    delete old.walls; delete old.anchor; delete old.supportZMm; delete old.gutter.lowSideMm; delete old.gutter.highSideMm; delete old.gutter.budgeted;
+    delete old.walls; delete old.anchor; delete old.supportZMm; delete old.gutter.lowSideMm; delete old.gutter.highSideMm; delete old.gutter.budgeted; delete old.gutter.pricePerMCents;
     delete old.sheet.piecesPerSlope; delete old.sheet.overlapMm; delete old.chord.extraBars; delete old.web.extraBars; delete old.purlin.extraBars;
     expect(trussEditorSchema.parse(old)).toEqual(t);
 
@@ -125,6 +125,13 @@ describe("editor de tesoura por estações", () => {
 
     const blank = blankTruss();
     expect(trussIssues(blank).filter(i => i.level === "erro")).toEqual([]);
+    expect(purlinPositions(blank)).toHaveLength(blank.purlinLines);
     expect(trussSummary(blank).knownCents).toBe(0);
+    // O checkbox da calha não pode fingir que orçou sem preço.
+    const budgetPending = trussSummary({ ...t, gutter: { ...t.gutter, budgeted: true } });
+    expect(budgetPending.missing).toContain("Calha (m)");
+    const pricedCalha = trussSummary({ ...t, gutter: { ...t.gutter, budgeted: true, pricePerMCents: 2400 } });
+    expect(pricedCalha.knownCents - one.knownCents).toBe(2400 * t.lengthMm / 1000);
+    expect(trussSummary({ ...t, gutter: { ...t.gutter, budgeted: false, pricePerMCents: 2400 } }).knownCents).toBe(one.knownCents);
   });
 });

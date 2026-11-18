@@ -143,6 +143,8 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
           <Cm label="Lado maior da calha (cm)" mm={t.gutter.highSideMm} onMm={v => set({ gutter: { ...t.gutter, highSideMm: v } })} hint="Lado do muro." />
         </div>
         <label className={styles.toggle}><input type="checkbox" checked={t.gutter.budgeted} onChange={e => set({ gutter: { ...t.gutter, budgeted: e.target.checked } })} /><span><strong>Calha entra no orçamento</strong><small>Desligado: a calha aparece no desenho, mas não soma.</small></span></label>
+        {t.gutter.budgeted && <NumberField label="Calha (R$/m)" money value={t.gutter.pricePerMCents} min={0} max={100000} decimals={2}
+          onChange={pricePerMCents => set({ gutter: { ...t.gutter, pricePerMCents } })} hint="Informe o preço de cada metro de calha; sem preço, o orçamento mostra pendente." />}
       </section>
       <section className={styles.card}>
         <h3>Tesoura</h3>

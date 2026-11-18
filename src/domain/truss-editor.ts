@@ -47,7 +47,7 @@ export const trussEditorSchema = z.object({
   gutter: z.object({ supportMm: mm.min(0).max(2000), widthMm: mm.min(0).max(3000), clearanceMm: mm.min(0).max(3000),
     /** Lado menor (lado da telha) e lado maior (lado do muro) da calha. */
     lowSideMm: mm.min(0).max(2000).default(125), highSideMm: mm.min(0).max(3000).default(200),
-    budgeted: z.boolean().default(false) }).strict(),
+    budgeted: z.boolean().default(false), pricePerMCents: z.number().int().min(0).max(10000000).nullable().default(null) }).strict(),
   /** Muros: altura do topo em relação ao piso. A tesoura apoia no muro alto. */
   walls: z.object({ lowMm: mm.min(0).max(20000), highMm: mm.min(0).max(20000), thicknessMm: mm.min(50).max(1000) }).strict()
     .default({ lowMm: 3000, highMm: 3800, thicknessMm: 150 }),
@@ -87,7 +87,7 @@ export type TrussEditor = z.infer<typeof trussEditorSchema>;
 export function tomTrussDefaults(): TrussEditor {
   return {
     version: 1, spanMm: 8000, lengthMm: 10000, trusses: 3,
-    gutter: { supportMm: 150, widthMm: 400, clearanceMm: 200, lowSideMm: 125, highSideMm: 200, budgeted: false },
+    gutter: { supportMm: 150, widthMm: 400, clearanceMm: 200, lowSideMm: 125, highSideMm: 200, budgeted: false, pricePerMCents: null },
     walls: { lowMm: 3000, highMm: 3800, thicknessMm: 150 }, supportZMm: 3000,
     anchor: { plateWidthMm: 150, plateHeightMm: 200, boltsPerSupport: 2, boltLengthMm: 1000, platePriceCents: null, boltPriceCents: null },
     tipHeightMm: 75, highHeightMm: 800, panelMm: 500, countFrom: "high", diagonal: "to-high",
@@ -103,7 +103,7 @@ export function tomTrussDefaults(): TrussEditor {
 /** Obra nova: modelo genérico para digitar por cima (sem preços). */
 export function blankTruss(): TrussEditor {
   const b = tomTrussDefaults();
-  return { ...b, spanMm: 6000, lengthMm: 8000, trusses: 3, highHeightMm: Math.round(75 + (6000 - 750) * 0.1), stationsMm: null, flippedPanels: [],
+  return { ...b, spanMm: 6000, lengthMm: 8000, trusses: 3, highHeightMm: Math.round(75 + (6000 - 750) * 0.1), purlinStepMm: 1000, stationsMm: null, flippedPanels: [],
     chord: { ...b.chord, barPriceCents: null }, web: { ...b.web, barPriceCents: null }, purlin: { ...b.purlin, barPriceCents: null },
     sheet: { ...b.sheet, pricePerMCents: null }, laborPerM2Cents: null, consumablesCents: null, screwPriceCents: null };
 }
@@ -233,6 +233,8 @@ export function trussSummary(t: TrussEditor) {
     { item: `Montantes e diagonais ${t.web.designation}${t.fullHeightBudget ? " (medida cheia)" : ""}`, qty: `${webBars} barras${t.web.extraBars ? ` (+${t.web.extraBars} folga)` : ""}`, cents: money(webBars, t.web) },
     { item: `Terças ${t.purlin.designation}`, qty: `${purlinBars} barras${t.purlin.extraBars ? ` (+${t.purlin.extraBars} folga)` : ""}`, cents: money(purlinBars, t.purlin) },
     { item: "Telha", qty: `${sheets} × ${(sheetLengthMm / 1000).toFixed(2).replace(".", ",")} m${k > 1 ? ` (${k} por água)` : ""}`, cents: t.sheet.pricePerMCents === null ? null : Math.round(sheetM * t.sheet.pricePerMCents) },
+    ...(t.gutter.budgeted ? [{ item: "Calha (m)", qty: `${(t.lengthMm / 1000).toFixed(2).replace(".", ",")} m`,
+      cents: t.gutter.pricePerMCents === null ? null : Math.round(t.lengthMm / 1000 * t.gutter.pricePerMCents) }] : []),
     { item: `Chapa de ancoragem ${Math.round(t.anchor.plateWidthMm / 10)} x ${Math.round(t.anchor.plateHeightMm / 10)} cm`, qty: `${plates} un`, cents: t.anchor.platePriceCents === null ? null : plates * t.anchor.platePriceCents },
     { item: `Chumbador ${(t.anchor.boltLengthMm / 1000).toFixed(2).replace(".", ",")} m`, qty: `${bolts} un`, cents: t.anchor.boltPriceCents === null ? null : bolts * t.anchor.boltPriceCents },
     { item: "Parafusos", qty: `${screws} un`, cents: t.screwPriceCents === null ? null : screws * t.screwPriceCents },
@@ -245,7 +247,7 @@ export function trussSummary(t: TrussEditor) {
     buy: { chord: chordBars, web: webBars, purlin: purlinBars }, columns, supports, plates, bolts,
     kg: { chord: kg(chordL, t.chord), web: kg(webL, t.web), purlin: kg(purlinL, t.purlin), total: kg(chordL, t.chord) + kg(webL, t.web) + kg(purlinL, t.purlin) },
     sheets, sheetLengthMm, sheetM, screws, areaM2, lines,
-    gutterLine: `Calha ${Math.round(t.gutter.widthMm / 10)} cm × ${(t.lengthMm / 1000).toFixed(2).replace(".", ",")} m${t.gutter.budgeted ? "" : " — fora do orçamento"}`,
+    gutterLine: `Calha ${Math.round(t.gutter.widthMm / 10)} cm × ${(t.lengthMm / 1000).toFixed(2).replace(".", ",")} m${t.gutter.budgeted ? (t.gutter.pricePerMCents === null ? " — preço pendente" : " — incluída no orçamento") : " — fora do orçamento"}`,
     knownCents: lines.reduce((s, l) => s + (l.cents ?? 0), 0), missing: lines.filter(l => l.cents === null).map(l => l.item),
   };
 }
