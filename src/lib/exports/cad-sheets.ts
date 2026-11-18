@@ -262,6 +262,35 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       }
       if(!supports.length&&page.name==="PLANTAS")
         pendingNotes.push("PENDENTE: apoios não declarados; nenhum apoio foi criado.");
+      // Truss dimensions are drawn BEFORE member labels so balloons avoid them.
+      // Graphic dimensions only. Inferred visual contacts with chord axes do
+      // not become declared joints or solver restraints.
+      if(opts.frame&&pieces.some(p=>p.role==="topChord")&&pieces.some(p=>p.role==="bottomChord")){
+        const webs=pieces.filter(p=>p.role==="web"&&!isDeclaredBrace(p)).filter(p=>{
+          const u=nodes.get(p.start)!,v=nodes.get(p.end)!;
+          return Math.hypot(u.x-v.x,u.y-v.y)<=1;
+        }).sort((p,q)=>{
+          const u=nodes.get(p.start)!,v=nodes.get(q.start)!;
+          return u[horizontal]-v[horizontal];
+        });
+        const bottoms=pieces.filter(p=>p.role==="bottomChord").flatMap(p=>[nodes.get(p.start)!,nodes.get(p.end)!]);
+        const bottomZ=bottoms.length?Math.min(...bottoms.map(n=>n.z)):datum;
+        // Dense trusses (many verticals): dimension only the two end heights.
+        // Every vertical length is in the identification table; 16 height
+        // dimensions plus 15 diagonal marks overprinted each other.
+        const heightWebs=webs.length>8?[webs[0],webs.at(-1)!]:webs;
+        for(const [i,p] of heightWebs.entries()){
+          const u=nodes.get(p.start)!,v=nodes.get(p.end)!;
+          book.dim(space,at(projection(u)),at(projection(v)),scale,
+            `ALTURA MONTANTE ${marks.get(p.id)}`,webs.length>8?(i===0?7:-7):i%2===0?-7:7);
+        }
+        if(webs.length>8)pendingNotes.push(`Alturas dos ${webs.length} montantes: ver tabela de identificação (cotadas aqui só as extremidades).`);
+        for(let i=1;i<webs.length;i++){
+          const u=nodes.get(webs[i-1].start)!,v=nodes.get(webs[i].start)!;
+          const a:P=[u[horizontal],bottomZ],b:P=[v[horizontal],bottomZ];
+          if(Math.abs(b[0]-a[0])>1e-5)book.dim(space,at(a),at(b),scale,"PAINEL ENTRE MONTANTES",-10);
+        }
+      }
       const labelledTypes=new Set<string>();
       if(!opts.bases)for(const p of pieces){
         const a=nodes.get(p.start)!,b=nodes.get(p.end)!,mark=marks.get(p.id)!;
@@ -294,29 +323,6 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         }
         book.poly(space,[u,v],layer);
         if(first)label([(u[0]+v[0])/2,(u[1]+v[1])/2],id);
-      }
-      // Graphic dimensions only. Inferred visual contacts with chord axes do
-      // not become declared joints or solver restraints.
-      if(opts.frame&&pieces.some(p=>p.role==="topChord")&&pieces.some(p=>p.role==="bottomChord")){
-        const webs=pieces.filter(p=>p.role==="web"&&!isDeclaredBrace(p)).filter(p=>{
-          const u=nodes.get(p.start)!,v=nodes.get(p.end)!;
-          return Math.hypot(u.x-v.x,u.y-v.y)<=1;
-        }).sort((p,q)=>{
-          const u=nodes.get(p.start)!,v=nodes.get(q.start)!;
-          return u[horizontal]-v[horizontal];
-        });
-        const bottoms=pieces.filter(p=>p.role==="bottomChord").flatMap(p=>[nodes.get(p.start)!,nodes.get(p.end)!]);
-        const bottomZ=bottoms.length?Math.min(...bottoms.map(n=>n.z)):datum;
-        for(const [i,p] of webs.entries()){
-          const u=nodes.get(p.start)!,v=nodes.get(p.end)!;
-          book.dim(space,at(projection(u)),at(projection(v)),scale,
-            `ALTURA MONTANTE ${marks.get(p.id)}`,i%2===0?-7:7);
-        }
-        for(let i=1;i<webs.length;i++){
-          const u=nodes.get(webs[i-1].start)!,v=nodes.get(webs[i].start)!;
-          const a:P=[u[horizontal],bottomZ],b:P=[v[horizontal],bottomZ];
-          if(Math.abs(b[0]-a[0])>1e-5)book.dim(space,at(a),at(b),scale,"PAINEL ENTRE MONTANTES",-10);
-        }
       }
       if(dense)pendingNotes.push("PENDENTE: marcas densas; conferir tabela de peças.");
       let noteY=rect.height-9;
