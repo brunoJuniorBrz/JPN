@@ -20,7 +20,15 @@ test("edita tesoura, mantém quantidades e cria projeto na aba Tesoura com pacot
   await expect(page).toHaveURL(/\/projetos\/[^/]+\?fluxo=levantamento&etapa=3/);
   await expect(page.getByRole("tab", { name: /^Tesoura/ })).toHaveAttribute("aria-selected", "true");
 
-  await page.getByRole("tab", { name: /^Arquivos/ }).click();
+  const trussTab = page.getByRole("tab", { name: /^Tesoura/ });
+  const fileTab = page.getByRole("tab", { name: /^Arquivos/ });
+  await expect(page.getByRole("tabpanel", { name: "Tesoura" })).toBeVisible();
+  await trussTab.press("End");
+  await expect(fileTab).toHaveAttribute("aria-selected", "true");
+  await fileTab.press("Home");
+  await expect(page.getByRole("tab", { name: /^Modelo 3D/ })).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: /^Modelo 3D/ }).press("ArrowLeft");
+  await expect(fileTab).toHaveAttribute("aria-selected", "true");
   const control = page.getByTestId("complete-package-control");
   await expect(control).toBeVisible();
   await control.getByText("Dados para o plano de corte", { exact: true }).click();
