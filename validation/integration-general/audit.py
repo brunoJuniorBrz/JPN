@@ -95,18 +95,18 @@ REVIEWED_AMENDMENTS = {
     # edition literals and the speed-data SHA assertion updated, no numerical expectation changed.
     "src/domain/normative-origin.test.ts": "80a2d9c9ee73462acebc9d17711d845124e66ced",
     "src/domain/wind-speed.test.ts": "e5cf65b5ac01975374c50803a7c96b1eb3d0f65e",
-    # UI F1 (docs/ui/PLANO-UI.md, test changes authorized by the project owner; review in the UI PR):
+    # #148: tests/e2e/presentation-3d.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.\n    "tests/e2e/presentation-3d.spec.ts": "a74f874614f2da6b8cf2c5b815c585391ec72cea",\n    # #148: tests/e2e/spatial-analysis.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.\n    "tests/e2e/spatial-analysis.spec.ts": "68f2843c570444ae00af87b82c5fb7997e935e17",\n    # #148: tests/e2e/studio-measurement.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.\n    "tests/e2e/studio-measurement.spec.ts": "7d8eb37822bd2c6e0d6d76043c3f5fff492d309d",\n    # UI F1 (docs/ui/PLANO-UI.md, test changes authorized by the project owner; review in the UI PR):
     # the project screen became a studio. Result tabs / "Ferramenta de engenharia" select became
     # steps and an analysis-tools nav; navigation-only edits, no warning/blocking check removed.
     # PR #145: adaptation reviewed against F0–F6 original; adds Tesoura stage and resolves the tool only after opening Análise, without changing assertions.
     "tests/e2e/result-tabs.ts": "1c30655fa8702b0a5fbe29b9669c55897590d93e",              # helpers map old tabs/select to studio steps/tools
-    "tests/e2e/planning.spec.ts": "db23a7a0af199f21d15c20e567ada7006fa4928d",            # "Resultado"/"Ir para resultado" -> Materiais; pendências em Verificação
-    "tests/e2e/platform.spec.ts": "92a90f3a0c8c9ff15dace977691469f72d5332f9",            # "Resultado" -> Materiais
-    "tests/e2e/profiles-3d.spec.ts": "7d4c531ca63be452e18caa7e9045c5f1ddb75c43",         # "Resultado" -> Materiais
-    "tests/e2e/result-workspace.spec.ts": "bfce4a587b4bfb624b028209af74585527f2ae0c",    # 3D stays visible across steps; keyboard on the steps list
-    "tests/e2e/spatial-coordination.spec.ts": "fc586e16e91730d4461c261b27a98b535dec5655",# "Resultado" -> Materiais
-    "tests/e2e/spatial-preparation.spec.ts": "82482409d92f1c7a5249f1783ec9eb5059f9dd75", # "Resultado" -> Materiais
-    "tests/e2e/ux-actions.spec.ts": "acfe1ce55ee5e6208b904120ad7edc594d26bc21",          # tab "Modelo 3D" -> viewport region; pendências em Verificação
+    "tests/e2e/planning.spec.ts": "867b51766b4ca077de22476ec27a26d2ef0aea49",            # "Resultado"/"Ir para resultado" -> Materiais; pendências em Verificação
+    "tests/e2e/platform.spec.ts": "fdba218571b7e2da818bb4e0af6bd2f173e94587",            # "Resultado" -> Materiais
+    "tests/e2e/profiles-3d.spec.ts": "f089b2f011589c798fd20a610fd092a745b0a219",         # "Resultado" -> Materiais
+    "tests/e2e/result-workspace.spec.ts": "e7dfc14ec6db7bd4225c8e0d4a5f8d55330451d5",    # 3D stays visible across steps; keyboard on the steps list
+    "tests/e2e/spatial-coordination.spec.ts": "7d18f889b1f769a8b1cfd07a194ffd0f8c1c9dbd",# "Resultado" -> Materiais
+    "tests/e2e/spatial-preparation.spec.ts": "1e78b58ca8c5405c7e66ad71300e3e752d7f8ea4", # "Resultado" -> Materiais
+    "tests/e2e/ux-actions.spec.ts": "e95dabbea2c3b1dd75e700ffb4d665710b1e9c94",          # tab "Modelo 3D" -> viewport region; pendências em Verificação
 }
 
 TREES = {}
