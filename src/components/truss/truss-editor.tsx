@@ -129,7 +129,9 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
             const kind = e.target.value as Truss["roofKind"], off = tipOffsetMm(t);
             const run = (t.spanMm - (kind === "two-slopes" ? 2 : 1) * off) / (kind === "two-slopes" ? 2 : 1);
             const step = Math.max(300, Math.floor(run / (t.purlinLines - 1) / 10) * 10);
-            set({ roofKind: kind, purlinStepMm: Math.min(t.purlinStepMm, step), stationsMm: null, flippedPanels: [] });
+            // A alternância preserva a inclinação escolhida; só o semivão muda.
+            const highHeightMm = Math.round((t.tipHeightMm + run * fallPercent(t) / 100) * 10) / 10;
+            set({ roofKind: kind, highHeightMm, purlinStepMm: Math.min(t.purlinStepMm, step), stationsMm: null, flippedPanels: [] });
           }}><option value="one-slope">Uma água</option><option value="two-slopes">Duas águas simétricas</option></Select></Field>
           <Cm label="Muro a muro (cm)" mm={t.spanMm} onMm={spanMm => set({ spanMm, stationsMm: null })} min={100} />
           <Cm label="Comprimento (cm)" mm={t.lengthMm} onMm={lengthMm => set({ lengthMm })} min={100} />
