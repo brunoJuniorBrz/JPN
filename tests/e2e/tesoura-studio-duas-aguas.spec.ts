@@ -46,10 +46,13 @@ test("obra nova 12×20, duas águas e cinco tesouras declaradas: 3D sem preços 
   await page.setViewportSize({ width: 1440, height: 920 });
   await page.goto("/tesoura");
   await expect(page.getByLabel("Muro a muro (cm)")).toHaveValue("600");
+  const slopeBefore = await page.getByLabel("Caída (%)").inputValue();
   await page.getByLabel("Muro a muro (cm)").fill("1200");
+  await expect(page.getByLabel("Caída (%)")).toHaveValue(slopeBefore);
   await page.getByLabel("Comprimento (cm)").fill("2000");
   await page.getByLabel("Tesouras").fill("5");
   await page.getByLabel("Tipo de cobertura").selectOption("two-slopes");
+  await expect(page.getByLabel("Caída (%)")).toHaveValue(slopeBefore);
   await expect(page.getByRole("button", { name: "Criar projeto com esta tesoura" })).toBeEnabled();
   await expect(page.getByText(/Sem preço:/)).toBeVisible();
   await page.getByRole("button", { name: "Criar projeto com esta tesoura" }).click();

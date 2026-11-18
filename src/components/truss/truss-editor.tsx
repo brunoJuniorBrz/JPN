@@ -13,6 +13,16 @@ const cm = (mm: number, digits = 1) => (mm / 10).toLocaleString("pt-BR", { maxim
 const m = (mm: number) => (mm / 1000).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const brl = (c: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(c / 100);
 
+/** Reorganização geométrica ao mudar o vão, calha ou número de águas; não escolhe apoios. */
+function reflowTruss(t: Truss, patch: Partial<Pick<Truss, "spanMm" | "roofKind" | "gutter">>): Partial<Truss> {
+  const candidate: Truss = { ...t, ...patch }, runMm = trussLengthMm(candidate);
+  if (!(runMm > 0) || !Number.isFinite(runMm)) return { ...patch, stationsMm: null, flippedPanels: [] };
+  const lines = Math.min(60, Math.max(2, Math.ceil(runMm / t.purlinStepMm) + 1));
+  const step = Math.max(300, Math.min(6000, Math.floor(runMm / (lines - 1) / 10) * 10));
+  return { ...patch, highHeightMm: Math.round((t.tipHeightMm + runMm * fallPercent(t) / 100) * 10) / 10,
+    purlinLines: lines, purlinStepMm: step, stationsMm: null, flippedPanels: [] };
+}
+
 /** Campo em centímetros sobre um valor guardado em milímetros. */
 function Cm({ label, mm, onMm, hint, min = 0, max = 100000 }: { label: string; mm: number; onMm: (mm: number) => void; hint?: string; min?: number; max?: number }) {
   return <NumberField label={label} hint={hint} value={Math.round(mm) / 10} min={min} max={max} decimals={1} onChange={v => { if (v !== null) onMm(Math.round(v * 10 * 10) / 10); }} />;
@@ -126,14 +136,9 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
         <h3>Obra</h3>
         <div className={styles.grid}>
           <Field label="Tipo de cobertura"><Select value={t.roofKind} onChange={e => {
-            const kind = e.target.value as Truss["roofKind"], off = tipOffsetMm(t);
-            const run = (t.spanMm - (kind === "two-slopes" ? 2 : 1) * off) / (kind === "two-slopes" ? 2 : 1);
-            const step = Math.max(300, Math.floor(run / (t.purlinLines - 1) / 10) * 10);
-            // A alternância preserva a inclinação escolhida; só o semivão muda.
-            const highHeightMm = Math.round((t.tipHeightMm + run * fallPercent(t) / 100) * 10) / 10;
-            set({ roofKind: kind, highHeightMm, purlinStepMm: Math.min(t.purlinStepMm, step), stationsMm: null, flippedPanels: [] });
+            set(reflowTruss(t, { roofKind: e.target.value as Truss["roofKind"] }));
           }}><option value="one-slope">Uma água</option><option value="two-slopes">Duas águas simétricas</option></Select></Field>
-          <Cm label="Muro a muro (cm)" mm={t.spanMm} onMm={spanMm => set({ spanMm, stationsMm: null })} min={100} />
+          <Cm label="Muro a muro (cm)" mm={t.spanMm} onMm={spanMm => set(reflowTruss(t, { spanMm }))} min={100} />
           <Cm label="Comprimento (cm)" mm={t.lengthMm} onMm={lengthMm => set({ lengthMm })} min={100} />
           <Cm label="Altura do muro baixo (cm)" mm={t.walls.lowMm} onMm={v => set({ walls: { ...t.walls, lowMm: v } })} hint="Do piso ao topo." />
           {t.roofKind === "one-slope" && <Cm label="Altura do muro alto (cm)" mm={t.walls.highMm} onMm={v => set({ walls: { ...t.walls, highMm: v } })} hint="Referência para a ancoragem no lado alto." />}
@@ -146,9 +151,9 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
       <section className={styles.card}>
         <h3>Calha e ponta baixa</h3>
         <div className={styles.grid}>
-          <Cm label="Apoio da calha no muro (cm)" mm={t.gutter.supportMm} onMm={v => set({ gutter: { ...t.gutter, supportMm: v }, stationsMm: null })} />
-          <Cm label="Largura da calha (cm)" mm={t.gutter.widthMm} onMm={v => set({ gutter: { ...t.gutter, widthMm: v }, stationsMm: null })} />
-          <Cm label="Da calha até a ponta (cm)" mm={t.gutter.clearanceMm} onMm={v => set({ gutter: { ...t.gutter, clearanceMm: v }, stationsMm: null })} />
+          <Cm label="Apoio da calha no muro (cm)" mm={t.gutter.supportMm} onMm={v => set(reflowTruss(t, { gutter: { ...t.gutter, supportMm: v } }))} />
+          <Cm label="Largura da calha (cm)" mm={t.gutter.widthMm} onMm={v => set(reflowTruss(t, { gutter: { ...t.gutter, widthMm: v } }))} />
+          <Cm label="Da calha até a ponta (cm)" mm={t.gutter.clearanceMm} onMm={v => set(reflowTruss(t, { gutter: { ...t.gutter, clearanceMm: v } }))} />
           <Cm label="Lado menor da calha (cm)" mm={t.gutter.lowSideMm} onMm={v => set({ gutter: { ...t.gutter, lowSideMm: v } })} hint="Lado da telha." />
           <Cm label="Lado maior da calha (cm)" mm={t.gutter.highSideMm} onMm={v => set({ gutter: { ...t.gutter, highSideMm: v } })} hint="Lado do muro." />
         </div>

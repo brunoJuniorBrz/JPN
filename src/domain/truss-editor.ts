@@ -179,6 +179,11 @@ export function trussIssues(t: TrussEditor): TrussIssue[] {
     out.push({ level: "erro", message: "Número de linhas de terça não cabe no semivão com o passo informado." });
   if (new Set(purlins.map(p => p.sMm)).size !== purlins.length)
     out.push({ level: "erro", message: "Duas linhas de terça coincidem no mesmo nó; altere a quantidade, o passo ou os montantes." });
+  const positioned = purlins.map(p => p.sMm).sort((a, b) => a - b);
+  const gaps = positioned.slice(1).map((position, i) => position - positioned[i]);
+  const uncoveredMm = Math.max(0, ...gaps);
+  if (uncoveredMm > t.purlinStepMm + Math.max(50, t.panelMm / 2))
+    out.push({ level: "aviso", message: `Há intervalo de ${Math.round(uncoveredMm)} mm entre linhas de terça, maior que o passo informado de ${t.purlinStepMm} mm (com tolerância geométrica de encaixe em nós). Confira o trecho sem terça antes de usar a distribuição.` });
   const shifted = purlins.filter(p => Math.abs(p.shiftMm) > 10);
   if (shifted.length) out.push({ level: "aviso", message: `${shifted.length} posição(ões) de terça ajustada(s) ao montante mais próximo: ${shifted.map(p => `${(p.requestedMm / 10).toFixed(1)} → ${(p.sMm / 10).toFixed(1)} cm`).join(", ")}. Conferir espaçamentos.` });
   const step = t.purlinStepMm * Math.hypot(1, fallPercent(t) / 100);
