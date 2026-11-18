@@ -1,5 +1,9 @@
 "use client";
 import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
+import { studioModelFromPhysical } from "@/domain/studio-result-layers";
+import type { Viewer3DApi, Viewer3DLabel } from "./structure-3d";
+const Structure3D = dynamic(() => import("./structure-3d").then(m => m.Structure3D), { ssr: false, loading: () => <p role="status">Carregando modelo 3D…</p> });
 import type { Project } from "@/domain/models";
 import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { mixedPreparationReview } from "@/domain/mixed-adapter";
@@ -15,13 +19,30 @@ export function useDeclaredModel(project: Project) {
 }
 type Declared = ReturnType<typeof useDeclaredModel>;
 
-/** Visualização central do modelo declarado (vistas de linhas). */
-export function DeclaredViewport({ project, declared: { model, review }, selected, onSelect, nodeId, onSelectNode }: { project: Project; declared: Declared; selected?: string; onSelect?: (id: string) => void; nodeId?: string; onSelectNode?: (id: string) => void }) {
+/** Visualização real das barras declaradas: a conversão não infere seções ou apoios. */
+export function DeclaredViewport({ project, declared: { model, review }, selected, onSelect, nodeId, onSelectNode, analysisColors, deformed, labels, onApi }: {
+  project: Project; declared: Declared; selected?: string; onSelect?: (id: string) => void;
+  nodeId?: string; onSelectNode?: (id: string) => void; analysisColors?: Record<string, number>;
+  deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null;
+  labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void;
+}) {
   const [localPiece, setLocalPiece] = useState(""), [localNode, setLocalNode] = useState("");
+  const [view, setView] = useState<"3d" | "lines">("3d");
   const piece = selected ?? localPiece, setPiece = onSelect ?? setLocalPiece, node = nodeId ?? localNode, setNode = onSelectNode ?? setLocalNode;
-  return <section className="result-workspace" aria-label="Resultado do modelo declarado"><h2>Estrutura física declarada</h2>
+  // Uma mudança comercial não deve recriar o canvas/câmera se os nós e barras são os mesmos.
+  const visualModel = useMemo(() => studioModelFromPhysical(model), [project.workspace.physicalStructure]);
+  return <section className="result-workspace declared-studio-view" aria-label="Resultado do modelo declarado"><h2>Estrutura física declarada</h2>
     <p>{model.nodes.length} nós · {model.pieces.length} barras · revisão {project.workspace.physicalStructure!.revision} · {review.issues.length ? "Dados físicos pendentes" : "Modelo válido para preparar a análise"}.</p>
-    <PhysicalLineView model={model} selected={piece} onSelect={setPiece} selectedNodeId={node} onSelectNode={setNode} />
+    <div className="actions" role="group" aria-label="Visualização declarada">
+      <button type="button" className={view === "3d" ? "button" : "button secondary"} aria-pressed={view === "3d"} onClick={() => setView("3d")}>Modelo 3D</button>
+      <button type="button" className={view === "lines" ? "button" : "button secondary"} aria-pressed={view === "lines"} onClick={() => setView("lines")}>Vista simples 2D</button>
+    </div>
+    {view === "3d" ? <>
+      <p className="field-hint">Barras e nós declarados em 3D. Sem inferência de perfis, ligações ou apoios; dados faltantes continuam pendentes.</p>
+      <Structure3D model={visualModel} roof={project.roof} planning={project.planning} projectName={project.name}
+        selected={piece} onSelect={setPiece} selectedNodeId={node} onSelectNode={setNode} inspectNodes
+        orientationCube labels={labels} analysisColors={analysisColors} deformed={deformed} onApi={onApi} allowPresentation={false} />
+    </> : <PhysicalLineView model={model} selected={piece} onSelect={setPiece} selectedNodeId={node} onSelectNode={setNode} analysisColors={analysisColors} />}
   </section>;
 }
 

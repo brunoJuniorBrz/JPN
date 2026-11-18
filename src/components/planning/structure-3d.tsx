@@ -28,7 +28,7 @@ import { sectionAxes, sectionAxisLabels, sectionPlane, steelFinishes, steelFinis
 const TRANSITION_MS = 420;
 const metres = (mm: number, digits = 3) => (mm / 1000).toLocaleString("pt-BR", { maximumFractionDigits: digits });
 
-export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false, orientationCube=false, labels, onApi }: { orientationCube?: boolean; labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
+export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false, orientationCube=false, labels, onApi, allowPresentation=true }: { orientationCube?: boolean; labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; allowPresentation?: boolean; model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
@@ -52,7 +52,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const optionsRef = useRef(presentationOptions);
   const applyOptions = useRef<(options:PresentationOptions)=>void>(()=>{});
   const capture = useRef<()=>void>(()=>{});
-  const envelope = useMemo(() => presentationEnvelope(roof, planning), [roof, planning]);
+  const envelope = useMemo(() => allowPresentation ? presentationEnvelope(roof, planning) : null, [roof, planning, allowPresentation]);
   const dimensions = envelope ? dimensionLabels(presentationDimensions(envelope)) : [];
   const [expanded, setExpanded] = useState(false);
   const [visibleRoles, setVisibleRoles] = useState<PieceRole[]>([...roles]);
@@ -434,7 +434,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const technical = !failure && mode !== "finished";
   return <div className={expanded ? "structure-viewer structure-viewer--expanded studio" : "structure-viewer studio"}>
     {expanded && <div className="structure-viewer-heading"><strong>Apresentação da estrutura · 3D</strong><button type="button" className="button secondary" onClick={() => setExpanded(false)}>Fechar tela cheia</button></div>}
-    {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).filter(([value]) => !analysisColors || value !== "finished").map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
+    {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).filter(([value]) => (allowPresentation && !analysisColors) || value !== "finished").map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
     {technical && <div className={toolsCollapsed ? "inspection-tools inspection-tools--collapsed" : "inspection-tools"} aria-label="Ferramentas de inspeção 3D">
       <button type="button" className="inspection-collapse" aria-expanded={!toolsCollapsed} onClick={() => setToolsCollapsed(value => !value)}>{toolsCollapsed ? "Mostrar ferramentas" : "Recolher ferramentas"}</button>
       {!toolsCollapsed && <>

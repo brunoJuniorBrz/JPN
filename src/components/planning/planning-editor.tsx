@@ -59,7 +59,8 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   const [analysisTool, setAnalysisTool] = useState<AnalysisTool>("overview");
   const [submitted, setSubmitted] = useState(false), [message, setMessage] = useState("");
   const [profileToEdit, setProfileToEdit] = useState<PieceRole>();
-  const [open3D, setOpen3D] = useState(initialOpen3D);
+  // Modelos já existentes abrem diretamente no 3D, com opção de voltar às vistas simples.
+  const [open3D, setOpen3D] = useState(initialOpen3D || !!initial);
   const [open3DRequest, setOpen3DRequest] = useState(0);
   const declared = project.workspace.physicalStructure !== undefined;
   const generated = useGeneratedResult(project);
@@ -149,8 +150,8 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     go(roof.widthM === null || roof.lengthM === null || roof.lowHeightM === null || roof.slopePercent === null ? "geometria" : "estrutura");
   }
 
-  const declaredModel = declared ? <DeclaredModelParts project={project} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} /> : null;
   const resultView = useStudioResultView(selectionModel, selectedPiece, selectedNode, showLabels);
+  const declaredModel = declared ? <DeclaredModelParts project={project} selected={selectedPiece} onSelect={setSelectedPiece} nodeId={selectedNode} onSelectNode={setSelectedNode} analysisColors={resultView.colors} deformed={resultView.deformed} labels={resultView.labels} onApi={setViewerApi} /> : null;
   // F4: totais e pendências derivados do projeto em memória (atualizam no mesmo render da edição).
   const totals = useMemo(() => liveTotals(project, declared ? null : generated.result), [project, declared, generated.result]);
   const declaredIssues = useMemo(() => {
@@ -201,14 +202,14 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     {project.isExample && <p className="example-banner">EXEMPLO FICTÍCIO · Medidas, distribuição e perfis apenas para demonstrar o cálculo geométrico.</p>}
     {step !== "materiais" && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
     <StudioLayout
-      rail={<StudioRail step={step} onStep={id => go(id)} tool={analysisTool} onTool={openTool} showTools={!declared} pendingCount={pendingCount} />}
+      rail={<StudioRail step={step} onStep={id => go(id)} tool={analysisTool} onTool={openTool} showTools={!declared && step === "analise"} pendingCount={pendingCount} />}
       viewportToolbar={<><div className="viewer-shortcut"><button type="button" className="button secondary" onClick={open3DViewer}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button>{preview.model
           ? <InfoTip label="visualização 3D">Visualização 3D da estrutura disponível também no celular. Arraste para girar; use Iso/Superior/Frontal/Lateral para vistas prontas.</InfoTip>
           : <span className="field-hint">{`Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span>}</div>
         {preview.model && <StudioResultsBar onSelectNode={setSelectedNode} onOpenAnalysis={() => openTool("mixedlocal")} showLabels={showLabels} onShowLabels={setShowLabels} />}</>}
-      viewport={declared ? declaredModel : <StudioViewportMenu model={selectionModel} selected={selectedPiece} api={viewerApi} onShowForces={id => { setSelectedPiece(id); if (step !== "analise" && step !== "verificacao") go("verificacao"); }} onEditProfile={configureProfile}>
-        <GeneratedViewport project={deferredProject} result={viewGenerated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece}
-          analysisColors={resultView.colors} deformed={resultView.deformed} orientationCube labels={resultView.labels} onApi={setViewerApi} />
+      viewport={<StudioViewportMenu model={selectionModel} selected={selectedPiece} api={viewerApi} onShowForces={id => { setSelectedPiece(id); if (step !== "analise" && step !== "verificacao") go("verificacao"); }} onEditProfile={configureProfile}>
+        {declared ? declaredModel : <GeneratedViewport project={deferredProject} result={viewGenerated.result} startIn3D={open3D} open3DRequest={open3DRequest} onConfigureProfile={configureProfile} onEditStructure={editStructure} onResolvePending={resolvePending} selected={selectedPiece} onSelect={setSelectedPiece}
+          analysisColors={resultView.colors} deformed={resultView.deformed} orientationCube labels={resultView.labels} onApi={setViewerApi} />}
       </StudioViewportMenu>}
       inspectorTitle={step === "analise" && !declared ? `Análise · ${analysisToolLabel(analysisTool)}` : stepLabel}
       inspector={<>
@@ -238,9 +239,14 @@ function analysisToolLabel(tool: AnalysisTool) {
   return { overview: "Roteiro estrutural", analysis: "Análise disponível", spatial: "Análise 3D experimental", mixedlocal: "Análise Estrutural Experimental" }[tool];
 }
 
-function DeclaredModelParts({ project, selected, onSelect, nodeId, onSelectNode }: { project: Project; selected: string; onSelect: (id: string) => void; nodeId: string; onSelectNode: (id: string) => void }) {
+function DeclaredModelParts({ project, selected, onSelect, nodeId, onSelectNode, analysisColors, deformed, labels, onApi }: {
+  project: Project; selected: string; onSelect: (id: string) => void; nodeId: string; onSelectNode: (id: string) => void;
+  analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null;
+  labels?: import("./structure-3d").Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void;
+}) {
   const declared = useDeclaredModel(project);
-  return <DeclaredViewport project={project} declared={declared} selected={selected} onSelect={onSelect} nodeId={nodeId} onSelectNode={onSelectNode} />;
+  return <DeclaredViewport project={project} declared={declared} selected={selected} onSelect={onSelect} nodeId={nodeId} onSelectNode={onSelectNode}
+    analysisColors={analysisColors} deformed={deformed} labels={labels} onApi={onApi} />;
 }
 function DeclaredMaterialsPart({ project }: { project: Project }) {
   const declared = useDeclaredModel(project);
