@@ -20,7 +20,7 @@ for(const width of [375,1440]){
       const errors:string[]=[];page.on("pageerror",err=>errors.push(err.message));
       await seed(page);
       const stored=await page.evaluate(()=>localStorage.getItem("jpn-projetos:v1"));
-      await page.getByRole("button",{name:"Visualizar em 3D",exact:true}).click();
+      await page.getByRole("button",{name:"Abrir modelo 3D",exact:true}).click();
       const canvas=page.getByRole("img",{name:"Modelo 3D da estrutura"});
       await expect(canvas).toBeVisible();
       await page.getByRole("button",{name:"Medir entre nós"}).click();

@@ -27,7 +27,7 @@ for (const width of [375, 1440]) test(`Studio releases WebGL after repeated moun
   const saved = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
   let triangles: string | null = null;
   for (let cycle = 0; cycle < 3; cycle++) {
-    await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+    await page.getByRole("button", { name: "Abrir modelo 3D", exact: true }).click();
     const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
     await expect(canvas).toHaveAttribute("data-environment", "procedural", { timeout: 30000 });
     if (triangles === null) triangles = await canvas.getAttribute("data-triangles");
@@ -42,7 +42,7 @@ for (const width of [375, 1440]) test(`Studio releases WebGL after repeated moun
     await handle!.dispose();
   }
   expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(saved);
-  await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+  await page.getByRole("button", { name: "Abrir modelo 3D", exact: true }).click();
   const originalCanvas = await page.getByRole("img", { name: "Modelo 3D da estrutura" }).elementHandle();
   await openEngineeringTool(page, "Preparar análise");
   await page.getByLabel("Classe do aço").fill("Estudo M52");
@@ -59,7 +59,7 @@ for (const width of [375, 1440]) test.describe(`studio-next ${width}px`, () => {
     const errors: string[] = []; page.on("pageerror", e => errors.push(e.message)); await seed(page);
     const before = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
     const totals = await page.getByTestId("takeoff-totals").innerText();
-    await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+    await page.getByRole("button", { name: "Abrir modelo 3D", exact: true }).click();
     const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" }); await expect(canvas).toBeVisible();
     await expect(canvas).toHaveAttribute("data-projection", "perspective");
     await expect(canvas).toHaveAttribute("data-environment", "procedural");

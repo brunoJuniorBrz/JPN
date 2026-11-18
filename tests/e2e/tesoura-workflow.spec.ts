@@ -18,17 +18,19 @@ test("edita tesoura, mantém quantidades e cria projeto na aba Tesoura com pacot
 
   await page.getByRole("button", { name: "Criar projeto com esta tesoura" }).click();
   await expect(page).toHaveURL(/\/projetos\/[^/]+\?fluxo=levantamento&etapa=3/);
-  await expect(page.getByRole("tab", { name: /^Tesoura/ })).toHaveAttribute("aria-selected", "true");
-
-  const trussTab = page.getByRole("tab", { name: /^Tesoura/ });
-  const fileTab = page.getByRole("tab", { name: /^Arquivos/ });
-  await expect(page.getByRole("tabpanel", { name: "Tesoura" })).toBeVisible();
-  await trussTab.press("End");
-  await expect(fileTab).toHaveAttribute("aria-selected", "true");
-  await fileTab.press("Home");
-  await expect(page.getByRole("tab", { name: /^Modelo 3D/ })).toHaveAttribute("aria-selected", "true");
-  await page.getByRole("tab", { name: /^Modelo 3D/ }).press("ArrowLeft");
-  await expect(fileTab).toHaveAttribute("aria-selected", "true");
+  const nav = page.getByRole("navigation", { name: "Etapas do levantamento" });
+  const trussStep = nav.getByRole("button", { name: /Tesoura/ });
+  const filesStep = nav.getByRole("button", { name: /Arquivos/ });
+  await expect(trussStep).toHaveAttribute("aria-current", "step");
+  await filesStep.click();
+  await expect(filesStep).toHaveAttribute("aria-current", "step");
+  // O trilho F1 substituiu as abas: navegação com Enter continua acessível.
+  await trussStep.focus();
+  await trussStep.press("Enter");
+  await expect(trussStep).toHaveAttribute("aria-current", "step");
+  await filesStep.focus();
+  await filesStep.press("Enter");
+  await expect(filesStep).toHaveAttribute("aria-current", "step");
   const control = page.getByTestId("complete-package-control");
   await expect(control).toBeVisible();
   await control.getByText("Dados para o plano de corte", { exact: true }).click();
