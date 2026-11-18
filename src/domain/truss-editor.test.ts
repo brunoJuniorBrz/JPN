@@ -3,6 +3,7 @@ import { newProject } from "./models";
 import { emptyPlanning } from "./structure";
 import { auditPhysicalRoofCoverage } from "./physical-roof-coverage";
 import { structureSignature } from "./calculations/project-basis";
+import { resolvePhysicalStructure } from "./physical-structure";
 import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor, suggestedTrussCount } from "./truss-editor";
 import { spatialPreparationReview } from "./spatial-preparation";
 import { packageTakeoff } from "@/lib/exports/package-source";
@@ -177,7 +178,7 @@ describe("editor de tesoura por estações", () => {
       expect(prep.geometrySignature).toBe(structureSignature(p));
       expect(spatialPreparationReview(p,prep).issues.some(i=>i.code==="STALE_GEOMETRY")).toBe(false);
       expect(prep.physicalRoofFaces!.faces.every(f=>f.supportPieceIds.length>0)).toBe(true);
-      const checked=auditPhysicalRoofCoverage(prep.physicalRoofFaces!,p.workspace.physicalStructure!);
+      const checked=auditPhysicalRoofCoverage(prep.physicalRoofFaces!,resolvePhysicalStructure(p).model!);
       expect(checked.associatedPieceIds).toHaveLength(p.workspace.physicalStructure!.pieces.filter(piece=>piece.role==="purlin").length);
       expect(prep.supports.every(s=>s.dofs.every(d=>d==="pending"))).toBe(true);
     }
