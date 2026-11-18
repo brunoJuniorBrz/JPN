@@ -1,0 +1,60 @@
+name: CAD Tom QA - PR 141
+on:
+  push:
+    branches: [feat/cad-complete-package]
+  workflow_dispatch:
+jobs:
+  cad-tom-quality:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pnpm dependencies
+        run: npx --yes pnpm@12.15.0 install --frozen-lockfile
+      - name: Typecheck
+        run: npx --yes pnpm@12.15.0 typecheck
+      - name: Real native export of Tom and regular/irregular regressions
+        run: npx --yes pnpm@12.15.0 exec vitest run src/lib/exports/tom-cad-regression.test.ts src/lib/exports/tom-8x10-cad.test.ts src/lib/exports/complete-package.test.ts --reporter=verbose
+      - name: Install PDF/DXF audit dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y poppler-utils
+          python -m pip install --quiet ezdxf PyMuPDF Pillow
+      - name: PDF/DXF visual metrics, clipping and line crossing audit
+        run: |
+          python tests/verify_tom_cad_visual.py
+          python tests/verify_tom_cad_visual.py .tools/complete-package/tom-8x10
+      - name: Recover historical pre-correction CAD package for before pictures
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p .tools/complete-package/antes
+          gh run download 44181655801 -n tom-pr141-native-cad-actual-output -D .tools/complete-package/antes || echo 'Historical evidence unavailable; do not claim visual before/after comparison.'
+          BASE_PDF="$(find .tools/complete-package/antes -type f -name pranchas.pdf | head -n 1)"
+          if [ -n "$BASE_PDF" ]; then
+            pdftoppm -png -r 150 "$BASE_PDF" .tools/complete-package/antes/antes-prancha
+          fi
+      - name: Render every Tom PDF sheet at 150 DPI
+        if: always()
+        run: |
+          if test -f .tools/complete-package/tom/pranchas/pranchas.pdf; then
+            pdftoppm -png -r 150 .tools/complete-package/tom/pranchas/pranchas.pdf .tools/complete-package/tom/prancha
+          fi
+          if test -f .tools/complete-package/tom-8x10/pranchas/pranchas.pdf; then
+            pdftoppm -png -r 150 .tools/complete-package/tom-8x10/pranchas/pranchas.pdf .tools/complete-package/tom-8x10/prancha
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tom-pr141-cad-qa-evidence
+          path: |
+            .tools/complete-package/tom
+            .tools/complete-package/tom-8x10
+            .tools/complete-package/antes
+            test-results

@@ -3,9 +3,19 @@ import type { Project } from "@/domain/models";
 import { resolvePhysicalStructure } from "@/domain/physical-structure";
 import { generateStructure, structureViews } from "@/domain/calculations/structure";
 import { PRELIMINARY_NOTICE, type ViewName } from "@/domain/calculations/geometry";
-import {addPhysicalSheets} from "./cad-sheets";
+import {addPhysicalSheets,type CadExportOptions} from "./cad-sheets";
+import {isUnlocatedCommercialPiece} from "./package-commercial-groups";
+export {prepareCadReactions} from "./cad-model";
+export type {CadReactionReceipt} from "./cad-model";
+export type {CadExportOptions} from "./cad-sheets";
 
-export function createStructureDxf(project: Project, issuedAt:Date=new Date()): string {
+export function createStructureDxf(project: Project, issuedAtOrOptions:Date|CadExportOptions=new Date(), options:CadExportOptions={}): string {
+  return createCadDrawing(project,issuedAtOrOptions,options).dxf;
+}
+/** DXF and PDF share the exact same paper geometry, labels and pagination. */
+export function createCadDrawing(project: Project, issuedAtOrOptions:Date|CadExportOptions=new Date(), options:CadExportOptions={}) {
+  const issuedAt=issuedAtOrOptions instanceof Date?issuedAtOrOptions:new Date();
+  const settings=issuedAtOrOptions instanceof Date?options:issuedAtOrOptions;
   const result = resolvePhysicalStructure(project);
   if (!result.model) throw new Error("Geometria indisponível para exportação.");
   const dxf = new DxfWriter(); dxf.setUnits(Units.Millimeters);
@@ -13,16 +23,24 @@ export function createStructureDxf(project: Project, issuedAt:Date=new Date()): 
   for (const [role, color] of Object.entries(colors)) dxf.addLayer(role, color);
   dxf.addLayer("IDENTIFICACAO", 7); dxf.addLayer("PRELIMINAR", 1);
   const nodes = new Map(result.model.nodes.map(n => [n.id, n]));
-  for (const p of result.model.pieces) {
+  // Loose commercial components have NO verified XYZ location.
+  // Do not export their test/staging coordinates as installed 3D geometry.
+  const unlocatedIds=new Set(project.workspace.physicalStructure?.pieces.filter(isUnlocatedCommercialPiece).map(p=>p.id)??[]);
+  const installed=result.model.pieces.filter(p=>!unlocatedIds.has(p.id));
+  for (const p of installed) {
     const a = nodes.get(p.start)!, b = nodes.get(p.end)!;
     dxf.addLine(point3d(a.x, a.y, a.z), point3d(b.x, b.y, b.z), { layerName: p.role });
     dxf.addText(point3d((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2), 60, p.id, { layerName: "IDENTIFICACAO" });
   }
   dxf.addText(point3d(0, -1000, 0), 150, "PRELIMINAR - NAO UTILIZAR PARA EXECUCAO OU CORTE", { layerName: "PRELIMINAR" });
+  if(installed.length!==result.model.pieces.length)
+    dxf.addText(point3d(0,-1700,0),90,
+      `${result.model.pieces.length-installed.length} itens SEM LOCACAO omitidos do modelo 3D; consultar itens a confirmar.`,
+      {layerName:"PRELIMINAR"});
   const revision = String(project.workspace.physicalStructure?.revision ?? project.roof.revision).replace(/[\x00-\x1f\x7f]/g," ");
   dxf.addText(point3d(0, -1300, 0), 100, `Projeto ${project.id} / revisao geometrica ${revision} / unidades mm`, { layerName: "PRELIMINAR" });
-  if(project.workspace.physicalStructure)addPhysicalSheets(dxf,project,issuedAt);
-  return dxf.stringify();
+  const sheets=addPhysicalSheets(dxf,project,issuedAt,settings);
+  return {dxf:dxf.stringify(),sheets};
 }
 const escape = (value: string) => value.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]!);
 export function createStructureSvg(project: Project, view: ViewName = "front") {
