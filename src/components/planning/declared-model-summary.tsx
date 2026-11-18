@@ -16,7 +16,7 @@ export function DeclaredModelSummary({project,activeSection,onSectionChange}:{pr
     try{const {createStructureDxf}=await import("@/lib/exports/cad");downloadText(createStructureDxf(project),`jpn-${project.id}-PRELIMINAR.dxf`);setCadError("");}
     catch(e){setCadError(e instanceof Error?e.message:"Não foi possível exportar o DXF.");}
   }
-  const sections:[[ResultSection,string],[ResultSection,string],[ResultSection,string],[ResultSection,string]]=[["model","Modelo 3D"],["materials","Materiais"],["engineering","Engenharia"],["files","Arquivos"]];
+  const sections:[ResultSection,string][]=[["model","Modelo 3D"],["truss","Tesoura"],["materials","Materiais"],["engineering","Engenharia"],["files","Arquivos"]];
   return <section className="result-workspace" aria-label="Resultado do modelo declarado"><h2>Estrutura física declarada</h2>
     <p>{model.nodes.length} nós · {model.pieces.length} barras · revisão {project.workspace.physicalStructure!.revision} · {review.issues.length?"Dados físicos pendentes":"Modelo válido para preparar a análise"}.</p>
     <p className="result-permanent-warning" data-testid="result-safety-warning">Análise experimental disponível no domínio suportado. Verificações normativas incompletas · fabricação bloqueada.</p>

@@ -11,9 +11,10 @@ import { groupMaterialsForDisplay, summarizePending, locatePending, locatePendin
 import { StructurePreview } from "./structure-preview";
 import { DeclaredModelSummary } from "./declared-model-summary";
 
-export type ResultSection = "model" | "materials" | "engineering" | "files";
+export type ResultSection = "model" | "truss" | "materials" | "engineering" | "files";
 const sections: {id: ResultSection; label: string}[] = [
   {id:"model",label:"Modelo 3D"},
+  {id:"truss",label:"Tesoura"},
   {id:"materials",label:"Materiais"},
   {id:"engineering",label:"Engenharia"},
   {id:"files",label:"Arquivos"},
