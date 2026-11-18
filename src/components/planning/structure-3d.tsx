@@ -130,8 +130,8 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     let disposed = false, environment: PresentationHandle | null = null;
     const rig = createCameraRig(1, () => { controls.target.copy(rig.target); controls.update(); render(); });
     const controls = new OrbitControls(rig.active(), renderer.domElement); controls.enableDamping = false;
-    // F3: o cubo segue a orientação da câmera ativa (perspectiva ou ortográfica) por uma câmera auxiliar.
-    const cubeCamera = new THREE.PerspectiveCamera(), viewHelper = new ViewHelper(cubeCamera, renderer.domElement);
+    // O cubo usa a câmera real para permitir girar por clique, sem um loop permanente.
+    const viewHelper = new ViewHelper(rig.active(), renderer.domElement);
     const labelRenderer = new CSS2DRenderer(), labelLayer = labelRenderer.domElement, labelGroup = new THREE.Group();
     labelLayer.className = "viewer-labels"; labelLayer.setAttribute("aria-hidden", "true"); container.appendChild(labelLayer); scene.add(labelGroup);
     // F5: oclusão ambiente (GTAO) e contorno de arestas só no modo Acabado e fora de aparelho fraco.
@@ -170,7 +170,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       if (orientationRef.current && !presenting) {
         // Sem autoClear: o cubo é desenhado por cima da cena, só no canto.
         const autoClear = renderer.autoClear; renderer.autoClear = false;
-        cubeCamera.quaternion.copy(rig.active().quaternion); viewHelper.render(renderer);
+        viewHelper.camera = rig.active(); viewHelper.render(renderer);
         renderer.autoClear = autoClear;
       }
       labelLayer.style.display = presenting ? "none" : "";
@@ -378,7 +378,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const follow = () => { rig.target.copy(controls.target); render(); };
     const observer = new ResizeObserver(resize); observer.observe(container); controls.addEventListener("change", follow);
     const raycaster = new THREE.Raycaster(); raycaster.params.Line = { threshold: span / 180 };
-    let startX = 0, startY = 0, hoverFrame = 0, lastHover = "";
+    let startX = 0, startY = 0, hoverFrame = 0, orientationFrame = 0, lastHover = "";
     const pickPiece = (x: number, y: number, commit: boolean): string | null => {
       if (activeMode === "finished") return null;
       const rect = renderer.domElement.getBoundingClientRect();
@@ -405,13 +405,37 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       if (lastHover) { lastHover = ""; hover.current?.(""); }
       canvas.style.cursor = "";
     };
-    const down = (e: PointerEvent) => { startX = e.clientX; startY = e.clientY; rig.cancel(); };
-    const wheel = () => rig.cancel();
+    const stopOrientation = () => {
+      if (orientationFrame) window.cancelAnimationFrame(orientationFrame);
+      orientationFrame = 0;
+      if (viewHelper.animating) { viewHelper.update(1); controls.update(); }
+    };
+    const down = (e: PointerEvent) => { startX = e.clientX; startY = e.clientY; rig.cancel(); stopOrientation(); };
+    const wheel = () => { rig.cancel(); stopOrientation(); };
     const up = (e: PointerEvent) => {
       if (Math.hypot(e.clientX - startX, e.clientY - startY) > 5) return;
       const rect = renderer.domElement.getBoundingClientRect();
       raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), rig.active());
       if (activeMode === "finished") return;
+      if (orientationRef.current && e.button === 0) {
+        viewHelper.camera = rig.active();
+        viewHelper.center.copy(controls.target);
+        if (viewHelper.handleClick(e)) {
+          rig.cancel();
+          canvas.dataset.cameraView = "orientation-cube";
+          let previous = performance.now();
+          const tick = (now: number) => {
+            if (disposed) return;
+            viewHelper.update(reducedMotion ? 1 : Math.max(1 / 120, Math.min(.1, (now - previous) / 1000)));
+            previous = now;
+            render();
+            if (viewHelper.animating) orientationFrame = window.requestAnimationFrame(tick);
+            else { orientationFrame = 0; controls.update(); }
+          };
+          tick(performance.now() + 16);
+          return;
+        }
+      }
       if((nodePicking.current||measurePicking.current)&&nodeMarkers.visible){
         const nodeHit=raycaster.intersectObject(nodeMarkers,false)[0];
         if(nodeHit?.instanceId!==undefined){const id=model.nodes[nodeHit.instanceId]?.id;if(id){
@@ -434,7 +458,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       canvas.dataset.environment = stage.loadEnvironment() ? "procedural" : "none";
       canvas.dataset.environmentMs = stage.environmentMs().toFixed(0); render();
     }, 60);
-    return () => { disposed = true; window.cancelAnimationFrame(hoverFrame); pickAt.current=()=>null; applyLabels.current = () => {}; viewHelper.dispose(); labelLayer.remove(); if (post) { post.gtao.dispose(); post.outline.dispose(); post.composer.dispose(); post = null; } showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("pointermove", move); renderer.domElement.removeEventListener("pointerleave", leave); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
+    return () => { disposed = true; window.cancelAnimationFrame(hoverFrame); window.cancelAnimationFrame(orientationFrame); pickAt.current=()=>null; applyLabels.current = () => {}; viewHelper.dispose(); labelLayer.remove(); if (post) { post.gtao.dispose(); post.outline.dispose(); post.composer.dispose(); post = null; } showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("pointermove", move); renderer.domElement.removeEventListener("pointerleave", leave); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
   }, [model, gridSpacingM, envelope, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);

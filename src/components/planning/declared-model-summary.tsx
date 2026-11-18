@@ -30,6 +30,8 @@ export function DeclaredViewport({ project, declared: { model, review }, selecte
   const [view, setView] = useState<"3d" | "lines">("3d");
   const piece = selected ?? localPiece, setPiece = onSelect ?? setLocalPiece, node = nodeId ?? localNode, setNode = onSelectNode ?? setLocalNode;
   // Uma mudança comercial não deve recriar o canvas/câmera se os nós e barras são os mesmos.
+  // A referência física é a fonte do modelo: outros campos podem criar um novo objeto model idêntico.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const visualModel = useMemo(() => studioModelFromPhysical(model), [project.workspace.physicalStructure]);
   return <section className="result-workspace declared-studio-view" aria-label="Resultado do modelo declarado"><h2>Estrutura física declarada</h2>
     <p>{model.nodes.length} nós · {model.pieces.length} barras · revisão {project.workspace.physicalStructure!.revision} · {review.issues.length ? "Dados físicos pendentes" : "Modelo válido para preparar a análise"}.</p>
