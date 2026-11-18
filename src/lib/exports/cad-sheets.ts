@@ -237,7 +237,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         const g=t.gutter,bottom=t.supportZMm-Math.max(g.lowSideMm,g.highSideMm);
         const positions=S===2?[g.supportMm,span-g.supportMm-g.widthMm]:[g.supportMm];
         for(const [index,x] of positions.entries()){
-          const outline:P=[[x,bottom+g.lowSideMm],[x,bottom],[x+g.widthMm,bottom],[x+g.widthMm,bottom+g.highSideMm]];
+          const outline:P[]=[[x,bottom+g.lowSideMm],[x,bottom],[x+g.widthMm,bottom],[x+g.widthMm,bottom+g.highSideMm]];
           book.poly(space,outline.map(at),"COBERTURA");
           book.text(space,at([x,bottom-70]),`CALHA ${index+1} - ESQUEMA`,"TEXTOS",1.8);
         }
