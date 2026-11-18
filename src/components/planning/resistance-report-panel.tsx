@@ -12,6 +12,7 @@ import { DeclaredServiceControl } from "./declared-service-control";
 import { ColdformedDesignControl } from "./coldformed-design-control";
 import type { MemberExecution } from "@/domain/resistance-assessment";
 import { axialConnectionMinimum } from "@/domain/axial-connection-minimum";
+import { AnchorPulloutPanel } from "./anchor-pullout-panel";
 
 const labels:Record<DemandComponent,string>={nN:"N",vyN:"Vy",vzN:"Vz",tNm:"T",myNm:"My",mzNm:"Mz"};
 const show=(n:number|null)=>n===null?"Não aplicável":n===0?"0":n.toExponential(5);
@@ -26,6 +27,7 @@ export function ResistanceReportPanel({report,selectedPiece,onSelectPiece,onExpo
   return <section className="notice" data-testid="resistance-report" aria-label="Solicitações e preparação resistente">
     <h4>Solicitações e preparação resistente — M23 parcial</h4>
     <p data-testid="engine-release-gate"><strong>MOTOR NÃO PRONTO — BLOQUEADO</strong>. Análise, critérios declarados, resistência normativa, revisão profissional e fabricação são estados separados.</p>
+    <AnchorPulloutPanel report={report.anchorPullout}/>
     <details><summary>Bloqueios da cadeia estrutural completa</summary><ul>{report.releaseGate.blocked.map(x=><li key={x.id}>{x.reason}</li>)}</ul></details>
     <p>Estrutura NÃO APROVADA PARA FABRICAÇÃO. Procedimentos resistentes parciais disponíveis no controle Ue/MRD, com cálculo Python e relatório separado. A peça inteira permanece incompleta. A tabela básica abaixo contém solicitações, sem aprovação resistente.</p>
     <p>Máximos/mínimos apenas nas estações amostradas; os esforços de cada linha são simultâneos na mesma combinação e posição. N positivo = tração; negativo = compressão. Forças em N e momentos em N·m, nos eixos locais do solver.</p>

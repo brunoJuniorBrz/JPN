@@ -6,7 +6,8 @@ import { canonicalSpatialInput } from "./spatial-analysis";
 import { mixedInputHash } from "./mixed-analysis";
 import { anyMixedResultSchema,secondOrderMixedResultSchema } from "./structural-loading";
 import { provisionalNotices } from "./normative-provenance";
-import { assessSupportReactions } from "./support-interface";
+import { assessSupportReactions, assessAnchorPullout } from "./support-interface";
+import { nbr8681DeclarationFor } from "./nbr8681-combinations";
 import { auditPhysicalRoofReactionPath,isDeclaredRoofTrace } from "./physical-reaction-path";
 import { auditSecondOrderReadiness } from "./second-order-readiness";
 import { extractMemberDemands, type DemandInput } from "./member-demands";
@@ -114,6 +115,9 @@ export async function buildResistanceReport(project:Project,prepared:DemandInput
     normativeProceduresImplemented:[...availableNormativeProcedures],procedureRegistry:normativeProcedureRegistry,binding,physicalInput:current.request,
     engineeringCombinations:draft.engineeringCombinations??null,...(draft.normativeProvenance?.length?{normativeStatus:"PROVISIONAL" as const,normativeNotices:provisionalNotices(draft.normativeProvenance),normativeProvenance:draft.normativeProvenance}:{}),demands,pieces,continuousDemands,wholePieceDeflections,serviceChecks,
     supportAudits:assessSupportReactions(draft.supportInterfaces??[],parsed),
+    anchorPullout:assessAnchorPullout({interfaces:draft.supportInterfaces??[],anchorTypes:draft.anchorTypes,result:parsed,
+      engineeringCombinations:draft.engineeringCombinations??null,nbr8681Declaration:nbr8681DeclarationFor(draft),
+      ulsCombinationIds:draft.engineeringCombinations?draft.engineeringCombinations.combinations.filter(c=>c.purpose==="ULS").map(c=>c.id):null}),
     ...(roofReactionAudit?{physicalRoofReactionAudit:roofReactionAudit}:{}),
     secondOrderAudit,
     loadProcedureExecutions:(draft.loading?.wind?.cases??[]).filter(c=>c.speedCalculation).map(c=>({caseId:c.id,procedures:["NBR6123:2023-4.2","NBR6123:2023-5.3.3"],status:"calculated-partial" as const,result:calculateWindSpeed(c.speedCalculation)})),

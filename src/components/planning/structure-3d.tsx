@@ -16,12 +16,13 @@ import { sectionAxes, sectionAxisLabels, sectionPlane, steelFinishes, steelFinis
 const TRANSITION_MS = 420;
 const metres = (mm: number, digits = 3) => (mm / 1000).toLocaleString("pt-BR", { maximumFractionDigits: digits });
 
-export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
+export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false, supportStatus }: { model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean; supportStatus?:Record<string,"exceeds"|"pending"|"governing"|"ok"> }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
   const selectNode=useRef(onSelectNode),nodePicking=useRef(inspectNodes),nodeTools=useRef<(enabled:boolean,id:string,measurementActive?:boolean,ids?:readonly string[])=>void>(()=>{});
   useEffect(()=>{selectNode.current=onSelectNode;},[onSelectNode]);
+  const applySupport=useRef<(status?:Record<string,string>)=>void>(()=>{});
   const [measuring, setMeasuring] = useState(false);
   const [measurementSelection, setMeasurementSelection] = useState<{model:StructureModel;ids:string[]}>({model,ids:[]});
   const measuredNodes = useMemo(() => measurementSelection.model === model ? measurementSelection.ids : [], [measurementSelection, model]);
@@ -110,6 +111,16 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const nodeMarkers=new THREE.InstancedMesh(nodeGeometry,nodeMaterial,model.nodes.length);nodeMarkers.renderOrder=10;nodeMarkers.visible=false;scene.add(nodeMarkers);resources.push(nodeGeometry,nodeMaterial);
     const nodeMatrix=new THREE.Matrix4();model.nodes.forEach((n,i)=>{nodeMatrix.makeTranslation(scenePoint(n).x,scenePoint(n).y,scenePoint(n).z);nodeMarkers.setMatrixAt(i,nodeMatrix);nodeMarkers.setColorAt(i,new THREE.Color(0x8262b5));});
     nodeMarkers.instanceMatrix.needsUpdate=true;
+    // N4: anchor pull-out status per existing-wall support (red exceeds, amber pending, orange governing, green ok).
+    const supportGeometry=new THREE.SphereGeometry(span/60,12,8),supportMaterial=new THREE.MeshBasicMaterial({depthTest:false,transparent:true,opacity:.95,toneMapped:false});
+    const supportMarkers=new THREE.InstancedMesh(supportGeometry,supportMaterial,Math.max(1,model.nodes.length));supportMarkers.count=0;supportMarkers.renderOrder=11;scene.add(supportMarkers);resources.push(supportGeometry,supportMaterial);
+    applySupport.current=status=>{
+      const entries=Object.entries(status??{}).filter(([id])=>model.nodes.some(n=>n.id===id)),m=new THREE.Matrix4();
+      entries.forEach(([id,s],i)=>{const p=scenePoint(model.nodes.find(n=>n.id===id)!);m.makeTranslation(p.x,p.y,p.z);supportMarkers.setMatrixAt(i,m);
+        supportMarkers.setColorAt(i,new THREE.Color(s==="exceeds"?0xc0392b:s==="pending"?0xe89f27:s==="governing"?0xd35400:0x2e8b57));});
+      supportMarkers.count=entries.length;supportMarkers.instanceMatrix.needsUpdate=true;if(supportMarkers.instanceColor)supportMarkers.instanceColor.needsUpdate=true;
+      canvas.dataset.supportStatus=entries.map(([id,s])=>id+":"+s).join(",");render();
+    };
     // Visual-only measuring overlay; points come from real model node IDs, in mm.
     const measureGeometry = new THREE.BufferGeometry();
     measureGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(6), 3));
@@ -325,12 +336,13 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       canvas.dataset.environment = stage.loadEnvironment() ? "procedural" : "none";
       canvas.dataset.environmentMs = stage.environmentMs().toFixed(0); render();
     }, 60);
-    return () => { disposed = true; showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
+    return () => { disposed = true; showDeformed.current(null); window.clearTimeout(environmentTimer); rig.cancel(); environment?.dispose(); observer.disconnect(); controls.removeEventListener("change", follow); controls.dispose(); profiles.dispose(); nodeMarkers.dispose(); supportMarkers.dispose(); applySupport.current=()=>{}; nodeTools.current=()=>{}; resources.forEach(r => r.dispose()); renderer.domElement.removeEventListener("pointerdown", down); renderer.domElement.removeEventListener("pointerup", up); renderer.domElement.removeEventListener("webglcontextlost", lost); renderer.domElement.removeEventListener("wheel", wheel); renderer.clippingPlanes = []; stage.dispose(); renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove(); highlight.current = () => {}; changeMode.current = () => {}; applyOptions.current = () => {}; capture.current = () => {}; reset.current = () => {}; focus.current = () => {}; applyVisibility.current = () => {}; cameraView.current = () => {}; applyProjection.current = () => {}; applyFinish.current = () => {}; applyGhost.current = () => {}; applySection.current = () => {}; };
   }, [model, gridSpacingM, envelope, projectName]);
   useEffect(() => { changeMode.current(mode); }, [mode, model]);
   useEffect(() => { optionsRef.current = presentationOptions; applyOptions.current(presentationOptions); }, [presentationOptions]);
   useEffect(() => { highlight.current(selected); }, [selected, model]);
   useEffect(() => { colorize.current(analysisColors); }, [analysisColors, model]);
+  useEffect(() => { applySupport.current(supportStatus); }, [supportStatus, model]);
   useEffect(() => { showDeformed.current(deformed ?? null); }, [deformed, model]);
   useEffect(() => { applyProjection.current(projection); }, [projection, model]);
   useEffect(() => { applyFinish.current(finish); }, [finish, model]);
@@ -449,6 +461,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
         </div>
       </aside>}
     </div>
+    {!failure && supportStatus && Object.keys(supportStatus).length > 0 && <SupportLegend status={supportStatus} />}
     {!failure && mode === "finished" && <section className="presentation-controls" aria-label="Personalizar apresentação da obra">
       <div className="presentation-controls-head"><strong>Personalizar visualização</strong><span>Elementos cenográficos, sem alteração do orçamento ou da estrutura</span></div>
       <div className="presentation-settings">
@@ -468,5 +481,20 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       {pictureError && <p role="alert" className="field-error">{pictureError}</p>}
       <p className="drawing-help">Arraste para girar; dois dedos para ampliar/deslocar. Grade: {gridSpacingM.toLocaleString("pt-BR")} m por célula. Cores por categoria; acabamento, sombras e reflexos são apenas visuais. Nitidez de imagem adaptativa com limite de pixels para preservar o desempenho. Use a seleção de peças para acesso por teclado.</p>
     </>}
+  </div>;
+}
+
+/** N4: the marker colours always come with text (state + support IDs), never colour alone. */
+const supportLegend=[["exceeds","EXCEDE a capacidade declarada","#c0392b"],["pending","PENDENTE (capacidade ou inspeção)","#e89f27"],
+  ["governing","GOVERNA (maior razão)","#d35400"],["ok","OK, dentro da capacidade declarada","#2e8b57"]] as const;
+function SupportLegend({status}:{status:Record<string,"exceeds"|"pending"|"governing"|"ok">}){
+  const entries=Object.entries(status);
+  return <div className="studio-support-legend" data-testid="studio-support-legend" role="note" aria-label="Arrancamento por apoio"
+    style={{margin:"8px 0",background:"#fff",color:"#1d1d1d",border:"1px solid #999",borderRadius:6,padding:"6px 8px",fontSize:13,lineHeight:1.4}}>
+    <strong>Arrancamento por apoio (ELU)</strong>
+    {supportLegend.map(([key,label,color])=>{const ids=entries.filter(([,s])=>s===key).map(([id])=>id);if(!ids.length)return null;
+      return <div key={key} data-state={key} style={{display:"flex",gap:6,alignItems:"baseline"}}>
+        <span aria-hidden="true" style={{display:"inline-block",width:10,height:10,borderRadius:5,background:color,flex:"none"}}/>
+        <span><strong>{label}</strong>: {ids.join(", ")}</span></div>;})}
   </div>;
 }

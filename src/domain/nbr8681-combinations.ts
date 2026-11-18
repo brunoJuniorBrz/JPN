@@ -6,6 +6,7 @@ import data from "../../data/normas/nbr8681-2025-combinations.json" with {type:"
 import type {Project} from "./models";
 import {applyEngineeringCombinations} from "./apply-engineering-combinations";
 import {engineeringCombinationsSchema} from "./engineering-combinations";
+import {nbr8681PermanentReferenceFactors} from "./nbr8681-permanent-factors";
 /** Generator limit (every analysis case must be classified exactly once). The analysis itself accepts more cases (MAX_CASES); above this the generator REFUSES, never truncates. */
 export const MAX_DECLARED_ACTIONS=16;
 
@@ -45,18 +46,8 @@ const ref=(clause:string)=>({standard:"ABNT NBR 8681",edition:"2025",clause,
   responsible:"Revisão profissional pendente; o JPN não substitui o responsável técnico"});
 const psiOf=(row:string)=>(data.table6.rows as Record<string,{psi:number[]}>)[row].psi;
 
-type Perm={caseId:string;gu:number;gf:number;table:string};
-function permanentFactors(d:Nbr8681Declaration,kind:Kind):Perm[]{
-  return d.actions.flatMap(a=>{
-    if(a.nature!=="permanent")return [];
-    if(a.permanentType==="prestress"||a.permanentType==="settlement-shrinkage"){
-      const [gu,gf]=data.table3[a.permanentType][kind];return [{caseId:a.caseId,gu,gf,table:"Tabela 3"}];
-    }
-    if(d.permanentMode==="grouped"){const [gu,gf]=data.table2[kind];return [{caseId:a.caseId,gu,gf,table:"Tabela 2"}];}
-    if(!a.permanentType)return fail("M42_PERMANENT_TYPE","tipo da Tabela 1 é obrigatório para "+a.caseId+" em permanentMode=separate");
-    const [gu,gf]=data.table1.types[a.permanentType][kind];return [{caseId:a.caseId,gu,gf,table:"Tabela 1"}];
-  });
-}
+// Tabelas 1 a 3 lookup shared with the anchor pull-out check (single implementation).
+const permanentFactors=(d:Nbr8681Declaration,kind:Kind)=>nbr8681PermanentReferenceFactors(d,kind);
 const gammaQ=(d:Nbr8681Declaration,type:keyof typeof data.table4.types,kind:Kind)=>
   d.variableMode==="joint"&&type!=="temperature-atmospheric"?data.table5[kind]:data.table4.types[type][kind];
 
@@ -198,5 +189,19 @@ export function applyNbr8681Combinations(project:Project,raw:unknown){
   if(!draft)fail("M42_MODEL_PENDING","declare o modelo físico antes das combinações");
   const generated=generateNbr8681Combinations(raw,draft.cases.map(c=>c.id));
   // N3: single checked source -> no PROVISIONAL mark for 8681; an old mark persisted in the project is removed.
-  return {project:clearProvenance(applyEngineeringCombinations(project,generated.engineeringCombinations),"combinations-nbr8681"),generated};
+  const applied=clearProvenance(applyEngineeringCombinations(project,generated.engineeringCombinations),"combinations-nbr8681");
+  // N4: keep the declaration that generated the table (classification of each permanent action for the anchor check).
+  const sp=applied.workspace.spatialPreparation!;
+  return {project:{...applied,workspace:{...applied.workspace,spatialPreparation:{...sp,nbr8681Declaration:nbr8681DeclarationSchema.parse(raw)}}},generated};
+}
+
+/** The stored NBR 8681 declaration, only when it reproduces EXACTLY the project's current combination table for the
+ * current cases (otherwise stale or edited by hand -> null, never an invented classification). */
+export function nbr8681DeclarationFor(draft:{cases:{id:string}[];engineeringCombinations?:unknown;nbr8681Declaration?:unknown}):Nbr8681Declaration|null{
+  if(!draft.nbr8681Declaration||!draft.engineeringCombinations)return null;
+  try{
+    const d=nbr8681DeclarationSchema.parse(draft.nbr8681Declaration);
+    const regenerated=generateNbr8681Combinations(d,draft.cases.map(c=>c.id)).engineeringCombinations;
+    return JSON.stringify(regenerated)===JSON.stringify(engineeringCombinationsSchema.parse(draft.engineeringCombinations))?d:null;
+  }catch{return null;}
 }
