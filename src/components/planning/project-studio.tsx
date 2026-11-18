@@ -1,6 +1,6 @@
 "use client";
 import { useState, type ReactNode } from "react";
-import { BarChart3, Box, ChevronDown, ChevronUp, ClipboardCheck, FileText, HardHat, Layers, Package, Ruler, Weight } from "lucide-react";
+import { BarChart3, Box, ChevronDown, ChevronUp, ClipboardCheck, FileText, HardHat, Layers, Package, Ruler, Triangle, Weight } from "lucide-react";
 import { cx } from "@/components/ui/cx";
 
 /** Etapas do estúdio do projeto (F1). A ordem é a do fluxo de trabalho. */
@@ -8,6 +8,7 @@ export const studioSteps = [
   { id: "obra", label: "Obra", icon: HardHat },
   { id: "geometria", label: "Geometria", icon: Ruler },
   { id: "estrutura", label: "Estrutura", icon: Layers },
+  { id: "tesoura", label: "Tesoura", icon: Triangle },
   { id: "cargas", label: "Cargas", icon: Weight },
   { id: "analise", label: "Análise", icon: BarChart3 },
   { id: "verificacao", label: "Verificação", icon: ClipboardCheck },
