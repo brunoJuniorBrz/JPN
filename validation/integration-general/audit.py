@@ -95,7 +95,13 @@ REVIEWED_AMENDMENTS = {
     # edition literals and the speed-data SHA assertion updated, no numerical expectation changed.
     "src/domain/normative-origin.test.ts": "80a2d9c9ee73462acebc9d17711d845124e66ced",
     "src/domain/wind-speed.test.ts": "e5cf65b5ac01975374c50803a7c96b1eb3d0f65e",
-    # #148: tests/e2e/presentation-3d.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.\n    "tests/e2e/presentation-3d.spec.ts": "a74f874614f2da6b8cf2c5b815c585391ec72cea",\n    # #148: tests/e2e/spatial-analysis.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.\n    "tests/e2e/spatial-analysis.spec.ts": "68f2843c570444ae00af87b82c5fb7997e935e17",\n    # #148: tests/e2e/studio-measurement.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.\n    "tests/e2e/studio-measurement.spec.ts": "7d8eb37822bd2c6e0d6d76043c3f5fff492d309d",\n    # UI F1 (docs/ui/PLANO-UI.md, test changes authorized by the project owner; review in the UI PR):
+    # #148: tests/e2e/presentation-3d.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
+    "tests/e2e/presentation-3d.spec.ts": "a74f874614f2da6b8cf2c5b815c585391ec72cea",
+    # #148: tests/e2e/spatial-analysis.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
+    "tests/e2e/spatial-analysis.spec.ts": "68f2843c570444ae00af87b82c5fb7997e935e17",
+    # #148: tests/e2e/studio-measurement.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
+    "tests/e2e/studio-measurement.spec.ts": "7d8eb37822bd2c6e0d6d76043c3f5fff492d309d",
+    # UI F1 (docs/ui/PLANO-UI.md, test changes authorized by the project owner; review in the UI PR):
     # the project screen became a studio. Result tabs / "Ferramenta de engenharia" select became
     # steps and an analysis-tools nav; navigation-only edits, no warning/blocking check removed.
     # PR #145: adaptation reviewed against F0–F6 original; adds Tesoura stage and resolves the tool only after opening Análise, without changing assertions.
