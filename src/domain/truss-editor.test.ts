@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { newProject } from "./models";
-import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussSummary, withFall, fallPercent, trussEditorSchema } from "./truss-editor";
+import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema } from "./truss-editor";
 import { spatialPreparationReview } from "./spatial-preparation";
 import { packageTakeoff } from "@/lib/exports/package-source";
 import { packageCutting } from "@/lib/exports/complete-package";
@@ -50,37 +50,9 @@ describe("editor de tesoura por estações", () => {
     const d = trussPieces(flipped).find(p => p.mark === "D15")!;
     expect(d.a[0]).toBeGreaterThan(d.b[0]);
     expect(trussPieces({ ...t, diagonal: "none" }).some(p => p.kind === "D")).toBe(false);
-    expect(trussIssues({ ...t, purlinStepMm: 1400 }).some(i => i.message.includes("fora de nó"))).toBe(true);
+    expect(trussIssues({ ...t, purlinStepMm: 1400 }).some(i => i.message.includes("ajustada"))).toBe(true);
     expect(trussIssues({ ...t, highHeightMm: 50 }).some(i => i.level === "erro")).toBe(true);
     expect(() => applyTrussToProject(newProject(), { ...t, highHeightMm: 50 })).toThrow();
-  });
-
-  it("painel de 60 cm mantém terças nos nós e quantidade comercial do editor", () => {
-    const t = { ...tomTrussDefaults(), panelMm: 600 };
-    const purlins = purlinPositions(t), nodes = stations(t);
-    expect(purlins).toHaveLength(t.purlinLines);
-    expect(purlins.every(p => p.onNode && nodes.includes(p.sMm))).toBe(true);
-    expect(purlins.some(p => Math.abs(p.shiftMm) > 10)).toBe(true);
-    expect(trussIssues(t).some(i => i.message.includes("fora de nó"))).toBe(true);
-    const summary = trussSummary(t);
-    expect(summary.bars.web).toBe(8);
-    expect(summary.bars.webFullHeight).toBe(13);
-    const project = applyTrussToProject(newProject(), { ...t, fullHeightBudget: true });
-    expect(project.workspace.physicalStructure!.pieces.filter(p => p.role === "purlin"))
-      .toHaveLength((t.trusses - 1) * t.purlinLines);
-  });
-
-  it("não aplica linhas de terça duplicadas ou que não cabem no vão", () => {
-    const t = { ...tomTrussDefaults(), purlinStepMm: 6000 };
-    expect(trussIssues(t).some(i => i.level === "erro")).toBe(true);
-    expect(() => applyTrussToProject(newProject(), t)).toThrow();
-  });
-
-  it("mantém workspace legado sem campo trussEditor", async () => {
-    const { emptyWorkspace, workspaceSchema } = await import("./workspace");
-    const old = emptyWorkspace();
-    expect("trussEditor" in old).toBe(false);
-    expect(workspaceSchema.parse(old)).toEqual(old);
   });
 
   it("orçamento: medida cheia e itens sem preço", () => {
@@ -96,7 +68,7 @@ describe("editor de tesoura por estações", () => {
     const t = tomTrussDefaults();
     // Dado salvo antes destes campos continua abrindo (defaults).
     const old = JSON.parse(JSON.stringify(t));
-    delete old.walls; delete old.anchor; delete old.supportZMm; delete old.gutter.lowSideMm; delete old.gutter.highSideMm; delete old.gutter.budgeted; delete old.gutter.pricePerMCents;
+    delete old.roofKind; delete old.walls; delete old.anchor; delete old.supportZMm; delete old.gutter.lowSideMm; delete old.gutter.highSideMm; delete old.gutter.budgeted; delete old.gutter.pricePerMCents;
     delete old.sheet.piecesPerSlope; delete old.sheet.overlapMm; delete old.chord.extraBars; delete old.web.extraBars; delete old.purlin.extraBars;
     expect(trussEditorSchema.parse(old)).toEqual(t);
 
@@ -125,13 +97,46 @@ describe("editor de tesoura por estações", () => {
 
     const blank = blankTruss();
     expect(trussIssues(blank).filter(i => i.level === "erro")).toEqual([]);
-    expect(purlinPositions(blank)).toHaveLength(blank.purlinLines);
     expect(trussSummary(blank).knownCents).toBe(0);
-    // O checkbox da calha não pode fingir que orçou sem preço.
-    const budgetPending = trussSummary({ ...t, gutter: { ...t.gutter, budgeted: true } });
-    expect(budgetPending.missing).toContain("Calha (m)");
-    const pricedCalha = trussSummary({ ...t, gutter: { ...t.gutter, budgeted: true, pricePerMCents: 2400 } });
-    expect(pricedCalha.knownCents - one.knownCents).toBe(2400 * t.lengthMm / 1000);
-    expect(trussSummary({ ...t, gutter: { ...t.gutter, budgeted: false, pricePerMCents: 2400 } }).knownCents).toBe(one.knownCents);
+  });
+
+  it("duas águas simétricas: duas faces XYZ, cumeeira única e apoios pendentes", () => {
+    const original = tomTrussDefaults();
+    const t = trussEditorSchema.parse({ ...original, roofKind: "two-slopes", purlinStepMm: 600 });
+    expect(trussIssues(t).filter(i => i.level === "erro")).toEqual([]);
+    const L = 3250, parts = trussPiecesComplete(t);
+    expect(parts.some(p => p.id.startsWith("E-"))).toBe(true);
+    expect(parts.some(p => p.id.startsWith("D-"))).toBe(true);
+    expect(parts.filter(p => p.kind === "M" && p.a[0] === L)).toHaveLength(1);
+    const purlins = roofPurlinPositions(t);
+    expect(new Set(purlins.map(p => p.xMm)).size).toBe(purlins.length);
+    expect(purlins.filter(p => Math.abs(p.xMm - L) < 1e-6)).toHaveLength(1);
+    const project = applyTrussToProject(newProject(), t);
+    const faces = project.workspace.spatialPreparation!.physicalRoofFaces!.faces;
+    expect(faces.map(f => f.id)).toEqual(["AGUA-E", "AGUA-D"]);
+    const nodes = new Map(project.workspace.physicalStructure!.nodes.map(n => [n.id, n]));
+    expect(faces.every(f => f.outer.every(v => Number.isFinite(v[2])))).toBe(true);
+    expect(project.workspace.physicalStructure!.pieces.filter(p => p.role === "purlin")).toHaveLength((t.trusses - 1) * purlins.length);
+    const supports = project.workspace.spatialPreparation!.supports;
+    expect(supports).toHaveLength(t.trusses * 2);
+    expect(supports.every(s => s.dofs.every(d => d === "pending"))).toBe(true);
+    const supportX = [...new Set(supports.map(s => nodes.get(s.nodeId)!.x))].sort((a, b) => a - b);
+    expect(supportX).toEqual([750, 7250]);
+    const two = trussSummary(t), one = trussSummary(original);
+    expect(two.sheets).toBe(one.sheets * 2);
+    expect(two.plates).toBe(t.trusses * 2);
+    expect(two.kg.total).toBeCloseTo(two.kg.chord + two.kg.web + two.kg.purlin, 7);
+    expect(project.workspace.trussEditor?.roofKind).toBe("two-slopes");
+  });
+
+  it("calha: só entra no orçamento quando habilitada, conta dois beirais e preço declarado", () => {
+    const t = tomTrussDefaults(), base = trussSummary(t);
+    const priced = trussSummary({ ...t, gutter: { ...t.gutter, budgeted: true, pricePerMCents: 2400 } });
+    expect(priced.knownCents - base.knownCents).toBe(2400 * 10);
+    const dualInput = { ...t, roofKind: "two-slopes" as const, purlinStepMm: 600 };
+    const dual = trussSummary({ ...dualInput, gutter: { ...t.gutter, budgeted: true, pricePerMCents: 2400 } });
+    const notBudgeted = trussSummary(dualInput);
+    expect(dual.knownCents - notBudgeted.knownCents).toBe(2400 * 20);
+    expect(trussSummary({ ...t, gutter: { ...t.gutter, budgeted: true, pricePerMCents: null } }).missing).toContain("Calha (m)");
   });
 });

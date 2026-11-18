@@ -6,7 +6,7 @@ import { roofSurface } from "./studio-view";
 
 export type WallLayout = "none" | "rear" | "sides" | "three" | "closed";
 export type RoofColor = "graphite" | "silver" | "white" | "terracotta";
-export type RoofFinish = "trapezoidal" | "sandwich" | "standing";
+export type RoofFinish = "trapezoidal" | "sandwich" | "standing" | "corrugated";
 export interface PresentationOptions {
   walls: WallLayout;
   roofColor: RoofColor;

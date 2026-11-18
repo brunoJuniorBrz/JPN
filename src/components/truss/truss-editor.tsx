@@ -4,7 +4,7 @@ import { RotateCcw, Plus, Trash2, ArrowLeftRight, Check, TriangleAlert, FilePlus
 import { NumberField } from "@/components/number-field";
 import { Field, Input, Select } from "@/components/ui";
 import {
-  blankTruss, COMMON_PROFILES, fallPercent, purlinPositions, stations, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPieces, trussSummary, withFall,
+  blankTruss, COMMON_PROFILES, fallPercent, roofPurlinPositions, slopeCount, stations, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
   type TrussEditor as Truss,
 } from "@/domain/truss-editor";
 import styles from "./truss-editor.module.css";
@@ -19,8 +19,8 @@ function Cm({ label, mm, onMm, hint, min = 0, max = 100000 }: { label: string; m
 }
 
 function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null; onSelect: (i: number) => void }) {
-  const L = trussLengthMm(t), st = stations(t), pieces = trussPieces(t), purlins = purlinPositions(t), off = tipOffsetMm(t);
-  const th = t.walls.thicknessMm, sMin = -off - th, sMax = L + th;
+  const L = trussLengthMm(t), S = slopeCount(t), st = stations(t), pieces = trussPiecesComplete(t), purlins = roofPurlinPositions(t), off = tipOffsetMm(t);
+  const th = t.walls.thicknessMm, sMin = -off - th, sMax = L * S + th;
   const W = 1000, padL = 46, padR = 46, sx = (W - padL - padR) / (sMax - sMin);
   const vz = Math.min(sx * 4, 330 / Math.max(t.highHeightMm, 1)), stub = 120;
   const top = 40, H = top + t.highHeightMm * vz + stub + 110;
@@ -33,29 +33,30 @@ function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null;
   const panels = st.slice(1).map((s, i) => [st[i], s]);
   return <svg className={styles.drawing} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Elevação da tesoura com muros e calha (altura da tesoura exagerada para leitura)">
     <rect x={X(sMin)} y={Yw(t.walls.lowMm)} width={th * sx} height={wallBottom - Yw(t.walls.lowMm)} className={styles.wall}><title>Muro baixo {cm(t.walls.lowMm)} cm</title></rect>
-    <rect x={X(L)} y={Yw(t.walls.highMm)} width={th * sx} height={wallBottom - Yw(t.walls.highMm)} className={styles.wall}><title>Muro alto {cm(t.walls.highMm)} cm</title></rect>
+    <rect x={X(L * S)} y={Yw(S === 2 ? t.walls.lowMm : t.walls.highMm)} width={th * sx} height={wallBottom - Yw(S === 2 ? t.walls.lowMm : t.walls.highMm)} className={styles.wall}><title>{S === 2 ? "Muro do outro beiral" : "Muro alto"}</title></rect>
     <rect x={X(-off)} y={gTop + 4} width={g.supportMm * sx} height={8} className={styles.ledge}><title>Apoio da calha</title></rect>
     <path d={`M ${X(gx0)} ${gTop + (g.highSideMm - g.lowSideMm) * sx * 1.5} V ${gBot} H ${X(gx1)} V ${gTop}`} className={styles.gutter}><title>Calha {cm(g.widthMm)} cm</title></path>
-    <rect x={X(L) - 6} y={base - plateH / 2 - (base - Y(t.highHeightMm)) / 2} width={6} height={plateH} className={styles.plate}><title>Chapa de ancoragem</title></rect>
-    {Array.from({ length: t.anchor.boltsPerSupport }, (_, i) => { const yb = base - (base - Y(t.highHeightMm)) / 2 - plateH / 2 + plateH * (i + 1) / (t.anchor.boltsPerSupport + 1);
-      return <line key={i} x1={X(L) - 10} y1={yb} x2={X(L) + Math.min(t.anchor.boltLengthMm, th * 0.85) * sx} y2={yb} className={styles.bolt} />; })}
+    {S === 2 && <path d={`M ${X(2 * L - gx0)} ${gTop + (g.highSideMm - g.lowSideMm) * sx * 1.5} V ${gBot} H ${X(2 * L - gx1)} V ${gTop}`} className={styles.gutter}><title>Calha do beiral direito</title></path>}
+    {(S === 2 ? [0, 2 * L] : [L]).map(x => <rect key={x} x={X(x) - 6} y={base - plateH / 2 - (base - Y(t.highHeightMm)) / 2} width={6} height={plateH} className={styles.plate}><title>Posição declarada da chapa (sem verificação)</title></rect>)}
+    {(S === 2 ? [0, 2 * L] : [L]).flatMap(x => Array.from({ length: t.anchor.boltsPerSupport }, (_, i) => { const yb = base - (base - Y(t.highHeightMm)) / 2 - plateH / 2 + plateH * (i + 1) / (t.anchor.boltsPerSupport + 1);
+      return <line key={`${x}-${i}`} x1={X(x) - 10} y1={yb} x2={X(x) + Math.min(t.anchor.boltLengthMm, th * 0.85) * sx} y2={yb} className={styles.bolt} />; }))}
     {pieces.filter(p => p.kind === "D").map(p => <line key={p.id} x1={X(p.a[0])} y1={Y(p.a[1])} x2={X(p.b[0])} y2={Y(p.b[1])} className={styles.web} />)}
     {pieces.filter(p => p.kind === "BI" || p.kind === "BS").map(p => <line key={p.id} x1={X(p.a[0])} y1={Y(p.a[1])} x2={X(p.b[0])} y2={Y(p.b[1])} className={styles.chord} />)}
-    {pieces.filter(p => p.kind === "BI" || p.kind === "BS").filter(p => p.id.endsWith("-A") && p.b[0] < L - 1).map(p => <circle key={`e${p.id}`} cx={X(p.b[0])} cy={Y(p.b[1])} r={5} className={styles.splice}><title>Emenda do banzo</title></circle>)}
-    {st.map((s, i) => <g key={s} onClick={() => onSelect(i)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(i); } }} tabIndex={0} className={selected === i ? styles.selected : styles.post} role="button" aria-label={`Montante ${i + 1}, ${cm(s)} cm da ponta`}>
+    {pieces.filter(p => p.kind === "BI" || p.kind === "BS").filter(p => p.id.endsWith("-A") && p.b[0] < L * S - 1).map(p => <circle key={`e${p.id}`} cx={X(p.b[0])} cy={Y(p.b[1])} r={5} className={styles.splice}><title>Emenda do banzo</title></circle>)}
+    {st.map((s, i) => <g key={s} tabIndex={0} onClick={() => onSelect(i)} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(i); } }} className={selected === i ? styles.selected : styles.post} role="button" aria-label={`Montante ${i + 1}, ${cm(s)} cm da ponta`}>
       <line x1={X(s)} y1={Y(0)} x2={X(s)} y2={Y(t.tipHeightMm + (t.highHeightMm - t.tipHeightMm) * s / L)} />
       <rect x={X(s) - 9} y={Y(t.highHeightMm) - 10} width={18} height={Y(0) - Y(t.highHeightMm) + 20} fill="transparent" stroke="none" />
     </g>)}
     {purlins.map((p, i) => { const z = t.tipHeightMm + (t.highHeightMm - t.tipHeightMm) * p.sMm / L;
-      return <rect key={i} x={X(p.sMm) - 7} y={Y(z) - 12} width={14} height={10} className={p.onNode ? styles.purlin : styles.purlinOff}><title>{p.onNode ? "Terça no nó" : "Terça fora de nó"}</title></rect>; })}
+      return <rect key={i} x={X(p.xMm) - 7} y={Y(z) - 12} width={14} height={10} className={p.onNode ? styles.purlin : styles.purlinOff}><title>{p.onNode ? "Terça no nó" : "Terça fora de nó"}</title></rect>; })}
     <text x={X(sMin)} y={wallBottom + 26} className={styles.wallText} textAnchor="start">muro {cm(t.walls.lowMm)}</text>
-    <text x={X(sMax)} y={wallBottom + 26} className={styles.wallText} textAnchor="end">muro {cm(t.walls.highMm)}</text>
+    <text x={X(sMax)} y={wallBottom + 26} className={styles.wallText} textAnchor="end">muro {cm(S === 2 ? t.walls.lowMm : t.walls.highMm)}</text>
     <text x={X((gx0 + gx1) / 2)} y={gBot + 22} className={styles.dim}>calha {cm(g.widthMm)}</text>
     {panels.map(([a, b], i) => (panels.length <= 12 || i % 2 === 0 || i === panels.length - 1) && <text key={a} x={X((a + b) / 2)} y={base + 26} className={styles.dim}>{cm(b - a)}</text>)}
-    <line x1={X(0)} y1={H - 38} x2={X(L)} y2={H - 38} className={styles.dimLine} />
-    <text x={X(L / 2)} y={H - 8} className={styles.dimStrong}>{m(L)} m de tesoura · caída {fallPercent(t).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} %</text>
+    <line x1={X(0)} y1={H - 38} x2={X(L * S)} y2={H - 38} className={styles.dimLine} />
+    <text x={X(L * S / 2)} y={H - 8} className={styles.dimStrong}>{m(L * S)} m de tesoura · {S} água(s) · inclinação {fallPercent(t).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} %</text>
     <text x={X(0) + 6} y={Y(t.tipHeightMm) - 10} className={styles.dimSide} textAnchor="start">{cm(t.tipHeightMm)}</text>
-    <text x={X(L) - 10} y={Y(t.highHeightMm) - 12} className={styles.dimSide} textAnchor="end">{cm(t.highHeightMm)}</text>
+    <text x={X(L) - 10} y={Y(t.highHeightMm) - 12} className={styles.dimSide} textAnchor="end">{cm(t.highHeightMm)}{S === 2 ? " (cumeeira)" : ""}</text>
   </svg>;
 }
 
@@ -109,7 +110,7 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
             {result.s.lines.map(l => <tr key={l.item}><td>{l.item}</td><td>{l.qty}</td><td>{l.cents === null ? <em>a informar</em> : brl(l.cents)}</td></tr>)}
             <tr className={styles.total}><td>Total conhecido</td><td></td><td>{brl(result.s.knownCents)}</td></tr>
           </tbody></table>
-          <p className={styles.muted}>{result.s.gutterLine}. {result.s.plates} chapa(s) e {result.s.bolts} chumbador(es) no muro alto.</p>
+          <p className={styles.muted}>{result.s.gutterLine}. {result.s.plates} chapa(s) e {result.s.bolts} chumbador(es) nas posições declaradas.</p>
           {result.s.missing.length > 0 && <p className={styles.muted}>Sem preço: {result.s.missing.join(", ")}.</p>}
         </>}
         {result.issues.map(i => <p key={i.message} className={i.level === "erro" ? styles.error : styles.warn}><TriangleAlert size={15} />{i.message}</p>)}
@@ -124,10 +125,19 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
       <section className={styles.card}>
         <h3>Obra</h3>
         <div className={styles.grid}>
+          <Field label="Tipo de cobertura"><Select value={t.roofKind} onChange={e => {
+            const kind = e.target.value as Truss["roofKind"], off = tipOffsetMm(t);
+            const run = (t.spanMm - (kind === "two-slopes" ? 2 : 1) * off) / (kind === "two-slopes" ? 2 : 1);
+            const step = Math.max(300, Math.floor(run / (t.purlinLines - 1) / 10) * 10);
+            // A alternância preserva a inclinação escolhida; só o semivão muda.
+            const highHeightMm = Math.round((t.tipHeightMm + run * fallPercent(t) / 100) * 10) / 10;
+            set({ roofKind: kind, highHeightMm, purlinStepMm: Math.min(t.purlinStepMm, step), stationsMm: null, flippedPanels: [] });
+          }}><option value="one-slope">Uma água</option><option value="two-slopes">Duas águas simétricas</option></Select></Field>
           <Cm label="Muro a muro (cm)" mm={t.spanMm} onMm={spanMm => set({ spanMm, stationsMm: null })} min={100} />
           <Cm label="Comprimento (cm)" mm={t.lengthMm} onMm={lengthMm => set({ lengthMm })} min={100} />
           <Cm label="Altura do muro baixo (cm)" mm={t.walls.lowMm} onMm={v => set({ walls: { ...t.walls, lowMm: v } })} hint="Do piso ao topo." />
-          <Cm label="Altura do muro alto (cm)" mm={t.walls.highMm} onMm={v => set({ walls: { ...t.walls, highMm: v } })} hint="Onde a tesoura é chumbada." />
+          {t.roofKind === "one-slope" && <Cm label="Altura do muro alto (cm)" mm={t.walls.highMm} onMm={v => set({ walls: { ...t.walls, highMm: v } })} hint="Referência para a ancoragem no lado alto." />}
+          {t.roofKind === "two-slopes" && <p className={styles.muted}>Duas águas: mesmo nível nos dois beirais, cumeeira central e calhas dos dois lados. Sem atribuir vínculos ou ligações.</p>}
           <Cm label="Espessura do muro (cm)" mm={t.walls.thicknessMm} onMm={v => set({ walls: { ...t.walls, thicknessMm: v } })} min={5} />
           <Cm label="Banzo de baixo a partir do piso (cm)" mm={t.supportZMm} onMm={supportZMm => set({ supportZMm })} hint="Altura de apoio da tesoura." />
           <NumberField label="Tesouras" value={t.trusses} min={2} max={60} decimals={0} onChange={v => v !== null && set({ trusses: v })} hint={`A cada ${m(t.lengthMm / (t.trusses - 1))} m`} />
@@ -142,16 +152,15 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
           <Cm label="Lado menor da calha (cm)" mm={t.gutter.lowSideMm} onMm={v => set({ gutter: { ...t.gutter, lowSideMm: v } })} hint="Lado da telha." />
           <Cm label="Lado maior da calha (cm)" mm={t.gutter.highSideMm} onMm={v => set({ gutter: { ...t.gutter, highSideMm: v } })} hint="Lado do muro." />
         </div>
-        <label className={styles.toggle}><input type="checkbox" checked={t.gutter.budgeted} onChange={e => set({ gutter: { ...t.gutter, budgeted: e.target.checked } })} /><span><strong>Calha entra no orçamento</strong><small>Desligado: a calha aparece no desenho, mas não soma.</small></span></label>
-        {t.gutter.budgeted && <NumberField label="Calha (R$/m)" money value={t.gutter.pricePerMCents} min={0} max={100000} decimals={2}
-          onChange={pricePerMCents => set({ gutter: { ...t.gutter, pricePerMCents } })} hint="Informe o preço de cada metro de calha; sem preço, o orçamento mostra pendente." />}
+        <label className={styles.toggle}><input type="checkbox" checked={t.gutter.budgeted} onChange={e => set({ gutter: { ...t.gutter, budgeted: e.target.checked } })} /><span><strong>Calha entra no orçamento</strong><small>Desligado: a calha aparece no desenho, mas não soma. Com duas águas, o comprimento é contado nos dois beirais.</small></span></label>
+        {t.gutter.budgeted && <NumberField label="Calha (R$/metro)" money value={t.gutter.pricePerMCents} min={0} max={100000} decimals={2} onChange={v => set({ gutter: { ...t.gutter, pricePerMCents: v } })} hint="Sem preço informado, o custo fica pendente." />}
       </section>
       <section className={styles.card}>
-        <h3>Tesoura</h3>
+        <h3>Geometria da tesoura</h3>
         <div className={styles.grid}>
           <Cm label="Altura na ponta (cm)" mm={t.tipHeightMm} onMm={tipHeightMm => set({ tipHeightMm })} min={0.1} />
-          <Cm label="Altura no lado alto (cm)" mm={t.highHeightMm} onMm={highHeightMm => set({ highHeightMm })} min={0.1} />
-          <NumberField label="Caída (%)" value={Math.round(fallPercent(t) * 100) / 100} min={0.5} max={60} decimals={2} onChange={v => v !== null && setT(prev => withFall(prev, v))} hint="Muda a altura do lado alto." />
+          <Cm label={t.roofKind === "two-slopes" ? "Altura na cumeeira (cm)" : "Altura no lado alto (cm)"} mm={t.highHeightMm} onMm={highHeightMm => set({ highHeightMm })} min={0.1} />
+          <NumberField label="Caída (%)" value={Math.round(fallPercent(t) * 100) / 100} min={0.5} max={60} decimals={2} onChange={v => v !== null && setT(prev => withFall(prev, v))} hint={t.roofKind === "two-slopes" ? "Inclinação de cada água, muda a cumeeira." : "Muda a altura do lado alto."} />
           <Cm label="Painel (cm)" mm={t.panelMm} onMm={panelMm => set({ panelMm, stationsMm: null, flippedPanels: [] })} min={10} />
           <Field label="Contar painéis a partir"><Select value={t.countFrom} onChange={e => set({ countFrom: e.target.value as Truss["countFrom"], stationsMm: null, flippedPanels: [] })}><option value="high">do lado alto (sobra na ponta)</option><option value="low">da ponta (sobra no alto)</option></Select></Field>
           <Field label="Diagonais"><Select value={t.diagonal} onChange={e => set({ diagonal: e.target.value as Truss["diagonal"], flippedPanels: [] })}><option value="to-high">subindo para o lado alto</option><option value="to-low">subindo para a ponta</option><option value="x">em X</option><option value="none">sem diagonal</option></Select></Field>
@@ -160,11 +169,11 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
         {t.stationsMm && <button type="button" className="button secondary" onClick={() => set({ stationsMm: null, flippedPanels: [] })}><RotateCcw size={16} />Desfazer ajustes ponto a ponto ({st.length} montantes)</button>}
       </section>
       <section className={styles.card}>
-        <h3>Ancoragem no muro alto</h3>
+        <h3>{t.roofKind === "two-slopes" ? "Ancoragens nos dois beirais" : "Ancoragem no muro alto"}</h3>
         <div className={styles.grid}>
           <Cm label="Chapa largura (cm)" mm={t.anchor.plateWidthMm} onMm={v => set({ anchor: { ...t.anchor, plateWidthMm: v } })} />
           <Cm label="Chapa altura (cm)" mm={t.anchor.plateHeightMm} onMm={v => set({ anchor: { ...t.anchor, plateHeightMm: v } })} />
-          <NumberField label="Chumbadores por tesoura" value={t.anchor.boltsPerSupport} min={0} max={20} decimals={0} onChange={v => v !== null && set({ anchor: { ...t.anchor, boltsPerSupport: v } })} />
+          <NumberField label={t.roofKind === "two-slopes" ? "Chumbadores por beiral/tesoura" : "Chumbadores por tesoura"} value={t.anchor.boltsPerSupport} min={0} max={20} decimals={0} onChange={v => v !== null && set({ anchor: { ...t.anchor, boltsPerSupport: v } })} />
           <Cm label="Comprimento do chumbador (cm)" mm={t.anchor.boltLengthMm} onMm={v => set({ anchor: { ...t.anchor, boltLengthMm: v } })} />
           <NumberField label="Chapa (R$/un)" money value={t.anchor.platePriceCents} min={0} max={100000} decimals={2} onChange={v => set({ anchor: { ...t.anchor, platePriceCents: v } })} />
           <NumberField label="Chumbador (R$/un)" money value={t.anchor.boltPriceCents} min={0} max={100000} decimals={2} onChange={v => set({ anchor: { ...t.anchor, boltPriceCents: v } })} />
@@ -173,8 +182,8 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
       <section className={styles.card}>
         <h3>Terças</h3>
         <div className={styles.grid}>
-          <NumberField label="Linhas de terça" value={t.purlinLines} min={2} max={60} decimals={0} onChange={v => v !== null && set({ purlinLines: v })} />
-          <Cm label="Espaço a partir do lado alto (cm)" mm={t.purlinStepMm} onMm={purlinStepMm => set({ purlinStepMm })} min={30} hint="A última terça fica na ponta." />
+          <NumberField label={t.roofKind === "two-slopes" ? "Linhas de terça por água" : "Linhas de terça"} value={t.purlinLines} min={2} max={60} decimals={0} onChange={v => v !== null && set({ purlinLines: v })} />
+          <Cm label={t.roofKind === "two-slopes" ? "Espaço a partir da cumeeira (cm)" : "Espaço a partir do lado alto (cm)"} mm={t.purlinStepMm} onMm={purlinStepMm => set({ purlinStepMm })} min={30} hint="A última terça fica na ponta." />
         </div>
       </section>
       <section className={styles.card}>
