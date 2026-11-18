@@ -11,8 +11,10 @@ import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 
 /** Rótulo HTML preso a um nó ou ao meio de uma peça (F3). Só visual; a informação também existe em texto no estúdio. */
+/** Camadas de contexto arquitetônico do editor de tesoura (só visuais). */
+export type SiteVisibility = { walls: boolean; gutter: boolean; sheet: boolean; plates: boolean };
 /** Ações visuais expostas ao estúdio (menu de contexto e Ctrl+K). Nada é persistido. */
-export type Viewer3DApi = { isolate: (pieceId: string) => void; hideRole: (role: PieceRole) => void; showAll: () => void; measureFrom: (nodeId: string) => void; focus: (pieceId: string) => void; reset: () => void; pickAt: (clientX: number, clientY: number) => string | null };
+export type Viewer3DApi = { view?: (view: StudioView, orthographic: boolean) => void; setRoles?: (visible: PieceRole[]) => void; isolate: (pieceId: string) => void; hideRole: (role: PieceRole) => void; showAll: () => void; measureFrom: (nodeId: string) => void; focus: (pieceId: string) => void; reset: () => void; pickAt: (clientX: number, clientY: number) => string | null };
 export type Viewer3DLabel ={ key: string; nodeId?: string; pieceId?: string; text: string; tone?: "neutral" | "ok" | "warn" | "danger" };
 import { roles, roleLabels, type PieceRole, type StructureModel, type Planning } from "@/domain/structure";
 import type { RoofParameters } from "@/domain/project-details";
@@ -30,7 +32,7 @@ import { sectionAxes, sectionAxisLabels, sectionPlane, steelFinishes, steelFinis
 const TRANSITION_MS = 420;
 const metres = (mm: number, digits = 3) => (mm / 1000).toLocaleString("pt-BR", { maximumFractionDigits: digits });
 
-export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false, orientationCube=false, labels, onApi, onHover, siteContext, allowPresentation=true }: { orientationCube?: boolean; labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; onHover?: (id: string) => void; siteContext?: TrussEditor; allowPresentation?: boolean; model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
+export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false, orientationCube=false, labels, onApi, onHover, siteContext, allowPresentation=true, compact=false, siteVisibility }: { compact?: boolean; siteVisibility?: SiteVisibility; orientationCube?: boolean; labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; onHover?: (id: string) => void; siteContext?: TrussEditor; allowPresentation?: boolean; model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
@@ -60,7 +62,8 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const dimensions = envelope ? dimensionLabels(presentationDimensions(envelope)) : [];
   const [expanded, setExpanded] = useState(false);
   const [visibleRoles, setVisibleRoles] = useState<PieceRole[]>([...roles]);
-  const [toolsCollapsed, setToolsCollapsed] = useState(false);
+  // Modo compacto (passo Tesoura): o canvas ocupa a área; as ferramentas avançadas começam fechadas.
+  const [toolsCollapsed, setToolsCollapsed] = useState(compact);
   const [isolatedId, setIsolatedId] = useState<string | null>(null);
   const activeIsolation = isolatedId === selected ? isolatedId : null;
   const selectedPiece = model.pieces.find(piece => piece.id === selected);
@@ -84,9 +87,13 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       focus: id => focus.current(id),
       reset: () => reset.current(),
       pickAt: (x,y) => pickAt.current(x,y),
+      view: (view, orthographic) => { setProjection(orthographic ? "orthographic" : "perspective"); window.requestAnimationFrame(() => cameraView.current(view)); },
+      setRoles: visible => { setVisibleRoles(roles.filter(r => visible.includes(r))); setIsolatedId(null); },
     });
     return () => onApi(null);
   }, [onApi, onSelect, model]);
+  const applySite = useRef<(v?: SiteVisibility) => void>(() => {});
+  useEffect(() => { applySite.current(siteVisibility); }, [siteVisibility, model, siteContext]);
   // Studio tools. All of them are view state: nothing is persisted or sent to the engine.
   const [projection, setProjection] = useState<Projection>("perspective");
   const [finish, setFinish] = useState<SteelFinish>("painted");
@@ -132,6 +139,15 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const profiles = buildProfileScene(model, quality.segments); scene.add(profiles.root);
     const site = siteContext ? createTrussSiteScene(siteContext) : null;
     if (site) scene.add(site.root);
+    // Camadas de contexto (só visuais) pelo nome dos objetos da cena arquitetônica.
+    applySite.current = v => {
+      if (!site) return;
+      for (const child of site.root.children) {
+        const name = child.name;
+        child.visible = !v ? true : name.startsWith("Muro") ? v.walls : name.startsWith("Calha") ? v.gutter : name.startsWith("Cobertura") ? v.sheet : v.plates;
+      }
+      canvas.dataset.siteVisible = String(site.root.children.filter(c => c.visible).length); render();
+    };
     canvas.dataset.quality = quality.low ? "reduced" : "standard";
     canvas.dataset.shadows = shadows ? "on" : "off"; canvas.dataset.environment = "pending";
     canvas.dataset.solidCount = String(profiles.solidCount); canvas.dataset.fallbackCount = String(profiles.fallbackCount);
@@ -530,7 +546,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const technical = !failure && mode !== "finished";
   return <div className={expanded ? "structure-viewer structure-viewer--expanded studio" : "structure-viewer studio"}>
     {expanded && <div className="structure-viewer-heading"><strong>Apresentação da estrutura · 3D</strong><button type="button" className="button secondary" onClick={() => setExpanded(false)}>Fechar tela cheia</button></div>}
-    {!failure && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).filter(([value]) => (allowPresentation && !analysisColors) || value !== "finished").map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
+    {!failure && !compact && <div className="view-switch" role="group" aria-label="Modo de visualização 3D">{([["structural", "Estrutural"], ["profiles", "Perfis 3D"], ["mixed", "Misto"], ["finished", "Acabado"]] as const).filter(([value]) => (allowPresentation && !analysisColors) || value !== "finished").map(([value, label]) => <button key={value} type="button" aria-pressed={mode === value} className={mode === value ? "selected" : ""} onClick={() => setMode(value)}>{label}</button>)}</div>}
     {technical && <div className={toolsCollapsed ? "inspection-tools inspection-tools--collapsed" : "inspection-tools"} aria-label="Ferramentas de inspeção 3D">
       <button type="button" className="inspection-collapse" aria-expanded={!toolsCollapsed} onClick={() => setToolsCollapsed(value => !value)}>{toolsCollapsed ? "Mostrar ferramentas" : "Recolher ferramentas"}</button>
       {!toolsCollapsed && <>
@@ -593,7 +609,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
         <small>Medida geométrica visual, sem tolerâncias de montagem ou aprovação estrutural.</small>
       </div>}
     </div>}
-    {!failure && mode !== "structural" && <div className="notice structure-profile-notice" data-testid="profile-coverage">
+    {!failure && !compact && mode !== "structural" && <div className="notice structure-profile-notice" data-testid="profile-coverage">
       <strong>{model.pieces.length - fallbackCount} peças com seção 3D · {fallbackCount} em linha.</strong>
       {fallbackCount > 0 && <><p>Para visualizar perfis reais, informe família, dimensões e espessura de cada categoria. O sistema não inventa medidas para projetos antigos.</p><div className="actions">{onConfigureProfile && <button type="button" className="button" onClick={onConfigureProfile}>Cadastrar dimensões</button>}{onDemonstrate && <button type="button" className="button secondary" onClick={onDemonstrate}>Ver demonstração com perfis</button>}</div></>}
     </div>}
@@ -644,7 +660,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     {failure ? <p role="status" className="notice">{failure}</p> : <>
       <div className="actions structure-viewer-tools"><button type="button" className="button" onClick={() => setExpanded(v => !v)}>{expanded ? "Sair da tela cheia" : "Tela cheia"}</button><button className="button secondary" type="button" onClick={() => reset.current()}>Isométrica · ajustar 3D</button><button className="button secondary" type="button" disabled={!selected || mode === "finished"} onClick={() => focus.current(selected)}>Focar peça selecionada</button>{mode === "finished" && <button type="button" className="button" onClick={() => capture.current()}>Salvar imagem PNG</button>}</div>
       {pictureError && <p role="alert" className="field-error">{pictureError}</p>}
-      <p className="drawing-help">Arraste para girar; dois dedos para ampliar/deslocar. Grade: {gridSpacingM.toLocaleString("pt-BR")} m por célula. Cores por categoria; acabamento, sombras e reflexos são apenas visuais. Nitidez de imagem adaptativa com limite de pixels para preservar o desempenho. Use a seleção de peças para acesso por teclado.</p>
+      {!compact && <p className="drawing-help">Arraste para girar; dois dedos para ampliar/deslocar. Grade: {gridSpacingM.toLocaleString("pt-BR")} m por célula. Cores por categoria; acabamento, sombras e reflexos são apenas visuais. Nitidez de imagem adaptativa com limite de pixels para preservar o desempenho. Use a seleção de peças para acesso por teclado.</p>}
     </>}
   </div>;
 }
