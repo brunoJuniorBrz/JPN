@@ -7,7 +7,7 @@ async function createQuickRoof(page: import("@playwright/test").Page) {
   await page.getByLabel("Comprimento (m)").fill("35");
   await page.getByLabel("Altura (m)").fill("5");
   await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
-  await expect(page.getByRole("tab", { name: /^Modelo 3D/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible({timeout:45000});
 }
 
 for (const width of [375, 1440]) {

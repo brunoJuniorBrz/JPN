@@ -23,7 +23,7 @@ for (const width of [390, 1440]) test(`levantamento sem preços, revisão ao fin
   const nav = page.getByRole("navigation", { name: "Etapas do levantamento" });
   await nav.getByRole("button", { name: "Estrutura" }).click();
   await page.getByLabel("Espaçamento máximo entre tesouras (m)", { exact: true }).fill("4");
-  await nav.getByRole("button", { name: "Resultado" }).click();
+  await nav.getByRole("button", { name: "Materiais" }).click();
   await expect(page.getByTestId("takeoff-totals")).toContainText("149");
   await page.getByRole("button", { name: "Salvar levantamento" }).click(); await page.reload();
   await expect(page.getByTestId("takeoff-totals")).toContainText("149");
@@ -49,7 +49,7 @@ test("cria levantamento com perfis pendentes e preserva os dados no backup", asy
   await page.getByLabel("Espaçamento máximo entre terças (m)", { exact: true }).fill("2");
   await page.getByLabel("Altura da tesoura no lado baixo (m)").fill("0,8");
   await page.getByLabel("Número de painéis por tesoura").fill("4");
-  await page.getByRole("button", { name: "Ir para resultado" }).click();
+  await page.getByRole("navigation", { name: "Etapas do levantamento" }).getByRole("button", { name: "Materiais" }).click();
   await expect(page.getByTestId("takeoff-totals")).toContainText("123");
   await openResultTab(page, "Arquivos");
   await expect(page.getByRole("button", { name: "Baixar lista em PDF" })).toBeEnabled();
