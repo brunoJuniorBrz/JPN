@@ -125,7 +125,12 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
       <section className={styles.card}>
         <h3>Obra</h3>
         <div className={styles.grid}>
-          <Field label="Tipo de cobertura"><Select value={t.roofKind} onChange={e => set({ roofKind: e.target.value as Truss["roofKind"], stationsMm: null, flippedPanels: [] })}><option value="one-slope">Uma água</option><option value="two-slopes">Duas águas simétricas</option></Select></Field>
+          <Field label="Tipo de cobertura"><Select value={t.roofKind} onChange={e => {
+            const kind = e.target.value as Truss["roofKind"], off = tipOffsetMm(t);
+            const run = (t.spanMm - (kind === "two-slopes" ? 2 : 1) * off) / (kind === "two-slopes" ? 2 : 1);
+            const step = Math.max(300, Math.floor(run / (t.purlinLines - 1) / 10) * 10);
+            set({ roofKind: kind, purlinStepMm: Math.min(t.purlinStepMm, step), stationsMm: null, flippedPanels: [] });
+          }}><option value="one-slope">Uma água</option><option value="two-slopes">Duas águas simétricas</option></Select></Field>
           <Cm label="Muro a muro (cm)" mm={t.spanMm} onMm={spanMm => set({ spanMm, stationsMm: null })} min={100} />
           <Cm label="Comprimento (cm)" mm={t.lengthMm} onMm={lengthMm => set({ lengthMm })} min={100} />
           <Cm label="Altura do muro baixo (cm)" mm={t.walls.lowMm} onMm={v => set({ walls: { ...t.walls, lowMm: v } })} hint="Do piso ao topo." />
