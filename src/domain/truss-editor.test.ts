@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { newProject } from "./models";
 import { emptyPlanning } from "./structure";
-import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor } from "./truss-editor";
+import { auditPhysicalRoofCoverage } from "./physical-roof-coverage";
+import { structureSignature } from "./calculations/project-basis";
+import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor, suggestedTrussCount } from "./truss-editor";
 import { spatialPreparationReview } from "./spatial-preparation";
 import { packageTakeoff } from "@/lib/exports/package-source";
 import { packageCutting } from "@/lib/exports/complete-package";
@@ -58,7 +60,7 @@ describe("editor de tesoura por estações", () => {
 
   it("orçamento: medida cheia e itens sem preço", () => {
     const t = tomTrussDefaults(), real = trussSummary(t), full = trussSummary({ ...t, fullHeightBudget: true });
-    expect(full.lines[1].qty).toBe("14 barras");
+    expect(full.lines[1].qty).toBe("14 barras · corte real 9");
     expect(real.lines[1].qty).toBe("9 barras");
     expect(real.missing).toEqual(expect.arrayContaining([`Banzos ${t.chord.designation}`]));
     // telha 75,9 m x R$ 44 + parafusos + insumos + mão de obra
@@ -163,9 +165,31 @@ describe("editor de tesoura por estações", () => {
     const p = newProject();
     p.roof = { ...p.roof, widthM: 12, lengthM: 20, slopePercent: 10 };
     const t = trussDefaultsFor(p);
-    expect(t.trusses).toBe(3); // espaçamento entre tesouras não foi declarado
-    expect(trussIssues(t).some(i => i.level === "erro" && i.message.includes("excede a barra comercial"))).toBe(true);
-    expect(() => applyTrussToProject(p, t)).toThrow(/excede a barra comercial/);
+    expect(t.trusses).toBe(suggestedTrussCount(20000,t.stockMm)); // proposta comercial; não dimensionamento
+    expect(trussIssues({ ...t, trusses: 3 }).some(i => i.level === "erro" && i.message.includes("excede a barra comercial"))).toBe(true);
+    expect(() => applyTrussToProject(p, { ...t, trusses: 3 })).toThrow(/excede a barra comercial/);
+  });
+
+  it("assinatura atual e terças físicas vinculadas à superfície de uma ou duas águas", () => {
+    for(const roofKind of ["one-slope","two-slopes"] as const){
+      const t={...tomTrussDefaults(),roofKind,purlinStepMm:roofKind==="two-slopes"?600:1500};
+      const p=applyTrussToProject(newProject(),t),prep=p.workspace.spatialPreparation!;
+      expect(prep.geometrySignature).toBe(structureSignature(p));
+      expect(spatialPreparationReview(p,prep).issues.some(i=>i.code==="STALE_GEOMETRY")).toBe(false);
+      expect(prep.physicalRoofFaces!.faces.every(f=>f.supportPieceIds.length>0)).toBe(true);
+      const checked=auditPhysicalRoofCoverage(prep.physicalRoofFaces!,p.workspace.physicalStructure!);
+      expect(checked.associatedPieceIds).toHaveLength(p.workspace.physicalStructure!.pieces.filter(piece=>piece.role==="purlin").length);
+      expect(prep.supports.every(s=>s.dofs.every(d=>d==="pending"))).toBe(true);
+    }
+  });
+
+  it("12x20 duas águas gera mais de 250 nós sem habilitar fabricação", () => {
+    const t={...tomTrussDefaults(),roofKind:"two-slopes" as const,spanMm:12000,lengthMm:20000,
+      trusses:5,panelMm:250,purlinLines:6,purlinStepMm:600};
+    const p=applyTrussToProject(newProject(),t);
+    expect(p.workspace.physicalStructure!.nodes.length).toBeGreaterThan(250);
+    expect(p.workspace.cutting.useFabrication).toBe(false);
+    expect(p.workspace.spatialPreparation!.supports.every(s=>s.dofs.every(d=>d==="pending"))).toBe(true);
   });
 
 });

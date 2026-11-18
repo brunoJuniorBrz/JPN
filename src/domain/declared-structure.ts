@@ -6,7 +6,7 @@ const source=z.string().trim().min(1).max(1000);
 const coordinate=z.number().finite().min(-10000000).max(10000000);
 export const declaredStructureSchema=z.object({schema_version:z.literal("jpn.declared-structure/1"),source:z.literal("declared"),
   units:z.literal("mm"),revision:source,provenance:source,
-  nodes:z.array(z.object({id:physicalId,x:coordinate,y:coordinate,z:coordinate}).strict()).min(2).max(250),
+  nodes:z.array(z.object({id:physicalId,x:coordinate,y:coordinate,z:coordinate}).strict()).min(2).max(1000),
   pieces:z.array(z.object({id:physicalId,start:physicalId,end:physicalId,role:z.enum(physicalRoles),label:z.string().trim().max(100).optional(),group:z.string().trim().max(100).optional()}).strict()).min(1).max(600),
 }).strict().superRefine((v,ctx)=>{
   const issue=(message:string)=>ctx.addIssue({code:"custom",message});

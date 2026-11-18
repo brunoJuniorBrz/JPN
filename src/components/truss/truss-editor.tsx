@@ -4,7 +4,7 @@ import { RotateCcw, Plus, Trash2, ArrowLeftRight, Check, TriangleAlert, FilePlus
 import { NumberField } from "@/components/number-field";
 import { Field, Input, Select } from "@/components/ui";
 import {
-  blankTruss, COMMON_PROFILES, fallPercent, roofPurlinPositions, slopeCount, stations, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
+  blankTruss, COMMON_PROFILES, fallPercent, roofPurlinPositions, slopeCount, stations, suggestedTrussCount, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
   type TrussEditor as Truss,
 } from "@/domain/truss-editor";
 import styles from "./truss-editor.module.css";
@@ -73,6 +73,7 @@ function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null;
 export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss; onApply: (t: Truss) => void; applyLabel: string }) {
   const [t, setT] = useState<Truss>(() => initial ?? blankTruss());
   const [selected, setSelected] = useState<number | null>(null);
+  const [trussesAuto, setTrussesAuto] = useState(!initial);
   const [message, setMessage] = useState("");
   const set = (patch: Partial<Truss>) => { setMessage(""); setT(prev => ({ ...prev, ...patch })); };
   const result = useMemo(() => {
@@ -126,8 +127,8 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
         {result.issues.map(i => <p key={i.message} className={i.level === "erro" ? styles.error : styles.warn}><TriangleAlert size={15} />{i.message}</p>)}
         <div className={styles.actions}>
           <button type="button" className="button" disabled={!!result.error || errors.length > 0} onClick={() => { try { onApply(trussEditorSchema.parse(t)); setMessage("Aplicado. 3D, CAD, materiais e plano de corte usam esta tesoura."); } catch (e) { setMessage(e instanceof Error ? e.message : "Não foi possível aplicar."); } }}><Check size={18} />{applyLabel}</button>
-          <button type="button" className="button secondary" onClick={() => { setT(blankTruss()); setSelected(null); setMessage("Obra nova: digite as medidas por cima. Preços em branco."); }}><FilePlus2 size={18} />Nova obra</button>
-          <button type="button" className="button secondary" onClick={() => { setT(tomTrussDefaults()); setSelected(null); }}><RotateCcw size={18} />Exemplo 8×10</button>
+          <button type="button" className="button secondary" onClick={() => { setT(blankTruss()); setTrussesAuto(true); setSelected(null); setMessage("Obra nova: digite as medidas por cima. Preços em branco."); }}><FilePlus2 size={18} />Nova obra</button>
+          <button type="button" className="button secondary" onClick={() => { setT(tomTrussDefaults()); setTrussesAuto(false); setSelected(null); }}><RotateCcw size={18} />Exemplo 8×10</button>
         </div>
         {message && <p className={styles.ok} role="status">{message}</p>}
       </section>
@@ -139,13 +140,14 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
             set(reflowTruss(t, { roofKind: e.target.value as Truss["roofKind"] }));
           }}><option value="one-slope">Uma água</option><option value="two-slopes">Duas águas simétricas</option></Select></Field>
           <Cm label="Muro a muro (cm)" mm={t.spanMm} onMm={spanMm => set(reflowTruss(t, { spanMm }))} min={100} />
-          <Cm label="Comprimento (cm)" mm={t.lengthMm} onMm={lengthMm => set({ lengthMm })} min={100} />
+          <Cm label="Comprimento (cm)" mm={t.lengthMm} onMm={lengthMm => set({ lengthMm, ...(trussesAuto ? { trusses: suggestedTrussCount(lengthMm,t.stockMm) } : {}) })} min={100} />
           <Cm label="Altura do muro baixo (cm)" mm={t.walls.lowMm} onMm={v => set({ walls: { ...t.walls, lowMm: v } })} hint="Do piso ao topo." />
           {t.roofKind === "one-slope" && <Cm label="Altura do muro alto (cm)" mm={t.walls.highMm} onMm={v => set({ walls: { ...t.walls, highMm: v } })} hint="Referência para a ancoragem no lado alto." />}
           {t.roofKind === "two-slopes" && <p className={styles.muted}>Duas águas: mesmo nível nos dois beirais, cumeeira central e calhas dos dois lados. Sem atribuir vínculos ou ligações.</p>}
           <Cm label="Espessura do muro (cm)" mm={t.walls.thicknessMm} onMm={v => set({ walls: { ...t.walls, thicknessMm: v } })} min={5} />
           <Cm label="Banzo de baixo a partir do piso (cm)" mm={t.supportZMm} onMm={supportZMm => set({ supportZMm })} hint="Altura de apoio da tesoura." />
-          <NumberField label="Tesouras" value={t.trusses} min={2} max={60} decimals={0} onChange={v => v !== null && set({ trusses: v })} hint={`A cada ${m(t.lengthMm / (t.trusses - 1))} m`} />
+          <NumberField label="Tesouras" value={t.trusses} min={2} max={60} decimals={0} onChange={v => { if (v !== null) { setTrussesAuto(false); set({ trusses: v }); } }} hint={`A cada ${m(t.lengthMm / (t.trusses - 1))} m · não verificado estruturalmente`} />
+          <label className={styles.toggle}><input type="checkbox" checked={trussesAuto} onChange={e => { setTrussesAuto(e.target.checked); if(e.target.checked) set({ trusses: suggestedTrussCount(t.lengthMm,t.stockMm) }); }} /><span><strong>Quantidade automática (preliminar)</strong><small>Pela barra comercial. Apoios e espaçamento resistente exigem validação.</small></span></label>
         </div>
       </section>
       <section className={styles.card}>
@@ -203,7 +205,7 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
           <NumberField label="Preço da barra (R$)" money value={t[k].barPriceCents} min={0} max={1000000} decimals={2} onChange={v => set({ [k]: { ...t[k], barPriceCents: v } } as Partial<Truss>)} />
           <NumberField label="Barras de folga" value={t[k].extraBars} min={0} max={100} decimals={0} onChange={v => v !== null && set({ [k]: { ...t[k], extraBars: v } } as Partial<Truss>)} hint="Somadas na compra." />
         </div>)}
-        <Cm label="Barra comercial (cm)" mm={t.stockMm} onMm={stockMm => set({ stockMm })} min={100} />
+        <Cm label="Barra comercial (cm)" mm={t.stockMm} onMm={stockMm => set({ stockMm, ...(trussesAuto ? { trusses: suggestedTrussCount(t.lengthMm,stockMm) } : {}) })} min={100} />
         <p className={styles.muted}>kg/m da lista: valores nominais de referência; confira com o fornecedor.</p>
       </section>
       <section className={styles.card}>
