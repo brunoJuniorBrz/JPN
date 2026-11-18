@@ -27,4 +27,14 @@ describe("contexto arquitetônico 3D do editor de tesouras (não estrutural)", (
       expect(box.min.y).toBeCloseTo(0, 4);
     } finally { site.dispose(); }
   });
+
+  it("representa duas peças de telha por água, com sobreposição apenas visual", () => {
+    const base = tomTrussDefaults(), t = { ...base, roofKind: "two-slopes" as const, purlinStepMm: 650,
+      sheet: { ...base.sheet, piecesPerSlope: 2, overlapMm: 250 } };
+    const site = createTrussSiteScene(t);
+    try {
+      expect(site.root.userData).toMatchObject({ roofCount: 2, roofPanelCount: 4 });
+      expect(site.root.children.filter(c => c.name.startsWith("Cobertura preliminar"))).toHaveLength(4);
+    } finally { site.dispose(); }
+  });
 });

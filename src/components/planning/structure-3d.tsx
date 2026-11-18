@@ -132,6 +132,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     canvas.dataset.siteWalls = String(site?.root.userData.wallCount ?? 0);
     canvas.dataset.siteGutters = String(site?.root.userData.gutterCount ?? 0);
     canvas.dataset.siteAnchors = String(site?.root.userData.anchorCount ?? 0);
+    canvas.dataset.siteRoofPanels = String(site?.root.userData.roofPanelCount ?? 0);
     const center = bounds.getCenter(new THREE.Vector3()), size = bounds.getSize(new THREE.Vector3());
     const span = Math.max(size.x, size.y, size.z, 1), gridStep = gridSpacingM;
     const grid = new THREE.GridHelper(gridStep * 20, 20, 0x9aa79c, 0xd3dad2); grid.position.set(center.x, 0, center.z); scene.add(grid);

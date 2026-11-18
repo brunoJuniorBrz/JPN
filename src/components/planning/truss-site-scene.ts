@@ -69,12 +69,27 @@ export function createTrussSiteScene(t: TrussEditor) {
     const mesh = new THREE.Mesh(geometry, material); mesh.name = name;
     geometries.push(geometry); materials.push(material); root.add(mesh);
   };
+  // Peças por água, com sobreposição projetada na inclinação. Apenas leitura visual,
+  // não é paginação de chapas para fabricação nem plano de montagem.
+  const roofPanels = (name: string, x0: number, x1: number, z0: number, z1: number) => {
+    const count = t.sheet.piecesPerSlope, run = Math.abs(x1 - x0);
+    if (run < 1e-6) return;
+    const inclination = Math.hypot(run, z1 - z0) / run;
+    const overlap = Math.min(t.sheet.overlapMm / 1000 / inclination, run / (count * 2));
+    const panelRun = (run + (count - 1) * overlap) / count;
+    const direction = Math.sign(x1 - x0);
+    const zAt = (x: number) => z0 + (z1 - z0) * (x - x0) / (x1 - x0);
+    for (let i = 0; i < count; i++) {
+      const a = x0 + direction * i * (panelRun - overlap), b = a + direction * panelRun;
+      roofMesh(`${name} — trecho ${i + 1}/${count}`, a, b, zAt(a), zAt(b));
+    }
+  };
   const roofL = (off - t.sheet.beyondTipMm) / 1000, ridgeX = (off + L) / 1000;
   const leftEndZ = (t.supportZMm + heightAt(t, -t.sheet.beyondTipMm)) / 1000 + .05;
   const ridgeZ = (t.supportZMm + heightAt(t, L)) / 1000 + .05;
-  roofMesh("Cobertura preliminar água 1", roofL, S === 2 ? ridgeX : span,
+  roofPanels("Cobertura preliminar água 1", roofL, S === 2 ? ridgeX : span,
     leftEndZ, S === 2 ? ridgeZ : (t.supportZMm + heightAt(t, t.spanMm - off)) / 1000 + .05);
-  if (S === 2) roofMesh("Cobertura preliminar água 2", ridgeX, (off + 2 * L + t.sheet.beyondTipMm) / 1000, ridgeZ, leftEndZ);
-  root.userData = { preliminary: true, slopeCount: S, wallCount: 2, gutterCount: gutterXs.length, anchorCount: anchorsX.length * t.trusses, roofCount: S };
+  if (S === 2) roofPanels("Cobertura preliminar água 2", ridgeX, (off + 2 * L + t.sheet.beyondTipMm) / 1000, ridgeZ, leftEndZ);
+  root.userData = { preliminary: true, slopeCount: S, wallCount: 2, gutterCount: gutterXs.length, anchorCount: anchorsX.length * t.trusses, roofCount: S, roofPanelCount: S * t.sheet.piecesPerSlope };
   return { root, dispose: () => { for (const g of geometries) g.dispose(); for (const m of materials) m.dispose(); } };
 }

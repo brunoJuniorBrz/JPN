@@ -20,6 +20,7 @@ for (const width of [390, 1440]) test(`editor duas águas → Studio 3D → paco
   await expect(canvas).toBeVisible({ timeout: 45000 });
   await expect(canvas).toHaveAttribute("data-site-slopes", "2");
   await expect(canvas).toHaveAttribute("data-site-gutters", "2");
+  await expect(canvas).toHaveAttribute("data-site-roof-panels", "2");
   await expect(canvas).toHaveAttribute("data-site-anchors", "6");
   await expect(page.getByTestId("fabrication-seal")).toBeVisible();
   await expect(page.getByTestId("result-safety-warning")).toBeVisible();
