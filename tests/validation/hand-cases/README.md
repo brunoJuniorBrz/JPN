@@ -1,6 +1,6 @@
 # Casos de validação calculados à mão (rascunho de formato)
 
-A pasta `tests/validation/` do Codex ainda não existe na main (ac4abf9). Os casos estão em `nbr8681-hand-cases.json`, que deve ser convertido para o formato do Codex quando a pasta existir. O teste `src/domain/nbr8681-hand-cases.test.ts` roda o gerador NBR 8681 real e confere cada valor esperado deste JSON.
+Os casos HC-A, HC-B e HC-C estão nesta pasta em formato manual `jpn.hand-cases/0-draft`, preservados sem alterar os valores esperados. São ensaios analíticos de ações e combinações, não projetos físicos `jpn.validation-case/1` aceitos pelo runner de `tests/validation/cases/`. O teste `src/domain/nbr8681-hand-cases.test.ts` roda o gerador NBR 8681 real e confere os valores esperados deste JSON.
 
 Entradas marcadas como `declared` (cargas, Vk, cpe, capacidade) são valores de ensaio, não valores normativos.
 

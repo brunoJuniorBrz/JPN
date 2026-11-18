@@ -1,0 +1,281 @@
+{
+  "id": "34343434-3434-4434-8434-343434343434",
+  "name": "Example analytical cantilever, not a real building",
+  "client": "Independent review pending",
+  "phone": "",
+  "location": "",
+  "description": "Gerado pela entrada rápida. Distribuição, inclinação e perfis apenas sugeridos para apresentação em 3D; todos os parâmetros são editáveis.",
+  "category": "Outros",
+  "status": "Em elaboração",
+  "createdAt": "2026-11-05T14:18:39.122Z",
+  "updatedAt": "2026-11-05T14:18:39.122Z",
+  "technicalNotes": "PRÉ-PROJETO VISUAL: sem cálculo de vento, cargas, estabilidade, resistência ou ligações. Não usar para compras, cortes ou fabricação antes do dimensionamento e detalhamento profissional.",
+  "commercialNotes": "",
+  "technicalContact": "",
+  "technicalStatus": "preliminary",
+  "roof": {
+    "widthM": null,
+    "lengthM": null,
+    "lowHeightM": null,
+    "slopePercent": null,
+    "fall": "width-positive",
+    "profileDescription": "",
+    "supports": [],
+    "revision": 1
+  },
+  "estimate": {
+    "materials": [],
+    "labor": [],
+    "expenses": [],
+    "charges": [],
+    "pricingMode": "markup",
+    "pricingPercent": 0,
+    "deadline": "",
+    "paymentTerms": "",
+    "validity": "",
+    "exclusions": ""
+  },
+  "isExample": false,
+  "planning": null,
+  "workspace": {
+    "cutting": {
+      "kerfMm": null,
+      "endTrimMm": null,
+      "minimumRemnantMm": null,
+      "useFabrication": false
+    },
+    "fabrication": [],
+    "spatialPreparation": {
+      "version": 1,
+      "geometrySignature": "{\"assignments\":[{\"materialId\":\"STEEL\",\"pieceId\":\"V\",\"rotationDeg\":0,\"sectionId\":\"SYMMETRIC\"}],\"physicalStructure\":{\"nodes\":[{\"id\":\"A\",\"x\":0,\"y\":0,\"z\":0},{\"id\":\"B\",\"x\":1000,\"y\":0,\"z\":0}],\"pieces\":[{\"end\":\"B\",\"id\":\"V\",\"start\":\"A\"}],\"provenance\":\"Synthetic 1 m Euler-Bernoulli cantilever; illustrative input\",\"revision\":\"EXAMPLE-1\",\"schema_version\":\"jpn.declared-structure/1\",\"source\":\"declared\",\"units\":\"mm\"}}",
+      "physicalCatalog": {
+        "schema_version": "jpn.physical-catalog/1",
+        "materials": [
+          {
+            "steelGrade": "Synthetic isotropic test material",
+            "materialSource": "Synthetic 1 m Euler-Bernoulli cantilever; illustrative input",
+            "materialRevision": "EXAMPLE-1",
+            "eGpa": 200,
+            "gGpa": 76.92307692307692,
+            "nu": 0.3,
+            "id": "STEEL"
+          }
+        ],
+        "sections": [
+          {
+            "areaCm2": 10,
+            "iyCm4": 1000,
+            "izCm4": 1000,
+            "jCm4": 100,
+            "sectionSource": "Synthetic 1 m Euler-Bernoulli cantilever; illustrative input",
+            "sectionRevision": "EXAMPLE-1",
+            "id": "SYMMETRIC",
+            "designation": "Synthetic symmetric section, not a commercial profile"
+          }
+        ],
+        "assignments": [
+          {
+            "pieceId": "V",
+            "materialId": "STEEL",
+            "sectionId": "SYMMETRIC",
+            "rotationDeg": 0
+          }
+        ]
+      },
+      "groups": {
+        "column": {
+          "steelGrade": "",
+          "materialSource": "",
+          "materialRevision": "",
+          "eGpa": null,
+          "gGpa": null,
+          "nu": null,
+          "areaCm2": null,
+          "iyCm4": null,
+          "izCm4": null,
+          "jCm4": null,
+          "sectionSource": "",
+          "sectionRevision": "",
+          "rotationDeg": null,
+          "connection": "pending"
+        },
+        "topChord": {
+          "steelGrade": "",
+          "materialSource": "",
+          "materialRevision": "",
+          "eGpa": null,
+          "gGpa": null,
+          "nu": null,
+          "areaCm2": null,
+          "iyCm4": null,
+          "izCm4": null,
+          "jCm4": null,
+          "sectionSource": "",
+          "sectionRevision": "",
+          "rotationDeg": null,
+          "connection": "pending"
+        },
+        "bottomChord": {
+          "steelGrade": "",
+          "materialSource": "",
+          "materialRevision": "",
+          "eGpa": null,
+          "gGpa": null,
+          "nu": null,
+          "areaCm2": null,
+          "iyCm4": null,
+          "izCm4": null,
+          "jCm4": null,
+          "sectionSource": "",
+          "sectionRevision": "",
+          "rotationDeg": null,
+          "connection": "pending"
+        },
+        "web": {
+          "steelGrade": "",
+          "materialSource": "",
+          "materialRevision": "",
+          "eGpa": null,
+          "gGpa": null,
+          "nu": null,
+          "areaCm2": null,
+          "iyCm4": null,
+          "izCm4": null,
+          "jCm4": null,
+          "sectionSource": "",
+          "sectionRevision": "",
+          "rotationDeg": null,
+          "connection": "pending"
+        },
+        "purlin": {
+          "steelGrade": "",
+          "materialSource": "",
+          "materialRevision": "",
+          "eGpa": null,
+          "gGpa": null,
+          "nu": null,
+          "areaCm2": null,
+          "iyCm4": null,
+          "izCm4": null,
+          "jCm4": null,
+          "sectionSource": "",
+          "sectionRevision": "",
+          "rotationDeg": null,
+          "connection": "pending"
+        }
+      },
+      "supports": [
+        {
+          "nodeId": "A",
+          "dofs": [
+            "fixed",
+            "fixed",
+            "fixed",
+            "fixed",
+            "fixed",
+            "fixed"
+          ]
+        }
+      ],
+      "memberConnections": [
+        {
+          "pieceId": "V",
+          "start": "rigid",
+          "end": "rigid"
+        }
+      ],
+      "cases": [
+        {
+          "id": "F",
+          "source": "Synthetic 1 m Euler-Bernoulli cantilever; illustrative input"
+        }
+      ],
+      "loads": [
+        {
+          "id": "50505050-5050-4050-8050-505050505050",
+          "caseId": "F",
+          "nodeId": "B",
+          "fxKn": 0,
+          "fyKn": 0,
+          "fzKn": -1,
+          "mxKnm": 0,
+          "myKnm": 0,
+          "mzKnm": 0
+        }
+      ],
+      "combinations": [
+        {
+          "id": "SLS",
+          "factors": {
+            "F": 1
+          }
+        }
+      ],
+      "connectionsReview": "Explicit rigid member ends, fixed base, free end",
+      "lateralSystem": "Six declared base restraints, no inferred restraint",
+      "loadPathReview": "Vertical end force to cantilever to explicitly fixed A",
+      "connectivity": {
+        "version": 1,
+        "geometrySignature": "{\"assignments\":[{\"materialId\":\"STEEL\",\"pieceId\":\"V\",\"rotationDeg\":0,\"sectionId\":\"SYMMETRIC\"}],\"physicalStructure\":{\"nodes\":[{\"id\":\"A\",\"x\":0,\"y\":0,\"z\":0},{\"id\":\"B\",\"x\":1000,\"y\":0,\"z\":0}],\"pieces\":[{\"end\":\"B\",\"id\":\"V\",\"start\":\"A\"}],\"provenance\":\"Synthetic 1 m Euler-Bernoulli cantilever; illustrative input\",\"revision\":\"EXAMPLE-1\",\"schema_version\":\"jpn.declared-structure/1\",\"source\":\"declared\",\"units\":\"mm\"}}",
+        "reviewSource": "Explicit synthetic topology review for THIS changed test model",
+        "junctions": []
+      },
+      "memberKinds": [
+        {
+          "pieceId": "V",
+          "kind": "frame"
+        }
+      ],
+      "loading": {
+        "version": 1,
+        "selfWeight": null,
+        "uniform": [],
+        "roofArea": []
+      },
+      "localAxes": {
+        "version": 1,
+        "convention": "jpn-z-up/1",
+        "geometrySignature": "{\"assignments\":[{\"materialId\":\"STEEL\",\"pieceId\":\"V\",\"rotationDeg\":0,\"sectionId\":\"SYMMETRIC\"}],\"physicalStructure\":{\"nodes\":[{\"id\":\"A\",\"x\":0,\"y\":0,\"z\":0},{\"id\":\"B\",\"x\":1000,\"y\":0,\"z\":0}],\"pieces\":[{\"end\":\"B\",\"id\":\"V\",\"start\":\"A\"}],\"provenance\":\"Synthetic 1 m Euler-Bernoulli cantilever; illustrative input\",\"revision\":\"EXAMPLE-1\",\"schema_version\":\"jpn.declared-structure/1\",\"source\":\"declared\",\"units\":\"mm\"}}",
+        "members": [
+          {
+            "pieceId": "V",
+            "rotationDeg": 0,
+            "source": "Synthetic 1 m Euler-Bernoulli cantilever; illustrative input",
+            "revision": "EXAMPLE-1"
+          }
+        ]
+      }
+    },
+    "physicalStructure": {
+      "schema_version": "jpn.declared-structure/1",
+      "source": "declared",
+      "units": "mm",
+      "revision": "EXAMPLE-1",
+      "provenance": "Synthetic 1 m Euler-Bernoulli cantilever; illustrative input",
+      "nodes": [
+        {
+          "id": "A",
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        {
+          "id": "B",
+          "x": 1000,
+          "y": 0,
+          "z": 0
+        }
+      ],
+      "pieces": [
+        {
+          "id": "V",
+          "start": "A",
+          "end": "B",
+          "role": "beam"
+        }
+      ]
+    },
+    "analysis": null
+  },
+  "revisions": []
+}
