@@ -132,6 +132,8 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     const controls = new OrbitControls(rig.active(), renderer.domElement); controls.enableDamping = false;
     // O cubo usa a câmera real para permitir girar por clique, sem um loop permanente.
     const viewHelper = new ViewHelper(rig.active(), renderer.domElement);
+    // @types/three ainda não declara a propriedade pública camera do ViewHelper r187.
+    const setHelperCamera = (camera: THREE.Camera) => { Object.assign(viewHelper, { camera }); };
     const labelRenderer = new CSS2DRenderer(), labelLayer = labelRenderer.domElement, labelGroup = new THREE.Group();
     labelLayer.className = "viewer-labels"; labelLayer.setAttribute("aria-hidden", "true"); container.appendChild(labelLayer); scene.add(labelGroup);
     // F5: oclusão ambiente (GTAO) e contorno de arestas só no modo Acabado e fora de aparelho fraco.
@@ -170,7 +172,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       if (orientationRef.current && !presenting) {
         // Sem autoClear: o cubo é desenhado por cima da cena, só no canto.
         const autoClear = renderer.autoClear; renderer.autoClear = false;
-        viewHelper.camera = rig.active(); viewHelper.render(renderer);
+        setHelperCamera(rig.active()); viewHelper.render(renderer);
         renderer.autoClear = autoClear;
       }
       labelLayer.style.display = presenting ? "none" : "";
@@ -418,7 +420,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), rig.active());
       if (activeMode === "finished") return;
       if (orientationRef.current && e.button === 0) {
-        viewHelper.camera = rig.active();
+        setHelperCamera(rig.active());
         viewHelper.center.copy(controls.target);
         if (viewHelper.handleClick(e)) {
           rig.cancel();
