@@ -129,7 +129,7 @@ export function trussDefaultsFor(project: Project): TrussEditor {
   const base = blankTruss(), r = project.roof;
   if (!r.widthM || !r.lengthM) return base;
   const spanMm = r.widthM * 1000, lengthMm = r.lengthM * 1000;
-  const roofKind = project.planning?.typology === "gable" ? "two-slopes" : "one-slope";
+  const roofKind: TrussEditor["roofKind"] = project.planning?.typology === "gable" ? "two-slopes" : "one-slope";
   const declaredSpacing = project.planning?.frameSpacingM;
   const trusses = declaredSpacing && declaredSpacing > 0
     ? Math.min(60, Math.max(2, Math.ceil(r.lengthM / declaredSpacing) + 1))
