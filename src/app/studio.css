@@ -112,7 +112,7 @@
 /* Rótulos CSS2D sobre o 3D: só visuais (aria-hidden); a mesma informação está em texto no estúdio. */
 .structure-3d { position: relative; }
 .viewer-labels { position: absolute; inset: 0; pointer-events: none; }
-.viewer-label { padding: 2px 6px; border-radius: var(--radius-sm); background: #ffffffe6; border: 1px solid var(--color-line-strong); color: var(--color-ink); font-size: 11px; font-weight: var(--weight-semibold); white-space: nowrap; pointer-events: none; box-shadow: var(--shadow-sm); }
+.viewer-label { padding: 2px 6px; border-radius: var(--radius-sm); background: #ffffffe6; border: 1px solid #b9c0ad; color: #1f241d; font-size: 11px; font-weight: var(--weight-semibold); white-space: nowrap; pointer-events: none; box-shadow: var(--shadow-sm); }
 .viewer-label--ok { border-color: #9fb592; }
 .viewer-label--warn { border-color: #d9b45e; background: #fff8e6f0; }
 .viewer-label--danger { border-color: #d77c70; background: #fff1eef0; color: var(--color-danger-strong); }
@@ -272,7 +272,7 @@
 .studio-viewport-body .truss-3d .structure-viewer { position: relative; }
 .truss-3d .inspection-tools { position: absolute; top: 6px; right: 6px; z-index: 4; width: min(420px, calc(100% - 12px)); max-height: calc(100% - 12px); overflow: auto; margin: 0; background: var(--color-surface); box-shadow: var(--shadow-md, 0 8px 24px -12px #1f241d66); }
 .truss-3d .inspection-tools--collapsed { width: auto; padding: 0; border: 0; background: transparent; box-shadow: none; }
-.truss-3d .inspection-tools--collapsed .inspection-collapse { width: auto; min-height: 32px; padding: 4px 10px; font-size: var(--text-xs); background: var(--color-surface); }
+.truss-3d .inspection-tools--collapsed .inspection-collapse { width: auto; min-height: 32px; padding: 4px 10px; font-size: var(--text-xs); background: var(--color-surface); color: var(--color-ink); border: 1px solid var(--color-line-strong); }
 .truss-3d .structure-viewer-tools { display: none; }
 .truss-inspector { display: flex; flex-direction: column; gap: 10px; padding: 0 var(--space-4) 0; }
 .truss-inspector-top { position: sticky; top: 0; z-index: 3; display: grid; gap: 6px; padding: 10px 0 8px; background: var(--color-surface); border-bottom: 1px solid var(--color-line); }
@@ -283,9 +283,10 @@
 .truss-start { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--color-muted); font-size: var(--text-sm); }
 .truss-start .button { min-height: 36px; padding: 4px 10px; font-size: var(--text-sm); }
 .project-studio[data-step="tesoura"] .editor-save-note { padding: 0 var(--space-4) var(--space-3); }
-.project-studio[data-step="tesoura"] .studio-status { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
-.project-studio[data-step="tesoura"] .studio-status > * { flex: 0 0 auto; }
-.project-studio[data-step="tesoura"] .studio-status .result-permanent-warning { flex: 1 0 260px; }
+/* Barra do passo: selo e KPIs numa faixa; o aviso permanente de segurança quebra para a linha de baixo e fica sempre à vista. */
+.project-studio[data-step="tesoura"] .studio-status { flex-wrap: wrap; }
+.project-studio[data-step="tesoura"] .studio-status [data-testid="truss-summary-chips"] { flex: 0 1 auto; min-width: 0; }
+.project-studio[data-step="tesoura"] .studio-status .result-permanent-warning { flex: 1 1 100%; order: 3; }
 .truss-status-span { color: var(--color-muted); font-size: var(--text-xs); }
 @media (min-width: 1200px) {
   .truss-split-only { display: inline-block; }

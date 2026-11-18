@@ -166,3 +166,29 @@ Registro curto das decisões tomadas sem consulta (ver regra em [PLANO-UI.md](PL
    - Na tela antiga, eles ficavam sempre visíveis acima das etapas. Os testes protegidos `m35-irregular` e `m49-garage` os usam a partir de qualquer etapa.
    - Importar ou registrar um modelo declarado leva à etapa Geometria; um modelo gerado continua indo para Materiais.
 6. **Screenshots.** As imagens em `validation/` são evidências protegidas e regeneradas pelos próprios testes, então não foram trocadas. As novas, de desktop 1440 e celular 390 nos temas claro e escuro, ficam em `docs/ui/screenshots/`.
+
+## Tesoura com 3D ao vivo (branch `feat/studio-tesoura-3d-ao-vivo`, empilhada no PR #145)
+
+1. **Rascunho em memória.** O passo Tesoura edita um rascunho. ~150 ms depois da última alteração, `applyTrussToProject` (puro, clona o projeto) gera o modelo que vai para o 3D e para o contexto da obra. Nada é salvo até "Aplicar".
+   - Selo "RASCUNHO — não aplicado" com Δ barras e Δ kg em relação ao aplicado. "Descartar" volta ao aplicado.
+   - Medidas inválidas mantêm o último rascunho válido no 3D; "Aplicar" fica desabilitado enquanto houver erro.
+2. **Um único renderer WebGL.** O `Structure3D` guarda o renderer entre trocas de modelo: troca e descarta só a cena, preserva a câmera e só libera o contexto ao desmontar.
+   - `data-rebuilds` e `data-geometries` no canvas servem de prova nos testes (contagem estável depois de 50 edições).
+   - A API do visualizador não depende mais de `onSelect` (usa a ref), para evitar o laço onApi → render → onApi quando o pai recria a função.
+3. **Viewport próprio do passo.** 3D | Elevação | Lado a lado (este só a partir de 1200 px: elevação em cima, 3D embaixo). As vistas "Frente da tesoura" (ortográfica) e "Iso" ficam na barra; as ferramentas avançadas, num botão recolhido no canto.
+   - Camadas: Tesouras e Terças escondem papéis do modelo; Telha, Muros, Calha e Chapas escondem só o contexto visual.
+   - Rótulos curtos (vão, comprimento, ponta, alto/cumeeira, caída) ancorados em peças do meio, para não se amontoarem.
+4. **Seleção sincronizada por estação.** Montante/diagonal no 3D (`T#-M#`, `T#-D#`, com `E-` em duas águas) seleciona a mesma estação no desenho e abre o painel do ponto. A seleção vale para todas as tesouras (rótulo em cada uma). Hover no desenho destaca no 3D.
+5. **Modo construtor na barra.** No passo Tesoura a barra mostra só "Estudo · fabricação bloqueada" e os KPIs da tesoura. Pendências de análise, Recalcular e resultados saem dela.
+   - **O aviso permanente de segurança continua visível** (regra de nunca enfraquecer avisos/bloqueios). O selo usa `data-testid="fabrication-seal"`, como o selo das outras etapas.
+6. **"Massa pendente" no modelo declarado.** A barra usa a massa do levantamento declarado (kg/m informado por perfil), só quando todas as peças têm massa.
+7. **Banzo inferior em duas águas — registrado, não decidido.** Opção "Banzo inferior: contínuo com emenda | dividido na cumeeira", padrão contínuo.
+   - Dividido em duas metades dá 12 barras U contra 9 do contínuo no exemplo. Os testes cobrem as duas opções.
+   - **Quem decide é o construtor/engenheiro.** A obra de uma água (Tom 8×10) não muda.
+8. **Página `/tesoura` avulsa** continua com o editor antigo (cria o projeto). O editor novo vive no estúdio.
+9. **Travas mantidas.** `computedStructuralApproval=false`, `fabricationRelease=false`, NOT_READY_BLOCKED.
+   - Muros, calha, telha, chapas e chumbadores seguem só contexto visual: sem apoios fixos, cargas, rigidez, E/G/I/J, capacidades ou ligações.
+   - Os apoios do editor seguem só como posição, com GDL pendentes.
+10. **Desempenho.** O rascunho do 8×10 é gerado em ~3 ms (domínio; mediana < 50 ms no teste unitário).
+    - A reconstrução da cena no navegador fica em ~100 ms em dev (sem minificação) e é debounced, então digitar não trava.
+11. **Elevação no tema escuro** segue clara, como os demais desenhos técnicos (item 3 da F6).

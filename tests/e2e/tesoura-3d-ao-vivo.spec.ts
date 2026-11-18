@@ -6,7 +6,8 @@ async function openTrussStep(page: Page, width: number, height = 900) {
   await page.goto("/tesoura");
   await page.getByRole("button", { name: "Exemplo 8×10" }).click();
   await page.getByRole("button", { name: "Criar projeto com esta tesoura" }).click();
-  await expect(page).toHaveURL(/\/projetos\/[^/]+\?fluxo=levantamento&etapa=3/);
+  // A primeira visita à rota do projeto compila no servidor de desenvolvimento.
+  await expect(page).toHaveURL(/\/projetos\/[^/]+\?fluxo=levantamento&etapa=3/, { timeout: 60000 });
   const viewport = page.getByTestId("truss-viewport");
   const canvas = viewport.getByRole("img", { name: "Modelo 3D da estrutura" });
   await expect(canvas).toBeVisible({ timeout: 45000 });
@@ -22,7 +23,8 @@ async function openSection(page: Page, id: string) {
 }
 
 test("rascunho ao vivo: o 3D muda sem aplicar, um só canvas, sem vazamento; Descartar volta ao aplicado", async ({ page }) => {
-  test.setTimeout(180000);
+  // 50 reconstruções da cena com WebGL por software (swiftshader) levam alguns minutos.
+  test.setTimeout(480000);
   const errors: string[] = []; page.on("pageerror", e => errors.push(e.message));
   const { viewport, canvas } = await openTrussStep(page, 1440);
   await expect(page.getByTestId("fabrication-seal")).toContainText("Estudo · fabricação bloqueada");
@@ -90,7 +92,7 @@ test("arrastar um montante na Elevação muda a cota (snap 1 cm) e mostra a medi
   await page.mouse.move(x + 15, y, { steps: 4 });
   await expect(page.getByTestId("truss-live-dimension")).toContainText("cm da ponta");
   await page.mouse.move(x + 30, y, { steps: 4 }); await page.mouse.up();
-  const field = page.getByTestId("truss-point-panel").getByLabel("Distância da ponta (cm)");
+  const field = page.getByTestId("truss-point-panel").getByRole("textbox", { name: "Distância da ponta (cm)" });
   await expect(field).toBeVisible();
   const value = Number((await field.inputValue()).replace(",", "."));
   expect(Number.isInteger(value)).toBe(true); // snap de 1 cm
@@ -107,6 +109,11 @@ for (const [width, height] of [[390, 844], [1440, 900]] as const) for (const the
     expect(c.y).toBeGreaterThanOrEqual(0);
     expect(c.y + Math.min(c.height, 200)).toBeLessThanOrEqual(height);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    // Selo e aviso permanente de segurança inteiros dentro da largura da tela (sem ficar escondidos na rolagem).
+    for (const id of ["fabrication-seal", "result-safety-warning"]) {
+      const b = (await page.getByTestId(id).boundingBox())!;
+      expect(b.x).toBeGreaterThanOrEqual(0); expect(b.x + b.width).toBeLessThanOrEqual(width + 1);
+    }
     if (width < 1000) {
       // Painel inferior: rodapé Aplicar/Descartar acima da barra de etapas; o 3D fica preso no topo.
       await page.evaluate(() => window.scrollTo(0, 900)); await page.waitForTimeout(300);
