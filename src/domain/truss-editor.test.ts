@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { newProject } from "./models";
-import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema } from "./truss-editor";
+import { emptyPlanning } from "./structure";
+import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor } from "./truss-editor";
 import { spatialPreparationReview } from "./spatial-preparation";
 import { packageTakeoff } from "@/lib/exports/package-source";
 import { packageCutting } from "@/lib/exports/complete-package";
@@ -138,5 +139,49 @@ describe("editor de tesoura por estações", () => {
     const notBudgeted = trussSummary(dualInput);
     expect(dual.knownCents - notBudgeted.knownCents).toBe(2400 * 20);
     expect(trussSummary({ ...t, gutter: { ...t.gutter, budgeted: true, pricePerMCents: null } }).missing).toContain("Calha (m)");
+  });
+
+  it("obra independente 12×20 em duas águas: dimensões, preços vazios e terças por geometria", () => {
+    const project = newProject();
+    project.roof = { ...project.roof, widthM: 12, lengthM: 20, slopePercent: 10 };
+    project.planning = { ...emptyPlanning(), typology: "gable" };
+    const t = trussDefaultsFor(project);
+    expect(t.roofKind).toBe("two-slopes");
+    expect(t.spanMm).toBe(12000);
+    expect(t.lengthMm).toBe(20000);
+    expect(t.trusses).toBe(5); // Cinco quadros geométricos: segmentos de terça de 5 m, sem dimensionamento.
+    expect(t.purlinLines).toBe(7);
+    expect(t.chord.barPriceCents).toBeNull();
+    expect(t.sheet.pricePerMCents).toBeNull();
+    expect(t.laborPerM2Cents).toBeNull();
+    expect(trussIssues(t).filter(i => i.level === "erro")).toEqual([]);
+    expect(trussSummary(t).bars.purlin).toBeGreaterThan(0);
+    const built = applyTrussToProject(project, t);
+    expect(built.workspace.spatialPreparation!.physicalRoofFaces!.faces).toHaveLength(2);
+    expect(built.workspace.spatialPreparation!.supports).toHaveLength(10);
+    expect(built.workspace.spatialPreparation!.supports.every(x => x.dofs.every(d => d === "pending"))).toBe(true);
+    expect(built.workspace.physicalStructure!.pieces.filter(p => p.role === "purlin")).toHaveLength(4 * 13);
+  });
+
+  it("outras dimensões preservam geometria e não importam preços do Tom", () => {
+    for (const [widthM, lengthM] of [[6, 8], [8, 10], [12, 20]] as const) {
+      const project = newProject();
+      project.roof = { ...project.roof, widthM, lengthM, slopePercent: 10 };
+      const t = trussDefaultsFor(project);
+      expect(t.roofKind).toBe("one-slope");
+      expect(t.spanMm).toBe(widthM * 1000);
+      expect(t.lengthMm).toBe(lengthM * 1000);
+      expect(t.purlinLines).toBeGreaterThanOrEqual(2);
+      expect(trussIssues(t).filter(i => i.level === "erro")).toEqual([]);
+      expect(trussSummary(t).knownCents).toBe(0);
+    }
+  });
+
+  it("não inventa emenda estrutural para terça maior que barra comercial", () => {
+    const t = { ...blankTruss(), lengthMm: 20000, trusses: 2 };
+    expect(trussIssues(t)).toEqual(expect.arrayContaining([
+      expect.objectContaining({ level: "erro", message: expect.stringContaining("excede a barra comercial") }),
+    ]));
+    expect(() => applyTrussToProject(newProject(), t)).toThrow(/emenda/);
   });
 });
