@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { newProject } from "./models";
-import { applyTrussToProject, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussSummary, withFall, fallPercent, trussEditorSchema } from "./truss-editor";
+import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussSummary, withFall, fallPercent, trussEditorSchema } from "./truss-editor";
+import { spatialPreparationReview } from "./spatial-preparation";
 import { packageTakeoff } from "@/lib/exports/package-source";
 import { packageCutting } from "@/lib/exports/complete-package";
 
@@ -61,5 +62,41 @@ describe("editor de tesoura por estações", () => {
     expect(real.missing).toEqual(expect.arrayContaining([`Banzos ${t.chord.designation}`]));
     // telha 75,9 m x R$ 44 + parafusos + insumos + mão de obra
     expect(real.knownCents).toBe(333960 + real.screws * 60 + 110000 + 400000);
+  });
+
+  it("obra do dia a dia: muros, ancoragem, telha em 2 peças, folga e obra nova", () => {
+    const t = tomTrussDefaults();
+    // Dado salvo antes destes campos continua abrindo (defaults).
+    const old = JSON.parse(JSON.stringify(t));
+    delete old.walls; delete old.anchor; delete old.supportZMm; delete old.gutter.lowSideMm; delete old.gutter.highSideMm; delete old.gutter.budgeted;
+    delete old.sheet.piecesPerSlope; delete old.sheet.overlapMm; delete old.chord.extraBars; delete old.web.extraBars; delete old.purlin.extraBars;
+    expect(trussEditorSchema.parse(old)).toEqual(t);
+
+    const two = trussSummary({ ...t, sheet: { ...t.sheet, piecesPerSlope: 2, overlapMm: 250 } }), one = trussSummary(t);
+    expect(two.sheets).toBe(one.sheets * 2);
+    expect(two.sheetLengthMm).toBe(Math.ceil((one.sheetLengthMm + 250) / 2 / 10) * 10);
+    expect(two.screws).toBe(one.screws);
+
+    const extra = trussSummary({ ...t, web: { ...t.web, extraBars: 1 }, chord: { ...t.chord, extraBars: 2 } });
+    expect(extra.buy).toEqual({ chord: one.bars.chord + 2, web: one.bars.web + 1, purlin: one.bars.purlin });
+    expect(extra.lines[0].qty).toBe(`${one.bars.chord + 2} barras (+2 folga)`);
+
+    const priced = trussSummary({ ...t, anchor: { ...t.anchor, boltsPerSupport: 2, platePriceCents: 3000, boltPriceCents: 1500 } });
+    expect(priced.plates).toBe(3);
+    expect(priced.bolts).toBe(6);
+    expect(priced.knownCents - one.knownCents).toBe(3 * 3000 + 6 * 1500);
+
+    const p = applyTrussToProject(newProject(), { ...t, supportZMm: 3200 });
+    const supports = p.workspace.spatialPreparation!.supports;
+    expect(supports).toHaveLength(6);
+    expect(supports.every(s => s.dofs.every(d => d === "pending"))).toBe(true);
+    const nodes = new Map(p.workspace.physicalStructure!.nodes.map(n => [n.id, n]));
+    expect(supports.every(s => nodes.get(s.nodeId)!.z === 3200)).toBe(true);
+    const review = spatialPreparationReview(p, p.workspace.spatialPreparation!);
+    expect(JSON.stringify(review)).not.toContain("ORPHAN_SUPPORT");
+
+    const blank = blankTruss();
+    expect(trussIssues(blank).filter(i => i.level === "erro")).toEqual([]);
+    expect(trussSummary(blank).knownCents).toBe(0);
   });
 });

@@ -45,3 +45,9 @@
 .notice{font-size:12px;color:#6b5121;background:#fff8ea;border:1px dashed #ecd6a6;border-radius:10px;padding:10px;margin:0}
 @media(max-width:1060px){.editor{grid-template-columns:minmax(0,1fr)}.canvas{position:static}}
 @media(max-width:520px){.kpis b{font-size:20px}.card{padding:12px}}
+.wall{fill:#e8e2d6;stroke:#8b7d66;stroke-width:1.5}
+.ledge{fill:#8b7d66}
+.gutter{fill:none;stroke:#2f6f9f;stroke-width:3;stroke-linejoin:round}
+.plate{fill:#d9480f}
+.bolt{stroke:#d9480f;stroke-width:2;stroke-dasharray:5 3}
+.wallText{font-size:20px;fill:#6b5f4c;font-weight:600}
