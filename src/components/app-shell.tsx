@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, FolderOpen, Boxes, Settings2, HardDrive, ArrowUpRight, Check, LoaderCircle, AlertCircle, Download, RotateCcw } from "lucide-react";
+import { LayoutDashboard, FolderOpen, Boxes, Settings2, Triangle, HardDrive, ArrowUpRight, Check, LoaderCircle, AlertCircle, Download, RotateCcw } from "lucide-react";
 import { useData } from "./data-provider";
 import { downloadText } from "@/lib/format";
 import { serializeBackup } from "@/infrastructure/persistence/local";
 import { Fragment, type ReactNode } from "react";
 
-const navigation = [{ href: "/", label: "Visão geral", mobile: "Início", icon: LayoutDashboard }, { href: "/projetos", label: "Projetos", mobile: "Projetos", icon: FolderOpen }, { href: "/materiais", label: "Materiais", mobile: "Materiais", icon: Boxes }, { href: "/configuracoes", label: "Configurações", mobile: "Ajustes", icon: Settings2 }];
+const navigation = [{ href: "/", label: "Visão geral", mobile: "Início", icon: LayoutDashboard }, { href: "/projetos", label: "Projetos", mobile: "Projetos", icon: FolderOpen }, { href: "/tesoura", label: "Tesoura", mobile: "Tesoura", icon: Triangle }, { href: "/materiais", label: "Materiais", mobile: "Materiais", icon: Boxes }, { href: "/configuracoes", label: "Configurações", mobile: "Ajustes", icon: Settings2 }];
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { data, ready, fatal, error, saveState, flush, reload, recover, invalidDraft, setInvalidDraft, loadEpoch } = useData();

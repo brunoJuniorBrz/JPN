@@ -36,7 +36,7 @@ export function cadModel(project:Project){
     if(resolved.source==="generated")return rows.get(id)?.profile||"PENDENTE";
     return draft?.physicalCatalog?.sections.find(s=>s.id===sectionId)?.designation?.trim()||`PENDENTE [${sectionId??rows.get(id)?.sectionId??"sem seção"}]`;
   };
-  const supports=(draft?.supports??[]).filter(s=>s.dofs.some(d=>d==="fixed")).flatMap(s=>nodes.has(s.nodeId)?[nodes.get(s.nodeId)!]:[]);
+  const supports=(draft?.supports??[]).filter(s=>!s.dofs.every(d=>d==="free")).flatMap(s=>nodes.has(s.nodeId)?[nodes.get(s.nodeId)!]:[]);
   const currentJunctions=draft?.connectivity?.geometrySignature===structureSignature(project)?draft.connectivity.junctions:[];
   type Frame={axis:"x"|"y";coordinate:number;pieces:CadPiece[];kind:"TESOURA"|"PORTICO";key:string;visualOnlyContacts:string[];omittedPieceIds:string[];structuralStatus:"PENDENTE"|"DECLARED"};
   const frames:Frame[]=[];
