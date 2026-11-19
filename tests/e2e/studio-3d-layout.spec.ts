@@ -105,3 +105,24 @@ test("375px: 3D na largura da tela, vistas sem cortar e painel com botão própr
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(errors).toEqual([]);
 });
+
+test("1440px: fechar tela cheia permanece acima do canvas e recebe clique real", async ({ page }) => {
+  test.setTimeout(90000);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const canvas = await createRoof(page);
+  await page.getByRole("button", { name: "Expandir modelo 3D em tela cheia", exact: true }).click();
+  const expanded = page.locator(".structure-viewer--expanded");
+  const close = expanded.getByRole("button", { name: "Fechar tela cheia", exact: true });
+  await expect(expanded).toBeVisible();
+  await expect(canvas).toBeVisible();
+  await expect(close).toBeVisible();
+  // O ponto central do botão deve acertar o próprio botão, jamais o WebGL.
+  expect(await close.evaluate(button => {
+    const rect = button.getBoundingClientRect();
+    const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+    return hit === button || button.contains(hit);
+  })).toBe(true);
+  await close.click();
+  await expect(expanded).toHaveCount(0);
+  await expect(canvas).toBeVisible();
+});
