@@ -51,7 +51,7 @@ describe("campanha de referencias externas: geometria de garagem a galpao", () =
       const model = generateStructure(p).model;
       expect(model).not.toBeNull();
       expect(model!.pieces.some(piece => piece.role === "purlin")).toBe(true);
-      expect(model!.pieces.some(piece => piece.role === "truss-top")).toBe(true);
+      expect(model!.pieces.some(piece => piece.role === "topChord")).toBe(true);
     });
   }
 
