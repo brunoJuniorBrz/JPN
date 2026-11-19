@@ -17,3 +17,11 @@ O painel Studio também passou a ter rolagem própria. A suposição histórica 
 - Esta revisão não significa aprovação da alteração do motor numérico.
 - Os bloqueios `computedStructuralApproval=false`, `fabricationRelease=false` e `NOT_READY_BLOCKED` não foram modificados.
 - A CI completa e os E2Es continuam obrigatórios antes de liberar a produção.
+
+## Revisão adicional — intercepção de clique e timeout no runner
+
+- A execução `44546516292` passou na auditoria histórica, nos testes unitários, no TypeScript, no lint e nas validações numéricas, mas falhou em 2/134 E2E.
+- `tesoura-substituir.spec.ts`: ao navegar pelo Studio estreito em viewport desktop, o CSS em `truss-editor.module.css` posicionava o canvas em `sticky` mesmo quando o grid tinha só uma coluna. Ao rolar até **Aplicar na obra e atualizar o 3D**, o SVG/painel de tipos interceptava eventos do botão. Agora o editor usa `container-type:inline-size` e desativa o sticky quando a largura real do componente é de até 897 px, preservando sticky somente no layout de duas colunas.
+- `profiles-3d.spec.ts`: o caso desktop de 1440 px atingiu 30 s sem falha de asserção identificada. Aumentou-se para 90 s **somente esse caso** para não falsear o teste de raycasting WebGL no runner; nenhuma validação, verificação de estado, clique ou retorno foi removido.
+- O novo blob auditado do teste congelado é `9cbfae46ab36298c65ffcd935b04e344e5f4b519` (substitui `86ca2f3969cfc88bdd656fdd8c7164dc16e789a6`). Registro explícito em `validation/integration-general/audit.py`, sem exceções gerais nem desativação da auditoria.
+- **Aceite pendente:** CI integral verde no SHA final, incluindo o E2E de substituição sobre pilares, o desktop 3D e o build; a alteração de timeout não equivale a comprovação de desempenho.
