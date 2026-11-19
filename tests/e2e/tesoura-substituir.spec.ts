@@ -9,6 +9,8 @@ test("obra completa com pilares: Aplicar na Tesoura pede confirmação antes de 
   await expect(page).toHaveURL(/\/projetos\/[^/]+\?/, { timeout: 30000 });
   const nav = page.getByRole("navigation", { name: "Etapas do levantamento" });
   await nav.getByRole("button", { name: /Tesoura/ }).click();
+  // Obra completa abre com a tesoura apoiada em pilares (mesmas linhas da obra).
+  await expect(page.getByLabel("Apoio da tesoura")).toHaveValue("columns");
   const apply = page.getByRole("button", { name: /Aplicar na obra e atualizar o 3D/ });
   await apply.scrollIntoViewIfNeeded();
   await apply.click();
@@ -16,6 +18,7 @@ test("obra completa com pilares: Aplicar na Tesoura pede confirmação antes de 
   await expect(warning).toBeVisible();
   await expect(warning).toContainText("Pilares:");
   await expect(warning).toContainText("Terças:");
+  await expect(warning).toContainText("pilares nas pontas das tesouras");
   // Cancelar não muda nada.
   await page.getByRole("button", { name: "Cancelar" }).click();
   await expect(warning).toBeHidden();

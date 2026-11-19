@@ -95,7 +95,8 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     if(!coords.length)coords.push(...model.nodes.map(projection));
     // No corte frontal da tesoura, muros/calhas explicitamente informados também
     // entram nos limites gráficos. Isso nunca cria barras ou vínculos de cálculo.
-    const trussContext=view==="cut"&&across==="x"&&!opts.bases?project.workspace.trussEditor:null;
+    // Tesoura sobre pilares: os pilares já são peças do modelo; não há muro/calha a esquematizar.
+    const trussContext=view==="cut"&&across==="x"&&!opts.bases&&project.workspace.trussEditor?.support!=="columns"?project.workspace.trussEditor:null;
     if(trussContext){
       const S=trussContext.roofKind==="two-slopes"?2:1,span=trussContext.spanMm,th=trussContext.walls.thicknessMm;
       for(const [x,h] of [[0,trussContext.walls.lowMm],[span,S===2?trussContext.walls.lowMm:trussContext.walls.highMm]])

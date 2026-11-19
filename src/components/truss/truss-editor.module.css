@@ -1,4 +1,4 @@
-.editor{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(320px,1fr);gap:18px;align-items:start}
+.editor{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px;align-items:start}
 .canvas{position:sticky;top:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
 .drawing{display:block;width:100%;height:auto;touch-action:manipulation}
 .chord{stroke:#1f2933;stroke-width:4;stroke-linecap:round}
@@ -54,3 +54,4 @@
 .replaceWarning{background:#fff0ef;border:1px solid #ebb7b1;color:#982f2f;border-radius:9px;padding:10px 12px;font-size:13px;margin:0}
 .replaceWarning p{display:flex;gap:6px;align-items:center;margin:0 0 6px}
 .replaceWarning ul{margin:0 0 6px 18px;padding:0}
+.column{fill:#8c97a3;stroke:#55606b;stroke-width:1.5}

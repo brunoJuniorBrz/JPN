@@ -30,7 +30,7 @@ const profileSchema = z.object({
 }).strict();
 
 /** Perfis usuais do dia a dia (kg/m editável depois de escolher). */
-export const COMMON_PROFILES: { designation: string; kgPerM: number; basis: string; use: ("chord" | "web" | "purlin")[] }[] = [
+export const COMMON_PROFILES: { designation: string; kgPerM: number; basis: string; use: ("chord" | "web" | "purlin" | "column")[] }[] = [
   { designation: "U 75x40x2.65 mm", kgPerM: 3.11, basis: "nominal (linha média)", use: ["chord", "web"] },
   { designation: "U 100x40x2.65 mm", kgPerM: 3.54, basis: "publicada", use: ["chord", "web"] },
   { designation: "U 127x50x2.65 mm", kgPerM: 4.52, basis: "publicada", use: ["chord"] },
@@ -41,7 +41,12 @@ export const COMMON_PROFILES: { designation: string; kgPerM: number; basis: stri
   { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, basis: "nominal (linha média)", use: ["web"] },
   { designation: "L 1 x 1/8 pol", kgPerM: 1.19, basis: "nominal (linha média)", use: ["web"] },
   { designation: "L 1 x 3/16 pol", kgPerM: 1.73, basis: "nominal (linha média)", use: ["web"] },
+  { designation: "Tubo 80x80x3.00 mm", kgPerM: 7.25, basis: "nominal (seção cheia, sem raio)", use: ["column"] },
+  { designation: "Tubo 100x100x3.00 mm", kgPerM: 9.14, basis: "nominal (seção cheia, sem raio)", use: ["column"] },
+  { designation: "Tubo 100x100x4.75 mm", kgPerM: 14.21, basis: "nominal (seção cheia, sem raio)", use: ["column"] },
+  { designation: "Tubo 150x150x4.75 mm", kgPerM: 21.67, basis: "nominal (seção cheia, sem raio)", use: ["column"] },
 ];
+const DEFAULT_COLUMN = { designation: "Tubo 100x100x3.00 mm", kgPerM: 9.14, barPriceCents: null, extraBars: 0 };
 export const trussEditorSchema = z.object({
   version: z.literal(1),
   /** A falta deste campo em projetos salvos é uma água (compatibilidade retroativa). */
@@ -58,6 +63,11 @@ export const trussEditorSchema = z.object({
     .default({ lowMm: 3000, highMm: 3800, thicknessMm: 150 }),
   /** Altura do banzo inferior em relação ao piso (apoio da tesoura). */
   supportZMm: mm.min(0).max(20000).default(3000),
+  /** Onde a tesoura apoia: muros existentes (padrão) ou pilares novos (obra completa).
+   * Com pilares, a tesoura vai de eixo a eixo dos pilares; calha e muros não são modelados. */
+  support: z.enum(["walls", "columns"]).default("walls"),
+  /** Perfil dos pilares (só no apoio em pilares). */
+  column: profileSchema.default(DEFAULT_COLUMN),
   anchor: z.object({ plateWidthMm: mm.min(0).max(2000), plateHeightMm: mm.min(0).max(2000), boltsPerSupport: z.number().int().min(0).max(20),
     boltLengthMm: mm.min(0).max(5000), platePriceCents: z.number().int().min(0).max(10000000).nullable(), boltPriceCents: z.number().int().min(0).max(10000000).nullable() }).strict()
     .default({ plateWidthMm: 150, plateHeightMm: 200, boltsPerSupport: 2, boltLengthMm: 1000, platePriceCents: null, boltPriceCents: null }),
@@ -93,7 +103,7 @@ export function tomTrussDefaults(): TrussEditor {
   return {
     version: 1, roofKind: "one-slope", spanMm: 8000, lengthMm: 10000, trusses: 3,
     gutter: { supportMm: 150, widthMm: 400, clearanceMm: 200, lowSideMm: 125, highSideMm: 200, budgeted: false, pricePerMCents: null },
-    walls: { lowMm: 3000, highMm: 3800, thicknessMm: 150 }, supportZMm: 3000,
+    walls: { lowMm: 3000, highMm: 3800, thicknessMm: 150 }, supportZMm: 3000, support: "walls", column: { ...DEFAULT_COLUMN },
     anchor: { plateWidthMm: 150, plateHeightMm: 200, boltsPerSupport: 2, boltLengthMm: 1000, platePriceCents: null, boltPriceCents: null },
     tipHeightMm: 75, highHeightMm: 800, panelMm: 500, countFrom: "high", diagonal: "to-high",
     stationsMm: null, flippedPanels: [], purlinLines: 6, purlinStepMm: 1500, chordSpliceMm: 5980, stockMm: 6000,
@@ -110,7 +120,7 @@ export function blankTruss(): TrussEditor {
   return {
     version: 1, roofKind: "one-slope", spanMm: 6000, lengthMm: 8000, trusses: 3,
     gutter: { supportMm: 150, widthMm: 300, clearanceMm: 150, lowSideMm: 125, highSideMm: 200, budgeted: false, pricePerMCents: null },
-    walls: { lowMm: 3000, highMm: 3600, thicknessMm: 150 }, supportZMm: 3000,
+    walls: { lowMm: 3000, highMm: 3600, thicknessMm: 150 }, supportZMm: 3000, support: "walls", column: { ...DEFAULT_COLUMN },
     anchor: { plateWidthMm: 150, plateHeightMm: 200, boltsPerSupport: 2, boltLengthMm: 1000, platePriceCents: null, boltPriceCents: null },
     tipHeightMm: 75, highHeightMm: 615, panelMm: 500, countFrom: "high", diagonal: "to-high",
     stationsMm: null, flippedPanels: [], purlinLines: 6, purlinStepMm: 1000, chordSpliceMm: 5980, stockMm: 6000,
@@ -143,13 +153,31 @@ export function trussDefaultsFor(project: Project): TrussEditor {
   const trusses = planning?.frameSpacingM ? Math.min(60, Math.max(2, Math.ceil(lengthMm / (planning.frameSpacingM * 1000)) + 1)) : suggestedTrussCount(lengthMm, base.stockMm);
   const supportZMm = roof.lowHeightM === null ? base.supportZMm : Math.round(roof.lowHeightM * 1000);
   const highHeightMm = Math.round(base.tipHeightMm + runMm * ((roof.slopePercent ?? 10) / 100));
+  // Obra completa (pré-projeto com pilares): a tesoura apoia em pilares, de eixo a eixo,
+  // usando altura de tesoura, pilar e perfis já informados na obra.
+  if (planning) {
+    const depth = planning.trussDepthM ? Math.round(planning.trussDepthM * 1000) : base.tipHeightMm;
+    const low = roof.lowHeightM === null ? base.supportZMm + depth : Math.round(roof.lowHeightM * 1000);
+    const run = spanMm / slopes;
+    const fromPlanning = (p: { name: string; section: string; massKgM: number | null }, fallback: TrussEditor["chord"]) =>
+      p.massKgM ? { ...fallback, designation: (p.section || p.name || fallback.designation).slice(0, 120), kgPerM: p.massKgM } : fallback;
+    const cols: TrussEditor = { ...base, roofKind, spanMm, lengthMm, trusses, support: "columns" as const, supportZMm: Math.max(0, low - depth), tipHeightMm: depth };
+    const fit = Math.max(2, Math.ceil(run / wantedStep) + 1);
+    return { ...cols, highHeightMm: Math.round(depth + run * ((roof.slopePercent ?? 10) / 100)),
+      purlinLines: Math.min(60, fit), purlinStepMm: Math.min(6000, Math.max(300, Math.round(run / (fit - 1) / 10) * 10)),
+      walls: { ...base.walls, lowMm: 0, highMm: 0 },
+      chord: fromPlanning(planning.profiles.topChord, base.chord), web: fromPlanning(planning.profiles.web, base.web),
+      purlin: fromPlanning(planning.profiles.purlin, base.purlin), column: fromPlanning(planning.profiles.column, base.column) };
+  }
   return { ...base, roofKind, spanMm, lengthMm, trusses, purlinLines, purlinStepMm, highHeightMm,
     supportZMm, walls: { ...base.walls, lowMm: supportZMm,
       highMm: roofKind === "two-slopes" ? supportZMm : Math.min(20000, Math.max(0, supportZMm + highHeightMm)) } };
 }
 
 /** Projeção horizontal de uma água; em duas águas há dois semivãos simétricos. */
-export const tipOffsetMm = (t: TrussEditor) => t.gutter.supportMm + t.gutter.widthMm + t.gutter.clearanceMm;
+export const tipOffsetMm = (t: TrussEditor) => t.support === "columns" ? 0 : t.gutter.supportMm + t.gutter.widthMm + t.gutter.clearanceMm;
+/** Pilares do apoio em pilares: dois por tesoura (um em cada ponta), do piso ao banzo inferior. */
+export const columnCount = (t: TrussEditor) => t.support === "columns" ? t.trusses * 2 : 0;
 export const slopeCount = (t: TrussEditor) => t.roofKind === "two-slopes" ? 2 : 1;
 export const trussLengthMm = (t: TrussEditor) => (t.spanMm - slopeCount(t) * tipOffsetMm(t)) / slopeCount(t);
 export const totalTrussRunMm = (t: TrussEditor) => slopeCount(t) * trussLengthMm(t);
@@ -287,20 +315,26 @@ export function trussSummary(t: TrussEditor) {
   const slopeMm = Math.hypot(L, t.highHeightMm - t.tipHeightMm), runMm = slopeMm + t.sheet.beyondTipMm * slopeMm / L;
   const k = t.sheet.piecesPerSlope, sheetLengthMm = Math.ceil((runMm + (k - 1) * t.sheet.overlapMm) / k / 10) * 10;
   const columns = Math.ceil(t.lengthMm / t.sheet.usefulWidthMm), sheets = columns * k * slopeCount(t), sheetM = sheets * sheetLengthMm / 1000;
-  const supports = n * 2, plates = n * slopeCount(t), bolts = plates * t.anchor.boltsPerSupport;
+  const onColumns = t.support === "columns", nCols = columnCount(t);
+  const columnL = Array(nCols).fill(t.supportZMm) as number[];
+  const column = !nCols ? { bars: 0, wasteMm: 0 } : t.supportZMm <= t.stockMm - 10 ? barsFor(columnL, t.stockMm)
+    : { bars: Math.ceil(sum(columnL) / (t.stockMm - 10)), wasteMm: 0 };
+  const supports = n * 2, plates = onColumns ? nCols : n * slopeCount(t), bolts = plates * t.anchor.boltsPerSupport;
   const screws = Math.ceil((columns * purlins.length * 4 + (columns - 1) * slopeCount(t) * Math.ceil(slopeMm / 500)) / 50) * 50;
   const areaM2 = t.spanMm * t.lengthMm / 1e6;
   const webBars = (t.fullHeightBudget ? webFullBars : web.bars) + t.web.extraBars;
   const chordBars = chord.bars + t.chord.extraBars, purlinBars = purlin.bars + t.purlin.extraBars;
+  const columnBars = nCols ? column.bars + t.column.extraBars : 0;
   const money = (bars: number, p: { barPriceCents: number | null }) => p.barPriceCents === null ? null : bars * p.barPriceCents;
   const lines = [
     { item: `Banzos ${t.chord.designation}`, qty: `${chordBars} barras${t.chord.extraBars ? ` (+${t.chord.extraBars} folga)` : ""}`, cents: money(chordBars, t.chord) },
     { item: `Montantes e diagonais ${t.web.designation}${t.fullHeightBudget ? " (medida cheia)" : ""}`, qty: `${webBars} barras${t.fullHeightBudget ? ` · corte real ${web.bars}` : ""}${t.web.extraBars ? ` (+${t.web.extraBars} folga)` : ""}`, cents: money(webBars, t.web) },
+    ...(onColumns ? [{ item: `Pilares ${t.column.designation}`, qty: `${columnBars} barras · ${nCols} pilares de ${(t.supportZMm / 1000).toFixed(2).replace(".", ",")} m${t.supportZMm > t.stockMm - 10 ? " (com emenda)" : ""}${t.column.extraBars ? ` (+${t.column.extraBars} folga)` : ""}`, cents: money(columnBars, t.column) }] : []),
     { item: `Terças ${t.purlin.designation}`, qty: `${purlinBars} barras${t.purlin.extraBars ? ` (+${t.purlin.extraBars} folga)` : ""}`, cents: money(purlinBars, t.purlin) },
     { item: "Telha", qty: `${sheets} × ${(sheetLengthMm / 1000).toFixed(2).replace(".", ",")} m (${slopeCount(t)} água(s), ${k} peça(s)/água)`, cents: t.sheet.pricePerMCents === null ? null : Math.round(sheetM * t.sheet.pricePerMCents) },
-    ...(t.gutter.budgeted ? [{ item: "Calha (m)", qty: `${(t.lengthMm * slopeCount(t) / 1000).toFixed(2).replace(".", ",")} m (${slopeCount(t)} lado(s))`,
+    ...(t.gutter.budgeted && !onColumns ? [{ item: "Calha (m)", qty: `${(t.lengthMm * slopeCount(t) / 1000).toFixed(2).replace(".", ",")} m (${slopeCount(t)} lado(s))`,
       cents: t.gutter.pricePerMCents === null ? null : Math.round(t.gutter.pricePerMCents * t.lengthMm * slopeCount(t) / 1000) }] : []),
-    { item: `Chapa de ancoragem ${Math.round(t.anchor.plateWidthMm / 10)} x ${Math.round(t.anchor.plateHeightMm / 10)} cm`, qty: `${plates} un`, cents: t.anchor.platePriceCents === null ? null : plates * t.anchor.platePriceCents },
+    { item: `${onColumns ? "Chapa de base" : "Chapa de ancoragem"} ${Math.round(t.anchor.plateWidthMm / 10)} x ${Math.round(t.anchor.plateHeightMm / 10)} cm`, qty: `${plates} un`, cents: t.anchor.platePriceCents === null ? null : plates * t.anchor.platePriceCents },
     { item: `Chumbador ${(t.anchor.boltLengthMm / 1000).toFixed(2).replace(".", ",")} m`, qty: `${bolts} un`, cents: t.anchor.boltPriceCents === null ? null : bolts * t.anchor.boltPriceCents },
     { item: "Parafusos", qty: `${screws} un`, cents: t.screwPriceCents === null ? null : screws * t.screwPriceCents },
     { item: "Insumos", qty: "—", cents: t.consumablesCents },
@@ -309,10 +343,11 @@ export function trussSummary(t: TrussEditor) {
   return {
     trussLengthMm: L, fallPercent: fallPercent(t), stations: st, pieces: one, purlins,
     bars: { chord: chord.bars, web: web.bars, webFullHeight: webFullBars, purlin: purlin.bars },
-    buy: { chord: chordBars, web: webBars, purlin: purlinBars }, columns, supports, plates, bolts,
-    kg: { chord: kg(chordL, t.chord), web: kg(webL, t.web), purlin: kg(purlinL, t.purlin), total: kg(chordL, t.chord) + kg(webL, t.web) + kg(purlinL, t.purlin) },
+    buy: { chord: chordBars, web: webBars, purlin: purlinBars, column: columnBars }, columns, supports, plates, bolts, columnCount: nCols,
+    kg: { chord: kg(chordL, t.chord), web: kg(webL, t.web), purlin: kg(purlinL, t.purlin), column: kg(columnL, t.column),
+      total: kg(chordL, t.chord) + kg(webL, t.web) + kg(purlinL, t.purlin) + kg(columnL, t.column) },
     sheets, sheetLengthMm, sheetM, screws, areaM2, lines,
-    gutterLine: `Calha ${Math.round(t.gutter.widthMm / 10)} cm × ${(t.lengthMm * slopeCount(t) / 1000).toFixed(2).replace(".", ",")} m${t.gutter.budgeted ? (t.gutter.pricePerMCents === null ? " — preço pendente" : " — incluída no orçamento") : " — fora do orçamento"}`,
+    gutterLine: onColumns ? "Tesoura sobre pilares: calha e muros não modelados" : `Calha ${Math.round(t.gutter.widthMm / 10)} cm × ${(t.lengthMm * slopeCount(t) / 1000).toFixed(2).replace(".", ",")} m${t.gutter.budgeted ? (t.gutter.pricePerMCents === null ? " — preço pendente" : " — incluída no orçamento") : " — fora do orçamento"}`,
     knownCents: lines.reduce((s, l) => s + (l.cents ?? 0), 0), missing: lines.filter(l => l.cents === null).map(l => l.item),
   };
 }
@@ -323,7 +358,7 @@ const area = (kgPerM: number) => Number((kgPerM / 7850 * 1e4).toFixed(4));
  * materiais e plano de corte passam a usar exatamente estas peças.
  */
 /** Grupos de peças que o próprio editor cria; o resto pertence a outra origem. */
-const EDITOR_GROUPS = new Set(["TESOURA", "TERCAS"]);
+const EDITOR_GROUPS = new Set(["TESOURA", "TERCAS", "PILARES-TESOURA"]);
 
 /**
  * O que "Aplicar" vai substituir. O editor reescreve a estrutura física inteira
@@ -353,7 +388,7 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
   const x0 = tipOffsetMm(t), Z0 = t.supportZMm, L = trussLengthMm(t), S = slopeCount(t), bays = t.trusses - 1;
   const ys = Array.from({ length: t.trusses }, (_, f) => f * t.lengthMm / bays);
   type Node = { id: string; x: number; y: number; z: number };
-  type Piece = { id: string; role: "topChord" | "bottomChord" | "web" | "purlin"; start: string; end: string; label: string; group: string };
+  type Piece = { id: string; role: "topChord" | "bottomChord" | "web" | "purlin" | "column"; start: string; end: string; label: string; group: string };
   const nodes: Node[] = [], pieces: Piece[] = [], keys = new Map<string, string>();
   const node = (x: number, y: number, z: number) => {
     const k = [x, y, z].map(v => v.toFixed(3)).join("/");
@@ -366,6 +401,13 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
     for (const p of trussPiecesComplete(t)) pieces.push({ id: `T${f + 1}-${p.id}`, role: role[p.kind], start: node(x0 + p.a[0], y, Z0 + p.a[1]), end: node(x0 + p.b[0], y, Z0 + p.b[1]),
       label: `${label[p.kind]} ${p.kind === "BI" || p.kind === "BS" ? t.chord.designation : t.web.designation}`, group: "TESOURA" });
   });
+  // Apoio em pilares: um pilar em cada ponta de cada tesoura, do piso (z = 0) ao banzo inferior.
+  const columnFeet: string[] = [];
+  if (t.support === "columns") ys.forEach((y, f) => (["E", "D"] as const).forEach((side, i) => {
+    const x = i === 0 ? x0 : x0 + S * L, foot = node(x, y, 0);
+    columnFeet.push(foot);
+    pieces.push({ id: `P${f + 1}-${side}`, role: "column", start: foot, end: node(x, y, Z0), label: `Pilar ${t.column.designation}`, group: "PILARES-TESOURA" });
+  }));
   roofPurlinPositions(t).forEach((p, r) => ys.slice(0, -1).forEach((y, v) => {
     const z = Z0 + heightAt(t, p.sMm);
     pieces.push({ id: `TE${r + 1}-V${v + 1}`, role: "purlin", start: node(x0 + p.xMm, y, z), end: node(x0 + p.xMm, ys[v + 1], z), label: `Terça ${t.purlin.designation}`, group: "TERCAS" });
@@ -382,9 +424,9 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
   draft.physicalCatalog = {
     schema_version: "jpn.physical-catalog/1",
     materials: [{ id: "ACO", steelGrade: "NAO-INFORMADO (perfil comercial)", eGpa: null, gGpa: null, nu: null, density, materialSource: "Aço não especificado", materialRevision: revision }],
-    sections: (["chord", "web", "purlin"] as const).map(k => ({ id: k.toUpperCase(), designation: t[k].designation, areaCm2: area(t[k].kgPerM), iyCm4: null, izCm4: null, jCm4: null,
+    sections: (t.support === "columns" ? ["chord", "web", "purlin", "column"] as const : ["chord", "web", "purlin"] as const).map(k => ({ id: k.toUpperCase(), designation: t[k].designation, areaCm2: area(t[k].kgPerM), iyCm4: null, izCm4: null, jCm4: null,
       sectionSource: `Massa linear informada ${t[k].kgPerM} kg/m (área equivalente)`, sectionRevision: revision })),
-    assignments: pieces.map(p => ({ pieceId: p.id, materialId: "ACO", sectionId: p.role === "purlin" ? "PURLIN" : p.role === "web" ? "WEB" : "CHORD", rotationDeg: null })),
+    assignments: pieces.map(p => ({ pieceId: p.id, materialId: "ACO", sectionId: p.role === "purlin" ? "PURLIN" : p.role === "web" ? "WEB" : p.role === "column" ? "COLUMN" : "CHORD", rotationDeg: null })),
   };
   const xs = x0 - t.sheet.beyondTipMm, ridge = x0 + L, xe = x0 + S * L + (S === 2 ? t.sheet.beyondTipMm : tipOffsetMm(t));
   const zLeft = (x: number) => Z0 + heightAt(t, x - x0);
@@ -406,15 +448,17 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
   });
   // Apoios só como POSIÇÃO (muro alto ancorado e ponta baixa): vínculos pendentes,
   // nada é presumido como fixo.
-  draft.supports = ys.flatMap(y => [node(x0, y, Z0), node(x0 + S * L, y, Z0)]).map(nodeId => ({ nodeId, dofs: ["pending", "pending", "pending", "pending", "pending", "pending"] as ["pending", "pending", "pending", "pending", "pending", "pending"] }));
+  draft.supports = (t.support === "columns" ? columnFeet : ys.flatMap(y => [node(x0, y, Z0), node(x0 + S * L, y, Z0)])).map(nodeId => ({ nodeId, dofs: ["pending", "pending", "pending", "pending", "pending", "pending"] as ["pending", "pending", "pending", "pending", "pending", "pending"] }));
   next.workspace.spatialPreparation = draft;
   draft.geometrySignature = structureSignature(next); // APÓS atribuir catálogo e perfis
   next.workspace.overallDimensionChecks = [{ axis: "y", statedLengthMm: t.lengthMm, source: "Comprimento da obra (editor de tesoura)", revision }];
   next.workspace.trussEditor = t;
   next.technicalNotes = [
     `Tesoura do editor JPN: ${S} água(s), semivão útil ${(L / 1000).toFixed(2)} m por água, altura na ponta ${t.tipHeightMm} mm e na ${S === 2 ? "cumeeira" : "extremidade alta"} ${t.highHeightMm} mm (inclinação ${fallPercent(t).toFixed(1)} %), ${stations(t).length} montantes por semivão, diagonais ${t.diagonal}.`,
-    `Recuo da ponta baixa: apoio ${t.gutter.supportMm} + calha ${t.gutter.widthMm} + folga ${t.gutter.clearanceMm} mm; calha com lado menor ${t.gutter.lowSideMm} e maior ${t.gutter.highSideMm} mm${t.gutter.budgeted ? "" : " (fora do orçamento)"}.`,
-    `Muros: beiral baixo ${t.walls.lowMm} mm, ${S === 1 ? `lado alto ${t.walls.highMm} mm` : "ambos os beirais no mesmo nível declarado"} (espessura ${t.walls.thicknessMm}); banzo inferior a ${t.supportZMm} mm do piso. Chapa de ancoragem ${t.anchor.plateWidthMm} x ${t.anchor.plateHeightMm} mm, ${t.anchor.boltsPerSupport} chumbador(es) de ${t.anchor.boltLengthMm} mm por ${S === 1 ? "muro alto" : "beiral"} (sem verificação).`,
+    ...(t.support === "columns" ? [] : [`Recuo da ponta baixa: apoio ${t.gutter.supportMm} + calha ${t.gutter.widthMm} + folga ${t.gutter.clearanceMm} mm; calha com lado menor ${t.gutter.lowSideMm} e maior ${t.gutter.highSideMm} mm${t.gutter.budgeted ? "" : " (fora do orçamento)"}.`]),
+    t.support === "columns"
+      ? `Apoio em ${columnCount(t)} pilares ${t.column.designation} de ${t.supportZMm} mm (piso ao banzo inferior), nas pontas das tesouras; bases só como posição, vínculos pendentes. Chapa de base ${t.anchor.plateWidthMm} x ${t.anchor.plateHeightMm} mm com ${t.anchor.boltsPerSupport} chumbador(es) de ${t.anchor.boltLengthMm} mm por pilar (sem verificação).`
+      : `Muros: beiral baixo ${t.walls.lowMm} mm, ${S === 1 ? `lado alto ${t.walls.highMm} mm` : "ambos os beirais no mesmo nível declarado"} (espessura ${t.walls.thicknessMm}); banzo inferior a ${t.supportZMm} mm do piso. Chapa de ancoragem ${t.anchor.plateWidthMm} x ${t.anchor.plateHeightMm} mm, ${t.anchor.boltsPerSupport} chumbador(es) de ${t.anchor.boltLengthMm} mm por ${S === 1 ? "muro alto" : "beiral"} (sem verificação).`,
     `Telha em ${t.sheet.piecesPerSlope} peça(s) por água${t.sheet.piecesPerSlope > 1 ? `, sobreposição ${t.sheet.overlapMm} mm` : ""}.`,
     `Distribuição preliminar: ${t.trusses} tesoura(s), ${Math.round(t.lengthMm/(t.trusses-1))} mm entre elas; posições não constituem apoios verificados.`,
     ...(t.fullHeightBudget ? [`Montantes/diagonais: compra por medida cheia ${trussSummary(t).buy.web} barras; corte geométrico real ${trussSummary(t).bars.web} barras (sem liberação para fabricar).`] : []),
