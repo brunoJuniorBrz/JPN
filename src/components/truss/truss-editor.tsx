@@ -70,7 +70,10 @@ function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null;
   </svg>;
 }
 
-export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss; onApply: (t: Truss) => void; applyLabel: string }) {
+export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initial?: Truss; onApply: (t: Truss) => void; applyLabel: string;
+  /** Peças de outra origem que "Aplicar" vai apagar (pilares, vigas...). Se houver, pede confirmação. */
+  replaces?: string[] }) {
+  const [confirming, setConfirming] = useState(false);
   const [t, setT] = useState<Truss>(() => initial ?? blankTruss());
   const [selected, setSelected] = useState<number | null>(null);
   const [trussesAuto, setTrussesAuto] = useState(!initial);
@@ -125,8 +128,18 @@ export function TrussEditor({ initial, onApply, applyLabel }: { initial?: Truss;
           {result.s.missing.length > 0 && <p className={styles.muted}>Sem preço: {result.s.missing.join(", ")}.</p>}
         </>}
         {result.issues.map(i => <p key={i.message} className={i.level === "erro" ? styles.error : styles.warn}><TriangleAlert size={15} />{i.message}</p>)}
+        {confirming && !!replaces?.length && <div className={styles.replaceWarning} role="alert" data-testid="truss-replace-warning">
+          <p><TriangleAlert size={15} /><strong>Aplicar vai substituir a estrutura desta obra.</strong></p>
+          <p>O editor monta só tesouras e terças apoiadas nos muros. Estas peças atuais vão sumir:</p>
+          <ul>{replaces.map(l => <li key={l}>{l}</li>)}</ul>
+          <p>Para guardar a obra como está, cancele e use Projetos → Duplicar antes de aplicar.</p>
+        </div>}
         <div className={styles.actions}>
-          <button type="button" className="button" disabled={!!result.error || errors.length > 0} onClick={() => { try { onApply(trussEditorSchema.parse(t)); setMessage("Aplicado. 3D, CAD, materiais e plano de corte usam esta tesoura."); } catch (e) { setMessage(e instanceof Error ? e.message : "Não foi possível aplicar."); } }}><Check size={18} />{applyLabel}</button>
+          <button type="button" className="button" disabled={!!result.error || errors.length > 0} onClick={() => {
+            if (replaces?.length && !confirming) { setConfirming(true); setMessage(""); return; }
+            try { onApply(trussEditorSchema.parse(t)); setConfirming(false); setMessage("Aplicado. 3D, CAD, materiais e plano de corte usam esta tesoura."); } catch (e) { setMessage(e instanceof Error ? e.message : "Não foi possível aplicar."); } }}>
+            <Check size={18} />{confirming ? "Substituir mesmo assim" : applyLabel}</button>
+          {confirming && <button type="button" className="button secondary" onClick={() => setConfirming(false)}>Cancelar</button>}
           <button type="button" className="button secondary" onClick={() => { setT(blankTruss()); setTrussesAuto(true); setSelected(null); setMessage("Obra nova: digite as medidas por cima. Preços em branco."); }}><FilePlus2 size={18} />Nova obra</button>
           <button type="button" className="button secondary" onClick={() => { setT(tomTrussDefaults()); setTrussesAuto(false); setSelected(null); }}><RotateCcw size={18} />Exemplo 8×10</button>
         </div>

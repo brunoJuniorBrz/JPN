@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { newProject } from "./models";
+import { planningExample } from "./planning-example";
 import { emptyPlanning } from "./structure";
 import { auditPhysicalRoofCoverage } from "./physical-roof-coverage";
 import { structureSignature } from "./calculations/project-basis";
 import { resolvePhysicalStructure } from "./physical-structure";
-import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor, suggestedTrussCount } from "./truss-editor";
+import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor, suggestedTrussCount, trussReplacementImpact
+} from "./truss-editor";
 import { spatialPreparationReview } from "./spatial-preparation";
 import { packageTakeoff } from "@/lib/exports/package-source";
 import { packageCutting } from "@/lib/exports/complete-package";
@@ -193,4 +195,25 @@ describe("editor de tesoura por estações", () => {
     expect(p.workspace.spatialPreparation!.supports.every(s=>s.dofs.every(d=>d==="pending"))).toBe(true);
   });
 
+});
+
+describe("aviso antes de substituir a estrutura", () => {
+  it("obra completa gerada: lista pilares, tesouras e terças que vão sumir", () => {
+    const impact = trussReplacementImpact(planningExample());
+    expect(impact.replaces).toBe(true);
+    expect(impact.source).toBe("generated");
+    expect(impact.lines.some(l => l.startsWith("Pilares: "))).toBe(true);
+    expect(impact.lines.some(l => l.startsWith("Terças: "))).toBe(true);
+  });
+  it("obra criada pelo próprio editor: nada a avisar", () => {
+    const p = applyTrussToProject(newProject(), tomTrussDefaults());
+    expect(trussReplacementImpact(p)).toEqual({ replaces: false, source: null, lines: [] });
+    expect(trussReplacementImpact(newProject()).replaces).toBe(false);
+  });
+  it("modelo declarado com peças de outra origem: avisa só essas", () => {
+    const p = applyTrussToProject(newProject(), tomTrussDefaults());
+    const s = p.workspace.physicalStructure!;
+    s.pieces.push({ id: "VIGA1", role: "beam", start: s.nodes[0].id, end: s.nodes[1].id, label: "Viga de borda", group: "VIGAS" });
+    expect(trussReplacementImpact(p).lines).toEqual(["Vigas: 1"]);
+  });
 });

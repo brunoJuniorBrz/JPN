@@ -51,3 +51,6 @@
 .plate{fill:#d9480f}
 .bolt{stroke:#d9480f;stroke-width:2;stroke-dasharray:5 3}
 .wallText{font-size:20px;fill:#6b5f4c;font-weight:600}
+.replaceWarning{background:#fff0ef;border:1px solid #ebb7b1;color:#982f2f;border-radius:9px;padding:10px 12px;font-size:13px;margin:0}
+.replaceWarning p{display:flex;gap:6px;align-items:center;margin:0 0 6px}
+.replaceWarning ul{margin:0 0 6px 18px;padding:0}

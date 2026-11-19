@@ -33,10 +33,10 @@ test(`perfis 3D, seleção, modos e persistência em ${width}px`, async ({ page 
   await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
   await expect(page.getByLabel("Selecionar peça no desenho")).toHaveValue("");
   if (width === 375) expect(Number(await canvas.getAttribute("data-pixel-ratio"))).toBeGreaterThanOrEqual(1.75);
-  await page.getByRole("button", { name: "Tela cheia", exact: true }).click();
+  await page.getByRole("button", { name: "Expandir modelo 3D em tela cheia", exact: true }).click();
   await expect(page.locator(".structure-viewer--expanded")).toBeVisible();
   await expect(canvas).toBeVisible();
-  await page.getByRole("button", { name: "Sair da tela cheia", exact: true }).click();
+  await page.getByRole("button", { name: "Fechar tela cheia", exact: true }).click();
   await expect(page.locator(".structure-viewer--expanded")).toHaveCount(0);
   await page.getByRole("button", { name: "Perfis 3D", exact: true }).click(); await expect(canvas).toHaveAttribute("data-mode", "profiles");
   expect(Number(await canvas.getAttribute("data-solid-count"))).toBeGreaterThan(50);
