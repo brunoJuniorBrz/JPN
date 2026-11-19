@@ -1,0 +1,33 @@
+name: Field project campaign (isolated)
+on:
+  push:
+    branches:
+      - test/real-projects-wind-trusses-20261119
+  pull_request:
+    paths:
+      - src/domain/field-project-campaign.test.ts
+      - .github/workflows/field-project-campaign.yml
+jobs:
+  field-projects:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare actual PyNite worker used by integration tests
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install -r engine/requirements-sections.lock
+          .venv/bin/python -m pip install --no-build-isolation --no-deps -e ./engine
+      - run: npx --yes pnpm@12.15.0 install --frozen-lockfile
+      - name: Typecheck
+        run: npx --yes pnpm@12.15.0 typecheck
+      - name: Run independent field campaign
+        run: npx --yes pnpm@12.15.0 exec vitest run src/domain/field-project-campaign.test.ts src/domain/truss-editor.test.ts src/domain/purlin-traceability.test.ts src/domain/wind-speed.test.ts src/domain/wind-internal-pressure.test.ts src/domain/wind-external-references.test.ts src/domain/wind-load-path.test.ts src/domain/wind-facade-normative.test.ts src/domain/nbr6123-edition.test.ts src/domain/roof-load-path-independent.test.ts src/domain/roof-load-path.test.ts src/domain/physical-roof-faces.test.ts src/domain/orthogonal-roof-cells.test.ts src/domain/engineering-combination-coverage.test.ts src/domain/structural-release-invariant.test.ts src/domain/nbr8681-combinations.test.ts src/domain/nbr6120-actions.test.ts
