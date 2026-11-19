@@ -571,6 +571,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       {fallbackCount > 0 && <><p>Para visualizar perfis reais, informe família, dimensões e espessura de cada categoria. O sistema não inventa medidas para projetos antigos.</p><div className="actions">{onConfigureProfile && <button type="button" className="button" onClick={onConfigureProfile}>Cadastrar dimensões</button>}{onDemonstrate && <button type="button" className="button secondary" onClick={onDemonstrate}>Ver demonstração com perfis</button>}</div></>}
     </div>}
     <div className="presentation-viewport">
+      {!failure && <button type="button" className="viewer-fullscreen-button" aria-label={expanded ? "Sair da tela cheia do modelo 3D" : "Expandir modelo 3D em tela cheia"} aria-pressed={expanded} title={expanded ? "Sair da tela cheia" : "Tela cheia"} onClick={() => setExpanded(value => !value)}><span aria-hidden="true">{expanded ? "↙" : "⛶"}</span><span>{expanded ? "Sair da tela cheia" : "Tela cheia"}</span></button>}
       <div ref={host} className="structure-3d" hidden={!!failure} />
       {!failure && <div className="studio-camera" aria-label="Câmera do Studio 3D">
         <div className="inspection-view-buttons" role="group" aria-label="Orientação da câmera 3D">
@@ -615,7 +616,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       <p className="field-hint">Telha, relevo das nervuras, beiral, cumeeira, paredes, veículo e pessoa são ilustrativos e não compõem a lista de materiais. Mude para Perfis 3D para selecionar ou editar peças.</p>
     </section>}
     {failure ? <p role="status" className="notice">{failure}</p> : <>
-      <div className="actions structure-viewer-tools"><button type="button" className="button" onClick={() => setExpanded(v => !v)}>{expanded ? "Sair da tela cheia" : "Tela cheia"}</button><button className="button secondary" type="button" onClick={() => reset.current()}>Isométrica · ajustar 3D</button><button className="button secondary" type="button" disabled={!selected || mode === "finished"} onClick={() => focus.current(selected)}>Focar peça selecionada</button>{mode === "finished" && <button type="button" className="button" onClick={() => capture.current()}>Salvar imagem PNG</button>}</div>
+      <div className="actions structure-viewer-tools"><button className="button secondary" type="button" onClick={() => reset.current()}>Isométrica · ajustar 3D</button><button className="button secondary" type="button" disabled={!selected || mode === "finished"} onClick={() => focus.current(selected)}>Focar peça selecionada</button>{mode === "finished" && <button type="button" className="button" onClick={() => capture.current()}>Salvar imagem PNG</button>}</div>
       {pictureError && <p role="alert" className="field-error">{pictureError}</p>}
       <p className="drawing-help">Arraste para girar; dois dedos para ampliar/deslocar. Grade: {gridSpacingM.toLocaleString("pt-BR")} m por célula. Cores por categoria; acabamento, sombras e reflexos são apenas visuais. Nitidez de imagem adaptativa com limite de pixels para preservar o desempenho. Use a seleção de peças para acesso por teclado.</p>
     </>}
