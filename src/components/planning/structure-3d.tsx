@@ -585,6 +585,11 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
         <button type="button" className="studio-projection" aria-pressed={projection === "orthographic"} title="Alterna entre perspectiva e projeção ortográfica real" onClick={() => setProjection(value => value === "perspective" ? "orthographic" : "perspective")}>{projection === "orthographic" ? "Ortográfica" : "Perspectiva"}</button>
       </div>}
       {!failure && <span ref={stats} className="studio-stats" aria-hidden="true" />}
+      {expanded && <div className="studio-fullscreen-stats" aria-label="Quantitativos do modelo em tela cheia">
+        <span>{model.pieces.length} peças</span>
+        <span>{model.totalLengthM.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m de perfis</span>
+        <span className="studio-fullscreen-warning">Fabricação bloqueada</span>
+      </div>}
       {!failure && mode === "finished" && envelope && <div className="presentation-hud" aria-label="Cotas do pré-projeto">
         <span className="presentation-label">JPN · PRÉ-PROJETO VISUAL · NÃO DIMENSIONADO</span>
         {presentationOptions.showDimensions && <div className="presentation-dimensions">{dimensions.map(label=><span key={label}>{label}</span>)}</div>}
