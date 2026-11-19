@@ -25,3 +25,11 @@ O painel Studio também passou a ter rolagem própria. A suposição histórica 
 - `profiles-3d.spec.ts`: o caso desktop de 1440 px atingiu 30 s sem falha de asserção identificada. Aumentou-se para 90 s **somente esse caso** para não falsear o teste de raycasting WebGL no runner; nenhuma validação, verificação de estado, clique ou retorno foi removido.
 - O novo blob auditado do teste congelado é `9cbfae46ab36298c65ffcd935b04e344e5f4b519` (substitui `86ca2f3969cfc88bdd656fdd8c7164dc16e789a6`). Registro explícito em `validation/integration-general/audit.py`, sem exceções gerais nem desativação da auditoria.
 - **Aceite pendente:** CI integral verde no SHA final, incluindo o E2E de substituição sobre pilares, o desktop 3D e o build; a alteração de timeout não equivale a comprovação de desempenho.
+
+## Evidência nova: rastreamento Playwright da segunda falha (#154)
+
+- CI: https://github.com/brunoJuniorBrz/JPN/actions/runs/44566697492 — 133 de 134 E2E passaram; o caso `profiles-3d.spec.ts` em 1440px ainda falhou após 90 segundos.
+- Artefato `general-integration-browser-evidence` ID `14556016853`, `trace.zip`: o **clique em `Fechar tela cheia`** ficou pendente, porque o `<canvas role="img">` da `.presentation-viewport` interceptou o ponto central do botão repetidamente. **Não era lentidão do raycasting nem dos cálculos**.
+- Correção de produção: `.structure-viewer-heading` agora estabelece camada relativa `z-index:6` acima do canvas e não encolhe no contêiner flex; sem desabilitar eventos do 3D.
+- Novo teste dedicado em `tests/e2e/studio-3d-layout.spec.ts` verifica `document.elementFromPoint` sobre o centro do botão e exige clique de Playwright seguido do fechamento real, com o canvas ainda visível.
+- A ampliação de timeout anterior permanece como margem para o runner, mas **não deve ser considerada a correção** do problema; somente a CI integral verde da nova revisão validará o ajuste.
