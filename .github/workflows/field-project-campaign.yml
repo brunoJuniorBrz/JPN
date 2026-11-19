@@ -1,0 +1,25 @@
+name: Field project campaign (isolated)
+on:
+  push:
+    branches:
+      - test/real-projects-wind-trusses-20261119
+  pull_request:
+    paths:
+      - src/domain/field-project-campaign.test.ts
+      - .github/workflows/field-project-campaign.yml
+jobs:
+  field-projects:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npx --yes pnpm@12.15.0 install --frozen-lockfile
+      - name: Typecheck
+        run: npx --yes pnpm@12.15.0 typecheck
+      - name: Run independent field campaign
+        run: npx --yes pnpm@12.15.0 exec vitest run src/domain/field-project-campaign.test.ts
