@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { newProject } from "./models";
 import { planningExample } from "./planning-example";
+import { generateStructure } from "./calculations/structure";
 import { emptyPlanning } from "./structure";
 import { auditPhysicalRoofCoverage } from "./physical-roof-coverage";
 import { structureSignature } from "./calculations/project-basis";
 import { resolvePhysicalStructure } from "./physical-structure";
-import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor, suggestedTrussCount, trussReplacementImpact
+import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor, suggestedTrussCount, trussReplacementImpact, columnCount, tipOffsetMm, trussLengthMm
 } from "./truss-editor";
 import { spatialPreparationReview } from "./spatial-preparation";
 import { packageTakeoff } from "@/lib/exports/package-source";
@@ -84,7 +85,7 @@ describe("editor de tesoura por estações", () => {
     expect(two.screws).toBe(one.screws);
 
     const extra = trussSummary({ ...t, web: { ...t.web, extraBars: 1 }, chord: { ...t.chord, extraBars: 2 } });
-    expect(extra.buy).toEqual({ chord: one.bars.chord + 2, web: one.bars.web + 1, purlin: one.bars.purlin });
+    expect(extra.buy).toEqual({ chord: one.bars.chord + 2, web: one.bars.web + 1, purlin: one.bars.purlin, column: 0 });
     expect(extra.lines[0].qty).toBe(`${one.bars.chord + 2} barras (+2 folga)`);
 
     const priced = trussSummary({ ...t, anchor: { ...t.anchor, boltsPerSupport: 2, platePriceCents: 3000, boltPriceCents: 1500 } });
@@ -215,5 +216,40 @@ describe("aviso antes de substituir a estrutura", () => {
     const s = p.workspace.physicalStructure!;
     s.pieces.push({ id: "VIGA1", role: "beam", start: s.nodes[0].id, end: s.nodes[1].id, label: "Viga de borda", group: "VIGAS" });
     expect(trussReplacementImpact(p).lines).toEqual(["Vigas: 1"]);
+  });
+});
+
+describe("tesoura sobre pilares (obra completa)", () => {
+  it("obra gerada abre com apoio em pilares, mesma quantidade de pilares e alturas da obra", () => {
+    const project = planningExample(), generated = generateStructure(project).model!;
+    const t = trussDefaultsFor(project);
+    expect(t.support).toBe("columns");
+    expect(tipOffsetMm(t)).toBe(0);
+    expect(trussLengthMm(t)).toBe(t.spanMm);
+    expect(t.tipHeightMm).toBe(Math.round(project.planning!.trussDepthM! * 1000));
+    expect(t.supportZMm).toBe(Math.round(project.roof.lowHeightM! * 1000) - t.tipHeightMm);
+    expect(columnCount(t)).toBe(generated.pieces.filter(p => p.role === "column").length);
+  });
+  it("Aplicar mantém pilares (recriados nas pontas das tesouras), apoios nas bases e massa igual ao resumo", () => {
+    const project = planningExample(), t = trussDefaultsFor(project), s = trussSummary(t);
+    const next = applyTrussToProject(project, t), ps = next.workspace.physicalStructure!;
+    const nodes = new Map(ps.nodes.map(n => [n.id, n]));
+    const cols = ps.pieces.filter(p => p.role === "column");
+    expect(cols).toHaveLength(t.trusses * 2);
+    for (const c of cols) { expect(nodes.get(c.start)!.z).toBe(0); expect(nodes.get(c.end)!.z).toBe(t.supportZMm); }
+    const supports = next.workspace.spatialPreparation!.supports;
+    expect(supports).toHaveLength(t.trusses * 2);
+    expect(supports.every(x => nodes.get(x.nodeId)!.z === 0 && x.dofs.every(d => d === "pending"))).toBe(true);
+    expect(packageTakeoff(next).totals.massKg).toBeCloseTo(s.kg.total, 1);
+    expect(s.lines.some(l => l.item.startsWith(`Pilares ${t.column.designation}`))).toBe(true);
+    expect(s.lines.some(l => l.item.startsWith("Chapa de base"))).toBe(true);
+    // Depois de aplicado, a obra é do editor: não pede confirmação de novo.
+    expect(trussReplacementImpact(next).replaces).toBe(false);
+  });
+  it("muros continuam sendo o padrão e não ganham pilares", () => {
+    const t = tomTrussDefaults();
+    expect(t.support).toBe("walls");
+    expect(columnCount(t)).toBe(0);
+    expect(applyTrussToProject(newProject(), t).workspace.physicalStructure!.pieces.some(p => p.role === "column")).toBe(false);
   });
 });

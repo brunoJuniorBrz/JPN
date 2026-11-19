@@ -21,14 +21,15 @@ export function createTrussSiteScene(t: TrussEditor) {
     geometries.push(geometry); materials.push(material); root.add(mesh);
     return mesh;
   };
-  const wallThickness = t.walls.thicknessMm / 1000;
-  for (const [x, height, side] of [[0, t.walls.lowMm / 1000, "esquerdo"], [span, (S === 2 ? t.walls.lowMm : t.walls.highMm) / 1000, "direito"]] as const) {
+  const wallThickness = t.walls.thicknessMm / 1000, onWalls = t.support !== "columns";
+  // Tesoura sobre pilares: os pilares são peças do modelo; muros, calhas e chapas de muro não se aplicam.
+  if (onWalls) for (const [x, height, side] of [[0, t.walls.lowMm / 1000, "esquerdo"], [span, (S === 2 ? t.walls.lowMm : t.walls.highMm) / 1000, "direito"]] as const) {
     if (height > 0) addBox("Muro " + side + " — referência arquitetônica", [wallThickness, height, len],
       [x, height / 2, -len / 2], 0xb8a994, .42);
   }
   // Calhas U simplificadas nas bordas, comprimento real declarado; sem dimensionamento hidráulico.
   const gutterWidth = t.gutter.widthMm / 1000, small = t.gutter.lowSideMm / 1000, large = t.gutter.highSideMm / 1000;
-  const gutterXs = S === 2 ? [t.gutter.supportMm / 1000 + gutterWidth / 2, span - t.gutter.supportMm / 1000 - gutterWidth / 2]
+  const gutterXs = !onWalls ? [] : S === 2 ? [t.gutter.supportMm / 1000 + gutterWidth / 2, span - t.gutter.supportMm / 1000 - gutterWidth / 2]
     : [t.gutter.supportMm / 1000 + gutterWidth / 2];
   for (let i = 0; i < gutterXs.length; i++) {
     const x = gutterXs[i], thickness = .018, y = floorZ - .06;
@@ -39,7 +40,7 @@ export function createTrussSiteScene(t: TrussEditor) {
       [x + gutterWidth / 2, y + large / 2, -len / 2], 0x3b81ac, .9);
   }
   // Chapas e chumbadores são MARCADORES VISUAIS, não detalhes executivos.
-  const anchorsX = S === 2 ? [off / 1000, (off + 2 * L) / 1000] : [(off + L) / 1000];
+  const anchorsX = !onWalls ? [] : S === 2 ? [off / 1000, (off + 2 * L) / 1000] : [(off + L) / 1000];
   const anchorY = floorZ + Math.max(t.anchor.plateHeightMm / 2000, .04);
   for (const x of anchorsX) for (let i = 0; i < t.trusses; i++) {
     const y = -len * i / (t.trusses - 1);
@@ -90,6 +91,6 @@ export function createTrussSiteScene(t: TrussEditor) {
   roofPanels("Cobertura preliminar água 1", roofL, S === 2 ? ridgeX : span,
     leftEndZ, S === 2 ? ridgeZ : (t.supportZMm + heightAt(t, t.spanMm - off)) / 1000 + .05);
   if (S === 2) roofPanels("Cobertura preliminar água 2", ridgeX, (off + 2 * L + t.sheet.beyondTipMm) / 1000, ridgeZ, leftEndZ);
-  root.userData = { preliminary: true, slopeCount: S, wallCount: 2, gutterCount: gutterXs.length, anchorCount: anchorsX.length * t.trusses, roofCount: S, roofPanelCount: S * t.sheet.piecesPerSlope };
+  root.userData = { preliminary: true, slopeCount: S, wallCount: onWalls ? 2 : 0, gutterCount: gutterXs.length, anchorCount: anchorsX.length * t.trusses, roofCount: S, roofPanelCount: S * t.sheet.piecesPerSlope };
   return { root, dispose: () => { for (const g of geometries) g.dispose(); for (const m of materials) m.dispose(); } };
 }

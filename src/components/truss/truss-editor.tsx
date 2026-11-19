@@ -14,7 +14,7 @@ const m = (mm: number) => (mm / 1000).toLocaleString("pt-BR", { minimumFractionD
 const brl = (c: number) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(c / 100);
 
 /** Reorganização geométrica ao mudar o vão, calha ou número de águas; não escolhe apoios. */
-function reflowTruss(t: Truss, patch: Partial<Pick<Truss, "spanMm" | "roofKind" | "gutter">>): Partial<Truss> {
+function reflowTruss(t: Truss, patch: Partial<Pick<Truss, "spanMm" | "roofKind" | "gutter" | "support">>): Partial<Truss> {
   const candidate: Truss = { ...t, ...patch }, runMm = trussLengthMm(candidate);
   if (!(runMm > 0) || !Number.isFinite(runMm)) return { ...patch, stationsMm: null, flippedPanels: [] };
   const lines = Math.min(60, Math.max(2, Math.ceil(runMm / t.purlinStepMm) + 1));
@@ -30,7 +30,7 @@ function Cm({ label, mm, onMm, hint, min = 0, max = 100000 }: { label: string; m
 
 function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null; onSelect: (i: number) => void }) {
   const L = trussLengthMm(t), S = slopeCount(t), st = stations(t), pieces = trussPiecesComplete(t), purlins = roofPurlinPositions(t), off = tipOffsetMm(t);
-  const th = t.walls.thicknessMm, sMin = -off - th, sMax = L * S + th;
+  const cols = t.support === "columns", th = cols ? 120 : t.walls.thicknessMm, sMin = -off - th, sMax = L * S + th;
   const W = 1000, padL = 46, padR = 46, sx = (W - padL - padR) / (sMax - sMin);
   const vz = Math.min(sx * 4, 330 / Math.max(t.highHeightMm, 1)), stub = 120;
   const top = 40, H = top + t.highHeightMm * vz + stub + 110;
@@ -41,7 +41,8 @@ function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null;
   const g = t.gutter, gx0 = -off + g.supportMm, gx1 = gx0 + g.widthMm, gTop = base, gBot = base + Math.max(g.lowSideMm, g.highSideMm) * sx * 1.5;
   const plateH = Math.min(t.anchor.plateHeightMm * sx * 1.5, base - Y(t.highHeightMm) + 20);
   const panels = st.slice(1).map((s, i) => [st[i], s]);
-  return <svg className={styles.drawing} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Elevação da tesoura com muros e calha (altura da tesoura exagerada para leitura)">
+  return <svg className={styles.drawing} viewBox={`0 0 ${W} ${H}`} role="img" aria-label={cols ? "Elevação da tesoura sobre pilares (altura da tesoura exagerada para leitura)" : "Elevação da tesoura com muros e calha (altura da tesoura exagerada para leitura)"}>
+    {cols ? [0, L * S].map(x => <rect key={`p${x}`} x={X(x) - th * sx / 2} y={base} width={th * sx} height={stub} className={styles.column}><title>Pilar {t.column.designation}, {cm(t.supportZMm)} cm</title></rect>) : <>
     <rect x={X(sMin)} y={Yw(t.walls.lowMm)} width={th * sx} height={wallBottom - Yw(t.walls.lowMm)} className={styles.wall}><title>Muro baixo {cm(t.walls.lowMm)} cm</title></rect>
     <rect x={X(L * S)} y={Yw(S === 2 ? t.walls.lowMm : t.walls.highMm)} width={th * sx} height={wallBottom - Yw(S === 2 ? t.walls.lowMm : t.walls.highMm)} className={styles.wall}><title>{S === 2 ? "Muro do outro beiral" : "Muro alto"}</title></rect>
     <rect x={X(-off)} y={gTop + 4} width={g.supportMm * sx} height={8} className={styles.ledge}><title>Apoio da calha</title></rect>
@@ -50,6 +51,7 @@ function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null;
     {(S === 2 ? [0, 2 * L] : [L]).map(x => <rect key={x} x={X(x) - 6} y={base - plateH / 2 - (base - Y(t.highHeightMm)) / 2} width={6} height={plateH} className={styles.plate}><title>Posição declarada da chapa (sem verificação)</title></rect>)}
     {(S === 2 ? [0, 2 * L] : [L]).flatMap(x => Array.from({ length: t.anchor.boltsPerSupport }, (_, i) => { const yb = base - (base - Y(t.highHeightMm)) / 2 - plateH / 2 + plateH * (i + 1) / (t.anchor.boltsPerSupport + 1);
       return <line key={`${x}-${i}`} x1={X(x) - 10} y1={yb} x2={X(x) + Math.min(t.anchor.boltLengthMm, th * 0.85) * sx} y2={yb} className={styles.bolt} />; }))}
+    </>}
     {pieces.filter(p => p.kind === "D").map(p => <line key={p.id} x1={X(p.a[0])} y1={Y(p.a[1])} x2={X(p.b[0])} y2={Y(p.b[1])} className={styles.web} />)}
     {pieces.filter(p => p.kind === "BI" || p.kind === "BS").map(p => <line key={p.id} x1={X(p.a[0])} y1={Y(p.a[1])} x2={X(p.b[0])} y2={Y(p.b[1])} className={styles.chord} />)}
     {pieces.filter(p => p.kind === "BI" || p.kind === "BS").filter(p => p.id.endsWith("-A") && p.b[0] < L * S - 1).map(p => <circle key={`e${p.id}`} cx={X(p.b[0])} cy={Y(p.b[1])} r={5} className={styles.splice}><title>Emenda do banzo</title></circle>)}
@@ -59,9 +61,14 @@ function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null;
     </g>)}
     {purlins.map((p, i) => { const z = t.tipHeightMm + (t.highHeightMm - t.tipHeightMm) * p.sMm / L;
       return <rect key={i} x={X(p.xMm) - 7} y={Y(z) - 12} width={14} height={10} className={p.onNode ? styles.purlin : styles.purlinOff}><title>{p.onNode ? "Terça no nó" : "Terça fora de nó"}</title></rect>; })}
-    <text x={X(sMin)} y={wallBottom + 26} className={styles.wallText} textAnchor="start">muro {cm(t.walls.lowMm)}</text>
-    <text x={X(sMax)} y={wallBottom + 26} className={styles.wallText} textAnchor="end">muro {cm(S === 2 ? t.walls.lowMm : t.walls.highMm)}</text>
-    <text x={X((gx0 + gx1) / 2)} y={gBot + 22} className={styles.dim}>calha {cm(g.widthMm)}</text>
+    {cols ? <>
+      <text x={X(sMin)} y={wallBottom + 26} className={styles.wallText} textAnchor="start">pilar {cm(t.supportZMm)}</text>
+      <text x={X(sMax)} y={wallBottom + 26} className={styles.wallText} textAnchor="end">pilar {cm(t.supportZMm)}</text>
+    </> : <>
+      <text x={X(sMin)} y={wallBottom + 26} className={styles.wallText} textAnchor="start">muro {cm(t.walls.lowMm)}</text>
+      <text x={X(sMax)} y={wallBottom + 26} className={styles.wallText} textAnchor="end">muro {cm(S === 2 ? t.walls.lowMm : t.walls.highMm)}</text>
+      <text x={X((gx0 + gx1) / 2)} y={gBot + 22} className={styles.dim}>calha {cm(g.widthMm)}</text>
+    </>}
     {panels.map(([a, b], i) => (panels.length <= 12 || i % 2 === 0 || i === panels.length - 1) && <text key={a} x={X((a + b) / 2)} y={base + 26} className={styles.dim}>{cm(b - a)}</text>)}
     <line x1={X(0)} y1={H - 38} x2={X(L * S)} y2={H - 38} className={styles.dimLine} />
     <text x={X(L * S / 2)} y={H - 8} className={styles.dimStrong}>{m(L * S)} m de tesoura · {S} água(s) · inclinação {fallPercent(t).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} %</text>
@@ -130,7 +137,9 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
         {result.issues.map(i => <p key={i.message} className={i.level === "erro" ? styles.error : styles.warn}><TriangleAlert size={15} />{i.message}</p>)}
         {confirming && !!replaces?.length && <div className={styles.replaceWarning} role="alert" data-testid="truss-replace-warning">
           <p><TriangleAlert size={15} /><strong>Aplicar vai substituir a estrutura desta obra.</strong></p>
-          <p>O editor monta só tesouras e terças apoiadas nos muros. Estas peças atuais vão sumir:</p>
+          <p>{t.support === "columns"
+            ? `O editor remonta a estrutura: ${t.trusses} tesouras, terças e ${t.trusses * 2} pilares nas pontas das tesouras. Estas peças atuais serão substituídas:`
+            : "O editor monta só tesouras e terças apoiadas nos muros. Estas peças atuais vão sumir:"}</p>
           <ul>{replaces.map(l => <li key={l}>{l}</li>)}</ul>
           <p>Para guardar a obra como está, cancele e use Projetos → Duplicar antes de aplicar.</p>
         </div>}
@@ -152,18 +161,21 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
           <Field label="Tipo de cobertura"><Select value={t.roofKind} onChange={e => {
             set(reflowTruss(t, { roofKind: e.target.value as Truss["roofKind"] }));
           }}><option value="one-slope">Uma água</option><option value="two-slopes">Duas águas simétricas</option></Select></Field>
-          <Cm label="Muro a muro (cm)" mm={t.spanMm} onMm={spanMm => set(reflowTruss(t, { spanMm }))} min={100} />
+          <Field label="Apoio da tesoura"><Select value={t.support} onChange={e => set(reflowTruss(t, { support: e.target.value as Truss["support"] }))}>
+            <option value="walls">Muros existentes</option><option value="columns">Pilares (obra completa)</option></Select></Field>
+          <Cm label={t.support === "columns" ? "Vão entre eixos dos pilares (cm)" : "Muro a muro (cm)"} mm={t.spanMm} onMm={spanMm => set(reflowTruss(t, { spanMm }))} min={100} />
           <Cm label="Comprimento (cm)" mm={t.lengthMm} onMm={lengthMm => set({ lengthMm, ...(trussesAuto ? { trusses: suggestedTrussCount(lengthMm,t.stockMm) } : {}) })} min={100} />
-          <Cm label="Altura do muro baixo (cm)" mm={t.walls.lowMm} onMm={v => set({ walls: { ...t.walls, lowMm: v } })} hint="Do piso ao topo." />
-          {t.roofKind === "one-slope" && <Cm label="Altura do muro alto (cm)" mm={t.walls.highMm} onMm={v => set({ walls: { ...t.walls, highMm: v } })} hint="Referência para a ancoragem no lado alto." />}
+          {t.support === "walls" && <Cm label="Altura do muro baixo (cm)" mm={t.walls.lowMm} onMm={v => set({ walls: { ...t.walls, lowMm: v } })} hint="Do piso ao topo." />}
+          {t.support === "walls" && t.roofKind === "one-slope" && <Cm label="Altura do muro alto (cm)" mm={t.walls.highMm} onMm={v => set({ walls: { ...t.walls, highMm: v } })} hint="Referência para a ancoragem no lado alto." />}
           {t.roofKind === "two-slopes" && <p className={styles.muted}>Duas águas: mesmo nível nos dois beirais, cumeeira central e calhas dos dois lados. Sem atribuir vínculos ou ligações.</p>}
-          <Cm label="Espessura do muro (cm)" mm={t.walls.thicknessMm} onMm={v => set({ walls: { ...t.walls, thicknessMm: v } })} min={5} />
-          <Cm label="Banzo de baixo a partir do piso (cm)" mm={t.supportZMm} onMm={supportZMm => set({ supportZMm })} hint="Altura de apoio da tesoura." />
+          {t.support === "walls" && <Cm label="Espessura do muro (cm)" mm={t.walls.thicknessMm} onMm={v => set({ walls: { ...t.walls, thicknessMm: v } })} min={5} />}
+          <Cm label={t.support === "columns" ? "Altura do pilar (cm)" : "Banzo de baixo a partir do piso (cm)"} mm={t.supportZMm} onMm={supportZMm => set({ supportZMm })} hint={t.support === "columns" ? "Do piso ao banzo de baixo da tesoura." : "Altura de apoio da tesoura."} />
+          {t.support === "columns" && <p className={styles.muted}>Tesoura de eixo a eixo dos pilares, um pilar em cada ponta de cada tesoura. Calha e muros não entram; vínculos das bases ficam pendentes.</p>}
           <NumberField label="Tesouras" value={t.trusses} min={2} max={60} decimals={0} onChange={v => { if (v !== null) { setTrussesAuto(false); set({ trusses: v }); } }} hint={`A cada ${m(t.lengthMm / (t.trusses - 1))} m · não verificado estruturalmente`} />
           <label className={styles.toggle}><input type="checkbox" checked={trussesAuto} onChange={e => { setTrussesAuto(e.target.checked); if(e.target.checked) set({ trusses: suggestedTrussCount(t.lengthMm,t.stockMm) }); }} /><span><strong>Quantidade automática (preliminar)</strong><small>Pela barra comercial. Apoios e espaçamento resistente exigem validação.</small></span></label>
         </div>
       </section>
-      <section className={styles.card}>
+      {t.support === "walls" && <section className={styles.card}>
         <h3>Calha e ponta baixa</h3>
         <div className={styles.grid}>
           <Cm label="Apoio da calha no muro (cm)" mm={t.gutter.supportMm} onMm={v => set(reflowTruss(t, { gutter: { ...t.gutter, supportMm: v } }))} />
@@ -174,7 +186,7 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
         </div>
         <label className={styles.toggle}><input type="checkbox" checked={t.gutter.budgeted} onChange={e => set({ gutter: { ...t.gutter, budgeted: e.target.checked } })} /><span><strong>Calha entra no orçamento</strong><small>Desligado: a calha aparece no desenho, mas não soma. Com duas águas, o comprimento é contado nos dois beirais.</small></span></label>
         {t.gutter.budgeted && <NumberField label="Calha (R$/metro)" money value={t.gutter.pricePerMCents} min={0} max={100000} decimals={2} onChange={v => set({ gutter: { ...t.gutter, pricePerMCents: v } })} hint="Sem preço informado, o custo fica pendente." />}
-      </section>
+      </section>}
       <section className={styles.card}>
         <h3>Geometria da tesoura</h3>
         <div className={styles.grid}>
@@ -189,11 +201,11 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
         {t.stationsMm && <button type="button" className="button secondary" onClick={() => set({ stationsMm: null, flippedPanels: [] })}><RotateCcw size={16} />Desfazer ajustes ponto a ponto ({st.length} montantes)</button>}
       </section>
       <section className={styles.card}>
-        <h3>{t.roofKind === "two-slopes" ? "Ancoragens nos dois beirais" : "Ancoragem no muro alto"}</h3>
+        <h3>{t.support === "columns" ? "Chapa de base dos pilares" : t.roofKind === "two-slopes" ? "Ancoragens nos dois beirais" : "Ancoragem no muro alto"}</h3>
         <div className={styles.grid}>
           <Cm label="Chapa largura (cm)" mm={t.anchor.plateWidthMm} onMm={v => set({ anchor: { ...t.anchor, plateWidthMm: v } })} />
           <Cm label="Chapa altura (cm)" mm={t.anchor.plateHeightMm} onMm={v => set({ anchor: { ...t.anchor, plateHeightMm: v } })} />
-          <NumberField label={t.roofKind === "two-slopes" ? "Chumbadores por beiral/tesoura" : "Chumbadores por tesoura"} value={t.anchor.boltsPerSupport} min={0} max={20} decimals={0} onChange={v => v !== null && set({ anchor: { ...t.anchor, boltsPerSupport: v } })} />
+          <NumberField label={t.support === "columns" ? "Chumbadores por pilar" : t.roofKind === "two-slopes" ? "Chumbadores por beiral/tesoura" : "Chumbadores por tesoura"} value={t.anchor.boltsPerSupport} min={0} max={20} decimals={0} onChange={v => v !== null && set({ anchor: { ...t.anchor, boltsPerSupport: v } })} />
           <Cm label="Comprimento do chumbador (cm)" mm={t.anchor.boltLengthMm} onMm={v => set({ anchor: { ...t.anchor, boltLengthMm: v } })} />
           <NumberField label="Chapa (R$/un)" money value={t.anchor.platePriceCents} min={0} max={100000} decimals={2} onChange={v => set({ anchor: { ...t.anchor, platePriceCents: v } })} />
           <NumberField label="Chumbador (R$/un)" money value={t.anchor.boltPriceCents} min={0} max={100000} decimals={2} onChange={v => set({ anchor: { ...t.anchor, boltPriceCents: v } })} />
@@ -208,8 +220,8 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
       </section>
       <section className={styles.card}>
         <h3>Perfis e preços</h3>
-        {(["chord", "web", "purlin"] as const).map(k => <div key={k} className={styles.grid}>
-          <Field label={`${k === "chord" ? "Banzos" : k === "web" ? "Montantes e diagonais" : "Terças"}: escolher`}><Select value={COMMON_PROFILES.some(p => p.designation === t[k].designation) ? t[k].designation : ""} onChange={e => { const p = COMMON_PROFILES.find(x => x.designation === e.target.value); if (p) set({ [k]: { ...t[k], designation: p.designation, kgPerM: p.kgPerM } } as Partial<Truss>); }}>
+        {(t.support === "columns" ? ["chord", "web", "purlin", "column"] as const : ["chord", "web", "purlin"] as const).map(k => <div key={k} className={styles.grid}>
+          <Field label={`${k === "chord" ? "Banzos" : k === "web" ? "Montantes e diagonais" : k === "purlin" ? "Terças" : "Pilares"}: escolher`}><Select value={COMMON_PROFILES.some(p => p.designation === t[k].designation) ? t[k].designation : ""} onChange={e => { const p = COMMON_PROFILES.find(x => x.designation === e.target.value); if (p) set({ [k]: { ...t[k], designation: p.designation, kgPerM: p.kgPerM } } as Partial<Truss>); }}>
             <option value="">outro (digitar)</option>
             {COMMON_PROFILES.filter(p => p.use.includes(k)).concat(COMMON_PROFILES.filter(p => !p.use.includes(k))).map(p => <option key={p.designation} value={p.designation}>{p.designation} · {p.kgPerM.toLocaleString("pt-BR")} kg/m</option>)}
           </Select></Field>
