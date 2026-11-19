@@ -11,6 +11,7 @@ import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDef
 import { spatialPreparationReview } from "./spatial-preparation";
 import { packageTakeoff } from "@/lib/exports/package-source";
 import { packageCutting } from "@/lib/exports/complete-package";
+import { cadModel } from "@/lib/exports/cad-model";
 
 describe("editor de tesoura por estações", () => {
   it("reproduz a tesoura do croqui do Tom (8 x 10 m) sem código", () => {
@@ -289,6 +290,30 @@ describe("vários tipos de tesoura na mesma obra", () => {
     const cat = applyTrussToProject(newProject(), t).workspace.spatialPreparation!.physicalCatalog!;
     expect(cat.sections.map(x => x.designation)).toContain("U 127x50x2.65 mm");
     expect(new Set(cat.sections.map(x => x.id)).size).toBe(cat.sections.length);
+  });
+  it("mesmo nome comercial com massas e preços diferentes não mistura custo ou massa", () => {
+    const base = tomTrussDefaults(), v = addTrussType(base);
+    const heavy = { ...base.web, kgPerM: base.web.kgPerM * 2, barPriceCents: 20000 };
+    const t = { ...v, types: v.types.map(x => ({ ...x, web: heavy })), lineTypes: ["T2", "T1", "T1"] };
+    const s = trussSummary(t), rows = s.lines.filter(l => l.item.startsWith("Montantes e diagonais "));
+    expect(rows).toHaveLength(2);
+    expect(rows[0].item).toContain("kg/m");
+    expect(rows[1].item).toContain("kg/m");
+    expect(s.kg.web).toBeGreaterThan(trussSummary(base).kg.web);
+    const p = applyTrussToProject(newProject(), t);
+    expect(packageTakeoff(p).totals.massKg).toBeCloseTo(s.kg.total, 1);
+    const webSections = p.workspace.spatialPreparation!.physicalCatalog!.sections.filter(x => x.id.startsWith("WEB"));
+    expect(webSections).toHaveLength(2);
+  });
+  it("dois tipos com geometria e perfis iguais mantêm pranchas CAD separadas", () => {
+    const base = addTrussType(tomTrussDefaults());
+    const t = { ...base, lineTypes: ["T2", "T1", "T2"] };
+    const p = applyTrussToProject(newProject(), t);
+    const frames = cadModel(p).frameGroups.filter(g => g[0].kind === "TESOURA");
+    const ids = frames.flatMap(g => g[0].pieces.map(x => /^T(\\d+)-/.exec(x.id)?.[1]).filter((x): x is string => !!x)).map(n => lineTypeId(t, Number(n) - 1));
+    expect(new Set(ids)).toEqual(new Set(["T1", "T2"]));
+    expect(frames.length).toBeGreaterThanOrEqual(2);
+    expect(frames.every(g => new Set(g.flatMap(f => f.pieces.map(x => /^T(\\d+)-/.exec(x.id)?.[1]).filter((x): x is string => !!x)).map(n => lineTypeId(t, Number(n) - 1))).size === 1)).toBe(true);
   });
   it("terça sem montante no outro tipo gera aviso; remover tipo volta as linhas ao tipo 1", () => {
     const t = twoTypes();
