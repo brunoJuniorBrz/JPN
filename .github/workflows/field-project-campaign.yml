@@ -22,4 +22,4 @@ jobs:
       - name: Typecheck
         run: npx --yes pnpm@12.15.0 typecheck
       - name: Run independent field campaign
-        run: npx --yes pnpm@12.15.0 exec vitest run src/domain/field-project-campaign.test.ts
+        run: npx --yes pnpm@12.15.0 exec vitest run src/domain/field-project-campaign.test.ts src/domain/truss-editor.test.ts src/domain/purlin-traceability.test.ts src/domain/wind-speed.test.ts src/domain/wind-internal-pressure.test.ts src/domain/wind-external-references.test.ts src/domain/wind-load-path.test.ts src/domain/wind-facade-normative.test.ts src/domain/nbr6123-edition.test.ts src/domain/roof-load-path-independent.test.ts src/domain/roof-load-path.test.ts src/domain/physical-roof-faces.test.ts src/domain/orthogonal-roof-cells.test.ts src/domain/engineering-combination-coverage.test.ts src/domain/structural-release-invariant.test.ts src/domain/nbr8681-combinations.test.ts src/domain/nbr6120-actions.test.ts
