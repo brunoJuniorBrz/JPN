@@ -66,7 +66,10 @@ describe("banzo inferior com perfil próprio", () => {
     const report = packageTakeoff(p), stock = Object.fromEntries(report.groups.map(g => [g.key, 12000])); // pilar de 6 m não cabe em barra de 6 m com aparas
     const cut = packageCutting(p, { stockByGroup: stock });
     expect(cut.groups.map(g => g.profile.split(" · ")[0])).toEqual(expect.arrayContaining([U100.designation, U90.designation]));
-    expect(s.lines.filter(l => l.item.startsWith("Banzos"))).toHaveLength(2);
+    const chordRows = s.lines.filter(l => l.item.startsWith("Banzo superior") || l.item.startsWith("Banzo inferior"));
+    expect(chordRows).toHaveLength(2);
+    expect(chordRows.some(l => l.item.includes(U100.designation) && l.item.startsWith("Banzo superior"))).toBe(true);
+    expect(chordRows.some(l => l.item.includes(U90.designation) && l.item.startsWith("Banzo inferior"))).toBe(true);
   });
 
   it("cada tipo de tesoura pode ter o seu banzo inferior", () => {
