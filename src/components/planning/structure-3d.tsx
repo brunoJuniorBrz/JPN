@@ -570,8 +570,10 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
       <strong>{model.pieces.length - fallbackCount} peças com seção 3D · {fallbackCount} em linha.</strong>
       {fallbackCount > 0 && <><p>Para visualizar perfis reais, informe família, dimensões e espessura de cada categoria. O sistema não inventa medidas para projetos antigos.</p><div className="actions">{onConfigureProfile && <button type="button" className="button" onClick={onConfigureProfile}>Cadastrar dimensões</button>}{onDemonstrate && <button type="button" className="button secondary" onClick={onDemonstrate}>Ver demonstração com perfis</button>}</div></>}
     </div>}
+    {!failure && !expanded && <div className="viewer-fullscreen-row">
+      <button type="button" className="viewer-fullscreen-button" aria-label="Expandir modelo 3D em tela cheia" title="Tela cheia" onClick={() => setExpanded(true)}><span aria-hidden="true">⛶</span><span>Tela cheia</span></button>
+    </div>}
     <div className="presentation-viewport">
-      {!failure && <button type="button" className="viewer-fullscreen-button" aria-label={expanded ? "Sair da tela cheia do modelo 3D" : "Expandir modelo 3D em tela cheia"} aria-pressed={expanded} title={expanded ? "Sair da tela cheia" : "Tela cheia"} onClick={() => setExpanded(value => !value)}><span aria-hidden="true">{expanded ? "↙" : "⛶"}</span><span>{expanded ? "Sair da tela cheia" : "Tela cheia"}</span></button>}
       <div ref={host} className="structure-3d" hidden={!!failure} />
       {!failure && <div className="studio-camera" aria-label="Câmera do Studio 3D">
         <div className="inspection-view-buttons" role="group" aria-label="Orientação da câmera 3D">
