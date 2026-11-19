@@ -65,7 +65,9 @@ contra 126,25 kg publicados (−0,6%). Howe e Warren não fecham em nenhum paine
 testado; a geometria do TCC só existe na figura e precisa ser conferida.
 
 **Limitações do editor encontradas.**
-1. Um único perfil para banzo superior e inferior. Na Pratt do TCC (banzo superior
-   U 100x50, inferior U 90x25), o editor erraria o aço em +10,6% ou −11,8%.
+1. ~~Um único perfil para banzo superior e inferior.~~ **Resolvido**: campo
+   `bottomChord` (null = igual ao superior), por obra e por tipo de tesoura, em
+   muro ou pilar. A Pratt do TCC agora fecha em −0,6%; com perfil único o erro
+   seria +10,6% ou −11,8% (`src/domain/truss-bottom-chord.test.ts`).
 2. O editor sempre gera montante em todos os nós, então não há como fazer uma
    Warren sem montantes.
