@@ -1,4 +1,5 @@
 import type {Project} from "@/domain/models";
+import {lineTypeId} from "@/domain/truss-editor";
 import {packageTakeoff} from "./package-source";
 import {resolvePhysicalStructure} from "@/domain/physical-structure";
 import {restoreMixedAnalysis} from "@/domain/restore-mixed-analysis";
@@ -101,7 +102,15 @@ export function cadModel(project:Project){
         // This signature is a GRAPHIC TYPE ONLY; neither missing joints nor
         // unknown supports are silently promoted to structural equivalence.
         // Unknown conditions remain identical tokens in the signature.
-        const key=JSON.stringify({axis,normalized,boundary,kind});
+        // Mesmo com desenho e seção iguais, tipos declarados diferentes precisam
+        // permanecer em pranchas distintas com o nome escolhido pelo usuário.
+        const editor=project.workspace.trussEditor;
+        const firstTruss=component.find(p=>/^T\\d+-/.test(p.id));
+        const match=firstTruss? /^T(\\d+)-/.exec(firstTruss.id):null;
+        const line=match?Number(match[1])-1:-1;
+        const editorType=kind==="TESOURA"&&editor?.types.length&&line>=0&&line<editor.trusses
+          ? lineTypeId(editor,line):null;
+        const key=JSON.stringify({axis,normalized,boundary,kind,editorType});
         frames.push({axis,coordinate,pieces:component,kind,key,
           visualOnlyContacts:[...visualOnlyContacts],omittedPieceIds,
           structuralStatus:known?"DECLARED":"PENDENTE"});
