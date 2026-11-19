@@ -381,7 +381,7 @@ export function trussSummary(t: TrussEditor) {
         if (!lengths.length) continue;
         const profile = key === "web" ? e.web : kind === "BI" ? (e.bottomChord ?? e.chord) : e.chord;
         const id = profileKey(profile);
-        const g = m.get(id) ?? { profile, lengths: [], fullMm: 0, chordKinds: new Set<"BI" | "BS">() };
+        const g: Group = m.get(id) ?? { profile, lengths: [], fullMm: 0, chordKinds: new Set<"BI" | "BS">() };
         g.lengths.push(...lengths);
         if (kind === "BI" || kind === "BS") g.chordKinds.add(kind);
         m.set(id, g);
