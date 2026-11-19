@@ -109,7 +109,7 @@ REVIEWED_AMENDMENTS = {
     "tests/e2e/result-tabs.ts": "1c30655fa8702b0a5fbe29b9669c55897590d93e",              # helpers map old tabs/select to studio steps/tools
     "tests/e2e/planning.spec.ts": "42b0e9a79de1f9d4b07b20a2a3c564c8aca5ea23",            # "Resultado"/"Ir para resultado" -> Materiais; pendências em Verificação
     "tests/e2e/platform.spec.ts": "fdba218571b7e2da818bb4e0af6bd2f173e94587",            # "Resultado" -> Materiais
-    "tests/e2e/profiles-3d.spec.ts": "51a16f83c93441385db33db21e81f5dc639506e4",         # "Resultado" -> Materiais
+    # #151 / #150: reviewed E2E selectors match dedicated fullscreen row and header close button.\n    # Only Playwright controls changed (no model, approval or blocking assertions); see docs/ui/REVIEW-E2E-FULLSCREEN-151.md.\n    "tests/e2e/profiles-3d.spec.ts": "86ca2f3969cfc88bdd656fdd8c7164dc16e789a6",         # fullscreen entry/exit accessibility names; was 51a16f8
     "tests/e2e/result-workspace.spec.ts": "e7dfc14ec6db7bd4225c8e0d4a5f8d55330451d5",    # 3D stays visible across steps; keyboard on the steps list
     "tests/e2e/spatial-coordination.spec.ts": "7d18f889b1f769a8b1cfd07a194ffd0f8c1c9dbd",# "Resultado" -> Materiais
     "tests/e2e/spatial-preparation.spec.ts": "1e78b58ca8c5405c7e66ad71300e3e752d7f8ea4", # "Resultado" -> Materiais
