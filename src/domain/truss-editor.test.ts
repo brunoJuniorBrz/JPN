@@ -310,10 +310,10 @@ describe("vários tipos de tesoura na mesma obra", () => {
     const t = { ...base, lineTypes: ["T2", "T1", "T2"] };
     const p = applyTrussToProject(newProject(), t);
     const frames = cadModel(p).frameGroups.filter(g => g[0].kind === "TESOURA");
-    const ids = frames.flatMap(g => g[0].pieces.map(x => /^T(\\d+)-/.exec(x.id)?.[1]).filter((x): x is string => !!x)).map(n => lineTypeId(t, Number(n) - 1));
+    const ids = frames.flatMap(g => g[0].pieces.map(x => /^T(\d+)-/.exec(x.id)?.[1]).filter((x): x is string => !!x)).map(n => lineTypeId(t, Number(n) - 1));
     expect(new Set(ids)).toEqual(new Set(["T1", "T2"]));
     expect(frames.length).toBeGreaterThanOrEqual(2);
-    expect(frames.every(g => new Set(g.flatMap(f => f.pieces.map(x => /^T(\\d+)-/.exec(x.id)?.[1]).filter((x): x is string => !!x)).map(n => lineTypeId(t, Number(n) - 1))).size === 1)).toBe(true);
+    expect(frames.every(g => new Set(g.flatMap(f => f.pieces.map(x => /^T(\d+)-/.exec(x.id)?.[1]).filter((x): x is string => !!x)).map(n => lineTypeId(t, Number(n) - 1))).size === 1)).toBe(true);
   });
   it("terça sem montante no outro tipo gera aviso; remover tipo volta as linhas ao tipo 1", () => {
     const t = twoTypes();
