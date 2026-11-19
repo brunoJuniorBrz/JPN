@@ -16,6 +16,8 @@ import { declaredStructureSchema } from "./declared-structure";
 import { physicalRoofFacesSchema } from "./physical-roof-faces";
 import { newSpatialPreparation } from "./spatial-preparation";
 import { structureSignature } from "./calculations/project-basis";
+import { generateStructure } from "./calculations/structure";
+import { physicalRoleLabels, roleLabels } from "./structure";
 
 const mm = z.number().finite();
 const profileSchema = z.object({
@@ -320,6 +322,31 @@ const area = (kgPerM: number) => Number((kgPerM / 7850 * 1e4).toFixed(4));
  * Grava a tesoura no projeto como estrutura DECLARADA: 3D, CAD, lista de
  * materiais e plano de corte passam a usar exatamente estas peças.
  */
+/** Grupos de peças que o próprio editor cria; o resto pertence a outra origem. */
+const EDITOR_GROUPS = new Set(["TESOURA", "TERCAS"]);
+
+/**
+ * O que "Aplicar" vai substituir. O editor reescreve a estrutura física inteira
+ * (tesouras + terças sobre muros), então pilares, vigas e outras peças que não
+ * vieram dele somem. Serve para pedir confirmação antes.
+ */
+export function trussReplacementImpact(project: Project): { replaces: boolean; source: "generated" | "declared" | null; lines: string[] } {
+  const counts = new Map<string, number>();
+  const bump = (label: string) => counts.set(label, (counts.get(label) ?? 0) + 1);
+  let source: "generated" | "declared" | null = null;
+  const declared = project.workspace.physicalStructure;
+  if (declared) {
+    for (const p of declared.pieces) if (!EDITOR_GROUPS.has(p.group ?? "")) bump(physicalRoleLabels[p.role]);
+    if (counts.size) source = "declared";
+  } else if (project.planning) {
+    const model = generateStructure(project).model;
+    for (const p of model?.pieces ?? []) bump(roleLabels[p.role]);
+    if (counts.size) source = "generated";
+  }
+  const lines = [...counts].map(([label, n]) => `${label}: ${n}`);
+  return { replaces: lines.length > 0, source, lines };
+}
+
 export function applyTrussToProject(project: Project, input: TrussEditor, revision = "TESOURA-EDITOR"): Project {
   const t = trussEditorSchema.parse(input), issues = trussIssues(t).filter(i => i.level === "erro");
   if (issues.length) throw Error(issues.map(i => i.message).join(" "));

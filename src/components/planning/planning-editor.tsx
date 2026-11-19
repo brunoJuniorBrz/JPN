@@ -19,7 +19,7 @@ import { GeneralForm } from "@/components/projects/general-form";
 import { RoofForm } from "@/components/geometry/roof-form";
 import { StructureForm } from "./structure-form";
 import { TrussEditor } from "@/components/truss/truss-editor";
-import { applyTrussToProject, trussDefaultsFor } from "@/domain/truss-editor";
+import { applyTrussToProject, trussDefaultsFor, trussReplacementImpact } from "@/domain/truss-editor";
 import { CompletePackageControl } from "./complete-package-control";
 import { GeneratedFiles, GeneratedMaterials, GeneratedReview, GeneratedSafetyWarning, GeneratedTotals, GeneratedViewport, useGeneratedResult, type ResultSection } from "./takeoff-summary";
 import { DeclaredEngineering, DeclaredFiles, DeclaredMaterials, DeclaredSafetyWarning, DeclaredViewport, useDeclaredModel } from "./declared-model-summary";
@@ -68,6 +68,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   const [open3DRequest, setOpen3DRequest] = useState(0);
   const declared = project.workspace.physicalStructure !== undefined;
   const generated = useGeneratedResult(project);
+  const replaceLines = useMemo(() => step === "tesoura" ? trussReplacementImpact(project).lines : [], [project, step]);
   // F4: a visualização (2D/3D, seleção, camadas) usa a versão adiada do projeto; totais, selo e
   // formulários usam a imediata. Assim os totais mudam no primeiro commit após a edição.
   const deferredProject = useDeferredValue(project);
@@ -185,7 +186,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     ? <p className="notice">Modelo declarado: {project.workspace.physicalStructure!.nodes.length} nós e {project.workspace.physicalStructure!.pieces.length} barras. Consulte as vistas no centro; o contorno da cobertura, a edição por nós e barras e a importação de nova revisão JSON ficam em Ferramentas do projeto, abaixo. Nenhuma cobertura foi gerada.</p>
     : <><GuidedRoofSetup project={project} onChange={update} />{["Cobertura metálica", "Galpão", "Barracão"].includes(project.category) ? <RoofForm typology={project.planning?.typology} roof={project.roof} onChange={roof => update({ roof })} planning partialOutline={project.workspace.guidedSupport?.coverage === "partial"} /> : <p className="notice">A geração de peças atende coberturas de uma água nesta versão. O orçamento de venda continua disponível para outras categorias.</p>}</>;
   else if (step === "estrutura") panel = declared ? <SpatialPreparationPanel project={project} onChange={update} mixed /> : <StructureForm project={project} onChange={update} profileToEdit={profileToEdit} />;
-  else if (step === "tesoura") panel = <TrussEditor key={project.id} initial={project.workspace.trussEditor ?? trussDefaultsFor(project)} applyLabel="Aplicar na obra e atualizar o 3D" onApply={t => {
+  else if (step === "tesoura") panel = <TrussEditor key={project.id} initial={project.workspace.trussEditor ?? trussDefaultsFor(project)} applyLabel="Aplicar na obra e atualizar o 3D" replaces={replaceLines} onApply={t => {
     const next = applyTrussToProject(project, t);
     update({ roof: next.roof, planning: next.planning, workspace: next.workspace, technicalNotes: next.technicalNotes, updatedAt: next.updatedAt });
     setSelectedPiece(""); setSelectedNode(""); setHoveredPiece("");
