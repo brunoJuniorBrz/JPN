@@ -111,7 +111,7 @@ REVIEWED_AMENDMENTS = {
     "tests/e2e/platform.spec.ts": "fdba218571b7e2da818bb4e0af6bd2f173e94587",            # "Resultado" -> Materiais
     # #151 / #150: reviewed E2E selectors match dedicated fullscreen row and header close button.
     # Only Playwright controls changed (no model, approval or blocking assertions); see docs/ui/REVIEW-E2E-FULLSCREEN-151.md.
-    "tests/e2e/profiles-3d.spec.ts": "86ca2f3969cfc88bdd656fdd8c7164dc16e789a6",         # fullscreen entry/exit accessibility names; was 51a16f8
+    "tests/e2e/profiles-3d.spec.ts": "9cbfae46ab36298c65ffcd935b04e344e5f4b519",         # selectors + desktop 90s raycast timeout; was 86ca2f3
     "tests/e2e/result-workspace.spec.ts": "e7dfc14ec6db7bd4225c8e0d4a5f8d55330451d5",    # 3D stays visible across steps; keyboard on the steps list
     "tests/e2e/spatial-coordination.spec.ts": "7d18f889b1f769a8b1cfd07a194ffd0f8c1c9dbd",# "Resultado" -> Materiais
     "tests/e2e/spatial-preparation.spec.ts": "1e78b58ca8c5405c7e66ad71300e3e752d7f8ea4", # "Resultado" -> Materiais
