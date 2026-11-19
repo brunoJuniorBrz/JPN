@@ -18,6 +18,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare actual PyNite worker used by integration tests
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install -r engine/requirements-sections.lock
+          .venv/bin/python -m pip install --no-build-isolation --no-deps -e ./engine
       - run: npx --yes pnpm@12.15.0 install --frozen-lockfile
       - name: Typecheck
         run: npx --yes pnpm@12.15.0 typecheck
