@@ -5,7 +5,7 @@ import { NumberField } from "@/components/number-field";
 import { Field, Input, Select } from "@/components/ui";
 import {
   BASE_TYPE, TYPE_KEYS, addTrussType, lineTypeId, removeTrussType, trussOfType, typeName,
-  blankTruss, COMMON_PROFILES, fallPercent, roofPurlinPositions, slopeCount, stations, suggestedTrussCount, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
+  blankTruss, COMMON_PROFILES, columnCount, endSupportOf, trussEnds, withEndSupports, type EndSupport, type TrussSide, fallPercent, roofPurlinPositions, slopeCount, stations, suggestedTrussCount, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
   type TrussEditor as Truss,
 } from "@/domain/truss-editor";
 import styles from "./truss-editor.module.css";
@@ -105,13 +105,12 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
   const st = stations(v), L = trussLengthMm(v);
   // Banzos e montantes: perfil do tipo em edição; terças e pilares: da obra.
   type ProfileKey = "chord" | "bottomChord" | "web" | "purlin" | "column";
-  const src = (k: ProfileKey): Truss["chord"] => {
-    if (k === "bottomChord") return v.bottomChord ?? v.chord;
-    return (k === "chord" || k === "web" ? v : t)[k];
-  };
-  const setProfile = (k: ProfileKey, p: Truss["chord"]) => k === "chord" || k === "bottomChord" || k === "web"
-    ? setGeom({ [k]: p } as Partial<Truss>) : set({ [k]: p } as Partial<Truss>);
-  const profileKeys: ProfileKey[] = ["chord", ...(v.bottomChord ? ["bottomChord" as const] : []), "web", "purlin", ...(t.support === "columns" ? ["column" as const] : [])];
+  const ofType = (k: ProfileKey) => k === "chord" || k === "bottomChord" || k === "web";
+  // Banzo inferior sem perfil próprio mostra (e parte de) o banzo superior.
+  const src = (k: ProfileKey): Truss["chord"] => k === "bottomChord" ? (v.bottomChord ?? v.chord) : (ofType(k) ? v : t)[k];
+  const setProfile = (k: ProfileKey, p: Truss["chord"]) => ofType(k) ? setGeom({ [k]: p } as Partial<Truss>) : set({ [k]: p } as Partial<Truss>);
+  const profileTitle = { chord: "Banzo superior", bottomChord: "Banzo inferior", web: "Montantes e diagonais", purlin: "Terças", column: "Pilares" } as const;
+  const sameChord = v.bottomChord === null;
   const editStations = (next: number[]) => setGeom({ stationsMm: [...new Set(next)].sort((a, b) => a - b) });
   const sel = selected !== null && selected < st.length ? selected : null;
   const errors = result.issues.filter(i => i.level === "erro");
@@ -157,14 +156,11 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
         {result.error && <p className={styles.error}>{result.error}</p>}
         {result.s && <>
           <div className={styles.kpis}>
-            <div><b>{result.s.buy.chord}</b><span>barras de banzos (compra por perfil)</span></div>
+            <div><b>{result.s.buy.chord}</b><span>barras {sameChord ? t.chord.designation : `banzos (${t.chord.designation} em cima · ${(t.bottomChord ?? t.chord).designation} embaixo)`}</span></div>
             <div><b>{result.s.buy.web}</b><span>barras {t.web.designation}{t.fullHeightBudget ? " (medida cheia)" : ""}</span></div>
             <div><b>{result.s.buy.purlin}</b><span>barras {t.purlin.designation}</span></div>
             <div><b>{Math.round(result.s.kg.total)} kg</b><span>{(result.s.kg.total / (t.spanMm * t.lengthMm / 1e6)).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} kg/m² de aço</span></div>
-             <div><b>{result.s.chordBreakdown.upperBars}</b><span>barras banzo superior · estimativa isolada</span></div>
-             <div><b>{result.s.chordBreakdown.lowerBars}</b><span>barras banzo inferior · estimativa isolada</span></div>
           </div>
-          <p className={styles.muted}>Estimativas individuais dos banzos não são somáveis quando compartilham perfil: a compra acima otimiza barras do mesmo perfil em conjunto.</p>
           <label className={styles.toggle}><input type="checkbox" checked={t.fullHeightBudget} onChange={e => set({ fullHeightBudget: e.target.checked })} /><span><strong>Orçar pela medida cheia</strong><small>Todo montante com {cm(t.highHeightMm)} cm: {result.s.bars.webFullHeight} barras (medidas reais: {result.s.bars.web}). O plano de corte sempre usa as reais.</small></span></label>
           <table className={styles.budget}><tbody>
             {result.s.lines.map(l => <tr key={l.item}><td>{l.item}</td><td>{l.qty}</td><td>{l.cents === null ? <em>a informar</em> : brl(l.cents)}</td></tr>)}
@@ -176,8 +172,8 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
         {result.issues.map(i => <p key={i.message} className={i.level === "erro" ? styles.error : styles.warn}><TriangleAlert size={15} />{i.message}</p>)}
         {confirming && !!replaces?.length && <div className={styles.replaceWarning} role="alert" data-testid="truss-replace-warning">
           <p><TriangleAlert size={15} /><strong>Aplicar vai substituir a estrutura desta obra.</strong></p>
-          <p>{t.support === "columns"
-            ? `O editor remonta a estrutura: ${t.trusses} tesouras, terças e ${t.trusses * 2} pilares nas pontas das tesouras. Estas peças atuais serão substituídas:`
+          <p>{columnCount(t)
+            ? `O editor remonta a estrutura: ${t.trusses} tesouras, terças e ${columnCount(t)} pilares nas pontas das tesouras (onde a ponta apoia em pilar). Estas peças atuais serão substituídas:`
             : "O editor monta só tesouras e terças apoiadas nos muros. Estas peças atuais vão sumir:"}</p>
           <ul>{replaces.map(l => <li key={l}>{l}</li>)}</ul>
           <p>Para guardar a obra como está, cancele e use Projetos → Duplicar antes de aplicar.</p>
@@ -200,8 +196,14 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
           <Field label="Tipo de cobertura"><Select value={t.roofKind} onChange={e => {
             set(reflowTruss(t, { roofKind: e.target.value as Truss["roofKind"] }));
           }}><option value="one-slope">Uma água</option><option value="two-slopes">Duas águas simétricas</option></Select></Field>
-          <Field label="Apoio da tesoura"><Select value={t.support} onChange={e => set(reflowTruss(t, { support: e.target.value as Truss["support"] }))}>
-            <option value="walls">Muros existentes</option><option value="columns">Pilares (obra completa)</option></Select></Field>
+          <Field label="Apoio da tesoura"><Select value={t.lineSupports.length ? "mixed" : t.support} data-testid="truss-support-mode" onChange={e => {
+            const mode = e.target.value;
+            if (mode === "mixed") set({ lineSupports: withEndSupports(t, () => null) });
+            else set({ ...reflowTruss(t, { support: mode as Truss["support"] }), lineSupports: [] });
+          }}>
+            <option value="walls">Tudo sobre muros</option><option value="columns">Tudo sobre pilares (obra completa)</option><option value="mixed">Misto: parte muro, parte pilar</option></Select></Field>
+          {t.lineSupports.length > 0 && <Field label="Medidas da obra"><Select value={t.support} onChange={e => set(reflowTruss(t, { support: e.target.value as Truss["support"] }))}>
+            <option value="walls">muro a muro (com calha)</option><option value="columns">eixo a eixo dos pilares</option></Select></Field>}
           <Cm label={t.support === "columns" ? "Vão entre eixos dos pilares (cm)" : "Muro a muro (cm)"} mm={t.spanMm} onMm={spanMm => set(reflowTruss(t, { spanMm }))} min={100} />
           <Cm label="Comprimento (cm)" mm={t.lengthMm} onMm={lengthMm => set({ lengthMm, ...(trussesAuto ? { trusses: suggestedTrussCount(lengthMm,t.stockMm) } : {}) })} min={100} />
           {t.support === "walls" && <Cm label="Altura do muro baixo (cm)" mm={t.walls.lowMm} onMm={v => set({ walls: { ...t.walls, lowMm: v } })} hint="Do piso ao topo." />}
@@ -209,11 +211,12 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
           {t.roofKind === "two-slopes" && <p className={styles.muted}>Duas águas: mesmo nível nos dois beirais, cumeeira central e calhas dos dois lados. Sem atribuir vínculos ou ligações.</p>}
           {t.support === "walls" && <Cm label="Espessura do muro (cm)" mm={t.walls.thicknessMm} onMm={v => set({ walls: { ...t.walls, thicknessMm: v } })} min={5} />}
           <Cm label={t.support === "columns" ? "Altura do pilar (cm)" : "Banzo de baixo a partir do piso (cm)"} mm={t.supportZMm} onMm={supportZMm => set({ supportZMm })} hint={t.support === "columns" ? "Do piso ao banzo de baixo da tesoura." : "Altura de apoio da tesoura."} />
-          {t.support === "columns" && <p className={styles.muted}>Tesoura de eixo a eixo dos pilares, um pilar em cada ponta de cada tesoura. Calha e muros não entram; vínculos das bases ficam pendentes.</p>}
+          {t.support === "columns" && <p className={styles.muted}>Tesoura de eixo a eixo dos pilares. Onde já existe muro, troque a ponta para muro em &quot;Apoios por tesoura&quot;.</p>}
           <NumberField label="Tesouras" value={t.trusses} min={2} max={60} decimals={0} onChange={v => { if (v !== null) { setTrussesAuto(false); set({ trusses: v }); } }} hint={`A cada ${m(t.lengthMm / (t.trusses - 1))} m · não verificado estruturalmente`} />
           <label className={styles.toggle}><input type="checkbox" checked={trussesAuto} onChange={e => { setTrussesAuto(e.target.checked); if(e.target.checked) set({ trusses: suggestedTrussCount(t.lengthMm,t.stockMm) }); }} /><span><strong>Quantidade automática (preliminar)</strong><small>Pela barra comercial. Apoios e espaçamento resistente exigem validação.</small></span></label>
         </div>
       </section>
+      <SupportsCard t={t} set={set} />
       {t.support === "walls" && <section className={styles.card}>
         <h3>Calha e ponta baixa</h3>
         <div className={styles.grid}>
@@ -240,11 +243,11 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
         {v.stationsMm && <button type="button" className="button secondary" onClick={() => setGeom({ stationsMm: null, flippedPanels: [] })}><RotateCcw size={16} />Desfazer ajustes ponto a ponto ({st.length} montantes)</button>}
       </section>
       <section className={styles.card}>
-        <h3>{t.support === "columns" ? "Chapa de base dos pilares" : t.roofKind === "two-slopes" ? "Ancoragens nos dois beirais" : "Ancoragem no muro alto"}</h3>
+        <h3>{columnCount(t) && trussEnds(t).some(e => e.kind === "wall") ? "Chapas e chumbadores (pilares e muros)" : t.support === "columns" ? "Chapa de base dos pilares" : t.roofKind === "two-slopes" ? "Ancoragens nos dois beirais" : "Ancoragem no muro alto"}</h3>
         <div className={styles.grid}>
           <Cm label="Chapa largura (cm)" mm={t.anchor.plateWidthMm} onMm={v => set({ anchor: { ...t.anchor, plateWidthMm: v } })} />
           <Cm label="Chapa altura (cm)" mm={t.anchor.plateHeightMm} onMm={v => set({ anchor: { ...t.anchor, plateHeightMm: v } })} />
-          <NumberField label={t.support === "columns" ? "Chumbadores por pilar" : t.roofKind === "two-slopes" ? "Chumbadores por beiral/tesoura" : "Chumbadores por tesoura"} value={t.anchor.boltsPerSupport} min={0} max={20} decimals={0} onChange={v => v !== null && set({ anchor: { ...t.anchor, boltsPerSupport: v } })} />
+          <NumberField label={columnCount(t) && trussEnds(t).some(e => e.kind === "wall") ? "Chumbadores por chapa" : t.support === "columns" ? "Chumbadores por pilar" : t.roofKind === "two-slopes" ? "Chumbadores por beiral/tesoura" : "Chumbadores por tesoura"} value={t.anchor.boltsPerSupport} min={0} max={20} decimals={0} onChange={v => v !== null && set({ anchor: { ...t.anchor, boltsPerSupport: v } })} />
           <Cm label="Comprimento do chumbador (cm)" mm={t.anchor.boltLengthMm} onMm={v => set({ anchor: { ...t.anchor, boltLengthMm: v } })} />
           <NumberField label="Chapa (R$/un)" money value={t.anchor.platePriceCents} min={0} max={100000} decimals={2} onChange={v => set({ anchor: { ...t.anchor, platePriceCents: v } })} />
           <NumberField label="Chumbador (R$/un)" money value={t.anchor.boltPriceCents} min={0} max={100000} decimals={2} onChange={v => set({ anchor: { ...t.anchor, boltPriceCents: v } })} />
@@ -259,12 +262,11 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
       </section>
       <section className={styles.card}>
         <h3>Perfis e preços</h3>
-        <label className={styles.toggle}>
-          <input type="checkbox" checked={v.bottomChord == null} onChange={e => setGeom({ bottomChord: e.target.checked ? null : { ...v.chord } })} />
-          <span><strong>Banzo inferior com o mesmo perfil do superior</strong><small>Desmarque para definir perfil, preço e folga próprios no {typeName(t, editingId).toLowerCase()}.</small></span>
-        </label>
-        {profileKeys.map(k => <div key={k} className={styles.grid}>
-          <Field label={`${k === "chord" ? "Banzo superior" : k === "bottomChord" ? "Banzo inferior" : k === "web" ? "Montantes e diagonais" : k === "purlin" ? "Terças" : "Pilares"}: escolher`}><Select value={COMMON_PROFILES.some(p => p.designation === src(k).designation) ? src(k).designation : ""} onChange={e => { const p = COMMON_PROFILES.find(x => x.designation === e.target.value); if (p) setProfile(k, { ...src(k), designation: p.designation, kgPerM: p.kgPerM }); }}>
+        <label className={styles.toggle}><input type="checkbox" checked={sameChord} data-testid="truss-same-chord"
+          onChange={e => setGeom({ bottomChord: e.target.checked ? null : { ...v.chord } })} />
+          <span><strong>Banzo inferior com o mesmo perfil do superior</strong><small>Desmarque para usar um perfil mais leve (ou mais pesado) embaixo. Vale para tesoura sobre muro e sobre pilar.</small></span></label>
+        {(["chord", ...(sameChord ? [] : ["bottomChord"] as const), "web", "purlin", ...(columnCount(t) ? ["column"] as const : [])] as ProfileKey[]).map(k => <div key={k} className={styles.grid} data-testid={`truss-profile-${k}`}>
+          <Field label={`${k === "chord" && sameChord ? "Banzos (superior e inferior)" : profileTitle[k]}: escolher`}><Select value={COMMON_PROFILES.some(p => p.designation === src(k).designation) ? src(k).designation : ""} onChange={e => { const p = COMMON_PROFILES.find(x => x.designation === e.target.value); if (p) setProfile(k, { ...src(k), designation: p.designation, kgPerM: p.kgPerM }); }}>
             <option value="">outro (digitar)</option>
             {COMMON_PROFILES.filter(p => p.use.includes(k === "bottomChord" ? "chord" : k)).concat(COMMON_PROFILES.filter(p => !p.use.includes(k === "bottomChord" ? "chord" : k))).map(p => <option key={p.designation} value={p.designation}>{p.designation} · {p.kgPerM.toLocaleString("pt-BR")} kg/m</option>)}
           </Select></Field>
@@ -292,4 +294,62 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
       <p className={styles.notice}>Estudo de conferência: sem cálculo de cargas, vento, perfis ou ligações. Fabricação bloqueada até conferência de engenheiro.</p>
     </div>
   </div>;
+}
+
+/** Apoios: o Tom só mexe aqui se a obra for MISTA (onde termina o muro e começam os pilares).
+ * Lista de materiais (pilares, chapas, chumbadores) sai sozinha. Engenharia fica no "Avançado"
+ * e nunca impede o orçamento preliminar. */
+function SupportsCard({ t, set }: { t: Truss; set: (patch: Partial<Truss>) => void }) {
+  const S = slopeCount(t), ends = trussEnds(t), mixed = t.lineSupports.length > 0;
+  const sideName = (side: TrussSide) => S === 2 ? (side === "left" ? "Lado esquerdo" : "Lado direito") : (side === "left" ? "Lado da ponta baixa" : "Lado alto");
+  const walls = ends.filter(e => e.kind === "wall").length, cols = ends.length - walls;
+  const bothWalls = Array.from({ length: t.trusses }, (_, i) => endSupportOf(t, i, "left") === "wall" && endSupportOf(t, i, "right") === "wall").some(Boolean);
+  const one = (line: number, side: TrussSide, kind: EndSupport) => set({ lineSupports: withEndSupports(t, (l, s) => l === line && s === side ? kind : null) });
+  const sm = t.supportModel, setModel = (patch: Partial<Truss["supportModel"]>) => set({ supportModel: { ...sm, ...patch } });
+  // Trecho de muro por lado: "muro da tesoura A até a B", o resto em pilar.
+  const wallLines = (side: TrussSide) => ends.filter(e => e.side === side && e.kind === "wall").map(e => e.line + 1);
+  const range = (side: TrussSide) => { const w = wallLines(side); return w.length && w.at(-1)! - w[0] + 1 === w.length ? [w[0], w.at(-1)!] : null; };
+  const sideMode = (side: TrussSide) => { const w = wallLines(side).length; return w === t.trusses ? "wall" : w === 0 ? "column" : range(side) ? "range" : "custom"; };
+  const setRange = (side: TrussSide, from: number, to: number) => set({ lineSupports: withEndSupports(t, (l, s) => s !== side ? null : l + 1 >= from && l + 1 <= to ? "wall" : "column") });
+  const setSide = (side: TrussSide, mode: string) => mode === "wall" ? setRange(side, 1, t.trusses) : mode === "column" ? setRange(side, 0, -1)
+    : mode === "range" ? setRange(side, 1, Math.max(1, Math.ceil(t.trusses / 2))) : undefined;
+  const engineeringPending = walls > 0 && sm.wallSiteReview.trim().length < 5;
+  return <section className={styles.card} data-testid="truss-supports">
+    <h3>Apoios</h3>
+    <p className={styles.muted} data-testid="truss-supports-summary">{walls} ponta(s) em muro · {cols} em pilar → {cols} pilar(es), {cols} chapa(s) de base e as ancoragens dos muros entram na lista sozinhos.</p>
+    {mixed && <div className={styles.grid}>
+      {(["left", "right"] as const).map(side => <div key={side} className={styles.grid} data-testid={`truss-side-${side}`}>
+        <Field label={sideName(side)}><Select value={sideMode(side)} onChange={e => setSide(side, e.target.value)} data-testid={`truss-side-mode-${side}`}>
+          <option value="wall">muro em todas</option><option value="column">pilar em todas</option><option value="range">muro em parte, pilar no resto</option>
+          {sideMode(side) === "custom" && <option value="custom">ajustado tesoura por tesoura</option>}
+        </Select></Field>
+        {sideMode(side) === "range" && <>
+          <NumberField label="Muro da tesoura" value={range(side)![0]} min={1} max={t.trusses} decimals={0} onChange={v => v !== null && setRange(side, v, Math.max(v, range(side)![1]))} />
+          <NumberField label="até a tesoura" value={range(side)![1]} min={1} max={t.trusses} decimals={0} onChange={v => v !== null && setRange(side, Math.min(v, range(side)![0]), v)} hint="As outras apoiam em pilar." />
+        </>}
+      </div>)}
+    </div>}
+    {mixed && <details className={styles.details}>
+      <summary>Ajustar tesoura por tesoura</summary>
+      <div className={styles.lines} aria-label="Apoio de cada ponta por tesoura">
+        {Array.from({ length: t.trusses }, (_, i) => (["left", "right"] as const).map(side => <Field key={`${i}-${side}`} label={`T${i + 1} — ${sideName(side).toLowerCase()}`}>
+          <Select value={endSupportOf(t, i, side)} onChange={e => one(i, side, e.target.value as EndSupport)} data-testid={`truss-end-${i + 1}-${side}`}>
+            <option value="wall">muro</option><option value="column">pilar</option>
+          </Select></Field>)).flat()}
+      </div>
+    </details>}
+    <details className={styles.details} data-testid="truss-supports-advanced">
+      <summary>Avançado — engenharia (não muda a lista de materiais){engineeringPending ? " · conferência do muro pendente" : ""}</summary>
+      <p className={styles.muted}>Hipóteses para o cálculo estrutural. O orçamento preliminar sai sem isso; a aprovação estrutural é que fica pendente.</p>
+      <div className={styles.grid}>
+        {cols > 0 && <Field label="Base do pilar"><Select value={sm.columnBase} onChange={e => setModel({ columnBase: e.target.value as Truss["supportModel"]["columnBase"] })}>
+          <option value="fixed">engastada (chapa + chumbadores)</option><option value="pinned">articulada (exige contraventamento)</option></Select></Field>}
+        {bothWalls && <label className={styles.toggle}><input type="checkbox" checked={sm.wallsSlide} onChange={e => setModel({ wallsSlide: e.target.checked })} />
+          <span><strong>Tesoura entre dois muros: uma ponta desliza</strong><small>Furo oblongo na chapa: a tesoura não empurra o muro para fora.</small></span></label>}
+        {walls > 0 && <Field label="Muros conferidos no local por (nome e data)"><Input value={sm.wallSiteReview} maxLength={300} placeholder="ex.: Tom, 20/11/2026 — cinta grauteada no topo"
+          onChange={e => setModel({ wallSiteReview: e.target.value })} data-testid="truss-wall-review" /></Field>}
+      </div>
+      {engineeringPending && <p className={styles.muted}>Sem a conferência do muro, o cálculo estrutural fica bloqueado. A lista de materiais e o orçamento preliminar continuam valendo como não validados.</p>}
+    </details>
+  </section>;
 }
