@@ -30,7 +30,7 @@ import { sectionAxes, sectionAxisLabels, sectionPlane, steelFinishes, steelFinis
 const TRANSITION_MS = 420;
 const metres = (mm: number, digits = 3) => (mm / 1000).toLocaleString("pt-BR", { maximumFractionDigits: digits });
 
-export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false, orientationCube=false, labels, onApi, onHover, siteContext, allowPresentation=true }: { orientationCube?: boolean; labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; onHover?: (id: string) => void; siteContext?: TrussEditor; allowPresentation?: boolean; model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
+export function Structure3D({ model, roof, planning, projectName, selected, onSelect, onDemonstrate, onConfigureProfile, analysisColors, deformed, selectedNodeId, onSelectNode, inspectNodes=false, orientationCube=false, labels, onApi, onHover, siteContext, allowPresentation=true, resetRequest=0 }: { /** Cada novo valor volta ao modo Perfis 3D e enquadra a estrutura inteira, sem recriar o WebGL. */ resetRequest?: number; orientationCube?: boolean; labels?: Viewer3DLabel[]; onApi?: (api: Viewer3DApi | null) => void; onHover?: (id: string) => void; siteContext?: TrussEditor; allowPresentation?: boolean; model: StructureModel; roof: RoofParameters; planning: Planning | null; projectName: string; selected: string; onSelect: (id: string) => void; onDemonstrate?: () => void; onConfigureProfile?: () => void; analysisColors?: Record<string, number>; deformed?: { a: [number, number, number]; b: [number, number, number] }[] | null; selectedNodeId?:string; onSelectNode?:(id:string)=>void; inspectNodes?:boolean }) {
   const extents = ["x", "y", "z"].map(k => Math.max(...model.nodes.map(n => n[k as "x" | "y" | "z"])) - Math.min(...model.nodes.map(n => n[k as "x" | "y" | "z"])));
   const gridSpacingM = Math.pow(10, Math.floor(Math.log10(Math.max(...extents.map(v => v / 1000), 1) / 8)));
   const host = useRef<HTMLDivElement>(null), select = useRef(onSelect), highlight = useRef<(id: string) => void>(() => {}), reset = useRef<() => void>(() => {});
@@ -69,6 +69,9 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
   const cameraView = useRef<(view: StudioView) => void>(() => {});
   // Opening the viewer always starts with solid profiles, regardless of the mode last used.
   const [mode, setMode] = useState<ViewerMode | "finished">("profiles");
+  const [lastResetRequest, setLastResetRequest] = useState(resetRequest);
+  if (resetRequest !== lastResetRequest) { setLastResetRequest(resetRequest); setMode("profiles"); }
+  useEffect(() => { if (resetRequest) reset.current(); }, [resetRequest]);
   const changeMode = useRef<(mode: ViewerMode | "finished") => void>(() => {});
   const focus = useRef<(id: string) => void>(() => {});
   const colorize = useRef<(colors?: Record<string, number>) => void>(() => {});

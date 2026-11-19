@@ -66,10 +66,11 @@
 .studio-viewport-body #jpn-viewer .inspection-tools:has(.inspection-layers[open], .inspection-measurement) { flex-wrap: wrap; overflow-x: visible; }
 .studio-viewport-body #jpn-viewer .inspection-tools > .button,
 .studio-viewport-body #jpn-viewer .inspection-collapse { min-height: 36px; padding: 4px 10px; font-size: 12.5px; }
-.studio-viewport-body #jpn-viewer .inspection-layers { flex: 0 1 auto; min-width: 0; }
+.studio-viewport-body #jpn-viewer .inspection-layers { flex: 0 0 auto; min-width: 0; }
 .studio-viewport-body #jpn-viewer .inspection-layers[open] { flex: 1 1 100%; }
-.studio-viewport-body #jpn-viewer .inspection-layers summary { min-height: 36px; padding: 6px 10px; gap: 8px; }
-.studio-viewport-body #jpn-viewer .inspection-tools .studio-field { flex: 0 1 260px; min-width: 0; font-size: 11px; grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+.studio-viewport-body #jpn-viewer .inspection-layers summary { min-height: 36px; padding: 6px 10px; gap: 8px; white-space: nowrap; }
+.studio-viewport-body #jpn-viewer .inspection-tools .studio-field { display: flex; flex: 0 0 auto; align-items: center; gap: 6px; min-width: 0; font-size: 11px; white-space: nowrap; }
+.studio-viewport-body #jpn-viewer .inspection-tools .studio-field .input { width: 150px; }
 .studio-viewport-body #jpn-viewer .inspection-tools .studio-field .input { min-height: 36px; padding: 4px 8px; font-size: 12.5px; }
 /* Câmera (Iso/Superior/Frontal/Lateral/Perspectiva) flutua no canto da tela, sempre visível. */
 .studio-viewport-body .structure-viewer:not(.structure-viewer--expanded) .studio-camera { top: 14px; right: 12px; flex-direction: row; align-items: center; }
@@ -224,6 +225,12 @@
   .studio-viewport { height: max(340px, 54dvh); }
   /* Celular/tablet: o painel tem o próprio botão (Recolher painel); a barra do 3D fica numa linha. */
   .studio-panel-toggle { display: none; }
+  /* Selo e aviso logo abaixo do 3D (sempre junto do modelo), sem ficar fixos por cima da tela 3D ao rolar. */
+  .studio-status { position: static; }
+  .studio-viewport { order: 0; }
+  .studio-status { order: 1; }
+  .studio-inspector { order: 2; }
+  .studio-rail { order: 3; }
   .studio-viewport-bar { flex-wrap: nowrap; gap: 6px; padding: 5px 7px; overflow-x: auto; scrollbar-width: none; }
   .studio-viewport-bar > *, .studio-viewport-bar > .viewer-shortcut { flex: 0 0 auto; }
   .studio-viewport-bar > .viewer-shortcut .ui-info-tip, .studio-viewport-bar > .viewer-shortcut .field-hint { display: none; }
@@ -336,10 +343,10 @@
   .studio-tour-new { display: none; }
   .project-studio { gap: 8px; }
   /* Etapas mantêm a navegação fixa; a lista de ferramentas aparece junto da etapa Análise. */
-  .studio-rail { order: 2; }
+  .studio-rail { order: 3; }
   .studio-viewport { order: 0; height: clamp(415px, 64dvh, 620px); }
-  .studio-inspector { order: 1; }
-  .studio-status { order: 3; }
+  .studio-inspector { order: 2; }
+  .studio-status { order: 1; }
   .studio-viewport-body { padding: 7px; }
   .studio-viewport-body .result-model-panel .structure-3d,
   .studio-viewport-body .declared-studio-view .structure-3d {
