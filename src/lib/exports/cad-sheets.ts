@@ -3,7 +3,7 @@ import type {Project} from "@/domain/models";
 import {CadBook,CAD_NOTICE,type PaperFormat,type Point2 as P,type CadRect,type CadPage} from "./cad-book";
 import {cadModel,cadReactions,axisLetter,sortedCoordinates as unique,isDeclaredBrace,type CadPiece,type CadReactionReceipt} from "./cad-model";
 import {cadRoofFaces} from "./cad-roof";
-import {trussSummary} from "@/domain/truss-editor";
+import {lineTypeId,trussSummary,typeName} from "@/domain/truss-editor";
 import {isUnlocatedCommercialPiece} from "./package-commercial-groups";
 import {reviewSourceDimensions,reviewRoofSlope,reviewRoofEnvelope} from "./package-dimension-review";
 export {CAD_NOTICE};
@@ -395,7 +395,11 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     return narrow>25&&wide*2<=narrow;
   });
   const framePages=data.frameGroups.map((group,i)=>{
-    const title=`${group[0].kind==="TESOURA"?"Tesoura":"Pórtico"} — tipo ${i+1} (${group.length}×)`;
+    // Com tipos do editor de tesoura, a prancha usa o nome do tipo (o mesmo da tela).
+    const editor=project.workspace.trussEditor,firstTruss=group[0].pieces.find(p=>/^T(\d+)-/.test(p.id));
+    const line=editor?.types.length?Number(/^T(\d+)-/.exec(firstTruss?.id??"")?.[1]??0)-1:-1;
+    const named=editor&&line>=0&&line<editor.trusses?typeName(editor,lineTypeId(editor,line)):null;
+    const title=`${group[0].kind==="TESOURA"?"Tesoura":"Pórtico"} — ${named??`tipo ${i+1}`} (${group.length}×)`;
     const drawingPage=book.add(`${group[0].kind} ${i+1}`,title);
     return {drawingPage,tablePage:frameWide[i]?book.add(`${group[0].kind} ${i+1} PECAS`,`${title} — identificação de peças`):drawingPage};
   });
