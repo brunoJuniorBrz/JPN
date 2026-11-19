@@ -362,16 +362,19 @@ export function trussSummary(t: TrussEditor) {
   // Cada linha de tesoura com o seu tipo; banzos e montantes agrupados por perfil.
   const perLine = Array.from({ length: n }, (_, i) => { const e = trussOfLine(t, i); return { e, pieces: trussPiecesComplete(e) }; });
   type Group = { profile: TrussEditor["chord"]; lengths: number[]; fullMm: number };
+  // Não agrupar por nome isoladamente: massa, preço e folga podem divergir mesmo com a mesma designação.
+  const profileKey = (p: TrussEditor["chord"]) => JSON.stringify([p.designation, p.kgPerM, p.barPriceCents, p.extraBars]);
   const group = (key: "chord" | "web") => {
     const m = new Map<string, Group>(), kinds: TrussPiece["kind"][] = key === "chord" ? ["BI", "BS"] : ["M", "D"];
     for (const { e, pieces } of perLine) {
-      const g = m.get(e[key].designation) ?? { profile: e[key], lengths: [], fullMm: 0 };
+      const keyOfProfile = profileKey(e[key]);
+      const g = m.get(keyOfProfile) ?? { profile: e[key], lengths: [], fullMm: 0 };
       g.lengths.push(...pieces.filter(p => kinds.includes(p.kind)).map(p => p.lengthMm));
       if (key === "web") { // medida cheia (como o Tom orça): montante na altura máxima, diagonal no painel mais largo
         const est = stations(e), maxPanel = Math.max(...est.slice(1).map((x, i) => x - est[i]));
         g.fullMm += pieces.filter(p => p.kind === "M").length * t.highHeightMm + pieces.filter(p => p.kind === "D").length * Math.hypot(maxPanel, t.highHeightMm);
       }
-      m.set(e[key].designation, g);
+      m.set(keyOfProfile, g);
     }
     return [...m.values()];
   };
@@ -380,10 +383,17 @@ export function trussSummary(t: TrussEditor) {
   const purlinL = purlins.flatMap(() => Array(bays).fill(purlinPiece) as number[]);
   const sum = (a: number[]) => a.reduce((s, x) => s + x, 0);
   const purlin = barsFor(purlinL, t.stockMm);
-  const extra = (g: Group, base: TrussEditor["chord"]) => g.profile.designation === base.designation ? base.extraBars : g.profile.extraBars;
-  const chordRows = chordGroups.map(g => ({ g, bars: barsFor(g.lengths, t.stockMm).bars, extra: extra(g, t.chord) }));
+  const extra = (g: Group) => g.profile.extraBars;
+  // Diferenciar visualmente linhas de um mesmo nome com especificações comerciais distintas.
+  const profileLabel = (g: Group, groups: Group[]) => {
+    const p = g.profile;
+    if (groups.filter(x => x.profile.designation === p.designation).length === 1) return p.designation;
+    const price = p.barPriceCents === null ? "preço pendente" : `R$ ${(p.barPriceCents / 100).toFixed(2)}/barra`;
+    return `${p.designation} (${p.kgPerM} kg/m; ${price}; folga ${p.extraBars})`;
+  };
+  const chordRows = chordGroups.map(g => ({ g, bars: barsFor(g.lengths, t.stockMm).bars, extra: extra(g) }));
   const webRows = webGroups.map(g => { const real = barsFor(g.lengths, t.stockMm).bars, full = Math.ceil(g.fullMm / (t.stockMm - 10));
-    return { g, real, full, bars: (t.fullHeightBudget ? full : real), extra: extra(g, t.web) }; });
+    return { g, real, full, bars: (t.fullHeightBudget ? full : real), extra: extra(g) }; });
   const chord = { bars: sum(chordRows.map(r => r.bars)) }, web = { bars: sum(webRows.map(r => r.real)) };
   const webFullBars = sum(webRows.map(r => r.full));
   const kg = (l: number[], p: { kgPerM: number }) => sum(l) / 1000 * p.kgPerM;
@@ -403,8 +413,8 @@ export function trussSummary(t: TrussEditor) {
   const columnBars = nCols ? column.bars + t.column.extraBars : 0;
   const money = (bars: number, p: { barPriceCents: number | null }) => p.barPriceCents === null ? null : bars * p.barPriceCents;
   const lines = [
-    ...chordRows.map(r => ({ item: `Banzos ${r.g.profile.designation}`, qty: `${r.bars + r.extra} barras${r.extra ? ` (+${r.extra} folga)` : ""}`, cents: money(r.bars + r.extra, r.g.profile) })),
-    ...webRows.map(r => ({ item: `Montantes e diagonais ${r.g.profile.designation}${t.fullHeightBudget ? " (medida cheia)" : ""}`, qty: `${r.bars + r.extra} barras${t.fullHeightBudget ? ` · corte real ${r.real}` : ""}${r.extra ? ` (+${r.extra} folga)` : ""}`, cents: money(r.bars + r.extra, r.g.profile) })),
+    ...chordRows.map(r => ({ item: `Banzos ${profileLabel(r.g, chordGroups)}`, qty: `${r.bars + r.extra} barras${r.extra ? ` (+${r.extra} folga)` : ""}`, cents: money(r.bars + r.extra, r.g.profile) })),
+    ...webRows.map(r => ({ item: `Montantes e diagonais ${profileLabel(r.g, webGroups)}${t.fullHeightBudget ? " (medida cheia)" : ""}`, qty: `${r.bars + r.extra} barras${t.fullHeightBudget ? ` · corte real ${r.real}` : ""}${r.extra ? ` (+${r.extra} folga)` : ""}`, cents: money(r.bars + r.extra, r.g.profile) })),
     ...(onColumns ? [{ item: `Pilares ${t.column.designation}`, qty: `${columnBars} barras · ${nCols} pilares de ${(t.supportZMm / 1000).toFixed(2).replace(".", ",")} m${t.supportZMm > t.stockMm - 10 ? " (com emenda)" : ""}${t.column.extraBars ? ` (+${t.column.extraBars} folga)` : ""}`, cents: money(columnBars, t.column) }] : []),
     { item: `Terças ${t.purlin.designation}`, qty: `${purlinBars} barras${t.purlin.extraBars ? ` (+${t.purlin.extraBars} folga)` : ""}`, cents: money(purlinBars, t.purlin) },
     { item: "Telha", qty: `${sheets} × ${(sheetLengthMm / 1000).toFixed(2).replace(".", ",")} m (${slopeCount(t)} água(s), ${k} peça(s)/água)`, cents: t.sheet.pricePerMCents === null ? null : Math.round(sheetM * t.sheet.pricePerMCents) },
