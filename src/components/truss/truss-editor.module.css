@@ -1,4 +1,4 @@
-.editor{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px;align-items:start}
+.editor{display:grid;container-type:inline-size;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr));gap:18px;align-items:start}
 .canvas{position:sticky;top:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
 .drawing{display:block;width:100%;height:auto;touch-action:manipulation}
 .chord{stroke:#1f2933;stroke-width:4;stroke-linecap:round}
@@ -43,6 +43,9 @@
 .ok{background:#edf7ef;border:1px solid #b9dcc2;color:#25603a;border-radius:9px;padding:10px;font-size:13px;margin:0}
 .muted{font-size:12px;color:var(--muted)}
 .notice{font-size:12px;color:#6b5121;background:#fff8ea;border:1px dashed #ecd6a6;border-radius:10px;padding:10px;margin:0}
+/* Quando o Studio estreita a área útil, o editor vira uma coluna mesmo em desktop.
+   O desenho sticky não pode cobrir os botões da segunda linha (Playwright #154). */
+@container(max-width:897px){.canvas{position:static}}
 @media(max-width:1060px){.editor{grid-template-columns:minmax(0,1fr)}.canvas{position:static}}
 @media(max-width:520px){.kpis b{font-size:20px}.card{padding:12px}}
 .wall{fill:#e8e2d6;stroke:#8b7d66;stroke-width:1.5}

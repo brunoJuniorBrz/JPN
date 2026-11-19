@@ -448,7 +448,9 @@ body { font-size: 16px; }
   width: 100%; height: 100dvh; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
   background: #f7f9f4; overflow-y: auto; overscroll-behavior: contain;
 }
-.structure-viewer-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding-bottom: 10px; }
+/* In fullscreen, the canvas can overlap the heading inside the flattened Studio
+   layout. Keep the real close control above the WebGL hit surface. */
+.structure-viewer-heading { position: relative; z-index: 6; flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding-bottom: 10px; }
 .structure-viewer-heading strong { font-size: 16px; }
 .structure-viewer--expanded .view-switch { flex-shrink: 0; }
 .structure-viewer--expanded .structure-profile-notice { flex-shrink: 0; max-height: 26dvh; overflow-y: auto; }
