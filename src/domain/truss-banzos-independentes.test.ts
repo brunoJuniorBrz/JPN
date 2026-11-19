@@ -5,6 +5,7 @@ import {
   trussEditorSchema, trussOfLine, trussPiecesComplete, trussSummary,
 } from "./truss-editor";
 import { packageTakeoff } from "@/lib/exports/package-source";
+import { cadModel } from "@/lib/exports/cad-model";
 import { packageCutting } from "@/lib/exports/complete-package";
 
 const inferior = { designation: "U 90x25 de ensaio", kgPerM: 2.68, barPriceCents: 12300, extraBars: 1 };
@@ -46,6 +47,9 @@ describe("banzos independentes, sem liberação estrutural", () => {
       expect(lowerPieces.length).toBeGreaterThan(0);
       expect(upperPieces.every(x => x.label.includes(t.chord.designation) && sections.get(assigned.get(x.id)! ) === t.chord.designation)).toBe(true);
       expect(lowerPieces.every(x => x.label.includes(inferior.designation) && sections.get(assigned.get(x.id)! ) === inferior.designation)).toBe(true);
+      const cad = cadModel(p);
+      expect(upperPieces.every(x => cad.profile(x.id) === t.chord.designation)).toBe(true);
+      expect(lowerPieces.every(x => cad.profile(x.id) === inferior.designation)).toBe(true);
       const takeoff = packageTakeoff(p);
       const stock = Object.fromEntries(takeoff.groups.map(g => [g.key, 12000]));
       const cutting = packageCutting(p, { stockByGroup: stock });
