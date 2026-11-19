@@ -5,7 +5,7 @@ import { NumberField } from "@/components/number-field";
 import { Field, Input, Select } from "@/components/ui";
 import {
   BASE_TYPE, TYPE_KEYS, addTrussType, lineTypeId, removeTrussType, trussOfType, typeName,
-  blankTruss, COMMON_PROFILES, columnCount, endSupportOf, trussEnds, withEndSupports, type EndSupport, type TrussSide, fallPercent, roofPurlinPositions, slopeCount, stations, suggestedTrussCount, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
+  blankTruss, COMMON_PROFILES, columnCount, endSupportOf, trussEnds, wallPlateCount, withEndSupports, type EndSupport, type TrussSide, fallPercent, roofPurlinPositions, slopeCount, stations, suggestedTrussCount, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
   type TrussEditor as Truss,
 } from "@/domain/truss-editor";
 import styles from "./truss-editor.module.css";
@@ -291,7 +291,7 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
           <NumberField label="Parafuso (R$/un)" money value={t.screwPriceCents} min={0} max={1000} decimals={2} onChange={v => set({ screwPriceCents: v })} />
         </div>
       </section>
-      <p className={styles.notice}>Estudo de conferência: sem cálculo de cargas, vento, perfis ou ligações. Fabricação bloqueada até conferência de engenheiro.</p>
+      <p className={styles.notice}>Lista de materiais preliminar. A preparação do cálculo utiliza hipóteses de perfis e ligações; vento, contraventamento e verificações de apoio permanecem pendentes. Aprovação estrutural e fabricação bloqueadas.</p>
     </div>
   </div>;
 }
@@ -316,7 +316,8 @@ function SupportsCard({ t, set }: { t: Truss; set: (patch: Partial<Truss>) => vo
   const engineeringPending = walls > 0 && sm.wallSiteReview.trim().length < 5;
   return <section className={styles.card} data-testid="truss-supports">
     <h3>Apoios</h3>
-    <p className={styles.muted} data-testid="truss-supports-summary">{walls} ponta(s) em muro · {cols} em pilar → {cols} pilar(es), {cols} chapa(s) de base e as ancoragens dos muros entram na lista sozinhos.</p>
+    <p className={styles.muted} data-testid="truss-supports-summary">{walls} ponta(s) em muro · {cols} em pilar → {cols} pilar(es), {cols} chapa(s) de base, {wallPlateCount(t)} chapa(s) de ancoragem e {(cols + wallPlateCount(t)) * t.anchor.boltsPerSupport} chumbador(es) na lista.</p>
+    {walls > wallPlateCount(t) && <p className={styles.muted}>Atenção: em coberturas de uma água, a regra herdada contabiliza chapas de ancoragem apenas na ponta alta. Confira se a ponta baixa também precisa de chapa ou fixação antes da compra.</p>}
     {mixed && <div className={styles.grid}>
       {(["left", "right"] as const).map(side => <div key={side} className={styles.grid} data-testid={`truss-side-${side}`}>
         <Field label={sideName(side)}><Select value={sideMode(side)} onChange={e => setSide(side, e.target.value)} data-testid={`truss-side-mode-${side}`}>
