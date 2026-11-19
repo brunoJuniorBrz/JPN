@@ -14,7 +14,7 @@ for (const width of [390, 1440]) test(`editor duas águas → Studio 3D → paco
   await expect(page.getByRole("button", { name: "Criar projeto com esta tesoura" })).toBeEnabled();
   await page.getByRole("button", { name: "Criar projeto com esta tesoura" }).click();
   await expect(page).toHaveURL(/\/projetos\/[^/]+\?fluxo=levantamento&etapa=3/);
-  await expect(page.getByTestId("project-studio")).toBeVisible();
+  await expect(page.getByTestId("project-studio")).toBeVisible({ timeout: 30000 }); // WebGL + rota nova no CI
 
   const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
   await expect(canvas).toBeVisible({ timeout: 45000 });
@@ -56,7 +56,7 @@ test("obra nova 12×20, duas águas e cinco tesouras declaradas: 3D sem preços 
   await expect(page.getByRole("button", { name: "Criar projeto com esta tesoura" })).toBeEnabled();
   await expect(page.getByText(/Sem preço:/)).toBeVisible();
   await page.getByRole("button", { name: "Criar projeto com esta tesoura" }).click();
-  await expect(page.getByTestId("project-studio")).toBeVisible();
+  await expect(page.getByTestId("project-studio")).toBeVisible({ timeout: 30000 }); // WebGL + rota nova no CI
   const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
   await expect(canvas).toHaveAttribute("data-site-slopes", "2", { timeout: 45000 });
   await expect(canvas).toHaveAttribute("data-site-anchors", "10");
