@@ -47,6 +47,23 @@ export const COMMON_PROFILES: { designation: string; kgPerM: number; basis: stri
   { designation: "Tubo 150x150x4.75 mm", kgPerM: 21.67, basis: "nominal (seção cheia, sem raio)", use: ["column"] },
 ];
 const DEFAULT_COLUMN = { designation: "Tubo 100x100x3.00 mm", kgPerM: 9.14, barPriceCents: null, extraBars: 0 };
+/** Campos que um TIPO de tesoura pode mudar. A cobertura (vão, alturas, caída, terças,
+ * apoio) é a mesma da obra; muda o desenho interno e os perfis da tesoura. */
+export const TYPE_KEYS = ["panelMm", "countFrom", "diagonal", "stationsMm", "flippedPanels", "chord", "web"] as const;
+export const trussTypeSchema = z.object({
+  id: z.string().regex(/^T[2-9]$|^T1[0-9]$/),
+  name: z.string().trim().min(1).max(40),
+  panelMm: mm.min(100).max(5000),
+  countFrom: z.enum(["high", "low"]),
+  diagonal: z.enum(["to-high", "to-low", "none", "x"]),
+  stationsMm: z.array(mm.min(0).max(60000)).min(2).max(200).nullable(),
+  flippedPanels: z.array(z.number().int().min(0).max(200)).max(200),
+  chord: profileSchema,
+  web: profileSchema,
+}).strict();
+export type TrussType = z.infer<typeof trussTypeSchema>;
+export const BASE_TYPE = "T1";
+
 export const trussEditorSchema = z.object({
   version: z.literal(1),
   /** A falta deste campo em projetos salvos é uma água (compatibilidade retroativa). */
@@ -95,6 +112,10 @@ export const trussEditorSchema = z.object({
   screwPriceCents: z.number().int().min(0).max(100000).nullable(),
   /** Orçamento pela medida cheia: todo montante e diagonal na altura máxima. */
   fullHeightBudget: z.boolean(),
+  /** Tipos extras (T2, T3...). O tipo 1 são os próprios campos do editor. */
+  types: z.array(trussTypeSchema).max(9).default([]),
+  /** Tipo de cada linha de tesoura (índice 0 = primeira); vazio/ausente = tipo 1. */
+  lineTypes: z.array(z.string().max(4)).max(60).default([]),
 }).strict();
 export type TrussEditor = z.infer<typeof trussEditorSchema>;
 
@@ -111,7 +132,7 @@ export function tomTrussDefaults(): TrussEditor {
     web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: null, extraBars: 0 },
     purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: null, extraBars: 0 },
     sheet: { usefulWidthMm: 1020, pricePerMCents: 4400, beyondTipMm: 300, piecesPerSlope: 1, overlapMm: 250 },
-    laborPerM2Cents: 5000, consumablesCents: 110000, screwPriceCents: 60, fullHeightBudget: false,
+    laborPerM2Cents: 5000, consumablesCents: 110000, screwPriceCents: 60, fullHeightBudget: false, types: [], lineTypes: [],
   };
 }
 
@@ -128,7 +149,7 @@ export function blankTruss(): TrussEditor {
     web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: null, extraBars: 0 },
     purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: null, extraBars: 0 },
     sheet: { usefulWidthMm: 1020, pricePerMCents: null, beyondTipMm: 300, piecesPerSlope: 1, overlapMm: 250 },
-    laborPerM2Cents: null, consumablesCents: null, screwPriceCents: null, fullHeightBudget: false,
+    laborPerM2Cents: null, consumablesCents: null, screwPriceCents: null, fullHeightBudget: false, types: [], lineTypes: [],
   };
 }
 
@@ -199,6 +220,35 @@ export function stations(t: TrussEditor): number[] {
   return [...new Set([0, ...raw, L].map(s => Math.round(s * 10) / 10))].sort((a, b) => a - b);
 }
 
+/** Id do tipo usado na linha `i` (tipo inexistente ou vazio = tipo 1). */
+export const lineTypeId = (t: TrussEditor, i: number) => {
+  const id = t.lineTypes[i];
+  return id && t.types.some(x => x.id === id) ? id : BASE_TYPE;
+};
+/** Tesoura efetiva de um tipo: cobertura da obra + desenho/perfis do tipo. */
+export function trussOfType(t: TrussEditor, id: string): TrussEditor {
+  const ty = t.types.find(x => x.id === id);
+  if (!ty) return t;
+  return { ...t, panelMm: ty.panelMm, countFrom: ty.countFrom, diagonal: ty.diagonal, stationsMm: ty.stationsMm, flippedPanels: ty.flippedPanels, chord: ty.chord, web: ty.web };
+}
+export const trussOfLine = (t: TrussEditor, i: number) => trussOfType(t, lineTypeId(t, i));
+/** Nome legível do tipo. */
+export const typeName = (t: TrussEditor, id: string) => id === BASE_TYPE ? "Tipo 1" : t.types.find(x => x.id === id)?.name ?? id;
+/** Novo tipo copiando o desenho de um tipo existente. */
+export function addTrussType(t: TrussEditor, fromId = BASE_TYPE): TrussEditor {
+  const used = new Set(t.types.map(x => x.id));
+  const n = Array.from({ length: 18 }, (_, i) => i + 2).find(i => !used.has(`T${i}`));
+  if (!n || t.types.length >= 9) return t;
+  const src = trussOfType(t, fromId);
+  const ty: TrussType = { id: `T${n}`, name: `Tipo ${n}`, panelMm: src.panelMm, countFrom: src.countFrom, diagonal: src.diagonal,
+    stationsMm: src.stationsMm ? [...src.stationsMm] : null, flippedPanels: [...src.flippedPanels], chord: { ...src.chord }, web: { ...src.web } };
+  return { ...t, types: [...t.types, ty] };
+}
+/** Remove um tipo; as linhas que o usavam voltam ao tipo 1. */
+export function removeTrussType(t: TrussEditor, id: string): TrussEditor {
+  return { ...t, types: t.types.filter(x => x.id !== id), lineTypes: t.lineTypes.map(x => x === id ? BASE_TYPE : x) };
+}
+
 export type TrussIssue = { level: "erro" | "aviso"; message: string };
 export function trussIssues(t: TrussEditor): TrussIssue[] {
   const out: TrussIssue[] = [], L = trussLengthMm(t), st = stations(t);
@@ -225,6 +275,14 @@ export function trussIssues(t: TrussEditor): TrussIssue[] {
   if (shifted.length) out.push({ level: "aviso", message: `${shifted.length} posição(ões) de terça ajustada(s) ao montante mais próximo: ${shifted.map(p => `${(p.requestedMm / 10).toFixed(1)} → ${(p.sMm / 10).toFixed(1)} cm`).join(", ")}. Conferir espaçamentos.` });
   const step = t.purlinStepMm * Math.hypot(1, fallPercent(t) / 100);
   if (step > 2500) out.push({ level: "aviso", message: `Terças a ${(step / 1000).toFixed(2)} m na inclinação: confira o vão máximo da telha.` });
+  for (const ty of t.types) {
+    const eff = trussOfType(t, ty.id), est = stations(eff), ep = est.slice(1).map((x, i) => x - est[i]);
+    if (ep.some(p => p < 50)) out.push({ level: "erro", message: `${ty.name}: há montantes a menos de 5 cm um do outro.` });
+    if (Math.max(...ep) > t.stockMm) out.push({ level: "erro", message: `${ty.name}: há painel maior que a barra comercial.` });
+    const off = purlins.filter(p => !est.some(x => Math.abs(x - p.sMm) < 1));
+    if (off.length) out.push({ level: "aviso", message: `${ty.name}: ${off.length} terça(s) sem montante embaixo (${off.map(p => (p.sMm / 10).toFixed(1)).join(", ")} cm da ponta). As terças seguem o tipo 1; ajuste os montantes deste tipo.` });
+    if (!t.lineTypes.includes(ty.id)) out.push({ level: "aviso", message: `${ty.name} não está em nenhuma linha de tesoura.` });
+  }
   out.push({ level: "aviso", message: "Perfis, emendas e ligações sem verificação estrutural: conferência por engenheiro antes de fabricar." });
   return out;
 }
@@ -301,17 +359,35 @@ export function barsFor(lengths: number[], stockMm: number, kerfMm = 3, trimMm =
 export type TrussSummary = ReturnType<typeof trussSummary>;
 export function trussSummary(t: TrussEditor) {
   const one = trussPiecesComplete(t), n = t.trusses, L = trussLengthMm(t), st = stations(t);
-  const lengths = (k: TrussPiece["kind"][]) => one.filter(p => k.includes(p.kind)).flatMap(p => Array(n).fill(p.lengthMm) as number[]);
-  const chordL = lengths(["BI", "BS"]), webL = lengths(["M", "D"]);
+  // Cada linha de tesoura com o seu tipo; banzos e montantes agrupados por perfil.
+  const perLine = Array.from({ length: n }, (_, i) => { const e = trussOfLine(t, i); return { e, pieces: trussPiecesComplete(e) }; });
+  type Group = { profile: TrussEditor["chord"]; lengths: number[]; fullMm: number };
+  const group = (key: "chord" | "web") => {
+    const m = new Map<string, Group>(), kinds: TrussPiece["kind"][] = key === "chord" ? ["BI", "BS"] : ["M", "D"];
+    for (const { e, pieces } of perLine) {
+      const g = m.get(e[key].designation) ?? { profile: e[key], lengths: [], fullMm: 0 };
+      g.lengths.push(...pieces.filter(p => kinds.includes(p.kind)).map(p => p.lengthMm));
+      if (key === "web") { // medida cheia (como o Tom orça): montante na altura máxima, diagonal no painel mais largo
+        const est = stations(e), maxPanel = Math.max(...est.slice(1).map((x, i) => x - est[i]));
+        g.fullMm += pieces.filter(p => p.kind === "M").length * t.highHeightMm + pieces.filter(p => p.kind === "D").length * Math.hypot(maxPanel, t.highHeightMm);
+      }
+      m.set(e[key].designation, g);
+    }
+    return [...m.values()];
+  };
+  const chordGroups = group("chord"), webGroups = group("web");
   const purlins = roofPurlinPositions(t), bays = n - 1, purlinPiece = t.lengthMm / bays;
   const purlinL = purlins.flatMap(() => Array(bays).fill(purlinPiece) as number[]);
   const sum = (a: number[]) => a.reduce((s, x) => s + x, 0);
-  const chord = barsFor(chordL, t.stockMm), web = barsFor(webL, t.stockMm), purlin = barsFor(purlinL, t.stockMm);
-  // Medida cheia (como o Tom orça): todo montante na altura máxima, toda diagonal no painel mais largo.
-  const maxPanel = Math.max(...st.slice(1).map((s, i) => s - st[i]));
-  const fullWeb = one.filter(p => p.kind === "M").length * t.highHeightMm + one.filter(p => p.kind === "D").length * Math.hypot(maxPanel, t.highHeightMm);
-  const webFullBars = Math.ceil(fullWeb * n / (t.stockMm - 10));
+  const purlin = barsFor(purlinL, t.stockMm);
+  const extra = (g: Group, base: TrussEditor["chord"]) => g.profile.designation === base.designation ? base.extraBars : g.profile.extraBars;
+  const chordRows = chordGroups.map(g => ({ g, bars: barsFor(g.lengths, t.stockMm).bars, extra: extra(g, t.chord) }));
+  const webRows = webGroups.map(g => { const real = barsFor(g.lengths, t.stockMm).bars, full = Math.ceil(g.fullMm / (t.stockMm - 10));
+    return { g, real, full, bars: (t.fullHeightBudget ? full : real), extra: extra(g, t.web) }; });
+  const chord = { bars: sum(chordRows.map(r => r.bars)) }, web = { bars: sum(webRows.map(r => r.real)) };
+  const webFullBars = sum(webRows.map(r => r.full));
   const kg = (l: number[], p: { kgPerM: number }) => sum(l) / 1000 * p.kgPerM;
+  const kgGroups = (gs: Group[]) => sum(gs.map(g => kg(g.lengths, g.profile)));
   const slopeMm = Math.hypot(L, t.highHeightMm - t.tipHeightMm), runMm = slopeMm + t.sheet.beyondTipMm * slopeMm / L;
   const k = t.sheet.piecesPerSlope, sheetLengthMm = Math.ceil((runMm + (k - 1) * t.sheet.overlapMm) / k / 10) * 10;
   const columns = Math.ceil(t.lengthMm / t.sheet.usefulWidthMm), sheets = columns * k * slopeCount(t), sheetM = sheets * sheetLengthMm / 1000;
@@ -322,13 +398,13 @@ export function trussSummary(t: TrussEditor) {
   const supports = n * 2, plates = onColumns ? nCols : n * slopeCount(t), bolts = plates * t.anchor.boltsPerSupport;
   const screws = Math.ceil((columns * purlins.length * 4 + (columns - 1) * slopeCount(t) * Math.ceil(slopeMm / 500)) / 50) * 50;
   const areaM2 = t.spanMm * t.lengthMm / 1e6;
-  const webBars = (t.fullHeightBudget ? webFullBars : web.bars) + t.web.extraBars;
-  const chordBars = chord.bars + t.chord.extraBars, purlinBars = purlin.bars + t.purlin.extraBars;
+  const webBars = sum(webRows.map(r => r.bars + r.extra));
+  const chordBars = sum(chordRows.map(r => r.bars + r.extra)), purlinBars = purlin.bars + t.purlin.extraBars;
   const columnBars = nCols ? column.bars + t.column.extraBars : 0;
   const money = (bars: number, p: { barPriceCents: number | null }) => p.barPriceCents === null ? null : bars * p.barPriceCents;
   const lines = [
-    { item: `Banzos ${t.chord.designation}`, qty: `${chordBars} barras${t.chord.extraBars ? ` (+${t.chord.extraBars} folga)` : ""}`, cents: money(chordBars, t.chord) },
-    { item: `Montantes e diagonais ${t.web.designation}${t.fullHeightBudget ? " (medida cheia)" : ""}`, qty: `${webBars} barras${t.fullHeightBudget ? ` · corte real ${web.bars}` : ""}${t.web.extraBars ? ` (+${t.web.extraBars} folga)` : ""}`, cents: money(webBars, t.web) },
+    ...chordRows.map(r => ({ item: `Banzos ${r.g.profile.designation}`, qty: `${r.bars + r.extra} barras${r.extra ? ` (+${r.extra} folga)` : ""}`, cents: money(r.bars + r.extra, r.g.profile) })),
+    ...webRows.map(r => ({ item: `Montantes e diagonais ${r.g.profile.designation}${t.fullHeightBudget ? " (medida cheia)" : ""}`, qty: `${r.bars + r.extra} barras${t.fullHeightBudget ? ` · corte real ${r.real}` : ""}${r.extra ? ` (+${r.extra} folga)` : ""}`, cents: money(r.bars + r.extra, r.g.profile) })),
     ...(onColumns ? [{ item: `Pilares ${t.column.designation}`, qty: `${columnBars} barras · ${nCols} pilares de ${(t.supportZMm / 1000).toFixed(2).replace(".", ",")} m${t.supportZMm > t.stockMm - 10 ? " (com emenda)" : ""}${t.column.extraBars ? ` (+${t.column.extraBars} folga)` : ""}`, cents: money(columnBars, t.column) }] : []),
     { item: `Terças ${t.purlin.designation}`, qty: `${purlinBars} barras${t.purlin.extraBars ? ` (+${t.purlin.extraBars} folga)` : ""}`, cents: money(purlinBars, t.purlin) },
     { item: "Telha", qty: `${sheets} × ${(sheetLengthMm / 1000).toFixed(2).replace(".", ",")} m (${slopeCount(t)} água(s), ${k} peça(s)/água)`, cents: t.sheet.pricePerMCents === null ? null : Math.round(sheetM * t.sheet.pricePerMCents) },
@@ -344,8 +420,9 @@ export function trussSummary(t: TrussEditor) {
     trussLengthMm: L, fallPercent: fallPercent(t), stations: st, pieces: one, purlins,
     bars: { chord: chord.bars, web: web.bars, webFullHeight: webFullBars, purlin: purlin.bars },
     buy: { chord: chordBars, web: webBars, purlin: purlinBars, column: columnBars }, columns, supports, plates, bolts, columnCount: nCols,
-    kg: { chord: kg(chordL, t.chord), web: kg(webL, t.web), purlin: kg(purlinL, t.purlin), column: kg(columnL, t.column),
-      total: kg(chordL, t.chord) + kg(webL, t.web) + kg(purlinL, t.purlin) + kg(columnL, t.column) },
+    kg: { chord: kgGroups(chordGroups), web: kgGroups(webGroups), purlin: kg(purlinL, t.purlin), column: kg(columnL, t.column),
+      total: kgGroups(chordGroups) + kgGroups(webGroups) + kg(purlinL, t.purlin) + kg(columnL, t.column) },
+    lineTypes: Array.from({ length: n }, (_, i) => lineTypeId(t, i)),
     sheets, sheetLengthMm, sheetM, screws, areaM2, lines,
     gutterLine: onColumns ? "Tesoura sobre pilares: calha e muros não modelados" : `Calha ${Math.round(t.gutter.widthMm / 10)} cm × ${(t.lengthMm * slopeCount(t) / 1000).toFixed(2).replace(".", ",")} m${t.gutter.budgeted ? (t.gutter.pricePerMCents === null ? " — preço pendente" : " — incluída no orçamento") : " — fora do orçamento"}`,
     knownCents: lines.reduce((s, l) => s + (l.cents ?? 0), 0), missing: lines.filter(l => l.cents === null).map(l => l.item),
@@ -397,10 +474,25 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
   };
   const role = { BI: "bottomChord", BS: "topChord", M: "web", D: "web" } as const;
   const label = { BI: "Banzo inferior", BS: "Banzo superior", M: "Montante", D: "Diagonal" } as const;
+  // Seções por perfil: tipos com o mesmo perfil compartilham a seção.
+  const sectionOf = new Map<string, string>(), sectionProfiles: { id: string; p: TrussEditor["chord"] }[] = [];
+  const sectionFor = (base: string, p: TrussEditor["chord"]) => {
+    const key = `${base}|${p.designation}|${p.kgPerM}`;
+    if (!sectionOf.has(key)) { const id = sectionProfiles.some(x => x.id === base) ? `${base}-${sectionProfiles.filter(x => x.id.startsWith(base)).length + 1}` : base; sectionOf.set(key, id); sectionProfiles.push({ id, p }); }
+    return sectionOf.get(key)!;
+  };
+  const pieceSection = new Map<string, string>();
   ys.forEach((y, f) => {
-    for (const p of trussPiecesComplete(t)) pieces.push({ id: `T${f + 1}-${p.id}`, role: role[p.kind], start: node(x0 + p.a[0], y, Z0 + p.a[1]), end: node(x0 + p.b[0], y, Z0 + p.b[1]),
-      label: `${label[p.kind]} ${p.kind === "BI" || p.kind === "BS" ? t.chord.designation : t.web.designation}`, group: "TESOURA" });
+    const e = trussOfLine(t, f), chordSec = sectionFor("CHORD", e.chord), webSec = sectionFor("WEB", e.web);
+    for (const p of trussPiecesComplete(e)) {
+      const id = `T${f + 1}-${p.id}`, isChord = p.kind === "BI" || p.kind === "BS";
+      pieces.push({ id, role: role[p.kind], start: node(x0 + p.a[0], y, Z0 + p.a[1]), end: node(x0 + p.b[0], y, Z0 + p.b[1]),
+        label: `${label[p.kind]} ${isChord ? e.chord.designation : e.web.designation}`, group: "TESOURA" });
+      pieceSection.set(id, isChord ? chordSec : webSec);
+    }
   });
+  sectionFor("PURLIN", t.purlin);
+  if (t.support === "columns") sectionFor("COLUMN", t.column);
   // Apoio em pilares: um pilar em cada ponta de cada tesoura, do piso (z = 0) ao banzo inferior.
   const columnFeet: string[] = [];
   if (t.support === "columns") ys.forEach((y, f) => (["E", "D"] as const).forEach((side, i) => {
@@ -424,9 +516,9 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
   draft.physicalCatalog = {
     schema_version: "jpn.physical-catalog/1",
     materials: [{ id: "ACO", steelGrade: "NAO-INFORMADO (perfil comercial)", eGpa: null, gGpa: null, nu: null, density, materialSource: "Aço não especificado", materialRevision: revision }],
-    sections: (t.support === "columns" ? ["chord", "web", "purlin", "column"] as const : ["chord", "web", "purlin"] as const).map(k => ({ id: k.toUpperCase(), designation: t[k].designation, areaCm2: area(t[k].kgPerM), iyCm4: null, izCm4: null, jCm4: null,
-      sectionSource: `Massa linear informada ${t[k].kgPerM} kg/m (área equivalente)`, sectionRevision: revision })),
-    assignments: pieces.map(p => ({ pieceId: p.id, materialId: "ACO", sectionId: p.role === "purlin" ? "PURLIN" : p.role === "web" ? "WEB" : p.role === "column" ? "COLUMN" : "CHORD", rotationDeg: null })),
+    sections: sectionProfiles.map(({ id, p }) => ({ id, designation: p.designation, areaCm2: area(p.kgPerM), iyCm4: null, izCm4: null, jCm4: null,
+      sectionSource: `Massa linear informada ${p.kgPerM} kg/m (área equivalente)`, sectionRevision: revision })),
+    assignments: pieces.map(p => ({ pieceId: p.id, materialId: "ACO", sectionId: pieceSection.get(p.id) ?? (p.role === "purlin" ? "PURLIN" : "COLUMN"), rotationDeg: null })),
   };
   const xs = x0 - t.sheet.beyondTipMm, ridge = x0 + L, xe = x0 + S * L + (S === 2 ? t.sheet.beyondTipMm : tipOffsetMm(t));
   const zLeft = (x: number) => Z0 + heightAt(t, x - x0);
@@ -460,6 +552,7 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
       ? `Apoio em ${columnCount(t)} pilares ${t.column.designation} de ${t.supportZMm} mm (piso ao banzo inferior), nas pontas das tesouras; bases só como posição, vínculos pendentes. Chapa de base ${t.anchor.plateWidthMm} x ${t.anchor.plateHeightMm} mm com ${t.anchor.boltsPerSupport} chumbador(es) de ${t.anchor.boltLengthMm} mm por pilar (sem verificação).`
       : `Muros: beiral baixo ${t.walls.lowMm} mm, ${S === 1 ? `lado alto ${t.walls.highMm} mm` : "ambos os beirais no mesmo nível declarado"} (espessura ${t.walls.thicknessMm}); banzo inferior a ${t.supportZMm} mm do piso. Chapa de ancoragem ${t.anchor.plateWidthMm} x ${t.anchor.plateHeightMm} mm, ${t.anchor.boltsPerSupport} chumbador(es) de ${t.anchor.boltLengthMm} mm por ${S === 1 ? "muro alto" : "beiral"} (sem verificação).`,
     `Telha em ${t.sheet.piecesPerSlope} peça(s) por água${t.sheet.piecesPerSlope > 1 ? `, sobreposição ${t.sheet.overlapMm} mm` : ""}.`,
+    ...(t.types.length ? [`Tipos de tesoura: ${[BASE_TYPE, ...t.types.map(x => x.id)].map(id => `${typeName(t, id)} nas linhas ${Array.from({ length: t.trusses }, (_, i) => i).filter(i => lineTypeId(t, i) === id).map(i => i + 1).join(", ") || "nenhuma"}`).join("; ")}. Cobertura, apoios e terças iguais; muda o desenho interno e os perfis.`] : []),
     `Distribuição preliminar: ${t.trusses} tesoura(s), ${Math.round(t.lengthMm/(t.trusses-1))} mm entre elas; posições não constituem apoios verificados.`,
     ...(t.fullHeightBudget ? [`Montantes/diagonais: compra por medida cheia ${trussSummary(t).buy.web} barras; corte geométrico real ${trussSummary(t).bars.web} barras (sem liberação para fabricar).`] : []),
     "ESTUDO DE CONFERÊNCIA: sem cargas, vento, dimensionamento ou ligações. Não usar para fabricação.",

@@ -4,6 +4,7 @@ import { RotateCcw, Plus, Trash2, ArrowLeftRight, Check, TriangleAlert, FilePlus
 import { NumberField } from "@/components/number-field";
 import { Field, Input, Select } from "@/components/ui";
 import {
+  BASE_TYPE, TYPE_KEYS, addTrussType, lineTypeId, removeTrussType, trussOfType, typeName,
   blankTruss, COMMON_PROFILES, fallPercent, roofPurlinPositions, slopeCount, stations, suggestedTrussCount, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
   type TrussEditor as Truss,
 } from "@/domain/truss-editor";
@@ -16,11 +17,12 @@ const brl = (c: number) => new Intl.NumberFormat("pt-BR", { style: "currency", c
 /** Reorganização geométrica ao mudar o vão, calha ou número de águas; não escolhe apoios. */
 function reflowTruss(t: Truss, patch: Partial<Pick<Truss, "spanMm" | "roofKind" | "gutter" | "support">>): Partial<Truss> {
   const candidate: Truss = { ...t, ...patch }, runMm = trussLengthMm(candidate);
-  if (!(runMm > 0) || !Number.isFinite(runMm)) return { ...patch, stationsMm: null, flippedPanels: [] };
+  if (!(runMm > 0) || !Number.isFinite(runMm)) return { ...patch, stationsMm: null, flippedPanels: [], types: t.types.map(x => ({ ...x, stationsMm: null, flippedPanels: [] })) };
   const lines = Math.min(60, Math.max(2, Math.ceil(runMm / t.purlinStepMm) + 1));
   const step = Math.max(300, Math.min(6000, Math.floor(runMm / (lines - 1) / 10) * 10));
   return { ...patch, highHeightMm: Math.round((t.tipHeightMm + runMm * fallPercent(t) / 100) * 10) / 10,
-    purlinLines: lines, purlinStepMm: step, stationsMm: null, flippedPanels: [] };
+    purlinLines: lines, purlinStepMm: step, stationsMm: null, flippedPanels: [],
+    types: t.types.map(x => ({ ...x, stationsMm: null, flippedPanels: [] })) };
 }
 
 /** Campo em centímetros sobre um valor guardado em milímetros. */
@@ -90,14 +92,43 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
     try { const parsed = trussEditorSchema.parse(t); return { s: trussSummary(parsed), issues: trussIssues(parsed), error: "" }; }
     catch (e) { return { s: null, issues: [], error: e instanceof Error ? e.message.split("\n")[0] : "Medidas inválidas." }; }
   }, [t]);
-  const st = stations(t), L = trussLengthMm(t);
-  const editStations = (next: number[]) => set({ stationsMm: [...new Set(next)].sort((a, b) => a - b) });
+  // Tipo em edição: a cobertura é da obra; desenho interno e perfis são do tipo.
+  const [editing, setEditing] = useState(BASE_TYPE);
+  const editingId = editing === BASE_TYPE || t.types.some(x => x.id === editing) ? editing : BASE_TYPE;
+  const v = trussOfType(t, editingId);
+  const setGeom = (patch: Partial<Truss>) => {
+    if (editingId === BASE_TYPE) return set(patch);
+    const own = Object.fromEntries(Object.entries(patch).filter(([k]) => (TYPE_KEYS as readonly string[]).includes(k)));
+    const rest = Object.fromEntries(Object.entries(patch).filter(([k]) => !(TYPE_KEYS as readonly string[]).includes(k)));
+    set({ ...rest, types: t.types.map(x => x.id === editingId ? { ...x, ...own } : x) });
+  };
+  const st = stations(v), L = trussLengthMm(v);
+  // Banzos e montantes: perfil do tipo em edição; terças e pilares: da obra.
+  type ProfileKey = "chord" | "web" | "purlin" | "column";
+  const src = (k: ProfileKey) => (k === "chord" || k === "web" ? v : t)[k];
+  const setProfile = (k: ProfileKey, p: Truss["chord"]) => k === "chord" || k === "web" ? setGeom({ [k]: p } as Partial<Truss>) : set({ [k]: p } as Partial<Truss>);
+  const editStations = (next: number[]) => setGeom({ stationsMm: [...new Set(next)].sort((a, b) => a - b) });
   const sel = selected !== null && selected < st.length ? selected : null;
   const errors = result.issues.filter(i => i.level === "erro");
 
   return <div className={styles.editor}>
     <div className={styles.canvas}>
-      <Drawing t={t} selected={sel} onSelect={i => setSelected(i)} />
+      <div className={styles.typeBar}>
+        <Field label="Desenhando"><Select value={editingId} onChange={e => { setEditing(e.target.value); setSelected(null); }}>
+          {[BASE_TYPE, ...t.types.map(x => x.id)].map(id => <option key={id} value={id}>{typeName(t, id)}{t.types.length ? ` · linhas ${Array.from({ length: t.trusses }, (_, i) => i).filter(i => lineTypeId(t, i) === id).map(i => i + 1).join(", ") || "nenhuma"}` : ""}</option>)}
+        </Select></Field>
+        {editingId !== BASE_TYPE && <Field label="Nome do tipo"><Input value={t.types.find(x => x.id === editingId)?.name ?? ""} maxLength={40} onChange={e => set({ types: t.types.map(x => x.id === editingId ? { ...x, name: e.target.value } : x) })} /></Field>}
+        <div className={styles.row}>
+          <button type="button" className="button secondary" disabled={t.types.length >= 9} onClick={() => { const next = addTrussType(t, editingId); const id = next.types.at(-1)?.id; set({ types: next.types }); if (id) setEditing(id); setSelected(null); }}><Plus size={16} />Novo tipo (copia este)</button>
+          {editingId !== BASE_TYPE && <button type="button" className="button secondary" onClick={() => { const next = removeTrussType(t, editingId); set({ types: next.types, lineTypes: next.lineTypes }); setEditing(BASE_TYPE); setSelected(null); }}><Trash2 size={16} />Remover tipo</button>}
+        </div>
+        {t.types.length > 0 && <div className={styles.lines} aria-label="Tipo de cada tesoura">
+          {Array.from({ length: t.trusses }, (_, i) => <Field key={i} label={`Tesoura ${i + 1}`}><Select value={lineTypeId(t, i)} onChange={e => { const next = Array.from({ length: t.trusses }, (_, j) => lineTypeId(t, j)); next[i] = e.target.value; set({ lineTypes: next }); }}>
+            {[BASE_TYPE, ...t.types.map(x => x.id)].map(id => <option key={id} value={id}>{typeName(t, id)}</option>)}
+          </Select></Field>)}
+        </div>}
+      </div>
+      <Drawing t={v} selected={sel} onSelect={i => setSelected(i)} />
       <p className={styles.hint}>Toque num montante para ajustar. Altura exagerada para facilitar a leitura; as medidas são reais (em cm).</p>
       {sel !== null && <div className={styles.point}>
         <strong>Montante {sel + 1}</strong>
@@ -110,7 +141,7 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
         </> : <span className={styles.muted}>Montante da {sel === 0 ? "ponta" : "lado alto"}: muda pelas medidas da tesoura.</span>}
         <div className={styles.row}>
           {sel < st.length - 1 && <button type="button" className="button secondary" onClick={() => editStations([...st, Math.round((st[sel] + st[sel + 1]) / 2 * 10) / 10])}><Plus size={18} />Montante no meio do painel ao lado</button>}
-          {sel < st.length - 1 && t.diagonal !== "none" && t.diagonal !== "x" && <button type="button" className="button secondary" onClick={() => set({ flippedPanels: t.flippedPanels.includes(sel) ? t.flippedPanels.filter(i => i !== sel) : [...t.flippedPanels, sel] })}><ArrowLeftRight size={18} />Inverter diagonal deste painel</button>}
+          {sel < st.length - 1 && v.diagonal !== "none" && v.diagonal !== "x" && <button type="button" className="button secondary" onClick={() => setGeom({ flippedPanels: v.flippedPanels.includes(sel) ? v.flippedPanels.filter(i => i !== sel) : [...v.flippedPanels, sel] })}><ArrowLeftRight size={18} />Inverter diagonal deste painel</button>}
         </div>
       </div>}
     </div>
@@ -193,12 +224,12 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
           <Cm label="Altura na ponta (cm)" mm={t.tipHeightMm} onMm={tipHeightMm => set({ tipHeightMm })} min={0.1} />
           <Cm label={t.roofKind === "two-slopes" ? "Altura na cumeeira (cm)" : "Altura no lado alto (cm)"} mm={t.highHeightMm} onMm={highHeightMm => set({ highHeightMm })} min={0.1} />
           <NumberField label="Caída (%)" value={Math.round(fallPercent(t) * 100) / 100} min={0.5} max={60} decimals={2} onChange={v => v !== null && setT(prev => withFall(prev, v))} hint={t.roofKind === "two-slopes" ? "Inclinação de cada água, muda a cumeeira." : "Muda a altura do lado alto."} />
-          <Cm label="Painel (cm)" mm={t.panelMm} onMm={panelMm => set({ panelMm, stationsMm: null, flippedPanels: [] })} min={10} />
-          <Field label="Contar painéis a partir"><Select value={t.countFrom} onChange={e => set({ countFrom: e.target.value as Truss["countFrom"], stationsMm: null, flippedPanels: [] })}><option value="high">do lado alto (sobra na ponta)</option><option value="low">da ponta (sobra no alto)</option></Select></Field>
-          <Field label="Diagonais"><Select value={t.diagonal} onChange={e => set({ diagonal: e.target.value as Truss["diagonal"], flippedPanels: [] })}><option value="to-high">subindo para o lado alto</option><option value="to-low">subindo para a ponta</option><option value="x">em X</option><option value="none">sem diagonal</option></Select></Field>
+          <Cm label="Painel (cm)" mm={v.panelMm} onMm={panelMm => setGeom({ panelMm, stationsMm: null, flippedPanels: [] })} min={10} hint={editingId !== BASE_TYPE ? `Só no ${typeName(t, editingId)}.` : undefined} />
+          <Field label="Contar painéis a partir"><Select value={v.countFrom} onChange={e => setGeom({ countFrom: e.target.value as Truss["countFrom"], stationsMm: null, flippedPanels: [] })}><option value="high">do lado alto (sobra na ponta)</option><option value="low">da ponta (sobra no alto)</option></Select></Field>
+          <Field label="Diagonais"><Select value={v.diagonal} onChange={e => setGeom({ diagonal: e.target.value as Truss["diagonal"], flippedPanels: [] })}><option value="to-high">subindo para o lado alto</option><option value="to-low">subindo para a ponta</option><option value="x">em X</option><option value="none">sem diagonal</option></Select></Field>
           <Cm label="Emenda do banzo a partir da ponta (cm)" mm={t.chordSpliceMm} onMm={chordSpliceMm => set({ chordSpliceMm })} min={50} />
         </div>
-        {t.stationsMm && <button type="button" className="button secondary" onClick={() => set({ stationsMm: null, flippedPanels: [] })}><RotateCcw size={16} />Desfazer ajustes ponto a ponto ({st.length} montantes)</button>}
+        {v.stationsMm && <button type="button" className="button secondary" onClick={() => setGeom({ stationsMm: null, flippedPanels: [] })}><RotateCcw size={16} />Desfazer ajustes ponto a ponto ({st.length} montantes)</button>}
       </section>
       <section className={styles.card}>
         <h3>{t.support === "columns" ? "Chapa de base dos pilares" : t.roofKind === "two-slopes" ? "Ancoragens nos dois beirais" : "Ancoragem no muro alto"}</h3>
@@ -221,14 +252,14 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
       <section className={styles.card}>
         <h3>Perfis e preços</h3>
         {(t.support === "columns" ? ["chord", "web", "purlin", "column"] as const : ["chord", "web", "purlin"] as const).map(k => <div key={k} className={styles.grid}>
-          <Field label={`${k === "chord" ? "Banzos" : k === "web" ? "Montantes e diagonais" : k === "purlin" ? "Terças" : "Pilares"}: escolher`}><Select value={COMMON_PROFILES.some(p => p.designation === t[k].designation) ? t[k].designation : ""} onChange={e => { const p = COMMON_PROFILES.find(x => x.designation === e.target.value); if (p) set({ [k]: { ...t[k], designation: p.designation, kgPerM: p.kgPerM } } as Partial<Truss>); }}>
+          <Field label={`${k === "chord" ? "Banzos" : k === "web" ? "Montantes e diagonais" : k === "purlin" ? "Terças" : "Pilares"}: escolher`}><Select value={COMMON_PROFILES.some(p => p.designation === src(k).designation) ? src(k).designation : ""} onChange={e => { const p = COMMON_PROFILES.find(x => x.designation === e.target.value); if (p) setProfile(k, { ...src(k), designation: p.designation, kgPerM: p.kgPerM }); }}>
             <option value="">outro (digitar)</option>
             {COMMON_PROFILES.filter(p => p.use.includes(k)).concat(COMMON_PROFILES.filter(p => !p.use.includes(k))).map(p => <option key={p.designation} value={p.designation}>{p.designation} · {p.kgPerM.toLocaleString("pt-BR")} kg/m</option>)}
           </Select></Field>
-          <Field label="Nome do perfil"><Input value={t[k].designation} onChange={e => set({ [k]: { ...t[k], designation: e.target.value } } as Partial<Truss>)} /></Field>
-          <NumberField label="kg/m" value={t[k].kgPerM} min={0.01} max={1000} decimals={3} onChange={v => v !== null && set({ [k]: { ...t[k], kgPerM: v } } as Partial<Truss>)} />
-          <NumberField label="Preço da barra (R$)" money value={t[k].barPriceCents} min={0} max={1000000} decimals={2} onChange={v => set({ [k]: { ...t[k], barPriceCents: v } } as Partial<Truss>)} />
-          <NumberField label="Barras de folga" value={t[k].extraBars} min={0} max={100} decimals={0} onChange={v => v !== null && set({ [k]: { ...t[k], extraBars: v } } as Partial<Truss>)} hint="Somadas na compra." />
+          <Field label="Nome do perfil"><Input value={src(k).designation} onChange={e => setProfile(k, { ...src(k), designation: e.target.value })} /></Field>
+          <NumberField label="kg/m" value={src(k).kgPerM} min={0.01} max={1000} decimals={3} onChange={v => v !== null && setProfile(k, { ...src(k), kgPerM: v })} />
+          <NumberField label="Preço da barra (R$)" money value={src(k).barPriceCents} min={0} max={1000000} decimals={2} onChange={v => setProfile(k, { ...src(k), barPriceCents: v })} />
+          <NumberField label="Barras de folga" value={src(k).extraBars} min={0} max={100} decimals={0} onChange={v => v !== null && setProfile(k, { ...src(k), extraBars: v })} hint="Somadas na compra." />
         </div>)}
         <Cm label="Barra comercial (cm)" mm={t.stockMm} onMm={stockMm => set({ stockMm, ...(trussesAuto ? { trusses: suggestedTrussCount(t.lengthMm,stockMm) } : {}) })} min={100} />
         <p className={styles.muted}>kg/m da lista: valores nominais de referência; confira com o fornecedor.</p>

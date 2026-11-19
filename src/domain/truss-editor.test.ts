@@ -6,7 +6,7 @@ import { emptyPlanning } from "./structure";
 import { auditPhysicalRoofCoverage } from "./physical-roof-coverage";
 import { structureSignature } from "./calculations/project-basis";
 import { resolvePhysicalStructure } from "./physical-structure";
-import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor, suggestedTrussCount, trussReplacementImpact, columnCount, tipOffsetMm, trussLengthMm
+import { applyTrussToProject, blankTruss, purlinPositions, stations, tomTrussDefaults, trussIssues, trussPieces, trussPiecesComplete, roofPurlinPositions, trussSummary, withFall, fallPercent, trussEditorSchema, trussDefaultsFor, suggestedTrussCount, trussReplacementImpact, columnCount, tipOffsetMm, trussLengthMm, addTrussType, removeTrussType, lineTypeId, trussOfLine
 } from "./truss-editor";
 import { spatialPreparationReview } from "./spatial-preparation";
 import { packageTakeoff } from "@/lib/exports/package-source";
@@ -251,5 +251,55 @@ describe("tesoura sobre pilares (obra completa)", () => {
     expect(t.support).toBe("walls");
     expect(columnCount(t)).toBe(0);
     expect(applyTrussToProject(newProject(), t).workspace.physicalStructure!.pieces.some(p => p.role === "column")).toBe(false);
+  });
+});
+
+describe("vários tipos de tesoura na mesma obra", () => {
+  const twoTypes = () => {
+    let t = addTrussType(tomTrussDefaults());
+    t = { ...t, types: t.types.map(x => ({ ...x, name: "Ponta", panelMm: 750, countFrom: "low" as const })), lineTypes: ["T2", "T1", "T2"] };
+    return t;
+  };
+  it("novo tipo copia o desenho e as linhas escolhem o tipo", () => {
+    const base = tomTrussDefaults(), t = addTrussType(base);
+    expect(t.types).toHaveLength(1);
+    expect(t.types[0]).toMatchObject({ id: "T2", name: "Tipo 2", panelMm: base.panelMm, diagonal: base.diagonal });
+    expect(trussSummary(t).bars).toEqual(trussSummary(base).bars); // sem linhas no tipo 2, nada muda
+    expect(trussIssues(t).some(i => i.message.includes("Tipo 2 não está em nenhuma linha"))).toBe(true);
+    const tt = twoTypes();
+    expect([0, 1, 2].map(i => lineTypeId(tt, i))).toEqual(["T2", "T1", "T2"]);
+    expect(trussOfLine(tt, 0).panelMm).toBe(750);
+    expect(trussOfLine(tt, 1).panelMm).toBe(500);
+  });
+  it("resumo e modelo somam cada linha com o seu tipo; massa do pacote igual ao resumo", () => {
+    const t = twoTypes(), s = trussSummary(t), single = trussSummary(tomTrussDefaults());
+    expect(s.lineTypes).toEqual(["T2", "T1", "T2"]);
+    expect(s.kg.web).toBeLessThan(single.kg.web); // painéis maiores nas pontas: menos montantes
+    const p = applyTrussToProject(newProject(), t), ps = p.workspace.physicalStructure!;
+    const count = (f: number) => ps.pieces.filter(x => x.id.startsWith(`T${f}-`) && x.role === "web").length;
+    expect(count(1)).toBeLessThan(count(2));
+    expect(count(1)).toBe(count(3));
+    expect(packageTakeoff(p).totals.massKg).toBeCloseTo(s.kg.total, 1);
+    expect(p.technicalNotes).toContain("Ponta nas linhas 1, 3");
+  });
+  it("perfil diferente por tipo vira outra linha de orçamento e outra seção", () => {
+    const base = twoTypes(), heavy = { designation: "U 127x50x2.65 mm", kgPerM: 4.52, barPriceCents: null, extraBars: 0 };
+    const t = { ...base, types: base.types.map(x => ({ ...x, chord: heavy })) }, s = trussSummary(t);
+    expect(s.lines.filter(l => l.item.startsWith("Banzos ")).map(l => l.item)).toEqual(["Banzos U 127x50x2.65 mm", "Banzos U 100x40x2.65 mm"]);
+    const cat = applyTrussToProject(newProject(), t).workspace.spatialPreparation!.physicalCatalog!;
+    expect(cat.sections.map(x => x.designation)).toContain("U 127x50x2.65 mm");
+    expect(new Set(cat.sections.map(x => x.id)).size).toBe(cat.sections.length);
+  });
+  it("terça sem montante no outro tipo gera aviso; remover tipo volta as linhas ao tipo 1", () => {
+    const t = twoTypes();
+    expect(trussIssues(t).some(i => i.level === "aviso" && i.message.startsWith("Ponta:") && i.message.includes("sem montante"))).toBe(true);
+    const r = removeTrussType(t, "T2");
+    expect(r.types).toEqual([]);
+    expect([0, 1, 2].map(i => lineTypeId(r, i))).toEqual(["T1", "T1", "T1"]);
+    expect(trussSummary(r).bars).toEqual(trussSummary(tomTrussDefaults()).bars);
+  });
+  it("projeto salvo antes dos tipos continua abrindo igual", () => {
+    const old = JSON.parse(JSON.stringify(tomTrussDefaults())); delete old.types; delete old.lineTypes;
+    expect(trussEditorSchema.parse(old)).toEqual(tomTrussDefaults());
   });
 });
