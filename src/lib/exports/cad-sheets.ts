@@ -396,7 +396,8 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   });
   const framePages=data.frameGroups.map((group,i)=>{
     // Com tipos do editor de tesoura, a prancha usa o nome do tipo (o mesmo da tela).
-    const editor=project.workspace.trussEditor,line=editor?.types.length?Number(/^T(\d+)-/.exec(group[0].pieces[0]?.id??"")?.[1]??0)-1:-1;
+    const editor=project.workspace.trussEditor,firstTruss=group[0].pieces.find(p=>/^T(\d+)-/.test(p.id));
+    const line=editor?.types.length?Number(/^T(\d+)-/.exec(firstTruss?.id??"")?.[1]??0)-1:-1;
     const named=editor&&line>=0&&line<editor.trusses?typeName(editor,lineTypeId(editor,line)):null;
     const title=`${group[0].kind==="TESOURA"?"Tesoura":"Pórtico"} — ${named??`tipo ${i+1}`} (${group.length}×)`;
     const drawingPage=book.add(`${group[0].kind} ${i+1}`,title);
