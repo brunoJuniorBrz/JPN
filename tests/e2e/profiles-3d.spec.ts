@@ -21,6 +21,9 @@ async function seed(page: Page) {
 for (const width of [375, 1440]) test.describe(`dispositivo ${width}px`, () => {
 test.use({ isMobile: width === 375, hasTouch: width === 375, deviceScaleFactor: width === 375 ? 2 : 1 });
 test(`perfis 3D, seleção, modos e persistência em ${width}px`, async ({ page }) => {
+  // A varredura real de raycasting e o renderer WebGL em 1440px podem ultrapassar
+  // o timeout padrão em runner compartilhado. Preservar TODAS as asserções.
+  if (width === 1440) test.setTimeout(90000);
   await page.setViewportSize({ width, height: 900 });
   const errors: string[] = []; page.on("pageerror", e => errors.push(e.message)); await seed(page);
   const before = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
