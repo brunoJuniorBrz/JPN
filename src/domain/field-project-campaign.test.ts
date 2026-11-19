@@ -6,6 +6,11 @@
  *   https://www.camaraitapoa.sc.gov.br/contratacao-direta-dispensa-de-licitacao/1398-contratacao-de-empresa-especializada-para-fabricacao-transporte-e-instalacao-de-cobertura-metalica-para-vaga-de-garagem.html
  * - Prefeitura de Presidente Juscelino MG, projeto de 200 m2, planta 10 x 20 m
  *   e cinco tesouras: https://bkp.presidentejuscelino.mg.gov.br/wp-content/uploads/2022/07/Anexos-TP-0112022-Assinado.pdf
+ * - Prefeitura de Witmarsum SC, pavilhao de 12,00 x 12,49 m,
+ *   8 pilares, duas aguas, caimento de 8%:
+ *   https://witmarsum.sc.gov.br/uploads/sites/293/2024/09/MEMORIAL-DESCRITIVO-COBERTURA-NOSSA-SENHORA-DAS-GRACAS.pdf
+ * - Parque de Exposicoes SC, cobertura 22 x 100 m, 21 tesouras, 42 pilares:
+ *   https://painel.sc.gov.br/uploads/sites/331/2024/08/MEMORIAL_DESCRITIVO_E_CALCULO_assinado.pdf
  * - UFPB, Leite (2016): galpao de 19,87 x 49,40 m, 10 modulos de 4,94 m,
  *   cobertura a 18,55 graus e V0 historico de 30 m/s:
  *   https://ct.ufpb.br/ccec/contents/documentos/tccs/copy_of_2016.1/analise-dos-esforcos-atuantes-em-um-galpao-metalico-devido-a-acao-do-vento.pdf
@@ -31,6 +36,8 @@ import {
 const cases = [
   { name: "Itapoa 5 x 5,5 (geometria publica)", typology: "mono", widthM: 5, lengthM: 5.5, heightM: 3, slopePercent: 8, frameSpacingM: 2.75, purlinSpacingM: 1.0, areaM2: 27.5 },
   { name: "Presidente Juscelino 10 x 20", typology: "gable", widthM: 10, lengthM: 20, heightM: 4, slopePercent: 15, frameSpacingM: 5, purlinSpacingM: 1.0, areaM2: 200 },
+  { name: "Witmarsum 12 x 12,49", typology: "gable", widthM: 12, lengthM: 12.49, heightM: 4.01, slopePercent: 8, frameSpacingM: 4.2, purlinSpacingM: 1.0, areaM2: 149.88 },
+  { name: "Parque de Exposicoes SC 22 x 100", typology: "gable", widthM: 22, lengthM: 100, heightM: 5, slopePercent: 10, frameSpacingM: 5, purlinSpacingM: 1.5, areaM2: 2200 },
   { name: "UFPB 19,87 x 49,40", typology: "gable", widthM: 19.87, lengthM: 49.4, heightM: 6.85, slopePercent: Math.tan(18.55 * Math.PI / 180) * 100, frameSpacingM: 4.94, purlinSpacingM: 1.5, areaM2: 981.578 },
   { name: "limite sintetico 40 x 100", typology: "gable", widthM: 40, lengthM: 100, heightM: 11.67, slopePercent: 12, frameSpacingM: 10, purlinSpacingM: 2, areaM2: 4000 },
 ] as const;
@@ -96,6 +103,25 @@ describe("campanha de referencias externas: geometria de garagem a galpao", () =
     expect(result.workspace.trussEditor!.lineTypes).toEqual(t.lineTypes);
     expect(result.workspace.spatialPreparation!.supports.every(s => s.dofs.every(d => d === "pending"))).toBe(true);
     expect(result.workspace.cutting.useFabrication).toBe(false);
+  });
+
+  it("Witmarsum: 12 x 12,49 com quatro tesouras e oito pilares (hipotese de espacamento)", () => {
+    const p = createQuickProject({ typology: "gable", widthM: 12, lengthM: 12.49,
+      heightM: 4.01, slopePercent: 8, frameSpacingM: 4.2, purlinSpacingM: 1 });
+    const model = generateStructure(p).model!;
+    expect(model.frameCount).toBe(4);
+    expect(model.pieces.filter(piece => piece.role === "column")).toHaveLength(8);
+    expect(model.projectedAreaM2).toBeCloseTo(149.88, 8);
+  });
+
+  it("Parque de Exposicoes SC: 21 linhas de tesoura e 42 pilares num modelo de 2200m2", () => {
+    const p = createQuickProject({ typology: "gable", widthM: 22, lengthM: 100,
+      heightM: 5, slopePercent: 10, frameSpacingM: 5, purlinSpacingM: 1.5 });
+    const model = generateStructure(p).model!;
+    expect(model.projectedAreaM2).toBe(2200);
+    expect(model.frameCount).toBe(21);
+    expect(model.pieces.filter(piece => piece.role === "column")).toHaveLength(42);
+    expect(trussDefaultsFor(p).trusses).toBe(21);
   });
 
   it("UFPB: 49,40 m / 4,94 m sao 10 modulos e 11 linhas; sem forcar emendas comerciais", () => {
