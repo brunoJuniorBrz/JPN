@@ -24,7 +24,7 @@ import { CompletePackageControl } from "./complete-package-control";
 import { GeneratedFiles, GeneratedMaterials, GeneratedReview, GeneratedSafetyWarning, GeneratedTotals, GeneratedViewport, useGeneratedResult, type ResultSection } from "./takeoff-summary";
 import { DeclaredEngineering, DeclaredFiles, DeclaredMaterials, DeclaredSafetyWarning, DeclaredViewport, useDeclaredModel } from "./declared-model-summary";
 import { ProjectWorkbench, type WorkbenchTool } from "./project-workbench";
-import { StudioLayout, StudioRail, studioStepFromLegacy, studioStepIndex, studioStepUrl, studioSteps, type AnalysisTool, type StudioStepId } from "./project-studio";
+import { StudioLayout, StudioRail, StudioTools, studioStepFromLegacy, studioStepIndex, studioStepUrl, studioSteps, type AnalysisTool, type StudioStepId } from "./project-studio";
 import type { PendingTarget } from "./result-presentation";
 import { StudioAnalysisProvider, useStudioAnalysis } from "./studio-analysis";
 import { StudioCommandPalette, StudioViewportMenu } from "./studio-command";
@@ -140,14 +140,11 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     saveProject(next); if (!flush()) throw Error("Não foi possível salvar o modelo importado; confira o aviso de armazenamento.");
     // Modelo declarado segue para Geometria (contorno da cobertura e aviso do modelo); gerado, para Materiais.
     const target: StudioStepId = next.workspace.physicalStructure ? "geometria" : "materiais";
-    // For a brand-new project, avoid mounting the large 3D viewer on /projetos/novo
-    // before the route transition. The saved model is ready in the destination page.
-    if (!initial) {
-      setInvalidDraft(false);
-      router.replace(`/projetos/${next.id}?fluxo=levantamento&etapa=${target}&vista=3d`);
-      return;
-    }
-    setProject(next); setInvalidDraft(false); setStep(target); setOpen3D(true); setOpen3DRequest(n => n + 1); setSelectedPiece(""); setSelectedNode("");
+    setInvalidDraft(false);
+    // Projeto novo: o modelo já está salvo; vai direto para a URL do projeto criado. Renderizar o
+    // modelo 3D declarado nesta página (que será descartada) atrasava a navegação em vários segundos.
+    if (!initial) { router.replace(`/projetos/${next.id}?fluxo=levantamento&etapa=${target}&vista=3d`); return; }
+    setProject(next); setStep(target); setOpen3D(true); setOpen3DRequest(n => n + 1); setSelectedPiece(""); setSelectedNode("");
   }
   function open3DViewer() {
     if (preview.model) {
@@ -199,7 +196,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   else if (step === "verificacao") panel = declared
     ? <div className="notice"><p>Os relatórios de resistência, apoios e ligações ficam nos resultados da análise estrutural. Verificações normativas incompletas · fabricação bloqueada.</p><button type="button" className="button secondary" onClick={() => go("analise")}>Abrir análise estrutural</button></div>
     : <><GeneratedReview result={generated.result} pending={generated.pending} onResolvePending={resolvePending} /><div className="spatial-jump"><p>Resistência, apoios e ligações aparecem nos resultados da Análise Estrutural Experimental.</p><button type="button" className="button secondary" onClick={() => openTool("mixedlocal")}>Abrir análise estrutural</button></div></>;
-  else if (step === "materiais") panel = declared ? <DeclaredMaterialsPart project={project} /> : <GeneratedMaterials result={generated.result} grouped={generated.grouped} />;
+  else if (step === "materiais") panel = declared ? <DeclaredMaterialsPart project={project} /> : <GeneratedMaterials result={generated.result} grouped={generated.grouped} onShowPieces={ids => { setSelectedPiece(ids[0] ?? ""); setSelectedNode(""); if (ids[0]) window.requestAnimationFrame(() => viewerApi?.focus(ids[0])); }} />;
   else if (step === "arquivos") panel = declared ? <>
     <DeclaredFiles project={project} />
     <CompletePackageControl project={project} onChange={update} beforeExport={() => {
@@ -232,7 +229,8 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
     {project.isExample && <p className="example-banner">EXEMPLO FICTÍCIO · Medidas, distribuição e perfis apenas para demonstrar o cálculo geométrico.</p>}
     {step !== "materiais" && project.technicalNotes.startsWith("PRÉ-PROJETO VISUAL:") && <p className="example-banner">PRÉ-PROJETO VISUAL · Perfis e espaçamentos são sugestões geométricas editáveis, sem dimensionamento. Não usar para comprar ou cortar.</p>}
     <StudioLayout
-      rail={<StudioRail step={step} onStep={id => go(id)} tool={analysisTool} onTool={openTool} showTools={!declared && step === "analise"} pendingCount={pendingCount} />}
+      rail={<StudioRail step={step} onStep={id => go(id)} pendingCount={pendingCount} />}
+      openKey={`${step}|${selectedPiece}|${selectedNode}`}
       viewportToolbar={<><div className="viewer-shortcut"><button type="button" className="button secondary" onClick={open3DViewer}><Box size={19} />{preview.model ? "Abrir modelo 3D" : "Configurar modelo 3D"}</button>{preview.model
           ? <InfoTip label="visualização 3D">Visualização 3D da estrutura disponível também no celular. Arraste para girar; use Iso/Superior/Frontal/Lateral para vistas prontas.</InfoTip>
           : <span className="field-hint">{`Para visualizar em 3D: ${preview.pending[0] ?? "complete a estrutura"}`}</span>}</div>
@@ -244,7 +242,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
       inspectorTitle={step === "analise" && !declared ? `Análise · ${analysisToolLabel(analysisTool)}` : stepLabel}
       inspector={<>
         <p className="workflow-progress">Passo {stepIndex + 1} de {studioSteps.length} — {stepLabel}</p>
-        <div className="workflow-content">{selection}{panel}{workbench}{projectTools}</div>
+        <div className="workflow-content">{!declared && step === "analise" && <StudioTools step={step} tool={analysisTool} onTool={openTool} />}{selection}{panel}{workbench}{projectTools}</div>
         <div className="workflow-footer"><InfoTip label="quantitativos">Quantitativos independentes de preços: comprimentos e peças vêm da geometria; preços entram só no Orçamento de venda.</InfoTip><div className="actions">
           {stepIndex > 0 && <button type="button" className="button secondary" onClick={() => go(studioSteps[stepIndex - 1].id)}><ArrowLeft size={18} />Voltar</button>}
           {initial && <button type="button" className={next ? "button secondary" : "button"} onClick={save}><Save size={18} />Salvar levantamento</button>}
