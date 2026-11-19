@@ -416,11 +416,16 @@ body { font-size: 16px; }
 .structure-profile-notice p { margin: 7px 0 9px; }
 .structure-profile-notice .actions { margin-top: 12px; }
 .structure-viewer-tools { margin-bottom: 10px; }
-/* Fullscreen is a primary viewport action, visible without scrolling on mobile. */
+/* Fullscreen action has a dedicated row above the model, never over camera controls. */
 .presentation-viewport { position: relative; }
+.viewer-fullscreen-row {
+  display: flex; align-items: center; justify-content: flex-start;
+  min-width: 0; margin: 6px 0 4px;
+}
+/* The studio flattens the viewer layout; keep this row directly before its canvas. */
+.studio-viewport-body #jpn-viewer .viewer-fullscreen-row { order: -3; }
 .viewer-fullscreen-button {
-  position: absolute; top: 12px; left: 12px; z-index: 30;
-  display: inline-flex; align-items: center; gap: 7px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   min-height: 44px; padding: 9px 13px; border: 1px solid #bac7bc;
   border-radius: 10px; background: #20392d; color: #fff;
   font: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
@@ -428,9 +433,9 @@ body { font-size: 16px; }
 }
 .viewer-fullscreen-button span[aria-hidden] { font-size: 22px; line-height: 1; }
 .viewer-fullscreen-button:focus-visible { outline: 3px solid #7fbca0; outline-offset: 2px; }
-.structure-viewer--expanded .viewer-fullscreen-button { top: 8px; left: 8px; }
 @media (max-width: 600px) {
-  .viewer-fullscreen-button { top: 8px; left: 8px; min-height: 44px; padding: 8px 11px; }
+  .viewer-fullscreen-row { margin: 5px 0 3px; }
+  .viewer-fullscreen-button { padding: 8px 11px; }
 }
 
 .structure-3d { width: 100%; height: 440px; min-height: 350px; overflow: hidden; border: 1px solid var(--line); margin: 16px 0; background: #f6f8f2; }
