@@ -1,0 +1,365 @@
+/* Estúdio do projeto (F1). Três faixas:
+   - desktop >= 1200px: etapas | 3D fixo | inspetor, status embaixo, tudo na altura da janela;
+   - tablet 1000–1199px: etapas em grade, 3D com altura contida, inspetor e status empilhados;
+   - celular < 1000px: 3D no topo, inspetor como painel inferior, etapas numa barra fixa embaixo. */
+
+.project-studio { --studio-status-h: 64px; --studio-steps-h: 62px; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); min-width: 0; }
+
+/* Etapas */
+.studio-rail { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); align-content: start; }
+.studio-tools, .studio-steps { min-width: 0; }
+.studio-steps ol, .studio-tools ul { list-style: none; margin: 0; padding: 0; }
+.studio-steps ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-1); padding: var(--space-2); background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-lg); }
+.studio-step { position: relative; width: 100%; min-height: var(--hit-target); display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; padding: 6px 10px; border: 0; border-radius: var(--radius-md); background: transparent; color: #606b56; font-size: var(--text-md); font-weight: var(--weight-semibold); text-align: left; }
+.studio-step:hover { background: var(--color-surface-hover); color: var(--color-ink); }
+.studio-step.current { background: var(--color-accent-soft); color: #655022; }
+.studio-step > svg { display: none; }
+.studio-step-index { width: 22px; height: 22px; flex: 0 0 22px; display: grid; place-items: center; border: 1px solid #aeb79f; border-radius: var(--radius-full); font-size: var(--text-xs); }
+.studio-step.current .studio-step-index { background: #8a7038; border-color: #8a7038; color: var(--color-on-dark); }
+.studio-step-label { min-width: 0; overflow-wrap: anywhere; }
+.studio-step-count { flex-basis: 100%; padding-left: 30px; color: #8a6427; font-size: var(--text-2xs); font-weight: var(--weight-medium); }
+.studio-tools { margin-bottom: var(--space-4); padding: var(--space-2) var(--space-3) var(--space-3); background: var(--color-surface-muted); border: 1px solid var(--color-line); border-radius: var(--radius-md); }
+.studio-tools-caption { margin: 2px 0 var(--space-2); color: var(--color-muted); font-size: var(--text-2xs); font-weight: var(--weight-bold); letter-spacing: 1px; text-transform: uppercase; }
+.studio-tools ul { display: flex; flex-wrap: wrap; gap: var(--space-1); }
+.studio-tool { min-height: 36px; padding: 6px 10px; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface-muted); color: var(--color-ink); font-size: var(--text-sm); text-align: left; }
+.studio-tool:hover { background: var(--color-surface-hover); }
+.studio-tool.current { background: var(--color-dark); border-color: var(--color-dark); color: var(--color-on-dark); }
+.studio-step:focus-visible, .studio-tool:focus-visible, .studio-sheet-toggle:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+/* Visualização: altura contida; a tela 2D/3D vem primeiro e os controles extras ficam abaixo (rolagem própria). */
+.studio-viewport { min-width: 0; height: max(380px, 58dvh); display: flex; flex-direction: column; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-lg); overflow: hidden; }
+/* Barra fina do topo da visualização: atalho do 3D, estado dos resultados e o botão do painel numa linha. */
+.studio-viewport-bar { flex: 0 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 6px 10px; border-bottom: 1px solid var(--color-line); }
+.studio-viewport-bar > .viewer-shortcut { display: flex; align-items: center; gap: 8px; flex: 0 1 auto; min-width: 0; margin: 0; padding: 0; border: 0; background: none; }
+.studio-viewport-bar > .viewer-shortcut .button { width: auto; min-height: 38px; padding: 6px 12px; font-size: var(--text-sm); }
+.studio-viewport-bar > .viewer-shortcut .field-hint { font-size: var(--text-xs); }
+.studio-viewport-bar > .studio-results { flex: 1 1 260px; min-width: 0; padding: 0; border: 0; background: none; }
+.studio-viewport-bar > .studio-results--warn { padding: 4px 8px; border-radius: var(--radius-md); background: var(--color-warning-soft); }
+.studio-panel-toggle { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; min-height: 38px; margin-left: auto; padding: 0 12px; border: 1px solid var(--color-line-strong); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-ink); font-size: var(--text-sm); font-weight: var(--weight-semibold); }
+.studio-panel-toggle:hover { background: var(--color-surface-hover); }
+.studio-panel-toggle:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.studio-viewport-body { flex: 1 1 auto; min-height: 0; padding: var(--space-3); overflow: auto; container-type: size; }
+/* Tela cheia usa position: fixed; a contenção do container a prenderia na coluna. */
+.studio-viewport-body:has(.structure-viewer--expanded) { container-type: normal; overflow: visible; }
+.studio-viewport-body .drawing-panel { border: 0; padding: 0; background: transparent; }
+.studio-viewport-body .pending-box { margin: 0; }
+.studio-viewport-empty { display: grid; place-items: center; gap: var(--space-2); min-height: 240px; color: var(--color-muted); text-align: center; }
+/* Dentro do 3D: os dois seletores (2D/3D e modo) numa linha, a tela logo abaixo, as ferramentas de
+   inspeção logo depois da tela. O resto (busca, avisos, personalização) fica abaixo, rolando. */
+.studio-viewport-body #jpn-viewer { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.studio-viewport-body #jpn-viewer > *,
+.studio-viewport-body #jpn-viewer > .structure-viewer:not(.structure-viewer--expanded) > * { flex: 1 1 100%; min-width: 0; }
+.studio-viewport-body #jpn-viewer > .structure-viewer:not(.structure-viewer--expanded) { display: contents; }
+.studio-viewport-body #jpn-viewer > .drawing-heading { display: none; }
+.studio-viewport-body #jpn-viewer > .view-switch { order: -5; flex: 0 1 auto; margin: 0; }
+.studio-viewport-body #jpn-viewer .view-switch[aria-label="Modo de visualização 3D"] { order: -4; flex: 1 1 320px; max-width: 520px; margin: 0; }
+.studio-viewport-body #jpn-viewer > .actions:has(> .button) { order: -4; flex: 0 1 auto; margin: 0 0 0 auto; }
+.studio-viewport-body #jpn-viewer .view-switch button { min-height: 36px; padding: 4px 12px; font-size: var(--text-sm); }
+.studio-viewport-body #jpn-viewer > .view-switch.viewer-switch--3d button { min-width: 0; }
+.studio-viewport-body #jpn-viewer > .actions > .button { min-height: 36px; padding: 4px 12px; font-size: var(--text-sm); }
+.studio-viewport-body #jpn-viewer > .drawing-toolbar { order: -3; }
+.studio-viewport-body #jpn-viewer .presentation-viewport,
+.studio-viewport-body #jpn-viewer > .roof-svg { order: -2; }
+.studio-viewport-body #jpn-viewer .inspection-tools { order: -1; margin: 0; padding: 6px 8px; gap: 6px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
+.studio-viewport-body #jpn-viewer .inspection-tools > * { flex-shrink: 0; }
+/* Camadas abertas, medição ou corte: a barra quebra linha para mostrar o painel da ferramenta. */
+.studio-viewport-body #jpn-viewer .inspection-tools:has(.inspection-layers[open], .inspection-measurement) { flex-wrap: wrap; overflow-x: visible; }
+.studio-viewport-body #jpn-viewer .inspection-tools > .button,
+.studio-viewport-body #jpn-viewer .inspection-collapse { min-height: 36px; padding: 4px 10px; font-size: 12.5px; }
+.studio-viewport-body #jpn-viewer .inspection-layers { flex: 0 0 auto; min-width: 0; }
+.studio-viewport-body #jpn-viewer .inspection-layers[open] { flex: 1 1 100%; }
+.studio-viewport-body #jpn-viewer .inspection-layers summary { min-height: 36px; padding: 6px 10px; gap: 8px; white-space: nowrap; }
+.studio-viewport-body #jpn-viewer .inspection-tools .studio-field { display: flex; flex: 0 0 auto; align-items: center; gap: 6px; min-width: 0; font-size: 11px; white-space: nowrap; }
+.studio-viewport-body #jpn-viewer .inspection-tools .studio-field .input { width: 150px; }
+.studio-viewport-body #jpn-viewer .inspection-tools .studio-field .input { min-height: 36px; padding: 4px 8px; font-size: 12.5px; }
+/* Câmera (Iso/Superior/Frontal/Lateral/Perspectiva) flutua no canto da tela, sempre visível. */
+.studio-viewport-body .structure-viewer:not(.structure-viewer--expanded) .studio-camera { top: 14px; right: 12px; flex-direction: row; align-items: center; }
+.studio-viewport-body .studio-camera .inspection-view-buttons { flex: 0 0 auto; width: auto; }
+.studio-viewport-body .studio-camera .inspection-view-buttons button, .studio-viewport-body .studio-projection { min-height: 34px; }
+/* A tela ocupa a altura da coluna menos a linha dos seletores e a das ferramentas. */
+.studio-viewport-body .result-model-panel .structure-3d { height: max(260px, calc(100cqh - 150px)); min-height: 260px; margin: 4px 0; }
+.studio-viewport-body #jpn-viewer > .roof-svg { max-height: max(240px, calc(100cqh - 124px)); }
+
+/* Inspetor */
+/* Tabela de materiais cabe na largura do painel: texto menor e colunas numéricas estreitas. */
+.studio-inspector .result-materials-table { min-width: 0; font-size: var(--text-sm); }
+.studio-inspector .result-materials-table td:first-child { max-width: none; }
+.studio-inspector .result-materials-table th, .studio-inspector .result-materials-table td { padding: 8px 6px; }
+.studio-inspector .result-materials-table th:not(:first-child), .studio-inspector .result-materials-table td:not(:first-child) { width: 1%; white-space: nowrap; text-align: right; }
+.result-show-3d { margin-left: 6px; min-height: 30px; padding: 2px 8px; border: 1px solid var(--color-line-strong); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-ink); font-size: var(--text-xs); font-weight: var(--weight-semibold); }
+.result-show-3d:hover { background: var(--color-accent-soft); }
+.result-show-3d:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.studio-inspector { min-width: 0; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-lg); }
+.studio-inspector-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); }
+.studio-inspector-title { padding: var(--space-4) var(--space-4) 0; font-size: var(--text-xl); }
+.studio-sheet-grabber { display: none; }
+.studio-sheet-toggle { display: none; }
+.studio-inspector .workflow-progress { padding: 6px var(--space-4) 12px; background: none; border-bottom: 1px solid var(--color-line); font-size: var(--text-sm); }
+.studio-inspector .workflow-content { padding: var(--space-4); }
+.studio-inspector .workflow-footer { padding: var(--space-3) var(--space-4); }
+.studio-inspector .editor-save-note { padding: 0 var(--space-4) var(--space-4); }
+.studio-project-tools { display: grid; gap: var(--space-3); margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-line); }
+/* O workbench fica sempre montado; quando é o único conteúdo da etapa, não precisa do separador. */
+.studio-inspector .workflow-content > :first-child { margin-top: 0; }
+.studio-inspector .workflow-content > .project-workbench:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.studio-inspector .workflow-content > .project-workbench:first-child > .actions:first-child { margin-top: 0; }
+
+/* Seleção (F2): peça, segmentos e nó/apoio no topo do inspetor */
+.studio-selection { display: grid; gap: var(--space-3); margin-bottom: var(--space-5); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-line); }
+.studio-selection-search { display: grid; gap: 6px; position: relative; }
+.studio-selection-label { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); font-weight: var(--weight-semibold); color: var(--color-muted); }
+.studio-selection-search .input { min-height: 40px; padding: 8px 10px; font-size: var(--text-base); }
+.studio-selection-results { list-style: none; margin: 0; padding: 4px; display: grid; gap: 2px; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface); box-shadow: var(--shadow-sm); }
+.studio-selection-results button { width: 100%; min-height: 36px; padding: 6px 8px; border: 0; border-radius: var(--radius-sm); background: transparent; text-align: left; font-size: var(--text-sm); }
+.studio-selection-results button:hover, .studio-selection-results button:focus-visible { background: var(--color-accent-soft); outline: none; }
+.studio-selection-results .field-hint { padding: 6px 8px; }
+.studio-selection-empty { display: flex; align-items: center; gap: 6px; margin: 0; }
+.studio-selection-card { display: grid; gap: var(--space-2); padding: var(--space-3); border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface-muted); }
+.studio-selection-card > header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); font-size: var(--text-base); }
+.studio-selection-sub { margin: 0; font-size: var(--text-sm); color: var(--color-muted); }
+.studio-selection-status { display: grid; gap: 6px; justify-items: start; }
+.studio-selection-status details { font-size: var(--text-sm); }
+.studio-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px var(--space-3); margin: 0; }
+.studio-facts > div { min-width: 0; }
+.studio-facts dt { font-size: var(--text-2xs); color: var(--color-muted); text-transform: uppercase; letter-spacing: .5px; }
+.studio-facts dd { margin: 0; font-size: var(--text-md); font-weight: var(--weight-semibold); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.studio-facts--forces dd { font-size: var(--text-base); }
+
+/* Resultados no 3D (F3) */
+.studio-results { flex: 0 0 auto; display: grid; gap: 6px; padding: 6px 12px 8px; border-bottom: 1px solid var(--color-line); font-size: var(--text-sm); }
+.studio-results--empty { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); color: var(--color-muted); }
+.studio-results--warn { display: flex; align-items: center; gap: 6px; background: var(--color-warning-soft); color: var(--color-warning); }
+.studio-results-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px var(--space-3); }
+.studio-results-field { display: grid; gap: 2px; font-size: var(--text-2xs); font-weight: var(--weight-semibold); color: var(--color-muted); }
+.studio-results-field .input { min-height: 34px; padding: 4px 8px; font-size: var(--text-sm); width: auto; max-width: 220px; }
+.studio-results-check { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; font-size: var(--text-sm); }
+.studio-results-note { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--color-warning); font-size: var(--text-xs); }
+.studio-results-caption { font-size: var(--text-2xs); font-weight: var(--weight-bold); color: var(--color-muted); text-transform: uppercase; letter-spacing: .5px; }
+.studio-legend { margin: 0; display: grid; gap: 2px; }
+.studio-legend-bar { height: 10px; border-radius: var(--radius-full); border: 1px solid #0000001a; }
+.studio-legend figcaption { display: flex; justify-content: space-between; gap: var(--space-2); font-size: var(--text-2xs); color: var(--color-muted); font-variant-numeric: tabular-nums; }
+.studio-supports { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.studio-supports ul { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.studio-support { display: inline-flex; align-items: center; gap: 4px; min-height: 30px; padding: 2px 8px; border: 1px solid var(--color-line); border-radius: var(--radius-full); background: var(--color-surface); font-size: var(--text-xs); font-weight: var(--weight-semibold); }
+.studio-support small { color: var(--color-muted); font-weight: var(--weight-regular); }
+.studio-support--ok { border-color: #c9d6c2; color: #4e5a45; }
+.studio-support--warn { border-color: var(--color-warning-line); background: var(--color-warning-soft); color: var(--color-warning); }
+.studio-support--danger { border-color: var(--color-danger-line); background: var(--color-danger-soft); color: var(--color-danger-strong); }
+.studio-support:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+/* Rótulos CSS2D sobre o 3D: só visuais (aria-hidden); a mesma informação está em texto no estúdio. */
+.structure-3d { position: relative; }
+.viewer-labels { position: absolute; inset: 0; pointer-events: none; }
+.viewer-label { padding: 2px 6px; border-radius: var(--radius-sm); background: #ffffffe6; border: 1px solid var(--color-line-strong); color: var(--color-ink); font-size: 11px; font-weight: var(--weight-semibold); white-space: nowrap; pointer-events: none; box-shadow: var(--shadow-sm); }
+.viewer-label--ok { border-color: #9fb592; }
+.viewer-label--warn { border-color: #d9b45e; background: #fff8e6f0; }
+.viewer-label--danger { border-color: #d77c70; background: #fff1eef0; color: var(--color-danger-strong); }
+
+/* F4: selo, totais ao vivo e estado da análise */
+.studio-seal { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; min-height: 36px; padding: 2px 6px 2px 2px; border: 0; border-radius: var(--radius-full); background: transparent; color: var(--color-danger-strong); font-size: var(--text-2xs); font-weight: var(--weight-semibold); }
+.studio-seal:hover { background: var(--color-danger-soft); }
+.studio-seal:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.studio-seal-count { white-space: nowrap; text-decoration: underline; text-underline-offset: 2px; }
+.studio-live-totals { display: flex; gap: var(--space-2); flex: 0 0 auto; }
+.studio-live-totals > span { display: inline-flex; align-items: baseline; gap: 6px; padding: 4px 8px; border-radius: 9px; background: #f0f5ef; border: 1px solid #e3eae1; white-space: nowrap; }
+.studio-live-totals small { font-size: var(--text-2xs); color: #536354; }
+.studio-live-totals strong { font-size: var(--text-base); color: #263a2d; font-variant-numeric: tabular-nums; }
+.studio-analysis-state { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.studio-analysis-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: var(--radius-full); border: 1px solid var(--color-line); font-size: var(--text-xs); font-weight: var(--weight-semibold); white-space: nowrap; }
+.studio-analysis-chip--current { border-color: #c9d6c2; color: #4e5a45; background: var(--color-success-soft); }
+.studio-analysis-chip--stale, .studio-analysis-chip--error { border-color: var(--color-warning-line); color: var(--color-warning); background: var(--color-warning-soft); }
+.studio-analysis-chip--running { border-color: #bcd0e4; color: #2c5578; background: #eef5fb; }
+.studio-pending-dialog { width: min(720px, calc(100vw - 24px)); }
+.studio-pending-list ul { margin: var(--space-3) 0 0; padding-left: 18px; display: grid; gap: 6px; font-size: var(--text-md); line-height: 1.5; }
+
+/* F5: menu de contexto e paleta de comandos */
+.studio-canvas-zone { min-width: 0; border-radius: var(--radius-md); }
+.studio-canvas-zone:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.studio-command-trigger { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 10px; border: 1px solid var(--color-line-strong); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-muted); font-size: var(--text-sm); }
+.studio-command-trigger:hover { color: var(--color-ink); background: var(--color-surface-hover); }
+.studio-command-trigger:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.studio-command-dialog { width: min(560px, calc(100vw - 24px)); top: 18%; transform: translate(-50%, 0); }
+.studio-command-dialog .ui-dialog-body { padding-top: 0; }
+.studio-command-input { min-height: 44px; margin-bottom: var(--space-2); }
+.studio-command-list { max-height: min(56vh, 420px); overflow: auto; }
+.studio-command-list [cmdk-group-heading] { padding: 8px 6px 4px; font-size: var(--text-2xs); font-weight: var(--weight-bold); color: var(--color-muted); text-transform: uppercase; letter-spacing: .5px; }
+.studio-command-list [cmdk-item] { display: flex; align-items: center; gap: 8px; min-height: 38px; padding: 6px 8px; border-radius: var(--radius-sm); font-size: var(--text-md); cursor: pointer; }
+.studio-command-list [cmdk-item][data-selected="true"] { background: var(--color-accent-soft); }
+.studio-command-list [cmdk-empty] { padding: 16px 8px; color: var(--color-muted); font-size: var(--text-sm); }
+
+/* No desktop e no tablet os dados da barra seguem o fluxo normal da barra de status. */
+.studio-status-data { display: contents; }
+
+/* F6: ações do cabeçalho, tour e cartões da lista */
+.studio-header-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.studio-tour-new { margin-left: 4px; padding: 0 6px; border-radius: var(--radius-full); background: var(--color-accent-soft); color: var(--color-accent-strong); font-size: var(--text-2xs); font-weight: var(--weight-bold); text-transform: uppercase; }
+.studio-tour-body { font-size: var(--text-base); line-height: 1.6; }
+.project-card { transition: border-color .15s, box-shadow .15s, transform .15s; }
+.project-card:hover { border-color: var(--color-line-strong); box-shadow: var(--shadow-sm); }
+.project-card:focus-within { outline: var(--focus-ring); outline-offset: 2px; }
+
+/* Barra de status */
+.studio-status { position: sticky; bottom: 0; z-index: var(--z-sticky); display: flex; flex-wrap: wrap; align-items: center; gap: 6px var(--space-3); padding: 8px 12px; background: #fffffff2; backdrop-filter: blur(8px); border: 1px solid var(--color-line); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+.studio-status .result-permanent-warning { position: static; margin: 0; padding: 4px 8px; flex: 1 1 260px; font-size: var(--text-xs); }
+.studio-status .result-metrics { margin: 0; display: flex; gap: var(--space-2); min-width: 0; max-width: 100%; overflow-x: auto; }
+.studio-status .result-metrics > div { flex: 0 0 auto; flex-direction: row; align-items: baseline; gap: 6px; padding: 4px 8px; white-space: nowrap; }
+.studio-status .result-metrics span { font-size: var(--text-2xs); }
+.studio-status .result-metrics strong { font-size: var(--text-base); overflow-wrap: normal; }
+.studio-lock { flex: 0 0 auto; }
+
+/* Celular e tablet retrato */
+@media (max-width: 999.98px) {
+  .app:has(.project-studio) .mobile-nav { display: none; }
+  .main-content:has(.project-studio) { padding-bottom: calc(var(--studio-steps-h) + 24px + env(safe-area-inset-bottom)); }
+  .studio-steps { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; padding-bottom: env(safe-area-inset-bottom); background: #fffffff7; backdrop-filter: blur(12px); border-top: 1px solid var(--color-line); }
+  .studio-steps ol { display: flex; gap: 2px; padding: 4px 6px; overflow-x: auto; border: 0; border-radius: 0; background: transparent; scrollbar-width: none; }
+  .studio-step { flex: 0 0 auto; width: auto; min-width: 70px; min-height: 52px; flex-direction: column; flex-wrap: nowrap; justify-content: center; gap: 3px; padding: 4px 8px; font-size: var(--text-2xs); text-align: center; }
+  .studio-step > svg { display: block; width: 18px; height: 18px; }
+  .studio-step-index { display: none; }
+  /* A contagem continua no nome acessível; visualmente vira um ponto. */
+  .studio-step-count { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; padding: 0; }
+  .studio-step:has(.studio-step-count)::after { content: ""; position: absolute; top: 6px; right: 18px; width: 7px; height: 7px; border-radius: var(--radius-full); background: #c4862b; }
+  .studio-tools { padding: 6px 8px; }
+  .studio-tools-caption { display: none; }
+  .studio-tools ul { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .studio-tool { flex: 0 0 auto; white-space: nowrap; }
+  .studio-viewport { height: max(340px, 54dvh); }
+  /* Celular/tablet: o painel tem o próprio botão (Recolher painel); a barra do 3D fica numa linha. */
+  .studio-panel-toggle { display: none; }
+  /* Selo e aviso logo abaixo do 3D (sempre junto do modelo), sem ficar fixos por cima da tela 3D ao rolar. */
+  .studio-status { position: static; }
+  .studio-viewport { order: 0; }
+  .studio-status { order: 1; }
+  .studio-inspector { order: 2; }
+  .studio-rail { order: 3; }
+  .studio-viewport-bar { flex-wrap: nowrap; gap: 6px; padding: 5px 7px; overflow-x: auto; scrollbar-width: none; }
+  .studio-viewport-bar > *, .studio-viewport-bar > .viewer-shortcut { flex: 0 0 auto; }
+  .studio-viewport-bar > .viewer-shortcut .ui-info-tip, .studio-viewport-bar > .viewer-shortcut .field-hint { display: none; }
+  .studio-viewport-bar > .viewer-shortcut .button { min-height: 34px; padding: 4px 10px; font-size: 12.5px; white-space: nowrap; }
+  .studio-viewport-bar > .studio-results { flex: 1 0 auto; font-size: 12px; }
+  .studio-viewport-body #jpn-viewer > .actions:has(> .button) { order: 1; margin: 0; }
+  .studio-viewport-body #jpn-viewer .view-switch[aria-label="Modo de visualização 3D"] { display: flex; flex: 1 1 100%; max-width: none; overflow-x: auto; scrollbar-width: none; }
+  .studio-viewport-body #jpn-viewer .view-switch[aria-label="Modo de visualização 3D"] button { flex: 1 0 auto; }
+  /* Câmera ocupa só uma faixa estreita no alto da tela 3D e nunca sai da tela. */
+  .studio-viewport-body .structure-viewer:not(.structure-viewer--expanded) .studio-camera { top: 10px; left: 8px; right: 8px; justify-content: flex-end; flex-wrap: wrap; gap: 4px; }
+  .studio-viewport-body .studio-camera .inspection-view-buttons button, .studio-viewport-body .studio-projection { min-width: 0; min-height: 34px; padding: 0 7px; font-size: 11.5px; }
+  /* Conteúdo largo (tabelas de resultado) rola dentro do painel, nunca a página. */
+  .studio-inspector { overflow-x: auto; }
+  /* Inspetor como painel inferior (não modal), com alça e botão para recolher. */
+  .studio-inspector { position: relative; border-radius: 18px 18px var(--radius-lg) var(--radius-lg); box-shadow: 0 -8px 24px -18px #1f241d66; }
+  .studio-sheet-grabber { display: block; width: 40px; height: 4px; margin: 8px auto 0; border-radius: var(--radius-full); background: var(--color-line-strong); }
+  .studio-sheet-toggle { display: inline-flex; align-items: center; gap: 4px; min-height: var(--hit-target); margin: var(--space-2) var(--space-3) 0 0; padding: 0 10px; border: 1px solid var(--color-line); border-radius: var(--radius-md); background: var(--color-surface-muted); color: var(--color-ink); font-size: var(--text-sm); font-weight: var(--weight-semibold); }
+  .studio-status { bottom: calc(var(--studio-steps-h) + env(safe-area-inset-bottom)); z-index: 45; padding: 6px 8px; gap: 4px 8px; }
+  .studio-status .result-permanent-warning { flex-basis: 100%; order: 3; padding: 3px 6px; font-size: 10.5px; line-height: 1.35; }
+  /* Totais, massa, venda e análise numa faixa única com rolagem horizontal. */
+  .studio-status-data { display: flex; flex: 1 1 100%; flex-wrap: nowrap; gap: 6px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+  .studio-status-data > * { flex: 0 0 auto; }
+  .studio-status-data .result-metrics { overflow: visible; }
+  /* Cabeçalho do projeto compacto no celular: ações numa linha, sem a descrição decorativa. */
+  .main-content:has(.project-studio) .page-heading .muted, .main-content:has(.project-studio) .page-heading .eyebrow { display: none; }
+  .main-content:has(.project-studio) .page-heading { gap: var(--space-2); margin-bottom: var(--space-3); }
+  .studio-header-actions { flex-wrap: nowrap; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .studio-header-actions > * { flex: 0 0 auto; }
+  .studio-command-trigger .ui-kbd-combo { display: none; }
+}
+
+@media (min-width: 1000px) {
+  /* Desktop: o 3D é a área principal. Etapas numa barra estreita | 3D | painel da etapa (recolhível).
+     A página não rola; só o conteúdo de cada painel rola. */
+  .main-content:has(.project-studio) { display: flex; flex-direction: column; height: calc(100dvh - 66px); padding-top: var(--space-3); padding-bottom: var(--space-2); overflow: hidden; }
+  .main-content:has(.project-studio) > * { flex: 0 0 auto; }
+  .main-content:has(.project-studio) > .project-studio { flex: 1 1 auto; min-height: 0; }
+  /* Rodapé, sobrelinha, descrição e o link repetido de volta (já está na barra superior) cedem a altura ao 3D. */
+  .main-content:has(.project-studio) > .page-footer,
+  .main-content:has(.project-studio) > .back-link,
+  .main-content:has(.project-studio) .page-heading .eyebrow,
+  .main-content:has(.project-studio) .page-heading .muted { display: none; }
+  .project-studio {
+    gap: var(--space-2);
+    grid-template-columns: 84px minmax(0, 1fr) minmax(340px, 400px);
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas: "rail viewport inspector" "status status status";
+  }
+  .project-studio[data-panel="closed"] { grid-template-columns: 84px minmax(0, 1fr); grid-template-areas: "rail viewport" "status status"; }
+  .project-studio[data-panel="closed"] > .studio-inspector { display: none; }
+
+  /* Barra de etapas: ícone com o nome embaixo, legível para quem não decorou os ícones. */
+  .studio-rail { grid-area: rail; min-height: 0; overflow-y: auto; scrollbar-width: thin; }
+  .studio-steps ol { grid-template-columns: 1fr; gap: 2px; padding: 4px; }
+  .studio-step { flex-direction: column; flex-wrap: nowrap; justify-content: center; gap: 3px; min-height: 58px; padding: 6px 2px; font-size: 11.5px; line-height: 1.15; text-align: center; }
+  .studio-step > svg { display: block; width: 20px; height: 20px; color: #7d856f; }
+  .studio-step.current > svg { color: #8a7038; }
+  .studio-step-index { display: none; }
+  .studio-step-label { overflow-wrap: normal; word-break: normal; }
+  .studio-step-count { flex-basis: auto; padding: 1px 4px; border-radius: var(--radius-full); background: #f6e7c9; color: #7a561d; font-size: 9.5px; line-height: 1.2; }
+
+  /* Visualização: barra fina no topo e a tela 3D preenchendo o resto. */
+  .studio-viewport { grid-area: viewport; height: auto; min-height: 0; }
+  .studio-viewport-body { padding: 8px 10px 10px; }
+  .studio-viewport-body .result-model-panel .structure-3d { min-height: 300px; height: max(300px, calc(100cqh - 118px)); margin: 4px 0; }
+  .studio-viewport-body .declared-studio-view .structure-3d { min-height: 320px; height: max(320px, calc(100cqh - 150px)); }
+
+  .studio-inspector { grid-area: inspector; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+  .studio-status { grid-area: status; position: static; flex-wrap: wrap; min-height: 0; padding: 6px 10px; }
+  .studio-status .result-permanent-warning { flex: 1 1 auto; }
+
+  /* Cabeçalho compacto: o estúdio começa logo abaixo do título. */
+  .main-content:has(.project-studio) .project-mode { margin-bottom: var(--space-2); }
+  .main-content:has(.project-studio) .project-mode button { min-height: 38px; padding: 6px 14px; }
+  .main-content:has(.project-studio) .page-heading { margin-bottom: var(--space-2); gap: var(--space-2); align-items: center; }
+  .main-content:has(.project-studio) .page-heading h1 { font-size: 22px; letter-spacing: -.4px; }
+  .main-content:has(.project-studio) .example-banner { margin: 0 0 var(--space-2); padding: 6px 12px; font-size: var(--text-sm); }
+}
+
+/* Auditoria F1–F6: garantir que o visualizador fique acima das ferramentas e caiba no celular.
+   O selo de bloqueio e o aviso de segurança continuam permanentemente visíveis. */
+.studio-viewport-body .declared-studio-view .structure-3d {
+  min-height: 300px;
+  height: max(300px, calc(100cqh - 195px));
+}
+.studio-viewport-body .declared-studio-view .presentation-viewport { display: flex; flex-direction: column; }
+.studio-viewport-body .declared-studio-view .studio-camera {
+  position: static; order: -1; display: flex; flex-wrap: wrap; justify-content: flex-end;
+  gap: 6px; margin: 6px 0;
+}
+.declared-studio-view > .actions { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.declared-studio-view > .field-hint { margin: 4px 0 8px; font-size: var(--text-xs); }
+.studio-selection-card header small { color: var(--color-muted); font-weight: var(--weight-regular); }
+@media (max-width: 599.98px) {
+  .main-content:has(.project-studio) { padding-left: 10px; padding-right: 10px; }
+  .main-content:has(.project-studio) .project-mode { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-bottom: 8px; }
+  .main-content:has(.project-studio) .project-mode button {
+    min-width: 0; min-height: 42px; padding: 6px; font-size: 13px; line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .main-content:has(.project-studio) .back-link { margin: 2px 0 6px; font-size: 12px; }
+  .main-content:has(.project-studio) .page-heading { margin: 0 0 8px; gap: 6px; }
+  .main-content:has(.project-studio) .page-heading h1 { font-size: clamp(19px, 5.6vw, 23px); line-height: 1.18; letter-spacing: -.3px; }
+  .main-content:has(.project-studio) .example-banner {
+    margin: 0 0 8px; padding: 7px 9px; font-size: 11px; line-height: 1.3;
+  }
+  .studio-header-actions { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; gap: 5px; }
+  .studio-header-actions button { min-height: 36px; padding: 5px 7px; font-size: 11px; white-space: nowrap; }
+  .studio-header-actions svg { width: 14px; height: 14px; }
+  .studio-tour-new { display: none; }
+  .project-studio { gap: 8px; }
+  /* Etapas mantêm a navegação fixa; a lista de ferramentas aparece junto da etapa Análise. */
+  .studio-rail { order: 3; }
+  .studio-viewport { order: 0; height: clamp(415px, 64dvh, 620px); }
+  .studio-inspector { order: 2; }
+  .studio-status { order: 1; }
+  .studio-viewport-body { padding: 7px; }
+  .studio-viewport-body .result-model-panel .structure-3d,
+  .studio-viewport-body .declared-studio-view .structure-3d {
+    min-height: 285px; height: max(285px, calc(100cqh - 155px));
+  }
+  .studio-viewport-body .declared-studio-view .structure-viewer { min-width: 0; }
+  .studio-results { padding: 5px 7px; }
+  .studio-inspector-title { padding: 10px 10px 0; font-size: 16px; }
+  .studio-inspector .workflow-content { padding: 10px; }
+  .studio-inspector .workflow-progress { padding: 6px 10px 8px; }
+  .studio-status { padding: 4px 6px; gap: 2px 6px; }
+  .studio-status .result-permanent-warning { padding: 2px 4px; font-size: 11px; line-height: 1.3; }
+  .studio-status .result-metrics > div, .studio-live-totals > span { padding: 2px 6px; }
+  .studio-status .result-metrics strong, .studio-live-totals strong { font-size: 13px; }
+  .studio-analysis-state .ui-button { min-height: 32px; }
+}

@@ -27,7 +27,7 @@ test(`perfis 3D, seleção, modos e persistência em ${width}px`, async ({ page 
   const totals = await page.getByTestId("takeoff-totals").innerText();
   // Even a previously stored Structural preference must not override the new opening default.
   await page.evaluate(() => localStorage.setItem("jpn-viewer-mode:v1", "structural"));
-  await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+  await page.getByRole("button", { name: "Abrir modelo 3D", exact: true }).click();
   const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" }); await expect(canvas).toBeVisible();
   await expect(canvas).toHaveAttribute("data-mode", "profiles");
   await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
@@ -66,14 +66,14 @@ test(`perfis 3D, seleção, modos e persistência em ${width}px`, async ({ page 
   await page.getByRole("button", { name: "Estrutural", exact: true }).click(); await expect(canvas).toHaveAttribute("data-mode", "structural");
   // Re-opening 3D resets mode and camera after choosing other modes or pieces.
   await page.getByRole("button", { name: "Voltar às vistas 2D" }).click();
-  await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+  await page.getByRole("button", { name: "Abrir modelo 3D", exact: true }).click();
   await expect(canvas).toHaveAttribute("data-mode", "profiles");
   await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
   await expect(page.getByLabel("Selecionar peça no desenho")).toHaveValue("");
   const box = (await canvas.boundingBox())!; await page.mouse.move(box.x + box.width / 2, box.y + 170); await page.mouse.down(); await page.mouse.move(box.x + box.width / 2 + 35, box.y + 180, { steps: 5 }); await page.mouse.up();
   await page.getByRole("button", { name: "Isométrica · ajustar 3D" }).click();
   expect(await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"))).toBe(before);
-  await page.reload(); await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+  await page.reload(); await page.getByRole("button", { name: "Abrir modelo 3D", exact: true }).click();
   await expect(canvas).toHaveAttribute("data-mode", "profiles");
   await expect(canvas).toHaveAttribute("data-framing", "whole-structure");
   expect(await page.getByTestId("takeoff-totals").innerText()).toBe(totals);
@@ -95,7 +95,7 @@ test("cadastro geométrico incompleto avisa e persiste dimensões sem inferir pr
   await detail.getByLabel("Aba X externa 3D (mm)").fill("100"); await detail.getByLabel("Aba Y externa 3D (mm)").fill("80");
   await detail.getByLabel("Espessura uniforme 3D (mm)").fill("6"); await detail.getByLabel("Giro axial visual (graus)").fill("90");
   await expect(detail).toContainText("Seção ideal completa");
-  await page.getByRole("navigation", { name: "Etapas do levantamento" }).getByRole("button", { name: "Resultado" }).click();
+  await page.getByRole("navigation", { name: "Etapas do levantamento" }).getByRole("button", { name: "Materiais" }).click();
   await page.getByRole("button", { name: "Salvar levantamento", exact: true }).click(); await page.reload();
   const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("jpn-projetos:v1")!).projects[0].planning.profiles.column);
   expect(stored.visualSection).toEqual({ family: "angle", legXmm: 100, legYmm: 80, rollDeg: 90 });
@@ -110,7 +110,7 @@ for (const width of [375, 1440]) test(`exemplo antigo abre demonstração sólid
   await expect(page.getByTestId("takeoff-totals")).toBeVisible();
   const original = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
   const totals = await page.getByTestId("takeoff-totals").innerText();
-  await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+  await page.getByRole("button", { name: "Abrir modelo 3D", exact: true }).click();
   await page.getByRole("button", { name: "Perfis 3D", exact: true }).click();
   await expect(page.getByTestId("profile-coverage")).toContainText("0 peças com seção 3D · 123 em linha");
   await page.getByRole("button", { name: "Ver demonstração com perfis" }).click();
@@ -175,7 +175,7 @@ for (const width of [375, 1440]) test(`Studio 3D filtra camadas, isola peça e p
   await seed(page);
   const before = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
   const totals = await page.getByTestId("takeoff-totals").innerText();
-  await page.getByRole("button", { name: "Visualizar em 3D", exact: true }).click();
+  await page.getByRole("button", { name: "Abrir modelo 3D", exact: true }).click();
   const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
   await expect(canvas).toHaveAttribute("data-mode", "profiles");
   await page.getByLabel("Selecionar peça no desenho").selectOption("P1");
@@ -209,7 +209,7 @@ for (const width of [375, 1440]) test(`Studio 3D mostra ficha rápida e recolhe 
   await page.setViewportSize({width, height: 850});
   await seed(page);
   const before = await page.evaluate(() => localStorage.getItem("jpn-projetos:v1"));
-  await page.getByRole("button", {name: "Visualizar em 3D", exact: true}).click();
+  await page.getByRole("button", {name: "Abrir modelo 3D", exact: true}).click();
   const canvas = page.getByRole("img", {name: "Modelo 3D da estrutura"});
   await page.getByLabel("Selecionar peça no desenho").selectOption("P1");
   const card = page.getByTestId("inspection-selected-piece");

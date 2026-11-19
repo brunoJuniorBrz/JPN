@@ -13,8 +13,19 @@ import {createPackageZip} from "./package-zip";
 import {CAD_NOTICE} from "./cad-book";
 import {mixedPreparationReview} from "@/domain/mixed-adapter";
 import {newSpatialPreparation} from "@/domain/spatial-preparation";
+import {trussSummary} from "@/domain/truss-editor";
 
 export type PackageOptions=CadExportOptions&{issuedAt?:Date;stockByGroup?:Record<string,number>;barPriceCentsByGroup?:Record<string,number>};
+/** Compact only the human-facing memorial: full detailed rows remain in manifest and trace file. */
+export function compactMemorialWarnings(rows:string[]):string[]{
+  const grouped=new Map<string,string[]>();
+  for(const row of rows){
+    const match=/^([A-Z][A-Z0-9_]+):\s/.exec(row);
+    const key=match && !["PENDENTE","AVISO"].includes(match[1]) ? match[1] : row;
+    const group=grouped.get(key)??[];group.push(row);grouped.set(key,group);
+  }
+  return [...grouped].flatMap(([code,group])=>group.length<=3?group:[`${code}: ${group.length} ocorrências; exemplos: ${group.slice(0,2).map(x=>x.slice(0,165)).join(" / ")}. Lista integral em rastreabilidade/pendencias-completas.txt.`]);
+}
 const encoder=new TextEncoder();
 const csv=(rows:unknown[][])=>"\ufeff"+rows.map(row=>row.map(v=>`"${String(v??"PENDENTE").replace(/"/g,'""').replace(/^[=+@\-\t\r]/,"'$&")}"`).join(";")).join("\r\n");
 const safe=(s:string)=>s.normalize("NFKD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9_-]+/g,"-").slice(0,90)||"obra";
@@ -131,7 +142,9 @@ export async function createCompletePackage(input:Project,options:PackageOptions
     ["Origem",project.workspace.physicalStructure?"Estrutura declarada pelo projeto":"Estrutura gerada pelos parâmetros da interface"],
     ["Parâmetros",JSON.stringify(project.workspace.physicalStructure?{revision:takeoff.modelRevision}:project.roof)],
     ["Premissas informadas",project.planning?.specificationNotes||"PENDENTE"],["Peças",takeoff.totals.quantity],["Comprimento geométrico m",takeoff.totals.lengthM],
-    ["Massa total kg",takeoff.totals.massKg??"PENDENTE"],["Corte",`${cutting?"First Fit Decreasing; heurístico, sem prova de mínimo global":"INDISPONÍVEL"}; ${project.workspace.cutting.useFabrication?"comprimentos finais declarados":"comprimentos geométricos"}`],
+    ["Massa total kg",takeoff.totals.massKg??"PENDENTE"],
+    ...(project.workspace.trussEditor?.fullHeightBudget ? [[ "Montantes/diagonais", `Compra medida cheia: ${trussSummary(project.workspace.trussEditor).buy.web} barras; corte geométrico: ${trussSummary(project.workspace.trussEditor).bars.web} barras — conferência obrigatória` ]] : []),
+    ["Corte",`${cutting?"First Fit Decreasing; heurístico, sem prova de mínimo global":"INDISPONÍVEL"}; ${project.workspace.cutting.useFabrication?"comprimentos finais declarados":"comprimentos geométricos"}`],
     ["Configuração do corte",JSON.stringify(project.workspace.cutting)],["Custos",`Cadastro comercial existente (PODE incluir itens sem locação): materiais conhecidos ${estimate.materialsCents/100} BRL; total conhecido ${estimate.totalCostCents/100} BRL. Subtotal de barras PRINCIPAL: ${sumKnown("costMainCents")===null?"PENDENTE":(sumKnown("costMainCents")!/100).toFixed(2)} BRL; cenário COM itens a confirmar: ${sumKnown("costCombinedCents")===null?"PENDENTE":(sumKnown("costCombinedCents")!/100).toFixed(2)} BRL. Os subtotais de barras não incluem itens sem preço declarado ou demais componentes da obra.`],
   ]);
   table("Resumo de materiais",["Perfil/material","Qtd.","m","kg"],takeoff.groups.map(g=>[g.label,g.quantity,g.lengthM,g.massKg??"PENDENTE"]));
@@ -149,7 +162,9 @@ export async function createCompletePackage(input:Project,options:PackageOptions
     `${r.pieceId}/${r.faceId}`,`${r.modelRiseMm.toFixed(3)} / ${r.expectedRiseMm.toFixed(3)}`,`${r.deltaMm.toFixed(3)} / ${r.status}`]));
   if(overallDimensionReviews.length)table("Conferência das cotas gerais",["Eixo","Cota declarada / modelo mm","Diferença / status"],overallDimensionReviews.map(r=>[
     r.axis.toUpperCase(),`${r.statedLengthMm} / ${r.actualMm??"PENDENTE"}`,`${r.discrepancyMm??"PENDENTE"} / ${r.status}`]));
-  table("Premissas e pendências",["Conferência"],[...pending,...estimate.pending,...estimate.warnings].map(p=>[p]));
+  const detailedWarnings=[...pending,...estimate.pending,...estimate.warnings];
+  table("Premissas e pendências",["Conferência"],compactMemorialWarnings(detailedWarnings).map(p=>[p]));
+  add("rastreabilidade/pendencias-completas.txt","text/plain;charset=utf-8",detailedWarnings.join("\n"));
   add("memorial/quantitativos.pdf","application/pdf",doc.output("arraybuffer"));
   add("rastreabilidade/projeto.json","application/json",JSON.stringify(project,null,2));
   const manifest={schema_version:"jpn.documentation-package/1",projectId:project.id,revision:takeoff.modelRevision,issuedAt:issuedAt.toISOString(),

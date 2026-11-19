@@ -8,6 +8,7 @@ for (const width of [375,1440]) test(`modo acabado preserva a estrutura, persona
   await page.getByLabel("Comprimento (m)").fill("20");
   await page.getByLabel("Altura (m)").fill("4");
   await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
+  await page.getByRole("button",{name:"Abrir modelo 3D"}).click();
   const canvas=page.getByRole("img",{name:"Modelo 3D da estrutura"});
   await expect(canvas).toHaveAttribute("data-mode","profiles");
   const before=await page.getByTestId("takeoff-totals").innerText();

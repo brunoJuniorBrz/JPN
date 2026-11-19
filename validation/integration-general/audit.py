@@ -55,8 +55,8 @@ def ancestor(a, b):
 # Reviewed amendments to protected tests, pinned by Git blob.
 # PR #92 (M54): rejects facade loads duplicated under a disguised ID.
 REVIEWED_AMENDMENTS = {
-    # timeout explícito de 30 s no canvas 3D do CI (studio-next:32, quick-project:46)
-    "tests/e2e/quick-project.spec.ts": "16614d78c2aebf3e397343b5f7738079cf4216ef",
+    # Canvas 3D CI, with reviewed 90s full WebGL/regeneration/reload E2E budget in quick-project.
+    "tests/e2e/quick-project.spec.ts": "f780563e546b4e71f5f5b026e5b49288e74a7771",
     # Owner-requested M34ab fix: temporary output; read-only historical results.
     # Preserves the reviewed INT-1c/M44 checks and all original tolerances.
     "src/domain/m34ab-declared.test.ts": "7cbaf71bb161bad52054f2ed2f799e1611941fff",
@@ -67,13 +67,15 @@ REVIEWED_AMENDMENTS = {
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/m351-client-demo.spec.ts": "f068080fac0fc9eec31919082136348d7c7f5ee1",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
-    "tests/e2e/m35-irregular.spec.ts": "0586f731992f8cc7c384a210ef47490d8d1560c9",
+    "tests/e2e/m35-irregular.spec.ts": "ef9a670b15d50688af852db13d05e8c9e0bc4ad9",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/loaded-mixed.spec.ts": "1ba5e3a0f1bfdadda560ed862e7e3c4e05b5393c",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
-    "tests/e2e/integration-generated.spec.ts": "02be09e163f00ea74cfd714d89bc9d4bb6c3183f",
+    # UI F1 (owner-authorized test change, review in the UI PR): the old "4 Resultado" step button became the
+    # Materiais studio step via the openResultTab helper; solver, binding and blocking checks unchanged (was 02be09e).
+    "tests/e2e/integration-generated.spec.ts": "cd703922ab820690c1cc57eba21736ebcbffe407",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
-    "tests/e2e/integration-declared.spec.ts": "c716931c89b85bfbf6fa5c41a998d17a634bd184",   # INT-1f: now picks the simple view (supersedes 232a7db, INT-1a)
+    "tests/e2e/integration-declared.spec.ts": "a2e8fd24b62fc0f7c3ad163b8dd62946c51511a0",   # INT-1f: now picks the simple view (supersedes 232a7db, INT-1a)
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/general-integration.spec.ts": "7bf58daedae0e19f41ee68d13809c9b071d66f81",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
@@ -93,6 +95,25 @@ REVIEWED_AMENDMENTS = {
     # edition literals and the speed-data SHA assertion updated, no numerical expectation changed.
     "src/domain/normative-origin.test.ts": "80a2d9c9ee73462acebc9d17711d845124e66ced",
     "src/domain/wind-speed.test.ts": "e5cf65b5ac01975374c50803a7c96b1eb3d0f65e",
+    # #148 follow-up: reviewed manual declaration navigation, verification-stage selectors and WebGL test timeout.
+    # #148: tests/e2e/presentation-3d.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
+    "tests/e2e/presentation-3d.spec.ts": "a74f874614f2da6b8cf2c5b815c585391ec72cea",
+    # #148: tests/e2e/spatial-analysis.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
+    "tests/e2e/spatial-analysis.spec.ts": "68f2843c570444ae00af87b82c5fb7997e935e17",
+    # #148: tests/e2e/studio-measurement.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
+    "tests/e2e/studio-measurement.spec.ts": "7d8eb37822bd2c6e0d6d76043c3f5fff492d309d",
+    # UI F1 (docs/ui/PLANO-UI.md, test changes authorized by the project owner; review in the UI PR):
+    # the project screen became a studio. Result tabs / "Ferramenta de engenharia" select became
+    # steps and an analysis-tools nav; navigation-only edits, no warning/blocking check removed.
+    # PR #145: adaptation reviewed against F0–F6 original; adds Tesoura stage and resolves the tool only after opening Análise, without changing assertions.
+    "tests/e2e/result-tabs.ts": "1c30655fa8702b0a5fbe29b9669c55897590d93e",              # helpers map old tabs/select to studio steps/tools
+    "tests/e2e/planning.spec.ts": "42b0e9a79de1f9d4b07b20a2a3c564c8aca5ea23",            # "Resultado"/"Ir para resultado" -> Materiais; pendências em Verificação
+    "tests/e2e/platform.spec.ts": "fdba218571b7e2da818bb4e0af6bd2f173e94587",            # "Resultado" -> Materiais
+    "tests/e2e/profiles-3d.spec.ts": "51a16f83c93441385db33db21e81f5dc639506e4",         # "Resultado" -> Materiais
+    "tests/e2e/result-workspace.spec.ts": "e7dfc14ec6db7bd4225c8e0d4a5f8d55330451d5",    # 3D stays visible across steps; keyboard on the steps list
+    "tests/e2e/spatial-coordination.spec.ts": "7d18f889b1f769a8b1cfd07a194ffd0f8c1c9dbd",# "Resultado" -> Materiais
+    "tests/e2e/spatial-preparation.spec.ts": "1e78b58ca8c5405c7e66ad71300e3e752d7f8ea4", # "Resultado" -> Materiais
+    "tests/e2e/ux-actions.spec.ts": "1f4e72cafb6b27a4aadf34545d9fb17e6d1210b6",          # tab "Modelo 3D" -> viewport region; pendências em Verificação
 }
 
 TREES = {}

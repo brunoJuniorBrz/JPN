@@ -56,7 +56,7 @@ it("consolidates shed with a separate index sheet, native viewports and traceabl
   expect(t.some(s=>s.startsWith("CREA: ___")&&s.includes("ART: ___"))).toBe(true);
   expect(t).toContain("Quadro de revisões");expect(t).toContain("Galpão INT-8");expect(t).toContain("Data: 16/11/2026");expect(t).toContain("Revisão: M49-1");
   for(const label of ["VÃO Y 1-2","EIXOS A-B","BORDA/BEIRAL","CUMEEIRA","EIXOS TERÇAS"])expect(entities.some(e=>e.type==="DIMENSION"&&dimensionLabel(e)===label)).toBe(true);
-  for(const value of ["6000","4000","3000","3162.278"])expect(t).toContain(value);
+  for(const value of ["6000","4000","3000","3162"])expect(t).toContain(value);
   for(const dim of entities.filter(e=>e.type==="DIMENSION")){expect(parsed.blocks).toHaveProperty(dim.block!);expect(dim.actualMeasurement).toBeGreaterThan(0);expect(dim.text).toBe("<>");}
   for(const view of views(parsed)){
     // A roof cover view intentionally omits axis bubbles to keep it clear.
@@ -68,7 +68,7 @@ it("consolidates shed with a separate index sheet, native viewports and traceabl
   }
   expect(t.join(" ")).toContain("=PC"); // full physical ID survives type-mark grouping
   const takeoff=declaredTakeoff(p),pc=takeoff.pieces.find(p=>p.pieceId==="PC")!;
-  expect(t).toContain(String(Number(pc.massKg!.toFixed(3))));expect(t).toContain(String(Number((pc.massKg!/4).toFixed(3))));
+  expect(t).toContain(String(Number(pc.massKg!.toFixed(1))));expect(t).toContain(String(Number((pc.massKg!/4).toFixed(1))));
   expect(t.some(s=>s.startsWith(`ESCOPO PRINCIPAL (SEM AVULSAS): ${takeoff.totals.quantity} peças`))).toBe(true);
   expect(t).toContain("Resumo por perfil e material");
   expect(parsed.entities.filter(e=>e.type==="LINE")).toHaveLength(p.workspace.physicalStructure!.pieces.length);

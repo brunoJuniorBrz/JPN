@@ -41,6 +41,8 @@ for (const width of [390, 1440]) test(`jornada completa pela interface: galpão 
   await page.getByLabel("Importar modelo estrutural JSON").setInputFiles({ name: "galpao.json", mimeType: "application/json", buffer: Buffer.from(JSON.stringify(project)) });
   await expect(page).toHaveURL(/\/projetos\/[a-f0-9-]+\?fluxo=levantamento/);
   await expect(page.getByRole("heading", { name: project.name, exact: true })).toBeVisible();
+  await expect(page.getByRole("img",{name:"Modelo 3D da estrutura"})).toBeVisible({timeout:45000});
+  await page.getByRole("group",{name:"Visualização declarada"}).getByRole("button",{name:"Vista simples 2D"}).click();
   const view = page.getByTestId("declared-line-view").filter({ visible: true }); await expect(view.locator("[data-piece-id]")).toHaveCount(16);
   await openResultTab(page, "Engenharia"); const p = page.getByTestId("mixed-workspace");
   await expect(p.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1", { timeout: 30000 });

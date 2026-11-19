@@ -15,7 +15,7 @@ test("backup de projeto gerado -> cópia salva -> solver real sem substituir por
   await page.goto("/projetos");await page.getByRole("link",{name:source.name,exact:true}).click();
   await expect(page).toHaveURL(/\/projetos\/[a-f0-9-]+$/);
   const ownerId=new URL(page.url()).pathname.split("/").at(-1)!;expect(ownerId).not.toBe(source.id);
-  await page.getByRole("button",{name:/^4\s*Resultado$/}).click();
+  await openResultTab(page,"Materiais");   // UI F1: a antiga etapa "4 Resultado" virou a etapa Materiais do estúdio
   await openEngineeringTool(page,"Análise Estrutural Experimental");const panel=page.getByTestId("mixed-workspace");
   await expect(panel.getByTestId("mixed-scope")).toContainText("OBRA ATUAL");
   await expect(panel.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:25000});

@@ -12,6 +12,9 @@ for(const width of [390,1440])test(`projeto declarado salvo -> solver real -> re
   await expect(page).toHaveURL(/\/projetos\/[a-f0-9-]+\?fluxo=levantamento/);const savedURL=page.url();
   const ownerId=new URL(savedURL).pathname.split("/").at(-1)!;expect(ownerId).not.toBe(physical.id);
   await expect(page.getByRole("heading",{name:physical.name,exact:true})).toBeVisible();
+  // O Studio abre em 3D; a vista de linhas permanece acessível para conferência exata de IDs/XYZ.
+  await expect(page.getByRole("img",{name:"Modelo 3D da estrutura"})).toBeVisible({timeout:45000});
+  await page.getByRole("group",{name:"Visualização declarada"}).getByRole("button",{name:"Vista simples 2D"}).click();
   const view=page.getByTestId("declared-line-view").filter({visible:true});await expect(view).toBeVisible();
   await expect(view.locator("[data-node-id]")).toHaveCount(4);await expect(view.locator("[data-piece-id]")).toHaveCount(3);
   await expect(view.locator('[data-node-id="B2"]')).toHaveAttribute("data-x-mm","2000");

@@ -1,16 +1,23 @@
 import {type DxfWriter,point3d} from "@tarikjabiri/dxf";
 import type {Project} from "@/domain/models";
-import {CadBook,CAD_NOTICE,cadNumber as num,type PaperFormat,type Point2 as P,type CadRect,type CadPage} from "./cad-book";
+import {CadBook,CAD_NOTICE,type PaperFormat,type Point2 as P,type CadRect,type CadPage} from "./cad-book";
 import {cadModel,cadReactions,axisLetter,sortedCoordinates as unique,isDeclaredBrace,type CadPiece,type CadReactionReceipt} from "./cad-model";
 import {cadRoofFaces} from "./cad-roof";
+import {trussSummary} from "@/domain/truss-editor";
 import {isUnlocatedCommercialPiece} from "./package-commercial-groups";
 import {reviewSourceDimensions,reviewRoofSlope,reviewRoofEnvelope} from "./package-dimension-review";
 export {CAD_NOTICE};
 export type CadExportOptions={format?:PaperFormat;reactions?:CadReactionReceipt};
+/** Somente textos das pranchas: comprimentos/cotas inteiros e massas com 1 casa.
+ * As coordenadas físicas continuam numéricas sem arredondamento de geometria. */
+const num=(n:number)=>String(Math.round(n));
+const mass1=(n:number)=>n.toFixed(1);
+const reaction3=(n:number)=>Number(n.toFixed(3)).toString();
 
 export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,options:CadExportOptions={}){
   const data=cadModel(project),{model,draft,takeoff,nodes,profile,supports,xs,ys}=data;
   const book=new CadBook(dxf,options.format??"A3",project.name,model.revision,issuedAt,Math.max(...model.nodes.map(n=>n.x)));
+  const trussAccounting=project.workspace.trussEditor?trussSummary(project.workspace.trussEditor):null;
   const counters=new Map<string,number>(),marks=new Map<string,string>(),markByType=new Map<string,string>(),markCounts=new Map<string,number>();
   const items=new Map(takeoff.pieces.map(p=>[p.pieceId,p]));
   const unlocated=new Set(takeoff.pieces.filter(isUnlocatedCommercialPiece).map(p=>p.pieceId));
@@ -86,6 +93,16 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     const points=opts.bases?(supports.length?supports:model.nodes):[...pieces.flatMap(p=>[nodes.get(p.start)!,nodes.get(p.end)!]),...(showRoof?roof:[])];
     const coords=points.map(projection);
     if(!coords.length)coords.push(...model.nodes.map(projection));
+    // No corte frontal da tesoura, muros/calhas explicitamente informados também
+    // entram nos limites gráficos. Isso nunca cria barras ou vínculos de cálculo.
+    const trussContext=view==="cut"&&across==="x"&&!opts.bases?project.workspace.trussEditor:null;
+    if(trussContext){
+      const S=trussContext.roofKind==="two-slopes"?2:1,span=trussContext.spanMm,th=trussContext.walls.thicknessMm;
+      for(const [x,h] of [[0,trussContext.walls.lowMm],[span,S===2?trussContext.walls.lowMm:trussContext.walls.highMm]])
+        coords.push([x-th/2,0],[x+th/2,h]);
+      const gutterBottom=trussContext.supportZMm-Math.max(trussContext.gutter.lowSideMm,trussContext.gutter.highSideMm);
+      coords.push([0,gutterBottom],[span,gutterBottom]);
+    }
     if(view!=="plan")coords.push([coords[0][0],datum]);
     const minX=Math.min(...coords.map(p=>p[0])),minY=Math.min(...coords.map(p=>p[1]));
     const width=Math.max(...coords.map(p=>p[0]))-minX,height=Math.max(...coords.map(p=>p[1]))-minY;
@@ -212,6 +229,27 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
           const projected=ring.map(([x,y,z])=>at(projection({x,y,z})));book.poly(space,projected,"COBERTURA");
           for(let i=1;i<projected.length;i++)segments.push([projected[i-1],projected[i]]);
         }
+      }
+      if(trussContext){
+        const t=trussContext,S=t.roofKind==="two-slopes"?2:1,span=t.spanMm,th=t.walls.thicknessMm;
+        // Esquema arquitetônico no CORTE, exclusivamente com dados cadastrados.
+        // Camadas existentes: BARRAS_AUXILIARES (muros) e COBERTURA (calhas).
+        for(const [i,x,h] of [[0,0,t.walls.lowMm],[1,span,S===2?t.walls.lowMm:t.walls.highMm]]){
+          const wall:[[number,number],[number,number],[number,number],[number,number],[number,number]]=[
+            [x-th/2,0],[x+th/2,0],[x+th/2,h],[x-th/2,h],[x-th/2,0]
+          ];
+          book.poly(space,wall.map(at),"BARRAS_AUXILIARES");
+          book.text(space,at([x+th/2+70,Math.max(h/2,100)]),i===0?"MURO BAIXO (ESQUEMA)":S===2?"MURO OUTRO BEIRAL (ESQUEMA)":"MURO ALTO (ESQUEMA)","TEXTOS",1.8);
+        }
+        const g=t.gutter,bottom=t.supportZMm-Math.max(g.lowSideMm,g.highSideMm);
+        const positions=S===2?[g.supportMm,span-g.supportMm-g.widthMm]:[g.supportMm];
+        for(const [index,x] of positions.entries()){
+          const outline:P[]=[[x,bottom+g.lowSideMm],[x,bottom],[x+g.widthMm,bottom],[x+g.widthMm,bottom+g.highSideMm]];
+          book.poly(space,outline.map(at),"COBERTURA");
+          book.text(space,at([x,bottom-70]),`CALHA ${index+1} - ESQUEMA`,"TEXTOS",1.8);
+        }
+        pendingNotes.push("PENDENTE: MUROS E CALHAS apenas representacao esquematica no corte; cotas e materiais conforme editor. Sem verificacao estrutural/hidraulica.");
+        pendingNotes.push(`PENDENTE: CHAPAS ${t.anchor.plateWidthMm}x${t.anchor.plateHeightMm} mm; ${t.anchor.boltsPerSupport} chumbador(es) por posicao, L=${t.anchor.boltLengthMm} mm. Furos/ligacoes sem detalhe validado.`);
       }
       const supportLabels=new Map<string,{point:P;marks:string[]}>();
       for(const n of supports){
@@ -417,7 +455,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     return [supportMarks.get(n.id)!,data.location(n),`${num(n.x)} / ${num(n.y)} / ${num(n.z)}`,`${dofs}; ${face?(typeNames[face.kind]??"tipo: ver rastreabilidade"):"PENDENTE"}`];
   }),[0,.12,.24,.6,1],"APOIOS");
   if(reactions.data)book.table(bases,{...a,height:a.height*.43},"Reações concomitantes por combinação — eixos globais",["Apoio","Combinação","Fx (kN)","Fy (kN)","Fz (kN)","Mx (kNm)","My (kNm)","Mz (kNm)"],reactions.data.rows.map(r=>[
-    supportMarks.get(r.nodeId)!,r.combinationId,...r.force.map(n=>num(n/1000)),...r.moment.map(n=>num(n/1000))]),[0,.08,.28,.4,.52,.64,.76,.88,1],"REACOES");
+    supportMarks.get(r.nodeId)!,r.combinationId,...r.force.map(n=>reaction3(n/1000)),...r.moment.map(n=>reaction3(n/1000))]),[0,.08,.28,.4,.52,.64,.76,.88,1],"REACOES");
   else bases.draw.push(space=>book.wrapped(space,{x:a.x+half+gap,y:a.y,width:half,height:10},reactions.status,2,3,"PENDENCIAS"));
 
   }else trace.push("PENDENTE: nenhum apoio declarado; prancha de locação suprimida.");
@@ -447,7 +485,8 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
   book.notes(notes,a,[
     `Obra: ${project.name}. Revisão da geometria: ${model.revision}. ${CAD_NOTICE}.`,
     `Origem da geometria: ${model.provenance}. Medidas sem fonte física revisada não são levantamento de campo.`,
-    ...(project.technicalNotes.trim()?[`Observações declaradas: ${project.technicalNotes}`]:[]),
+    ...(project.technicalNotes.trim()?[ `Observações declaradas: ${project.technicalNotes}` ]:[]),
+    ...(trussAccounting&&project.workspace.trussEditor?.fullHeightBudget ? [`MONTANTES/DIAGONAIS: compra por medida cheia ${trussAccounting.buy.web} barras; corte geométrico real ${trussAccounting.bars.web} barras. Conferir ambas as contagens; não autorizam fabricação.`] : []),
     "Unidades: geometria e cotas em milímetros; massas em quilogramas; reações em quilonewtons e quilonewtons-metro. Eixos globais X e Y; eixo Z positivo para cima.",
     "As vistas representam eixos de peças declaradas. As cotas prevalecem sobre a medição gráfica. Os comprimentos são medidos entre nós, sem descontos de fabricação ou lista de corte.",
     "Marcas: C pilares, V vigas, T terças, BS/BI banzos, M montantes verticais; D exclusivamente diagonais e contraventamentos. Nenhuma marca atribui contenção estrutural.",
@@ -490,9 +529,9 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       // Grouped rows share one type signature; keep the unit mass visible so
       // a fabricator can check a single piece without dividing the total.
       return [mark,profile(p.pieceId),String(group.length),num(p.lengthMm),
-        mass===null?"PENDENTE":num(mass/(group.reduce((v,q)=>v+q.lengthMm,0)/1000)),
-        mass===null?"PENDENTE":num(mass/group.length),
-        mass===null?"PENDENTE":num(mass)];
+        mass===null?"PENDENTE":mass1(mass/(group.reduce((v,q)=>v+q.lengthMm,0)/1000)),
+        mass===null?"PENDENTE":mass1(mass/group.length),
+        mass===null?"PENDENTE":mass1(mass)];
     }),[0,.10,.40,.47,.62,.74,.87,1]);
   const summary=new Map<string,{profile:string;quantity:number;length:number;mass:number|null}>();
   for(const p of takeoff.pieces.filter(p=>!unlocated.has(p.pieceId))){
@@ -501,7 +540,7 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     row.mass=row.mass===null||p.massKg===null?null:row.mass+p.massKg;summary.set(key,row);
   }
   book.table(materialsPage,{...a,height:Math.max(22,detailBottom-8-a.y)},"Resumo por perfil e material",["Perfil declarado","Qtd.","Comprimento total (mm)","Massa total (kg)"],[...summary.values()].map(r=>[
-    r.profile,String(r.quantity),num(r.length),r.mass===null?"PENDENTE":num(r.mass)]),[0,.42,.5,.76,1],"MATERIAIS",
+    r.profile,String(r.quantity),num(r.length),r.mass===null?"PENDENTE":mass1(r.mass)]),[0,.42,.5,.76,1],"MATERIAIS",
     `ESCOPO PRINCIPAL (SEM AVULSAS): ${takeoff.pieces.length-unlocated.size} peças; ${num(takeoff.pieces.filter(p=>!unlocated.has(p.pieceId)).reduce((v,p)=>v+p.lengthMm,0))} mm. Itens a confirmar em folha própria.`);
   if(unlocated.size){
     const pendingPage=book.add("ITENS A CONFIRMAR","Peças sem locação — fora do orçamento principal");

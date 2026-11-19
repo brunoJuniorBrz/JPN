@@ -136,7 +136,7 @@ export class CadBook{
     // Real DIMENSION entity retained. Break its graphics block under the
     // measurement label instead of drawing a dimension stroke THROUGH text.
     const ux=(e[0]-c[0])/length,uy=(e[1]-c[1])/length;
-    const measurement=cadNumber(length*scale),gap=Math.min(length*.5,Math.max(5,measurement.length*1.65+4));
+    const measurement=String(Math.round(length*scale)),gap=Math.min(length*.5,Math.max(5,measurement.length*1.65+4));
     const center:Point2=[(c[0]+e[0])/2,(c[1]+e[1])/2];
     const left:Point2=[center[0]-ux*gap/2,center[1]-uy*gap/2],
       right:Point2=[center[0]+ux*gap/2,center[1]+uy*gap/2];
@@ -149,7 +149,7 @@ export class CadBook{
     dimensionText.rotation=angle;dimensionText.horizontalAlignment=1;dimensionText.secondAlignmentPoint=point3d(...middle);
     const styleName=`JPN_MM_${scale}`;let style=this.dxf.tables.dimStyleTable.records.find(s=>s.name===styleName);
     if(!style){
-      style=this.dxf.tables.dimStyleTable.addDimStyle(styleName);style.DIMLFAC=scale;style.DIMTXT=2.5;style.DIMASZ=1.5;style.DIMDEC=3;style.DIMDSEP=46;
+      style=this.dxf.tables.dimStyleTable.addDimStyle(styleName);style.DIMLFAC=scale;style.DIMTXT=2.5;style.DIMASZ=1.5;style.DIMDEC=0;style.DIMDSEP=46;
       style.DIMTXSTY=this.dxf.tables.styleTable.records.find(s=>s.name==="JPN_TEXTO")!.handle;
       style.DIMCLRD=256;style.DIMCLRE=256;style.DIMCLRT=256;style.DIMLWD=25;style.DIMLWE=25;
     }
