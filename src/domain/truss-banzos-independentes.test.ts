@@ -45,8 +45,8 @@ describe("banzos independentes, sem liberação estrutural", () => {
       const lowerPieces = physical.pieces.filter(x => x.role === "bottomChord");
       expect(upperPieces.length).toBeGreaterThan(0);
       expect(lowerPieces.length).toBeGreaterThan(0);
-      expect(upperPieces.every(x => x.label.includes(t.chord.designation) && sections.get(assigned.get(x.id)! ) === t.chord.designation)).toBe(true);
-      expect(lowerPieces.every(x => x.label.includes(inferior.designation) && sections.get(assigned.get(x.id)! ) === inferior.designation)).toBe(true);
+      expect(upperPieces.every(x => (x.label ?? "").includes(t.chord.designation) && sections.get(assigned.get(x.id)! ) === t.chord.designation)).toBe(true);
+      expect(lowerPieces.every(x => (x.label ?? "").includes(inferior.designation) && sections.get(assigned.get(x.id)! ) === inferior.designation)).toBe(true);
       const cad = cadModel(p);
       expect(upperPieces.every(x => cad.profile(x.id) === t.chord.designation)).toBe(true);
       expect(lowerPieces.every(x => cad.profile(x.id) === inferior.designation)).toBe(true);
@@ -72,8 +72,8 @@ describe("banzos independentes, sem liberação estrutural", () => {
     const p = applyTrussToProject(newProject(), t);
     const byLine = (line: number) => p.workspace.physicalStructure!.pieces
       .filter(x => x.id.startsWith(`T${line}-`) && x.role === "bottomChord");
-    expect(byLine(1).every(x => x.label.includes(t.chord.designation))).toBe(true);
-    expect(byLine(2).every(x => x.label.includes(inferior.designation))).toBe(true);
-    expect(byLine(3).every(x => x.label.includes(t.chord.designation))).toBe(true);
+    expect(byLine(1).every(x => (x.label ?? "").includes(t.chord.designation))).toBe(true);
+    expect(byLine(2).every(x => (x.label ?? "").includes(inferior.designation))).toBe(true);
+    expect(byLine(3).every(x => (x.label ?? "").includes(t.chord.designation))).toBe(true);
   });
 });
