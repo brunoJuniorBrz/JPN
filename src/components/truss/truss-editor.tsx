@@ -158,11 +158,11 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
         {result.s && <>
           <div className={styles.kpis}>
             <div><b>{result.s.buy.chord}</b><span>barras de banzos (compra por perfil)</span></div>
-             <div><b>{result.s.chordBreakdown.upperBars}</b><span>barras banzo superior · estimativa isolada</span></div>
-             <div><b>{result.s.chordBreakdown.lowerBars}</b><span>barras banzo inferior · estimativa isolada</span></div>
             <div><b>{result.s.buy.web}</b><span>barras {t.web.designation}{t.fullHeightBudget ? " (medida cheia)" : ""}</span></div>
             <div><b>{result.s.buy.purlin}</b><span>barras {t.purlin.designation}</span></div>
             <div><b>{Math.round(result.s.kg.total)} kg</b><span>{(result.s.kg.total / (t.spanMm * t.lengthMm / 1e6)).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} kg/m² de aço</span></div>
+             <div><b>{result.s.chordBreakdown.upperBars}</b><span>barras banzo superior · estimativa isolada</span></div>
+             <div><b>{result.s.chordBreakdown.lowerBars}</b><span>barras banzo inferior · estimativa isolada</span></div>
           </div>
           <p className={styles.muted}>Estimativas individuais dos banzos não são somáveis quando compartilham perfil: a compra acima otimiza barras do mesmo perfil em conjunto.</p>
           <label className={styles.toggle}><input type="checkbox" checked={t.fullHeightBudget} onChange={e => set({ fullHeightBudget: e.target.checked })} /><span><strong>Orçar pela medida cheia</strong><small>Todo montante com {cm(t.highHeightMm)} cm: {result.s.bars.webFullHeight} barras (medidas reais: {result.s.bars.web}). O plano de corte sempre usa as reais.</small></span></label>
