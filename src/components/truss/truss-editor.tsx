@@ -104,9 +104,14 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
   };
   const st = stations(v), L = trussLengthMm(v);
   // Banzos e montantes: perfil do tipo em edição; terças e pilares: da obra.
-  type ProfileKey = "chord" | "web" | "purlin" | "column";
-  const src = (k: ProfileKey) => (k === "chord" || k === "web" ? v : t)[k];
-  const setProfile = (k: ProfileKey, p: Truss["chord"]) => k === "chord" || k === "web" ? setGeom({ [k]: p } as Partial<Truss>) : set({ [k]: p } as Partial<Truss>);
+  type ProfileKey = "chord" | "bottomChord" | "web" | "purlin" | "column";
+  const src = (k: ProfileKey): Truss["chord"] => {
+    if (k === "bottomChord") return v.bottomChord ?? v.chord;
+    return (k === "chord" || k === "web" ? v : t)[k];
+  };
+  const setProfile = (k: ProfileKey, p: Truss["chord"]) => k === "chord" || k === "bottomChord" || k === "web"
+    ? setGeom({ [k]: p } as Partial<Truss>) : set({ [k]: p } as Partial<Truss>);
+  const profileKeys: ProfileKey[] = ["chord", ...(v.bottomChord ? ["bottomChord" as const] : []), "web", "purlin", ...(t.support === "columns" ? ["column" as const] : [])];
   const editStations = (next: number[]) => setGeom({ stationsMm: [...new Set(next)].sort((a, b) => a - b) });
   const sel = selected !== null && selected < st.length ? selected : null;
   const errors = result.issues.filter(i => i.level === "erro");
@@ -152,11 +157,14 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
         {result.error && <p className={styles.error}>{result.error}</p>}
         {result.s && <>
           <div className={styles.kpis}>
-            <div><b>{result.s.buy.chord}</b><span>barras {t.chord.designation}</span></div>
+            <div><b>{result.s.buy.chord}</b><span>barras de banzos (compra por perfil)</span></div>
+             <div><b>{result.s.chordBreakdown.upperBars}</b><span>barras banzo superior · estimativa isolada</span></div>
+             <div><b>{result.s.chordBreakdown.lowerBars}</b><span>barras banzo inferior · estimativa isolada</span></div>
             <div><b>{result.s.buy.web}</b><span>barras {t.web.designation}{t.fullHeightBudget ? " (medida cheia)" : ""}</span></div>
             <div><b>{result.s.buy.purlin}</b><span>barras {t.purlin.designation}</span></div>
             <div><b>{Math.round(result.s.kg.total)} kg</b><span>{(result.s.kg.total / (t.spanMm * t.lengthMm / 1e6)).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} kg/m² de aço</span></div>
           </div>
+          <p className={styles.muted}>Estimativas individuais dos banzos não são somáveis quando compartilham perfil: a compra acima otimiza barras do mesmo perfil em conjunto.</p>
           <label className={styles.toggle}><input type="checkbox" checked={t.fullHeightBudget} onChange={e => set({ fullHeightBudget: e.target.checked })} /><span><strong>Orçar pela medida cheia</strong><small>Todo montante com {cm(t.highHeightMm)} cm: {result.s.bars.webFullHeight} barras (medidas reais: {result.s.bars.web}). O plano de corte sempre usa as reais.</small></span></label>
           <table className={styles.budget}><tbody>
             {result.s.lines.map(l => <tr key={l.item}><td>{l.item}</td><td>{l.qty}</td><td>{l.cents === null ? <em>a informar</em> : brl(l.cents)}</td></tr>)}
@@ -251,10 +259,14 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
       </section>
       <section className={styles.card}>
         <h3>Perfis e preços</h3>
-        {(t.support === "columns" ? ["chord", "web", "purlin", "column"] as const : ["chord", "web", "purlin"] as const).map(k => <div key={k} className={styles.grid}>
-          <Field label={`${k === "chord" ? "Banzos" : k === "web" ? "Montantes e diagonais" : k === "purlin" ? "Terças" : "Pilares"}: escolher`}><Select value={COMMON_PROFILES.some(p => p.designation === src(k).designation) ? src(k).designation : ""} onChange={e => { const p = COMMON_PROFILES.find(x => x.designation === e.target.value); if (p) setProfile(k, { ...src(k), designation: p.designation, kgPerM: p.kgPerM }); }}>
+        <label className={styles.toggle}>
+          <input type="checkbox" checked={v.bottomChord == null} onChange={e => setGeom({ bottomChord: e.target.checked ? null : { ...v.chord } })} />
+          <span><strong>Banzo inferior com o mesmo perfil do superior</strong><small>Desmarque para definir perfil, preço e folga próprios no {typeName(t, editingId).toLowerCase()}.</small></span>
+        </label>
+        {profileKeys.map(k => <div key={k} className={styles.grid}>
+          <Field label={`${k === "chord" ? "Banzo superior" : k === "bottomChord" ? "Banzo inferior" : k === "web" ? "Montantes e diagonais" : k === "purlin" ? "Terças" : "Pilares"}: escolher`}><Select value={COMMON_PROFILES.some(p => p.designation === src(k).designation) ? src(k).designation : ""} onChange={e => { const p = COMMON_PROFILES.find(x => x.designation === e.target.value); if (p) setProfile(k, { ...src(k), designation: p.designation, kgPerM: p.kgPerM }); }}>
             <option value="">outro (digitar)</option>
-            {COMMON_PROFILES.filter(p => p.use.includes(k)).concat(COMMON_PROFILES.filter(p => !p.use.includes(k))).map(p => <option key={p.designation} value={p.designation}>{p.designation} · {p.kgPerM.toLocaleString("pt-BR")} kg/m</option>)}
+            {COMMON_PROFILES.filter(p => p.use.includes(k === "bottomChord" ? "chord" : k)).concat(COMMON_PROFILES.filter(p => !p.use.includes(k === "bottomChord" ? "chord" : k))).map(p => <option key={p.designation} value={p.designation}>{p.designation} · {p.kgPerM.toLocaleString("pt-BR")} kg/m</option>)}
           </Select></Field>
           <Field label="Nome do perfil"><Input value={src(k).designation} onChange={e => setProfile(k, { ...src(k), designation: e.target.value })} /></Field>
           <NumberField label="kg/m" value={src(k).kgPerM} min={0.01} max={1000} decimals={3} onChange={v => v !== null && setProfile(k, { ...src(k), kgPerM: v })} />
