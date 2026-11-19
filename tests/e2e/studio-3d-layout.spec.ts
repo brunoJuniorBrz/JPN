@@ -43,9 +43,14 @@ test("1440px: 3D ocupa a área principal, vistas visíveis e painel recolhível 
   }
   await page.getByRole("button", { name: "Superior", exact: true }).click();
   await page.getByRole("button", { name: "Vista isométrica" }).click();
-  // Ferramentas de inspeção logo abaixo da tela, dentro da janela.
+  // Ferramentas de inspeção permanecem acessíveis no painel com rolagem própria.
   const tools = page.getByRole("button", { name: "Medir entre nós" });
+  await expect(tools).toBeVisible();
+  await tools.scrollIntoViewIfNeeded();
   await expect(tools).toBeInViewport();
+  await tools.click();
+  await expect(page.getByTestId("3d-measurement")).toBeVisible();
+  await page.getByRole("button", { name: "Encerrar medição" }).click();
 
   // Recolher o painel amplia o 3D sem trocar o elemento WebGL.
   await canvas.evaluate(el => { (el as HTMLElement).dataset.e2eMarker = "same-canvas"; });
