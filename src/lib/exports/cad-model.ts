@@ -105,8 +105,8 @@ export function cadModel(project:Project){
         // Mesmo com desenho e seção iguais, tipos declarados diferentes precisam
         // permanecer em pranchas distintas com o nome escolhido pelo usuário.
         const editor=project.workspace.trussEditor;
-        const firstTruss=component.find(p=>/^T\\d+-/.test(p.id));
-        const match=firstTruss? /^T(\\d+)-/.exec(firstTruss.id):null;
+        const firstTruss=component.find(p=>/^T\d+-/.test(p.id));
+        const match=firstTruss? /^T(\d+)-/.exec(firstTruss.id):null;
         const line=match?Number(match[1])-1:-1;
         const editorType=kind==="TESOURA"&&editor?.types.length&&line>=0&&line<editor.trusses
           ? lineTypeId(editor,line):null;
