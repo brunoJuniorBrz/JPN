@@ -138,6 +138,28 @@ describe("campanha de referencias externas: geometria de garagem a galpao", () =
     expect(trussIssues(t).filter(issue => issue.message.includes("excede a barra comercial"))).toEqual([]);
   });
 
+
+  it("obra de 22x100m e barra comercial insuficiente: recusa adaptador global sem inventar calculo", () => {
+    const project = createQuickProject({
+      typology: "gable", widthM: 22, lengthM: 100, heightM: 5,
+      slopePercent: 10, frameSpacingM: 5, purlinSpacingM: 1.5,
+    });
+    expect(() => distributeRoofActions(project, [{
+      caseId: "TESTE-LIMITE", knM2: 0.5, projection: "horizontal",
+      direction: [0, 0, -1], source: "Teste de escala", revision: "1",
+      loadPath: "Faixas tributarias sem aprovacao",
+    }], {
+      version: 1, method: "parallel-purlin-strips", geometrySignature: structureSignature(project),
+    })).toThrow("ROOF_MODEL_LIMIT");
+
+    const stockLimited = createQuickProject({
+      typology: "gable", widthM: 40, lengthM: 100, heightM: 6,
+      frameSpacingM: 10, purlinSpacingM: 2,
+    });
+    const editor = trussDefaultsFor(stockLimited);
+    expect(trussIssues(editor).some(issue => issue.level === "erro" && issue.message.includes("excede a barra comercial"))).toBe(true);
+  });
+
   it("terca sem apoio/com vao maior que a barra nao ganha emenda ficticia", () => {
     const t = trussDefaultsFor(createQuickProject({
       typology: "gable", widthM: 10, lengthM: 20, heightM: 4,
