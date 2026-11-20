@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { expect, test } from "@playwright/test";
 
 for (const width of [375,1440]) {
@@ -20,7 +21,7 @@ for (const width of [375,1440]) {
     await page.getByRole("button",{name:"U enrijecido"}).click();
     await page.getByText("Detalhes opcionais (podem ficar para depois)").click();
     await page.getByLabel("Cidade da obra").fill("Capão Bonito / SP");
-    await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
+    await openProjectStudio(page, "Gerar modelo 3D");
     await expect(page).toHaveURL(/vista=3d/);
     const item=await page.evaluate(()=>JSON.parse(localStorage.getItem("jpn-projetos:v1")!).projects.at(-1));
     expect(item.roof.widthM).toBe(10);expect(item.roof.lengthM).toBe(20);

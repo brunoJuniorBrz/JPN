@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { expect, test } from "@playwright/test";
 import { openStudioStep } from "./result-tabs";
 
@@ -6,7 +7,7 @@ async function createQuickRoof(page: import("@playwright/test").Page) {
   await page.getByLabel("Largura (m)").fill("12");
   await page.getByLabel("Comprimento (m)").fill("35");
   await page.getByLabel("Altura (m)").fill("5");
-  await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
+  await openProjectStudio(page, "Gerar modelo 3D");
   await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible({timeout:45000});
 }
 

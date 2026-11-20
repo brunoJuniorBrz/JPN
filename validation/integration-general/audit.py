@@ -56,20 +56,20 @@ def ancestor(a, b):
 # PR #92 (M54): rejects facade loads duplicated under a disguised ID.
 REVIEWED_AMENDMENTS = {
     # Canvas 3D CI, with reviewed 90s full WebGL/regeneration/reload E2E budget in quick-project.
-    "tests/e2e/quick-project.spec.ts": "f780563e546b4e71f5f5b026e5b49288e74a7771",
+    "tests/e2e/quick-project.spec.ts": "61d7d3ea551d9f967c97e3f173554c165b258dc1",
     # Owner-requested M34ab fix: temporary output; read-only historical results.
     # Preserves the reviewed INT-1c/M44 checks and all original tolerances.
     "src/domain/m34ab-declared.test.ts": "7cbaf71bb161bad52054f2ed2f799e1611941fff",
     # M44-P1: NBR 14762 audit amendments (reviewed; was 477462c)
     "engine/tests/test_coldformed_design.py": "3ffd991d47f070b881c9024ea69b61154d7172c4",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
-    "tests/e2e/mixed-local.spec.ts": "0ae03da7e799ee6e558379fb8d6db7fd65bc0983",
+    "tests/e2e/mixed-local.spec.ts": "7058934bb8f937845efce580daba3ac1bc2a84c5",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/m351-client-demo.spec.ts": "f068080fac0fc9eec31919082136348d7c7f5ee1",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/m35-irregular.spec.ts": "ef9a670b15d50688af852db13d05e8c9e0bc4ad9",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
-    "tests/e2e/loaded-mixed.spec.ts": "1ba5e3a0f1bfdadda560ed862e7e3c4e05b5393c",
+    "tests/e2e/loaded-mixed.spec.ts": "d995faee75659bd99b178420eedcf3f65f0f9b33",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     # UI F1 (owner-authorized test change, review in the UI PR): the old "4 Resultado" step button became the
     # Materiais studio step via the openResultTab helper; solver, binding and blocking checks unchanged (was 02be09e).
@@ -79,7 +79,7 @@ REVIEWED_AMENDMENTS = {
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
     "tests/e2e/general-integration.spec.ts": "7bf58daedae0e19f41ee68d13809c9b071d66f81",
     # INT-1a: E2E journeys declare the reviewed Z-up axes and expect /3 (reviewed)
-    "tests/e2e/coldformed-design.spec.ts": "6f3cdefe76d0c086c98e3aef674371c63c00dd52",   # INT-1f: also checks the Studio verification layer for the NBR 14762 piece (supersedes de1ce15, INT-1a)
+    "tests/e2e/coldformed-design.spec.ts": "71214405252d69fa2ceea59fea747343fcdcf500",
     "src/domain/declared-facade-mixed-real.test.ts": "a3df819018a8b38e864f72bdda5fd26ba1fa2acd",
     "src/domain/continuous-demands.test.ts": "b63c2411b4aec5a217ef49ad5b00281f4b2df8f4",
     "src/domain/whole-piece-deflection.test.ts": "751c665f3266cc52772a69ebeaf4ed99415128fe",
@@ -97,9 +97,9 @@ REVIEWED_AMENDMENTS = {
     "src/domain/wind-speed.test.ts": "e5cf65b5ac01975374c50803a7c96b1eb3d0f65e",
     # #148 follow-up: reviewed manual declaration navigation, verification-stage selectors and WebGL test timeout.
     # #148: tests/e2e/presentation-3d.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
-    "tests/e2e/presentation-3d.spec.ts": "a74f874614f2da6b8cf2c5b815c585391ec72cea",
+    "tests/e2e/presentation-3d.spec.ts": "8f42678f4e27d884ddce3aa2ad3eb9bec10c2a14",
     # #148: tests/e2e/spatial-analysis.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
-    "tests/e2e/spatial-analysis.spec.ts": "68f2843c570444ae00af87b82c5fb7997e935e17",
+    "tests/e2e/spatial-analysis.spec.ts": "bf2ab4952b0b4e01faeec9398aa22a51c75b749f",
     # #148: tests/e2e/studio-measurement.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
     "tests/e2e/studio-measurement.spec.ts": "7d8eb37822bd2c6e0d6d76043c3f5fff492d309d",
     # UI F1 (docs/ui/PLANO-UI.md, test changes authorized by the project owner; review in the UI PR):
@@ -107,20 +107,27 @@ REVIEWED_AMENDMENTS = {
     # steps and an analysis-tools nav; navigation-only edits, no warning/blocking check removed.
     # PR #145: adaptation reviewed against F0–F6 original; adds Tesoura stage and resolves the tool only after opening Análise, without changing assertions.
     "tests/e2e/result-tabs.ts": "1c30655fa8702b0a5fbe29b9669c55897590d93e",              # helpers map old tabs/select to studio steps/tools
-    "tests/e2e/planning.spec.ts": "42b0e9a79de1f9d4b07b20a2a3c564c8aca5ea23",            # "Resultado"/"Ir para resultado" -> Materiais; pendências em Verificação
-    "tests/e2e/platform.spec.ts": "fdba218571b7e2da818bb4e0af6bd2f173e94587",            # "Resultado" -> Materiais
+    "tests/e2e/planning.spec.ts": "ce120ffad120ffff7e8c5da21e15914f92d25c52",
+    "tests/e2e/platform.spec.ts": "0b57125a287146f29fd942e2ba54dd7c8aa45ede",
     # #151 / #150: reviewed E2E selectors match dedicated fullscreen row and header close button.
     # Only Playwright controls changed (no model, approval or blocking assertions); see docs/ui/REVIEW-E2E-FULLSCREEN-151.md.
-    "tests/e2e/profiles-3d.spec.ts": "9cbfae46ab36298c65ffcd935b04e344e5f4b519",         # selectors + desktop 90s raycast timeout; was 86ca2f3
-    "tests/e2e/result-workspace.spec.ts": "e7dfc14ec6db7bd4225c8e0d4a5f8d55330451d5",    # 3D stays visible across steps; keyboard on the steps list
-    "tests/e2e/spatial-coordination.spec.ts": "7d18f889b1f769a8b1cfd07a194ffd0f8c1c9dbd",# "Resultado" -> Materiais
+    "tests/e2e/profiles-3d.spec.ts": "ebeb1cc6882bf7ab8f8914d1a142b49e0b6e8a8c",
+    "tests/e2e/result-workspace.spec.ts": "53c92c662d9273eeca5ea3bf531a99ee076421ca",
+    "tests/e2e/spatial-coordination.spec.ts": "599c01c83862e4543c7d5d469f36de457fbd97e8",
     "tests/e2e/spatial-preparation.spec.ts": "1e78b58ca8c5405c7e66ad71300e3e752d7f8ea4", # "Resultado" -> Materiais
-    "tests/e2e/ux-actions.spec.ts": "1f4e72cafb6b27a4aadf34545d9fb17e6d1210b6",          # tab "Modelo 3D" -> viewport region; pendências em Verificação
+    "tests/e2e/ux-actions.spec.ts": "0e189b8fad155f3878ac6009ef0e079bd1c0fecd",
     # PR #159: Playwright aguarda a rota assíncrona da entrada rápida antes de exigir os
     # totais e o WebGL; asserts de materiais, bloqueio de fabricação e persistência preservados.
     # Evidência: runs 44782448558 / 44782457982, snapshots incluem os alvos após timeout de 5s.
-    "tests/e2e/preproduction.spec.ts": "bea52d32ea889d8e1b2f1ed11da7457c7f3dd5e7",
-    "tests/e2e/spatial-preparation.spec.ts": "7b363e746d98d4a8374bff56a0a61737d5e5c7bd",
+    "tests/e2e/preproduction.spec.ts": "80ee16ee82a14852d2eff8a612ddb9c17812380c",
+    "tests/e2e/spatial-preparation.spec.ts": "e8daebdcdfcfbc05b400334a910da4d8df330241",
+    "tests/e2e/connections.spec.ts": "88079d8f1f894607f22d76eebaa47825dad7de37",
+    "tests/e2e/quick-project-guided.spec.ts": "c5b43eca8ea660201ac89369889af4671fb89070",
+    "tests/e2e/resistance-report.spec.ts": "6cf07eed0a4a8d8e77dfbf6c19884d61ba3b8866",
+    "tests/e2e/roof-load-path.spec.ts": "ae4a9bb2294e1d66c42bef4503dd5a75b6c28206",
+    "tests/e2e/showcase.spec.ts": "ea17dce3954e53e619520bd5df423ef33dfa2c81",
+    "tests/e2e/spatial-adapter.spec.ts": "06cabe98b05a278dff73d863a239a8bb3e0bf3dd",
+    "tests/e2e/wind-load-path.spec.ts": "ea76d21213eb959c2407e27dea4b240e44185751",
 }
 
 TREES = {}

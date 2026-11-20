@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { expect, test } from "@playwright/test";
 import { openResultTab } from "./result-tabs";
 
@@ -14,7 +15,7 @@ for (const width of [375, 1440]) {
     await page.getByLabel("Largura (m)").fill("10");
     await page.getByLabel("Comprimento (m)").fill("20");
     await page.getByLabel("Altura (m)").fill("4");
-    await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
+    await openProjectStudio(page, "Gerar modelo 3D");
     await expect(page).toHaveURL(/fluxo=levantamento&etapa=3&vista=3d/);
     const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
     await expect(canvas).toBeVisible();
@@ -64,7 +65,7 @@ test("sincroniza linhas vinculadas ao levantamento ao editar geometria, sem alte
   await page.getByLabel("Largura (m)").fill("8");
   await page.getByLabel("Comprimento (m)").fill("12");
   await page.getByLabel("Altura (m)").fill("3");
-  await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
+  await openProjectStudio(page, "Gerar modelo 3D");
   await expect(page.getByTestId("takeoff-totals")).toBeVisible();
   await openResultTab(page, "Materiais");
   await page.getByRole("button", { name: "Atualizar quantitativos no orçamento" }).click();

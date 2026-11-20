@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import {expect,test} from "@playwright/test";
 
 for (const width of [375,1440]) test(`modo acabado preserva a estrutura, personaliza telhado e exporta PNG em ${width}px`, async ({page})=>{
@@ -7,7 +8,7 @@ for (const width of [375,1440]) test(`modo acabado preserva a estrutura, persona
   await page.getByLabel("Largura (m)").fill("10");
   await page.getByLabel("Comprimento (m)").fill("20");
   await page.getByLabel("Altura (m)").fill("4");
-  await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
+  await openProjectStudio(page, "Gerar modelo 3D");
   await page.getByRole("button",{name:"Abrir modelo 3D"}).click();
   const canvas=page.getByRole("img",{name:"Modelo 3D da estrutura"});
   await expect(canvas).toHaveAttribute("data-mode","profiles");
@@ -54,7 +55,7 @@ test("a cobertura de uma água também ativa o Acabado sem mudar os quantitativo
   await page.getByLabel("Largura (m)").fill("8");
   await page.getByLabel("Comprimento (m)").fill("12");
   await page.getByLabel("Altura (m)").fill("3");
-  await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
+  await openProjectStudio(page, "Gerar modelo 3D");
   const canvas=page.getByRole("img",{name:"Modelo 3D da estrutura"});
   await page.getByRole("group",{name:"Modo de visualização 3D"}).getByRole("button",{name:"Acabado"}).click();
   await expect(canvas).toHaveAttribute("data-context-loaded","true");

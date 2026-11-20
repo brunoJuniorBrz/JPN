@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { openEngineeringTool } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 
@@ -9,11 +10,8 @@ for (const viewport of [375, 1440]) test(`preparação física é editável, per
   await page.getByLabel("Largura (m)").fill("10");
   await page.getByLabel("Comprimento (m)").fill("20");
   await page.getByLabel("Altura (m)").fill("4");
-  await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
-  // O canvas do Studio só é montado na rota do projeto, após a navegação assíncrona.
-  await page.waitForURL(url => url.pathname.startsWith("/projetos/") &&
-    url.pathname !== "/projetos/novo" && url.searchParams.get("vista") === "3d",
-    { timeout: 45000 });
+  await openProjectStudio(page, "Gerar modelo 3D");
+
   await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible({ timeout: 30000 });
   await openEngineeringTool(page, "Preparar análise");
   await expect(page.getByTestId("physical-prep-status")).toContainText("Preparação em andamento");
@@ -68,11 +66,8 @@ test("alterar espaçamentos mantém declarações e marca o vínculo como desatu
   await page.getByLabel("Largura (m)").fill("8");
   await page.getByLabel("Comprimento (m)").fill("12");
   await page.getByLabel("Altura (m)").fill("3");
-  await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
-  // O canvas do Studio só é montado na rota do projeto, após a navegação assíncrona.
-  await page.waitForURL(url => url.pathname.startsWith("/projetos/") &&
-    url.pathname !== "/projetos/novo" && url.searchParams.get("vista") === "3d",
-    { timeout: 45000 });
+  await openProjectStudio(page, "Gerar modelo 3D");
+
   await openEngineeringTool(page, "Preparar análise");
   await page.getByLabel("Classe do aço").fill("Aço fictício só para estudo");
   await page.getByRole("button", { name: "Salvar levantamento" }).click();

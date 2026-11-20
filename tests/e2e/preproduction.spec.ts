@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { openResultTab } from "./result-tabs";
 import { expect,test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
@@ -12,11 +13,8 @@ for(const width of [375,1440]){
     await page.getByLabel("Largura (m)").fill("8");
     await page.getByLabel("Comprimento (m)").fill("12");
     await page.getByLabel("Altura (m)").fill("4");
-    await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
-    // A criação salva e faz router.push assíncrono: aguardar o projeto abrir antes dos totais.
-    await page.waitForURL(url => url.pathname.startsWith("/projetos/") &&
-      url.pathname !== "/projetos/novo" && url.searchParams.get("vista") === "3d",
-      { timeout: 45000 });
+    await openProjectStudio(page, "Gerar modelo 3D");
+
     await expect(page.getByTestId("takeoff-totals")).toBeVisible({ timeout: 30000 });
     await openResultTab(page,"Materiais");
     const panel=page.getByTestId("preproduction-dossier");

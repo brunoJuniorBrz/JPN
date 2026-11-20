@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { openEngineeringTool } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -10,7 +11,7 @@ for (const width of [375, 1440]) {
     await page.getByLabel("Largura (m)").fill("10");
     await page.getByLabel("Comprimento (m)").fill("20");
     await page.getByLabel("Altura (m)").fill("4");
-    await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
+    await openProjectStudio(page, "Gerar modelo 3D");
     await expect(page.getByRole("img",{name:"Modelo 3D da estrutura"})).toBeVisible();
     const before=await page.getByTestId("takeoff-totals").innerText();
     await openEngineeringTool(page, "Roteiro estrutural");
@@ -48,7 +49,7 @@ test("roteiro detecta preparação obsoleta depois de alterar geometria e preser
   await page.getByLabel("Largura (m)").fill("8");
   await page.getByLabel("Comprimento (m)").fill("12");
   await page.getByLabel("Altura (m)").fill("3");
-  await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
+  await openProjectStudio(page, "Gerar modelo 3D");
   await openEngineeringTool(page, "Preparar análise");
   await page.getByLabel("Classe do aço").fill("Aço declarado, não aprovado");
   await page.getByRole("navigation",{name:"Etapas do levantamento"}).getByRole("button",{name:/Estrutura/}).click();

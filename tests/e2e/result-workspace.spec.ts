@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { expect, test } from "@playwright/test";
 import { openEngineeringTool, openResultTab } from "./result-tabs";
 
@@ -8,7 +9,7 @@ for (const width of [375, 1440]) test(`resultado organizado preserva modelo, avi
   await page.getByLabel("Largura (m)").fill("12");
   await page.getByLabel("Comprimento (m)").fill("35");
   await page.getByLabel("Altura (m)").fill("5");
-  await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
+  await openProjectStudio(page, "Gerar modelo 3D");
   const canvas=page.getByRole("img",{name:"Modelo 3D da estrutura",includeHidden:true});
   await expect(canvas).toBeVisible();
   const before=await page.evaluate(()=>localStorage.getItem("jpn-projetos:v1"));
