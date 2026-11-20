@@ -9,7 +9,7 @@ for (const viewport of [375, 1440]) test(`preparação física é editável, per
   await page.getByLabel("Comprimento (m)").fill("20");
   await page.getByLabel("Altura (m)").fill("4");
   await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
-  await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
+  // O canvas WebGL monta de forma assíncrona após gerar a geometria; em CI\n  // compartilhada pode levar mais que o timeout padrão de 5 segundos.\n  // Aguardar o modelo efetivo (sem sleeps) mantém a regressão verificável.\n  await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible({ timeout: 30000 });
   await openEngineeringTool(page, "Preparar análise");
   await expect(page.getByTestId("physical-prep-status")).toContainText("Preparação em andamento");
   await expect(page.getByTestId("physical-prep-status")).toContainText("pendências");
