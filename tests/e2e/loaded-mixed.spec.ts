@@ -1,10 +1,12 @@
+import { openProjectStudio } from "./open-project-studio";
 import { declareAxes } from "./axes";
 import { openEngineeringTool } from "./result-tabs";
 import {expect,test} from "@playwright/test";
 import {readFile} from "node:fs/promises";
 for(const width of [375,1440])test(`peso explícito e carga distribuída executam Python real em ${width}px`,async({page})=>{
  test.setTimeout(120000);await page.setViewportSize({width,height:930});const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
- await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
+ await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");
+  await openProjectStudio(page, "Gerar modelo 3D");
  await openEngineeringTool(page, "Análise Estrutural Experimental");const p=page.getByTestId("mixed-workspace");await p.getByRole("button",{name:"Abrir exemplo de peso e cargas"}).click();await expect(p.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:20000});
  await p.getByTestId("structural-loads").locator(":scope > summary").click();await expect(p.getByTestId("structural-loads")).toContainText("1000 kg/m³");await expect(p.getByTestId("structural-loads")).toContainText("PP-DEMO");
  await declareAxes(p);await p.getByRole("button",{name:"Executar análise mista local"}).click();await expect(p.getByTestId("loaded-result-trace")).toContainText("Peso próprio declarado",{timeout:30000});

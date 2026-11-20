@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import {test,expect} from "@playwright/test";
 import {readFile} from "node:fs/promises";
 import {openResultTab} from "./result-tabs";
@@ -6,7 +7,8 @@ import {m49GarageProject} from "../../src/domain/test-support/m49-garage-project
 test("exports native interface project as ZIP and individual sheet PDF; edits invalidate prior exports",async({page})=>{
   test.setTimeout(90000);
   const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
-  await page.goto("/");await page.getByRole("button",{name:"Abrir exemplo de levantamento"}).click();
+  await page.goto("/");
+  await openProjectStudio(page, "Abrir exemplo de levantamento");
   await openResultTab(page,"Arquivos");
   const control=page.getByTestId("complete-package-control");
   const waiting=page.waitForEvent("download");await control.getByRole("button",{name:"Exportar pacote completo",exact:true}).click();

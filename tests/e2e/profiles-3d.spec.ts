@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { expect, test, type Page } from "@playwright/test";
 import { planningExample } from "../../src/domain/planning-example";
 import { emptySnapshot } from "../../src/domain/models";
@@ -147,7 +148,7 @@ for (const width of [375, 1440]) test(`exemplo antigo abre demonstração sólid
 for (const width of [375, 1440]) test(`atalho visível abre o 3D da estrutura no fluxo em ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 850 });
   await page.goto("/");
-  await page.getByRole("button", { name: "Abrir exemplo completo de pré-projeto" }).click();
+  await openProjectStudio(page, "Abrir exemplo completo de pré-projeto");
   await page.getByRole("navigation", { name: "Etapas do levantamento" }).getByRole("button", { name: "Obra" }).click();
   await expect(page.getByRole("button", { name: "Abrir modelo 3D" })).toBeVisible();
   await page.getByRole("button", { name: "Abrir modelo 3D" }).click();

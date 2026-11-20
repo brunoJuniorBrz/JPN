@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { openEngineeringTool } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 import { emptySnapshot } from "../../src/domain/models";
@@ -48,7 +49,7 @@ for (const width of [375, 1440]) {
     await page.setViewportSize({ width, height: 950 });
     await page.goto("/projetos/novo");
     await page.getByLabel("Largura (m)").fill("10"); await page.getByLabel("Comprimento (m)").fill("20"); await page.getByLabel("Altura (m)").fill("4");
-    await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
+    await openProjectStudio(page, "Gerar modelo 3D");
     await openEngineeringTool(page, "Preparar análise"); await page.getByRole("button", { name: "4. Conferência" }).click();
     await page.getByRole("button", { name: "Preparar modelo físico desta obra" }).click();
     await expect(page.getByRole("alert").filter({ hasText: "PROPERTIES" })).toBeVisible();

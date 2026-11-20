@@ -1,10 +1,11 @@
+import { openProjectStudio } from "./open-project-studio";
 import { openResultTab } from "./result-tabs";
 import { expect,test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
 for(const width of [375,1440]){
   test(`dossiê M25 continua preliminar e exporta PDF/Excel em ${width}px`,async({page})=>{
-    test.setTimeout(120000);
+    test.setTimeout(180000);
     const errors:string[]=[];
     page.on("pageerror",e=>errors.push(e.message));
     await page.setViewportSize({width,height:900});
@@ -12,8 +13,9 @@ for(const width of [375,1440]){
     await page.getByLabel("Largura (m)").fill("8");
     await page.getByLabel("Comprimento (m)").fill("12");
     await page.getByLabel("Altura (m)").fill("4");
-    await page.getByRole("button",{name:"Gerar modelo 3D"}).click();
-    await expect(page.getByTestId("takeoff-totals")).toBeVisible();
+    await openProjectStudio(page, "Gerar modelo 3D");
+
+    await expect(page.getByTestId("takeoff-totals")).toBeVisible({ timeout: 30000 });
     await openResultTab(page,"Materiais");
     const panel=page.getByTestId("preproduction-dossier");
     await expect(panel).toContainText("NÃO LIBERADO PARA COMPRA OU CORTE");

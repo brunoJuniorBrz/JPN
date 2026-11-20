@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { expect, test, type Page } from "@playwright/test";
 import { planningExample } from "../../src/domain/planning-example";
 import { emptySnapshot } from "../../src/domain/models";
@@ -101,7 +102,7 @@ test("dispositivo sem WebGL mantém fallback 2D utilizável", async ({ page }) =
 });
 test("exemplo completo nasce apenas ao clicar e preserva a configuração na recarga", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Abrir exemplo completo de pré-projeto", exact: true }).click();
+  await openProjectStudio(page, "Abrir exemplo completo de pré-projeto");
   await expect(page.getByTestId("takeoff-totals")).toContainText("130");
   await openCutting(page);
   await expect(page.getByTestId("cutting-results")).toContainText("barras comerciais estimadas");
