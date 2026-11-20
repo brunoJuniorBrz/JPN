@@ -1,0 +1,1331 @@
+{
+ "tom-muros-1agua": {
+  "input": {
+   "version": 1,
+   "roofKind": "one-slope",
+   "spanMm": 8000,
+   "lengthMm": 10000,
+   "trusses": 3,
+   "gutter": {
+    "supportMm": 150,
+    "widthMm": 400,
+    "clearanceMm": 200,
+    "lowSideMm": 125,
+    "highSideMm": 200,
+    "budgeted": false,
+    "pricePerMCents": null
+   },
+   "walls": {
+    "lowMm": 3000,
+    "highMm": 3800,
+    "thicknessMm": 150
+   },
+   "supportZMm": 3000,
+   "support": "walls",
+   "column": {
+    "designation": "Tubo 100x100x3.00 mm",
+    "kgPerM": 9.14,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "anchor": {
+    "plateWidthMm": 150,
+    "plateHeightMm": 200,
+    "boltsPerSupport": 2,
+    "boltLengthMm": 1000,
+    "platePriceCents": null,
+    "boltPriceCents": null
+   },
+   "tipHeightMm": 75,
+   "highHeightMm": 800,
+   "panelMm": 500,
+   "countFrom": "high",
+   "diagonal": "to-high",
+   "stationsMm": null,
+   "flippedPanels": [],
+   "purlinLines": 6,
+   "purlinStepMm": 1500,
+   "chordSpliceMm": 5980,
+   "stockMm": 6000,
+   "chord": {
+    "designation": "U 100x40x2.65 mm",
+    "kgPerM": 3.54,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "web": {
+    "designation": "L 7/8 x 1/8 pol",
+    "kgPerM": 1.03,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "purlin": {
+    "designation": "Ue 75x40x15x2.65 mm",
+    "kgPerM": 3.63,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "sheet": {
+    "usefulWidthMm": 1020,
+    "pricePerMCents": 4400,
+    "beyondTipMm": 300,
+    "piecesPerSlope": 1,
+    "overlapMm": 250
+   },
+   "laborPerM2Cents": 5000,
+   "consumablesCents": 110000,
+   "screwPriceCents": 60,
+   "fullHeightBudget": false,
+   "types": [],
+   "lineTypes": []
+  },
+  "summary": {
+   "lines": [
+    {
+     "item": "Banzos U 100x40x2.65 mm",
+     "qty": "8 barras",
+     "cents": null
+    },
+    {
+     "item": "Montantes e diagonais L 7/8 x 1/8 pol",
+     "qty": "9 barras",
+     "cents": null
+    },
+    {
+     "item": "Terças Ue 75x40x15x2.65 mm",
+     "qty": "12 barras",
+     "cents": null
+    },
+    {
+     "item": "Telha",
+     "qty": "10 × 7,59 m (1 água(s), 1 peça(s)/água)",
+     "cents": 333960
+    },
+    {
+     "item": "Chapa de ancoragem 15 x 20 cm",
+     "qty": "3 un",
+     "cents": null
+    },
+    {
+     "item": "Chumbador 1,00 m",
+     "qty": "6 un",
+     "cents": null
+    },
+    {
+     "item": "Parafusos",
+     "qty": "400 un",
+     "cents": 24000
+    },
+    {
+     "item": "Insumos",
+     "qty": "—",
+     "cents": 110000
+    },
+    {
+     "item": "Mão de obra",
+     "qty": "80,0 m²",
+     "cents": 400000
+    }
+   ],
+   "kg": {
+    "chord": 154.37401734482026,
+    "web": 52.458121209559046,
+    "purlin": 217.79999999999998,
+    "column": 0,
+    "total": 424.63213855437925
+   },
+   "bars": {
+    "chord": 8,
+    "web": 9,
+    "webFullHeight": 14,
+    "purlin": 12
+   },
+   "buy": {
+    "chord": 8,
+    "web": 9,
+    "purlin": 12,
+    "column": 0
+   },
+   "plates": 3,
+   "bolts": 6,
+   "columnCount": 0,
+   "knownCents": 867960
+  },
+  "takeoff": {
+   "totals": {
+    "quantity": 117,
+    "lengthM": 154.53869424250013,
+    "massKg": 424.63345206431853
+   },
+   "groups": [
+    {
+     "key": "[\"bottomChord\",\"Banzo inferior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 76.995783
+    },
+    {
+     "key": "[\"topChord\",\"Banzo superior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 77.37980425008142
+    },
+    {
+     "key": "[\"web\",\"Montante L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 21.0892192875
+    },
+    {
+     "key": "[\"web\",\"Diagonal L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 31.368825526736906
+    },
+    {
+     "key": "[\"purlin\",\"Terça Ue 75x40x15x2.65 mm\",\"TERCAS\",\"MAT-REF-ACO\",\"SEC-REF-PURLIN\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 217.79982000000007
+    }
+   ]
+  },
+  "cutting": [
+   {
+    "profile": "U 100x40x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 4
+   },
+   {
+    "profile": "L 7/8 x 1/8 pol · NAO-INFORMADO (perfil comercial)",
+    "bars": 5
+   },
+   {
+    "profile": "Ue 75x40x15x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 6
+   }
+  ]
+ },
+ "tom-pilares": {
+  "input": {
+   "version": 1,
+   "roofKind": "one-slope",
+   "spanMm": 8000,
+   "lengthMm": 10000,
+   "trusses": 3,
+   "gutter": {
+    "supportMm": 150,
+    "widthMm": 400,
+    "clearanceMm": 200,
+    "lowSideMm": 125,
+    "highSideMm": 200,
+    "budgeted": false,
+    "pricePerMCents": null
+   },
+   "walls": {
+    "lowMm": 3000,
+    "highMm": 3800,
+    "thicknessMm": 150
+   },
+   "supportZMm": 3000,
+   "support": "columns",
+   "column": {
+    "designation": "Tubo 100x100x3.00 mm",
+    "kgPerM": 9.14,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "anchor": {
+    "plateWidthMm": 150,
+    "plateHeightMm": 200,
+    "boltsPerSupport": 2,
+    "boltLengthMm": 1000,
+    "platePriceCents": null,
+    "boltPriceCents": null
+   },
+   "tipHeightMm": 75,
+   "highHeightMm": 800,
+   "panelMm": 500,
+   "countFrom": "high",
+   "diagonal": "to-high",
+   "stationsMm": null,
+   "flippedPanels": [],
+   "purlinLines": 6,
+   "purlinStepMm": 1500,
+   "chordSpliceMm": 5980,
+   "stockMm": 6000,
+   "chord": {
+    "designation": "U 100x40x2.65 mm",
+    "kgPerM": 3.54,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "web": {
+    "designation": "L 7/8 x 1/8 pol",
+    "kgPerM": 1.03,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "purlin": {
+    "designation": "Ue 75x40x15x2.65 mm",
+    "kgPerM": 3.63,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "sheet": {
+    "usefulWidthMm": 1020,
+    "pricePerMCents": 4400,
+    "beyondTipMm": 300,
+    "piecesPerSlope": 1,
+    "overlapMm": 250
+   },
+   "laborPerM2Cents": 5000,
+   "consumablesCents": 110000,
+   "screwPriceCents": 60,
+   "fullHeightBudget": false,
+   "types": [],
+   "lineTypes": []
+  },
+  "summary": {
+   "lines": [
+    {
+     "item": "Banzos U 100x40x2.65 mm",
+     "qty": "9 barras",
+     "cents": null
+    },
+    {
+     "item": "Montantes e diagonais L 7/8 x 1/8 pol",
+     "qty": "10 barras",
+     "cents": null
+    },
+    {
+     "item": "Pilares Tubo 100x100x3.00 mm",
+     "qty": "6 barras · 6 pilares de 3,00 m",
+     "cents": null
+    },
+    {
+     "item": "Terças Ue 75x40x15x2.65 mm",
+     "qty": "12 barras",
+     "cents": null
+    },
+    {
+     "item": "Telha",
+     "qty": "10 × 8,34 m (1 água(s), 1 peça(s)/água)",
+     "cents": 366960
+    },
+    {
+     "item": "Chapa de base 15 x 20 cm",
+     "qty": "6 un",
+     "cents": null
+    },
+    {
+     "item": "Chumbador 1,00 m",
+     "qty": "12 un",
+     "cents": null
+    },
+    {
+     "item": "Parafusos",
+     "qty": "400 un",
+     "cents": 24000
+    },
+    {
+     "item": "Insumos",
+     "qty": "—",
+     "cents": 110000
+    },
+    {
+     "item": "Mão de obra",
+     "qty": "80,0 m²",
+     "cents": 400000
+    }
+   ],
+   "kg": {
+    "chord": 170.26817018463117,
+    "web": 57.479451311659446,
+    "purlin": 217.79999999999998,
+    "column": 164.52,
+    "total": 610.0676214962906
+   },
+   "bars": {
+    "chord": 9,
+    "web": 10,
+    "webFullHeight": 15,
+    "purlin": 12
+   },
+   "buy": {
+    "chord": 9,
+    "web": 10,
+    "purlin": 12,
+    "column": 6
+   },
+   "plates": 6,
+   "bolts": 12,
+   "columnCount": 6,
+   "knownCents": 900960
+  },
+  "takeoff": {
+   "totals": {
+    "quantity": 129,
+    "lengthM": 181.90364569509202,
+    "massKg": 610.0689183290658
+   },
+   "groups": [
+    {
+     "key": "[\"bottomChord\",\"Banzo inferior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 84.960864
+    },
+    {
+     "key": "[\"topChord\",\"Banzo superior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 85.30903772534495
+    },
+    {
+     "key": "[\"web\",\"Montante L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 22.981841531250005
+    },
+    {
+     "key": "[\"web\",\"Diagonal L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 34.497526072470635
+    },
+    {
+     "key": "[\"column\",\"Pilar Tubo 100x100x3.00 mm\",\"PILARES-TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-COLUMN\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 164.51982900000002
+    },
+    {
+     "key": "[\"purlin\",\"Terça Ue 75x40x15x2.65 mm\",\"TERCAS\",\"MAT-REF-ACO\",\"SEC-REF-PURLIN\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 217.79982000000007
+    }
+   ]
+  },
+  "cutting": [
+   {
+    "profile": "U 100x40x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 5
+   },
+   {
+    "profile": "L 7/8 x 1/8 pol · NAO-INFORMADO (perfil comercial)",
+    "bars": 5
+   },
+   {
+    "profile": "Tubo 100x100x3.00 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 2
+   },
+   {
+    "profile": "Ue 75x40x15x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 6
+   }
+  ]
+ },
+ "duas-aguas-12x20": {
+  "input": {
+   "version": 1,
+   "roofKind": "two-slopes",
+   "spanMm": 12000,
+   "lengthMm": 20000,
+   "trusses": 5,
+   "gutter": {
+    "supportMm": 150,
+    "widthMm": 400,
+    "clearanceMm": 200,
+    "lowSideMm": 125,
+    "highSideMm": 200,
+    "budgeted": false,
+    "pricePerMCents": null
+   },
+   "walls": {
+    "lowMm": 3000,
+    "highMm": 3800,
+    "thicknessMm": 150
+   },
+   "supportZMm": 3000,
+   "support": "walls",
+   "column": {
+    "designation": "Tubo 100x100x3.00 mm",
+    "kgPerM": 9.14,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "anchor": {
+    "plateWidthMm": 150,
+    "plateHeightMm": 200,
+    "boltsPerSupport": 2,
+    "boltLengthMm": 1000,
+    "platePriceCents": null,
+    "boltPriceCents": null
+   },
+   "tipHeightMm": 75,
+   "highHeightMm": 800,
+   "panelMm": 250,
+   "countFrom": "high",
+   "diagonal": "to-high",
+   "stationsMm": null,
+   "flippedPanels": [],
+   "purlinLines": 6,
+   "purlinStepMm": 600,
+   "chordSpliceMm": 5980,
+   "stockMm": 6000,
+   "chord": {
+    "designation": "U 100x40x2.65 mm",
+    "kgPerM": 3.54,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "web": {
+    "designation": "L 7/8 x 1/8 pol",
+    "kgPerM": 1.03,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "purlin": {
+    "designation": "Ue 75x40x15x2.65 mm",
+    "kgPerM": 3.63,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "sheet": {
+    "usefulWidthMm": 1020,
+    "pricePerMCents": 4400,
+    "beyondTipMm": 300,
+    "piecesPerSlope": 1,
+    "overlapMm": 250
+   },
+   "laborPerM2Cents": 5000,
+   "consumablesCents": 110000,
+   "screwPriceCents": 60,
+   "fullHeightBudget": false,
+   "types": [],
+   "lineTypes": []
+  },
+  "summary": {
+   "lines": [
+    {
+     "item": "Banzos U 100x40x2.65 mm",
+     "qty": "20 barras",
+     "cents": null
+    },
+    {
+     "item": "Montantes e diagonais L 7/8 x 1/8 pol",
+     "qty": "35 barras",
+     "cents": null
+    },
+    {
+     "item": "Terças Ue 75x40x15x2.65 mm",
+     "qty": "44 barras",
+     "cents": null
+    },
+    {
+     "item": "Telha",
+     "qty": "40 × 5,61 m (2 água(s), 1 peça(s)/água)",
+     "cents": 987360
+    },
+    {
+     "item": "Chapa de ancoragem 15 x 20 cm",
+     "qty": "10 un",
+     "cents": null
+    },
+    {
+     "item": "Chumbador 1,00 m",
+     "qty": "20 un",
+     "cents": null
+    },
+    {
+     "item": "Parafusos",
+     "qty": "1300 un",
+     "cents": 78000
+    },
+    {
+     "item": "Insumos",
+     "qty": "—",
+     "cents": 110000
+    },
+    {
+     "item": "Mão de obra",
+     "qty": "240,0 m²",
+     "cents": 1200000
+    }
+   ],
+   "kg": {
+    "chord": 373.4637381030504,
+    "web": 209.8826819648881,
+    "purlin": 798.6,
+    "column": 0,
+    "total": 1381.9464200679386
+   },
+   "bars": {
+    "chord": 20,
+    "web": 35,
+    "webFullHeight": 59,
+    "purlin": 44
+   },
+   "buy": {
+    "chord": 20,
+    "web": 35,
+    "purlin": 44,
+    "column": 0
+   },
+   "plates": 10,
+   "bolts": 20,
+   "columnCount": 0,
+   "knownCents": 2375360
+  },
+  "takeoff": {
+   "totals": {
+    "quantity": 489,
+    "lengthM": 529.2678252432245,
+    "massKg": 1381.949252349867
+   },
+   "groups": [
+    {
+     "key": "[\"bottomChord\",\"Banzo inferior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 185.85189000000003
+    },
+    {
+     "key": "[\"topChord\",\"Banzo superior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 187.6156460393701
+    },
+    {
+     "key": "[\"web\",\"Montante L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 95.01736162500002
+    },
+    {
+     "key": "[\"web\",\"Diagonal L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 114.86501468549682
+    },
+    {
+     "key": "[\"purlin\",\"Terça Ue 75x40x15x2.65 mm\",\"TERCAS\",\"MAT-REF-ACO\",\"SEC-REF-PURLIN\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 798.5993400000006
+    }
+   ]
+  },
+  "cutting": [
+   {
+    "profile": "U 100x40x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 10
+   },
+   {
+    "profile": "L 7/8 x 1/8 pol · NAO-INFORMADO (perfil comercial)",
+    "bars": 18
+   },
+   {
+    "profile": "Ue 75x40x15x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 22
+   }
+  ]
+ },
+ "duas-aguas-pilares-10x15": {
+  "input": {
+   "version": 1,
+   "roofKind": "two-slopes",
+   "spanMm": 10000,
+   "lengthMm": 15000,
+   "trusses": 4,
+   "gutter": {
+    "supportMm": 150,
+    "widthMm": 400,
+    "clearanceMm": 200,
+    "lowSideMm": 125,
+    "highSideMm": 200,
+    "budgeted": false,
+    "pricePerMCents": null
+   },
+   "walls": {
+    "lowMm": 3000,
+    "highMm": 3800,
+    "thicknessMm": 150
+   },
+   "supportZMm": 3000,
+   "support": "columns",
+   "column": {
+    "designation": "Tubo 100x100x3.00 mm",
+    "kgPerM": 9.14,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "anchor": {
+    "plateWidthMm": 150,
+    "plateHeightMm": 200,
+    "boltsPerSupport": 2,
+    "boltLengthMm": 1000,
+    "platePriceCents": null,
+    "boltPriceCents": null
+   },
+   "tipHeightMm": 400,
+   "highHeightMm": 900,
+   "panelMm": 1000,
+   "countFrom": "high",
+   "diagonal": "to-high",
+   "stationsMm": null,
+   "flippedPanels": [],
+   "purlinLines": 4,
+   "purlinStepMm": 1200,
+   "chordSpliceMm": 5980,
+   "stockMm": 6000,
+   "chord": {
+    "designation": "U 100x40x2.65 mm",
+    "kgPerM": 3.54,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "web": {
+    "designation": "L 7/8 x 1/8 pol",
+    "kgPerM": 1.03,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "purlin": {
+    "designation": "Ue 75x40x15x2.65 mm",
+    "kgPerM": 3.63,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "sheet": {
+    "usefulWidthMm": 1020,
+    "pricePerMCents": 4400,
+    "beyondTipMm": 300,
+    "piecesPerSlope": 1,
+    "overlapMm": 250
+   },
+   "laborPerM2Cents": 5000,
+   "consumablesCents": 110000,
+   "screwPriceCents": 60,
+   "fullHeightBudget": false,
+   "types": [],
+   "lineTypes": []
+  },
+  "summary": {
+   "lines": [
+    {
+     "item": "Banzos U 100x40x2.65 mm",
+     "qty": "16 barras",
+     "cents": null
+    },
+    {
+     "item": "Montantes e diagonais L 7/8 x 1/8 pol",
+     "qty": "14 barras",
+     "cents": null
+    },
+    {
+     "item": "Pilares Tubo 100x100x3.00 mm",
+     "qty": "8 barras · 8 pilares de 3,00 m",
+     "cents": null
+    },
+    {
+     "item": "Terças Ue 75x40x15x2.65 mm",
+     "qty": "21 barras",
+     "cents": null
+    },
+    {
+     "item": "Telha",
+     "qty": "30 × 5,33 m (2 água(s), 1 peça(s)/água)",
+     "cents": 703560
+    },
+    {
+     "item": "Chapa de base 15 x 20 cm",
+     "qty": "8 un",
+     "cents": null
+    },
+    {
+     "item": "Chumbador 1,00 m",
+     "qty": "16 un",
+     "cents": null
+    },
+    {
+     "item": "Parafusos",
+     "qty": "750 un",
+     "cents": 45000
+    },
+    {
+     "item": "Insumos",
+     "qty": "—",
+     "cents": 110000
+    },
+    {
+     "item": "Mão de obra",
+     "qty": "150,0 m²",
+     "cents": 750000
+    }
+   ],
+   "kg": {
+    "chord": 283.9062387950718,
+    "web": 78.9463455754468,
+    "purlin": 381.15,
+    "column": 219.36,
+    "total": 963.3625843705186
+   },
+   "bars": {
+    "chord": 16,
+    "web": 14,
+    "webFullHeight": 16,
+    "purlin": 21
+   },
+   "buy": {
+    "chord": 16,
+    "web": 14,
+    "purlin": 21,
+    "column": 8
+   },
+   "plates": 8,
+   "bolts": 16,
+   "columnCount": 8,
+   "knownCents": 1608560
+  },
+  "takeoff": {
+   "totals": {
+    "quantity": 129,
+    "lengthM": 285.8464399363737,
+    "massKg": 963.3648135822023
+   },
+   "groups": [
+    {
+     "key": "[\"bottomChord\",\"Banzo inferior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 141.60144
+    },
+    {
+     "key": "[\"topChord\",\"Banzo superior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 142.3076859771612
+    },
+    {
+     "key": "[\"web\",\"Montante L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 28.427958599999982
+    },
+    {
+     "key": "[\"web\",\"Diagonal L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 50.518272005040664
+    },
+    {
+     "key": "[\"column\",\"Pilar Tubo 100x100x3.00 mm\",\"PILARES-TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-COLUMN\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 219.35977200000002
+    },
+    {
+     "key": "[\"purlin\",\"Terça Ue 75x40x15x2.65 mm\",\"TERCAS\",\"MAT-REF-ACO\",\"SEC-REF-PURLIN\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 381.1496850000002
+    }
+   ]
+  },
+  "cutting": [
+   {
+    "profile": "U 100x40x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 8
+   },
+   {
+    "profile": "L 7/8 x 1/8 pol · NAO-INFORMADO (perfil comercial)",
+    "bars": 7
+   },
+   {
+    "profile": "Tubo 100x100x3.00 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 3
+   },
+   {
+    "profile": "Ue 75x40x15x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 11
+   }
+  ]
+ },
+ "tom-precos-medida-cheia-calha": {
+  "input": {
+   "version": 1,
+   "roofKind": "one-slope",
+   "spanMm": 8000,
+   "lengthMm": 10000,
+   "trusses": 3,
+   "gutter": {
+    "supportMm": 150,
+    "widthMm": 400,
+    "clearanceMm": 200,
+    "lowSideMm": 125,
+    "highSideMm": 200,
+    "budgeted": true,
+    "pricePerMCents": 3500
+   },
+   "walls": {
+    "lowMm": 3000,
+    "highMm": 3800,
+    "thicknessMm": 150
+   },
+   "supportZMm": 3000,
+   "support": "walls",
+   "column": {
+    "designation": "Tubo 100x100x3.00 mm",
+    "kgPerM": 9.14,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "anchor": {
+    "plateWidthMm": 150,
+    "plateHeightMm": 200,
+    "boltsPerSupport": 2,
+    "boltLengthMm": 1000,
+    "platePriceCents": 3000,
+    "boltPriceCents": 1500
+   },
+   "tipHeightMm": 75,
+   "highHeightMm": 800,
+   "panelMm": 500,
+   "countFrom": "high",
+   "diagonal": "to-high",
+   "stationsMm": null,
+   "flippedPanels": [],
+   "purlinLines": 6,
+   "purlinStepMm": 1500,
+   "chordSpliceMm": 5980,
+   "stockMm": 6000,
+   "chord": {
+    "designation": "U 100x40x2.65 mm",
+    "kgPerM": 3.54,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "web": {
+    "designation": "L 7/8 x 1/8 pol",
+    "kgPerM": 1.03,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "purlin": {
+    "designation": "Ue 75x40x15x2.65 mm",
+    "kgPerM": 3.63,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "sheet": {
+    "usefulWidthMm": 1020,
+    "pricePerMCents": 4400,
+    "beyondTipMm": 300,
+    "piecesPerSlope": 1,
+    "overlapMm": 250
+   },
+   "laborPerM2Cents": 5000,
+   "consumablesCents": 110000,
+   "screwPriceCents": 60,
+   "fullHeightBudget": true,
+   "types": [],
+   "lineTypes": []
+  },
+  "summary": {
+   "lines": [
+    {
+     "item": "Banzos U 100x40x2.65 mm",
+     "qty": "8 barras",
+     "cents": null
+    },
+    {
+     "item": "Montantes e diagonais L 7/8 x 1/8 pol (medida cheia)",
+     "qty": "14 barras · corte real 9",
+     "cents": null
+    },
+    {
+     "item": "Terças Ue 75x40x15x2.65 mm",
+     "qty": "12 barras",
+     "cents": null
+    },
+    {
+     "item": "Telha",
+     "qty": "10 × 7,59 m (1 água(s), 1 peça(s)/água)",
+     "cents": 333960
+    },
+    {
+     "item": "Calha (m)",
+     "qty": "10,00 m (1 lado(s))",
+     "cents": 35000
+    },
+    {
+     "item": "Chapa de ancoragem 15 x 20 cm",
+     "qty": "3 un",
+     "cents": 9000
+    },
+    {
+     "item": "Chumbador 1,00 m",
+     "qty": "6 un",
+     "cents": 9000
+    },
+    {
+     "item": "Parafusos",
+     "qty": "400 un",
+     "cents": 24000
+    },
+    {
+     "item": "Insumos",
+     "qty": "—",
+     "cents": 110000
+    },
+    {
+     "item": "Mão de obra",
+     "qty": "80,0 m²",
+     "cents": 400000
+    }
+   ],
+   "kg": {
+    "chord": 154.37401734482026,
+    "web": 52.458121209559046,
+    "purlin": 217.79999999999998,
+    "column": 0,
+    "total": 424.63213855437925
+   },
+   "bars": {
+    "chord": 8,
+    "web": 9,
+    "webFullHeight": 14,
+    "purlin": 12
+   },
+   "buy": {
+    "chord": 8,
+    "web": 14,
+    "purlin": 12,
+    "column": 0
+   },
+   "plates": 3,
+   "bolts": 6,
+   "columnCount": 0,
+   "knownCents": 920960
+  },
+  "takeoff": {
+   "totals": {
+    "quantity": 117,
+    "lengthM": 154.53869424250013,
+    "massKg": 424.63345206431853
+   },
+   "groups": [
+    {
+     "key": "[\"bottomChord\",\"Banzo inferior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 76.995783
+    },
+    {
+     "key": "[\"topChord\",\"Banzo superior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 77.37980425008142
+    },
+    {
+     "key": "[\"web\",\"Montante L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 21.0892192875
+    },
+    {
+     "key": "[\"web\",\"Diagonal L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 31.368825526736906
+    },
+    {
+     "key": "[\"purlin\",\"Terça Ue 75x40x15x2.65 mm\",\"TERCAS\",\"MAT-REF-ACO\",\"SEC-REF-PURLIN\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 217.79982000000007
+    }
+   ]
+  },
+  "cutting": [
+   {
+    "profile": "U 100x40x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 4
+   },
+   {
+    "profile": "L 7/8 x 1/8 pol · NAO-INFORMADO (perfil comercial)",
+    "bars": 5
+   },
+   {
+    "profile": "Ue 75x40x15x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 6
+   }
+  ]
+ },
+ "tom-dois-tipos": {
+  "input": {
+   "version": 1,
+   "roofKind": "one-slope",
+   "spanMm": 8000,
+   "lengthMm": 10000,
+   "trusses": 3,
+   "gutter": {
+    "supportMm": 150,
+    "widthMm": 400,
+    "clearanceMm": 200,
+    "lowSideMm": 125,
+    "highSideMm": 200,
+    "budgeted": false,
+    "pricePerMCents": null
+   },
+   "walls": {
+    "lowMm": 3000,
+    "highMm": 3800,
+    "thicknessMm": 150
+   },
+   "supportZMm": 3000,
+   "support": "walls",
+   "column": {
+    "designation": "Tubo 100x100x3.00 mm",
+    "kgPerM": 9.14,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "anchor": {
+    "plateWidthMm": 150,
+    "plateHeightMm": 200,
+    "boltsPerSupport": 2,
+    "boltLengthMm": 1000,
+    "platePriceCents": null,
+    "boltPriceCents": null
+   },
+   "tipHeightMm": 75,
+   "highHeightMm": 800,
+   "panelMm": 500,
+   "countFrom": "high",
+   "diagonal": "to-high",
+   "stationsMm": null,
+   "flippedPanels": [],
+   "purlinLines": 6,
+   "purlinStepMm": 1500,
+   "chordSpliceMm": 5980,
+   "stockMm": 6000,
+   "chord": {
+    "designation": "U 100x40x2.65 mm",
+    "kgPerM": 3.54,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "web": {
+    "designation": "L 7/8 x 1/8 pol",
+    "kgPerM": 1.03,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "purlin": {
+    "designation": "Ue 75x40x15x2.65 mm",
+    "kgPerM": 3.63,
+    "barPriceCents": null,
+    "extraBars": 0
+   },
+   "sheet": {
+    "usefulWidthMm": 1020,
+    "pricePerMCents": 4400,
+    "beyondTipMm": 300,
+    "piecesPerSlope": 1,
+    "overlapMm": 250
+   },
+   "laborPerM2Cents": 5000,
+   "consumablesCents": 110000,
+   "screwPriceCents": 60,
+   "fullHeightBudget": false,
+   "types": [
+    {
+     "id": "T2",
+     "name": "Tipo 2",
+     "panelMm": 750,
+     "countFrom": "high",
+     "diagonal": "to-high",
+     "stationsMm": null,
+     "flippedPanels": [],
+     "chord": {
+      "designation": "U 100x40x2.65 mm",
+      "kgPerM": 3.54,
+      "barPriceCents": null,
+      "extraBars": 0
+     },
+     "web": {
+      "designation": "L 7/8 x 1/8 pol",
+      "kgPerM": 1.03,
+      "barPriceCents": null,
+      "extraBars": 0
+     }
+    }
+   ],
+   "lineTypes": [
+    "T2",
+    "T1",
+    "T2"
+   ]
+  },
+  "summary": {
+   "lines": [
+    {
+     "item": "Banzos U 100x40x2.65 mm",
+     "qty": "8 barras",
+     "cents": null
+    },
+    {
+     "item": "Montantes e diagonais L 7/8 x 1/8 pol",
+     "qty": "8 barras",
+     "cents": null
+    },
+    {
+     "item": "Terças Ue 75x40x15x2.65 mm",
+     "qty": "12 barras",
+     "cents": null
+    },
+    {
+     "item": "Telha",
+     "qty": "10 × 7,59 m (1 água(s), 1 peça(s)/água)",
+     "cents": 333960
+    },
+    {
+     "item": "Chapa de ancoragem 15 x 20 cm",
+     "qty": "3 un",
+     "cents": null
+    },
+    {
+     "item": "Chumbador 1,00 m",
+     "qty": "6 un",
+     "cents": null
+    },
+    {
+     "item": "Parafusos",
+     "qty": "400 un",
+     "cents": 24000
+    },
+    {
+     "item": "Insumos",
+     "qty": "—",
+     "cents": 110000
+    },
+    {
+     "item": "Mão de obra",
+     "qty": "80,0 m²",
+     "cents": 400000
+    }
+   ],
+   "kg": {
+    "chord": 154.37401734482026,
+    "web": 45.21106283954823,
+    "purlin": 217.79999999999998,
+    "column": 0,
+    "total": 417.38508018436846
+   },
+   "bars": {
+    "chord": 8,
+    "web": 8,
+    "webFullHeight": 12,
+    "purlin": 12
+   },
+   "buy": {
+    "chord": 8,
+    "web": 8,
+    "purlin": 12,
+    "column": 0
+   },
+   "plates": 3,
+   "bolts": 6,
+   "columnCount": 0,
+   "knownCents": 867960
+  },
+  "takeoff": {
+   "totals": {
+    "quantity": 97,
+    "lengthM": 147.50271524248961,
+    "massKg": 417.38640424827616
+   },
+   "groups": [
+    {
+     "key": "[\"bottomChord\",\"Banzo inferior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 76.995783
+    },
+    {
+     "key": "[\"topChord\",\"Banzo superior U 100x40x2.65 mm\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-CHORD\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 77.37980425008142
+    },
+    {
+     "key": "[\"web\",\"Montante L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 16.7117256625
+    },
+    {
+     "key": "[\"web\",\"Diagonal L 7/8 x 1/8 pol\",\"TESOURA\",\"MAT-REF-ACO\",\"SEC-REF-WEB\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 28.499271335694583
+    },
+    {
+     "key": "[\"purlin\",\"Terça Ue 75x40x15x2.65 mm\",\"TERCAS\",\"MAT-REF-ACO\",\"SEC-REF-PURLIN\"]",
+     "profile": null,
+     "count": null,
+     "totalLengthMm": null,
+     "massKg": 217.79982000000007
+    }
+   ]
+  },
+  "cutting": [
+   {
+    "profile": "U 100x40x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 4
+   },
+   {
+    "profile": "L 7/8 x 1/8 pol · NAO-INFORMADO (perfil comercial)",
+    "bars": 4
+   },
+   {
+    "profile": "Ue 75x40x15x2.65 mm · NAO-INFORMADO (perfil comercial)",
+    "bars": 6
+   }
+  ]
+ }
+}
