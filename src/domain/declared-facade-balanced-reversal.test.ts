@@ -64,7 +64,7 @@ describe("M41-P3: regressão independente de binário de vento",()=>{
     c.forceN.forEach(value=>expect(value).toBeCloseTo(0,8));
     expect(c.momentNm[0]).toBeCloseTo(0,8);
     expect(c.momentNm[1]).toBeCloseTo(0,8);
-    expect(c.momentNm[2]).toBeCloseTo(18000,8);
+    // Regra da mão direita: F_x=-6000 N em y=1,5 m e F_x=+6000 N em y=4,5 m.\n    // M_z = -y*F_x = +9000 - 27000 = -18000 N.m (normal externa +X).\n    expect(c.momentNm[2]).toBeCloseTo(-18000,8);
     z.distributedForceN.forEach((value,i)=>expect(value).toBeCloseTo(z.expectedForceN[i],8));
     z.distributedMomentNm.forEach((value,i)=>expect(value).toBeCloseTo(z.expectedMomentNm[i],8));
     expect(c.loads.map(l=>l.pieceId)).toEqual(["C0","C3","C6"]);
