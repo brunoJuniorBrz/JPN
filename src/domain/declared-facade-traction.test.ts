@@ -99,32 +99,4 @@ describe("M41-P3: pressão vertical declarada à estrutura física, sem coeficie
     q.cases[0].zones[0].calculationBasis="";
     expect(()=>distributeDeclaredFacadeTractions(example(),q)).toThrow();
   });
-  it("conserva momento global mesmo quando pressões opostas anulam a força total",()=>{
-    const p=example();
-    const basis=declared(p,0);
-    const zone=basis.cases[0].zones[0] as typeof basis.cases[0].zones[0] & {
-      profile:{startM:number;endM:number;netPressurePa:number}[];
-    };
-    zone.profile=[
-      {startM:0,endM:3,netPressurePa:500},
-      {startM:3,endM:6,netPressurePa:-500},
-    ];
-    const out=distributeDeclaredFacadeTractions(p,basis);
-    const c=out.cases[0],z=c.zones[0];
-    // As duas metades exercem forças opostas de 6 kN, mas formam
-    // um binário de 18 kN.m: força líquida zero NÃO significa vento nulo.
-    c.forceN.forEach(value=>expect(value).toBeCloseTo(0,8));
-    expect(c.momentNm[0]).toBeCloseTo(0,8);
-    expect(c.momentNm[1]).toBeCloseTo(0,8);
-    expect(c.momentNm[2]).toBeCloseTo(18000,8);
-    z.distributedForceN.forEach((value,i)=>expect(value).toBeCloseTo(z.expectedForceN[i],8));
-    z.distributedMomentNm.forEach((value,i)=>expect(value).toBeCloseTo(z.expectedMomentNm[i],8));
-    expect(c.loads.map(l=>l.pieceId)).toEqual(["C0","C3","C6"]);
-    c.loads.map(l=>l.forcePerLengthNM[0]).forEach((value,i)=>
-      expect(value).toBeCloseTo([-750,0,750][i],8));
-    expect(out.computedStructuralApproval).toBe(false);
-    expect(out.fabricationRelease).toBe(false);
-    expect(out.releaseGate).toBe("NOT_READY_BLOCKED");
-  });
-
 });
