@@ -50,7 +50,7 @@ describe("M41-P3: regressão independente de binário de vento",()=>{
   it("conserva momento global mesmo quando pressões opostas anulam a força total",()=>{
     const p=example();
     const basis=declared(p,0);
-    const zone=basis.cases[0].zones[0] as typeof basis.cases[0].zones[0] & {
+    const zone=basis.cases[0].zones[0] as (typeof basis.cases)[number]["zones"][number] & {
       profile:{startM:number;endM:number;netPressurePa:number}[];
     };
     zone.profile=[
