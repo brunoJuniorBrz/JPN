@@ -50,3 +50,27 @@ Origem: obra 8 × 10 m do Tom (18/11/2026). A tesoura foi passada por mensagens 
 
 - Detalhe da calha rebaixada com platibanda e do apoio da ponta baixa (medidas do croqui: 15 / 40 / 20 / 12,5).
 - Detalhe da ancoragem no muro alto (croqui: 15 / 20 / 80 / 20 / 1 m).
+
+## Apoios mistos muro/pilar (nov/2026)
+
+Cada ponta de cada tesoura escolhe o que fica embaixo: **muro existente** ou **pilar novo**
+(`lineSupports`; vazio = segue o modo da obra, então projetos antigos não mudam). A geometria
+da tesoura (vão, recuo da calha, painéis) continua a da obra; muda só o apoio da ponta.
+
+- **Modelo físico:** pilar (piso → banzo inferior) só nas pontas em pilar; ponta em muro apoia
+  direto no nó do banzo inferior.
+- **Vínculos declarados no editor** (`supportModel`, hipótese do construtor, não presunção do motor):
+  base do pilar engastada (padrão) ou articulada; muro com translações e torção (RX) contidas pela
+  chapa soldada, giro no plano livre; tesoura entre dois muros com uma ponta deslizante em X
+  (padrão; duas águas: direita; uma água: ponta baixa — a ancoragem do muro alto fica fixa).
+- **Interfaces físicas** por nó (`supportInterfaces`): `existing-masonry` ou `new-steel-column`, lado
+  A/B, caminho de carga e base da restrição. Muro existente fica `hypothesis` (e bloqueia o cálculo
+  com `EXISTING_SUPPORT_PENDING`) até preencher "Muros conferidos no local por…", que vira
+  `site-reviewed` com o texto como evidência. A trava não foi afrouxada.
+- **Orçamento:** pilares só onde é pilar; chapa de base (pilares) e chapa de ancoragem (muros)
+  separadas; chumbadores por chapa.
+- **3D e CAD:** muro só nos trechos com muro; chapas só nas pontas em muro; corte esquematiza o
+  muro do lado que tiver muro (com as tesouras, se for parcial).
+- **Cálculo real:** `src/domain/truss-mixed-supports.test.ts` roda PyNite numa obra em que o muro
+  da direita acaba na 3ª tesoura: equilíbrio, compressão em todos os apoios, ponta deslizante sem
+  empuxo e auditoria de reação por interface (capacidade pendente, sem aprovação normativa).

@@ -97,7 +97,11 @@ describe("editor de tesoura por estações", () => {
     const p = applyTrussToProject(newProject(), { ...t, supportZMm: 3200 });
     const supports = p.workspace.spatialPreparation!.supports;
     expect(supports).toHaveLength(6);
-    expect(supports.every(s => s.dofs.every(d => d === "pending"))).toBe(true);
+    // Vínculos declarados no editor (não mais pendentes) + interface física de muro existente a conferir.
+    expect(supports.every(s => s.dofs.every(d => d !== "pending"))).toBe(true);
+    const faces = p.workspace.spatialPreparation!.supportInterfaces!;
+    expect(faces.map(f => f.nodeId).sort()).toEqual(supports.map(s => s.nodeId).sort());
+    expect(faces.every(f => f.kind === "existing-masonry" && f.reviewStatus === "hypothesis")).toBe(true);
     const nodes = new Map(p.workspace.physicalStructure!.nodes.map(n => [n.id, n]));
     expect(supports.every(s => nodes.get(s.nodeId)!.z === 3200)).toBe(true);
     const review = spatialPreparationReview(p, p.workspace.spatialPreparation!);
@@ -127,7 +131,12 @@ describe("editor de tesoura por estações", () => {
     expect(project.workspace.physicalStructure!.pieces.filter(p => p.role === "purlin")).toHaveLength((t.trusses - 1) * purlins.length);
     const supports = project.workspace.spatialPreparation!.supports;
     expect(supports).toHaveLength(t.trusses * 2);
-    expect(supports.every(s => s.dofs.every(d => d === "pending"))).toBe(true);
+    // Duas águas entre muros: ponta direita desliza no vão (UX livre), esquerda fixa; nada pendente.
+    expect(supports.every(s => s.dofs.every(d => d !== "pending"))).toBe(true);
+    const freeX = supports.filter(s => s.dofs[0] === "free").map(s => nodes.get(s.nodeId)!.x);
+    expect(freeX).toHaveLength(t.trusses);
+    expect(new Set(freeX).size).toBe(1);
+    expect(freeX[0]).toBeGreaterThan(Math.min(...supports.map(s => nodes.get(s.nodeId)!.x)));
     const supportX = [...new Set(supports.map(s => nodes.get(s.nodeId)!.x))].sort((a, b) => a - b);
     expect(supportX).toEqual([750, 7250]);
     const two = trussSummary(t), one = trussSummary(original);
@@ -184,7 +193,8 @@ describe("editor de tesoura por estações", () => {
       expect(prep.physicalRoofFaces!.faces.every(f=>f.supportPieceIds.length>0)).toBe(true);
       const checked=auditPhysicalRoofCoverage(prep.physicalRoofFaces!,resolvePhysicalStructure(p).model!);
       expect(checked.associatedPieceIds).toHaveLength(p.workspace.physicalStructure!.pieces.filter(piece=>piece.role==="purlin").length);
-      expect(prep.supports.every(s=>s.dofs.every(d=>d==="pending"))).toBe(true);
+      expect(prep.supports.every(s=>s.dofs.every(d=>d!=="pending"))).toBe(true);
+      expect(prep.supportInterfaces).toHaveLength(prep.supports.length);
     }
   });
 
@@ -194,7 +204,7 @@ describe("editor de tesoura por estações", () => {
     const p=applyTrussToProject(newProject(),t);
     expect(p.workspace.physicalStructure!.nodes.length).toBeGreaterThan(250);
     expect(p.workspace.cutting.useFabrication).toBe(false);
-    expect(p.workspace.spatialPreparation!.supports.every(s=>s.dofs.every(d=>d==="pending"))).toBe(true);
+    expect(p.workspace.spatialPreparation!.supports.every(s=>s.dofs.every(d=>d!=="pending"))).toBe(true);
   });
 
 });
@@ -240,7 +250,9 @@ describe("tesoura sobre pilares (obra completa)", () => {
     for (const c of cols) { expect(nodes.get(c.start)!.z).toBe(0); expect(nodes.get(c.end)!.z).toBe(t.supportZMm); }
     const supports = next.workspace.spatialPreparation!.supports;
     expect(supports).toHaveLength(t.trusses * 2);
-    expect(supports.every(x => nodes.get(x.nodeId)!.z === 0 && x.dofs.every(d => d === "pending"))).toBe(true);
+    // Base do pilar: engaste declarado no editor (padrão), interface de pilar metálico novo.
+    expect(supports.every(x => nodes.get(x.nodeId)!.z === 0 && x.dofs.every(d => d === "fixed"))).toBe(true);
+    expect(next.workspace.spatialPreparation!.supportInterfaces!.every(f => f.kind === "new-steel-column")).toBe(true);
     expect(packageTakeoff(next).totals.massKg).toBeCloseTo(s.kg.total, 1);
     expect(s.lines.some(l => l.item.startsWith(`Pilares ${t.column.designation}`))).toBe(true);
     expect(s.lines.some(l => l.item.startsWith("Chapa de base"))).toBe(true);

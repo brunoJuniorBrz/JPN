@@ -5,7 +5,7 @@
  */
 import * as THREE from "three";
 import type { TrussEditor } from "@/domain/truss-editor";
-import { heightAt, slopeCount, tipOffsetMm, trussLengthMm } from "@/domain/truss-editor";
+import { endSupportOf, heightAt, slopeCount, tipOffsetMm, trussLengthMm, type TrussSide } from "@/domain/truss-editor";
 
 export function createTrussSiteScene(t: TrussEditor) {
   const root = new THREE.Group();
@@ -22,10 +22,29 @@ export function createTrussSiteScene(t: TrussEditor) {
     return mesh;
   };
   const wallThickness = t.walls.thicknessMm / 1000, onWalls = t.support !== "columns";
-  // Tesoura sobre pilares: os pilares são peças do modelo; muros, calhas e chapas de muro não se aplicam.
-  if (onWalls) for (const [x, height, side] of [[0, t.walls.lowMm / 1000, "esquerdo"], [span, (S === 2 ? t.walls.lowMm : t.walls.highMm) / 1000, "direito"]] as const) {
-    if (height > 0) addBox("Muro " + side + " — referência arquitetônica", [wallThickness, height, len],
-      [x, height / 2, -len / 2], 0xb8a994, .42);
+  // Pilares são peças do modelo. Muros: só nos TRECHOS cujas pontas de tesoura apoiam em muro
+  // (ex.: muro acaba na 3ª tesoura, pilar daí em diante). Calha segue o modo da obra (geometria).
+  const lineY = (i: number) => t.trusses > 1 ? len * i / (t.trusses - 1) : 0;
+  const wallRuns = (side: TrussSide) => {
+    const runs: [number, number][] = [];
+    for (let i = 0; i < t.trusses; i++) if (endSupportOf(t, i, side) === "wall") {
+      const last = runs.at(-1);
+      if (last && last[1] === i - 1) last[1] = i; else runs.push([i, i]);
+    }
+    return runs;
+  };
+  const stub = Math.max(t.anchor.plateWidthMm / 2000, .15);
+  let wallCount = 0;
+  for (const [x, side, name] of [[0, "left", "esquerdo"], [span, "right", "direito"]] as const) {
+    // Em obra de pilares, o muro existente chega até a cota do banzo inferior (apoio da ponta).
+    const height = onWalls ? (side === "left" || S === 2 ? t.walls.lowMm : t.walls.highMm) / 1000 : floorZ;
+    if (!(height > 0)) continue;
+    for (const [a, b] of wallRuns(side)) {
+      const y0 = a === 0 ? 0 : lineY(a) - stub, y1 = b === t.trusses - 1 ? len : lineY(b) + stub;
+      addBox(`Muro ${name} (tesouras ${a + 1}–${b + 1}) — referência arquitetônica`, [wallThickness, height, y1 - y0],
+        [x, height / 2, -(y0 + y1) / 2], 0xb8a994, .42);
+      wallCount++;
+    }
   }
   // Calhas U simplificadas nas bordas, comprimento real declarado; sem dimensionamento hidráulico.
   const gutterWidth = t.gutter.widthMm / 1000, small = t.gutter.lowSideMm / 1000, large = t.gutter.highSideMm / 1000;
@@ -40,10 +59,14 @@ export function createTrussSiteScene(t: TrussEditor) {
       [x + gutterWidth / 2, y + large / 2, -len / 2], 0x3b81ac, .9);
   }
   // Chapas e chumbadores são MARCADORES VISUAIS, não detalhes executivos.
-  const anchorsX = !onWalls ? [] : S === 2 ? [off / 1000, (off + 2 * L) / 1000] : [(off + L) / 1000];
+  // Chapas de ancoragem: só nas pontas em muro (uma água: lado alto, como no orçamento).
+  const anchorEnds: [number, TrussSide][] = S === 2 ? [[off / 1000, "left"], [(off + 2 * L) / 1000, "right"]] : [[(off + L) / 1000, "right"]];
   const anchorY = floorZ + Math.max(t.anchor.plateHeightMm / 2000, .04);
-  for (const x of anchorsX) for (let i = 0; i < t.trusses; i++) {
-    const y = -len * i / (t.trusses - 1);
+  let anchorCount = 0;
+  for (const [x, side] of anchorEnds) for (let i = 0; i < t.trusses; i++) {
+    if (endSupportOf(t, i, side) !== "wall") continue;
+    anchorCount++;
+    const y = -lineY(i);
     if (t.anchor.plateWidthMm > 0 && t.anchor.plateHeightMm > 0) {
       addBox("Chapa declarada — sem resistência verificada", [.025, t.anchor.plateHeightMm / 1000, t.anchor.plateWidthMm / 1000],
         [x, anchorY, y], 0xc55d2d, .94);
@@ -91,6 +114,6 @@ export function createTrussSiteScene(t: TrussEditor) {
   roofPanels("Cobertura preliminar água 1", roofL, S === 2 ? ridgeX : span,
     leftEndZ, S === 2 ? ridgeZ : (t.supportZMm + heightAt(t, t.spanMm - off)) / 1000 + .05);
   if (S === 2) roofPanels("Cobertura preliminar água 2", ridgeX, (off + 2 * L + t.sheet.beyondTipMm) / 1000, ridgeZ, leftEndZ);
-  root.userData = { preliminary: true, slopeCount: S, wallCount: onWalls ? 2 : 0, gutterCount: gutterXs.length, anchorCount: anchorsX.length * t.trusses, roofCount: S, roofPanelCount: S * t.sheet.piecesPerSlope };
+  root.userData = { preliminary: true, slopeCount: S, wallCount, gutterCount: gutterXs.length, anchorCount, roofCount: S, roofPanelCount: S * t.sheet.piecesPerSlope };
   return { root, dispose: () => { for (const g of geometries) g.dispose(); for (const m of materials) m.dispose(); } };
 }
