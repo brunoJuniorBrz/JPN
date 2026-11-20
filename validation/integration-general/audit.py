@@ -116,6 +116,11 @@ REVIEWED_AMENDMENTS = {
     "tests/e2e/spatial-coordination.spec.ts": "7d18f889b1f769a8b1cfd07a194ffd0f8c1c9dbd",# "Resultado" -> Materiais
     "tests/e2e/spatial-preparation.spec.ts": "1e78b58ca8c5405c7e66ad71300e3e752d7f8ea4", # "Resultado" -> Materiais
     "tests/e2e/ux-actions.spec.ts": "1f4e72cafb6b27a4aadf34545d9fb17e6d1210b6",          # tab "Modelo 3D" -> viewport region; pendências em Verificação
+    # PR #159: Playwright aguarda a rota assíncrona da entrada rápida antes de exigir os
+    # totais e o WebGL; asserts de materiais, bloqueio de fabricação e persistência preservados.
+    # Evidência: runs 44782448558 / 44782457982, snapshots incluem os alvos após timeout de 5s.
+    "tests/e2e/preproduction.spec.ts": "bea52d32ea889d8e1b2f1ed11da7457c7f3dd5e7",
+    "tests/e2e/spatial-preparation.spec.ts": "7b363e746d98d4a8374bff56a0a61737d5e5c7bd",
 }
 
 TREES = {}
