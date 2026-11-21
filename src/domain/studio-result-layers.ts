@@ -1,5 +1,6 @@
 import type {PhysicalGeometry,StructureModel,PieceRole} from "./structure";
 import {emptyProfile} from "./structure";
+import {visualProfileFromDesignation} from "./profile-section";
 import {mixedStations} from "./mixed-analysis";
 import {reviewResultOverlay,type ResultOverlay,type ResultOverlayKind,type OverlayIssue} from "@/components/planning/studio-result-overlay";
 
@@ -7,10 +8,19 @@ import {reviewResultOverlay,type ResultOverlay,type ResultOverlayKind,type Overl
  * `reviewResultOverlay` (hash binding, combination, solver, units, no approval). A picture of results, never an approval. */
 const ROLE:Record<string,PieceRole>={beam:"topChord"};
 /** Physical geometry (declared structure) as the Studio model: line pieces only, no invented section or roof metrics. */
-export function studioModelFromPhysical(g:PhysicalGeometry):StructureModel{
+/** Designação comercial por peça a partir do catálogo físico (pieceId → seção → designação). */
+export function catalogDesignations(catalog:{sections:{id:string;designation?:string}[];assignments:{pieceId:string;sectionId:string}[]}|undefined|null){
+  if(!catalog)return undefined;
+  const bySection=new Map(catalog.sections.map(s=>[s.id,s.designation??""]));
+  const byPiece=new Map(catalog.assignments.map(a=>[a.pieceId,bySection.get(a.sectionId)??""]));
+  return (pieceId:string)=>byPiece.get(pieceId)||undefined;
+}
+/** `designationOf` (opcional): designação comercial por peça, usada só para a seção VISUAL no 3D. */
+export function studioModelFromPhysical(g:PhysicalGeometry,designationOf?:(pieceId:string)=>string|undefined):StructureModel{
+  const profileOf=(id:string)=>{const d=designationOf?.(id);return (d&&visualProfileFromDesignation(d))||emptyProfile();};
   return {units:"mm",nodes:g.nodes.map(n=>({...n})),groups:[],frameCount:0,frameSpacingM:0,purlinRows:0,purlinSpacingM:0,projectedAreaM2:0,roofAreaM2:0,
     totalLengthM:g.pieces.reduce((s,p)=>s+p.lengthMm,0)/1000,knownMassKg:0,massComplete:false,
-    pieces:g.pieces.map(p=>({id:p.id,role:(ROLE[p.role]??p.role) as PieceRole,start:p.start,end:p.end,lengthMm:p.lengthMm,profile:emptyProfile(),massKg:null}))};
+    pieces:g.pieces.map(p=>({id:p.id,role:(ROLE[p.role]??p.role) as PieceRole,start:p.start,end:p.end,lengthMm:p.lengthMm,profile:profileOf(p.id),massKg:null}))};
 }
 
 type Vec=[number,number,number];

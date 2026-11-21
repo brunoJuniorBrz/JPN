@@ -88,3 +88,8 @@
 :global(.studio-inspector) .actions { gap: 6px; }
 :global(.studio-inspector) .actions button { min-height: 42px; flex: 1 1 100%; }
 :global(.studio-inspector) .toggle { padding: 8px; }
+/* Aviso único de conferência: uma linha fixa e os pontos técnicos recolhidos. */
+.review{background:#fff8ea;border:1px solid #ecd6a6;color:#6b5121;border-radius:9px;padding:10px;font-size:13px;margin:0;display:grid;gap:6px}
+.review>p{display:flex;gap:8px;align-items:center;margin:0}
+.review summary{cursor:pointer;font-size:12px}
+.review ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:12px}

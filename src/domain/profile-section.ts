@@ -57,3 +57,48 @@ export function sectionOrientation(profile: ProfileSpec): string {
   const v = profile.visualSection;
   return `Centro da caixa externa no eixo da barra; referência X local = +Y do projeto, Y local = +Z para barras em +X; menor rotação até o eixo inicial→final; giro ${v?.rollDeg ?? 0}°${v?.family === "channel" ? `; abertura em ${v.opening === "negative-x" ? "−" : "+"}X local` : ""}. Orientação visual, sem validação para fabricação.`;
 }
+
+const num = (s: string) => Number(s.replace(",", "."));
+/** Polegada em fração ("7/8", "1", "1 1/4") para mm. */
+function inchToMm(s: string): number | null {
+  const parts = s.trim().split(/\s+/);
+  let total = 0;
+  for (const p of parts) {
+    const f = p.match(/^(\d+)\/(\d+)$/);
+    if (f) total += Number(f[1]) / Number(f[2]);
+    else if (/^\d+(?:[.,]\d+)?$/.test(p)) total += num(p);
+    else return null;
+  }
+  return total > 0 ? Math.round(total * 25.4 * 100) / 100 : null;
+}
+
+/**
+ * Seção APENAS VISUAL a partir da designação comercial do editor de tesoura
+ * ("U 100x40x2.65 mm", "Ue 75x40x15x2.65 mm", "L 7/8 x 1/8 pol", "Tubo 100x100x3.00 mm").
+ * Não alimenta área, inércia, massa nem verificação; designação desconhecida → null (barra em linha).
+ */
+export function visualProfileFromDesignation(designation: string): ProfileSpec | null {
+  const d = designation.trim();
+  const base = { name: d, steelGrade: "", section: d, source: "Designação comercial do editor de tesoura (representação visual)", massKgM: null, stockLengthM: null };
+  const n = "(\\d+(?:[.,]\\d+)?)";
+  const channel = d.match(new RegExp(`^(?:Ue|U|C)\\s*${n}\\s*x\\s*${n}(?:\\s*x\\s*${n})?\\s*x\\s*${n}\\s*mm$`, "i"));
+  if (channel) {
+    const [h, f, t] = [num(channel[1]), num(channel[2]), num(channel[4])];
+    return { ...base, data: { kind: "channel", dimensions: d, thicknessMm: t, areaCm2: null, elasticModulusGpa: null, iyCm4: null, izCm4: null, origin: "declared", sourceDate: "", calculationReference: "" },
+      visualSection: { family: "channel", heightMm: h, flangeWidthMm: f, opening: "positive-x", rollDeg: 0 } };
+  }
+  const tube = d.match(new RegExp(`^Tubo\\s*${n}\\s*x\\s*${n}\\s*x\\s*${n}\\s*mm$`, "i"));
+  if (tube) {
+    const [w, h, t] = [num(tube[1]), num(tube[2]), num(tube[3])];
+    return { ...base, data: { kind: "tube", dimensions: d, thicknessMm: t, areaCm2: null, elasticModulusGpa: null, iyCm4: null, izCm4: null, origin: "declared", sourceDate: "", calculationReference: "" },
+      visualSection: w === h ? { family: "square-tube", sideMm: w, rollDeg: 0 } : { family: "rectangular-tube", widthMm: w, heightMm: h, rollDeg: 0 } };
+  }
+  const angle = d.match(/^L\s*([\d\s/.,]+?)\s*x\s*([\d\s/.,]+?)\s*pol$/i);
+  if (angle) {
+    const leg = inchToMm(angle[1]), t = inchToMm(angle[2]);
+    if (leg === null || t === null) return null;
+    return { ...base, data: { kind: "angle", dimensions: d, thicknessMm: t, areaCm2: null, elasticModulusGpa: null, iyCm4: null, izCm4: null, origin: "declared", sourceDate: "", calculationReference: "" },
+      visualSection: { family: "angle", legXmm: leg, legYmm: leg, rollDeg: 0 } };
+  }
+  return null;
+}

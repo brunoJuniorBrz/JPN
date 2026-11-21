@@ -5,7 +5,7 @@ import { NumberField } from "@/components/number-field";
 import { Field, Input, Select } from "@/components/ui";
 import {
   BASE_TYPE, TYPE_KEYS, addTrussType, lineTypeId, removeTrussType, trussOfType, typeName,
-  blankTruss, COMMON_PROFILES, columnCount, endSupportOf, trussEnds, wallPlateCount, withEndSupports, type EndSupport, type TrussSide, fallPercent, roofPurlinPositions, slopeCount, stations, suggestedTrussCount, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
+  blankTruss, COMMON_PROFILES, columnCount, endSupportOf, trussEnds, wallPlateCount, withEndSupports, type EndSupport, type TrussSide, fallPercent, fitPurlins, roofPurlinPositions, slopeCount, stations, suggestedTrussCount, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
   type TrussEditor as Truss,
 } from "@/domain/truss-editor";
 import styles from "./truss-editor.module.css";
@@ -18,11 +18,41 @@ const brl = (c: number) => new Intl.NumberFormat("pt-BR", { style: "currency", c
 function reflowTruss(t: Truss, patch: Partial<Pick<Truss, "spanMm" | "roofKind" | "gutter" | "support">>): Partial<Truss> {
   const candidate: Truss = { ...t, ...patch }, runMm = trussLengthMm(candidate);
   if (!(runMm > 0) || !Number.isFinite(runMm)) return { ...patch, stationsMm: null, flippedPanels: [], types: t.types.map(x => ({ ...x, stationsMm: null, flippedPanels: [] })) };
-  const lines = Math.min(60, Math.max(2, Math.ceil(runMm / t.purlinStepMm) + 1));
-  const step = Math.max(300, Math.min(6000, Math.floor(runMm / (lines - 1) / 10) * 10));
+  const { purlinLines, purlinStepMm } = fitPurlins({ ...candidate, stationsMm: null }, runMm, t.purlinStepMm);
   return { ...patch, highHeightMm: Math.round((t.tipHeightMm + runMm * fallPercent(t) / 100) * 10) / 10,
-    purlinLines: lines, purlinStepMm: step, stationsMm: null, flippedPanels: [],
+    purlinLines, purlinStepMm, stationsMm: null, flippedPanels: [],
     types: t.types.map(x => ({ ...x, stationsMm: null, flippedPanels: [] })) };
+}
+
+type Summary = ReturnType<typeof trussSummary>;
+/** Só a exibição: o texto guardado da lista (gabarito de obras antigas) continua o mesmo. */
+const readableQty = (q: string) => q.replace("1 água(s)", "1 água").replace(/(\d+) água\(s\)/, "$1 águas")
+  .replace(/\b1 peça\(s\)\/água/, "1 peça por água").replace(/(\d+) peça\(s\)\/água/, "$1 peças por água");
+function BudgetTable({ s }: { s: Summary }) {
+  return <table className={styles.budget}><tbody>
+    {s.lines.map(l => <tr key={l.item}><td>{l.item}</td><td>{readableQty(l.qty)}</td><td>{l.cents === null ? <em>a informar</em> : brl(l.cents)}</td></tr>)}
+    <tr className={styles.total}><td>Total conhecido</td><td></td><td>{brl(s.knownCents)}</td></tr>
+  </tbody></table>;
+}
+
+/** Lista de materiais da obra, a mesma do "Resumo ao vivo" do editor, para a etapa Materiais do projeto. */
+export function TrussMaterialList({ truss }: { truss: Truss }) {
+  const s = useMemo(() => { try { return trussSummary(trussEditorSchema.parse(truss)); } catch { return null; } }, [truss]);
+  if (!s) return <p className="notice">Não foi possível montar a lista desta tesoura. Abra a etapa Tesoura e confira as medidas.</p>;
+  const area = truss.spanMm * truss.lengthMm / 1e6;
+  return <section className={styles.card} aria-label="Lista de materiais" data-testid="truss-material-list">
+    <h3>Lista de materiais</h3>
+    <p className={styles.muted}>A mesma lista do editor de tesoura: barras de {m(truss.stockMm)} m, quantidades para compra.</p>
+    <div className={styles.kpis}>
+      <div><b>{s.buy.chord}</b><span>barras de banzo</span></div>
+      <div><b>{s.buy.web}</b><span>barras {truss.web.designation}{truss.fullHeightBudget ? " (medida cheia)" : ""}</span></div>
+      <div><b>{s.buy.purlin}</b><span>barras {truss.purlin.designation}</span></div>
+      <div><b>{Math.round(s.kg.total)} kg</b><span>{(s.kg.total / area).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} kg/m² de aço</span></div>
+    </div>
+    <BudgetTable s={s} />
+    <p className={styles.muted}>{s.gutterLine}.</p>
+    {s.missing.length > 0 && <p className={styles.muted}>Sem preço: {s.missing.join(", ")}. Preencha na etapa Tesoura.</p>}
+  </section>;
 }
 
 /** Campo em centímetros sobre um valor guardado em milímetros. */
@@ -73,7 +103,7 @@ function Drawing({ t, selected, onSelect }: { t: Truss; selected: number | null;
     </>}
     {panels.map(([a, b], i) => (panels.length <= 12 || i % 2 === 0 || i === panels.length - 1) && <text key={a} x={X((a + b) / 2)} y={base + 26} className={styles.dim}>{cm(b - a)}</text>)}
     <line x1={X(0)} y1={H - 38} x2={X(L * S)} y2={H - 38} className={styles.dimLine} />
-    <text x={X(L * S / 2)} y={H - 8} className={styles.dimStrong}>{m(L * S)} m de tesoura · {S} água(s) · inclinação {fallPercent(t).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} %</text>
+    <text x={X(L * S / 2)} y={H - 8} className={styles.dimStrong}>{m(L * S)} m de tesoura · {S === 2 ? "2 águas" : "1 água"} · inclinação {fallPercent(t).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} %</text>
     <text x={X(0) + 6} y={Y(t.tipHeightMm) - 10} className={styles.dimSide} textAnchor="start">{cm(t.tipHeightMm)}</text>
     <text x={X(L) - 10} y={Y(t.highHeightMm) - 12} className={styles.dimSide} textAnchor="end">{cm(t.highHeightMm)}{S === 2 ? " (cumeeira)" : ""}</text>
   </svg>;
@@ -114,6 +144,7 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
   const editStations = (next: number[]) => setGeom({ stationsMm: [...new Set(next)].sort((a, b) => a - b) });
   const sel = selected !== null && selected < st.length ? selected : null;
   const errors = result.issues.filter(i => i.level === "erro");
+  const notes = result.issues.filter(i => i.level === "aviso");
 
   return <div className={styles.editor}>
     <div className={styles.canvas}>
@@ -162,14 +193,16 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
             <div><b>{Math.round(result.s.kg.total)} kg</b><span>{(result.s.kg.total / (t.spanMm * t.lengthMm / 1e6)).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} kg/m² de aço</span></div>
           </div>
           <label className={styles.toggle}><input type="checkbox" checked={t.fullHeightBudget} onChange={e => set({ fullHeightBudget: e.target.checked })} /><span><strong>Orçar pela medida cheia</strong><small>Todo montante com {cm(t.highHeightMm)} cm: {result.s.bars.webFullHeight} barras (medidas reais: {result.s.bars.web}). O plano de corte sempre usa as reais.</small></span></label>
-          <table className={styles.budget}><tbody>
-            {result.s.lines.map(l => <tr key={l.item}><td>{l.item}</td><td>{l.qty}</td><td>{l.cents === null ? <em>a informar</em> : brl(l.cents)}</td></tr>)}
-            <tr className={styles.total}><td>Total conhecido</td><td></td><td>{brl(result.s.knownCents)}</td></tr>
-          </tbody></table>
-          <p className={styles.muted}>{result.s.gutterLine}. {result.s.plates} chapa(s) e {result.s.bolts} chumbador(es) nas posições declaradas.</p>
+          <BudgetTable s={result.s} />
+          <p className={styles.muted}>{result.s.gutterLine}.</p>
           {result.s.missing.length > 0 && <p className={styles.muted}>Sem preço: {result.s.missing.join(", ")}.</p>}
         </>}
-        {result.issues.map(i => <p key={i.message} className={i.level === "erro" ? styles.error : styles.warn}><TriangleAlert size={15} />{i.message}</p>)}
+        {errors.map(i => <p key={i.message} className={styles.error}><TriangleAlert size={15} />{i.message}</p>)}
+        {/* Um aviso só: a lista sai completa e o engenheiro confere tudo de uma vez. */}
+        <div className={styles.review} data-testid="truss-engineer-review">
+          <p><TriangleAlert size={15} /><strong>Necessária conferência por engenheiro para validação.</strong></p>
+          {notes.length > 0 && <details><summary>Pontos para o engenheiro conferir ({notes.length})</summary><ul>{notes.map(i => <li key={i.message}>{i.message}</li>)}</ul></details>}
+        </div>
         {confirming && !!replaces?.length && <div className={styles.replaceWarning} role="alert" data-testid="truss-replace-warning">
           <p><TriangleAlert size={15} /><strong>Aplicar vai substituir a estrutura desta obra.</strong></p>
           <p>{columnCount(t)

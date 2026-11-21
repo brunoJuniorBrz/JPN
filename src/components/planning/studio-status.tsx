@@ -1,4 +1,5 @@
 "use client";
+import { trussEditorSchema, trussSummary } from "@/domain/truss-editor";
 import { useEffect, useState } from "react";
 import { AlertTriangle, CheckCircle2, Clock3, Loader2, Lock, RefreshCw } from "lucide-react";
 import type { Project } from "@/domain/models";
@@ -20,10 +21,15 @@ export function liveTotals(project: Project, result: StructureResult | null) {
   const model = result?.model ?? (project.workspace.physicalStructure ? resolvePhysicalStructure(project).model : null);
   // Massa só aparece quando alguma peça tem massa cadastrada; nada de "0 kg" por falta de dado.
   const known = model && result?.model ? result.model.pieces.reduce((sum, p) => sum + (p.massKg ?? 0), 0) : 0;
-  const massKg = model && known > 0 ? known : null;
+  // Obra do editor de tesoura: a massa é a mesma do "Resumo ao vivo" (kg/m de cada perfil escolhido).
+  let trussKg: number | null = null;
+  if (!result?.model && project.workspace.physicalStructure && project.workspace.trussEditor) {
+    try { trussKg = trussSummary(trussEditorSchema.parse(project.workspace.trussEditor)).kg.total; } catch { trussKg = null; }
+  }
+  const massKg = trussKg !== null && trussKg > 0 ? trussKg : model && known > 0 ? known : null;
   let saleCents: number | null = null;
   try { saleCents = calculateEstimate(project).saleCents; } catch { saleCents = null; }
-  return { pieces: model?.pieces.length ?? null, lengthM: model && result?.model ? result.model.totalLengthM : model ? model.pieces.reduce((sum, item) => sum + item.lengthMm, 0) / 1000 : null, massKg, massComplete: result?.model?.massComplete ?? false, saleCents };
+  return { pieces: model?.pieces.length ?? null, lengthM: model && result?.model ? result.model.totalLengthM : model ? model.pieces.reduce((sum, item) => sum + item.lengthMm, 0) / 1000 : null, massKg, massComplete: result?.model?.massComplete ?? trussKg !== null, saleCents };
 }
 
 /** Estado da análise para a barra: atual, desatualizada, rodando há N s, erro ou sem análise. */
