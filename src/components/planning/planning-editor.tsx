@@ -18,7 +18,7 @@ import { PageHeading } from "@/components/ui";
 import { GeneralForm } from "@/components/projects/general-form";
 import { RoofForm } from "@/components/geometry/roof-form";
 import { StructureForm } from "./structure-form";
-import { TrussEditor } from "@/components/truss/truss-editor";
+import { TrussEditor, TrussMaterialList } from "@/components/truss/truss-editor";
 import { applyTrussToProject, trussDefaultsFor, trussReplacementImpact } from "@/domain/truss-editor";
 import { CompletePackageControl } from "./complete-package-control";
 import { GeneratedFiles, GeneratedMaterials, GeneratedReview, GeneratedSafetyWarning, GeneratedTotals, GeneratedViewport, useGeneratedResult, type ResultSection } from "./takeoff-summary";
@@ -31,7 +31,7 @@ import { StudioCommandPalette, StudioViewportMenu } from "./studio-command";
 import { AdvancedToolsMenu, StudioTour } from "./studio-advanced";
 import type { Viewer3DApi } from "./structure-3d";
 import { StudioSelection } from "./studio-selection";
-import { studioModelFromPhysical } from "@/domain/studio-result-layers";
+import { catalogDesignations, studioModelFromPhysical } from "@/domain/studio-result-layers";
 import { StudioResultsBar, useStudioResultView } from "./studio-results";
 import { AnalysisState, FabricationSeal, LiveTotals, liveTotals } from "./studio-status";
 import { InfoTip } from "@/components/ui/info-tip";
@@ -77,7 +77,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   const selectionModel = useMemo(() => {
     if (!declared) return viewGenerated.result.model ?? null;
     const physical = resolvePhysicalStructure(deferredProject).model;
-    try { return physical ? studioModelFromPhysical(physical) : null; } catch { return null; }
+    try { return physical ? studioModelFromPhysical(physical, catalogDesignations(deferredProject.workspace.spatialPreparation?.physicalCatalog)) : null; } catch { return null; }
   }, [declared, viewGenerated.result.model, deferredProject]);
   const parsed = projectSchema.safeParse(project);
   const errors = parsed.success ? {} : Object.fromEntries(parsed.error.issues.map(i => [i.path[0], i.message]));
@@ -197,7 +197,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
   else if (step === "verificacao") panel = declared
     ? <div className="notice"><p>Os relatórios de resistência, apoios e ligações ficam nos resultados da análise estrutural. Verificações normativas incompletas · fabricação bloqueada.</p><button type="button" className="button secondary" onClick={() => go("analise")}>Abrir análise estrutural</button></div>
     : <><GeneratedReview result={generated.result} pending={generated.pending} onResolvePending={resolvePending} /><div className="spatial-jump"><p>Resistência, apoios e ligações aparecem nos resultados da Análise Estrutural Experimental.</p><button type="button" className="button secondary" onClick={() => openTool("mixedlocal")}>Abrir análise estrutural</button></div></>;
-  else if (step === "materiais") panel = declared ? <DeclaredMaterialsPart project={project} /> : <GeneratedMaterials result={generated.result} grouped={generated.grouped} onShowPieces={ids => { setSelectedPiece(ids[0] ?? ""); setSelectedNode(""); if (ids[0]) window.requestAnimationFrame(() => viewerApi?.focus(ids[0])); }} />;
+  else if (step === "materiais") panel = declared ? (project.workspace.trussEditor ? <><TrussMaterialList truss={project.workspace.trussEditor} /><details className="technical-details"><summary>Referências técnicas de cada barra (engenharia)</summary><DeclaredMaterialsPart project={project} /></details></> : <DeclaredMaterialsPart project={project} />) : <GeneratedMaterials result={generated.result} grouped={generated.grouped} onShowPieces={ids => { setSelectedPiece(ids[0] ?? ""); setSelectedNode(""); if (ids[0]) window.requestAnimationFrame(() => viewerApi?.focus(ids[0])); }} />;
   else if (step === "arquivos") panel = declared ? <>
     <DeclaredFiles project={project} />
     <CompletePackageControl project={project} onChange={update} beforeExport={() => {
@@ -253,7 +253,7 @@ function StudioEditor({ initial, initialStep = 0, initialStudioStep, initialOpen
       </>}
       status={<>
         <FabricationSeal result={declared ? null : generated.result} declaredIssues={declaredIssues} />
-        {declared ? <DeclaredSafetyWarning /> : <GeneratedSafetyWarning />}
+        {declared ? <DeclaredSafetyWarning trussEditor={!!project.workspace.trussEditor} /> : <GeneratedSafetyWarning />}
         <div className="studio-status-data">
           {!declared && <GeneratedTotals result={generated.result} />}
           <LiveTotals totals={totals} includeGeometry={declared} />

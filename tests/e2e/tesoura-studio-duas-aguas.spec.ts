@@ -9,7 +9,7 @@ for (const width of [390, 1440]) test(`editor duas águas → Studio 3D → paco
   await expect(page.getByRole("heading", { level: 1, name: "Tesoura" })).toBeVisible();
   const fallBefore = await page.getByLabel("Caída (%)").inputValue();
   await page.getByLabel("Tipo de cobertura").selectOption("two-slopes");
-  await expect(page.getByRole("img", { name: /Elevação da tesoura/ })).toContainText("2 água(s)");
+  await expect(page.getByRole("img", { name: /Elevação da tesoura/ })).toContainText("2 águas");
   await expect(page.getByLabel("Caída (%)")).toHaveValue(fallBefore);
   await expect(page.getByRole("button", { name: "Criar projeto com esta tesoura" })).toBeEnabled();
   await page.getByRole("button", { name: "Criar projeto com esta tesoura" }).click();

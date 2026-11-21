@@ -568,7 +568,7 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
     </div>}
     {!failure && mode !== "structural" && <div className="notice structure-profile-notice" data-testid="profile-coverage">
       <strong>{model.pieces.length - fallbackCount} peças com seção 3D · {fallbackCount} em linha.</strong>
-      {fallbackCount > 0 && <><p>Para visualizar perfis reais, informe família, dimensões e espessura de cada categoria. O sistema não inventa medidas para projetos antigos.</p><div className="actions">{onConfigureProfile && <button type="button" className="button" onClick={onConfigureProfile}>Cadastrar dimensões</button>}{onDemonstrate && <button type="button" className="button secondary" onClick={onDemonstrate}>Ver demonstração com perfis</button>}</div></>}
+      {fallbackCount > 0 && <><p>Para visualizar perfis reais, informe família, dimensões e espessura de cada categoria. Perfis sem medidas reconhecidas aparecem em linha.</p><div className="actions">{onConfigureProfile && <button type="button" className="button" onClick={onConfigureProfile}>Cadastrar dimensões</button>}{onDemonstrate && <button type="button" className="button secondary" onClick={onDemonstrate}>Ver demonstração com perfis</button>}</div></>}
     </div>}
     {!failure && !expanded && <div className="viewer-fullscreen-row">
       <button type="button" className="viewer-fullscreen-button" aria-label="Expandir modelo 3D em tela cheia" title="Tela cheia" onClick={() => setExpanded(true)}><span aria-hidden="true">⛶</span><span>Tela cheia</span></button>
@@ -585,6 +585,11 @@ export function Structure3D({ model, roof, planning, projectName, selected, onSe
         <button type="button" className="studio-projection" aria-pressed={projection === "orthographic"} title="Alterna entre perspectiva e projeção ortográfica real" onClick={() => setProjection(value => value === "perspective" ? "orthographic" : "perspective")}>{projection === "orthographic" ? "Ortográfica" : "Perspectiva"}</button>
       </div>}
       {!failure && <span ref={stats} className="studio-stats" aria-hidden="true" />}
+      {expanded && <div className="studio-fullscreen-stats" aria-label="Quantitativos do modelo em tela cheia">
+        <span>{model.pieces.length} peças</span>
+        <span>{model.totalLengthM.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m de perfis</span>
+        <span className="studio-fullscreen-warning">Fabricação bloqueada</span>
+      </div>}
       {!failure && mode === "finished" && envelope && <div className="presentation-hud" aria-label="Cotas do pré-projeto">
         <span className="presentation-label">JPN · PRÉ-PROJETO VISUAL · NÃO DIMENSIONADO</span>
         {presentationOptions.showDimensions && <div className="presentation-dimensions">{dimensions.map(label=><span key={label}>{label}</span>)}</div>}
