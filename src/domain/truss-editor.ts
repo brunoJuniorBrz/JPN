@@ -169,7 +169,7 @@ export function blankTruss(): TrussEditor {
     walls: { lowMm: 3000, highMm: 3600, thicknessMm: 150 }, supportZMm: 3000, support: "walls", column: { ...DEFAULT_COLUMN },
     anchor: { plateWidthMm: 150, plateHeightMm: 200, boltsPerSupport: 2, boltLengthMm: 1000, platePriceCents: null, boltPriceCents: null },
     tipHeightMm: 75, highHeightMm: 615, panelMm: 500, countFrom: "high", diagonal: "to-high",
-    stationsMm: null, flippedPanels: [], purlinLines: 6, purlinStepMm: 1000, chordSpliceMm: 5980, stockMm: 6000,
+    stationsMm: null, flippedPanels: [], purlinLines: 7, purlinStepMm: 1000, chordSpliceMm: 5980, stockMm: 6000,
     chord: { designation: "U 100x40x2.65 mm", kgPerM: 3.54, barPriceCents: null, extraBars: 0 }, bottomChord: null,
     web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: null, extraBars: 0 },
     purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: null, extraBars: 0 },
@@ -182,6 +182,22 @@ export function blankTruss(): TrussEditor {
  * inicial é um campo editável, NÃO uma verificação de apoio ou capacidade. */
 /** Quantidade geométrica inicial baseada no comprimento da barra disponível.
  * Não avalia vão resistente, apoios ou estabilidade e não libera fabricação. */
+/**
+ * Linhas e passo de terça para um semivão. Com montantes automáticos contados do lado alto, o passo é
+ * o múltiplo do painel mais próximo do passo desejado: toda terça cai num montante e o espaçamento fica igual
+ * (só o último trecho, junto à ponta, pode ser menor). Sem esse módulo, divide o semivão por igual.
+ */
+export function fitPurlins(t: Pick<TrussEditor, "panelMm" | "countFrom" | "stationsMm">, runMm: number, wantedStepMm: number): { purlinLines: number; purlinStepMm: number } {
+  const want = Math.max(300, Math.min(6000, wantedStepMm));
+  if (t.countFrom === "high" && t.stationsMm === null && t.panelMm > 0) {
+    const k = Math.max(1, Math.ceil(300 / t.panelMm), Math.round(want / t.panelMm));
+    const step = Math.min(6000, k * t.panelMm);
+    const lines = Math.min(60, Math.max(2, Math.ceil(runMm / step - 1e-6) + 1));
+    return { purlinLines: lines, purlinStepMm: step };
+  }
+  const lines = Math.min(60, Math.max(2, Math.ceil(runMm / want) + 1));
+  return { purlinLines: lines, purlinStepMm: Math.max(300, Math.min(6000, Math.floor(runMm / (lines - 1) / 10) * 10)) };
+}
 export function suggestedTrussCount(lengthMm: number, stockMm: number): number {
   if (!Number.isFinite(lengthMm) || !Number.isFinite(stockMm) || stockMm <= 20) return 2;
   return Math.min(60, Math.max(2, Math.ceil(lengthMm / (stockMm - 10)) + 1));
@@ -194,8 +210,7 @@ export function trussDefaultsFor(project: Project): TrussEditor {
   const slopes = roofKind === "two-slopes" ? 2 : 1;
   const runMm = (spanMm - slopes * (base.gutter.supportMm + base.gutter.widthMm + base.gutter.clearanceMm)) / slopes;
   const wantedStep = planning?.purlinSpacingM ? planning.purlinSpacingM * 1000 : base.purlinStepMm;
-  const purlinLines = runMm > 0 ? Math.min(60, Math.max(2, Math.ceil(runMm / wantedStep) + 1)) : base.purlinLines;
-  const purlinStepMm = runMm > 0 ? Math.min(6000, Math.max(300, Math.round(runMm / (purlinLines - 1) / 10) * 10)) : base.purlinStepMm;
+  const { purlinLines, purlinStepMm } = runMm > 0 ? fitPurlins(base, runMm, wantedStep) : base;
   const trusses = planning?.frameSpacingM ? Math.min(60, Math.max(2, Math.ceil(lengthMm / (planning.frameSpacingM * 1000)) + 1)) : suggestedTrussCount(lengthMm, base.stockMm);
   const supportZMm = roof.lowHeightM === null ? base.supportZMm : Math.round(roof.lowHeightM * 1000);
   const highHeightMm = Math.round(base.tipHeightMm + runMm * ((roof.slopePercent ?? 10) / 100));
@@ -310,11 +325,11 @@ export function removeTrussType(t: TrussEditor, id: string): TrussEditor {
   return { ...t, types: t.types.filter(x => x.id !== id), lineTypes: t.lineTypes.map(x => x === id ? BASE_TYPE : x) };
 }
 
+const cmBr = (mm: number) => (mm / 10).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
 export type TrussIssue = { level: "erro" | "aviso"; message: string };
 export function trussIssues(t: TrussEditor): TrussIssue[] {
   const out: TrussIssue[] = [], L = trussLengthMm(t), st = stations(t);
   if (L <= 500) out.push({ level: "erro", message: "Recuos da calha maiores que o vão útil: não sobra tesoura." });
-  if (t.roofKind === "two-slopes" && t.walls.highMm !== t.walls.lowMm) out.push({ level: "aviso", message: "Duas águas simétricas: os dois apoios de beiral usam a altura do muro baixo. A altura do muro alto cadastrada fica reservada ao modo uma água." });
   if (t.highHeightMm <= t.tipHeightMm) out.push({ level: "erro", message: "O lado alto precisa ser mais alto que a ponta." });
   const panels = st.slice(1).map((s, i) => s - st[i]);
   if (panels.some(p => p < 50)) out.push({ level: "erro", message: "Há montantes a menos de 5 cm um do outro." });
@@ -333,7 +348,7 @@ export function trussIssues(t: TrussEditor): TrussIssue[] {
   if (uncoveredMm > t.purlinStepMm + Math.max(50, t.panelMm / 2))
     out.push({ level: "aviso", message: `Há intervalo de ${Math.round(uncoveredMm)} mm entre linhas de terça, maior que o passo informado de ${t.purlinStepMm} mm (com tolerância geométrica de encaixe em nós). Confira o trecho sem terça antes de usar a distribuição.` });
   const shifted = purlins.filter(p => Math.abs(p.shiftMm) > 10);
-  if (shifted.length) out.push({ level: "aviso", message: `${shifted.length} posição(ões) de terça ajustada(s) ao montante mais próximo: ${shifted.map(p => `${(p.requestedMm / 10).toFixed(1)} → ${(p.sMm / 10).toFixed(1)} cm`).join(", ")}. Conferir espaçamentos.` });
+  if (shifted.length) out.push({ level: "aviso", message: `${shifted.length} posição(ões) de terça ajustada(s) ao montante mais próximo: ${shifted.map(p => `${cmBr(p.requestedMm)} → ${cmBr(p.sMm)} cm`).join("; ")}. Conferir espaçamentos.` });
   const step = t.purlinStepMm * Math.hypot(1, fallPercent(t) / 100);
   if (step > 2500) out.push({ level: "aviso", message: `Terças a ${(step / 1000).toFixed(2)} m na inclinação: confira o vão máximo da telha.` });
   for (const ty of t.types) {
@@ -341,7 +356,7 @@ export function trussIssues(t: TrussEditor): TrussIssue[] {
     if (ep.some(p => p < 50)) out.push({ level: "erro", message: `${ty.name}: há montantes a menos de 5 cm um do outro.` });
     if (Math.max(...ep) > t.stockMm) out.push({ level: "erro", message: `${ty.name}: há painel maior que a barra comercial.` });
     const off = purlins.filter(p => !est.some(x => Math.abs(x - p.sMm) < 1));
-    if (off.length) out.push({ level: "aviso", message: `${ty.name}: ${off.length} terça(s) sem montante embaixo (${off.map(p => (p.sMm / 10).toFixed(1)).join(", ")} cm da ponta). As terças seguem o tipo 1; ajuste os montantes deste tipo.` });
+    if (off.length) out.push({ level: "aviso", message: `${ty.name}: ${off.length} terça(s) sem montante embaixo (${off.map(p => cmBr(p.sMm)).join("; ")} cm da ponta). As terças seguem o tipo 1; ajuste os montantes deste tipo.` });
     if (!t.lineTypes.includes(ty.id)) out.push({ level: "aviso", message: `${ty.name} não está em nenhuma linha de tesoura.` });
   }
   out.push({ level: "aviso", message: "Perfis, emendas e ligações sem verificação estrutural: conferência por engenheiro antes de fabricar." });

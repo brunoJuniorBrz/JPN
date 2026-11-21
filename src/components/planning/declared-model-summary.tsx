@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { studioModelFromPhysical } from "@/domain/studio-result-layers";
+import { catalogDesignations, studioModelFromPhysical } from "@/domain/studio-result-layers";
 import type { Viewer3DApi, Viewer3DLabel } from "./structure-3d";
 const Structure3D = dynamic(() => import("./structure-3d").then(m => m.Structure3D), { ssr: false, loading: () => <p role="status">Carregando modelo 3D…</p> });
 import type { Project } from "@/domain/models";
@@ -34,8 +34,9 @@ export function DeclaredViewport({ project, declared: { model, review }, selecte
   // Compara pelo conteúdo: ações comerciais (ex.: atualizar quantitativos no orçamento) podem copiar o
   // workspace e gerar uma referência nova com os mesmos nós e barras, o que recriava a tela WebGL inteira.
   const physicalKey = JSON.stringify(project.workspace.physicalStructure), siteKey = JSON.stringify(project.workspace.trussEditor ?? null);
+  const catalogKey = JSON.stringify(project.workspace.spatialPreparation?.physicalCatalog ?? null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const visualModel = useMemo(() => studioModelFromPhysical(model), [physicalKey]);
+  const visualModel = useMemo(() => studioModelFromPhysical(model, catalogDesignations(project.workspace.spatialPreparation?.physicalCatalog)), [physicalKey, catalogKey]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const siteContext = useMemo(() => project.workspace.trussEditor, [siteKey]);
   return <section className="result-workspace declared-studio-view" aria-label="Resultado do modelo declarado"><h2>Estrutura física declarada</h2>
@@ -53,7 +54,9 @@ export function DeclaredViewport({ project, declared: { model, review }, selecte
   </section>;
 }
 
-export function DeclaredSafetyWarning() {
+export function DeclaredSafetyWarning({ trussEditor = false }: { trussEditor?: boolean }) {
+  // Obra do editor de tesoura: um aviso só; os detalhes ficam no selo de pendências.
+  if (trussEditor) return <p className="result-permanent-warning" data-testid="result-safety-warning">Necessária conferência por engenheiro para validação · fabricação bloqueada.</p>;
   return <p className="result-permanent-warning" data-testid="result-safety-warning">Análise experimental disponível no domínio suportado. Verificações normativas incompletas · fabricação bloqueada.</p>;
 }
 
