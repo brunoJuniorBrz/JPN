@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { openEngineeringTool, openResultTab } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
@@ -14,7 +15,7 @@ for (const mobile of [true, false]) test.describe(mobile ? "iPhone 375" : "deskt
     await page.getByLabel("Largura (m)", { exact: true }).fill("10");
     await page.getByLabel("Comprimento (m)", { exact: true }).fill("20");
     await page.getByLabel("Altura (m)", { exact: true }).fill("4");
-    await page.getByRole("button", { name: "Gerar modelo 3D", exact: true }).click();
+    await openProjectStudio(page, "Gerar modelo 3D");
     await page.getByRole("button", { name: "Abrir modelo 3D" }).click();
     await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Perfis 3D", exact: true })).toHaveAttribute("aria-pressed", "true");
@@ -45,7 +46,7 @@ for (const mobile of [true, false]) test.describe(mobile ? "iPhone 375" : "deskt
 });
 
 test("falha do serviço 3D não interrompe a visualização, o levantamento ou a edição", async ({ page }) => {
-  await page.goto("/"); await page.getByRole("button", { name: "Abrir exemplo de levantamento", exact: true }).click();
+  await page.goto("/"); await openProjectStudio(page, "Abrir exemplo de levantamento");
   await openEngineeringTool(page, "Análise 3D experimental");
   await page.getByRole("button", { name: "Carregar exemplo espacial validado", exact: true }).click();
   await page.route("**/api/analysis3d", route => route.fulfill({ status: 503, json: { error: { code: "UNAVAILABLE", message: "Serviço não configurado" } } }));

@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { expect, test } from "@playwright/test";
 import { emptySnapshot, newProject } from "../../src/domain/models";
 import { exampleMaterials, exampleProject, EXAMPLE_ID } from "../../src/domain/example";
@@ -12,7 +13,7 @@ for (const width of [375, 1440]) test(`demonstrações 3D com orçamento complet
     ["Abrir exemplo de levantamento", SHOWCASE_IDS.cobertura],
     ["Abrir exemplo completo de pré-projeto", SHOWCASE_IDS.galpao],
   ] as const) {
-    await page.getByRole("button", { name: button }).click();
+    await openProjectStudio(page, button);
     await expect(page).toHaveURL(new RegExp(`/projetos/${id}.*vista=3d`));
     const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
     await expect(canvas).toBeVisible();

@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { expect, test, type Page } from "@playwright/test";
 import { openStudioStep } from "./result-tabs";
 
@@ -8,7 +9,7 @@ async function createRoof(page: Page) {
   await page.getByLabel("Largura (m)").fill("12");
   await page.getByLabel("Comprimento (m)").fill("20");
   await page.getByLabel("Altura (m)").fill("4");
-  await page.getByRole("button", { name: "Gerar modelo 3D" }).click();
+  await openProjectStudio(page, "Gerar modelo 3D");
   const canvas = page.getByRole("img", { name: "Modelo 3D da estrutura" });
   await expect(canvas).toBeVisible({ timeout: 30000 });
   return canvas;

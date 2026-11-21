@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { openEngineeringTool } from "./result-tabs";
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
@@ -5,7 +6,8 @@ import { readFile } from "node:fs/promises";
 for(const width of [375,1440]) test(`vento zonal, combinações e Python real em ${width}px`,async({page})=>{
   test.setTimeout(120000);await page.setViewportSize({width,height:950});const errors:string[]=[];page.on("pageerror",e=>errors.push(e.message));
   await page.goto("/projetos/novo");await page.getByLabel("Largura (m)").fill("10");await page.getByLabel("Comprimento (m)").fill("20");await page.getByLabel("Altura (m)").fill("4");
-  await page.getByRole("button",{name:"Gerar modelo 3D"}).click();await openEngineeringTool(page, "Análise Estrutural Experimental");
+  await openProjectStudio(page, "Gerar modelo 3D");
+  await openEngineeringTool(page, "Análise Estrutural Experimental");
   const p=page.getByTestId("mixed-workspace");await p.getByRole("button",{name:"Abrir exemplo de vento zonal",exact:true}).click();
   await expect(p.getByTestId("mixed-health")).toContainText("PyNiteFEA 3.2.1",{timeout:60000});
   await p.getByTestId("structural-loads").locator(":scope > summary").click();const wind=p.getByTestId("wind-engineering");await wind.locator(":scope > summary").click();

@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { test, expect } from "@playwright/test";
 
 test("obra completa com pilares: Aplicar na Tesoura pede confirmação antes de substituir a estrutura", async ({ page }) => {
@@ -5,7 +6,7 @@ test("obra completa com pilares: Aplicar na Tesoura pede confirmação antes de 
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/");
-  await page.getByRole("button", { name: /Abrir exemplo de levantamento/ }).click();
+  await openProjectStudio(page, "Abrir exemplo de levantamento");
   await expect(page).toHaveURL(/\/projetos\/[^/]+\?/, { timeout: 30000 });
   const nav = page.getByRole("navigation", { name: "Etapas do levantamento" });
   await nav.getByRole("button", { name: /Tesoura/ }).click();

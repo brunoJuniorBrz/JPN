@@ -1,3 +1,4 @@
+import { openProjectStudio } from "./open-project-studio";
 import { expect, test } from "@playwright/test";
 import { PLANNING_EXAMPLE_ID } from "../../src/domain/planning-example";
 import { openResultTab, openStudioStep } from "./result-tabs";
@@ -5,7 +6,7 @@ import { openResultTab, openStudioStep } from "./result-tabs";
 for (const width of [390, 1440]) test(`levantamento sem preços, revisão ao final e downloads em ${width}px`, async ({ page }) => {
   await page.setViewportSize({ width, height: 900 });
   const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));
-  await page.goto("/"); await page.getByRole("button", { name: "Abrir exemplo de levantamento" }).click();
+  await page.goto("/"); await openProjectStudio(page, "Abrir exemplo de levantamento");
   await expect(page.getByTestId("takeoff-totals")).toContainText("123");
   await expect(page.getByTestId("takeoff-totals")).toContainText("201");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
