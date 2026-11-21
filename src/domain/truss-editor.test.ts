@@ -67,9 +67,14 @@ describe("editor de tesoura por estações", () => {
     const t = tomTrussDefaults(), real = trussSummary(t), full = trussSummary({ ...t, fullHeightBudget: true });
     expect(full.lines[1].qty).toBe("14 barras · corte real 9");
     expect(real.lines[1].qty).toBe("9 barras");
-    expect(real.missing).toEqual(expect.arrayContaining([`Banzos ${t.chord.designation}`]));
-    // telha 75,9 m x R$ 44 + parafusos + insumos + mão de obra
-    expect(real.knownCents).toBe(333960 + real.screws * 60 + 110000 + 400000);
+    // Exemplo do Tom com preço das barras: 8 U 4" x R$ 185, 9 L x R$ 54 (estimado), 12 Ue x R$ 155.
+    expect(real.missing).not.toEqual(expect.arrayContaining([`Banzos ${t.chord.designation}`]));
+    // aço + telha 75,9 m x R$ 44 + parafusos + insumos + mão de obra
+    expect(real.knownCents).toBe(8 * 18500 + 9 * 5400 + 12 * 15500 + 333960 + real.screws * 60 + 110000 + 400000);
+    // Sem preço de barra, o banzo continua listado como item a informar.
+    const unpriced = trussSummary({ ...t, chord: { ...t.chord, barPriceCents: null } });
+    expect(unpriced.missing).toEqual(expect.arrayContaining([`Banzos ${t.chord.designation}`]));
+    expect(unpriced.knownCents).toBe(real.knownCents - 8 * 18500);
   });
 
   it("obra do dia a dia: muros, ancoragem, telha em 2 peças, folga e obra nova", () => {

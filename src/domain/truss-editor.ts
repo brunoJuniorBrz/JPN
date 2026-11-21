@@ -153,9 +153,12 @@ export function tomTrussDefaults(): TrussEditor {
     anchor: { plateWidthMm: 150, plateHeightMm: 200, boltsPerSupport: 2, boltLengthMm: 1000, platePriceCents: null, boltPriceCents: null },
     tipHeightMm: 75, highHeightMm: 800, panelMm: 500, countFrom: "high", diagonal: "to-high",
     stationsMm: null, flippedPanels: [], purlinLines: 6, purlinStepMm: 1500, chordSpliceMm: 5980, stockMm: 6000,
-    chord: { designation: "U 100x40x2.65 mm", kgPerM: 3.54, barPriceCents: null, extraBars: 0 }, bottomChord: null,
-    web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: null, extraBars: 0 },
-    purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: null, extraBars: 0 },
+    // Preços das barras inteiras de 6 m (o Tom corta na oficina). U 4" R$ 185 = Tom (nov/2026).
+    // Cantoneira = ESTIMATIVA pelo R$/kg do U 4" (~R$ 8,70/kg x 6,2 kg ≈ R$ 54). Ue R$ 155 = planilha
+    // do galpão de 101 m² (obra anterior, pode estar defasado). Confirmar cantoneira e Ue com o fornecedor.
+    chord: { designation: "U 100x40x2.65 mm", kgPerM: 3.54, barPriceCents: 18500, extraBars: 0 }, bottomChord: null,
+    web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: 5400, extraBars: 0 },
+    purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: 15500, extraBars: 0 },
     sheet: { usefulWidthMm: 1020, pricePerMCents: 4400, beyondTipMm: 300, piecesPerSlope: 1, overlapMm: 250, cladding: "steel-0.5mm" },
     laborPerM2Cents: 5000, consumablesCents: 110000, screwPriceCents: 60, fullHeightBudget: false, types: [], lineTypes: [], lineSupports: [], supportModel: { columnBase: "fixed", wallsSlide: true, wallSiteReview: "" },
   };
