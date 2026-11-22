@@ -153,30 +153,46 @@ export function tomTrussDefaults(): TrussEditor {
     anchor: { plateWidthMm: 150, plateHeightMm: 200, boltsPerSupport: 2, boltLengthMm: 1000, platePriceCents: null, boltPriceCents: null },
     tipHeightMm: 75, highHeightMm: 800, panelMm: 500, countFrom: "high", diagonal: "to-high",
     stationsMm: null, flippedPanels: [], purlinLines: 6, purlinStepMm: 1500, chordSpliceMm: 5980, stockMm: 6000,
-    chord: { designation: "U 100x40x2.65 mm", kgPerM: 3.54, barPriceCents: null, extraBars: 0 }, bottomChord: null,
-    web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: null, extraBars: 0 },
-    purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: null, extraBars: 0 },
+    // Preços das barras inteiras de 6 m (o Tom corta na oficina). U 4" R$ 185 = Tom (nov/2026).
+    // Cantoneira = ESTIMATIVA pelo R$/kg do U 4" (~R$ 8,70/kg x 6,2 kg ≈ R$ 54). Ue R$ 155 = planilha
+    // do galpão de 101 m² (obra anterior, pode estar defasado). Confirmar cantoneira e Ue com o fornecedor.
+    chord: { designation: "U 100x40x2.65 mm", kgPerM: 3.54, barPriceCents: 18500, extraBars: 0 }, bottomChord: null,
+    web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: 5400, extraBars: 0 },
+    purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: 15500, extraBars: 0 },
     sheet: { usefulWidthMm: 1020, pricePerMCents: 4400, beyondTipMm: 300, piecesPerSlope: 1, overlapMm: 250, cladding: "steel-0.5mm" },
     laborPerM2Cents: 5000, consumablesCents: 110000, screwPriceCents: 60, fullHeightBudget: false, types: [], lineTypes: [], lineSupports: [], supportModel: { columnBase: "fixed", wallsSlide: true, wallSiteReview: "" },
   };
 }
 
-/** Obra nova independente do exemplo do Tom: preços continuam sem valor. */
+/**
+ * Obra nova no padrão de trabalho do Tom (nov/2026): calha de 40 cm (apoio 15 + calha 40 + 20 até a ponta),
+ * caída de 10 %, montantes a cada 50 cm, terças a cada 1,50 m (máx. 1,80 m), barras de 6 m cortadas na oficina,
+ * U 4" nos banzos, cantoneira 7/8 na alma, Ue nas terças, telha inteira por fileira e os preços dele.
+ * Insumos ficam sem valor: o Tom informa por obra. Medidas da obra continuam sendo do usuário.
+ */
 export function blankTruss(): TrussEditor {
-  return {
+  const base: TrussEditor = {
     version: 1, roofKind: "one-slope", spanMm: 6000, lengthMm: 8000, trusses: 3,
-    gutter: { supportMm: 150, widthMm: 300, clearanceMm: 150, lowSideMm: 125, highSideMm: 200, budgeted: false, pricePerMCents: null },
+    gutter: { supportMm: 150, widthMm: 400, clearanceMm: 200, lowSideMm: 125, highSideMm: 200, budgeted: false, pricePerMCents: null },
     walls: { lowMm: 3000, highMm: 3600, thicknessMm: 150 }, supportZMm: 3000, support: "walls", column: { ...DEFAULT_COLUMN },
     anchor: { plateWidthMm: 150, plateHeightMm: 200, boltsPerSupport: 2, boltLengthMm: 1000, platePriceCents: null, boltPriceCents: null },
-    tipHeightMm: 75, highHeightMm: 615, panelMm: 500, countFrom: "high", diagonal: "to-high",
-    stationsMm: null, flippedPanels: [], purlinLines: 7, purlinStepMm: 1000, chordSpliceMm: 5980, stockMm: 6000,
-    chord: { designation: "U 100x40x2.65 mm", kgPerM: 3.54, barPriceCents: null, extraBars: 0 }, bottomChord: null,
-    web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: null, extraBars: 0 },
-    purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: null, extraBars: 0 },
-    sheet: { usefulWidthMm: 1020, pricePerMCents: null, beyondTipMm: 300, piecesPerSlope: 1, overlapMm: 250, cladding: "steel-0.5mm" },
-    laborPerM2Cents: null, consumablesCents: null, screwPriceCents: null, fullHeightBudget: false, types: [], lineTypes: [], lineSupports: [], supportModel: { columnBase: "fixed", wallsSlide: true, wallSiteReview: "" },
+    tipHeightMm: 75, highHeightMm: 600, panelMm: 500, countFrom: "high", diagonal: "to-high",
+    stationsMm: null, flippedPanels: [], purlinLines: 5, purlinStepMm: 1500, chordSpliceMm: 5980, stockMm: 6000,
+    ...TOM_PROFILES_AND_PRICES(),
+    sheet: { usefulWidthMm: 1020, pricePerMCents: 4400, beyondTipMm: 300, piecesPerSlope: 1, overlapMm: 250, cladding: "steel-0.5mm" },
+    laborPerM2Cents: 5000, consumablesCents: null, screwPriceCents: 60, fullHeightBudget: false, types: [], lineTypes: [], lineSupports: [], supportModel: { columnBase: "fixed", wallsSlide: true, wallSiteReview: "" },
   };
+  // Caída de 10 % e terças a 1,50 m sobre os montantes, calculadas pelo comprimento real da tesoura.
+  const withSlope = withFall(base, 10);
+  return { ...withSlope, ...fitPurlins(withSlope, trussLengthMm(withSlope), 1500) };
 }
+/** Perfis e preços das barras inteiras de 6 m do Tom. U 4" R$ 185 (Tom, nov/2026); cantoneira R$ 54 ESTIMADA
+ * pelo R$/kg do U 4"; Ue R$ 155 da planilha do galpão de 101 m² (pode estar defasado). */
+const TOM_PROFILES_AND_PRICES = () => ({
+  chord: { designation: "U 100x40x2.65 mm", kgPerM: 3.54, barPriceCents: 18500, extraBars: 0 }, bottomChord: null,
+  web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: 5400, extraBars: 0 },
+  purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: 15500, extraBars: 0 },
+});
 
 /** Usa apenas dimensões e espaçamentos declarados; sem espaçamento informado, a quantidade
  * inicial é um campo editável, NÃO uma verificação de apoio ou capacidade. */
@@ -221,7 +237,8 @@ export function trussDefaultsFor(project: Project): TrussEditor {
     const low = roof.lowHeightM === null ? base.supportZMm + depth : Math.round(roof.lowHeightM * 1000);
     const run = spanMm / slopes;
     const fromPlanning = (p: { name: string; section: string; massKgM: number | null }, fallback: TrussEditor["chord"]) =>
-      p.massKgM ? { ...fallback, designation: (p.section || p.name || fallback.designation).slice(0, 120), kgPerM: p.massKgM } : fallback;
+      // Perfil vindo do pré-projeto: o preço do padrão do Tom é de outro perfil, então fica em branco.
+      p.massKgM ? { ...fallback, designation: (p.section || p.name || fallback.designation).slice(0, 120), kgPerM: p.massKgM, barPriceCents: null } : fallback;
     const cols: TrussEditor = { ...base, roofKind, spanMm, lengthMm, trusses, support: "columns" as const, supportZMm: Math.max(0, low - depth), tipHeightMm: depth };
     const fit = Math.max(2, Math.ceil(run / wantedStep) + 1);
     return { ...cols, highHeightMm: Math.round(depth + run * ((roof.slopePercent ?? 10) / 100)),
@@ -326,6 +343,8 @@ export function removeTrussType(t: TrussEditor, id: string): TrussEditor {
 }
 
 const cmBr = (mm: number) => (mm / 10).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+/** Vão máximo entre terças na linha de trabalho do Tom. */
+export const MAX_PURLIN_STEP_MM = 1800;
 export type TrussIssue = { level: "erro" | "aviso"; message: string };
 export function trussIssues(t: TrussEditor): TrussIssue[] {
   const out: TrussIssue[] = [], L = trussLengthMm(t), st = stations(t);
@@ -350,7 +369,8 @@ export function trussIssues(t: TrussEditor): TrussIssue[] {
   const shifted = purlins.filter(p => Math.abs(p.shiftMm) > 10);
   if (shifted.length) out.push({ level: "aviso", message: `${shifted.length} posição(ões) de terça ajustada(s) ao montante mais próximo: ${shifted.map(p => `${cmBr(p.requestedMm)} → ${cmBr(p.sMm)} cm`).join("; ")}. Conferir espaçamentos.` });
   const step = t.purlinStepMm * Math.hypot(1, fallPercent(t) / 100);
-  if (step > 2500) out.push({ level: "aviso", message: `Terças a ${(step / 1000).toFixed(2)} m na inclinação: confira o vão máximo da telha.` });
+  // Padrão do Tom (nov/2026): terça a 1,50 m, no máximo 1,80 m; acima disso "aguenta, mas fica barulhenta".
+  if (step > MAX_PURLIN_STEP_MM) out.push({ level: "aviso", message: `Terças a ${(step / 1000).toFixed(2)} m na inclinação: o padrão é 1,50 m e no máximo 1,80 m (acima disso a telha fica barulhenta). Confira também o vão máximo da telha.` });
   for (const ty of t.types) {
     const eff = trussOfType(t, ty.id), est = stations(eff), ep = est.slice(1).map((x, i) => x - est[i]);
     if (ep.some(p => p < 50)) out.push({ level: "erro", message: `${ty.name}: há montantes a menos de 5 cm um do outro.` });
@@ -375,6 +395,20 @@ export function purlinPositions(t: TrussEditor) {
   });
 }
 
+/** Menor pedaço de banzo que a oficina emenda (mesmo mínimo do campo "Emenda do banzo"). */
+export const MIN_CHORD_PIECE_MM = 500;
+/**
+ * Posição da emenda do banzo (fração do banzo). Usa a medida informada; se ela deixar um toco menor que
+ * MIN_CHORD_PIECE_MM (ex.: banzo de 6,00 m numa barra de 6 m = 5,98 + 2 cm), a emenda volta para o
+ * montante mais próximo que deixe os dois pedaços com pelo menos esse mínimo (emenda em cima de nó,
+ * como o Tom faz). A quantidade de barras não aumenta: o toco já ocupava uma barra a mais.
+ */
+export function chordSpliceRatio(t: TrussEditor, st: number[], L: number, totalMm: number): number {
+  const k = Math.min(1, t.chordSpliceMm / totalMm);
+  if (k >= 1 || (1 - k) * totalMm >= MIN_CHORD_PIECE_MM) return k;
+  const node = [...st].reverse().find(s => s / L <= k && s / L * totalMm >= MIN_CHORD_PIECE_MM && (1 - s / L) * totalMm >= MIN_CHORD_PIECE_MM);
+  return node === undefined ? k : node / L;
+}
 export type TrussPiece = { id: string; mark: string; kind: "BI" | "BS" | "M" | "D"; lengthMm: number; a: [number, number]; b: [number, number] };
 /** Peças de UMA tesoura em coordenadas locais (s a partir da ponta, z a partir do banzo inferior). */
 export function trussPieces(t: TrussEditor): TrussPiece[] {
@@ -382,7 +416,7 @@ export function trussPieces(t: TrussEditor): TrussPiece[] {
   const top = (s: number) => heightAt(t, s);
   const len = (a: [number, number], b: [number, number]) => Math.hypot(b[0] - a[0], b[1] - a[1]);
   for (const [kind, a, b] of [["BI", [0, 0], [L, 0]], ["BS", [0, top(0)], [L, top(L)]]] as const) {
-    const total = len(a as [number, number], b as [number, number]), k = Math.min(1, t.chordSpliceMm / total);
+    const total = len(a as [number, number], b as [number, number]), k = chordSpliceRatio(t, st, L, total);
     const e: [number, number] = [a[0] + k * (b[0] - a[0]), a[1] + k * (b[1] - a[1])];
     out.push({ id: `${kind}-A`, mark: `${kind}1`, kind, lengthMm: len(a as [number, number], e), a: a as [number, number], b: e });
     if (k < 1) out.push({ id: `${kind}-B`, mark: `${kind}2`, kind, lengthMm: len(e, b as [number, number]), a: e, b: b as [number, number] });

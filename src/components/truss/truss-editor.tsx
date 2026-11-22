@@ -217,7 +217,7 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
             try { onApply(trussEditorSchema.parse(t)); setConfirming(false); setMessage("Aplicado. 3D, CAD, materiais e plano de corte usam esta tesoura."); } catch (e) { setMessage(e instanceof Error ? e.message : "Não foi possível aplicar."); } }}>
             <Check size={18} />{confirming ? "Substituir mesmo assim" : applyLabel}</button>
           {confirming && <button type="button" className="button secondary" onClick={() => setConfirming(false)}>Cancelar</button>}
-          <button type="button" className="button secondary" onClick={() => { setT(blankTruss()); setTrussesAuto(true); setSelected(null); setMessage("Obra nova: digite as medidas por cima. Preços em branco."); }}><FilePlus2 size={18} />Nova obra</button>
+          <button type="button" className="button secondary" onClick={() => { setT(blankTruss()); setTrussesAuto(true); setSelected(null); setMessage("Obra nova no padrão do Tom: digite as medidas da obra por cima. Preços do Tom já preenchidos; informe os insumos."); }}><FilePlus2 size={18} />Nova obra</button>
           <button type="button" className="button secondary" onClick={() => { setT(tomTrussDefaults()); setTrussesAuto(false); setSelected(null); }}><RotateCcw size={18} />Exemplo 8×10</button>
         </div>
         {message && <p className={styles.ok} role="status">{message}</p>}

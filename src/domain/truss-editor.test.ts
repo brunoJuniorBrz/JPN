@@ -67,9 +67,14 @@ describe("editor de tesoura por estações", () => {
     const t = tomTrussDefaults(), real = trussSummary(t), full = trussSummary({ ...t, fullHeightBudget: true });
     expect(full.lines[1].qty).toBe("14 barras · corte real 9");
     expect(real.lines[1].qty).toBe("9 barras");
-    expect(real.missing).toEqual(expect.arrayContaining([`Banzos ${t.chord.designation}`]));
-    // telha 75,9 m x R$ 44 + parafusos + insumos + mão de obra
-    expect(real.knownCents).toBe(333960 + real.screws * 60 + 110000 + 400000);
+    // Exemplo do Tom com preço das barras: 8 U 4" x R$ 185, 9 L x R$ 54 (estimado), 12 Ue x R$ 155.
+    expect(real.missing).not.toEqual(expect.arrayContaining([`Banzos ${t.chord.designation}`]));
+    // aço + telha 75,9 m x R$ 44 + parafusos + insumos + mão de obra
+    expect(real.knownCents).toBe(8 * 18500 + 9 * 5400 + 12 * 15500 + 333960 + real.screws * 60 + 110000 + 400000);
+    // Sem preço de barra, o banzo continua listado como item a informar.
+    const unpriced = trussSummary({ ...t, chord: { ...t.chord, barPriceCents: null } });
+    expect(unpriced.missing).toEqual(expect.arrayContaining([`Banzos ${t.chord.designation}`]));
+    expect(unpriced.knownCents).toBe(real.knownCents - 8 * 18500);
   });
 
   it("obra do dia a dia: muros, ancoragem, telha em 2 peças, folga e obra nova", () => {
@@ -109,7 +114,9 @@ describe("editor de tesoura por estações", () => {
 
     const blank = blankTruss();
     expect(trussIssues(blank).filter(i => i.level === "erro")).toEqual([]);
-    expect(trussSummary(blank).knownCents).toBe(0);
+    // Obra nova já sai com os preços do Tom; insumos ele informa por obra.
+    expect(trussSummary(blank).knownCents).toBeGreaterThan(0);
+    expect(trussSummary(blank).missing).toContain("Insumos");
   });
 
   it("duas águas simétricas: duas faces XYZ, cumeeira única e apoios pendentes", () => {
@@ -159,8 +166,10 @@ describe("editor de tesoura por estações", () => {
   it("obra independente do exemplo e projeto 12×20 de duas águas com espaçamentos declarados", () => {
     const empty = blankTruss(), example = tomTrussDefaults();
     expect(empty.spanMm).not.toBe(example.spanMm);
-    expect(empty.sheet.pricePerMCents).toBeNull();
-    expect(empty.laborPerM2Cents).toBeNull();
+    // Obra nova no padrão do Tom: preços dele, insumos em branco.
+    expect(empty.sheet.pricePerMCents).toBe(4400);
+    expect(empty.laborPerM2Cents).toBe(5000);
+    expect(empty.consumablesCents).toBeNull();
     expect(trussIssues(empty).filter(i => i.level === "erro")).toEqual([]);
     const p = newProject();
     p.roof = { ...p.roof, widthM: 12, lengthM: 20, slopePercent: 10 };
@@ -171,7 +180,8 @@ describe("editor de tesoura por estações", () => {
     expect(t.purlinLines).toBe(6);
     expect(purlinPositions(t)).toHaveLength(t.purlinLines);
     expect(trussIssues(t).filter(i => i.level === "erro")).toEqual([]);
-    expect(trussSummary(t).knownCents).toBe(0);
+    // Sem perfis no pré-projeto, valem os perfis e preços do padrão do Tom.
+    expect(trussSummary(t).knownCents).toBeGreaterThan(0);
     expect(applyTrussToProject(p, t).workspace.trussEditor?.spanMm).toBe(12000);
   });
 
