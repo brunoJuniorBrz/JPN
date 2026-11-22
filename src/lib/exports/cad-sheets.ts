@@ -5,6 +5,7 @@ import {cadModel,cadReactions,axisLetter,sortedCoordinates as unique,isDeclaredB
 import {cadRoofFaces} from "./cad-roof";
 import {cutWalls,lineTypeId,trussEnds,trussSummary,typeName} from "@/domain/truss-editor";
 import {isUnlocatedCommercialPiece} from "./package-commercial-groups";
+import {addWorkshopSheet} from "./cad-workshop";
 import {reviewSourceDimensions,reviewRoofSlope,reviewRoofEnvelope} from "./package-dimension-review";
 export {CAD_NOTICE};
 export type CadExportOptions={format?:PaperFormat;reactions?:CadReactionReceipt};
@@ -17,6 +18,8 @@ const reaction3=(n:number)=>Number(n.toFixed(3)).toString();
 export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,options:CadExportOptions={}){
   const data=cadModel(project),{model,draft,takeoff,nodes,profile,supports,xs,ys}=data;
   const book=new CadBook(dxf,options.format??"A3",project.name,model.revision,issuedAt,Math.max(...model.nodes.map(n=>n.x)));
+  // Obra do editor de tesoura: a primeira folha fala a língua da oficina (cm, nomes por extenso, corte e compra).
+  if(project.workspace.trussEditor)addWorkshopSheet(book,project.workspace.trussEditor);
   const trussAccounting=project.workspace.trussEditor?trussSummary(project.workspace.trussEditor):null;
   const counters=new Map<string,number>(),marks=new Map<string,string>(),markByType=new Map<string,string>(),markCounts=new Map<string,number>();
   const items=new Map(takeoff.pieces.map(p=>[p.pieceId,p]));
