@@ -53,7 +53,7 @@ class SheetViewport extends Line{
   }
 }
 
-export type CadPage={name:string;title:string;draw:((space:DxfBlock)=>void)[]};
+export type CadPage={name:string;title:string;draw:((space:DxfBlock)=>void)[];subtitle?:string};
 export class CadBook{
   readonly scenes:CadScene[]=[];
   private graphics=new WeakMap<DxfBlock,CadSceneItem[]>();
@@ -245,7 +245,7 @@ export class CadBook{
       space.addEntity(new SheetViewport({x:0,y:0,width:this.width,height:this.height},[this.width/2,this.height/2],1,1));
       this.box(space,{x:25,y:10,width:this.width-35,height:this.height-20},"CARIMBO");
       this.text(space,[30,this.height-15],page.title,"TEXTOS",4.5);
-      this.text(space,[30,this.height-22],`${this.format} · cotas em mm · escalas indicadas nas vistas · comprimentos entre nós`,"TEXTOS",2.3);
+      this.text(space,[30,this.height-22],page.subtitle??`${this.format} · cotas em mm · escalas indicadas nas vistas · comprimentos entre nós`,"TEXTOS",2.3);
       const x=this.width-190;this.box(space,{x,y:23,width:180,height:55},"CARIMBO");
       for(const y of [34,44,54,66])this.poly(space,[[x,y],[this.width-10,y]],"CARIMBO");
       this.wrapped(space,{x:x+2,y:66,width:176,height:10},this.job,this.job.length>120?2.3:3,this.job.length>120?2.8:3.6,"CARIMBO");
