@@ -85,6 +85,28 @@ Próximos incrementos:
 6. Testar DXF em CAD disponível e documentar qual software foi usado.
 7. SCR somente após confirmar sintaxe e compatibilidade. DWG nativo continua fora do escopo.
 
+## Futuro — em espera (pedidos do Tom, nov/2026)
+
+Itens combinados, mas **não implementados**. Ficam aqui para não se perderem.
+
+### Marca d'água nas pranchas (nome Shimizu)
+- Por quê: as pranchas saem completas o bastante para um engenheiro de fora só assinar e cobrar. A marca deixa claro de onde o projeto saiu.
+- Nome: **Shimizu**. O CNPJ está nesse nome e é como todo mundo já chama a empresa. Substitui "JPN" na marca.
+- Como: texto em diagonal, cinza bem claro, em todas as folhas do PDF (inclusive a Folha da Oficina), sem atrapalhar a leitura das medidas. Sugestão de texto: "Shimizu · uso exclusivo · cópia para orçamento", com cliente e data.
+- Ainda a decidir: a marca vai sempre, ou só numa "versão para cliente" escolhida na exportação (com a versão interna limpa)?
+- Limite: a marca inibe, mas não impede, porque um PDF pode ser editado. O DXF é editável, então não leva marca. Regra de uso: cliente e engenheiro de fora recebem só o PDF com marca; o DXF fica interno.
+
+### Aguardando resposta do Tom
+- Reforço em U nas pontas da tesoura (projetos de mercado usam). Hoje toda a alma usa um perfil só.
+- Telha no lado alto: passa do muro ou termina nele? O desenho e o 3D mostram a cobertura 75 cm além do muro alto, e a lista calcula a telha sem esse trecho.
+- Cantoneira: a regra da "medida cheia de 80 cm" daria 14 barras na 8×10, mas o pedido real foi de 10.
+- Preços da cantoneira (hoje estimado em R$ 54) e do Ue atual (R$ 155 é da planilha antiga).
+
+### Ideias para depois
+- Ponta da obra apoiada direto na parede (oitão), sem tesoura: a obra de outubro (planta de 20/10) usa isso e economiza 2 tesouras por telhado.
+- Mais de um telhado na mesma obra (obras em L, caídas diferentes).
+- Otimizador "nível 1" silencioso: escolher emenda e plano de corte e avisar numa linha quando o que foi digitado custa mais que o necessário.
+
 ## Fase 5 — Planejada
 
 Coberturas de duas águas, modelos reutilizáveis, plano de corte, outros geradores, PWA offline testada, autenticação, sincronização remota, concorrência transacional, histórico de revisões e documentação técnica avançada.
