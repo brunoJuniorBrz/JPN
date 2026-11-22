@@ -97,6 +97,8 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
     // entram nos limites gráficos. Isso nunca cria barras ou vínculos de cálculo.
     // Tesoura sobre pilares: os pilares já são peças do modelo; não há muro/calha a esquematizar.
     // Com apoios mistos, só os lados que têm muro em alguma tesoura entram no esquema.
+    // Extensão cotada = peças + cobertura (sem a espessura do muro esquemático), igual à planta.
+    const geometryX=[Math.min(...coords.map(p=>p[0])),Math.max(...coords.map(p=>p[0]))];
     const editorCtx=project.workspace.trussEditor;
     const trussContext=view==="cut"&&across==="x"&&!opts.bases&&editorCtx&&trussEnds(editorCtx).some(e=>e.kind==="wall")?editorCtx:null;
     if(trussContext){
@@ -258,6 +260,17 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         pendingNotes.push("PENDENTE: MUROS E CALHAS apenas representacao esquematica no corte; cotas e materiais conforme editor. Sem verificacao estrutural/hidraulica.");
         pendingNotes.push(`PENDENTE: CHAPAS ${t.anchor.plateWidthMm}x${t.anchor.plateHeightMm} mm; ${t.anchor.boltsPerSupport} chumbador(es) por posicao, L=${t.anchor.boltLengthMm} mm. Furos/ligacoes sem detalhe validado.`);
       }
+      // Elevação lateral: muro existente (esquema) no trecho das tesouras apoiadas nele, para o apoio
+      // no topo do muro não parecer solto no ar. Só desenho; não cria peça, vínculo nem material.
+      if(view==="side"&&horizontal==="y"&&!opts.frame&&!opts.bases&&editorCtx&&ys.length===editorCtx.trusses){
+        for(const w of cutWalls(editorCtx)){
+          const lines=trussEnds(editorCtx).filter(e=>e.side===w.side&&e.kind==="wall").map(e=>e.line);
+          const y0=ys[Math.min(...lines)],y1=ys[Math.max(...lines)],h=w.heightMm;
+          const outline:P[]=[[y0,0],[y1,0],[y1,h],[y0,h],[y0,0]];
+          book.poly(space,outline.map(at),"BARRAS_AUXILIARES");
+          book.text(space,at([(y0+y1)/2,Math.max(h/3,100)]),(w.side==="left"?"MURO BAIXO (ESQUEMA)":"MURO ALTO (ESQUEMA)")+w.lines,"TEXTOS",1.8);
+        }
+      }
       const supportLabels=new Map<string,{point:P;marks:string[]}>();
       for(const n of supports){
         if(opts.frame&&!pieces.some(p=>p.start===n.id||p.end===n.id))continue;
@@ -273,15 +286,24 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         // Positive normal = up / left: horizontal below, vertical left.
         book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",-10);
         book.dim(space,at([minX,minY]),at([minX,maxY]),scale,"EXTENSÃO",10);
-      }else if(width>0&&!(hv.length===2&&hv[0]===minX&&hv[1]===maxX))
-        book.dim(space,at([minX,minY]),at([maxX,minY]),scale,"EXTENSÃO",(hv.length>1&&!opts.noMarks)?(trussHeights?-28:-20):(trussHeights?-20:-8));
+      }else if(width>0&&!(hv.length===2&&hv[0]===geometryX[0]&&hv[1]===geometryX[1]))
+        book.dim(space,at([geometryX[0],minY]),at([geometryX[1],minY]),scale,"EXTENSÃO",(hv.length>1&&!opts.noMarks)?(trussHeights?-28:-20):(trussHeights?-20:-8));
       if(view!=="plan"){
         for(const [i,z] of levelValues.entries()){
           const candidates=view==="cut"?roofSegments.flat().filter(p=>p[1]===z):roof.filter(p=>p.z===z).map(p=>projection(p));
           const actual=candidates.sort((a,b)=>a[0]-b[0])[0]??[minX,z];
-          book.dim(space,at([actual[0],datum]),at(actual),scale,showRoof?(ridge.includes(z)?"CUMEEIRA":"BORDA/BEIRAL"):"NÍVEL",(actual[0]-minX)/scale+10+i*7);
+          // Nome na cota; sobre muro a referência é o topo do apoio (não o piso), e isso vai escrito.
+          const levelName=(showRoof?(ridge.includes(z)?"CUMEEIRA":z===Math.min(...levelValues)?"BEIRAL":"TOPO TELHA"):"NÍVEL")+(Math.abs(datum)>1?" ACIMA DO APOIO":"");
+          book.dim(space,at([actual[0],datum]),at(actual),scale,showRoof?(ridge.includes(z)?"CUMEEIRA":"BORDA/BEIRAL"):"NÍVEL",(actual[0]-minX)/scale+10+i*7,levelName);
         }
         if(showRoof&&!roof.length)pendingNotes.push("PENDENTE: cobertura física não declarada; alturas não inferidas.");
+        // Altura do pilar com nome (piso ao topo do pilar), para não confundir com os níveis da telha.
+        if(!opts.frame&&!opts.bases){
+          const column=pieces.filter(p=>p.role==="column").filter(p=>view!=="cut"||(nodes.get(p.start)![cutAxis]===sectionPosition&&nodes.get(p.end)![cutAxis]===sectionPosition))
+            .map(p=>[nodes.get(p.start)!,nodes.get(p.end)!].sort((u,v)=>u.z-v.z)).sort((u,v)=>projection(v[0])[0]-projection(u[0])[0])[0];
+          // Pilar mais à direita, cota do lado de dentro: não cruza a marca do pilar nem as cotas de nível à esquerda.
+          if(column)book.dim(space,at(projection(column[0])),at(projection(column[1])),scale,"PILAR",6,"PILAR");
+        }
       }
       if(view==="cut"){
         if(distinct.length<=12)for(let i=1;i<distinct.length;i++)book.dim(space,at(distinct[i-1]),at(distinct[i]),scale,"EIXOS TERÇAS",5);
@@ -294,9 +316,14 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         // fully retained in the spacing table instead of overprinting labels.
         const legible=values.length<=12&&values.slice(1).every((v,i)=>(v-values[i])/scale>=14);
         const marked=legible?values:[values[0],values.at(-1)!];
-        for(let i=1;i<marked.length;i++){
-          const a:P=cutAxis==="y"?[marked[i-1],minY]:[minX,marked[i-1]],b:P=cutAxis==="y"?[marked[i],minY]:[minX,marked[i]];
-          book.dim(space,at(a),at(b),scale,legible?"TERÇAS PROJ.":"TERÇAS: ver ESPACAMENTOS",-13);
+        // A posição da terça é medida no eixo transversal (across). Com a planta girada, esse eixo fica na
+        // vertical do papel: a cota vai para a lateral esquerda, e não para baixo (antes caía sobre os vãos).
+        const placed=(v:number)=>projection({x:across==="x"?v:0,y:across==="y"?v:0,z:0});
+        const vertical=Math.abs(placed(1)[1]-placed(0)[1])>Math.abs(placed(1)[0]-placed(0)[0]);
+        const along=marked.map(v=>vertical?placed(v)[1]:placed(v)[0]).sort((a,b)=>a-b);
+        for(let i=1;i<along.length;i++){
+          const a:P=vertical?[minX,along[i-1]]:[along[i-1],minY],b:P=vertical?[minX,along[i]]:[along[i],minY];
+          book.dim(space,at(a),at(b),scale,legible?"TERÇAS PROJ.":"TERÇAS: ver ESPACAMENTOS",vertical?36:-13);
         }
         if(!model.pieces.some(isDeclaredBrace))
           pendingNotes.push("PENDENTE: contraventamentos não declarados; sem comprovação de contenção.");

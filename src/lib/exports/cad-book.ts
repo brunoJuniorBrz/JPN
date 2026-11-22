@@ -127,7 +127,8 @@ export class CadBook{
     }
   }
   dimensionObstacles(space:DxfBlock){return this.dimensionLines.get(space)??[];}
-  dim(space:DxfBlock,a:Point2,b:Point2,scale:number,label:string,offset=7){
+  /** `caption`: nome impresso antes da medida (ex.: "PILAR 3000"); sem caption, só o número. */
+  dim(space:DxfBlock,a:Point2,b:Point2,scale:number,label:string,offset=7,caption?:string){
     const length=Math.hypot(b[0]-a[0],b[1]-a[1]);if(length<1e-9)return;
     const normal:Point2=[-(b[1]-a[1])/length*offset,(b[0]-a[0])/length*offset];
     const c:Point2=[a[0]+normal[0],a[1]+normal[1]],e:Point2=[b[0]+normal[0],b[1]+normal[1]];
@@ -136,7 +137,7 @@ export class CadBook{
     // Real DIMENSION entity retained. Break its graphics block under the
     // measurement label instead of drawing a dimension stroke THROUGH text.
     const ux=(e[0]-c[0])/length,uy=(e[1]-c[1])/length;
-    const measurement=String(Math.round(length*scale)),gap=Math.min(length*.5,Math.max(5,measurement.length*1.65+4));
+    const measurement=(caption?`${caption} `:"")+String(Math.round(length*scale)),gap=Math.min(length*.5,Math.max(5,measurement.length*1.65+4));
     const center:Point2=[(c[0]+e[0])/2,(c[1]+e[1])/2];
     const left:Point2=[center[0]-ux*gap/2,center[1]-uy*gap/2],
       right:Point2=[center[0]+ux*gap/2,center[1]+uy*gap/2];

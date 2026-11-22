@@ -114,7 +114,9 @@ describe("editor de tesoura por estações", () => {
 
     const blank = blankTruss();
     expect(trussIssues(blank).filter(i => i.level === "erro")).toEqual([]);
-    expect(trussSummary(blank).knownCents).toBe(0);
+    // Obra nova já sai com os preços do Tom; insumos ele informa por obra.
+    expect(trussSummary(blank).knownCents).toBeGreaterThan(0);
+    expect(trussSummary(blank).missing).toContain("Insumos");
   });
 
   it("duas águas simétricas: duas faces XYZ, cumeeira única e apoios pendentes", () => {
@@ -164,8 +166,10 @@ describe("editor de tesoura por estações", () => {
   it("obra independente do exemplo e projeto 12×20 de duas águas com espaçamentos declarados", () => {
     const empty = blankTruss(), example = tomTrussDefaults();
     expect(empty.spanMm).not.toBe(example.spanMm);
-    expect(empty.sheet.pricePerMCents).toBeNull();
-    expect(empty.laborPerM2Cents).toBeNull();
+    // Obra nova no padrão do Tom: preços dele, insumos em branco.
+    expect(empty.sheet.pricePerMCents).toBe(4400);
+    expect(empty.laborPerM2Cents).toBe(5000);
+    expect(empty.consumablesCents).toBeNull();
     expect(trussIssues(empty).filter(i => i.level === "erro")).toEqual([]);
     const p = newProject();
     p.roof = { ...p.roof, widthM: 12, lengthM: 20, slopePercent: 10 };
@@ -176,7 +180,8 @@ describe("editor de tesoura por estações", () => {
     expect(t.purlinLines).toBe(6);
     expect(purlinPositions(t)).toHaveLength(t.purlinLines);
     expect(trussIssues(t).filter(i => i.level === "erro")).toEqual([]);
-    expect(trussSummary(t).knownCents).toBe(0);
+    // Sem perfis no pré-projeto, valem os perfis e preços do padrão do Tom.
+    expect(trussSummary(t).knownCents).toBeGreaterThan(0);
     expect(applyTrussToProject(p, t).workspace.trussEditor?.spanMm).toBe(12000);
   });
 
