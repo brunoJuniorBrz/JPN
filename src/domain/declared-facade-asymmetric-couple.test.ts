@@ -99,4 +99,55 @@ describe("M41-P3: asymmetric pressure couple and reversed cases", () => {
     expect(result.fabricationRelease).toBe(false);
     expect(result.releaseGate).toBe("NOT_READY_BLOCKED");
   });
+  it("blocks incomplete, overlapping and inconsistent pressure profiles instead of silently assigning wind loads", () => {
+    const project = facadeFixture();
+    const base = {
+      schema_version: "jpn.declared-facade-traction/1",
+      normativeValidation: "pending-engineer-review",
+      physicalSignature: declaredFacadeTractionSignature(project),
+      cases: [{
+        id: "WIND-POS", incidenceDeg: 0,
+        reference: "Synthetic invalid profile regression, not normative wind",
+        zones: [{
+          facadeId: "EAST", netPressurePa: 0,
+          source: "External synthetic input", revision: "invalid-profile-20261122",
+          calculationBasis: "Mechanical conservation test only",
+          profile: [
+            { startM: 0, endM: 2, netPressurePa: 600 },
+            { startM: 2, endM: 6, netPressurePa: -300 },
+          ],
+        }],
+      }],
+    };
+    const run = (profile: typeof base.cases[0]["zones"][0]["profile"], mean = 0) =>
+      distributeDeclaredFacadeTractions(project, {
+        ...base, cases: [{
+          ...base.cases[0], zones: [{
+            ...base.cases[0].zones[0], netPressurePa: mean, profile,
+          }],
+        }],
+      });
+
+    // No silent gaps, overlap, truncated facade or pressure mean mismatch.
+    expect(() => run([
+      { startM: 0, endM: 2, netPressurePa: 600 },
+      { startM: 2.1, endM: 6, netPressurePa: -300 },
+    ])).toThrow("FACADE_PROFILE_COVERAGE");
+    expect(() => run([
+      { startM: 0, endM: 2.1, netPressurePa: 600 },
+      { startM: 2, endM: 6, netPressurePa: -300 },
+    ])).toThrow("FACADE_PROFILE_COVERAGE");
+    expect(() => run([
+      { startM: 0, endM: 2, netPressurePa: 600 },
+      { startM: 2, endM: 5.9, netPressurePa: -300 },
+    ])).toThrow("FACADE_PROFILE_COVERAGE");
+    expect(() => run(base.cases[0].zones[0].profile, 1))
+      .toThrow("FACADE_PROFILE_MEAN");
+    // A valid signed couple must remain accepted, not be mistaken for zero wind.
+    const valid = run(base.cases[0].zones[0].profile);
+    expect(valid.cases[0].forceN[0]).toBeCloseTo(0, 8);
+    expect(valid.cases[0].momentNm[2]).toBeCloseTo(-14400, 8);
+    expect(valid.releaseGate).toBe("NOT_READY_BLOCKED");
+  });
+
 });
