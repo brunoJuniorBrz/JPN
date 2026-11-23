@@ -98,8 +98,8 @@ REVIEWED_AMENDMENTS = {
     # #148 follow-up: reviewed manual declaration navigation, verification-stage selectors and WebGL test timeout.
     # #148: tests/e2e/presentation-3d.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
     "tests/e2e/presentation-3d.spec.ts": "8f42678f4e27d884ddce3aa2ad3eb9bec10c2a14",
-    # #148: tests/e2e/spatial-analysis.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
-    "tests/e2e/spatial-analysis.spec.ts": "bf2ab4952b0b4e01faeec9398aa22a51c75b749f",
+    # #160: after analysis reload, explicitly reopen Estrutura/3D before canvas assertion;\n    # evidence: CI 45036759495 (137 pass, one E2E fails after reload). See docs/validation/REVIEW-E2E-RELOAD-160.md.
+    "tests/e2e/spatial-analysis.spec.ts": "0dd90a536316d9dbbfebcd8dcff23edf5ad113ff",
     # #148: tests/e2e/studio-measurement.spec.ts — Studio F1 navigation-only adaptation, documented in docs/ui/REVIEW-E2E-STUDIO-148.md.
     "tests/e2e/studio-measurement.spec.ts": "7d8eb37822bd2c6e0d6d76043c3f5fff492d309d",
     # UI F1 (docs/ui/PLANO-UI.md, test changes authorized by the project owner; review in the UI PR):
