@@ -39,7 +39,13 @@ for (const mobile of [true, false]) test.describe(mobile ? "iPhone 375" : "deskt
     await page.getByRole("button", { name: "Executar análise 3D experimental", exact: true }).click();
     payload.nodal_loads[0].fx_n += 1; await input.fill(JSON.stringify(payload));
     await expect(page.getByRole("alert").filter({ hasText: "resultado descartado" })).toBeVisible(); await expect(results).toHaveCount(0);
-    await page.reload(); await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible();
+    await page.reload();
+    // Reload restores the saved Studio step (Análise), not necessarily the 3D panel.
+    // Reopen the actual 3D view before asserting its canvas; preserve the stale-result check.
+    await page.getByRole("navigation", { name: "Etapas do levantamento" })
+      .getByRole("button", { name: /^Estrutura/ }).click();
+    await page.getByRole("button", { name: "Abrir modelo 3D" }).click();
+    await expect(page.getByRole("img", { name: "Modelo 3D da estrutura" })).toBeVisible({ timeout: 30_000 });
     await openEngineeringTool(page, "Análise 3D experimental"); await expect(results).toHaveCount(0);
     expect(errors).toEqual([]);
   });
