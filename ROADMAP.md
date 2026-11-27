@@ -89,7 +89,8 @@ Próximos incrementos:
 
 Itens combinados, mas **não implementados**. Ficam aqui para não se perderem.
 
-### Marca d'água nas pranchas (nome Shimizu)
+### Marca d'água nas pranchas (nome Shimizu) — feito (nov/2026)
+- Implementado: vai sempre em todos os PDFs do pacote (pranchas, Folha da Oficina e memorial), com cliente e data; DXF sem marca. A versão interna limpa existe no código (`watermark: false`), ainda sem botão na tela.
 - Por quê: as pranchas saem completas o bastante para um engenheiro de fora só assinar e cobrar. A marca deixa claro de onde o projeto saiu.
 - Nome: **Shimizu**. O CNPJ está nesse nome e é como todo mundo já chama a empresa. Substitui "JPN" na marca.
 - Como: texto em diagonal, cinza bem claro, em todas as folhas do PDF (inclusive a Folha da Oficina), sem atrapalhar a leitura das medidas. Sugestão de texto: "Shimizu · uso exclusivo · cópia para orçamento", com cliente e data.
@@ -103,7 +104,7 @@ Itens combinados, mas **não implementados**. Ficam aqui para não se perderem.
 - Preços da cantoneira (hoje estimado em R$ 54) e do Ue atual (R$ 155 é da planilha antiga).
 
 ### Ideias para depois
-- Ponta da obra apoiada direto na parede (oitão), sem tesoura: a obra de outubro (planta de 20/10) usa isso e economiza 2 tesouras por telhado.
+- [x] Ponta da obra apoiada direto na parede (oitão), sem tesoura: a obra de outubro (planta de 20/10) usa isso e economiza 2 tesouras por telhado. Feito (nov/2026): opção "Ponta apoiada na parede (oitão)" no editor de tesoura.
 - Mais de um telhado na mesma obra (obras em L, caídas diferentes).
 - Otimizador "nível 1" silencioso: escolher emenda e plano de corte e avisar numa linha quando o que foi digitado custa mais que o necessário.
 
