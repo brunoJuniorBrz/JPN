@@ -267,7 +267,9 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
       // no topo do muro não parecer solto no ar. Só desenho; não cria peça, vínculo nem material.
       if(view==="side"&&horizontal==="y"&&!opts.frame&&!opts.bases&&editorCtx&&ys.length===editorCtx.trusses){
         for(const w of cutWalls(editorCtx)){
-          const lines=trussEnds(editorCtx).filter(e=>e.side===w.side&&e.kind==="wall").map(e=>e.line);
+          // O muro lateral vai até o oitão, quando houver (a parede de ponta fecha nele).
+          const lines=[...trussEnds(editorCtx).filter(e=>e.side===w.side&&e.kind==="wall").map(e=>e.line),
+            ...[0,editorCtx.trusses-1].filter(l=>isGableLine(editorCtx,l))];
           const y0=ys[Math.min(...lines)],y1=ys[Math.max(...lines)],h=w.heightMm;
           const outline:P[]=[[y0,0],[y1,0],[y1,h],[y0,h],[y0,0]];
           book.poly(space,outline.map(at),"BARRAS_AUXILIARES");
@@ -278,7 +280,8 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
         for(const line of [0,editorCtx.trusses-1])if(isGableLine(editorCtx,line)){
           const y=ys[line],w=editorCtx.walls.thicknessMm,d=line===0?w:-w;
           book.poly(space,([[y,0],[y+d,0],[y+d,roofTop],[y,roofTop],[y,0]] as P[]).map(at),"BARRAS_AUXILIARES");
-          book.text(space,at([y+d*2,roofTop/2]),"OITAO (PAREDE) - TERCAS CHUMBADAS","TEXTOS",1.8);
+          // Texto em pé, colado na parede e para dentro da obra (não sai da folha na última linha).
+          book.text(space,at([y+(line===0?d*3:d*2),Math.min(300,roofTop/10)]),"OITAO (PAREDE) - TERCAS CHUMBADAS","TEXTOS",1.8).rotation=90;
         }
       }
       const supportLabels=new Map<string,{point:P;marks:string[]}>();

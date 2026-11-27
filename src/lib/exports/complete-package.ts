@@ -6,6 +6,7 @@ import {jsPDF} from "jspdf";
 import {autoTable} from "jspdf-autotable";
 import {createCadDrawing,type CadExportOptions} from "./cad";
 import {createCadPdf} from "./cad-pdf";
+import {WATERMARK_BRAND,stampWatermark,type Watermark} from "./watermark";
 import {packageTakeoff} from "./package-source";
 import {declaredCommercialGroups,isUnlocatedCommercialPiece} from "./package-commercial-groups";
 import {reviewSourceDimensions,reviewRoofEnvelope,reviewRoofSlope} from "./package-dimension-review";
@@ -15,7 +16,9 @@ import {mixedPreparationReview} from "@/domain/mixed-adapter";
 import {newSpatialPreparation} from "@/domain/spatial-preparation";
 import {trussSummary} from "@/domain/truss-editor";
 
-export type PackageOptions=CadExportOptions&{issuedAt?:Date;stockByGroup?:Record<string,number>;barPriceCentsByGroup?:Record<string,number>};
+export type PackageOptions=CadExportOptions&{issuedAt?:Date;stockByGroup?:Record<string,number>;barPriceCentsByGroup?:Record<string,number>;
+  /** Marca d'água nos PDFs (padrão: Shimizu, com cliente e data). false = PDFs limpos (uso interno). O DXF nunca leva marca. */
+  watermark?:false};
 /** Compact only the human-facing memorial: full detailed rows remain in manifest and trace file. */
 export function compactMemorialWarnings(rows:string[]):string[]{
   const grouped=new Map<string,string[]>();
@@ -76,6 +79,7 @@ export function packageCutting(project:Project,options:PackageOptions={}){
 export async function createCompletePackage(input:Project,options:PackageOptions={}){
   // Snapshot before the first await: every file and hash refers to this revision.
   const project=structuredClone(input),issuedAt=options.issuedAt??new Date(),takeoff=packageTakeoff(project),drawing=createCadDrawing(project,issuedAt,options);
+  const mark:Watermark|null=options.watermark===false?null:{brand:WATERMARK_BRAND,client:project.client,issuedAt};
   const reviews=reviewSourceDimensions(project),reviewById=new Map(reviews.map(r=>[r.pieceId,r]));
   const roofSlopeReviews=reviewRoofSlope(project),overallDimensionReviews=reviewRoofEnvelope(project);
   const unlocated=takeoff.pieces.filter(p=>isUnlocatedCommercialPiece(p)),unlocatedIds=new Set(unlocated.map(p=>p.pieceId));
@@ -96,7 +100,7 @@ export async function createCompletePackage(input:Project,options:PackageOptions
   try{cutting=packageCutting(project,options);}catch(e){pending.push(`Plano de corte indisponível: ${e instanceof Error?e.message:String(e)}`);}
   const files:{name:string;mime:string;bytes:Uint8Array}[]=[];
   const add=(name:string,mime:string,value:string|ArrayBuffer)=>files.push({name,mime,bytes:typeof value==="string"?encoder.encode(value):new Uint8Array(value)});
-  add("cad/pranchas.dxf","application/dxf",drawing.dxf);add("pranchas/pranchas.pdf","application/pdf",createCadPdf(drawing.sheets));
+  add("cad/pranchas.dxf","application/dxf",drawing.dxf);add("pranchas/pranchas.pdf","application/pdf",createCadPdf(drawing.sheets,mark));
   const materialHeaders=["ID","Perfil","Material","Quantidade","Comprimento geométrico mm","Massa linear kg/m","Massa kg","Preço cadastrado centavos/m","Cota fonte mm","Diferença mm","Conferência dimensional"];
   const materialRow=(p:typeof takeoff.pieces[number])=>{const review=reviewById.get(p.pieceId);
     return [p.pieceId,p.profile,p.steelGrade||"PENDENTE",1,p.lengthMm,
@@ -165,6 +169,7 @@ export async function createCompletePackage(input:Project,options:PackageOptions
   const detailedWarnings=[...pending,...estimate.pending,...estimate.warnings];
   table("Premissas e pendências",["Conferência"],compactMemorialWarnings(detailedWarnings).map(p=>[p]));
   add("rastreabilidade/pendencias-completas.txt","text/plain;charset=utf-8",detailedWarnings.join("\n"));
+  if(mark)stampWatermark(doc,mark);
   add("memorial/quantitativos.pdf","application/pdf",doc.output("arraybuffer"));
   add("rastreabilidade/projeto.json","application/json",JSON.stringify(project,null,2));
   const manifest={schema_version:"jpn.documentation-package/1",projectId:project.id,revision:takeoff.modelRevision,issuedAt:issuedAt.toISOString(),
