@@ -5,7 +5,7 @@
  */
 import type { TrussEditor } from "@/domain/truss-editor";
 import {
-  lineTypeId, roofPurlinPositions, stations, trussLengthMm, trussOfLine, trussPiecesComplete, trussSummary, typeName,
+  gableCount, lineTypeId, steelTrussLines, roofPurlinPositions, stations, trussLengthMm, trussOfLine, trussPiecesComplete, trussSummary, typeName,
   type TrussPiece,
 } from "@/domain/truss-editor";
 import type { CadBook, CadRect, Point2 } from "./cad-book";
@@ -25,7 +25,7 @@ export type WorkshopType = { name: string; trusses: number; pieces: TrussPiece[]
 /** Peças de corte por tipo de tesoura, agrupadas por marca (as duas águas somam). */
 export function workshopTypes(t: TrussEditor): WorkshopType[] {
   const byType = new Map<string, number[]>();
-  for (let i = 0; i < t.trusses; i++) {
+  for (const i of steelTrussLines(t)) { // oitão não é tesoura: nada a fabricar
     const id = lineTypeId(t, i);
     byType.set(id, [...(byType.get(id) ?? []), i]);
   }
@@ -105,6 +105,7 @@ function chordsAndPurlins(t: TrussEditor, type: WorkshopType, withPurlins: boole
     out.push(`  = ${lines * bays} pedaços de ${cm(piece)} cm, emenda em cima da tesoura`);
     const step = t.purlinStepMm;
     out.push(`  uma a cada ${cm(step)} cm na inclinação`);
+    if (gableCount(t)) out.push(`  ${gableCount(t) === 2 ? "as duas pontas apoiam" : "uma ponta apoia"} direto na parede (oitão): chumbar a terça na parede`);
     if (t.support === "columns" || t.lineSupports.some(s => s.left === "column" || s.right === "column"))
       out.push(`Pilares (${t.column.designation}): ${cm(t.supportZMm)} cm cada`);
   }

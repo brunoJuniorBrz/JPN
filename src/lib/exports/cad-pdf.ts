@@ -1,11 +1,13 @@
 import {jsPDF} from "jspdf";
 import type {CadScene,CadSceneItem} from "./cad-scene";
 import {CAD_LAYERS} from "./cad-book";
+import {stampWatermark,type Watermark} from "./watermark";
 
 // The built-in PDF font covers Portuguese in WinAnsi. Explicitly map the few
 // CAD symbols outside that encoding rather than emit garbled UTF-16 glyphs.
 const text=(value:string)=>value.replace(/−/g,"-").replace(/→/g,"->").replace(/²/g,"²").replace(/√/g,"sqrt");
-export function createCadPdf(sheets:CadScene[]):ArrayBuffer{
+/** `watermark` = marca Shimizu em todas as folhas (inclusive a Folha da Oficina); null = folha limpa. */
+export function createCadPdf(sheets:CadScene[],watermark:Watermark|null=null):ArrayBuffer{
   if(!sheets.length)throw Error("Nenhuma prancha disponível.");
   const first=sheets[0],doc=new jsPDF({unit:"mm",format:[first.width,first.height],orientation:"landscape",compress:true});
   for(const [i,sheet] of sheets.entries()){
@@ -36,5 +38,6 @@ export function createCadPdf(sheets:CadScene[]):ArrayBuffer{
     }
     draw(sheet.items);
   }
+  if(watermark)stampWatermark(doc,watermark);
   return doc.output("arraybuffer");
 }

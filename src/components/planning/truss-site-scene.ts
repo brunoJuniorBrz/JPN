@@ -5,7 +5,7 @@
  */
 import * as THREE from "three";
 import type { TrussEditor } from "@/domain/truss-editor";
-import { endSupportOf, heightAt, slopeCount, tipOffsetMm, trussLengthMm, type TrussSide } from "@/domain/truss-editor";
+import { endSupportOf, heightAt, isGableLine, slopeCount, tipOffsetMm, trussLengthMm, type TrussSide } from "@/domain/truss-editor";
 
 export function createTrussSiteScene(t: TrussEditor) {
   const root = new THREE.Group();
@@ -27,7 +27,8 @@ export function createTrussSiteScene(t: TrussEditor) {
   const lineY = (i: number) => t.trusses > 1 ? len * i / (t.trusses - 1) : 0;
   const wallRuns = (side: TrussSide) => {
     const runs: [number, number][] = [];
-    for (let i = 0; i < t.trusses; i++) if (endSupportOf(t, i, side) === "wall") {
+    // Oitão é parede: o muro lateral segue até ele.
+    for (let i = 0; i < t.trusses; i++) if (isGableLine(t, i) || endSupportOf(t, i, side) === "wall") {
       const last = runs.at(-1);
       if (last && last[1] === i - 1) last[1] = i; else runs.push([i, i]);
     }
@@ -45,6 +46,23 @@ export function createTrussSiteScene(t: TrussEditor) {
         [x, height / 2, -(y0 + y1) / 2], 0xb8a994, .42);
       wallCount++;
     }
+  }
+  // Oitão: parede de ponta subida na inclinação até o banzo de cima (onde a terça apoia).
+  // Só contexto visual; a parede não vira peça nem material.
+  const topZ = (xMm: number) => (t.supportZMm + heightAt(t, S === 2 ? Math.min(xMm - off, off + 2 * L - xMm) : xMm - off)) / 1000;
+  let gableCount = 0;
+  for (const i of [0, t.trusses - 1]) {
+    if (!isGableLine(t, i)) continue;
+    const outline = [[0, 0], [span, 0], [span, topZ(t.spanMm)], ...(S === 2 ? [[(off + L) / 1000, topZ(off + L)]] : []), [0, topZ(0)]] as [number, number][];
+    const shape = new THREE.Shape(outline.map(([x, z]) => new THREE.Vector2(x, z)));
+    const geometry = new THREE.ExtrudeGeometry(shape, { depth: wallThickness, bevelEnabled: false });
+    const material = new THREE.MeshStandardMaterial({ color: 0xb8a994, transparent: true, opacity: .42, depthWrite: false, roughness: .94, side: THREE.DoubleSide });
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.name = `Oitão (parede) na linha ${i + 1} — referência arquitetônica`;
+    // Extrusão em +Z local; a obra corre em -Z. A parede fica centrada na linha.
+    mesh.position.set(0, 0, -lineY(i) - wallThickness / 2);
+    geometries.push(geometry); materials.push(material); root.add(mesh);
+    gableCount++;
   }
   // Calhas U simplificadas nas bordas, comprimento real declarado; sem dimensionamento hidráulico.
   const gutterWidth = t.gutter.widthMm / 1000, small = t.gutter.lowSideMm / 1000, large = t.gutter.highSideMm / 1000;
@@ -64,7 +82,7 @@ export function createTrussSiteScene(t: TrussEditor) {
   const anchorY = floorZ + Math.max(t.anchor.plateHeightMm / 2000, .04);
   let anchorCount = 0;
   for (const [x, side] of anchorEnds) for (let i = 0; i < t.trusses; i++) {
-    if (endSupportOf(t, i, side) !== "wall") continue;
+    if (isGableLine(t, i) || endSupportOf(t, i, side) !== "wall") continue;
     anchorCount++;
     const y = -lineY(i);
     if (t.anchor.plateWidthMm > 0 && t.anchor.plateHeightMm > 0) {
@@ -114,6 +132,6 @@ export function createTrussSiteScene(t: TrussEditor) {
   roofPanels("Cobertura preliminar água 1", roofL, S === 2 ? ridgeX : span,
     leftEndZ, S === 2 ? ridgeZ : (t.supportZMm + heightAt(t, t.spanMm - off)) / 1000 + .05);
   if (S === 2) roofPanels("Cobertura preliminar água 2", ridgeX, (off + 2 * L + t.sheet.beyondTipMm) / 1000, ridgeZ, leftEndZ);
-  root.userData = { preliminary: true, slopeCount: S, wallCount, gutterCount: gutterXs.length, anchorCount, roofCount: S, roofPanelCount: S * t.sheet.piecesPerSlope };
+  root.userData = { preliminary: true, slopeCount: S, wallCount, gableCount, gutterCount: gutterXs.length, anchorCount, roofCount: S, roofPanelCount: S * t.sheet.piecesPerSlope };
   return { root, dispose: () => { for (const g of geometries) g.dispose(); for (const m of materials) m.dispose(); } };
 }
