@@ -3,7 +3,7 @@ import type {Project} from "@/domain/models";
 import {CadBook,CAD_NOTICE,type PaperFormat,type Point2 as P,type CadRect,type CadPage} from "./cad-book";
 import {cadModel,cadReactions,axisLetter,sortedCoordinates as unique,isDeclaredBrace,type CadPiece,type CadReactionReceipt} from "./cad-model";
 import {cadRoofFaces} from "./cad-roof";
-import {cutWalls,lineTypeId,trussEnds,trussSummary,typeName} from "@/domain/truss-editor";
+import {cutWalls,isGableLine,lineTypeId,trussEnds,trussSummary,typeName} from "@/domain/truss-editor";
 import {isUnlocatedCommercialPiece} from "./package-commercial-groups";
 import {addWorkshopSheet} from "./cad-workshop";
 import {reviewSourceDimensions,reviewRoofSlope,reviewRoofEnvelope} from "./package-dimension-review";
@@ -272,6 +272,13 @@ export function addPhysicalSheets(dxf:DxfWriter,project:Project,issuedAt:Date,op
           const outline:P[]=[[y0,0],[y1,0],[y1,h],[y0,h],[y0,0]];
           book.poly(space,outline.map(at),"BARRAS_AUXILIARES");
           book.text(space,at([(y0+y1)/2,Math.max(h/3,100)]),(w.side==="left"?"MURO BAIXO (ESQUEMA)":"MURO ALTO (ESQUEMA)")+w.lines,"TEXTOS",1.8);
+        }
+        // Oitão: parede de ponta no lugar da tesoura, até o banzo de cima (terças chumbadas nela).
+        const roofTop=Math.max(...[...nodes.values()].map(n=>n.z));
+        for(const line of [0,editorCtx.trusses-1])if(isGableLine(editorCtx,line)){
+          const y=ys[line],w=editorCtx.walls.thicknessMm,d=line===0?w:-w;
+          book.poly(space,([[y,0],[y+d,0],[y+d,roofTop],[y,roofTop],[y,0]] as P[]).map(at),"BARRAS_AUXILIARES");
+          book.text(space,at([y+d*2,roofTop/2]),"OITAO (PAREDE) - TERCAS CHUMBADAS","TEXTOS",1.8);
         }
       }
       const supportLabels=new Map<string,{point:P;marks:string[]}>();

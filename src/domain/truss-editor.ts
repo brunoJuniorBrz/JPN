@@ -15,6 +15,7 @@ import nbr6120 from "../../data/normas/nbr6120-2019-actions.json" with { type: "
 import { prepareTrussAnalysis } from "./truss-analysis";
 import type { Project } from "./models";
 import { declaredStructureSchema } from "./declared-structure";
+import type { SupportInterface } from "./support-interface";
 import { physicalRoofFacesSchema } from "./physical-roof-faces";
 import { newSpatialPreparation } from "./spatial-preparation";
 import { structureSignature } from "./calculations/project-basis";
@@ -96,6 +97,10 @@ export const trussEditorSchema = z.object({
   /** Apoio de cada ponta por linha de tesoura (índice = linha). Vazio ou ausente = segue `support`
    * (projetos antigos). A geometria da tesoura não muda: só o que fica embaixo de cada ponta. */
   lineSupports: z.array(z.object({ left: endSupportSchema, right: endSupportSchema }).strict()).max(60).default([]),
+  /** Oitão: a primeira (`start`) e/ou a última (`end`) linha de tesoura é uma parede de oitão já subida
+   * na inclinação do telhado. Ali não se fabrica tesoura: as terças apoiam direto na parede. As linhas
+   * continuam contando (o vão das terças não muda). Ausente = sem oitão (projetos antigos). */
+  gableEnds: z.object({ start: z.boolean().default(false), end: z.boolean().default(false) }).strict().default({ start: false, end: false }),
   /** Hipóteses de vínculo DECLARADAS pelo construtor no editor (não presumidas pelo motor). */
   supportModel: z.object({
     /** Base do pilar: engastada (chapa + chumbadores trabalhando à flexão) ou articulada. */
@@ -160,7 +165,7 @@ export function tomTrussDefaults(): TrussEditor {
     web: { designation: "L 7/8 x 1/8 pol", kgPerM: 1.03, barPriceCents: 5400, extraBars: 0 },
     purlin: { designation: "Ue 75x40x15x2.65 mm", kgPerM: 3.63, barPriceCents: 15500, extraBars: 0 },
     sheet: { usefulWidthMm: 1020, pricePerMCents: 4400, beyondTipMm: 300, piecesPerSlope: 1, overlapMm: 250, cladding: "steel-0.5mm" },
-    laborPerM2Cents: 5000, consumablesCents: 110000, screwPriceCents: 60, fullHeightBudget: false, types: [], lineTypes: [], lineSupports: [], supportModel: { columnBase: "fixed", wallsSlide: true, wallSiteReview: "" },
+    laborPerM2Cents: 5000, consumablesCents: 110000, screwPriceCents: 60, fullHeightBudget: false, types: [], lineTypes: [], lineSupports: [], gableEnds: { start: false, end: false }, supportModel: { columnBase: "fixed", wallsSlide: true, wallSiteReview: "" },
   };
 }
 
@@ -180,7 +185,7 @@ export function blankTruss(): TrussEditor {
     stationsMm: null, flippedPanels: [], purlinLines: 5, purlinStepMm: 1500, chordSpliceMm: 5980, stockMm: 6000,
     ...TOM_PROFILES_AND_PRICES(),
     sheet: { usefulWidthMm: 1020, pricePerMCents: 4400, beyondTipMm: 300, piecesPerSlope: 1, overlapMm: 250, cladding: "steel-0.5mm" },
-    laborPerM2Cents: 5000, consumablesCents: null, screwPriceCents: 60, fullHeightBudget: false, types: [], lineTypes: [], lineSupports: [], supportModel: { columnBase: "fixed", wallsSlide: true, wallSiteReview: "" },
+    laborPerM2Cents: 5000, consumablesCents: null, screwPriceCents: 60, fullHeightBudget: false, types: [], lineTypes: [], lineSupports: [], gableEnds: { start: false, end: false }, supportModel: { columnBase: "fixed", wallsSlide: true, wallSiteReview: "" },
   };
   // Caída de 10 % e terças a 1,50 m sobre os montantes, calculadas pelo comprimento real da tesoura.
   const withSlope = withFall(base, 10);
@@ -261,8 +266,15 @@ export const tipOffsetMm = (t: TrussEditor) => t.support === "columns" ? 0 : t.g
 /** Apoio de uma ponta: o declarado na linha ou, sem declaração, o modo da obra. */
 export const endSupportOf = (t: TrussEditor, line: number, side: TrussSide): EndSupport =>
   t.lineSupports[line]?.[side] ?? (t.support === "columns" ? "column" : "wall");
-/** Todas as pontas (linha × lado) com o seu apoio. "left" = ponta do x0; "right" = outra ponta (S=1: lado alto). */
-export const trussEnds = (t: TrussEditor) => Array.from({ length: t.trusses }, (_, line) =>
+/** Linha `i` é parede de oitão (sem tesoura fabricada; terças apoiadas na parede). */
+export const isGableLine = (t: TrussEditor, i: number) =>
+  (i === 0 && t.gableEnds.start) || (i === t.trusses - 1 && t.gableEnds.end);
+/** Linhas com tesoura de aço de verdade (fora dos oitões). */
+export const steelTrussLines = (t: TrussEditor) => Array.from({ length: t.trusses }, (_, i) => i).filter(i => !isGableLine(t, i));
+export const gableCount = (t: TrussEditor) => Array.from({ length: t.trusses }, (_, i) => i).filter(i => isGableLine(t, i)).length;
+/** Todas as pontas (linha × lado) com o seu apoio. "left" = ponta do x0; "right" = outra ponta (S=1: lado alto).
+ * Linhas de oitão não têm tesoura, então não têm ponta (nem pilar, chapa ou chumbador de tesoura). */
+export const trussEnds = (t: TrussEditor) => steelTrussLines(t).map(line =>
   (["left", "right"] as const).map(side => ({ line, side, kind: endSupportOf(t, line, side) }))).flat();
 export const columnCount = (t: TrussEditor) => trussEnds(t).filter(e => e.kind === "column").length;
 /** Chapas de ancoragem no muro: duas águas = cada ponta em muro; uma água = só o lado alto (a ponta baixa
@@ -276,7 +288,7 @@ export function cutWalls(t: TrussEditor) {
     if (!lines.length) return [];
     // Obra de pilares com trecho de muro: o muro chega à cota do banzo inferior (apoio da ponta).
     const heightMm = t.support !== "columns" ? (side === "left" || S === 2 ? t.walls.lowMm : t.walls.highMm) : t.supportZMm;
-    return [{ side, x: side === "left" ? 0 : t.spanMm, heightMm, lines: lines.length === t.trusses ? "" : ` - TESOURAS ${lines.join(",")}` }];
+    return [{ side, x: side === "left" ? 0 : t.spanMm, heightMm, lines: lines.length === steelTrussLines(t).length ? "" : ` - TESOURAS ${lines.join(",")}` }];
   });
 }
 /** Obra com apoios diferentes entre pontas/linhas. */
@@ -470,7 +482,8 @@ export type TrussSummary = ReturnType<typeof trussSummary>;
 export function trussSummary(t: TrussEditor) {
   const one = trussPiecesComplete(t), n = t.trusses, L = trussLengthMm(t), st = stations(t);
   // Cada linha de tesoura com o seu tipo; banzos e montantes agrupados por perfil.
-  const perLine = Array.from({ length: n }, (_, i) => { const e = trussOfLine(t, i); return { e, pieces: trussPiecesComplete(e) }; });
+  // Oitão: linha sem tesoura (a parede faz o papel dela); as terças continuam vencendo todos os vãos.
+  const perLine = steelTrussLines(t).map(i => { const e = trussOfLine(t, i); return { e, pieces: trussPiecesComplete(e) }; });
   type Group = { profile: TrussEditor["chord"]; lengths: number[]; fullMm: number };
   // Não agrupar por nome isoladamente: massa, preço e folga podem divergir mesmo com a mesma designação.
   const profileKey = (p: TrussEditor["chord"]) => JSON.stringify([p.designation, p.kgPerM, p.barPriceCents, p.extraBars]);
@@ -539,7 +552,9 @@ export function trussSummary(t: TrussEditor) {
   const columnL = Array(nCols).fill(t.supportZMm) as number[];
   const column = !nCols ? { bars: 0, wasteMm: 0 } : t.supportZMm <= t.stockMm - 10 ? barsFor(columnL, t.stockMm)
     : { bars: Math.ceil(sum(columnL) / (t.stockMm - 10)), wasteMm: 0 };
-  const supports = n * 2, basePlates = nCols, plates = basePlates + wallPlates, bolts = plates * t.anchor.boltsPerSupport;
+  const supports = steelTrussLines(t).length * 2, basePlates = nCols, plates = basePlates + wallPlates, bolts = plates * t.anchor.boltsPerSupport;
+  // Cada terça que chega no oitão é chumbada na parede (um ponto por linha de terça e por oitão).
+  const gables = gableCount(t), gableAnchors = gables * purlins.length;
   const screws = Math.ceil((columns * purlins.length * 4 + (columns - 1) * slopeCount(t) * Math.ceil(slopeMm / 500)) / 50) * 50;
   const areaM2 = t.spanMm * t.lengthMm / 1e6;
   const webBars = sum(webRows.map(r => r.bars + r.extra));
@@ -557,6 +572,7 @@ export function trussSummary(t: TrussEditor) {
     ...([["Chapa de base", basePlates], ["Chapa de ancoragem", wallPlates]] as const).filter(([, q]) => q > 0).map(([name, q]) =>
       ({ item: `${name} ${Math.round(t.anchor.plateWidthMm / 10)} x ${Math.round(t.anchor.plateHeightMm / 10)} cm`, qty: `${q} un${name === "Chapa de base" && wallPlates ? " (pilares)" : name === "Chapa de ancoragem" && basePlates ? " (muros)" : ""}`, cents: t.anchor.platePriceCents === null ? null : q * t.anchor.platePriceCents })),
     { item: `Chumbador ${(t.anchor.boltLengthMm / 1000).toFixed(2).replace(".", ",")} m`, qty: `${bolts} un`, cents: t.anchor.boltPriceCents === null ? null : bolts * t.anchor.boltPriceCents },
+    ...(gableAnchors ? [{ item: "Chumbador da terça no oitão", qty: `${gableAnchors} un (${purlins.length} terça(s) × ${gables} oitão(ões))`, cents: t.anchor.boltPriceCents === null ? null : gableAnchors * t.anchor.boltPriceCents }] : []),
     { item: "Parafusos", qty: `${screws} un`, cents: t.screwPriceCents === null ? null : screws * t.screwPriceCents },
     { item: "Insumos", qty: "—", cents: t.consumablesCents },
     { item: "Mão de obra", qty: `${areaM2.toFixed(1).replace(".", ",")} m²`, cents: t.laborPerM2Cents === null ? null : Math.round(areaM2 * t.laborPerM2Cents) },
@@ -569,6 +585,7 @@ export function trussSummary(t: TrussEditor) {
     kg: { chord: kgGroups(chordGroups), web: kgGroups(webGroups), purlin: kg(purlinL, t.purlin), column: kg(columnL, t.column),
       total: kgGroups(chordGroups) + kgGroups(webGroups) + kg(purlinL, t.purlin) + kg(columnL, t.column) },
     lineTypes: Array.from({ length: n }, (_, i) => lineTypeId(t, i)),
+    steelTrusses: steelTrussLines(t).length, gables, gableAnchors,
     sheets, sheetLengthMm, sheetM, screws, areaM2, lines,
     gutterLine: onColumns ? "Tesoura sobre pilares: calha e muros não modelados" : `Calha ${Math.round(t.gutter.widthMm / 10)} cm × ${(t.lengthMm * slopeCount(t) / 1000).toFixed(2).replace(".", ",")} m${t.gutter.budgeted ? (t.gutter.pricePerMCents === null ? " — preço pendente" : " — incluída no orçamento") : " — fora do orçamento"}`,
     knownCents: lines.reduce((s, l) => s + (l.cents ?? 0), 0), missing: lines.filter(l => l.cents === null).map(l => l.item),
@@ -647,6 +664,7 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
   };
   const pieceSection = new Map<string, string>();
   ys.forEach((y, f) => {
+    if (isGableLine(t, f)) return; // oitão: parede no lugar da tesoura
     const e = trussOfLine(t, f);
     const sec = { BS: sectionFor("CHORD", e.chord), BI: sectionFor("CHORD", bottomChordOf(e)), M: sectionFor("WEB", e.web), D: sectionFor("WEB", e.web) };
     for (const p of trussPiecesComplete(e)) {
@@ -671,9 +689,13 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
       supportNodes.push({ nodeId: foot, ...e });
     } else supportNodes.push({ nodeId: top, ...e });
   }
+  const gableNodes: { nodeId: string; line: number; purlin: number }[] = [];
   roofPurlinPositions(t).forEach((p, r) => ys.slice(0, -1).forEach((y, v) => {
-    const z = Z0 + heightAt(t, p.sMm);
-    pieces.push({ id: `TE${r + 1}-V${v + 1}`, role: "purlin", start: node(x0 + p.xMm, y, z), end: node(x0 + p.xMm, ys[v + 1], z), label: `Terça ${t.purlin.designation}`, group: "TERCAS" });
+    const z = Z0 + heightAt(t, p.sMm), a = node(x0 + p.xMm, y, z), b = node(x0 + p.xMm, ys[v + 1], z);
+    pieces.push({ id: `TE${r + 1}-V${v + 1}`, role: "purlin", start: a, end: b, label: `Terça ${t.purlin.designation}`, group: "TERCAS" });
+    // Terça chumbada na parede de oitão: apoio na ponta da terça.
+    if (v === 0 && isGableLine(t, 0)) gableNodes.push({ nodeId: a, line: 0, purlin: r + 1 });
+    if (v === bays - 1 && isGableLine(t, bays)) gableNodes.push({ nodeId: b, line: bays, purlin: r + 1 });
   }));
   const next: Project = structuredClone(project);
   next.planning = null;
@@ -712,9 +734,12 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
   // Vínculos DECLARADOS pelo construtor no editor (supportModel), um por ponta, com a interface
   // física (muro existente ou pilar novo) para o motor separar e auditar as reações de cada uma.
   const restraints = supportRestraints(t);
-  draft.supports = supportNodes.map(s => ({ nodeId: s.nodeId, dofs: [...restraints(s.line, s.side, s.kind)] }));
+  // Oitão: terça apoiada na parede — translações contidas, rotações livres (terça biapoiada).
+  const gableDofs: Dofs = ["fixed", "fixed", "fixed", "free", "free", "free"];
+  draft.supports = [...supportNodes.map(s => ({ nodeId: s.nodeId, dofs: [...restraints(s.line, s.side, s.kind)] as Dofs })),
+    ...gableNodes.map(g => ({ nodeId: g.nodeId, dofs: [...gableDofs] as Dofs }))];
   const review = t.supportModel.wallSiteReview.trim(), reviewed = review.length >= 5;
-  draft.supportInterfaces = supportNodes.map(s => {
+  draft.supportInterfaces = supportNodes.map((s): SupportInterface => {
     const dofs = restraints(s.line, s.side, s.kind), sliding = s.kind === "wall" && dofs[0] === "free";
     return {
       nodeId: s.nodeId, side: s.side === "left" ? "A" as const : "B" as const,
@@ -728,7 +753,14 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
         : `Tesoura ${s.line + 1}, ponta ${s.side === "left" ? "esquerda" : "direita"} sobre pilar: base ${t.supportModel.columnBase === "fixed" ? "engastada (chapa e chumbadores à flexão)" : "articulada (exige contraventamento)"}.`,
       reviewStatus: s.kind === "wall" && reviewed ? "site-reviewed" as const : "hypothesis" as const,
     };
-  });
+  }).concat(gableNodes.map(g => ({
+    nodeId: g.nodeId, side: "internal" as const, kind: "existing-masonry" as const, dofs: [...gableDofs] as Dofs,
+    source: reviewed ? `Editor de tesoura JPN; conferência do muro no local: ${review}` : "Editor de tesoura JPN — oitão declarado pelo construtor",
+    revision,
+    loadPath: "Terça -> chumbador na parede de oitão -> alvenaria existente (não verificada pelo JPN)",
+    restraintBasis: `Terça ${g.purlin} apoiada no oitão da linha ${g.line + 1}: translações contidas, rotações livres.`,
+    reviewStatus: reviewed ? "site-reviewed" as const : "hypothesis" as const,
+  })));
   next.workspace.spatialPreparation = draft;
   draft.geometrySignature = structureSignature(next); // APÓS atribuir catálogo e perfis
   next.workspace.overallDimensionChecks = [{ axis: "y", statedLengthMm: t.lengthMm, source: "Comprimento da obra (editor de tesoura)", revision }];
@@ -743,7 +775,9 @@ export function applyTrussToProject(project: Project, input: TrussEditor, revisi
       : `Muros: beiral baixo ${t.walls.lowMm} mm, ${S === 1 ? `lado alto ${t.walls.highMm} mm` : "ambos os beirais no mesmo nível declarado"} (espessura ${t.walls.thicknessMm}); banzo inferior a ${t.supportZMm} mm do piso. Chapa de ancoragem ${t.anchor.plateWidthMm} x ${t.anchor.plateHeightMm} mm, ${t.anchor.boltsPerSupport} chumbador(es) de ${t.anchor.boltLengthMm} mm por ${S === 1 ? "muro alto" : "beiral"} (sem verificação).`,
     `Telha em ${t.sheet.piecesPerSlope} peça(s) por água${t.sheet.piecesPerSlope > 1 ? `, sobreposição ${t.sheet.overlapMm} mm` : ""}.`,
     ...(t.types.length ? [`Tipos de tesoura: ${[BASE_TYPE, ...t.types.map(x => x.id)].map(id => `${typeName(t, id)} nas linhas ${Array.from({ length: t.trusses }, (_, i) => i).filter(i => lineTypeId(t, i) === id).map(i => i + 1).join(", ") || "nenhuma"}`).join("; ")}. Cobertura, apoios e terças iguais; muda o desenho interno e os perfis.`] : []),
-    `Distribuição preliminar: ${t.trusses} tesoura(s), ${Math.round(t.lengthMm/(t.trusses-1))} mm entre elas; posições não constituem apoios verificados.`,
+    gableCount(t)
+      ? `Distribuição preliminar: ${t.trusses} linhas de apoio a cada ${Math.round(t.lengthMm/(t.trusses-1))} mm — ${steelTrussLines(t).length} tesoura(s) de aço e oitão (parede) na${gableCount(t) > 1 ? "s linhas" : " linha"} ${Array.from({ length: t.trusses }, (_, i) => i).filter(i => isGableLine(t, i)).map(i => i + 1).join(" e ")}, com as terças chumbadas na parede; posições não constituem apoios verificados.`
+      : `Distribuição preliminar: ${t.trusses} tesoura(s), ${Math.round(t.lengthMm/(t.trusses-1))} mm entre elas; posições não constituem apoios verificados.`,
     ...(t.fullHeightBudget ? [`Montantes/diagonais: compra por medida cheia ${trussSummary(t).buy.web} barras; corte geométrico real ${trussSummary(t).bars.web} barras (sem liberação para fabricar).`] : []),
   ].join(" ");
   next.updatedAt = new Date().toISOString();

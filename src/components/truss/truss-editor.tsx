@@ -4,7 +4,7 @@ import { RotateCcw, Plus, Trash2, ArrowLeftRight, Check, TriangleAlert, FilePlus
 import { NumberField } from "@/components/number-field";
 import { Field, Input, Select } from "@/components/ui";
 import {
-  BASE_TYPE, TYPE_KEYS, addTrussType, lineTypeId, removeTrussType, trussOfType, typeName,
+  BASE_TYPE, TYPE_KEYS, addTrussType, gableCount, steelTrussLines, lineTypeId, removeTrussType, trussOfType, typeName,
   blankTruss, COMMON_PROFILES, columnCount, endSupportOf, trussEnds, wallPlateCount, withEndSupports, type EndSupport, type TrussSide, fallPercent, fitPurlins, roofPurlinPositions, slopeCount, stations, suggestedTrussCount, tipOffsetMm, tomTrussDefaults, trussEditorSchema, trussIssues, trussLengthMm, trussPiecesComplete, trussSummary, withFall,
   type TrussEditor as Truss,
 } from "@/domain/truss-editor";
@@ -158,7 +158,7 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
           {editingId !== BASE_TYPE && <button type="button" className="button secondary" onClick={() => { const next = removeTrussType(t, editingId); set({ types: next.types, lineTypes: next.lineTypes }); setEditing(BASE_TYPE); setSelected(null); }}><Trash2 size={16} />Remover tipo</button>}
         </div>
         {t.types.length > 0 && <div className={styles.lines} aria-label="Tipo de cada tesoura">
-          {Array.from({ length: t.trusses }, (_, i) => <Field key={i} label={`Tesoura ${i + 1}`}><Select value={lineTypeId(t, i)} onChange={e => { const next = Array.from({ length: t.trusses }, (_, j) => lineTypeId(t, j)); next[i] = e.target.value; set({ lineTypes: next }); }}>
+          {steelTrussLines(t).map(i => <Field key={i} label={`Tesoura ${i + 1}`}><Select value={lineTypeId(t, i)} onChange={e => { const next = Array.from({ length: t.trusses }, (_, j) => lineTypeId(t, j)); next[i] = e.target.value; set({ lineTypes: next }); }}>
             {[BASE_TYPE, ...t.types.map(x => x.id)].map(id => <option key={id} value={id}>{typeName(t, id)}</option>)}
           </Select></Field>)}
         </div>}
@@ -206,7 +206,7 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
         {confirming && !!replaces?.length && <div className={styles.replaceWarning} role="alert" data-testid="truss-replace-warning">
           <p><TriangleAlert size={15} /><strong>Aplicar vai substituir a estrutura desta obra.</strong></p>
           <p>{columnCount(t)
-            ? `O editor remonta a estrutura: ${t.trusses} tesouras, terças e ${columnCount(t)} pilares nas pontas das tesouras (onde a ponta apoia em pilar). Estas peças atuais serão substituídas:`
+            ? `O editor remonta a estrutura: ${steelTrussLines(t).length} tesouras${gableCount(t) ? ` (+ ${gableCount(t)} oitão)` : ""}, terças e ${columnCount(t)} pilares nas pontas das tesouras (onde a ponta apoia em pilar). Estas peças atuais serão substituídas:`
             : "O editor monta só tesouras e terças apoiadas nos muros. Estas peças atuais vão sumir:"}</p>
           <ul>{replaces.map(l => <li key={l}>{l}</li>)}</ul>
           <p>Para guardar a obra como está, cancele e use Projetos → Duplicar antes de aplicar.</p>
@@ -245,7 +245,16 @@ export function TrussEditor({ initial, onApply, applyLabel, replaces }: { initia
           {t.support === "walls" && <Cm label="Espessura do muro (cm)" mm={t.walls.thicknessMm} onMm={v => set({ walls: { ...t.walls, thicknessMm: v } })} min={5} />}
           <Cm label={t.support === "columns" ? "Altura do pilar (cm)" : "Banzo de baixo a partir do piso (cm)"} mm={t.supportZMm} onMm={supportZMm => set({ supportZMm })} hint={t.support === "columns" ? "Do piso ao banzo de baixo da tesoura." : "Altura de apoio da tesoura."} />
           {t.support === "columns" && <p className={styles.muted}>Tesoura de eixo a eixo dos pilares. Onde já existe muro, troque a ponta para muro em &quot;Apoios por tesoura&quot;.</p>}
-          <NumberField label="Tesouras" value={t.trusses} min={2} max={60} decimals={0} onChange={v => { if (v !== null) { setTrussesAuto(false); set({ trusses: v }); } }} hint={`A cada ${m(t.lengthMm / (t.trusses - 1))} m · não verificado estruturalmente`} />
+          <NumberField label={gableCount(t) ? "Linhas de apoio (tesouras + oitão)" : "Tesouras"} value={t.trusses} min={2} max={60} decimals={0} onChange={v => { if (v !== null) { setTrussesAuto(false); set({ trusses: v }); } }}
+            hint={gableCount(t) ? `A cada ${m(t.lengthMm / (t.trusses - 1))} m · ${steelTrussLines(t).length} tesoura(s) de aço + ${gableCount(t)} oitão` : `A cada ${m(t.lengthMm / (t.trusses - 1))} m · não verificado estruturalmente`} />
+          <Field label="Ponta apoiada na parede (oitão)"><Select value={t.gableEnds.start && t.gableEnds.end ? "both" : t.gableEnds.start ? "start" : t.gableEnds.end ? "end" : "none"} data-testid="truss-gable-ends"
+            onChange={e => { const v = e.target.value; set({ gableEnds: { start: v === "both" || v === "start", end: v === "both" || v === "end" } }); }}>
+            <option value="none">não — tesoura nas duas pontas</option>
+            <option value="start">só no começo (no lugar da tesoura 1)</option>
+            <option value="end">só no fim (no lugar da tesoura {t.trusses})</option>
+            <option value="both">nas duas pontas</option>
+          </Select></Field>
+          {gableCount(t) > 0 && <p className={styles.muted} data-testid="truss-gable-note">Onde tem oitão não entra tesoura: a parede sobe na inclinação do telhado e as terças são chumbadas nela. Economiza {gableCount(t)} tesoura(s).</p>}
           <label className={styles.toggle}><input type="checkbox" checked={trussesAuto} onChange={e => { setTrussesAuto(e.target.checked); if(e.target.checked) set({ trusses: suggestedTrussCount(t.lengthMm,t.stockMm) }); }} /><span><strong>Quantidade automática (preliminar)</strong><small>Pela barra comercial. Apoios e espaçamento resistente exigem validação.</small></span></label>
         </div>
       </section>
@@ -336,13 +345,13 @@ function SupportsCard({ t, set }: { t: Truss; set: (patch: Partial<Truss>) => vo
   const S = slopeCount(t), ends = trussEnds(t), mixed = t.lineSupports.length > 0;
   const sideName = (side: TrussSide) => S === 2 ? (side === "left" ? "Lado esquerdo" : "Lado direito") : (side === "left" ? "Lado da ponta baixa" : "Lado alto");
   const walls = ends.filter(e => e.kind === "wall").length, cols = ends.length - walls;
-  const bothWalls = Array.from({ length: t.trusses }, (_, i) => endSupportOf(t, i, "left") === "wall" && endSupportOf(t, i, "right") === "wall").some(Boolean);
+  const bothWalls = steelTrussLines(t).map(i => endSupportOf(t, i, "left") === "wall" && endSupportOf(t, i, "right") === "wall").some(Boolean);
   const one = (line: number, side: TrussSide, kind: EndSupport) => set({ lineSupports: withEndSupports(t, (l, s) => l === line && s === side ? kind : null) });
   const sm = t.supportModel, setModel = (patch: Partial<Truss["supportModel"]>) => set({ supportModel: { ...sm, ...patch } });
   // Trecho de muro por lado: "muro da tesoura A até a B", o resto em pilar.
   const wallLines = (side: TrussSide) => ends.filter(e => e.side === side && e.kind === "wall").map(e => e.line + 1);
   const range = (side: TrussSide) => { const w = wallLines(side); return w.length && w.at(-1)! - w[0] + 1 === w.length ? [w[0], w.at(-1)!] : null; };
-  const sideMode = (side: TrussSide) => { const w = wallLines(side).length; return w === t.trusses ? "wall" : w === 0 ? "column" : range(side) ? "range" : "custom"; };
+  const sideMode = (side: TrussSide) => { const w = wallLines(side).length; return w === steelTrussLines(t).length ? "wall" : w === 0 ? "column" : range(side) ? "range" : "custom"; };
   const setRange = (side: TrussSide, from: number, to: number) => set({ lineSupports: withEndSupports(t, (l, s) => s !== side ? null : l + 1 >= from && l + 1 <= to ? "wall" : "column") });
   const setSide = (side: TrussSide, mode: string) => mode === "wall" ? setRange(side, 1, t.trusses) : mode === "column" ? setRange(side, 0, -1)
     : mode === "range" ? setRange(side, 1, Math.max(1, Math.ceil(t.trusses / 2))) : undefined;
@@ -366,7 +375,7 @@ function SupportsCard({ t, set }: { t: Truss; set: (patch: Partial<Truss>) => vo
     {mixed && <details className={styles.details}>
       <summary>Ajustar tesoura por tesoura</summary>
       <div className={styles.lines} aria-label="Apoio de cada ponta por tesoura">
-        {Array.from({ length: t.trusses }, (_, i) => (["left", "right"] as const).map(side => <Field key={`${i}-${side}`} label={`T${i + 1} — ${sideName(side).toLowerCase()}`}>
+        {steelTrussLines(t).map(i => (["left", "right"] as const).map(side => <Field key={`${i}-${side}`} label={`T${i + 1} — ${sideName(side).toLowerCase()}`}>
           <Select value={endSupportOf(t, i, side)} onChange={e => one(i, side, e.target.value as EndSupport)} data-testid={`truss-end-${i + 1}-${side}`}>
             <option value="wall">muro</option><option value="column">pilar</option>
           </Select></Field>)).flat()}
